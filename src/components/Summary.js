@@ -278,7 +278,7 @@ export default class Summary extends Component {
 
         <div className="summary__display">
           <div className="summary__display-title">
-            Factors to Consider in Managing Chronic Pain
+            Clinical Opioid Summary to Reduce Impact
           </div>
 
           {meetsInclusionCriteria && <ExclusionBanner />}
@@ -287,21 +287,22 @@ export default class Summary extends Component {
 
           {meetsInclusionCriteria &&
             <div className="sections">
-              <Collapsible trigger={this.renderSectionHeader("PertinentMedicalHistory")} open={true}>
+            {/*  <Collapsible trigger={this.renderSectionHeader("PertinentMedicalHistory")} open={true}>
                 {this.renderSection("PertinentMedicalHistory")}
               </Collapsible>
 
               <Collapsible trigger={this.renderSectionHeader("PainAssessments")} open={true}>
                 {this.renderSection("PainAssessments")}
-              </Collapsible>
-
+             </Collapsible>
+			*/}
               <Collapsible trigger={this.renderSectionHeader("HistoricalTreatments")} open={true}>
                 {this.renderSection("HistoricalTreatments")}
               </Collapsible>
 
-              <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
+            {/*  <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
                 {this.renderSection("RiskConsiderations")}
               </Collapsible>
+			 */} 
             </div>
           }
 
@@ -316,6 +317,13 @@ export default class Summary extends Component {
             </a>
             for additional information and prescribing guidance.
           </div>
+		  
+	       <div  className="cdc-disclaimer">
+            This application was built using CDS Connect from AHRQ.  Funding was provided by.....
+			Lorem ipsum dolor sit amet, consectetur adipibore et dolore magna aliqua.
+          </div>
+		  	  
+		  
 
           <DevTools
             collector={collector}

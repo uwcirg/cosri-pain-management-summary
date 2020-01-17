@@ -19,7 +19,7 @@ export default class ExclusionBanner extends Component {
         <FontAwesome className="close-button" name="close" onClick={this.handleClose} />
 
         <div className="exclusion-banner__description">
-          <strong><FontAwesome name="exclamation-circle" /> TAKE NOTICE:</strong> This summary is not intended
+          <strong><FontAwesome name="exclamation-circle" /> TAKE Notice:</strong> This summary is not intended
           for patients who are undergoing <b>end-of-life care</b> (hospice or palliative) or <b>active cancer
           treatment</b>.
         </div>

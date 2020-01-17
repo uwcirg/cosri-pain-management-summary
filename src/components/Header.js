@@ -11,9 +11,10 @@ export default class Header extends Component {
     return (
       <header className="header">
         <div className="header__logo">
-          <img className="header__logo-img" src={process.env.PUBLIC_URL + "/assets/images/cds-connect-logo.png"}
+          <img className="header__logo-img" src={process.env.PUBLIC_URL + "/assets/images/logo.png"}
             alt="cds connect logo" />
-          <span className="header__logo-text">CDS Connect</span>
+			{/* <span className="header__logo-text">COSRI</span> */}
+		  <span className="header__tagline-text">Built with CDS Connect from AHRQ!</span>
         </div>
 
         <div className="header__summary">
@@ -31,7 +32,7 @@ export default class Header extends Component {
           </div>
 
           {meetsInclusionCriteria &&
-            <div className="header__summary-dashboard">
+			  <div className="header__summary-dashboard">
               <div className="entries">
                 <div className="entries-count total">{totalEntries}</div>
                 <div className="entries-label">Total Entries</div>
