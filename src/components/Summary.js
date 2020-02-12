@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import FontAwesome from 'react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Collapsible from 'react-collapsible';
 import ReactTooltip from 'react-tooltip';
 import ReactTable from 'react-table';
@@ -28,14 +28,17 @@ export default class Summary extends Component {
       showModal: false,
       modalSubSection: null
     };
-  }
 
-  componentWillMount() {
+    this.subsectionTableProps = { id: 'react_sub-section__table'};
+
     ReactModal.setAppElement('body');
   }
 
-  handleOpenModal = (modalSubSection) => {
-    this.setState({ showModal: true, modalSubSection });
+  handleOpenModal = (modalSubSection,event) => {
+    //only open modal   on 'enter' or click
+    if(event.keyCode === 13 || event.type === "click") {
+        this.setState({showModal: true, modalSubSection});
+    }
   }
 
   handleCloseModal = () => {
@@ -89,10 +92,12 @@ export default class Summary extends Component {
     return (
       <div className="table">
         <div className="no-entries">
-          <FontAwesome
+          <FontAwesomeIcon
             className={`flag flag-no-entry ${flaggedClass}`}
-            name="exclamation-circle"
+            icon="exclamation-circle"
+            title={`flag: ${tooltip}`}
             data-tip={tooltip}
+            role="tooltip"
           />
           no entries found
         </div>
@@ -116,13 +121,16 @@ export default class Summary extends Component {
     let columns = [
       {
         id: 'flagged',
-        Header: '',
+        Header: <span aria-label="flag"></span>,
         accessor: (entry) => this.isEntryFlagged(section, subSection.dataKey, entry),
         Cell: (props) =>
-          <FontAwesome
+          <FontAwesomeIcon
             className={`flag flag-entry ${props.value ? 'flagged' : ''}`}
-            name="exclamation-circle"
-            data-tip={props.value ? props.value : ''} />,
+            icon="exclamation-circle"
+            title={props.value ? `flag: ${props.value}` : 'flag'}
+            data-tip={props.value ? props.value : ''}
+            role="tooltip"
+          />,
         sortable: false,
         width: 35,
         minWidth: 35
@@ -178,18 +186,23 @@ export default class Summary extends Component {
       columns.push(column);
     });
 
+    //ReactTable needs an ID for aria-describedby
+    let tableID = subSection.name.replace(/ /g,"_") + "-table";
+    let customProps = {id:tableID};
     return (
-      <div key={index} className="table">
-        <ReactTable
-          className="sub-section__table"
-          columns={columns}
-          data={filteredEntries}
-          minRows={1}
-          showPagination={filteredEntries.length > 10}
-          pageSizeOptions={[10, 20, 50, 100]}
-          defaultPageSize={10}
-          resizable={false}
-        />
+      <div key={index} className="table" role="table"
+           aria-label={subSection.name} aria-describedby={customProps.id}>
+          <ReactTable
+            className="sub-section__table"
+            columns={columns}
+            data={filteredEntries}
+            minRows={1}
+            showPagination={filteredEntries.length > 10}
+            pageSizeOptions={[10, 20, 50, 100]}
+            defaultPageSize={10}
+            resizable={false}
+            getProps={() => customProps}
+          />
       </div>
     );
   }
@@ -208,16 +221,27 @@ export default class Summary extends Component {
       return (
         <div key={subSection.dataKey} className="sub-section h3-wrapper">
           <h3 id={subSection.dataKey} className="sub-section__header">
-            <FontAwesome
+            <FontAwesomeIcon
               className={`flag flag-nav ${flaggedClass}`}
-              name={flagged ? 'exclamation-circle' : 'circle'} />
+              icon={flagged ? 'exclamation-circle' : 'circle'}
+              title="flag"
+            />
             {subSection.name}
             {subSection.info &&
-              <FontAwesome
-                className='info-icon'
-                name="info-circle"
-                data-tip="more info"
-                onClick={() => this.handleOpenModal(subSection)} />
+              <div
+                onClick={(event) => this.handleOpenModal(subSection,event)}
+                onKeyDown={(event) => this.handleOpenModal(subSection,event)}
+                role="button"
+                tabIndex={0}
+                aria-label={subSection.name}>
+                <FontAwesomeIcon
+                  className='info-icon'
+                  icon="info-circle"
+                  title={`more info: ${subSection.name}`}
+                  data-tip="more info"
+                  role="tooltip"
+                />
+              </div>
             }
           </h3>
 
@@ -258,11 +282,11 @@ export default class Summary extends Component {
 
           <span>
             {title}
-            <FontAwesome className={`flag flag-header ${flaggedClass}`} name="exclamation-circle" />
+            <FontAwesomeIcon className={`flag flag-header ${flaggedClass}`} icon="exclamation-circle" title="flag" />
           </span>
         </div>
 
-        <FontAwesome className="chevron" name="chevron-right" />
+        <FontAwesomeIcon className="chevron" icon="chevron-right" title="expand/collapse" />
       </h2>
     );
   };
@@ -274,9 +298,9 @@ export default class Summary extends Component {
 
     return (
       <div className="summary">
-        <div className="summary__nav-wrapper"><div className="summary__nav"></div></div>
+        <div className="summary__nav-wrapper"><nav className="summary__nav"></nav></div>
 
-        <div className="summary__display">
+        <div className="summary__display" id="maincontent">
           <div className="summary__display-title">
             Clinical Opioid Summary to Reduce Impact
           </div>
@@ -291,7 +315,7 @@ export default class Summary extends Component {
                 {this.renderSection("PertinentMedicalHistory")}
               </Collapsible>
 
-              <Collapsible trigger={this.renderSectionHeader("PainAssessments")} open={true}>
+              <Collapsible tabIndex={0} trigger={this.renderSectionHeader("PainAssessments")} open={true}>
                 {this.renderSection("PainAssessments")}
              </Collapsible>
 			*/}

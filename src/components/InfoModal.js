@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import FontAwesome from 'react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactTable from 'react-table';
 
 export default class InfoModal extends Component {
+
+  constructor () {
+    super(...arguments);
+
+    this.elementsTableProps = { id: 'react__elements__table'};
+    this.referencesTableProps = { id: 'react__references__table'};
+  }
+
   renderElements = (elements) => {
     const tableElements = elements.elements;
     const columns = [{
@@ -17,9 +25,9 @@ export default class InfoModal extends Component {
       Header: () => <span className="col-header">Lookback</span>,
       accessor: 'lookback'
     }];
-
     return (
-      <div className="element">
+      <div className="element" role="table"
+           aria-label={elements.description} aria-describedby={this.elementsTableProps.id}>
         <h4>{elements.description}</h4>
         <ReactTable
           className="elements__table"
@@ -28,6 +36,7 @@ export default class InfoModal extends Component {
           minRows={1}
           showPagination={false}
           resizable={false}
+          getProps={() => this.elementsTableProps}
         />
       </div>
     );
@@ -49,11 +58,15 @@ export default class InfoModal extends Component {
 
     let data = references;
     data.forEach((reference) => {
-      reference.urlLink = <a href={reference.url} src={reference.title} target="_blank"><FontAwesome name="link" /></a>
+      reference.urlLink = (
+        <a href={reference.url} src={reference.title} target="_blank"
+           rel="noopener noreferrer"><FontAwesomeIcon icon="link" title="link" /></a>
+      );
     });
 
     return (
-      <div className="reference">
+      <div className="reference" role="table"
+           aria-label="References" aria-describedby={this.referencesTableProps.id}>
         <ReactTable
           className="elements__table"
           columns={columns}
@@ -61,6 +74,7 @@ export default class InfoModal extends Component {
           minRows={1}
           showPagination={false}
           resizable={false}
+          getProps={() => this.referencesTableProps}
         />
       </div>
     );
@@ -75,7 +89,7 @@ export default class InfoModal extends Component {
       <div className="info-modal">
         <div className="info-modal__header">
           More Information for {subSection.name}
-          <FontAwesome name="close" className="close-icon" onClick={closeModal}/>
+          <FontAwesomeIcon icon="times" title="close" className="close-icon" onClick={closeModal}/>
         </div>
 
         <div className="info-modal__body">

@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import tocbot from 'tocbot';
-import FontAwesome from 'react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
 import sumit from '../helpers/sumit';
 import flagit from '../helpers/flagit';
 import summaryMap from './summary.json';
-
-import factorsElm from '../cql/Factors_to_Consider_in_Managing_Chronic_Pain.json';
-import commonsElm from '../cql/CDS_Connect_Commons_for_FHIRv102.json';
-import fhirhelpersElm from '../cql/FHIRHelpers.json';
-import valueSetDB from '../cql/valueset-db.json';
 
 import Header from './Header';
 import Summary from './Summary';
@@ -34,29 +29,15 @@ export default class Landing extends Component {
     this.tocInitialized = false;
   }
 
-  componentWillMount() {
-    const elmDependencies = {
-      CDS_Connect_Commons_for_FHIRv102: commonsElm,
-      FHIRHelpers: fhirhelpersElm
-    };
-
-    try {
-      executeElm(factorsElm, elmDependencies, valueSetDB, this.state.collector, (result, error) => {
-        this.setState({ loading: false });
-
-        if (error) {
-          console.error(error);
-          return;
-        }
-
-        const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-
-        this.setState({ result, sectionFlags, flaggedCount });
-      });
-    } catch (err) {
+  componentDidMount() {
+    executeElm(this.state.collector).then((result) => {
+      this.setState({ loading: false });
+      const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+      this.setState({ result, sectionFlags, flaggedCount });
+    }).catch((err) => {
       console.error(err);
       this.setState({ loading: false });
-    }
+    });
   }
 
   componentDidUpdate() {
@@ -71,6 +52,11 @@ export default class Landing extends Component {
       });
 
       this.tocInitialized = true;
+    }
+
+    if (this.state.result && this.state.result.Summary.Patient.Name) {
+      const patientName = this.state.result.Summary.Patient.Name;
+      document.title = `Pain Management Summary - ${patientName}`;
     }
   }
 
@@ -182,7 +168,7 @@ export default class Landing extends Component {
     if (this.state.result == null) {
       return (
         <div className="banner error">
-          <FontAwesome name="exclamation-circle" /> Error: See console for details.
+          <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See console for details.
         </div>
       );
     }
@@ -199,6 +185,8 @@ export default class Landing extends Component {
 
     return (
       <div className="landing">
+        <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>
+
         <Header
           patientName={summary.Patient.Name}
           patientAge={summary.Patient.Age}
