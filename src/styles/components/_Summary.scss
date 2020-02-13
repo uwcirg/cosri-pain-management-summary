@@ -49,7 +49,8 @@
 
           &.is-active-link,
           &:hover {
-            background-color: $color-uw-light;
+            //background-color: $color-uw-light;
+            background-color: $color-gray-light;
           }
 
           .section__header-title {
@@ -87,8 +88,8 @@
     min-height: calc(100vh - 100px);
     width: 300px;
     min-width: 300px;
-    //background-color: $color-gray-dark;
-    background-color: $color-uw-dark;
+    background-color: $color-gray-dark;
+    //background-color: $color-uw-dark;
   }
 
   &__display {
@@ -96,8 +97,8 @@
     background-color: $color-gray-lightest;
 
     &-title {
-      //background-color: $color-blue;
-      background-color: $color-uw-gray;
+      background-color: $color-blue;
+      //background-color: $color-uw-gray;
       color: $color-white;
       text-align: center;
       font-size: 1.5em;
@@ -126,8 +127,8 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          //background-color: $color-black;
-          background-color: $color-gold;
+          background-color: $color-black;
+          //background-color: $color-gold;
           color: $color-white;
           padding: 15px 25px;
           font-weight: 400;
@@ -170,8 +171,8 @@
         .info-icon {
           margin-left: 5px;
           font-size: 0.9em;
-          //color: $color-blue;
-          color: $color-uw-icon;
+          color: $color-blue;
+          //color: $color-uw-icon;
           cursor: pointer;
         }
 
