@@ -4,8 +4,9 @@ services:
   frontend:
     build:
       context: .
+      dockerfile: Dockerfile.production
     ports:
-      - 8000:8000
+      - 8000:80
     volumes:
       - ./:/opt/app
     env_file:
