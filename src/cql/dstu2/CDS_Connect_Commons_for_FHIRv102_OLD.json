@@ -2,7 +2,7 @@
    "library" : {
       "identifier" : {
          "id" : "CDS_Connect_Commons_for_FHIRv102",
-         "version" : "1.3.2"
+         "version" : "1.3.0"
       },
       "schemaIdentifier" : {
          "id" : "urn:hl7-org:elm",
@@ -144,7 +144,7 @@
             } ]
          }, {
             "name" : "NullSafeToQuantity",
-            "context" : "Unfiltered",
+            "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
             "expression" : {
@@ -1117,16 +1117,14 @@
                   }, {
                      "type" : "In",
                      "operand" : [ {
-                        "type" : "ToDateTime",
-                        "operand" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "dateRecorded",
-                              "scope" : "C",
-                              "type" : "Property"
-                           }
-                        }
+                        "name" : "ToDateTime",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "path" : "dateRecorded",
+                           "scope" : "C",
+                           "type" : "Property"
+                        } ]
                      }, {
                         "name" : "LookBackInterval",
                         "type" : "QueryLetRef"
@@ -2451,118 +2449,6 @@
                }
             } ]
          }, {
-            "name" : "NotCancelled",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "type" : "FunctionDef",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "E",
-                  "expression" : {
-                     "name" : "EncList",
-                     "type" : "OperandRef"
-                  }
-               } ],
-               "relationship" : [ ],
-               "where" : {
-                  "type" : "Not",
-                  "operand" : {
-                     "type" : "Equal",
-                     "operand" : [ {
-                        "path" : "value",
-                        "type" : "Property",
-                        "source" : {
-                           "path" : "status",
-                           "scope" : "E",
-                           "type" : "Property"
-                        }
-                     }, {
-                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                        "value" : "cancelled",
-                        "type" : "Literal"
-                     } ]
-                  }
-               }
-            },
-            "operand" : [ {
-               "name" : "EncList",
-               "operandTypeSpecifier" : {
-                  "type" : "ListTypeSpecifier",
-                  "elementType" : {
-                     "name" : "{http://hl7.org/fhir}Encounter",
-                     "type" : "NamedTypeSpecifier"
-                  }
-               }
-            } ]
-         }, {
-            "name" : "EncounterLookBack",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "type" : "FunctionDef",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "E",
-                  "expression" : {
-                     "name" : "EncList",
-                     "type" : "OperandRef"
-                  }
-               } ],
-               "let" : [ {
-                  "identifier" : "LookBackInterval",
-                  "expression" : {
-                     "lowClosed" : true,
-                     "highClosed" : true,
-                     "type" : "Interval",
-                     "low" : {
-                        "type" : "Subtract",
-                        "operand" : [ {
-                           "type" : "Now"
-                        }, {
-                           "name" : "LookBack",
-                           "type" : "OperandRef"
-                        } ]
-                     },
-                     "high" : {
-                        "type" : "Now"
-                     }
-                  }
-               } ],
-               "relationship" : [ ],
-               "where" : {
-                  "type" : "Overlaps",
-                  "operand" : [ {
-                     "name" : "NullSafeToInterval",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "path" : "period",
-                        "scope" : "E",
-                        "type" : "Property"
-                     } ]
-                  }, {
-                     "name" : "LookBackInterval",
-                     "type" : "QueryLetRef"
-                  } ]
-               }
-            },
-            "operand" : [ {
-               "name" : "EncList",
-               "operandTypeSpecifier" : {
-                  "type" : "ListTypeSpecifier",
-                  "elementType" : {
-                     "name" : "{http://hl7.org/fhir}Encounter",
-                     "type" : "NamedTypeSpecifier"
-                  }
-               }
-            }, {
-               "name" : "LookBack",
-               "operandTypeSpecifier" : {
-                  "name" : "{urn:hl7-org:elm-types:r1}Quantity",
-                  "type" : "NamedTypeSpecifier"
-               }
-            } ]
-         }, {
             "name" : "AllergyIntolerancesByConcept",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -2704,15 +2590,12 @@
                         "operand" : [ {
                            "type" : "In",
                            "operand" : [ {
-                              "type" : "ToDateTime",
-                              "operand" : {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "path" : "startDate",
-                                    "scope" : "G",
-                                    "type" : "Property"
-                                 }
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "startDate",
+                                 "scope" : "G",
+                                 "type" : "Property"
                               }
                            }, {
                               "name" : "LookBackInterval",
@@ -2721,15 +2604,12 @@
                         }, {
                            "type" : "In",
                            "operand" : [ {
-                              "type" : "ToDateTime",
-                              "operand" : {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "path" : "targetDate",
-                                    "scope" : "G",
-                                    "type" : "Property"
-                                 }
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "targetDate",
+                                 "scope" : "G",
+                                 "type" : "Property"
                               }
                            }, {
                               "name" : "LookBackInterval",
@@ -2739,27 +2619,24 @@
                      }, {
                         "type" : "In",
                         "operand" : [ {
-                           "type" : "ToDateTime",
-                           "operand" : {
-                              "type" : "Add",
+                           "type" : "Add",
+                           "operand" : [ {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "startDate",
+                                 "scope" : "G",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "name" : "NullSafeToQuantity",
+                              "type" : "FunctionRef",
                               "operand" : [ {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "path" : "startDate",
-                                    "scope" : "G",
-                                    "type" : "Property"
-                                 }
-                              }, {
-                                 "name" : "NullSafeToQuantity",
-                                 "type" : "FunctionRef",
-                                 "operand" : [ {
-                                    "path" : "targetQuantity",
-                                    "scope" : "G",
-                                    "type" : "Property"
-                                 } ]
+                                 "path" : "targetQuantity",
+                                 "scope" : "G",
+                                 "type" : "Property"
                               } ]
-                           }
+                           } ]
                         }, {
                            "name" : "LookBackInterval",
                            "type" : "QueryLetRef"
@@ -2768,16 +2645,14 @@
                   }, {
                      "type" : "In",
                      "operand" : [ {
-                        "type" : "ToDateTime",
-                        "operand" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "statusDate",
-                              "scope" : "G",
-                              "type" : "Property"
-                           }
-                        }
+                        "name" : "ToDateTime",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "path" : "statusDate",
+                           "scope" : "G",
+                           "type" : "Property"
+                        } ]
                      }, {
                         "name" : "LookBackInterval",
                         "type" : "QueryLetRef"

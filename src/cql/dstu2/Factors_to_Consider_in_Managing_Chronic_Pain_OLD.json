@@ -22,7 +22,7 @@
          "def" : [ {
             "localIdentifier" : "C3F",
             "path" : "CDS_Connect_Commons_for_FHIRv102",
-            "version" : "1.3.2"
+            "version" : "1.3.0"
          }, {
             "localIdentifier" : "FHIRHelpers",
             "path" : "FHIRHelpers",
@@ -81,6 +81,11 @@
             "id" : "2.16.840.1.113883.3.464.1003.106.12.1004",
             "accessLevel" : "Public"
          }, {
+            "name" : "Opioid overdose and poisoning",
+            "id" : "2.16.840.1.113762.1.4.1146.1008",
+            "accessLevel" : "Public"
+         },
+         {
             "name" : "Suicide attempt",
             "id" : "2.16.840.1.113762.1.4.1032.40",
             "accessLevel" : "Public"
@@ -1751,8 +1756,11 @@
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
-               "name" : "Is18orOlder",
-               "type" : "ExpressionRef"
+               "type" : "And",
+               "operand" : [ {
+                  "name" : "Is18orOlder",
+                  "type" : "ExpressionRef"
+               }]
             }
          }, {
             "name" : "ReportConditionsAssociatedWithChronicPain",
@@ -1896,6 +1904,24 @@
                   "type" : "Retrieve",
                   "codes" : {
                      "name" : "Substance use disorder",
+                     "type" : "ValueSetRef"
+                  }
+               } ]
+            }
+         }, {
+            "name" : "OpioidOverdoseAndPoisoningConditions",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "Confirmed",
+               "libraryName" : "C3F",
+               "type" : "FunctionalRef",
+               "operand" : [ {
+                  "dataType" : "{http://hl7.org/fhir}Condition",
+                  "codeProperty" : "code",
+                  "type" : "Retrieve",
+                  "codes" : {
+                     "name" : "Opioid overdose and poisoning",
                      "type" : "ValueSetRef"
                   }
                } ]
@@ -2157,41 +2183,47 @@
                      "operand" : [ {
                         "type" : "Union",
                         "operand" : [ {
-                           "name" : "DepressionConditions",
-                           "type" : "ExpressionRef"
+                           "type" : "Union",
+                           "operand" : [ {
+                              "type" : "Union",
+                              "operand" : [ {
+                                 "type" : "Union",
+                                 "operand" : [ {
+                                    "type" : "Union",
+                                    "operand" : [ {
+                                       "name" : "DepressionConditions",
+                                       "type" : "ExpressionRef"
+                                    }, {
+                                       "name" : "AnxietyConditions",
+                                       "type" : "ExpressionRef"
+                                    } ]
+                                 }, {
+                                    "name" : "SubstanceUseDisorderConditions",
+                                    "type" : "ExpressionRef"
+                                 } ]
+                              }, {
+                                 "name" : "OpioidOverdoseAndPoisoningConditions",
+                                 "type" : "ExpressionRef"
+                              } ]
+                           }, {
+                              "name" : "SuicideAttemptConditions",
+                              "type" : "ExpressionRef"
+                           } ]
                         }, {
-                           "name" : "AnxietyConditions",
+                           "name" : "SleepDisorderedBreathingConditions",
                            "type" : "ExpressionRef"
                         } ]
-                     }, {
-                        "type" : "Union",
-                        "operand" : [ {
-                           "name" : "SubstanceUseDisorderConditions",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "name" : "SuicideAttemptConditions",
-                           "type" : "ExpressionRef"
-                        } ]
-                     } ]
-                  }, {
-                     "type" : "Union",
-                     "operand" : [ {
-                        "name" : "SleepDisorderedBreathingConditions",
-                        "type" : "ExpressionRef"
                      }, {
                         "name" : "RenalDysfunctionConditions",
                         "type" : "ExpressionRef"
                      } ]
-                  } ]
-               }, {
-                  "type" : "Union",
-                  "operand" : [ {
+                  }, {
                      "name" : "HepaticDysfunctionConditions",
                      "type" : "ExpressionRef"
-                  }, {
-                     "name" : "PregnancyConditions",
-                     "type" : "ExpressionRef"
                   } ]
+               }, {
+                  "name" : "PregnancyConditions",
+                  "type" : "ExpressionRef"
                } ]
             }
          }, {
@@ -2234,6 +2266,8 @@
                                     "operand" : [ {
                                        "type" : "Or",
                                        "operand" : [ {
+                                          "type" : "Or",
+                                          "operand" : [ {
                                           "type" : "Or",
                                           "operand" : [ {
                                              "type" : "Or",
@@ -2282,6 +2316,21 @@
                                              }
                                           } ]
                                        }, {
+                                          "type" : "InValueSet",
+                                          "code" : {
+                                             "name" : "NullSafeToConcept",
+                                             "libraryName" : "C3F",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "name" : "R",
+                                                "type" : "AliasRef"
+                                             } ]
+                                          },
+                                          "valueset" : {
+                                             "name" : "Opioid overdose and poisoning"
+                                          }
+                                       } ]
+                                    }, {
                                           "type" : "InValueSet",
                                           "code" : {
                                              "name" : "NullSafeToConcept",
@@ -2457,13 +2506,13 @@
                               "type" : "TupleTypeSpecifier",
                               "element" : [ {
                                  "name" : "Start",
-                                 "elementType" : {
+                                 "type" : {
                                     "name" : "{urn:hl7-org:elm-types:r1}String",
                                     "type" : "NamedTypeSpecifier"
                                  }
                               }, {
                                  "name" : "End",
-                                 "elementType" : {
+                                 "type" : {
                                     "name" : "{urn:hl7-org:elm-types:r1}String",
                                     "type" : "NamedTypeSpecifier"
                                  }
@@ -2543,19 +2592,36 @@
                                     "operand" : [ {
                                        "type" : "Or",
                                        "operand" : [ {
-                                          "type" : "InValueSet",
-                                          "code" : {
-                                             "name" : "NullSafeToConcept",
-                                             "libraryName" : "C3F",
-                                             "type" : "FunctionRef",
-                                             "operand" : [ {
-                                                "name" : "R",
-                                                "type" : "AliasRef"
-                                             } ]
-                                          },
-                                          "valueset" : {
-                                             "name" : "Major Depression"
-                                          }
+                                          "type" : "Or",
+                                          "operand" : [ {
+                                             "type" : "InValueSet",
+                                             "code" : {
+                                                "name" : "NullSafeToConcept",
+                                                "libraryName" : "C3F",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "name" : "R",
+                                                   "type" : "AliasRef"
+                                                } ]
+                                             },
+                                             "valueset" : {
+                                                "name" : "Major Depression"
+                                             }
+                                          }, {
+                                             "type" : "InValueSet",
+                                             "code" : {
+                                                "name" : "NullSafeToConcept",
+                                                "libraryName" : "C3F",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "name" : "R",
+                                                   "type" : "AliasRef"
+                                                } ]
+                                             },
+                                             "valueset" : {
+                                                "name" : "Anxiety"
+                                             }
+                                          } ]
                                        }, {
                                           "type" : "InValueSet",
                                           "code" : {
@@ -2568,7 +2634,7 @@
                                              } ]
                                           },
                                           "valueset" : {
-                                             "name" : "Anxiety"
+                                             "name" : "Substance use disorder"
                                           }
                                        } ]
                                     }, {
@@ -2583,10 +2649,10 @@
                                           } ]
                                        },
                                        "valueset" : {
-                                          "name" : "Substance use disorder"
+                                          "name" : "Opioid overdose and poisoning"
                                        }
                                     } ]
-                                 }, {
+                              }, {
                                     "type" : "InValueSet",
                                     "code" : {
                                        "name" : "NullSafeToConcept",
@@ -2950,13 +3016,13 @@
                            "type" : "TupleTypeSpecifier",
                            "element" : [ {
                               "name" : "Start",
-                              "elementType" : {
+                              "type" : {
                                  "name" : "{urn:hl7-org:elm-types:r1}String",
                                  "type" : "NamedTypeSpecifier"
                               }
                            }, {
                               "name" : "End",
-                              "elementType" : {
+                              "type" : {
                                  "name" : "{urn:hl7-org:elm-types:r1}String",
                                  "type" : "NamedTypeSpecifier"
                               }
@@ -3105,13 +3171,13 @@
                            "type" : "TupleTypeSpecifier",
                            "element" : [ {
                               "name" : "Start",
-                              "elementType" : {
+                              "type" : {
                                  "name" : "{urn:hl7-org:elm-types:r1}String",
                                  "type" : "NamedTypeSpecifier"
                               }
                            }, {
                               "name" : "End",
-                              "elementType" : {
+                              "type" : {
                                  "name" : "{urn:hl7-org:elm-types:r1}String",
                                  "type" : "NamedTypeSpecifier"
                               }
@@ -3231,27 +3297,27 @@
                         "operand" : [ {
                            "type" : "Union",
                            "operand" : [ {
-                              "name" : "ReportConditionRiskFactorsForOpioidRelatedHarms",
-                              "type" : "ExpressionRef"
+                              "type" : "Union",
+                              "operand" : [ {
+                                 "name" : "ReportConditionRiskFactorsForOpioidRelatedHarms",
+                                 "type" : "ExpressionRef"
+                              }, {
+                                 "name" : "ReportEncounterRiskFactorsForOpioidRelatedHarms",
+                                 "type" : "ExpressionRef"
+                              } ]
                            }, {
-                              "name" : "ReportEncounterRiskFactorsForOpioidRelatedHarms",
-                              "type" : "ExpressionRef"
-                           } ]
-                        }, {
-                           "type" : "Union",
-                           "operand" : [ {
                               "type" : "ToList",
                               "operand" : {
                                  "name" : "ReportOlderThan65",
                                  "type" : "ExpressionRef"
                               }
-                           }, {
-                              "type" : "ToList",
-                              "operand" : {
-                                 "name" : "ReportMostRecentPositivePregnancyObservation",
-                                 "type" : "ExpressionRef"
-                              }
                            } ]
+                        }, {
+                           "type" : "ToList",
+                           "operand" : {
+                              "name" : "ReportMostRecentPositivePregnancyObservation",
+                              "type" : "ExpressionRef"
+                           }
                         } ]
                      }
                   } ],
@@ -3730,7 +3796,7 @@
                         "type" : "ValueSetRef"
                      }
                   }, {
-                     "value" : 5,
+                     "value" : 2,
                      "unit" : "years",
                      "type" : "Quantity"
                   } ]
@@ -3757,7 +3823,7 @@
                         "type" : "ValueSetRef"
                      }
                   }, {
-                     "value" : 5,
+                     "value" : 2,
                      "unit" : "years",
                      "type" : "Quantity"
                   } ]
@@ -3985,7 +4051,7 @@
                         "type" : "ValueSetRef"
                      }
                   }, {
-                     "value" : 5,
+                     "value" : 2,
                      "unit" : "years",
                      "type" : "Quantity"
                   } ]
@@ -4012,7 +4078,7 @@
                         "type" : "ValueSetRef"
                      }
                   }, {
-                     "value" : 5,
+                     "value" : 2,
                      "unit" : "years",
                      "type" : "Quantity"
                   } ]
@@ -4455,7 +4521,7 @@
                         }
                      }
                   }, {
-                     "value" : 5,
+                     "value" : 2,
                      "unit" : "years",
                      "type" : "Quantity"
                   } ]
@@ -5097,7 +5163,7 @@
                         "type" : "ValueSetRef"
                      }
                   }, {
-                     "value" : 5,
+                     "value" : 2,
                      "unit" : "years",
                      "type" : "Quantity"
                   } ]
@@ -5124,7 +5190,7 @@
                         "type" : "ValueSetRef"
                      }
                   }, {
-                     "value" : 5,
+                     "value" : 2,
                      "unit" : "years",
                      "type" : "Quantity"
                   } ]
