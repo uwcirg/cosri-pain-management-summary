@@ -52,12 +52,13 @@ function executeELM(collector) {
       patientSource.loadBundles([bundle]);
       const results = executor.exec(patientSource);
       return results.patientResults[Object.keys(results.patientResults)[0]];
-    });
+    })
     resolve(results);
   });
 }
 
 function getLibrary(release) {
+  release = 4;
   switch(release) {
     case 2:
       return new cql.Library(dstu2FactorsELM, new cql.Repository({

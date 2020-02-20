@@ -176,3 +176,23 @@ it('formats non-conforming quantity results correctly', () => {
   const mockResult = 'positive';
   expect(formatit['quantityFormat']({}, mockResult)).toEqual('positive');
 });
+
+it('formats codeableconcept results correctly',() =>  {
+  const mockResult = {
+    "medicationCodeableConcept": {
+      "coding":[
+        {
+          "system":"http://hl7.org/fhir/sid/ndc",
+          "code":"59011046020",
+          "display":"OxyCONTIN 60 MG T12A"
+        }
+      ],
+      "text":"OxyCONTIN 60 MG T12A"
+    }
+  };
+  //codeableConceptFormat(result, input, key, field, codingField)
+  expect(formatit['codeableConceptFormat']({}, mockResult, 'medicationCodeableConcept', 'text')).toEqual('OxyCONTIN 60 MG T12A');
+  expect(formatit['codeableConceptFormat']({}, mockResult, 'medicationCodeableConcept', 'coding', 'code')).toEqual('59011046020');
+  expect(formatit['codeableConceptFormat']({}, mockResult, 'medicationCodeableConcept', 'coding', 'display')).toEqual('OxyCONTIN 60 MG T12A');
+  expect(formatit['codeableConceptFormat']({}, mockResult, 'medicationCodeableConcept', 'coding', 'system')).toEqual('http://hl7.org/fhir/sid/ndc');
+});

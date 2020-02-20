@@ -47,7 +47,11 @@ export default class Summary extends Component {
 
   isSectionFlagged(section) {
     const { sectionFlags } = this.props;
-    const subSections = Object.keys(sectionFlags[section]);
+    const subSections = sectionFlags[section] ? Object.keys(sectionFlags[section]): null;
+
+    if (!subSections) {
+      return false;
+    }
 
     for (let i = 0; i < subSections.length; ++i) {
       if (this.isSubsectionFlagged(section, subSections[i])) {
@@ -60,6 +64,9 @@ export default class Summary extends Component {
 
   isSubsectionFlagged(section, subSection) {
     const { sectionFlags } = this.props;
+    if (!sectionFlags[section] || !sectionFlags[section][subSection]) {
+      return false;
+    }
     if (sectionFlags[section][subSection] === true) {
       return true;
     } else if (sectionFlags[section][subSection] === false) {
@@ -86,9 +93,9 @@ export default class Summary extends Component {
   renderNoEntries(section, subSection) {
     const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
     const flaggedClass = flagged ? 'flagged' : '';
-    const flagText = this.props.sectionFlags[section][subSection.dataKey];
+    const sectionElement = this.props.sectionFlags[section];
+    const flagText = sectionElement ? sectionElement[subSection.dataKey] : '';
     const tooltip = flagged ? flagText : '';
-
     return (
       <div className="table">
         <div className="no-entries">
@@ -211,7 +218,8 @@ export default class Summary extends Component {
     const sectionMap = summaryMap[section];
 
     return sectionMap.map((subSection) => {
-      const data = this.props.summary[subSection.dataKeySource][subSection.dataKey];
+      const dataKeySource = this.props.summary[subSection.dataKeySource];
+      const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
       const hasEntries = entries.length !== 0;
 
@@ -273,6 +281,9 @@ export default class Summary extends Component {
     } else if (section === 'RiskConsiderations') {
       icon = <RiskIcon width="35" height="34" />;
       title = `Risk Considerations (${numRiskEntries})`;
+    } else if (section === 'ExternalDataSet') {
+      icon = <MedicalHistoryIcon width="30" height="40" />;
+      title = `Patient Prescriptions`;
     }
 
     return (
@@ -321,6 +332,11 @@ export default class Summary extends Component {
 			*/}
               <Collapsible trigger={this.renderSectionHeader("HistoricalTreatments")} open={true}>
                 {this.renderSection("HistoricalTreatments")}
+              </Collapsible>
+              {/* <Collapsible trigger={this.renderSectionHeader("PDMPMedications")} open={true}>
+              </Collapsible> */}
+              <Collapsible trigger={this.renderSectionHeader("ExternalDataSet")} open={true}>
+              {this.renderSection("ExternalDataSet")}
               </Collapsible>
 
             {/*  <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>

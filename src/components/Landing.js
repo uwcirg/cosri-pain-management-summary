@@ -11,7 +11,10 @@ import Header from './Header';
 import Summary from './Summary';
 import Spinner from '../elements/Spinner';
 
+
 let uuid = 0;
+//const PDMP_URL = "http://cosri-pdmp.cirg.washington.edu/v/r2/fhir/MedicationOrder";
+
 
 function generateUuid() {
   return ++uuid; // eslint-disable-line no-plusplus
@@ -23,17 +26,27 @@ export default class Landing extends Component {
     this.state = {
       result: null,
       loading: true,
-      collector: []
+      collector: [],
+      externals: {}
     };
 
     this.tocInitialized = false;
   }
 
   componentDidMount() {
+    //this.getExternalData();
     executeElm(this.state.collector).then((result) => {
-      this.setState({ loading: false });
-      const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-      this.setState({ result, sectionFlags, flaggedCount });
+      this.getExternalData(result).then(result => {
+        const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+        this.setState({ loading: false });
+        this.setState({ result, sectionFlags, flaggedCount });
+      }).catch(err => {
+        console.error(err);
+        this.setState({ loading: false });
+      });
+      // console.log("pdmpData: ", pdmpData);
+      // console.log(pdmpData)
+      
     }).catch((err) => {
       console.error(err);
       this.setState({ loading: false });
@@ -60,6 +73,53 @@ export default class Landing extends Component {
     }
   }
 
+  // getExternalData() {
+  //   let externalData = {};
+  //   //get PDMD data
+  //   this.getPDMPData().then(data => {
+  //     externalData["PDMP"] = data.entry? data.entry: {"error": false};
+  //     console.log("PDMP");
+  //     console.log(externalData)
+  //     this.setState({ externals : externalData });
+  //   });
+  // }
+  /*
+   * function for retrieving data from other sources e.g. PDMP
+   */
+  async getExternalData(result) {
+      let dataSet = {};
+      result = result || {};
+      result.Summary = result.Summary || {};
+      //PDMP data
+      //let response = await fetch(`${process.env.PUBLIC_URL}/pdmp.json`, {mode: 'no-cors'});
+      //let response = await fetch(`https://cosri-pdmp.cirg.washington.edu/v/r2/fhir/MedicationOrder`, {mode: 'no-cors'});
+      /*
+       * to get around cors and also to develop locally, need to set "proxy" property in package.json to its url, e.g. "proxy": "http://localhost:8001" */
+      let response = await fetch(`/v/r2/fhir/MedicationOrder`, {method: 'GET', mode: 'no-cors', headers:{'accepts':'application/json'}});
+      try {
+        const json = await response.json();
+        dataSet["PDMPMedications"] = json && json.entry? json.entry: null;
+        result.Summary["ExternalDataSet"] =  dataSet;
+      } catch(e) {
+        console.error(e);
+      } finally {
+        return result;
+      }
+     // console.log("results? ", result)
+      
+      //retrieving other data as needed
+
+      // .then(response => response.json())
+      // .then(data => {
+      //   console.log('get pdmp')
+      //   console.log(data)
+      //   //this.state.result["PDMPMedications"] = data.entry;
+      //   //console.log(this.state.result)
+      // })
+      // .catch(err => { console.log(err) });
+     // return result;
+  }
+
   getAnalyticsData(endpoint, apikey, summary) {
     const meetsInclusionCriteria = summary.Patient.MeetsInclusionCriteria;
     const applicationAnalytics = {
@@ -77,7 +137,10 @@ export default class Landing extends Component {
       Object.keys(cloneSections).forEach((sectionKey, i) => {
         applicationAnalytics.sections.push({ section: sectionKey, subSections: [] });
         Object.keys(cloneSections[sectionKey]).forEach(subSectionKey => {
-          const subSection = cloneSections[sectionKey][subSectionKey];
+          let SectionElement = cloneSections[sectionKey];
+          if (!SectionElement) return true;
+          const subSection = SectionElement[subSectionKey];
+          if (!subSectionKey) return true;
           let count;
           if (subSection instanceof Array) count = subSection.length;
           else if (subSection instanceof Object) count = 1;
@@ -115,9 +178,12 @@ export default class Landing extends Component {
 
     sectionKeys.forEach((sectionKey, i) => { // for each section
       sectionFlags[sectionKey] = {};
-
       summaryMap[sectionKey].forEach((subSection) => { // for each sub section
-        const data = summary[subSection.dataKeySource][subSection.dataKey];
+        const keySource = summary[subSection.dataKeySource];
+        if (!keySource) {
+          return true;
+        }
+        const data = keySource[subSection.dataKey];
         const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
 
         if (entries.length > 0) {
@@ -147,7 +213,7 @@ export default class Landing extends Component {
     });
 
     // Get the configured endpoint to use for POST for app analytics
-    fetch(`${process.env.PUBLIC_URL}/config.json`)
+    fetch(`${process.env.PUBLIC_URL}/config.json`, {mode: 'no-cors'})
       .then(response => response.json())
       .then(config => {
         // Only provide analytics if the endpoint has been set

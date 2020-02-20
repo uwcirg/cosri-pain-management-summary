@@ -609,5 +609,44 @@
         }
       ]
     }
+  ],
+  "ExternalDataSet": [
+    {
+      "name": "PDMP Prescriptions",
+      "dataKey": "PDMPMedications",
+      "dataKeySource": "ExternalDataSet",
+      "info": [
+        {
+          "type": "elements",
+          "description": "The medication order queries the following elements:",
+          "elements": [
+            {
+              "name": "MedicationOrder",
+              "status": "any",
+              "lookback": "n/a"
+            }
+          ]
+        }
+      ],
+      "tables": [
+        {
+          "headers": {
+            "Drug": {
+              "key": "medicationCodeableConcept",
+              "formatter": "codeableConceptFormat",
+              "formatterArguments": ["medicationCodeableConcept", "text"],
+              "minWidth": 200
+            },
+            "Written": { "key": "dateWritten", "formatter": "datishFormat" },
+            "NIC Code": {
+              "key": "medicationCodeableConcept",
+              "formatter": "codeableConceptFormat",
+              "formatterArguments": ["medicationCodeableConcept", "coding", "code"]
+            },
+            "Type": "resourceType"
+          }
+        }
+      ]
+    }
   ]
 }
