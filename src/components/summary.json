@@ -638,7 +638,7 @@
               "minWidth": 200
             },
             "Written": { "key": "dateWritten", "formatter": "datishFormat" },
-            "NIC Code": {
+            "NDC Code": {
               "key": "medicationCodeableConcept",
               "formatter": "codeableConceptFormat",
               "formatterArguments": ["medicationCodeableConcept", "coding", "code"]
