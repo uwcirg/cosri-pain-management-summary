@@ -58,7 +58,6 @@ function executeELM(collector) {
 }
 
 function getLibrary(release) {
-  release = 4;
   switch(release) {
     case 2:
       return new cql.Library(dstu2FactorsELM, new cql.Repository({
