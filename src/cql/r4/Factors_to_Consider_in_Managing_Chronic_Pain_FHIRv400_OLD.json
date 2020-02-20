@@ -1868,8 +1868,11 @@
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
-               "name" : "Is18orOlder",
-               "type" : "ExpressionRef"
+               "type" : "And",
+               "operand" : [ {
+                  "name" : "Is18orOlder",
+                  "type" : "ExpressionRef"
+               } ]
             }
          }, {
             "name" : "ReportConditionsAssociatedWithChronicPain",
