@@ -1,0 +1,70 @@
+{
+    "resourceType":"Bundle",
+    "entry":[
+       {
+          "resourceType":"MedicationOrder",
+          "dateWritten":"2020-02-05",
+          "medicationCodeableConcept":{
+             "medicationCodeableConcept":{
+                "coding":[
+                   {
+                      "system":"http://hl7.org/fhir/sid/ndc",
+                      "code":"00603158558",
+                      "display":"Promethazine-Codeine 6.25-10 MG/5ML SOLN"
+                   }
+                ],
+                "text":"Promethazine-Codeine 6.25-10 MG/5ML SOLN"
+             }
+          }
+       },
+       {
+          "resourceType":"MedicationOrder",
+          "dateWritten":"2019-11-11",
+          "medicationCodeableConcept":{
+             "medicationCodeableConcept":{
+                "coding":[
+                   {
+                      "system":"http://hl7.org/fhir/sid/ndc",
+                      "code":"59011046020",
+                      "display":"OxyCONTIN 60 MG T12A"
+                   }
+                ],
+                "text":"OxyCONTIN 60 MG T12A"
+             }
+          }
+       },
+       {
+          "resourceType":"MedicationOrder",
+          "dateWritten":"2019-10-31",
+          "medicationCodeableConcept":{
+             "medicationCodeableConcept":{
+                "coding":[
+                   {
+                      "system":"http://hl7.org/fhir/sid/ndc",
+                      "code":"59011044020",
+                      "display":"OxyCONTIN 40 MG T12A"
+                   }
+                ],
+                "text":"OxyCONTIN 40 MG T12A"
+             }
+          }
+       },
+       {
+          "resourceType":"MedicationOrder",
+          "dateWritten":"2019-11-01",
+          "medicationCodeableConcept":{
+             "medicationCodeableConcept":{
+                "coding":[
+                   {
+                      "system":"http://hl7.org/fhir/sid/ndc",
+                      "code":"00009002901",
+                      "display":"Xanax 0.25 MG TABS"
+                   }
+                ],
+                "text":"Xanax 0.25 MG TABS"
+             }
+          }
+       }
+    ],
+    "type":"searchset"
+ }

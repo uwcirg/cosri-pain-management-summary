@@ -91,11 +91,12 @@ export default class Landing extends Component {
       result = result || {};
       result.Summary = result.Summary || {};
       //PDMP data
-      //let response = await fetch(`${process.env.PUBLIC_URL}/pdmp.json`, {mode: 'no-cors'});
+      //temporary to demo rendering
+      let response = await fetch(`${process.env.PUBLIC_URL}/pdmp.json`, {mode: 'no-cors'});
       //let response = await fetch(`https://cosri-pdmp.cirg.washington.edu/v/r2/fhir/MedicationOrder`, {mode: 'no-cors'});
       /*
        * to get around cors and also to develop locally, need to set "proxy" property in package.json to its url, e.g. "proxy": "http://localhost:8001" */
-      let response = await fetch(`/v/r2/fhir/MedicationOrder`, {method: 'GET', mode: 'no-cors', headers:{'accepts':'application/json'}});
+      //let response = await fetch(`/v/r2/fhir/MedicationOrder`, {method: 'GET', mode: 'no-cors', headers:{'accepts':'application/json'}});
       try {
         const json = await response.json();
         dataSet["PDMPMedications"] = json && json.entry? json.entry: null;
