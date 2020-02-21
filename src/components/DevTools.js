@@ -105,7 +105,9 @@ export default class DevTools extends Component {
       <div className='pdmp-results'>
         <h4>PDMP Results <button onClick={this.togglePDMPResults}>[show/hide]</button></h4>
         <div style={{ display: this.state.displayPDMPResults ? 'block' : 'none' }}>
-          <pre>{externalDataset && externalDataset[key] ? JSON.stringify(externalDataset[key], null, 2) : 'No result'}</pre>
+          <pre>{externalDataset && externalDataset[key] ? 
+                JSON.stringify(externalDataset[key], null, 2) : 
+                'No result'}</pre>
         </div>
       </div>
     );

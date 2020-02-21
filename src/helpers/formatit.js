@@ -93,28 +93,25 @@ export function quantityFormat(result, input) {
     codingField: field in coding to match
  */
 export function codeableConceptFormat(result, input, key, field, codingField) {
-  //result = summary json
-  // input = codeableconcept data
-  //console.log("format result? ", result, " input ? ", input, "key? ", key, " field? ", field, " match ", codingField)
   if (!input) {
-    return "";
+    return '';
   }
-  if (typeof input === "object" &&
+  if (typeof input === 'object' &&
       input.hasOwnProperty(key) &&
       input[key].hasOwnProperty(field)) {
-      if (field === "text") {
+      if (field === 'text') {
         return input[key][field];
       }
-      if (field === "coding") {
+      if (field === 'coding') {
         let matchedItem = (input[key][field]).find(item => item.hasOwnProperty(codingField));
         if (matchedItem) {
           return matchedItem[codingField];
         }
-        return "";
+        return '';
       }
-      return "";
+      return '';
   }
-  return "";
+  return '';
 }
 
 function _datishAgeFormat(result, input, showAge) {

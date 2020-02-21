@@ -34,6 +34,7 @@ function executeELM(collector) {
         }
         return doSearch(client, release, name, collector);
       });
+      console.log(requests)
       // Don't return until all the requests have been resolved
       return Promise.all(requests).then((requestResults) => {
         const resources = [];

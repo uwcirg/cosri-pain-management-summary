@@ -86,7 +86,8 @@ export default class Landing extends Component {
       .catch(e => console.log('Error fetching PDMP data: ', e.message));
       /*
        * to get around cors and to call a server set up locally, need to set "proxy" property in package.json to its url, e.g. "proxy": "http://localhost:8001" */
-      //let response = await fetch(`/v/r2/fhir/MedicationOrder`, {method: 'GET', mode: 'no-cors', headers:{'accepts':'application/json'}});
+      /*let response = await fetch(`/v/r2/fhir/MedicationOrder`, 
+      {method: 'GET', mode: 'no-cors', headers:{'accepts':'application/json'}});*/
       let pdmpDataSet = null;
       try {
         const json = await (response.json()).catch(e => console.log('Error parsing PDMP response json: ', e.message));
