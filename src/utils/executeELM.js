@@ -52,7 +52,7 @@ function executeELM(collector) {
       patientSource.loadBundles([bundle]);
       const results = executor.exec(patientSource);
       return results.patientResults[Object.keys(results.patientResults)[0]];
-    })
+    });
     resolve(results);
   });
 }

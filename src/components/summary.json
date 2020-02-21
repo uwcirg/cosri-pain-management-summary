@@ -634,8 +634,7 @@
             "Drug": {
               "key": "medicationCodeableConcept",
               "formatter": "codeableConceptFormat",
-              "formatterArguments": ["medicationCodeableConcept", "text"],
-              "minWidth": 200
+              "formatterArguments": ["medicationCodeableConcept", "text"]
             },
             "Written": { "key": "dateWritten", "formatter": "datishFormat" },
             "NDC Code": {

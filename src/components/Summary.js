@@ -368,6 +368,7 @@ export default class Summary extends Component {
           <DevTools
             collector={collector}
             result={result}
+            summary={summary}
           />
 
           <ReactTooltip className="summary-tooltip" />

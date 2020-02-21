@@ -34,7 +34,6 @@ export default class Landing extends Component {
   }
 
   componentDidMount() {
-    //this.getExternalData();
     executeElm(this.state.collector).then((result) => {
       this.getExternalData(result).then(result => {
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
@@ -44,9 +43,6 @@ export default class Landing extends Component {
         console.error(err);
         this.setState({ loading: false });
       });
-      // console.log("pdmpData: ", pdmpData);
-      // console.log(pdmpData)
-      
     }).catch((err) => {
       console.error(err);
       this.setState({ loading: false });
@@ -72,17 +68,6 @@ export default class Landing extends Component {
       document.title = `Pain Management Summary - ${patientName}`;
     }
   }
-
-  // getExternalData() {
-  //   let externalData = {};
-  //   //get PDMD data
-  //   this.getPDMPData().then(data => {
-  //     externalData["PDMP"] = data.entry? data.entry: {"error": false};
-  //     console.log("PDMP");
-  //     console.log(externalData)
-  //     this.setState({ externals : externalData });
-  //   });
-  // }
   /*
    * function for retrieving data from other sources e.g. PDMP
    */
@@ -92,11 +77,12 @@ export default class Landing extends Component {
       result.Summary = result.Summary || {};
       //PDMP data
       //temporary to demo rendering
-      let response = await fetch(`${process.env.PUBLIC_URL}/pdmp.json`, {mode: 'no-cors'});
+      //let response = await fetch(`${process.env.PUBLIC_URL}/pdmp.json`, {mode: 'no-cors'});
+      //issue with CORS violation if called service endpoint directly, set "proxy" property to "https://cosri-pdmp.cirg.washington.edu" when developing locally
       //let response = await fetch(`https://cosri-pdmp.cirg.washington.edu/v/r2/fhir/MedicationOrder`, {mode: 'no-cors'});
       /*
        * to get around cors and also to develop locally, need to set "proxy" property in package.json to its url, e.g. "proxy": "http://localhost:8001" */
-      //let response = await fetch(`/v/r2/fhir/MedicationOrder`, {method: 'GET', mode: 'no-cors', headers:{'accepts':'application/json'}});
+      let response = await fetch(`/v/r2/fhir/MedicationOrder`, {method: 'GET', mode: 'no-cors', headers:{'accepts':'application/json'}});
       try {
         const json = await response.json();
         dataSet["PDMPMedications"] = json && json.entry? json.entry: null;
@@ -106,19 +92,6 @@ export default class Landing extends Component {
       } finally {
         return result;
       }
-     // console.log("results? ", result)
-      
-      //retrieving other data as needed
-
-      // .then(response => response.json())
-      // .then(data => {
-      //   console.log('get pdmp')
-      //   console.log(data)
-      //   //this.state.result["PDMPMedications"] = data.entry;
-      //   //console.log(this.state.result)
-      // })
-      // .catch(err => { console.log(err) });
-     // return result;
   }
 
   getAnalyticsData(endpoint, apikey, summary) {
