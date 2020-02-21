@@ -16,11 +16,12 @@ export default class Header extends Component {
             <FontAwesomeIcon className="return-icon" icon="chevron-left" title="back" />
           </a> */}
 
-          <img className="header__logo-img" src={process.env.PUBLIC_URL + "/assets/images/logo.png"}
-
-            alt="cds connect logo" />
-			{/* <span className="header__logo-text">COSRI</span> */}
-		  <span className="header__tagline-text">Built with CDS Connect from AHRQ!</span>
+          <img className="header__logo-img" src={process.env.PUBLIC_URL + "/assets/images/logo_horizontal.png"} alt="cds connect logo" />
+          {/* <span className="header__logo-text">COSRI</span> */}
+          <div className="header__tagline-text">
+          <span class="header__logo-text--light">built with </span>
+          <a href="https://cds.ahrq.gov/" target="_blank"><img className="header__logo-img secondary" src={process.env.PUBLIC_URL + "/assets/images/cds-connect-logo.png"} alt="cds connect logo" /></a> <span class="header__logo-text">CDS Connect</span>
+          </div>
         </div>
 
         <div className="header__summary">

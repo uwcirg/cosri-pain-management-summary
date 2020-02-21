@@ -275,10 +275,9 @@
       "tables": [
         {
           "headers": {
-            "Name": "Name",
-            "Type": "Type",
-            "Start": { "key": "Start", "formatter": "datishFormat" },
-            "End": { "key": "End", "formatter": "datishFormat" }
+            "Medication": "Name",
+            "Date": { "key": "Medication", "formatter": "datishFormat" },
+            "Type": { "key": "Type", "formatter": "stringSubstitutionFormat", "formatterArguments": ["Order"]}
           },
           "flags": [
             {
@@ -309,10 +308,9 @@
       "tables": [
         {
           "headers": {
-            "Name": "Name",
-            "Type": "Type",
-            "Start": { "key": "Start", "formatter": "datishFormat" },
-            "End": { "key": "End", "formatter": "datishFormat" }
+            "Medication": "Name",
+            "Date": { "key": "Start", "formatter": "datishFormat" },
+            "Type": { "key": "Type", "formatter": "stringSubstitutionFormat", "formatterArguments": ["Order"]}
           },
           "flags": [
             {
@@ -344,8 +342,8 @@
         {
           "headers": {
             "Name": "Name",
-            "Type": "Type",
-            "Date": { "key": "Date", "formatter": "datishFormat" }
+            "Date": { "key": "Date", "formatter": "datishFormat" },
+            "Type": "Type"
           },
           "flags": [
             {
@@ -612,7 +610,7 @@
   ],
   "ExternalDataSet": [
     {
-      "name": "PDMP Prescriptions",
+      "name": "PMP Prescriptions",
       "dataKey": "PDMPMedications",
       "dataKeySource": "ExternalDataSet",
       "info": [
@@ -631,18 +629,13 @@
       "tables": [
         {
           "headers": {
-            "Drug": {
+            "Medication": {
               "key": "medicationCodeableConcept",
               "formatter": "codeableConceptFormat",
               "formatterArguments": ["medicationCodeableConcept", "text"]
             },
-            "Written": { "key": "dateWritten", "formatter": "datishFormat" },
-            "NDC Code": {
-              "key": "medicationCodeableConcept",
-              "formatter": "codeableConceptFormat",
-              "formatterArguments": ["medicationCodeableConcept", "coding", "code"]
-            },
-            "Type": "resourceType"
+            "Date": { "key": "dateWritten", "formatter": "datishFormat" },
+            "Type": { "key": "resourceType", "formatter": "stringSubstitutionFormat", "formatterArguments": ["Order"]}
           }
         }
       ]

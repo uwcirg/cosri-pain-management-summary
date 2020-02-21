@@ -15,18 +15,37 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     height: 100%;
     width: 300px;
     background-color: $color-black;
     color: $color-white;
 
     &-img {
-      margin-right: 10px;
+     // margin-right: 10px;
+     &.secondary {
+       width: 30px;
+     }
     }
 
     &-text {
-      font-size: 1.5em;
+     // font-size: 1.5em;
+      display: inline-block;
+      vertical-align: top;
       font-weight: 600;
+      line-height: 1.5em;
+      position: relative;
+      top: 4px;
+      left: 2px;
+    }
+    &-text--light {
+      line-height: 1.5em;
+      position: relative;
+      font-weight: 400;
+      display: inline-block;
+      top: -8px;
+      right: 10px;
+      font-size: 0.95em;
     }
   }
 

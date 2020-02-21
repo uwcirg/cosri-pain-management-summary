@@ -277,13 +277,13 @@ export default class Summary extends Component {
       title = `Pain Assessments (${numPainEntries})`
     } else if (section === 'HistoricalTreatments') {
       icon = <TreatmentsIcon width="36" height="38" />;
-      title = `Historical Pain-related Treatments (${numTreatmentsEntries})`
+      title = `EHR Treatments (${numTreatmentsEntries})`
     } else if (section === 'RiskConsiderations') {
       icon = <RiskIcon width="35" height="34" />;
       title = `Risk Considerations (${numRiskEntries})`;
     } else if (section === 'ExternalDataSet') {
       icon = <MedicalHistoryIcon width="30" height="40" />;
-      title = `Patient Prescriptions`;
+      title = `State PMP Prescriptions`;
     }
 
     return (
@@ -333,7 +333,7 @@ export default class Summary extends Component {
               <Collapsible trigger={this.renderSectionHeader("HistoricalTreatments")} open={true}>
                 {this.renderSection("HistoricalTreatments")}
               </Collapsible>
-              
+
               <Collapsible trigger={this.renderSectionHeader("ExternalDataSet")} open={true}>
               {this.renderSection("ExternalDataSet")}
               </Collapsible>
