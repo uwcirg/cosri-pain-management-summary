@@ -34,16 +34,19 @@ export default class Landing extends Component {
   }
 
   componentDidMount() {
-    executeElm(this.state.collector).then((result) => {
-      this.getExternalData(result).then(result => {
+    Promise.all([executeElm(this.state.collector), this.getExternalData()])
+    .then(
+      response => {
+        //set result from data from EPIC
+        let result = response[0];
+        //add data from other sources, e.g. PDMP
+        result['Summary'] = {...result['Summary'], ...response[1]};
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ loading: false });
         this.setState({ result, sectionFlags, flaggedCount });
-      }).catch(err => {
-        console.error(err);
-        this.setState({ loading: false });
-      });
-    }).catch((err) => {
+      }
+    )
+    .catch((err) => {
       console.error(err);
       this.setState({ loading: false });
     });
@@ -71,26 +74,28 @@ export default class Landing extends Component {
   /*
    * function for retrieving data from other sources e.g. PDMP
    */
-  async getExternalData(result) {
+  async getExternalData() {
+      const externalDatasetKey = 'ExternalDataSet';
       let dataSet = {};
-      result = result || {};
-      result.Summary = result.Summary || {};
+      dataSet[externalDatasetKey] = {};
       //PDMP data
-      //temporary to demo rendering
-      let response = await fetch(`${process.env.PUBLIC_URL}/pdmp.json`, {mode: 'no-cors'});
+      //loading local file - this is temporary, just to demo rendering
+      let response = await fetch(`${process.env.PUBLIC_URL}/pdmp.json`, {mode: 'no-cors'})
       //issue with CORS violation if called service endpoint directly, set "proxy" property to "https://cosri-pdmp.cirg.washington.edu" when developing locally
-      //let response = await fetch(`https://cosri-pdmp.cirg.washington.edu/v/r2/fhir/MedicationOrder`, {mode: 'no-cors'});
+      //let response = await fetch(`https://cosri-pdmp.cirg.washington.edu/v/r2/fhir/MedicationOrder`, {headers:{'accepts':'application/json'}})
+      .catch(e => console.log('Error fetching PDMP data: ', e.message));
       /*
-       * to get around cors and also to develop locally, need to set "proxy" property in package.json to its url, e.g. "proxy": "http://localhost:8001" */
+       * to get around cors and to call a server set up locally, need to set "proxy" property in package.json to its url, e.g. "proxy": "http://localhost:8001" */
       //let response = await fetch(`/v/r2/fhir/MedicationOrder`, {method: 'GET', mode: 'no-cors', headers:{'accepts':'application/json'}});
+      let pdmpDataSet = null;
       try {
-        const json = await response.json();
-        dataSet["PDMPMedications"] = json && json.entry? json.entry: null;
-        result.Summary["ExternalDataSet"] =  dataSet;
+        const json = await (response.json()).catch(e => console.log('Error parsing PDMP response json: ', e.message));
+        pdmpDataSet = json && json.entry? json.entry: null;
       } catch(e) {
-        console.error(e);
+        pdmpDataSet = null;
       } finally {
-        return result;
+        dataSet[externalDatasetKey]['PDMPMedications'] = pdmpDataSet;
+        return dataSet;
       }
   }
 
@@ -187,7 +192,7 @@ export default class Landing extends Component {
     });
 
     // Get the configured endpoint to use for POST for app analytics
-    fetch(`${process.env.PUBLIC_URL}/config.json`, {mode: 'no-cors'})
+    fetch(`${process.env.PUBLIC_URL}/config.json`)
       .then(response => response.json())
       .then(config => {
         // Only provide analytics if the endpoint has been set
