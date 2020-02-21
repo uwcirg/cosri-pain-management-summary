@@ -79,6 +79,12 @@ export function quantityFormat(result, input) {
   return input;
 }
 
+export function stringSubstitutionFormat(result, input, replacement) {
+  if (input == null) return '';
+  if (replacement == null) return '';
+  return replacement;
+}
+
 /*
  * string formatter for FHIR codeableConcept element
  *  i.e.: {
