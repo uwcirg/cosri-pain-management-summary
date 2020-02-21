@@ -333,8 +333,7 @@ export default class Summary extends Component {
               <Collapsible trigger={this.renderSectionHeader("HistoricalTreatments")} open={true}>
                 {this.renderSection("HistoricalTreatments")}
               </Collapsible>
-              {/* <Collapsible trigger={this.renderSectionHeader("PDMPMedications")} open={true}>
-              </Collapsible> */}
+              
               <Collapsible trigger={this.renderSectionHeader("ExternalDataSet")} open={true}>
               {this.renderSection("ExternalDataSet")}
               </Collapsible>
