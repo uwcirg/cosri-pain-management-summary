@@ -277,13 +277,16 @@ export default class Summary extends Component {
       title = `Pain Assessments (${numPainEntries})`
     } else if (section === 'HistoricalTreatments') {
       icon = <TreatmentsIcon width="36" height="38" />;
-      title = `EHR Treatments (${numTreatmentsEntries})`
+      title = `EHR Medications (${numTreatmentsEntries})`
     } else if (section === 'RiskConsiderations') {
       icon = <RiskIcon width="35" height="34" />;
       title = `Risk Considerations (${numRiskEntries})`;
     } else if (section === 'ExternalDataSet') {
       icon = <MedicalHistoryIcon width="30" height="40" />;
       title = `State PMP Prescriptions`;
+    } else if (section === 'NonPharmacologicTreatments') {
+      icon =  <TreatmentsIcon width="36" height="38" />;
+      title = `Non-Pharmacologic Treatments`;
     }
 
     return (
@@ -313,7 +316,7 @@ export default class Summary extends Component {
 
         <div className="summary__display" id="maincontent">
           <div className="summary__display-title">
-            Clinical Opioid Summary to Reduce Impact
+            Clinical Opioid Summary with Rx Integration
           </div>
 
           {meetsInclusionCriteria && <ExclusionBanner />}
@@ -337,6 +340,11 @@ export default class Summary extends Component {
               <Collapsible trigger={this.renderSectionHeader("ExternalDataSet")} open={true}>
               {this.renderSection("ExternalDataSet")}
               </Collapsible>
+
+              <Collapsible trigger={this.renderSectionHeader("NonPharmacologicTreatments")} open={true}>
+              {this.renderSection("NonPharmacologicTreatments")}
+              </Collapsible>
+
 
             {/*  <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
                 {this.renderSection("RiskConsiderations")}

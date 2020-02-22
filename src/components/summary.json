@@ -322,39 +322,6 @@
       ]
     },
     {
-      "name": "Non-Pharmacologic Treatments",
-      "dataKey": "NonPharmacologicTreatments",
-      "dataKeySource": "HistoricalTreatments",
-      "info": [
-        {
-          "type": "elements",
-          "description": "Non-Pharmacologic Treatments queries the following elements:",
-          "elements": [
-            {
-              "name": "Non-pharmacologic procedures",
-              "status": "any",
-              "lookback": "2 years"
-            }
-          ]
-        }
-      ],
-      "tables": [
-        {
-          "headers": {
-            "Name": "Name",
-            "Date": { "key": "Date", "formatter": "datishFormat" },
-            "Type": "Type"
-          },
-          "flags": [
-            {
-              "flag": "ifNone",
-              "flagText": "Absence of non-pharmacologic treatments"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Stool Softeners and Laxatives",
       "dataKey": "StoolSoftenersAndLaxatives",
       "dataKeySource": "HistoricalTreatments",
@@ -604,6 +571,41 @@
             "Score": { "key": "Score", "formatter": "quantityFormat" },
             "Date": { "key": "Date", "formatter": "datishFormat" }
           }
+        }
+      ]
+    }
+  ],
+  "NonPharmacologicTreatments": [
+    {
+      "name": "Non-Pharmacologic Treatments",
+      "dataKey": "NonPharmacologicTreatments",
+      "dataKeySource": "HistoricalTreatments",
+      "info": [
+        {
+          "type": "elements",
+          "description": "Non-Pharmacologic Treatments queries the following elements:",
+          "elements": [
+            {
+              "name": "Non-pharmacologic procedures",
+              "status": "any",
+              "lookback": "2 years"
+            }
+          ]
+        }
+      ],
+      "tables": [
+        {
+          "headers": {
+            "Name": "Name",
+            "Date": { "key": "Date", "formatter": "datishFormat" },
+            "Type": "Type"
+          },
+          "flags": [
+            {
+              "flag": "ifNone",
+              "flagText": "Absence of non-pharmacologic treatments"
+            }
+          ]
         }
       ]
     }
