@@ -152,12 +152,18 @@ export default class Landing extends Component {
   }
 
   processSummary(summary) {
-    console.log(summary)
+    /*
+     *  temporary fix: certain sections we have chosen not to display so need to exclude those when tallying up flag counts
+     */
+    const excludeSections = ["PertinentMedicalHistory", "PainAssessments", "RiskConsiderations"];
     const sectionFlags = {};
     const sectionKeys = Object.keys(summaryMap);
     let flaggedCount = 0;
 
     sectionKeys.forEach((sectionKey, i) => { // for each section
+      if (excludeSections.indexOf(sectionKey) !== -1) {
+        return true;
+      }
       sectionFlags[sectionKey] = {};
       summaryMap[sectionKey].forEach((subSection) => { // for each sub section
         const keySource = summary[subSection.dataKeySource];
