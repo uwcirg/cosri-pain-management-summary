@@ -1,6 +1,12 @@
 import FHIR from 'fhirclient';
 
-fetch(`${process.env.REACT_APP_CONF_API_URL}/auth/auth-info`, {
+// retrieve launch context from backend, if configured
+let context_url = `${process.env.PUBLIC_URL}/launch-context.json`;
+if (process.env.REACT_APP_CONF_API_URL){
+  context_url = `${process.env.REACT_APP_CONF_API_URL}/auth/auth-info`;
+}
+
+fetch(context_url, {
   // include cookies in request
   credentials: 'include'
 })
