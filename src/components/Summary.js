@@ -265,7 +265,7 @@ export default class Summary extends Component {
   renderSectionHeader(section) {
     const flagged = this.isSectionFlagged(section);
     const flaggedClass = flagged ? 'flagged' : '';
-    const { numMedicalHistoryEntries, numPainEntries, numTreatmentsEntries, numRiskEntries } = this.props;
+    const { numMedicalHistoryEntries, numPainEntries, numTreatmentsEntries, numRiskEntries, numNonPharTreatmentEntries, numExternalDataEntries } = this.props;
 
     let icon = '';
     let title = '';
@@ -283,10 +283,10 @@ export default class Summary extends Component {
       title = `Risk Considerations (${numRiskEntries})`;
     } else if (section === 'ExternalDataSet') {
       icon = <MedicalHistoryIcon width="30" height="40" />;
-      title = `State PMP Prescriptions`;
+      title = `State PMP Prescriptions (${numExternalDataEntries})`;
     } else if (section === 'NonPharmacologicTreatments') {
       icon =  <TreatmentsIcon width="36" height="38" />;
-      title = `Non-Pharmacologic Treatments`;
+      title = `Non-Pharmacologic Treatments (${numNonPharTreatmentEntries})`;
     }
 
     return (
@@ -404,5 +404,7 @@ Summary.propTypes = {
   numMedicalHistoryEntries: PropTypes.number.isRequired,
   numPainEntries: PropTypes.number.isRequired,
   numTreatmentsEntries: PropTypes.number.isRequired,
-  numRiskEntries: PropTypes.number.isRequired
+  numRiskEntries: PropTypes.number.isRequired,
+  numNonPharTreatmentEntries: PropTypes.number.isRequired,
+  numExternalDataEntries: PropTypes.number.isRequired
 };

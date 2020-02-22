@@ -152,6 +152,7 @@ export default class Landing extends Component {
   }
 
   processSummary(summary) {
+    console.log(summary)
     const sectionFlags = {};
     const sectionKeys = Object.keys(summaryMap);
     let flaggedCount = 0;
@@ -223,11 +224,14 @@ export default class Landing extends Component {
     const { sectionFlags, flaggedCount } = this.state;
     const numMedicalHistoryEntries = sumit(summary.PertinentMedicalHistory || {});
     const numPainEntries = sumit(summary.PainAssessments || {});
-    const numTreatmentsEntries = sumit(summary.HistoricalTreatments || {});
+    const numNonPharTreatmentEntries =  sumit(summary.HistoricalTreatments['NonPharmacologicTreatments'] || {});
+    const numTreatmentsEntries = sumit(summary.HistoricalTreatments || {}) - numNonPharTreatmentEntries;
     const numRiskEntries =
       sumit(summary.RiskConsiderations || {}) +
       sumit(summary.MiscellaneousItems || {}); // TODO: update when CQL updates
-    const totalEntries = numMedicalHistoryEntries + numPainEntries + numTreatmentsEntries + numRiskEntries;
+    const numExternalDataEntries = sumit(summary.ExternalDataSet || {});
+    //const totalEntries = numMedicalHistoryEntries + numPainEntries + numTreatmentsEntries + numRiskEntries;
+    const totalEntries = numTreatmentsEntries + numNonPharTreatmentEntries + numExternalDataEntries;
 
     return (
       <div className="landing">
@@ -251,6 +255,8 @@ export default class Landing extends Component {
           numPainEntries={numPainEntries}
           numTreatmentsEntries={numTreatmentsEntries}
           numRiskEntries={numRiskEntries}
+          numNonPharTreatmentEntries={numNonPharTreatmentEntries}
+          numExternalDataEntries={numExternalDataEntries}
         />
       </div>
     );
