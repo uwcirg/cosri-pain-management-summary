@@ -78,7 +78,8 @@ export function quantityFormat(result, input) {
   // fall back to returning string
   return input;
 }
-
+/*
+ * TODO expand this to replace part of the text */
 export function stringSubstitutionFormat(result, input, replacement) {
   if (input == null) return '';
   if (replacement == null) return '';

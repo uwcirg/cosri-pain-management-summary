@@ -190,7 +190,6 @@ it('formats codeableconcept results correctly',() =>  {
       'text':'OxyCONTIN 60 MG T12A'
     }
   };
-  //codeableConceptFormat(result, input, key, field, codingField)
   expect(formatit['codeableConceptFormat']({}, mockResult, 'medicationCodeableConcept', 'text'))
   .toEqual('OxyCONTIN 60 MG T12A');
   expect(formatit['codeableConceptFormat']({}, mockResult, 'medicationCodeableConcept', 'coding', 'code'))
@@ -199,4 +198,9 @@ it('formats codeableconcept results correctly',() =>  {
   .toEqual('OxyCONTIN 60 MG T12A');
   expect(formatit['codeableConceptFormat']({}, mockResult, 'medicationCodeableConcept', 'coding', 'system'))
   .toEqual('http://hl7.org/fhir/sid/ndc');
+});
+
+it('formats substitution text correctly', () => {
+  const mockResult = {'resourceType':'medicationOrder'};
+  expect(formatit['stringSubstitutionFormat']({}, mockResult, 'Order')).toEqual('Order');
 });

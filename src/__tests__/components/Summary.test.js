@@ -10,7 +10,9 @@ const component = shallowRender(Summary, {
   numMedicalHistoryEntries: 2,
   numPainEntries: 4,
   numTreatmentsEntries: 1,
-  numRiskEntries: 2
+  numRiskEntries: 2,
+  numNonPharTreatmentEntries: 1,
+  numExternalDataEntries: 1
 });
 
 it('renders without crashing', () => {
