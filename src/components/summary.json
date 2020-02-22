@@ -276,7 +276,7 @@
         {
           "headers": {
             "Medication": "Name",
-            "Date": { "key": "Medication", "formatter": "datishFormat" },
+            "Date": { "key": "Start", "formatter": "datishFormat" },
             "Type": { "key": "Type", "formatter": "stringSubstitutionFormat", "formatterArguments": ["Order"]}
           },
           "flags": [
