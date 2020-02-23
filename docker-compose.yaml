@@ -10,4 +10,5 @@ services:
     volumes:
       - ./:/opt/app
     env_file:
-      - frontend.env
+      # Reuse .env from CRA
+      - .env
