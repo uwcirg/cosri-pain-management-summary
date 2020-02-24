@@ -84,7 +84,7 @@ export default class Landing extends Component {
       //loading local file - this is temporary, just to demo rendering
       let response = await fetch(`${process.env.PUBLIC_URL}/pdmp.json`, {mode: 'no-cors'})
       //issue with CORS violation if called service endpoint directly, set "proxy" property to "https://cosri-pdmp.cirg.washington.edu" when developing locally
-      //let response = await fetch(`https://cosri-pdmp.cirg.washington.edu/v/r2/fhir/MedicationOrder`, {headers:{'accepts':'application/json'}})
+      //let response = await fetch(`https://cosri-dev.cirg.washington.edu/v/r2/fhir/MedicationOrder`, {headers:{'accepts':'application/json'}})
       .catch(e => console.log('Error fetching PDMP data: ', e.message));
       /*
        * to get around cors and to call a server set up locally, need to set "proxy" property in package.json to its url, e.g. "proxy": "http://localhost:8001" */
