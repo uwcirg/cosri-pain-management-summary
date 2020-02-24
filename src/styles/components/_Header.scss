@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   height: 100px;
-  min-height: 132px;
+  min-height: 136px;
 
   &__return-link .return-icon {
     font-size: 1.5em;
@@ -24,10 +24,10 @@
     &-img {
      // margin-right: 10px;
      &.primary {
-       width: 224px;
+       width: 244px;
      }
      &.secondary {
-       width: 30px;
+       width: 28px;
      }
      &.terciary {
        position: relative;
