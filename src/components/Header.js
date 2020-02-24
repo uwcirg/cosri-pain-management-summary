@@ -16,7 +16,7 @@ export default class Header extends Component {
             <FontAwesomeIcon className="return-icon" icon="chevron-left" title="back" />
           </a> */}
 
-          <img className="header__logo-img" src={process.env.PUBLIC_URL + "/assets/images/logo_horizontal.png"} alt="cds connect logo" />
+          <img className="header__logo-img primary" src={process.env.PUBLIC_URL + "/assets/images/logo_horizontal.png"} alt="cds connect logo" />
           {/* <span className="header__logo-text">COSRI</span> */}
           <div className="header__tagline-text">
             <div className="entry">
@@ -24,7 +24,7 @@ export default class Header extends Component {
               <a href="https://cds.ahrq.gov" target="_blank" rel="noopener noreferrer"><img className="header__logo-img secondary" src={process.env.PUBLIC_URL + "/assets/images/cds_connect_logo.png"} alt="cds connect logo" /></a> <span className="header__logo-text">CDS Connect</span>
             </div>
             <div className="entry">
-              <a href="https://cds.ahrq.gov" target="_blank" rel="noopener noreferrer"><img className="header__logo-img terciary" src={process.env.PUBLIC_URL + "/assets/images/ahrq_logo.svg"} alt="ahrq connect logo" /></a>
+              <a href="https://cds.ahrq.gov" target="_blank" rel="noopener noreferrer"><img className="header__logo-img terciary" src={process.env.PUBLIC_URL + "/assets/images/ahrq_logo.png"} alt="ahrq connect logo" /></a>
             </div>
           </div>
         </div>

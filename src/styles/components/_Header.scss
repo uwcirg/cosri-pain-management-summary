@@ -23,6 +23,9 @@
 
     &-img {
      // margin-right: 10px;
+     &.primary {
+       width: 204px;
+     }
      &.secondary {
        width: 30px;
      }
