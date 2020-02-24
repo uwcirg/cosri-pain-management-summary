@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   height: 100px;
-  min-height: 124px;
+  min-height: 132px;
 
   &__return-link .return-icon {
     font-size: 1.5em;
@@ -26,6 +26,14 @@
      &.secondary {
        width: 30px;
      }
+     &.terciary {
+       position: relative;
+       left: 20px;
+     }
+    }
+
+    .entry {
+      text-align: right;
     }
 
     &-text {
@@ -35,8 +43,9 @@
       font-weight: 600;
       line-height: 1.5em;
       position: relative;
-      top: 4px;
+      top: 6px;
       left: 2px;
+      font-size: 0.85em;
     }
     &-text--light {
       line-height: 1.5em;
@@ -45,7 +54,7 @@
       display: inline-block;
       top: -8px;
       right: 10px;
-      font-size: 0.95em;
+      font-size: 0.85em;
     }
   }
 
@@ -64,6 +73,8 @@
         color: $color-blue;
         //color: $color-uw-icon;
         margin-right: 30px;
+        position: relative;
+        top: -0.8em;
       }
 
       .patient-name {
@@ -77,11 +88,13 @@
       .patient-demographics {
         display: flex;
         justify-content: flex-end;
+        flex-direction: column;
+        align-items: flex-end;
         color: $color-gray;
         font-weight: 600;
         text-transform: uppercase;
-        font-size: 1.2em;
-        margin-top: 4px;
+        font-size: 1.15em;
+        margin-top: 6px;
         .patient-age { margin-right: 16px; }
       }
     }
@@ -93,7 +106,7 @@
       .entries {
         display: flex;
         align-items: center;
-        margin: 0 20px;
+        margin: 0 12px;
 
         &-count {
           font-size: 3em;

@@ -41,6 +41,8 @@ export default class Landing extends Component {
         let result = response[0];
         //add data from other sources, e.g. PDMP
         result['Summary'] = {...result['Summary'], ...response[1]};
+        console.log(result['Summary'])
+        console.log(this.state.collector)
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ loading: false });
         this.setState({ result, sectionFlags, flaggedCount });
@@ -153,17 +155,14 @@ export default class Landing extends Component {
 
   processSummary(summary) {
     /*
-     *  temporary fix: certain sections we have chosen not to display so need to exclude those when tallying up flag counts
+     * TODO: certain sections we have chosen not to display so need to exclude those when tallying up flag counts
+     * suppressed section: "PertinentMedicalHistory", "PainAssessments", "RiskConsiderations"
      */
-    const excludeSections = ["PertinentMedicalHistory", "PainAssessments", "RiskConsiderations"];
     const sectionFlags = {};
     const sectionKeys = Object.keys(summaryMap);
     let flaggedCount = 0;
 
     sectionKeys.forEach((sectionKey, i) => { // for each section
-      if (excludeSections.indexOf(sectionKey) !== -1) {
-        return true;
-      }
       sectionFlags[sectionKey] = {};
       summaryMap[sectionKey].forEach((subSection) => { // for each sub section
         const keySource = summary[subSection.dataKeySource];
@@ -225,7 +224,7 @@ export default class Landing extends Component {
         </div>
       );
     }
-
+    const patientResource = this.state.collector[0]['data'];
     const summary = this.state.result.Summary;
     const { sectionFlags, flaggedCount } = this.state;
     const numMedicalHistoryEntries = sumit(summary.PertinentMedicalHistory || {});
@@ -245,7 +244,7 @@ export default class Landing extends Component {
 
         <Header
           patientName={summary.Patient.Name}
-          patientAge={summary.Patient.Age}
+          patientDOB={patientResource.birthDate}
           patientGender={summary.Patient.Gender}
           totalEntries={totalEntries}
           numFlaggedEntries={flaggedCount}

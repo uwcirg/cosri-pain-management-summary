@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export default class Header extends Component {
   render() {
     const {
-      patientName, patientAge, patientGender, totalEntries, numFlaggedEntries, meetsInclusionCriteria
+      patientName, patientDOB, patientGender, meetsInclusionCriteria
     } = this.props;
 
     return (
@@ -19,8 +19,13 @@ export default class Header extends Component {
           <img className="header__logo-img" src={process.env.PUBLIC_URL + "/assets/images/logo_horizontal.png"} alt="cds connect logo" />
           {/* <span className="header__logo-text">COSRI</span> */}
           <div className="header__tagline-text">
-          <span className="header__logo-text--light">built with </span>
-          <a href="https://cds.ahrq.gov/" target="_blank"><img className="header__logo-img secondary" src={process.env.PUBLIC_URL + "/assets/images/cds-connect-logo.png"} alt="cds connect logo" /></a> <span className="header__logo-text">CDS Connect</span>
+            <div className="entry">
+              <span className="header__logo-text--light">built with </span>
+              <a href="https://cds.ahrq.gov" target="_blank" rel="noopener noreferrer"><img className="header__logo-img secondary" src={process.env.PUBLIC_URL + "/assets/images/cds_connect_logo.png"} alt="cds connect logo" /></a> <span className="header__logo-text">CDS Connect</span>
+            </div>
+            <div className="entry">
+              <a href="https://cds.ahrq.gov" target="_blank" rel="noopener noreferrer"><img className="header__logo-img terciary" src={process.env.PUBLIC_URL + "/assets/images/ahrq_logo.svg"} alt="ahrq connect logo" /></a>
+            </div>
           </div>
         </div>
 
@@ -32,7 +37,7 @@ export default class Header extends Component {
               <h1 className="patient-name">{patientName}</h1>
 
               <div className="patient-demographics">
-                <span className="patient-age" aria-label="years">{patientAge} YRS</span>
+                <span className="patient-dob" aria-label="Date of birth">DOB: {patientDOB}</span>
                 <span className="patient-gender">{patientGender}</span>
               </div>
             </div>
@@ -40,7 +45,7 @@ export default class Header extends Component {
 
           {meetsInclusionCriteria &&
 			  <div className="header__summary-dashboard">
-              <div className="entries">
+              {/**  <div className="entries">
                 <div className="entries-count total">{totalEntries}</div>
                 <div className="entries-label">Total Entries</div>
               </div>
@@ -48,6 +53,9 @@ export default class Header extends Component {
               <div className="entries">
                 <div className="entries-count flagged">{numFlaggedEntries}</div>
                 <div className="entries-label">Total<br/>Flags</div>
+              </div> **/}
+              <div className="entries">
+                <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" />
               </div>
             </div>
           }
@@ -59,9 +67,7 @@ export default class Header extends Component {
 
 Header.propTypes = {
   patientName: PropTypes.string.isRequired,
-  patientAge: PropTypes.number.isRequired,
+  patientDOB: PropTypes.string.isRequired,
   patientGender: PropTypes.string.isRequired,
-  totalEntries: PropTypes.number.isRequired,
-  numFlaggedEntries: PropTypes.number.isRequired,
   meetsInclusionCriteria: PropTypes.bool.isRequired
 };
