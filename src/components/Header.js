@@ -63,6 +63,5 @@ export default class Header extends Component {
 Header.propTypes = {
   patientName: PropTypes.string.isRequired,
   patientDOB: PropTypes.string.isRequired,
-  patientGender: PropTypes.string.isRequired,
-  meetsInclusionCriteria: PropTypes.bool.isRequired
+  patientGender: PropTypes.string.isRequired
 };

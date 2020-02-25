@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import executeElm from '../utils/executeELM';
 import sumit from '../helpers/sumit';
 import flagit from '../helpers/flagit';
+import {datishFormat} from '../helpers/formatit';
 import summaryMap from './summary.json';
 
 import Header from './Header';
@@ -41,8 +42,6 @@ export default class Landing extends Component {
         let result = response[0];
         //add data from other sources, e.g. PDMP
         result['Summary'] = {...result['Summary'], ...response[1]};
-        console.log(result['Summary'])
-        console.log(this.state.collector)
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ loading: false });
         this.setState({ result, sectionFlags, flaggedCount });
@@ -246,7 +245,7 @@ export default class Landing extends Component {
 
         <Header
           patientName={summary.Patient.Name}
-          patientDOB={patientResource.birthDate}
+          patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
           patientGender={summary.Patient.Gender}
           totalEntries={totalEntries}
           numFlaggedEntries={flaggedCount}

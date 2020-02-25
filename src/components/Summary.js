@@ -133,7 +133,7 @@ export default class Summary extends Component {
         accessor: (entry) => this.isEntryFlagged(section, subSection.dataKey, entry),
         Cell: (props) =>
           <FontAwesomeIcon
-            className={`flag flag-entry ${props.value ? 'flagged' : ''} hide`}
+            className={`flag flag-entry ${props.value ? 'flagged' : ''}`}
             icon="exclamation-circle"
             title={props.value ? `flag: ${props.value}` : 'flag'}
             data-tip={props.value ? props.value : ''}
@@ -245,7 +245,7 @@ export default class Summary extends Component {
         <div key={subSection.dataKey} className="sub-section h3-wrapper">
           <h3 id={subSection.dataKey} className="sub-section__header">
             <FontAwesomeIcon
-              className={`flag flag-nav ${flaggedClass} hide`}
+              className={`flag flag-nav ${flaggedClass}`}
               icon={'circle'}
               title="flag"
               tabIndex={0}
@@ -313,7 +313,7 @@ export default class Summary extends Component {
 
           <span>
             {title}
-            <FontAwesomeIcon className={`flag flag-header ${flaggedClass} hide`} icon="exclamation-circle" title="flag" />
+            <FontAwesomeIcon className={`flag flag-header ${flaggedClass}`} icon="exclamation-circle" title="flag" />
           </span>
         </div>
 
