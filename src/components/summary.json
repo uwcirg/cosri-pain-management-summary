@@ -343,8 +343,7 @@
           "headers": {
             "Name": "Name",
             "Type": "Type",
-            "Start": { "key": "Start", "formatter": "datishFormat" },
-            "End": { "key": "End", "formatter": "datishFormat" }
+            "Date": { "key": "Start", "formatter": "datishFormat" }
           },
           "flags": [
             {
