@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export default class Header extends Component {
   render() {
     const {
-      patientName, patientDOB, patientGender, meetsInclusionCriteria
+      patientName, patientDOB, patientGender
     } = this.props;
 
     return (
@@ -23,8 +23,8 @@ export default class Header extends Component {
               <span className="header__logo-text--light">built with </span>
             </div>
             <div className="entry">
-            <a href="https://cds.ahrq.gov" target="_blank" rel="noopener noreferrer"><img className="header__logo-img secondary" src={process.env.PUBLIC_URL + "/assets/images/cds_connect_logo.png"} alt="cds connect logo" /></a> <span className="header__logo-text">CDS Connect</span>
-              <a href="https://cds.ahrq.gov" target="_blank" rel="noopener noreferrer"><img className="header__logo-img terciary" src={process.env.PUBLIC_URL + "/assets/images/ahrq_logo.png"} alt="ahrq connect logo" /></a>
+              <a href="https://cds.ahrq.gov" target="_blank" rel="noopener noreferrer"><img className="header__logo-img secondary" src={process.env.PUBLIC_URL + "/assets/images/cds_connect_logo.png"} alt="cds connect logo" /></a> <span className="header__logo-text">CDS Connect</span>
+              <a href="https://www.ahrq.gov/" target="_blank" rel="noopener noreferrer"><img className="header__logo-img terciary" src={process.env.PUBLIC_URL + "/assets/images/ahrq_logo.png"} alt="ahrq connect logo" /></a>
             </div>
           </div>
         </div>

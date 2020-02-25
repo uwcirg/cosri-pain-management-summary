@@ -102,8 +102,8 @@ export default class Summary extends Component {
           <FontAwesomeIcon
             className={`flag flag-no-entry ${flaggedClass}`}
             icon="exclamation-circle"
+            data-tip={flagText}
             title={`flag: ${tooltip}`}
-            data-tip={tooltip}
             role="tooltip"
             tabIndex={0}
           />
@@ -133,7 +133,7 @@ export default class Summary extends Component {
         accessor: (entry) => this.isEntryFlagged(section, subSection.dataKey, entry),
         Cell: (props) =>
           <FontAwesomeIcon
-            className={`flag flag-entry ${props.value ? 'flagged' : ''}`}
+            className={`flag flag-entry ${props.value ? 'flagged' : ''} hide`}
             icon="exclamation-circle"
             title={props.value ? `flag: ${props.value}` : 'flag'}
             data-tip={props.value ? props.value : ''}
@@ -245,8 +245,8 @@ export default class Summary extends Component {
         <div key={subSection.dataKey} className="sub-section h3-wrapper">
           <h3 id={subSection.dataKey} className="sub-section__header">
             <FontAwesomeIcon
-              className={`flag flag-nav ${flaggedClass}`}
-              icon={flagged ? 'exclamation-circle' : 'circle'}
+              className={`flag flag-nav ${flaggedClass} hide`}
+              icon={'circle'}
               title="flag"
               tabIndex={0}
             />
@@ -313,7 +313,7 @@ export default class Summary extends Component {
 
           <span>
             {title}
-            <FontAwesomeIcon className={`flag flag-header ${flaggedClass}`} icon="exclamation-circle" title="flag" />
+            <FontAwesomeIcon className={`flag flag-header ${flaggedClass} hide`} icon="exclamation-circle" title="flag" />
           </span>
         </div>
 
@@ -342,14 +342,7 @@ export default class Summary extends Component {
 
           {meetsInclusionCriteria &&
             <div className="sections">
-            {/*  <Collapsible trigger={this.renderSectionHeader("PertinentMedicalHistory")} open={true}>
-                {this.renderSection("PertinentMedicalHistory")}
-              </Collapsible>
-
-              <Collapsible tabIndex={0} trigger={this.renderSectionHeader("PainAssessments")} open={true}>
-                {this.renderSection("PainAssessments")}
-             </Collapsible>
-			*/}
+  
               <Collapsible trigger={this.renderSectionHeader("HistoricalTreatments")} open={true}>
                 {this.renderSection("HistoricalTreatments")}
               </Collapsible>
@@ -362,11 +355,18 @@ export default class Summary extends Component {
               {this.renderSection("NonPharmacologicTreatments")}
               </Collapsible>
 
-
-            {/*  <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
-                {this.renderSection("RiskConsiderations")}
+              {/*
+              <Collapsible trigger={this.renderSectionHeader("PertinentMedicalHistory")} open={true}>
+                {this.renderSection("PertinentMedicalHistory")}
               </Collapsible>
-			 */} 
+
+              <Collapsible tabIndex={0} trigger={this.renderSectionHeader("PainAssessments")} open={true}>
+                {this.renderSection("PainAssessments")}
+              </Collapsible>
+			
+              <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
+                {this.renderSection("RiskConsiderations")}
+              </Collapsible> */}
             </div>
           }
 

@@ -24,12 +24,12 @@
             "Status": "Status",
             "Start": {
               "key": "Onset",
-              "formatter": "datishAgeFormat",
+              "formatter": "datishFormat",
               "minWidth": 150
             },
             "End": {
               "key": "Abatement",
-              "formatter": "datishAgeFormat",
+              "formatter": "datishFormat",
               "minWidth": 150
             },
             "Recorded": {
@@ -104,12 +104,12 @@
             "Status": "Status",
             "Start": {
               "key": "Onset",
-              "formatter": "datishAgeFormat",
+              "formatter": "datishFormat",
               "minWidth": 150
             },
             "End": {
               "key": "Abatement",
-              "formatter": "datishAgeFormat",
+              "formatter": "datishFormat",
               "minWidth": 150
             },
             "Recorded": {
