@@ -14,8 +14,6 @@ import Spinner from '../elements/Spinner';
 
 
 let uuid = 0;
-//const PDMP_URL = "http://cosri-pdmp.cirg.washington.edu/v/r2/fhir/MedicationOrder";
-
 
 function generateUuid() {
   return ++uuid; // eslint-disable-line no-plusplus
