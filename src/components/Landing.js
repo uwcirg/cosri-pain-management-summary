@@ -77,18 +77,9 @@ export default class Landing extends Component {
       const externalDatasetKey = 'ExternalDataSet';
       let dataSet = {};
       dataSet[externalDatasetKey] = {};
-      //PDMP data
-      //loading local file - this is temporary, just to demo rendering
-      //let response = await fetch(`${process.env.PUBLIC_URL}/pdmp.json`, {mode: 'no-cors'})
-      /*
-       * IF environmental variable REACT_APP_CONF_API_URL is set, call that endpoint
-       */
       let response = await fetch(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`)
-      // .catch(e => console.log('Error fetching PDMP data: ', e.message));
-      /*
-       * to get around cors and to call a server set up locally, need to set "proxy" property in package.json to its url, e.g. "proxy": "http://localhost:8001" */
-      /*let response = await fetch(`/v/r2/fhir/MedicationOrder`, 
-      {method: 'GET', mode: 'no-cors', headers:{'accept':'application/json'}});*/
+      .catch(e => console.log('Error fetching PDMP data: ', e.message));
+    
       let pdmpDataSet = null;
       try {
         const json = await (response.json()).catch(e => console.log('Error parsing PDMP response json: ', e.message));

@@ -356,17 +356,18 @@ export default class Summary extends Component {
               </Collapsible>
 
               {/*
-              <Collapsible trigger={this.renderSectionHeader("PertinentMedicalHistory")} open={true}>
-                {this.renderSection("PertinentMedicalHistory")}
-              </Collapsible>
+                <Collapsible trigger={this.renderSectionHeader("PertinentMedicalHistory")} open={true}>
+                  {this.renderSection("PertinentMedicalHistory")}
+                </Collapsible>
 
-              <Collapsible tabIndex={0} trigger={this.renderSectionHeader("PainAssessments")} open={true}>
-                {this.renderSection("PainAssessments")}
-              </Collapsible>
-			
-              <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
-                {this.renderSection("RiskConsiderations")}
-              </Collapsible> */}
+                <Collapsible tabIndex={0} trigger={this.renderSectionHeader("PainAssessments")} open={true}>
+                  {this.renderSection("PainAssessments")}
+                </Collapsible>
+        
+                <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
+                  {this.renderSection("RiskConsiderations")}
+                </Collapsible>
+              */}
             </div>
           }
 
