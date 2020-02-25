@@ -28,11 +28,9 @@ export default class Header extends Component {
             </div>
           </div>
         </div>
-
         <div className="header__summary">
           <div className="header__summary-patient">
             <FontAwesomeIcon className="patient-icon" icon="user-circle" title="patient" />
-
             <div className="patient-info">
               <h1 className="patient-name">{patientName}</h1>
 
@@ -42,9 +40,7 @@ export default class Header extends Component {
               </div>
             </div>
           </div>
-
-          {meetsInclusionCriteria &&
-			  <div className="header__summary-dashboard">
+			    <div className="header__summary-dashboard">
               {/**  <div className="entries">
                 <div className="entries-count total">{totalEntries}</div>
                 <div className="entries-label">Total Entries</div>
@@ -54,11 +50,10 @@ export default class Header extends Component {
                 <div className="entries-count flagged">{numFlaggedEntries}</div>
                 <div className="entries-label">Total<br/>Flags</div>
               </div> **/}
-              <div className="entries">
-                <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" />
-              </div>
+            <div className="entries">
+              <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" />
             </div>
-          }
+          </div>
         </div>
       </header>
     );
