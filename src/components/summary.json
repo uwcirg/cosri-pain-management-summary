@@ -278,13 +278,7 @@
             "Medication": "Name",
             "Date": { "key": "Start", "formatter": "datishFormat" },
             "Type": { "key": "Type", "formatter": "stringSubstitutionFormat", "formatterArguments": ["Order"]}
-          },
-          "flags": [
-            {
-              "flag": "always",
-              "flagText": "Opioid medication"
-            }
-          ]
+          }
         }
       ]
     },
@@ -315,7 +309,7 @@
           "flags": [
             {
               "flag": "ifNone",
-              "flagText": "Absence of non-opioid medications"
+              "flagText": "CDC Guideline #1: Opioids are not first-line therapy"
             }
           ]
         }
@@ -358,7 +352,7 @@
                   }
                 ]
               },
-              "flagText": "Absence of stool softeners/laxative with presence of at least one opioid medication"
+              "flagText": "CDC Guideline #3: Absence of stool softeners/laxative with presence of at least one opioid medication"
             }
           ]
         }
@@ -579,6 +573,7 @@
       "name": "Non-Pharmacologic Treatments",
       "dataKey": "NonPharmacologicTreatments",
       "dataKeySource": "HistoricalTreatments",
+      "omitTitle": true,
       "info": [
         {
           "type": "elements",
@@ -602,18 +597,19 @@
           "flags": [
             {
               "flag": "ifNone",
-              "flagText": "Absence of non-pharmacologic treatments"
+              "flagText": "CDC Guideline #1: Opioids are not first-line therapy"
             }
           ]
         }
       ]
     }
   ],
-  "ExternalDataSet": [
+  "PDMPMedications": [
     {
       "name": "PMP Prescriptions",
       "dataKey": "PDMPMedications",
-      "dataKeySource": "ExternalDataSet",
+      "dataKeySource": "PDMPMedications",
+      "omitTitle": true,
       "info": [
         {
           "type": "elements",
@@ -637,6 +633,40 @@
             },
             "Date": { "key": "dateWritten", "formatter": "datishFormat" },
             "Type": { "key": "resourceType", "formatter": "stringSubstitutionFormat", "formatterArguments": ["Order"]}
+          }
+        }
+      ]
+    }
+  ],
+  "Occupation": [
+    {
+      "name": "Occupation",
+      "omitTitle": true,
+      "dataKey": "Occupation",
+      "dataKeySource": "Occupation",
+      "info": [
+        {
+          "type": "elements",
+          "description": "The occupation API queries the following elements:",
+          "elements": [
+            {
+              "name": "resourceType",
+              "status": "any",
+              "lookback": "n/a"
+            }
+          ]
+        }
+      ],
+      "tables": [
+        {
+          "headers": {
+            "Current": {
+              "key": "valueCodeableConcept",
+              "formatter": "codeableConceptFormat",
+              "formatterArguments": ["text"],
+              "sortable": false
+            },
+            "Effective Date": { "key": "effectiveDateTime", "formatter": "datishFormat", "sortable": false }
           }
         }
       ]

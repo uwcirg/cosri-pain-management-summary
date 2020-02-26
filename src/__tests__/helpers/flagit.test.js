@@ -79,7 +79,10 @@ it('flags "STarT Back Assessments" entries correctly', () => {
   expect(flagit(null, subSection, mockSummaryA)).toEqual(false);
 });
 
-it('flags "Opioid Medications" entries correctly', () => {
+/*
+ * currently flag displays are removed from opiod medications section
+ */
+it.skip('flags "Opioid Medications" entries correctly', () => {
   const subSection = summaryMap['HistoricalTreatments'][0];
   const mockEntry = {
     "Type": "Statement",
@@ -100,7 +103,7 @@ it('flags "Non-Opioid Medications" entries correctly', () => {
     "Start": "2018-04-30T00:00:00.000+00:00",
     "End": null
   };
-  const mockFlag = "Absence of non-opioid medications";
+  const mockFlag = "CDC Guideline #1: Opioids are not first-line therapy";
   expect(flagit(null, subSection, mockSummaryD)).toEqual(mockFlag);
   expect(flagit(mockEntry, subSection, mockSummaryA)).toEqual(false);
 });
@@ -112,7 +115,7 @@ it('flags "Non-Pharmacologic Treatments" entries correctly', () => {
     "Name": "Chiropraxy (regime/therapy)",
     "Date": "2018-04-05T00:00:00.000+00:00"
   };
-  const mockFlag = "Absence of non-pharmacologic treatments";
+  const mockFlag = "CDC Guideline #1: Opioids are not first-line therapy";
   expect(flagit(null, subSection, mockSummaryD)).toEqual(mockFlag);
   expect(flagit(mockEntry, subSection, mockSummaryA)).toEqual(false);
 });
@@ -125,7 +128,7 @@ it('flags "Stool Softeners and Laxatives" entries correctly', () => {
     "Start": "2018-04-05T00:00:00.000+00:00",
     "End": null
   };
-  const mockFlag = "Absence of stool softeners/laxative with presence of at least one opioid medication";
+  const mockFlag = "CDC Guideline #3: Absence of stool softeners/laxative with presence of at least one opioid medication";
   // no stool softeners (true) AND one or more opioids (true) => mockFlag
   expect(flagit(null, subSection, mockSummaryB)).toEqual(mockFlag);
   // stool softeners (false) AND one or more opioids (true) => false

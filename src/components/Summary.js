@@ -14,6 +14,9 @@ import MedicalHistoryIcon from '../icons/MedicalHistoryIcon';
 import PainIcon from '../icons/PainIcon';
 import TreatmentsIcon from '../icons/TreatmentsIcon';
 import RiskIcon from '../icons/RiskIcon';
+import RxIcon from '../icons/RxIcon';
+import MedicineIcon from '../icons/MedicineIcon';
+import OccupationIcon from '../icons/OccupationIcon';
 
 import InclusionBanner from './InclusionBanner';
 import ExclusionBanner from './ExclusionBanner';
@@ -102,12 +105,13 @@ export default class Summary extends Component {
           <FontAwesomeIcon
             className={`flag flag-no-entry ${flaggedClass}`}
             icon="exclamation-circle"
-            data-tip={flagText}
+     //       data-tip={flagText}
             title={`flag: ${tooltip}`}
             role="tooltip"
             tabIndex={0}
           />
           no entries found
+          <div className="flag-text">{flagText}</div>
         </div>
       </div>
     );
@@ -240,34 +244,36 @@ export default class Summary extends Component {
 
       const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
       const flaggedClass = flagged ? 'flagged' : '';
+      const omitTitleClass = subSection.omitTitle ? 'sub-section-notitle' : '';
 
       return (
         <div key={subSection.dataKey} className="sub-section h3-wrapper">
-          <h3 id={subSection.dataKey} className="sub-section__header">
+          <h3 id={subSection.dataKey} className={`sub-section__header ${omitTitleClass}`}>
             <FontAwesomeIcon
               className={`flag flag-nav ${flaggedClass}`}
               icon={'circle'}
               title="flag"
               tabIndex={0}
             />
-            {subSection.name}
-            {subSection.info &&
-              <div
-                onClick={(event) => this.handleOpenModal(subSection,event)}
-                onKeyDown={(event) => this.handleOpenModal(subSection,event)}
-                role="button"
-                tabIndex={0}
-                aria-label={subSection.name}>
-                <FontAwesomeIcon
-                  className='info-icon'
-                  icon="info-circle"
-                  title={`more info: ${subSection.name}`}
-                  data-tip="more info"
-                  role="tooltip"
-                  tabIndex={0}
-                />
-              </div>
-            }
+            <span className="sub-section__header__name">{subSection.name}</span>
+            <span className="sub-section__header__info">{subSection.info &&
+                  <div
+                    onClick={(event) => this.handleOpenModal(subSection,event)}
+                    onKeyDown={(event) => this.handleOpenModal(subSection,event)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={subSection.name}>
+                    <FontAwesomeIcon
+                      className='info-icon'
+                      icon="info-circle"
+                      title={`more info: ${subSection.name}`}
+                      data-tip="more info"
+                      role="tooltip"
+                      tabIndex={0}
+                    />
+                  </div>
+              }</span>
+           
           </h3>
 
           {!hasEntries && this.renderNoEntries(section, subSection)}
@@ -282,7 +288,7 @@ export default class Summary extends Component {
   renderSectionHeader(section) {
     const flagged = this.isSectionFlagged(section);
     const flaggedClass = flagged ? 'flagged' : '';
-    const { numMedicalHistoryEntries, numPainEntries, numTreatmentsEntries, numRiskEntries, numNonPharTreatmentEntries, numExternalDataEntries } = this.props;
+    const { numMedicalHistoryEntries, numPainEntries, numTreatmentsEntries, numRiskEntries, numNonPharTreatmentEntries, numPDMPDataEntries } = this.props;
 
     let icon = '';
     let title = '';
@@ -293,17 +299,30 @@ export default class Summary extends Component {
       icon = <PainIcon width="35"  height="35" />;
       title = `Pain Assessments (${numPainEntries})`
     } else if (section === 'HistoricalTreatments') {
-      icon = <TreatmentsIcon width="36" height="38" />;
+      icon = <MedicineIcon
+        className={`sectionIcon`}
+        title={`EHR Medications`}
+      />;
+    title = `Occupation`;
       title = `EHR Medications (${numTreatmentsEntries})`
     } else if (section === 'RiskConsiderations') {
       icon = <RiskIcon width="35" height="34" />;
       title = `Risk Considerations (${numRiskEntries})`;
-    } else if (section === 'ExternalDataSet') {
-      icon = <MedicalHistoryIcon width="30" height="40" />;
-      title = `State PMP Prescriptions (${numExternalDataEntries})`;
+    } else if (section === 'PDMPMedications') {
+      icon = <RxIcon
+        className={`sectionIcon`}
+        title={`PDMP Medications`}
+      />;
+      title = `State PMP Prescriptions (${numPDMPDataEntries})`;
     } else if (section === 'NonPharmacologicTreatments') {
       icon =  <TreatmentsIcon width="36" height="38" />;
       title = `Non-Pharmacologic Treatments (${numNonPharTreatmentEntries})`;
+    } else if (section === 'Occupation') {
+      icon = <OccupationIcon
+        className={`sectionIcon`}
+        title={`Occupation`}
+      />;
+      title = `Occupation`;
     }
 
     return (
@@ -347,12 +366,16 @@ export default class Summary extends Component {
                 {this.renderSection("HistoricalTreatments")}
               </Collapsible>
 
-              <Collapsible trigger={this.renderSectionHeader("ExternalDataSet")} open={true}>
-              {this.renderSection("ExternalDataSet")}
+              <Collapsible trigger={this.renderSectionHeader("PDMPMedications")} open={true}>
+              {this.renderSection("PDMPMedications")}
               </Collapsible>
 
               <Collapsible trigger={this.renderSectionHeader("NonPharmacologicTreatments")} open={true}>
               {this.renderSection("NonPharmacologicTreatments")}
+              </Collapsible>
+
+              <Collapsible trigger={this.renderSectionHeader("Occupation")} open={true}>
+              {this.renderSection("Occupation")}
               </Collapsible>
 
               {/*
@@ -424,5 +447,5 @@ Summary.propTypes = {
   numTreatmentsEntries: PropTypes.number.isRequired,
   numRiskEntries: PropTypes.number.isRequired,
   numNonPharTreatmentEntries: PropTypes.number.isRequired,
-  numExternalDataEntries: PropTypes.number.isRequired
+  numPDMPDataEntries: PropTypes.number.isRequired
 };

@@ -100,8 +100,22 @@ export function stringSubstitutionFormat(result, input, replacement) {
     codingField: field in coding to match
  */
 export function codeableConceptFormat(result, input, key, field, codingField) {
+  //console.log("input ? ", input, " key ", key, " field ", field)
   if (!input) {
     return '';
+  }
+  if (typeof input === 'object' && 
+      typeof input[key] === 'string') {
+    return input[key];
+  }
+  if (Array.isArray(input) && key && field) {
+    let resultText = '';
+    input.forEach(item => {
+      if (item.hasOwnProperty(key) && item[key].hasOwnProperty(field)) {
+        resultText += (resultText?escape('<br/>'):'') + item[key][field];
+      }
+    });
+    return resultText;
   }
   if (typeof input === 'object' &&
       input.hasOwnProperty(key) &&

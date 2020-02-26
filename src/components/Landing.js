@@ -74,22 +74,41 @@ export default class Landing extends Component {
    * function for retrieving data from other sources e.g. PDMP
    */
   async getExternalData() {
-      const externalDatasetKey = 'ExternalDataSet';
-      let dataSet = {};
-      dataSet[externalDatasetKey] = {};
-      let response = await fetch(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`)
-      .catch(e => console.log('Error fetching PDMP data: ', e.message));
-    
-      let pdmpDataSet = null;
-      try {
-        const json = await (response.json()).catch(e => console.log('Error parsing PDMP response json: ', e.message));
-        pdmpDataSet = json && json.entry? json.entry: null;
-      } catch(e) {
-        pdmpDataSet = null;
-      } finally {
-        dataSet[externalDatasetKey]['PDMPMedications'] = pdmpDataSet;
-        return dataSet;
-      }
+    let dataSet = {};
+    const PDMPDataKey = 'PDMPMedications';
+    const OccupationDataKey = 'Occupation';
+    let results = await Promise.all([
+      //PDMP data
+      this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`, PDMPDataKey, 'entry'),
+      //Occupation data
+      this.fetchData(`${process.env.PUBLIC_URL}/ocupacion.json`, 'Occupation', 'resource')
+    ]).catch(e => {
+      console.log(`Error parsing external data response json: ${e.message}`);
+      return [null, null];
+    });
+
+    dataSet[PDMPDataKey] = results[0];
+    dataSet[OccupationDataKey] = results[1];
+    return dataSet;
+  }
+
+  async fetchData (url, datasetKey, rootElement) {
+   // let datasetKey = 'PDMPMedications';
+    let dataSet = {};
+    dataSet[datasetKey] = {};
+    let response = await fetch(url)
+    .catch(e => console.log(`Error fetching ${datasetKey} data: ${e.message}`));
+  
+    let responseDataSet = null;
+    try {
+      const json = await (response.json()).catch(e => console.log(`Error parsing ${datasetKey} response json: ${e.message}`));
+      responseDataSet  = json && json[rootElement]? json[rootElement]: null;
+    } catch(e) {
+      responseDataSet  = null;
+    } finally {
+      dataSet[datasetKey] = responseDataSet;
+      return dataSet;
+    }
   }
 
   getAnalyticsData(endpoint, apikey, summary) {
@@ -224,9 +243,10 @@ export default class Landing extends Component {
     const numRiskEntries =
       sumit(summary.RiskConsiderations || {}) +
       sumit(summary.MiscellaneousItems || {}); // TODO: update when CQL updates
-    const numExternalDataEntries = sumit(summary.ExternalDataSet || {});
+    //const numExternalDataEntries = sumit(summary.ExternalDataSet || {});
+    const numPDMPDataEntries = sumit(summary.PDMPMedications || {});
     //const totalEntries = numMedicalHistoryEntries + numPainEntries + numTreatmentsEntries + numRiskEntries;
-    const totalEntries = numTreatmentsEntries + numNonPharTreatmentEntries + numExternalDataEntries;
+    const totalEntries = numTreatmentsEntries + numNonPharTreatmentEntries + numPDMPDataEntries;
 
     return (
       <div className="landing">
@@ -251,7 +271,7 @@ export default class Landing extends Component {
           numTreatmentsEntries={numTreatmentsEntries}
           numRiskEntries={numRiskEntries}
           numNonPharTreatmentEntries={numNonPharTreatmentEntries}
-          numExternalDataEntries={numExternalDataEntries}
+          numPDMPDataEntries={numPDMPDataEntries}
         />
       </div>
     );

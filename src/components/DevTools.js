@@ -99,14 +99,13 @@ export default class DevTools extends Component {
   }
 
   renderPDMPResults() {
-    let externalDataset = this.props.summary.ExternalDataSet ? this.props.summary.ExternalDataSet : null;
-    const key = 'PDMPMedications';
+    let pdmpDataset = this.props.summary.PDMPMedications ? this.props.summary.PDMPMedications : null;
     return (
       <div className='pdmp-results'>
         <h4>PDMP Results <button onClick={this.togglePDMPResults}>[show/hide]</button></h4>
         <div style={{ display: this.state.displayPDMPResults ? 'block' : 'none' }}>
-          <pre>{externalDataset && externalDataset[key] ? 
-                JSON.stringify(externalDataset[key], null, 2) : 
+          <pre>{pdmpDataset ? 
+                JSON.stringify(pdmpDataset, null, 2) : 
                 'No result'}</pre>
         </div>
       </div>
