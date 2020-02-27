@@ -666,7 +666,12 @@
               "formatterArguments": ["text"],
               "sortable": false
             },
-            "Effective Date": { "key": "effectiveDateTime", "formatter": "datishFormat", "sortable": false }
+            "Previous": {
+              "key": "component",
+              "formatter": "codeableConceptFormat",
+              "formatterArguments": ["valueCodeableConcept", "text", "system", "http://fhir.carevolution.com/codes/PHVS_Industry_CDC_Census2010/ObservationValue"],
+              "sortable": false
+            }
           }
         }
       ]

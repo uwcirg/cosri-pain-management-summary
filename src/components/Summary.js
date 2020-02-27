@@ -102,15 +102,16 @@ export default class Summary extends Component {
     return (
       <div className="table">
         <div className="no-entries">
-          <FontAwesomeIcon
-            className={`flag flag-no-entry ${flaggedClass}`}
-            icon="exclamation-circle"
-     //       data-tip={flagText}
-            title={`flag: ${tooltip}`}
-            role="tooltip"
-            tabIndex={0}
-          />
-          no entries found
+          <div>
+            <FontAwesomeIcon
+              className={`flag flag-no-entry ${flaggedClass}`}
+              icon="exclamation-circle"
+      //       data-tip={flagText}
+              title={`flag: ${tooltip}`}
+              role="tooltip"
+              tabIndex={0}
+            />
+            no entries found</div>
           <div className="flag-text">{flagText}</div>
         </div>
       </div>

@@ -188,6 +188,8 @@
             font-style: normal;
             margin-top: 8px;
             margin-left: 24px;
+            padding: 8px 0;
+            display: inline-block;
           }
           .flag-no-entry {
             margin-right: 12px;
@@ -260,7 +262,9 @@
               border-top: 1px solid $color-gray-lighter;
 
               button {
-                width: 96%;
+                width: 65%;
+                margin: 4px auto;
+                padding: 4px;
               }
             }
           }

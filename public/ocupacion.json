@@ -48,11 +48,11 @@
                 {
                     "system": "http://fhir.carevolution.com/codes/PHVS_Occupation_CDC_Census2010/ObservationValue",
                     "code": "6260",
-                    "display": "Construction Laborer",
+                    "display": "Pianist",
                     "userSelected": true
                 }
             ],
-            "text": "Construction Laborer"
+            "text": "Pianist"
         },
         "component": [
             {
@@ -78,11 +78,11 @@
                         {
                             "system": "http://fhir.carevolution.com/codes/PHVS_Industry_CDC_Census2010/ObservationValue",
                             "code": "770",
-                            "display": "Construction",
+                            "display": "Dog Walker",
                             "userSelected": true
                         }
                     ],
-                    "text": "Construction"
+                    "text": "Dog Walker"
                 }
             },
             {

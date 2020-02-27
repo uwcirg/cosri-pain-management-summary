@@ -40,6 +40,7 @@ export default class Landing extends Component {
         let result = response[0];
         //add data from other sources, e.g. PDMP
         result['Summary'] = {...result['Summary'], ...response[1]};
+        console.log(result['Summary']);
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ loading: false });
         this.setState({ result, sectionFlags, flaggedCount });
@@ -81,10 +82,13 @@ export default class Landing extends Component {
       //PDMP data
       this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`, PDMPDataKey, 'entry'),
       //Occupation data
+      //TODO fix this to use real API endpoint url
       this.fetchData(`${process.env.PUBLIC_URL}/ocupacion.json`, 'Occupation', 'resource')
     ]).catch(e => {
       console.log(`Error parsing external data response json: ${e.message}`);
-      return [null, null];
+      dataSet[PDMPDataKey] = null;
+      dataSet[OccupationDataKey] = null;
+      return dataSet;
     });
 
     dataSet[PDMPDataKey] = results[0];
@@ -93,12 +97,11 @@ export default class Landing extends Component {
   }
 
   async fetchData (url, datasetKey, rootElement) {
-   // let datasetKey = 'PDMPMedications';
     let dataSet = {};
     dataSet[datasetKey] = {};
     let response = await fetch(url)
     .catch(e => console.log(`Error fetching ${datasetKey} data: ${e.message}`));
-  
+
     let responseDataSet = null;
     try {
       const json = await (response.json()).catch(e => console.log(`Error parsing ${datasetKey} response json: ${e.message}`));

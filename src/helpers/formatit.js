@@ -96,10 +96,11 @@ export function stringSubstitutionFormat(result, input, replacement) {
     result: Summary json object
     input: codeableconcept json object from Summary
     key: name of the concept to match
-    field: field in concept to match
+    field: field in key concept to match, key concept will be an object
     codingField: field in coding to match
+    codingText: text in coding field to match
  */
-export function codeableConceptFormat(result, input, key, field, codingField) {
+export function codeableConceptFormat(result, input, key, field, codingField, codingText) {
   //console.log("input ? ", input, " key ", key, " field ", field)
   if (!input) {
     return '';
@@ -112,7 +113,13 @@ export function codeableConceptFormat(result, input, key, field, codingField) {
     let resultText = '';
     input.forEach(item => {
       if (item.hasOwnProperty(key) && item[key].hasOwnProperty(field)) {
-        resultText += (resultText?escape('<br/>'):'') + item[key][field];
+        console.log("key: ", key, item[key], " coding Field: ", codingField, " coding text: ", codingText)
+        if (item[key]["coding"] && codingText) {
+          console.log("coding ", item[key]["coding"])
+          let matchedItem = (item[key]["coding"]).find(item => item.hasOwnProperty(codingField) && item[codingField] === codingText);
+          if (!matchedItem) return true;
+        }
+        resultText += (resultText?', ':'') + item[key][field];
       }
     });
     return resultText;
