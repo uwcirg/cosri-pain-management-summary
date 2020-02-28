@@ -137,3 +137,9 @@ export function datishCompare(a, b) {
   // fall back to the string itself
   return stringCompare(aVal, bVal);
 }
+/*
+ * compare Link element component, see components/Link.js for detail
+ */
+export function linkCompare(a, b) {
+  return stringCompare(a.props['linkTitle'], b.props['linkTitle']);
+}

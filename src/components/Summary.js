@@ -17,9 +17,11 @@ import RiskIcon from '../icons/RiskIcon';
 import RxIcon from '../icons/RxIcon';
 import MedicineIcon from '../icons/MedicineIcon';
 import OccupationIcon from '../icons/OccupationIcon';
+import UserIcon from '../icons/UserIcon';
 
 import InclusionBanner from './InclusionBanner';
 import ExclusionBanner from './ExclusionBanner';
+import DataProvenance from './DataProvenance';
 import InfoModal from './InfoModal';
 import DevTools from './DevTools';
 
@@ -130,7 +132,6 @@ export default class Summary extends Component {
     if (filteredEntries.length === 0) return null;
 
     const headers = Object.keys(table.headers);
-
     let columns = [
       {
         id: 'flagged',
@@ -160,12 +161,12 @@ export default class Summary extends Component {
         accessor: (entry) => {
           let value = entry[headerKey];
           if (headerKey.formatter) {
+            console.log("formatter? ", headerKey.formatter)
             const { result } = this.props;
             let formatterArguments = headerKey.formatterArguments || [];
             value = formatit[headerKey.formatter](result, entry[headerKey.key], ...formatterArguments);
           }
-
-          return value;
+          return value ? value: entry[headerKey.key];
         },
         sortable: headerKey.sortable !== false
       };
@@ -183,6 +184,9 @@ export default class Summary extends Component {
             break;
           case 'quantityFormat':
             column.sortMethod = sortit.quantityCompare;
+            break;
+          case 'linkFormat':
+            column.sortMethod = sortit.linkCompare;
             break;
           default:
             // do nothing, rely on built-in sort
@@ -235,7 +239,7 @@ export default class Summary extends Component {
   }
 
   renderSection(section) {
-    const sectionMap = summaryMap[section];
+    const sectionMap = summaryMap[section]["sections"];
 
     return sectionMap.map((subSection) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
@@ -264,14 +268,23 @@ export default class Summary extends Component {
                     role="button"
                     tabIndex={0}
                     aria-label={subSection.name}>
-                    <FontAwesomeIcon
+                    <a
+                    className='info-icon'
+                    icon="info-circle"
+                    title={`more info: ${subSection.name}`}
+                    data-tip="more info"
+                    role="tooltip"
+                    tabIndex={0}
+                    >more info</a>
+
+                    {/* {<FontAwesomeIcon
                       className='info-icon'
                       icon="info-circle"
                       title={`more info: ${subSection.name}`}
                       data-tip="more info"
                       role="tooltip"
                       tabIndex={0}
-                    />
+                    />} */}
                   </div>
               }</span>
            
@@ -280,6 +293,12 @@ export default class Summary extends Component {
           {!hasEntries && this.renderNoEntries(section, subSection)}
           {hasEntries && subSection.tables.map((table, index) =>
             this.renderTable(table, entries, section, subSection, index))
+          }
+          {summaryMap[section].provenanceText &&
+            <DataProvenance
+              contentText={summaryMap[section].provenanceText}
+              queryDateTime={formatit.currentDateTimeFormat()}
+            />
           }
          </div>
       );
@@ -292,38 +311,31 @@ export default class Summary extends Component {
     const { numMedicalHistoryEntries, numPainEntries, numTreatmentsEntries, numRiskEntries, numNonPharTreatmentEntries, numPDMPDataEntries } = this.props;
 
     let icon = '';
-    let title = '';
+    let sourceTitle = summaryMap[section]['title'];
+    let title = sourceTitle;
+    console.log(section)
     if (section === 'PertinentMedicalHistory') {
       icon = <MedicalHistoryIcon width="30" height="40" />;
-      title = `Pertinent Medical History (${numMedicalHistoryEntries})`;
+      title += ` (${numMedicalHistoryEntries})`;
     } else if (section === 'PainAssessments') {
       icon = <PainIcon width="35"  height="35" />;
-      title = `Pain Assessments (${numPainEntries})`
+      title += ` (${numPainEntries})`
     } else if (section === 'HistoricalTreatments') {
-      icon = <MedicineIcon
-        className={`sectionIcon`}
-        title={`EHR Medications`}
-      />;
-    title = `Occupation`;
-      title = `EHR Medications (${numTreatmentsEntries})`
+      icon = <MedicineIcon className={`sectionIcon`} title={`${sourceTitle}`} />;
+      title += ` (${numTreatmentsEntries})`
     } else if (section === 'RiskConsiderations') {
       icon = <RiskIcon width="35" height="34" />;
-      title = `Risk Considerations (${numRiskEntries})`;
+      title += ` (${numRiskEntries})`;
     } else if (section === 'PDMPMedications') {
-      icon = <RxIcon
-        className={`sectionIcon`}
-        title={`PDMP Medications`}
-      />;
-      title = `State PMP Prescriptions (${numPDMPDataEntries})`;
+      icon = <RxIcon className={`sectionIcon`} title={`${sourceTitle}`}/>;
+      title += ` (${numPDMPDataEntries})`;
     } else if (section === 'NonPharmacologicTreatments') {
       icon =  <TreatmentsIcon width="36" height="38" />;
-      title = `Non-Pharmacologic Treatments (${numNonPharTreatmentEntries})`;
+      title += ` (${numNonPharTreatmentEntries})`;
     } else if (section === 'Occupation') {
-      icon = <OccupationIcon
-        className={`sectionIcon`}
-        title={`Occupation`}
-      />;
-      title = `Occupation`;
+      icon = <OccupationIcon className={`sectionIcon`} title={`${sourceTitle}`}/>;
+    } else if (section === 'PatientEducationMaterials') {
+      icon = <UserIcon className={`sectionIcon`} title={`${sourceTitle}`} />;
     }
 
     return (
@@ -375,21 +387,26 @@ export default class Summary extends Component {
               {this.renderSection("NonPharmacologicTreatments")}
               </Collapsible>
 
+
+              <Collapsible trigger={this.renderSectionHeader("PertinentMedicalHistory")} open={true}>
+                {this.renderSection("PertinentMedicalHistory")}
+              </Collapsible>
+
+              <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
+                {this.renderSection("RiskConsiderations")}
+              </Collapsible>
+
               <Collapsible trigger={this.renderSectionHeader("Occupation")} open={true}>
               {this.renderSection("Occupation")}
               </Collapsible>
 
-              {/*
-                <Collapsible trigger={this.renderSectionHeader("PertinentMedicalHistory")} open={true}>
-                  {this.renderSection("PertinentMedicalHistory")}
-                </Collapsible>
+              <Collapsible trigger={this.renderSectionHeader("PatientEducationMaterials")} open={true}>
+              {this.renderSection("PatientEducationMaterials")}
+              </Collapsible>
 
+              {/*
                 <Collapsible tabIndex={0} trigger={this.renderSectionHeader("PainAssessments")} open={true}>
                   {this.renderSection("PainAssessments")}
-                </Collapsible>
-        
-                <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
-                  {this.renderSection("RiskConsiderations")}
                 </Collapsible>
               */}
             </div>
@@ -412,7 +429,6 @@ export default class Summary extends Component {
 			Lorem ipsum dolor sit amet, consectetur adipibore et dolore magna aliqua.
           </div>
 		  	  
-		  
 
           <DevTools
             collector={collector}

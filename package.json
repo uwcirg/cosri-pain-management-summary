@@ -3,6 +3,7 @@
   "version": "0.3.0",
   "description": "Pain Management Factors SMART-on-FHIR App",
   "license": "Apache-2.0",
+  "homepage": "http://localhost:8000/pain-mgmt-summary/",
   "dependencies": {
     "@babel/polyfill": "^7.8.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.26",

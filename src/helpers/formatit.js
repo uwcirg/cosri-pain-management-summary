@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import VideoLink from '../components/VideoLink';
 
 const dateRE = /^\d{4}-\d{2}-\d{2}(T|\b)/; // loosely matches '2012-04-05' or '2012-04-05T00:00:00.000+00:00'
 const quantityRE = /^(\d+(\.\d+)?)(\s+(\S+))?$/; // matches '40' or '40 a' (a is UCUM unit for years)
@@ -8,6 +9,10 @@ const booleanRE = /^(true|false)$/; // matches 'true' or 'false'
 export function dateFormat(result, input) {
   if (input == null) return '';
   return moment.parseZone(input).format('YYYY-MMM-DD');
+}
+
+export function currentDateTimeFormat() {
+  return moment().format("MMMM Do YYYY, h:mm:ss a");
 }
 
 export function dateAgeFormat(result, input) {
@@ -86,6 +91,49 @@ export function stringSubstitutionFormat(result, input, replacement) {
   return replacement;
 }
 
+export function linkFormat(result, input) {
+  console.log("input ? ", input)
+  let isVideoLink = input['type'] === 'video' && input['videoId'];
+  console.log("type ? ", input['type'], " id? ", input['videoId'])
+  if (isVideoLink) {
+    console.log("is video link?")
+    return (
+      <div>
+        <VideoLink
+          linkTitle={input['title']}
+          linkURL={input['url']}
+          className={input['className']}
+          videoID= {input['videoId']}
+        />
+      </div>
+    );
+  } else {
+    return (
+      <a href={input['url']} title={input['title']} target='_blank' rel='noopener noreferrer' className={input['className']}>{input['title']}</a>
+    );
+  }
+}
+
+export function listFormat(result, input) {
+  if (input == null) {
+    return "";
+  }
+  if (!Array.isArray(input)) {
+    return "";
+  }
+ 
+  // let items = [];
+  // input.forEach(item => {
+  //   items.push([item]);
+  // });
+  return (
+      <ul className="sectionList">
+          {input.map(function(item, index){
+              return <li key={ index } className="className"><b>{item.text}:</b> {item.value}</li>;
+            })}
+      </ul>
+  );
+}
 /*
  * string formatter for FHIR codeableConcept element
  *  i.e.: {
@@ -113,9 +161,7 @@ export function codeableConceptFormat(result, input, key, field, codingField, co
     let resultText = '';
     input.forEach(item => {
       if (item.hasOwnProperty(key) && item[key].hasOwnProperty(field)) {
-        console.log("key: ", key, item[key], " coding Field: ", codingField, " coding text: ", codingText)
         if (item[key]["coding"] && codingText) {
-          console.log("coding ", item[key]["coding"])
           let matchedItem = (item[key]["coding"]).find(item => item.hasOwnProperty(codingField) && item[codingField] === codingText);
           if (!matchedItem) return true;
         }
