@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Video = ({ youtubeId }) => {
+const Video = ({ youtubeId, title }) => {
     return (
         <div
           className="video"
@@ -18,6 +18,7 @@ const Video = ({ youtubeId }) => {
               width: "100%",
               height: "100%"
             }}
+            title={title}
             src={`https://www.youtube.com/embed/${youtubeId}`}
             frameBorder="0"
             allowFullScreen

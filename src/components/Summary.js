@@ -269,6 +269,7 @@ export default class Summary extends Component {
                     tabIndex={0}
                     aria-label={subSection.name}>
                     <a
+                    href={() => {return false;}}
                     className='info-icon'
                     icon="info-circle"
                     title={`more info: ${subSection.name}`}

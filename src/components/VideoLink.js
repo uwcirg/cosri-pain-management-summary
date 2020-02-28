@@ -21,12 +21,12 @@ export default class Link extends Component {
   }
   render() {
     const {
-      linkTitle, linkURL, className, videoID
+      linkTitle, className, videoID
     } = this.props;
 
     return (
       <div>
-        <a  title={linkTitle} onClick={this.handleClick} className={`${className} video-link`} target='_blank' rel='noopener noreferrer'>{linkTitle}</a>
+        <a  href={() => {return false;}} title={linkTitle} onClick={this.handleClick} className={`${className} video-link`} target='_blank' rel='noopener noreferrer'>{linkTitle}</a>
         <FontAwesomeIcon
         icon={faChevronDown}
         className={`${this.state.isToggleOn?'hide': 'show-inline'} link-toggle`}
@@ -38,7 +38,7 @@ export default class Link extends Component {
           onClick={this.handleClick}
         />
         <div className={`${this.state.isToggleOn?'show': 'hide'} video-container`}>
-          <Video youtubeId={videoID}></Video>
+          <Video youtubeId={videoID} title={linkTitle}></Video>
         </div>
       </div>
     );
