@@ -698,12 +698,12 @@
   "Occupation": {
     "title":"Occupational Health",
     "codeTextKeys": [
+      "Occupational exposure",
       "Job supervisory level or pay grade",
       "Compensation and sectore employment type",
       "Work hours per day",
       "Work days per week",
-      "Employer name",
-      "Occupational exposure"
+      "Employer name"
     ],
     "sections": [
       {

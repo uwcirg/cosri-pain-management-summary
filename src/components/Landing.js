@@ -109,18 +109,24 @@ export default class Landing extends Component {
       morphedResult['Occupation']['description'] = [];
       let occupaSectionKeys = summaryMap['Occupation']['codeTextKeys'];
       if (result.component) {
-        (result.component).forEach(item => {
-          if (item.code && occupaSectionKeys.indexOf(item.code['text']) !== -1) {
-            let value = "";
-            if (item.valueString) {
-              value = item.valueString;
-            } else if (item.valueQuantity) {
-              value = item.valueQuantity['value'];
-            } else if (item.valueCodeableConcept) {
-              value = item.valueCodeableConcept['text'];
+        occupaSectionKeys.forEach(key => {
+          let matched = (result.component).find(item => {
+            if (item.code && item.code['text'] === key) {
+              return item;
+            }
+            return false;
+          });
+          if (matched) {
+            let value = '';
+            if (matched.valueString) {
+              value = matched.valueString;
+            } else if (matched.valueQuantity) {
+              value = matched.valueQuantity['value'];
+            } else if (matched.valueCodeableConcept) {
+              value = matched.valueCodeableConcept['text'];
             }
             morphedResult["Occupation"]["description"].push({
-              'text': item.code['text'],
+              'text': matched.code['text'],
               'value': value
             });
           }

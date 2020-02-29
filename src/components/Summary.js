@@ -314,7 +314,6 @@ export default class Summary extends Component {
     let icon = '';
     let sourceTitle = summaryMap[section]['title'];
     let title = sourceTitle;
-    console.log(section)
     if (section === 'PertinentMedicalHistory') {
       icon = <MedicalHistoryIcon width="30" height="40" />;
       title += ` (${numMedicalHistoryEntries})`;
