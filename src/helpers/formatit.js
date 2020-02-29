@@ -92,11 +92,8 @@ export function stringSubstitutionFormat(result, input, replacement) {
 }
 
 export function linkFormat(result, input) {
-  console.log("input ? ", input)
   let isVideoLink = input['type'] === 'video' && input['videoId'];
-  console.log("type ? ", input['type'], " id? ", input['videoId'])
   if (isVideoLink) {
-    console.log("is video link?")
     return (
       <div>
         <VideoLink
@@ -121,11 +118,6 @@ export function listFormat(result, input) {
   if (!Array.isArray(input)) {
     return "";
   }
- 
-  // let items = [];
-  // input.forEach(item => {
-  //   items.push([item]);
-  // });
   return (
       <ul className="sectionList">
           {input.map(function(item, index){

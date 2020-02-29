@@ -5,7 +5,7 @@ import {
 } from '../../utils/testFixtures';
 
 it('flags "Conditions Associated with Chronic Pain" entries correctly', () => {
-  const subSection = summaryMap['PertinentMedicalHistory'][0];
+  const subSection = summaryMap['PertinentMedicalHistory']['sections'][0];
   const mockEntry = {
     "Name": "Fibromyalgia (disorder)",
     "Status": "active",
@@ -16,7 +16,7 @@ it('flags "Conditions Associated with Chronic Pain" entries correctly', () => {
 });
 
 it('flags "Risk Factors for Opioid-related Harms" entries correctly', () => {
-  const subSection = summaryMap['PertinentMedicalHistory'][1];
+  const subSection = summaryMap['PertinentMedicalHistory']['sections'][1];
   const mockEntry = {
     "Name": "Agoraphobia with panic attacks (disorder)",
     "Status": "active",
@@ -24,13 +24,13 @@ it('flags "Risk Factors for Opioid-related Harms" entries correctly', () => {
     "Abatement": null,
     "Visit": null
   };
-  const mockFlag = "Factor that may place the patient at risk for an opioid-related harm";
+  const mockFlag = "CDC Guideline #8: Mitigate risk; WA AMDG Guideline: Avoid opioids if there is any FDA or clinical contraindications.";
   expect(flagit(mockEntry, subSection, mockSummaryA)).toEqual(mockFlag);
   expect(flagit(null, subSection, mockSummaryA)).toEqual(false);
 });
 
 it('flags "Numeric Pain Intensity Assessments" entries correctly', () => {
-  const subSection = summaryMap['PainAssessments'][0];
+  const subSection = summaryMap['PainAssessments']['sections'][0];
   const mockEntry = {
     "Name": "Pain severity Wong-Baker FACES Scale",
     "Score": "8",
@@ -41,8 +41,8 @@ it('flags "Numeric Pain Intensity Assessments" entries correctly', () => {
   expect(flagit(null, subSection, mockSummaryA)).toEqual(false);
 });
 
-it('flags "Pain Enjoyment General Activity (PEG) Assessments" entries correctly', () => {
-  const subSection = summaryMap['PainAssessments'][1];
+it.skip('flags "Pain Enjoyment General Activity (PEG) Assessments" entries correctly', () => {
+  const subSection = summaryMap['PainAssessments']['sections'][1];
   const mockEntry = {
     "Name": "Pain Enjoyment General Activity (PEG) Assessment",
     "Score": "5",
@@ -68,7 +68,7 @@ it('flags "Pain Enjoyment General Activity (PEG) Assessments" entries correctly'
 });
 
 it('flags "STarT Back Assessments" entries correctly', () => {
-  const subSection = summaryMap['PainAssessments'][2];
+  const subSection = summaryMap['PainAssessments']['sections'][2];
   const mockEntry = {
     "Name": "STarT Back Screening Tool",
     "Score": "4",
@@ -83,7 +83,7 @@ it('flags "STarT Back Assessments" entries correctly', () => {
  * currently flag displays are removed from opiod medications section
  */
 it.skip('flags "Opioid Medications" entries correctly', () => {
-  const subSection = summaryMap['HistoricalTreatments'][0];
+  const subSection = summaryMap['HistoricalTreatments']['sections'][0];
   const mockEntry = {
     "Type": "Statement",
     "Name": "Pentazocine 50 MG Oral Tablet",
@@ -96,39 +96,39 @@ it.skip('flags "Opioid Medications" entries correctly', () => {
 });
 
 it('flags "Non-Opioid Medications" entries correctly', () => {
-  const subSection = summaryMap['HistoricalTreatments'][1];
+  const subSection = summaryMap['HistoricalTreatments']['sections'][1];
   const mockEntry = {
     "Type": "Statement",
     "Name": "Diazepam 5 MG Oral Tablet",
     "Start": "2018-04-30T00:00:00.000+00:00",
     "End": null
   };
-  const mockFlag = "CDC Guideline #1: Opioids are not first-line therapy";
+  const mockFlag = "CDC Guideline #1: Opioids are not first-line therapy.";
   expect(flagit(null, subSection, mockSummaryD)).toEqual(mockFlag);
   expect(flagit(mockEntry, subSection, mockSummaryA)).toEqual(false);
 });
 
 it('flags "Non-Pharmacologic Treatments" entries correctly', () => {
-  const subSection = summaryMap['NonPharmacologicTreatments'][0];
+  const subSection = summaryMap['NonPharmacologicTreatments']['sections'][0];
   const mockEntry = {
     "Type": "Procedure",
     "Name": "Chiropraxy (regime/therapy)",
     "Date": "2018-04-05T00:00:00.000+00:00"
   };
-  const mockFlag = "CDC Guideline #1: Opioids are not first-line therapy";
+  const mockFlag = "CDC Guideline #1: Opioids are not first-line therapy.";
   expect(flagit(null, subSection, mockSummaryD)).toEqual(mockFlag);
   expect(flagit(mockEntry, subSection, mockSummaryA)).toEqual(false);
 });
 
 it('flags "Stool Softeners and Laxatives" entries correctly', () => {
-  const subSection = summaryMap['HistoricalTreatments'][2];
+  const subSection = summaryMap['HistoricalTreatments']['sections'][2];
   const mockEntry = {
     "Type": "Statement",
     "Name": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution",
     "Start": "2018-04-05T00:00:00.000+00:00",
     "End": null
   };
-  const mockFlag = "CDC Guideline #3: Absence of stool softeners/laxative with presence of at least one opioid medication";
+  const mockFlag = "CDC Guideline #3: To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed.";
   // no stool softeners (true) AND one or more opioids (true) => mockFlag
   expect(flagit(null, subSection, mockSummaryB)).toEqual(mockFlag);
   // stool softeners (false) AND one or more opioids (true) => false
@@ -138,7 +138,7 @@ it('flags "Stool Softeners and Laxatives" entries correctly', () => {
 });
 
 it('flags "Most Recent MME" entries correctly', () => {
-  const subSection = summaryMap['RiskConsiderations'][0];
+  const subSection = summaryMap['RiskConsiderations']['sections'][0];
   const mockEntryA = {
     "Name": "Morphine Milligram Equivalent (MME)",
     "Result": "20 {MME}/d",
@@ -149,21 +149,21 @@ it('flags "Most Recent MME" entries correctly', () => {
     "Result": "50 {MME}/d",
     "Date": "2018-04-30T00:00:00.000+00:00"
   };
-  const mockFlag = "Most recent MME assessment is 50+ MME/day";
+  const mockFlag = "CDC Guideline #5: Use lowest effective dose.";
   expect(flagit(mockEntryB, subSection, mockSummaryA)).toEqual(mockFlag);
   expect(flagit(mockEntryA, subSection, mockSummaryA)).toEqual(false);
   expect(flagit(null, subSection, mockSummaryA)).toEqual(false);
 });
 
 it('flags "Urine Drug Screens" entries correctly', () => {
-  const subSection = summaryMap['RiskConsiderations'][1];
+  const subSection = summaryMap['RiskConsiderations']['sections'][1];
   const mockEntry = {
     "Name": "Opiates [Presence] in Urine by Screen method",
     "Result": "2300 ng/mL",
     "Interpretation": "Negative",
     "Date": "2017-10-20T00:00:00.000+00:00"
   };
-  const mockFlag = "Absence of urine drug screen and at least one opioid medication";
+  const mockFlag = "CDC Guideline #10: Use urine drug testing.";
   // no urine drug screen (true) AND at least one opioid (true) => mockFlag
   expect(flagit(null, subSection, mockSummaryB)).toEqual(mockFlag);
   // no urine drug screen (true) AND no opioids (false) => false
@@ -175,15 +175,15 @@ it('flags "Urine Drug Screens" entries correctly', () => {
 });
 
 it('flags "Benzodiazepine Medications" entries correctly', () => {
-  const subSection = summaryMap['RiskConsiderations'][2];
+  const subSection = summaryMap['RiskConsiderations']['sections'][2];
   const mockEntry = {
     "Type": "Statement",
     "Name": "Diazepam 5 MG Oral Tablet",
     "Start": "2018-04-30T00:00:00.000+00:00",
     "End": null
   };
-  const mockFlagA = "Benzodiazepine medication and at least one opioid medication";
-  const mockFlagB = "Evidence of Benzodiazepine medication";
+  const mockFlagA = "CDC Guideline #11: Avoid concurrent opioid and benzodiazepine prescribing.";
+  const mockFlagB = "CDC Guideline #11: Avoid concurrent opioid and benzodiazepine prescribing.";
   // one or more benzo (true) AND one or more opioids (true) => mockFlagA
   expect(flagit(mockEntry, subSection, mockSummaryA)).toEqual(mockFlagA);
   // no benzo (false) AND one or more opioids (true) => false
@@ -193,26 +193,28 @@ it('flags "Benzodiazepine Medications" entries correctly', () => {
 });
 
 it('flags "Naloxone Medications" entries correctly', () => {
-  const subSection = summaryMap['RiskConsiderations'][3];
+  const subSection = summaryMap['RiskConsiderations']['sections'][4];
   const mockEntry = {
     "Type": "Order",
     "Name": "Naloxone Hydrochloride 40 MG/ML Nasal Spray",
     "Start": "2018-04-20T00:00:00.000+00:00",
     "End": null
   };
-  const mockFlagA = "Absence of Naloxone medication and most recent MME assessment is 50+ MME/day";
+  const mockFlagA = "CDC Guideline #8: Use strategies to mitigate risk.";
   // no naloxone (true) AND MME >= 50 (true) => mockFlag
   expect(flagit(null, subSection, mockSummaryG)).toEqual(mockFlagA);
   // no naloxone (true) AND MME < 50 (false)] => false
   expect(flagit(null, subSection, mockSummaryE)).toEqual(false);
 
-  const mockFlagB = "Evidence of Naloxone medication";
+  const mockFlagB = "CDC Guideline #8: Use strategies to mitigate risk.";
   // naloxone (true) => mockFlag
   expect(flagit(mockEntry, subSection, mockSummaryF)).toEqual(mockFlagB);
 });
-
-it('flags "Pain Management Risk Screenings" entries correctly', () => {
-  const subSection = summaryMap['RiskConsiderations'][4];
+/*
+ * skipping this for now, as we are not showing this section
+ */
+it.skip('flags "Pain Management Risk Screenings" entries correctly', () => {
+  const subSection = summaryMap['RiskConsiderations']['sections'][4];
   const mockEntry = {
     "Name": "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]",
     "Score": "7",

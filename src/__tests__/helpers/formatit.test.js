@@ -1,3 +1,4 @@
+import renderer from 'react-test-renderer';
 import * as formatit from '../../helpers/formatit';
 
 it('formats dates correctly', () => {
@@ -204,3 +205,4 @@ it('formats substitution text correctly', () => {
   const mockResult = {'resourceType':'medicationOrder'};
   expect(formatit['stringSubstitutionFormat']({}, mockResult, 'Order')).toEqual('Order');
 });
+

@@ -213,7 +213,7 @@ export default class Summary extends Component {
       <div key={index} className="table" role="table"
            aria-label={subSection.name} aria-describedby={customProps.id}>
           <ReactTable
-            className="sub-section__table"
+            className={`sub-section__table ${columns.length <= 2? 'single-column': ''}`}
             columns={columns}
             data={filteredEntries}
             minRows={1}

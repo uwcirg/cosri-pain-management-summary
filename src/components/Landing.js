@@ -101,32 +101,32 @@ export default class Landing extends Component {
 
   processOccupationData (result) {
     if (!result) return null;
-    console.log("in morphed data ", result)
     let morphedResult = {'Occupation': {}};
-    if (result.valueCodeableConcept) {
+    if (result.valueCodeableConcept && result['valueCodeableConcept']['text']) {
       morphedResult['Occupation']['currentJobTitle'] = result['valueCodeableConcept']['text'];
     }
     if (result.component) {
-      morphedResult["Occupation"]["description"] = [];
+      morphedResult['Occupation']['description'] = [];
       let occupaSectionKeys = summaryMap['Occupation']['codeTextKeys'];
-      (result.component).forEach(item => {
-        if (item.code && occupaSectionKeys.indexOf(item.code['text']) !== -1) {
-          let value = "";
-          if (item.valueString) {
-            value = item.valueString;
-          } else if (item.valueQuantity) {
-            value = item.valueQuantity['value'];
-          } else if (item.valueCodeableConcept) {
-            value = item.valueCodeableConcept['text'];
+      if (result.component) {
+        (result.component).forEach(item => {
+          if (item.code && occupaSectionKeys.indexOf(item.code['text']) !== -1) {
+            let value = "";
+            if (item.valueString) {
+              value = item.valueString;
+            } else if (item.valueQuantity) {
+              value = item.valueQuantity['value'];
+            } else if (item.valueCodeableConcept) {
+              value = item.valueCodeableConcept['text'];
+            }
+            morphedResult["Occupation"]["description"].push({
+              'text': item.code['text'],
+              'value': value
+            });
           }
-          morphedResult["Occupation"]["description"].push({
-            'text': item.code['text'],
-            'value': value
-          });
-        }
-      });
+        });
+      }
     }
-    console.log("morphed result ", morphedResult);
     return morphedResult;
   }
 

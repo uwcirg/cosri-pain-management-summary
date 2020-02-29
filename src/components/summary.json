@@ -285,10 +285,10 @@
               "headers": {
                 "Drug Description": "Name",
                 "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Last Fill Date": { "key": "End", "formatter": "datishFormat" },
                 "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+                "Dispensed": { "key": "End", "formatter": "datishFormat" },
+                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
               }
             }
           ]
@@ -315,10 +315,10 @@
               "headers": {
                 "Drug Description": "Name",
                 "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Last Fill Date": { "key": "End", "formatter": "datishFormat" },
                 "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+                "Dispensed": { "key": "End", "formatter": "datishFormat" },
+                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
               },
               "flags": [
                 {
@@ -351,10 +351,10 @@
               "headers": {
                 "Drug Description": "Name",
                 "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Last Fill Date": { "key": "End", "formatter": "datishFormat" },
                 "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+                "Dispensed": { "key": "End", "formatter": "datishFormat" },
+                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
               },
               "flags": [
                 {
@@ -484,10 +484,10 @@
             "headers": {
               "Drug Description": "Name",
               "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Last Fill Date": { "key": "End", "formatter": "datishFormat" },
               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+              "Dispensed": { "key": "End", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
             "flags": [
               {
@@ -506,7 +506,7 @@
               },
               {
                 "flag": "ifOneOrMore",
-                "flagText": "Evidence of Benzodiazepine medication"
+                "flagText": "CDC Guideline #11: Avoid concurrent opioid and benzodiazepine prescribing."
               }
             ]
           }
@@ -532,10 +532,11 @@
         "tables": [
           {
             "headers": {
-              "Name": "Name",
-              "Type": "Type",
-              "Start": { "key": "Start", "formatter": "datishFormat" },
-              "End": { "key": "End", "formatter": "datishFormat" }
+              "Drug Description": "Name",
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": { "key": "End", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
             "flags": [
               {
@@ -582,10 +583,10 @@
             "headers": {
               "Drug Description": "Name",
               "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Last Fill Date": { "key": "End", "formatter": "datishFormat" },
               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+              "Dispensed": { "key": "End", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
             "flags": [
               {
@@ -602,11 +603,11 @@
                     }
                   ]
                 },
-                "flagText": "CDC Guideline #5: Use lowest effective dose."
+                "flagText": "CDC Guideline #8: Use strategies to mitigate risk."
               },
               {
                 "flag": "ifOneOrMore",
-                "flagText": "Evidence of Naloxone medication"
+                "flagText": "CDC Guideline #8: Use strategies to mitigate risk."
               }
             ]
           }
@@ -684,10 +685,10 @@
                 "formatterArguments": ["medicationCodeableConcept", "text"]
               },
               "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Last Fill Date": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false },
               "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
-              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+              "Dispensed": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false },
+              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             }
           }
         ]
@@ -695,7 +696,7 @@
     ]
   },
   "Occupation": {
-    "title":"Occupation Health",
+    "title":"Occupational Health",
     "codeTextKeys": [
       "Job supervisory level or pay grade",
       "Compensation and sectore employment type",
@@ -740,7 +741,7 @@
         "tables": [
           {
             "headers": {
-              "Title": {
+              "Resources": {
                 "key": "link",
                 "formatter": "linkFormat",
                 "formatterArguments": ["title","url"],

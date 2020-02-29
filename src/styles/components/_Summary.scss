@@ -280,8 +280,17 @@
 
             .rt-th:nth-child(2),
             .rt-td:nth-child(2) {
-              min-width: calc(60px + 19vw);
-              max-width: calc(60px + 19vw);
+              //min-width: calc(60px + 19vw);
+              //max-width: calc(60px + 19vw);
+              min-width: calc(60px + 15vw);
+              max-width: calc(60px + 15vw);
+            }
+            &.single-column {
+              .rt-th:nth-child(2),
+              .rt-td:nth-child(2) {
+                min-width: calc(80px + 19vw);
+                max-width: calc(80px + 19vw);
+              }
             }
 
             .flag-entry {

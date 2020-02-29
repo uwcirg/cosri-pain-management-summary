@@ -28,9 +28,9 @@ export default class Link extends Component {
       <div>
         <a  href={() => {return false;}} title={linkTitle} onClick={this.handleClick} className={`${className} video-link`} target='_blank' rel='noopener noreferrer'>{linkTitle}</a>
         <FontAwesomeIcon
-        icon={faChevronDown}
-        className={`${this.state.isToggleOn?'hide': 'show-inline'} link-toggle`}
-        onClick={this.handleClick}
+          icon={faChevronDown}
+          className={`${this.state.isToggleOn?'hide': 'show-inline'} link-toggle`}
+          onClick={this.handleClick}
         /> 
         <FontAwesomeIcon
           icon={faChevronUp}
