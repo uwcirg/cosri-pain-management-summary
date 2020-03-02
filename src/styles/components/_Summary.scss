@@ -247,7 +247,7 @@
         }
 
         .table {
-          padding-bottom: 20px;
+          padding-bottom: 16px;
 
           .sub-section__table {
             border: 0;
@@ -374,6 +374,7 @@
         cursor: pointer;
         margin-bottom: 4px;
         margin-right: 8px;
+        opacity: 0.8;
 
         &:focus {
           outline: none;

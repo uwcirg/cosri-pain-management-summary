@@ -1,7 +1,7 @@
 import { shallowRender } from '../../utils/testHelpers';
-import Video from '../../components/Video';
+import VideoLink from '../../components/VideoLink';
 
-const component = shallowRender(Video, {
+const component = shallowRender(VideoLink, {
     title: 'Test Video',
     src: 'https://www.youtube.com/embed/CF64WEju1pM',
     className: 'video',

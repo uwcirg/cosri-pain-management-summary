@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import Video from '../components/Video';
+import VideoLink from '../components/VideoLink';
 
 const dateRE = /^\d{4}-\d{2}-\d{2}(T|\b)/; // loosely matches '2012-04-05' or '2012-04-05T00:00:00.000+00:00'
 const quantityRE = /^(\d+(\.\d+)?)(\s+(\S+))?$/; // matches '40' or '40 a' (a is UCUM unit for years)
@@ -97,7 +97,7 @@ export function linkFormat(result, input) {
   let isVideoLink = input['type'] === 'video' && input['embedVideoSrc'];
   if (isVideoLink) {
     return (
-        <Video
+        <VideoLink
           title={input['title']}
           src={input['embedVideoSrc']}
           className={input['className']}
@@ -208,4 +208,3 @@ function _datishAgeFormat(result, input, showAge) {
   // fall back to the input string
   return input;
 }
-

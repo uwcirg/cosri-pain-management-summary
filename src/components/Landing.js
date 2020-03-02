@@ -43,7 +43,6 @@ export default class Landing extends Component {
         //add data from other sources, e.g. PDMP
         result['Summary'] = {...result['Summary'], ...response[1]};
         result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
-        console.log(result['Summary']);
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ loading: false });
         this.setState({ result, sectionFlags, flaggedCount });
@@ -102,57 +101,58 @@ export default class Landing extends Component {
 
   processOccupationData (result) {
     if (!result || !result.length) return null;
-    console.log("Occupa ", result);
+
+    /*
+     * filter results for occupation items
+     */
     result = result.filter(item => {
       return item['resource']['code']['coding'][0]['code'] === summaryMap['Occupation']['occupationObsCode'];
     });
 
     if (!result.length) return;
 
-    console.log("filtered ", result)
-
     let morphedResult = {'Current': {}, 'Previous': {}};
     result = result.map(item => item.resource);
 
     result.forEach((item, index) => {
       if (index > 1) return true;
-      console.log(item, " ", index)
       let key = index === 0 ? 'Current': 'Previous';
       if (item.valueCodeableConcept && item['valueCodeableConcept']['text']) {
         morphedResult[key]['jobTitle'] = item['valueCodeableConcept']['text'];
       }
-      if (item.component) {
+      if (!item.component) {
         morphedResult[key]['description'] = [];
-        let occupaSectionKeys = summaryMap['Occupation']['itemObsCodeKeys'];
-        if (item.component) {
-          let description = []
-          occupaSectionKeys.forEach(key => {
-            let matched = (item.component).find(subitem => {
-              if (subitem.code && subitem.code['coding'][0]['code'] === key) {
-                return subitem;
-              }
-              return false;
-            });
-            if (matched) {
-              let value = '';
-              if (matched.valueString) {
-                value = matched.valueString;
-              } else if (matched.valueQuantity) {
-                value = matched.valueQuantity['value'];
-              } else if (matched.valueCodeableConcept) {
-                value = matched.valueCodeableConcept['text'];
-              }
-              description.push({
-                'text': matched.code['text'],
-                'value': value
-              });
-            }
-          });
-          morphedResult[key]["description"] = description;
-        }
+        return true;
       }
+      let occupaSectionKeys = summaryMap['Occupation']['itemObsCodeKeys'];
+      let description = []
+      /*
+       * select items to display - from json that matched the observation code
+       */
+      occupaSectionKeys.forEach(key => {
+        let matched = (item.component).find(subitem => {
+          if (subitem.code && subitem.code['coding'][0]['code'] === key) {
+            return subitem;
+          }
+          return false;
+        });
+        if (matched) {
+          let value = '';
+          if (matched.valueString) {
+            value = matched.valueString;
+          } else if (matched.valueQuantity) {
+            value = matched.valueQuantity['value'];
+          } else if (matched.valueCodeableConcept) {
+            value = matched.valueCodeableConcept['text'];
+          }
+          description.push({
+            'text': matched.code['text'],
+            'value': value
+          });
+        }
+      });
+      morphedResult[key]["description"] = description;
     });
-console.log(morphedResult)
     return morphedResult;
   }
 
