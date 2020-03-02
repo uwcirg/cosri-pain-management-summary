@@ -656,7 +656,7 @@
   },
   "PDMPMedications": {
     "title":"State PMP Prescriptions",
-    "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query",
+    "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
     "sections": [
       {
         "name": "PMP Prescriptions",
@@ -671,7 +671,7 @@
               {
                 "name": "MedicationOrder",
                 "status": "any",
-                "lookback": "n/a"
+                "lookback": "1 year"
               }
             ]
           }
