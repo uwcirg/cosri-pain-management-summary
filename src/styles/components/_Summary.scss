@@ -10,9 +10,6 @@
 
     .toc-list.is-collapsible {
       .toc-list-item {
-        &:first-of-type {
-          margin-top: 8px;
-        }
         .toc-link {
           font-size: 0.9em;
           //padding: 5px 8px 5px 42px;
@@ -354,7 +351,7 @@
 
     .data-provenance {
       font-size: 0.95em;
-      padding-bottom: 12px;
+      padding-bottom: 8px;
 
       .title {
         text-align: right;
@@ -376,6 +373,7 @@
         border: 0;
         cursor: pointer;
         margin-bottom: 4px;
+        margin-right: 8px;
 
         &:focus {
           outline: none;
@@ -406,13 +404,15 @@
       .cql-errors,
       .fhir-queries,
       .cql-results,
-      .pdmp-results {
+      .pdmp-results,
+      .occupation-results {
         margin-left: 40px;
       }
 
       .fhir-query,
       .cql-results div,
       .pdmp-results div,
+      .occupation-results div,
       .cql-errors table {
         margin-left: 40px;
         background-color: $color-white;

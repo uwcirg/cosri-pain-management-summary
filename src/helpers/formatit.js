@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import VideoLink from '../components/VideoLink';
+import Video from '../components/Video';
 
 const dateRE = /^\d{4}-\d{2}-\d{2}(T|\b)/; // loosely matches '2012-04-05' or '2012-04-05T00:00:00.000+00:00'
 const quantityRE = /^(\d+(\.\d+)?)(\s+(\S+))?$/; // matches '40' or '40 a' (a is UCUM unit for years)
@@ -90,27 +90,28 @@ export function stringSubstitutionFormat(result, input, replacement) {
   if (replacement == null) return '';
   return replacement;
 }
-
+/*
+ * format input as a anchor link or embed video link 
+ */
 export function linkFormat(result, input) {
-  let isVideoLink = input['type'] === 'video' && input['videoId'];
+  let isVideoLink = input['type'] === 'video' && input['embedVideoSrc'];
   if (isVideoLink) {
     return (
-      <div>
-        <VideoLink
-          linkTitle={input['title']}
-          linkURL={input['url']}
+        <Video
+          title={input['title']}
+          src={input['embedVideoSrc']}
           className={input['className']}
-          videoID= {input['videoId']}
+          toggleable={true}
         />
-      </div>
     );
-  } else {
-    return (
-      <a href={input['url']} title={input['title']} target='_blank' rel='noopener noreferrer' className={input['className']}>{input['title']}</a>
-    );
-  }
+  } 
+  return (
+    <a href={input['url']} title={input['title']} target='_blank' rel='noopener noreferrer' className={input['className']}>{input['title']}</a>
+  );
 }
-
+/*
+ *  format input items into list for displaying
+ */
 export function listFormat(result, input) {
   if (input == null) {
     return "";
