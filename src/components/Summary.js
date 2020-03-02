@@ -240,7 +240,7 @@ export default class Summary extends Component {
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
 
-    return sectionMap.map((subSection) => {
+    const subSections = sectionMap.map((subSection) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
@@ -293,14 +293,16 @@ export default class Summary extends Component {
           {hasEntries && subSection.tables.map((table, index) =>
             this.renderTable(table, entries, section, subSection, index))
           }
-
-          <DataInfo
-            contentText={summaryMap[section].provenanceText}
-            queryDateTime={formatit.currentDateTimeFormat()}
-          />
          </div>
       );
     });
+    return (<div>
+      {subSections}
+      <DataInfo
+            contentText={summaryMap[section].provenanceText}
+            queryDateTime={formatit.currentDateTimeFormat()}
+          />
+    </div>);
   }
 
   renderSectionHeader(section) {

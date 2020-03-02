@@ -352,15 +352,19 @@
     .data-provenance {
       font-size: 0.95em;
       padding-bottom: 8px;
+      margin-right: 20px;
+      margin-left: 20px;
+      margin-bottom: 16px;
+     
 
       .title {
         text-align: right;
-        margin-top: 12px;
+        margin-top: 16px;
       }
       .content {
         padding: 16px 36px;
-        border-top: 1px solid $color-gray-lighter;
-
+        box-shadow: 1px 2px 2px $color-box-shadow;
+        background: #FFF;
       }
       .text {
         margin-bottom: 8px;
@@ -372,9 +376,9 @@
         font-weight: 600;
         border: 0;
         cursor: pointer;
-        margin-bottom: 4px;
-        margin-right: 8px;
+        margin-bottom: 8px;
         opacity: 0.8;
+        padding: 0;
 
         &:focus {
           outline: none;
