@@ -25,9 +25,9 @@ export default class DataInfo extends Component {
             <div className="title">
                 <button onClick={this.handleClick}>[data quality info]</button>
             </div>
-            <div className={`${this.state.isToggleOn?'show': 'hide'} content`}>
+            <div className={`${this.state.isToggleOn?'display': ''} content`}>
                 <div className={`${contentText?'show':'hide'} text`}><b>{'Data Provenance:'}</b> {contentText}</div>
-                <div className={'query-info'}>{`${'The query was executed at: ' + queryDateTime}`}</div>
+                <div className={'query-info'}><b>{'The query was executed at: '}</b> {`${queryDateTime}`}</div>
             </div>
         </div>
     );
