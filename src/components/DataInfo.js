@@ -23,7 +23,7 @@ export default class DataInfo extends Component {
     return (
         <div className="data-provenance">
             <div className="title">
-                <button onClick={this.handleClick}>[data info]</button>
+                <button onClick={this.handleClick}>[data quality info]</button>
             </div>
             <div className={`${this.state.isToggleOn?'show': 'hide'} content`}>
                 <div className={`${contentText?'show':'hide'} text`}><b>{'Data Provenance:'}</b> {contentText}</div>
