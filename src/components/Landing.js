@@ -86,7 +86,8 @@ export default class Landing extends Component {
       this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`, PDMPDataKey, 'entry'),
       //Occupation data
       //TODO fix this to use real API endpoint url
-      this.fetchData(`${process.env.PUBLIC_URL}/ocupacion.json`, 'Occupation', 'resource')
+      this.fetchData(`${process.env.PUBLIC_URL}/ocupacion.json`, 'Occupation', 'entry')
+      //this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/Observation`, OccupationDataKey, 'entry'),
     ]).catch(e => {
       console.log(`Error parsing external data response json: ${e.message}`);
       dataSet[PDMPDataKey] = null;
@@ -100,39 +101,58 @@ export default class Landing extends Component {
   }
 
   processOccupationData (result) {
-    if (!result) return null;
-    let morphedResult = {'Occupation': {}};
-    if (result.valueCodeableConcept && result['valueCodeableConcept']['text']) {
-      morphedResult['Occupation']['currentJobTitle'] = result['valueCodeableConcept']['text'];
-    }
-    if (result.component) {
-      morphedResult['Occupation']['description'] = [];
-      let occupaSectionKeys = summaryMap['Occupation']['codeTextKeys'];
-      if (result.component) {
-        occupaSectionKeys.forEach(key => {
-          let matched = (result.component).find(item => {
-            if (item.code && item.code['text'] === key) {
-              return item;
-            }
-            return false;
-          });
-          if (matched) {
-            let value = '';
-            if (matched.valueString) {
-              value = matched.valueString;
-            } else if (matched.valueQuantity) {
-              value = matched.valueQuantity['value'];
-            } else if (matched.valueCodeableConcept) {
-              value = matched.valueCodeableConcept['text'];
-            }
-            morphedResult["Occupation"]["description"].push({
-              'text': matched.code['text'],
-              'value': value
-            });
-          }
-        });
+    if (!result || !result.length) return null;
+    console.log("Occupa ", result);
+    result = result.filter(item => {
+      return item['resource']['code']['coding'][0]['code'] === summaryMap['Occupation']['occupationObsCode'];
+    });
+
+    if (!result.length) return;
+
+    console.log("filtered ", result)
+
+    let morphedResult = {'Current': {}, 'Previous': {}};
+    result = result.map(item => item.resource);
+
+    result.forEach((item, index) => {
+      if (index > 1) return true;
+      console.log(item, " ", index)
+      let key = index === 0 ? 'Current': 'Previous';
+      if (item.valueCodeableConcept && item['valueCodeableConcept']['text']) {
+        morphedResult[key]['jobTitle'] = item['valueCodeableConcept']['text'];
       }
-    }
+      if (item.component) {
+        morphedResult[key]['description'] = [];
+        let occupaSectionKeys = summaryMap['Occupation']['itemObsCodeKeys'];
+        if (item.component) {
+          let description = []
+          occupaSectionKeys.forEach(key => {
+            let matched = (item.component).find(subitem => {
+              if (subitem.code && subitem.code['coding'][0]['code'] === key) {
+                return subitem;
+              }
+              return false;
+            });
+            if (matched) {
+              let value = '';
+              if (matched.valueString) {
+                value = matched.valueString;
+              } else if (matched.valueQuantity) {
+                value = matched.valueQuantity['value'];
+              } else if (matched.valueCodeableConcept) {
+                value = matched.valueCodeableConcept['text'];
+              }
+              description.push({
+                'text': matched.code['text'],
+                'value': value
+              });
+            }
+          });
+          morphedResult[key]["description"] = description;
+        }
+      }
+    });
+console.log(morphedResult)
     return morphedResult;
   }
 
@@ -290,7 +310,7 @@ export default class Landing extends Component {
     const numPDMPDataEntries = sumit(summary.PDMPMedications || {});
     //const totalEntries = numMedicalHistoryEntries + numPainEntries + numTreatmentsEntries + numRiskEntries;
     const totalEntries = numTreatmentsEntries + numNonPharTreatmentEntries + numPDMPDataEntries;
-    const patientOccupation = summary.Occupation && summary.Occupation.Occupation? summary.Occupation.Occupation['currentJobTitle'] : '';
+    const patientOccupation = summary.Occupation && summary.Occupation.Current? summary.Occupation.Current['jobTitle'] : '';
     return (
       <div className="landing">
         <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>

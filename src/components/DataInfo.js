@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-export default class DataProvenance extends Component {
+export default class DataInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {isToggleOn: false};
@@ -23,18 +23,17 @@ export default class DataProvenance extends Component {
     return (
         <div className="data-provenance">
             <div className="title">
-                {'data quality info'}
-                <button onClick={this.handleClick}>[show/hide]</button>
+                <button onClick={this.handleClick}>[data info]</button>
             </div>
             <div className={`${this.state.isToggleOn?'show': 'hide'} content`}>
-                <b>{'Data Provenance:'}</b> {contentText}
-                <div>{`${'The query was executed at: ' + queryDateTime}`}</div>
+                <div className={`${contentText?'show':'hide'} text`}><b>{'Data Provenance:'}</b> {contentText}</div>
+                <div className={'query-info'}>{`${'The query was executed at: ' + queryDateTime}`}</div>
             </div>
         </div>
     );
   }
 }
-DataProvenance.propTypes = {
-    contentText: PropTypes.string.isRequired,
+DataInfo.propTypes = {
+    contentText: PropTypes.string,
     queryDateTime: PropTypes.string.isRequired
 };

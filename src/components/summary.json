@@ -697,25 +697,39 @@
   },
   "Occupation": {
     "title":"Occupational Health",
-    "codeTextKeys": [
-      "Occupational exposure",
-      "Job supervisory level or pay grade",
-      "Compensation and sectore employment type",
-      "Work hours per day",
-      "Work days per week",
-      "Employer name"
-    ],
+    "occupationObsCode": "11341-5",
+    "itemObsCodeKeys": ["10161-8", "87707-6", "85107-8", "87512-0", "74160-3", "80427-8"],
     "sections": [
       {
-        "name": "Occupation Health",
-        "omitTitle": true,
-        "dataKey": "Occupation",
+        "name": "Current Occupation",
+        "dataKey": "Current",
         "dataKeySource": "Occupation",
         "tables": [
           {
             "headers": {
-              "Current Job": {
-                "key": "currentJobTitle",
+              "Job Title": {
+                "key": "jobTitle",
+                "sortable": false,
+                "formatter": false
+              },
+              "Description": {
+                "key": "description",
+                "formatter": "listFormat",
+                "sortable" : false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Previous Occupation",
+        "dataKey": "Previous",
+        "dataKeySource": "Occupation",
+        "tables": [
+          {
+            "headers": {
+              "Job Title": {
+                "key": "jobTitle",
                 "sortable": false,
                 "formatter": false
               },

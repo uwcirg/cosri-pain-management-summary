@@ -14,7 +14,8 @@ export default class Link extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick() {
+  handleClick(e) {
+    e.preventDefault();
     this.setState(state => ({
       isToggleOn: !state.isToggleOn
     }));
@@ -26,12 +27,12 @@ export default class Link extends Component {
 
     return (
       <div>
-        <a  href={() => {return false;}} title={linkTitle} onClick={this.handleClick} className={`${className} video-link`} target='_blank' rel='noopener noreferrer'>{linkTitle}</a>
+        <span title={linkTitle} onClick={this.handleClick} className={`${className} video-link`}>{linkTitle}</span>
         <FontAwesomeIcon
           icon={faChevronDown}
           className={`${this.state.isToggleOn?'hide': 'show-inline'} link-toggle`}
           onClick={this.handleClick}
-        /> 
+        />
         <FontAwesomeIcon
           icon={faChevronUp}
           className={`${this.state.isToggleOn?'show-inline': 'hide'} link-toggle`}

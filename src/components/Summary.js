@@ -21,7 +21,7 @@ import UserIcon from '../icons/UserIcon';
 
 import InclusionBanner from './InclusionBanner';
 import ExclusionBanner from './ExclusionBanner';
-import DataProvenance from './DataProvenance';
+import DataInfo from './DataInfo';
 import InfoModal from './InfoModal';
 import DevTools from './DevTools';
 
@@ -161,7 +161,6 @@ export default class Summary extends Component {
         accessor: (entry) => {
           let value = entry[headerKey];
           if (headerKey.formatter) {
-            console.log("formatter? ", headerKey.formatter)
             const { result } = this.props;
             let formatterArguments = headerKey.formatterArguments || [];
             value = formatit[headerKey.formatter](result, entry[headerKey.key], ...formatterArguments);
@@ -268,15 +267,14 @@ export default class Summary extends Component {
                     role="button"
                     tabIndex={0}
                     aria-label={subSection.name}>
-                    <a
-                    href={() => {return false;}}
+                    <span
                     className='info-icon'
                     icon="info-circle"
                     title={`more info: ${subSection.name}`}
                     data-tip="more info"
                     role="tooltip"
                     tabIndex={0}
-                    >more info</a>
+                    >more info</span>
 
                     {/* {<FontAwesomeIcon
                       className='info-icon'
@@ -288,19 +286,18 @@ export default class Summary extends Component {
                     />} */}
                   </div>
               }</span>
-           
+
           </h3>
 
           {!hasEntries && this.renderNoEntries(section, subSection)}
           {hasEntries && subSection.tables.map((table, index) =>
             this.renderTable(table, entries, section, subSection, index))
           }
-          {summaryMap[section].provenanceText &&
-            <DataProvenance
-              contentText={summaryMap[section].provenanceText}
-              queryDateTime={formatit.currentDateTimeFormat()}
-            />
-          }
+
+          <DataInfo
+            contentText={summaryMap[section].provenanceText}
+            queryDateTime={formatit.currentDateTimeFormat()}
+          />
          </div>
       );
     });
@@ -374,7 +371,7 @@ export default class Summary extends Component {
 
           {meetsInclusionCriteria &&
             <div className="sections">
-  
+
               <Collapsible trigger={this.renderSectionHeader("HistoricalTreatments")} open={true}>
                 {this.renderSection("HistoricalTreatments")}
               </Collapsible>
@@ -423,12 +420,12 @@ export default class Summary extends Component {
             </a>
             for additional information and prescribing guidance.
           </div>
-		  
+
 	       <div  className="cdc-disclaimer">
             This application was built using CDS Connect from AHRQ.  Funding was provided by.....
 			Lorem ipsum dolor sit amet, consectetur adipibore et dolore magna aliqua.
           </div>
-		  	  
+
 
           <DevTools
             collector={collector}
