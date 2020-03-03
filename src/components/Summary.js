@@ -325,7 +325,7 @@ export default class Summary extends Component {
     let sourceTitle = summaryMap[section]['title'];
     let title = sourceTitle;
     if (section === 'PertinentMedicalHistory') {
-      icon = <MedicalHistoryIcon width="30" height="40" />;
+      icon = <MedicalHistoryIcon width="25" height="35" />;
       title += ` (${numMedicalHistoryEntries})`;
     } else if (section === 'PainAssessments') {
       icon = <PainIcon width="35"  height="35" />;
@@ -337,7 +337,7 @@ export default class Summary extends Component {
       icon = <RiskIcon width="35" height="34" />;
       title += ` (${numRiskEntries})`;
     } else if (section === 'PDMPMedications') {
-      icon = <RxIcon className={`sectionIcon`} title={`${sourceTitle}`}/>;
+      icon = <RxIcon width="20" height="25" className={`sectionIcon`} title={`${sourceTitle}`}/>;
       title += ` (${numPDMPDataEntries})`;
     } else if (section === 'NonPharmacologicTreatments') {
       icon =  <TreatmentsIcon width="36" height="38" />;
@@ -371,7 +371,7 @@ export default class Summary extends Component {
 
     return (
       <div className="summary">
-        <div className={`${this.state.showNav?'open': ''} summary__nav-wrapper`}><nav className="summary__nav"></nav><div className="close" onClick={this.handleNavToggle}></div></div>
+        <div className={`${this.state.showNav?'open': ''} summary__nav-wrapper`}><nav className="summary__nav"></nav><div className="close" title="close" onClick={this.handleNavToggle}></div></div>
 
         <div className="summary__display" id="maincontent">
           <div className="summary__display-title">
