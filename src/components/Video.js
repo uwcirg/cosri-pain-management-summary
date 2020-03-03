@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown} from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
+import ChevronDownIcon from '../icons/ChevronDownIcon';
 import IframeElement from '../elements/Iframe';
 
 
@@ -51,10 +50,11 @@ export default class Video extends Component {
       <div>
         {/* element for toggling the visibility of video */}
         <span title={title} onClick={this.handleClick} className={`video-link`}>{title}</span>
-        <FontAwesomeIcon
-          icon={faChevronDown}
+        <ChevronDownIcon
           className={`${this.state.isToggleOn?'open': ''} link-toggle`}
           onClick={this.handleClick}
+          width='15'
+          height='15'
         />
         <div className={`${this.state.isToggleOn?'show': 'hide'} video-container`}>
           <div
