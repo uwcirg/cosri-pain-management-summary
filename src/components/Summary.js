@@ -31,12 +31,23 @@ export default class Summary extends Component {
 
     this.state = {
       showModal: false,
+      showNav: true,
       modalSubSection: null
     };
+
+     // This binding is necessary to make `this` work in the callback
+     this.handleNavToggle= this.handleNavToggle.bind(this);
 
     this.subsectionTableProps = { id: 'react_sub-section__table'};
 
     ReactModal.setAppElement('body');
+  }
+
+  handleNavToggle(e) {
+    e.preventDefault();
+    this.setState(state => ({
+      showNav: !state.showNav
+    }));
   }
 
   handleOpenModal = (modalSubSection,event) => {
@@ -360,7 +371,7 @@ export default class Summary extends Component {
 
     return (
       <div className="summary">
-        <div className="summary__nav-wrapper"><nav className="summary__nav"></nav></div>
+        <div className={`${this.state.showNav?'open': ''} summary__nav-wrapper`}><nav className="summary__nav"></nav><div className="close" onClick={this.handleNavToggle}></div></div>
 
         <div className="summary__display" id="maincontent">
           <div className="summary__display-title">

@@ -4,9 +4,10 @@
 
   &__nav {
     color: $color-white;
-    padding: 20px 0;
+    padding: 38px 0 20px;
     width: 300px;
     z-index: 1;
+    transition: opacity 450ms ease 100ms;
 
     .toc-list.is-collapsible {
       .toc-list-item {
@@ -90,9 +91,61 @@
 
   &__nav-wrapper {
     min-height: calc(100vh - 100px);
-    width: 300px;
-    min-width: 300px;
+    width: 60px;
+    min-width: 60px;
     background-color: $color-gray-dark;
+    transition: all 350ms ease-in-out;
+    .summary__nav {
+      opacity: 0;
+      z-index: -1;
+    }
+    .close {
+      position: fixed;
+      top: 140px;
+      color: #FFF;
+      left: 25px;
+      font-weight: 500;
+      font-size: 1.05em;
+      opacity: 0.6;
+      z-index: 5;
+      font-weight: 600;
+      font-size: 1.5em;
+      cursor: pointer;
+      transition: left 350ms ease 50ms, transform 750ms cubic-bezier(0.165, 0.84, 0.44, 1);
+      &:hover {
+        opacity: 1;
+      }
+      &::before {
+        content: '>';
+        display: block;
+        width: 50px;
+        height: 50px;
+        left: 0;
+        top: 0;
+        position: absolute;
+      }
+    }
+    &.open {
+      width: 300px;
+      min-width: 300px;
+      .summary__nav {
+        opacity: 1;
+        z-index: 1;
+      }
+      .close {
+        left: 276px;
+        font-size: 1.15em;
+        transform: translateX(0);
+        transform-origin: center;
+        &::before {
+          content: "X";
+        }
+      }
+    }
+    .is-position-fixed ~ .close {
+      top: 0;
+    }
+
     //background-color: $color-uw-dark;
   }
 
