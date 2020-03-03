@@ -371,7 +371,7 @@ export default class Summary extends Component {
 
     return (
       <div className="summary">
-        <div className={`${this.state.showNav?'open': ''} summary__nav-wrapper`}><nav className="summary__nav"></nav><div className="close" data-tip="close menu sidebar" role="tooltip" onClick={this.handleNavToggle}></div></div>
+        <div className={`${this.state.showNav?'open': ''} summary__nav-wrapper`}><nav className="summary__nav"></nav><div className="close" title="toggle menu sidebar" onClick={this.handleNavToggle}></div></div>
 
         <div className="summary__display" id="maincontent">
           <div className="summary__display-title">
