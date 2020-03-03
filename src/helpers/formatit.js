@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import VideoLink from '../components/Video';
 
 const dateRE = /^\d{4}-\d{2}-\d{2}(T|\b)/; // loosely matches '2012-04-05' or '2012-04-05T00:00:00.000+00:00'
 const quantityRE = /^(\d+(\.\d+)?)(\s+(\S+))?$/; // matches '40' or '40 a' (a is UCUM unit for years)
@@ -8,6 +9,10 @@ const booleanRE = /^(true|false)$/; // matches 'true' or 'false'
 export function dateFormat(result, input) {
   if (input == null) return '';
   return moment.parseZone(input).format('YYYY-MMM-DD');
+}
+
+export function currentDateTimeFormat() {
+  return moment().format("MMMM Do YYYY, h:mm:ss a");
 }
 
 export function dateAgeFormat(result, input) {
@@ -85,7 +90,42 @@ export function stringSubstitutionFormat(result, input, replacement) {
   if (replacement == null) return '';
   return replacement;
 }
-
+/*
+ * format input as a anchor link or embed video link 
+ */
+export function linkFormat(result, input) {
+  let isVideoLink = input['type'] === 'video' && input['embedVideoSrc'];
+  if (isVideoLink) {
+    return (
+        <VideoLink
+          title={input['title']}
+          src={input['embedVideoSrc']}
+          toggleable={true}
+        />
+    );
+  } 
+  return (
+    <a href={input['url']} title={input['title']} target='_blank' rel='noopener noreferrer' className={input['className']}>{input['title']}</a>
+  );
+}
+/*
+ *  format input items into list for displaying
+ */
+export function listFormat(result, input) {
+  if (input == null) {
+    return "";
+  }
+  if (!Array.isArray(input)) {
+    return "";
+  }
+  return (
+      <ul className="sectionList">
+          {input.map(function(item, index){
+              return <li key={ index } className={item.className}><b>{item.text}:</b> {item.value}</li>;
+            })}
+      </ul>
+  );
+}
 /*
  * string formatter for FHIR codeableConcept element
  *  i.e.: {
@@ -96,12 +136,31 @@ export function stringSubstitutionFormat(result, input, replacement) {
     result: Summary json object
     input: codeableconcept json object from Summary
     key: name of the concept to match
-    field: field in concept to match
+    field: field in key concept to match, key concept will be an object
     codingField: field in coding to match
+    codingText: text in coding field to match
  */
-export function codeableConceptFormat(result, input, key, field, codingField) {
+export function codeableConceptFormat(result, input, key, field, codingField, codingText) {
+  //console.log("input ? ", input, " key ", key, " field ", field)
   if (!input) {
     return '';
+  }
+  if (typeof input === 'object' && 
+      typeof input[key] === 'string') {
+    return input[key];
+  }
+  if (Array.isArray(input) && key && field) {
+    let resultText = '';
+    input.forEach(item => {
+      if (item.hasOwnProperty(key) && item[key].hasOwnProperty(field)) {
+        if (item[key]["coding"] && codingText) {
+          let matchedItem = (item[key]["coding"]).find(item => item.hasOwnProperty(codingField) && item[codingField] === codingText);
+          if (!matchedItem) return true;
+        }
+        resultText += (resultText?', ':'') + item[key][field];
+      }
+    });
+    return resultText;
   }
   if (typeof input === 'object' &&
       input.hasOwnProperty(key) &&
@@ -148,4 +207,3 @@ function _datishAgeFormat(result, input, showAge) {
   // fall back to the input string
   return input;
 }
-

@@ -10,7 +10,8 @@ export default class DevTools extends Component {
       displayDevTools: false,
       displayFhirQueries: false,
       displayCQLResults: false,
-      displayPDMPResults: false
+      displayPDMPResults: false,
+      displayOccupationResults: false
     };
   }
 
@@ -32,6 +33,11 @@ export default class DevTools extends Component {
   togglePDMPResults = (event) => {
     event.preventDefault();
     this.setState({ displayPDMPResults: !this.state.displayPDMPResults});
+  }
+
+  toggleOccupationResults = (event) => {
+    event.preventDefault();
+    this.setState({ displayOccupationResults: !this.state.displayOccupationResults});
   }
 
   errorMessage(er, i) {
@@ -99,14 +105,28 @@ export default class DevTools extends Component {
   }
 
   renderPDMPResults() {
-    let externalDataset = this.props.summary.ExternalDataSet ? this.props.summary.ExternalDataSet : null;
-    const key = 'PDMPMedications';
+    let pdmpDataset = this.props.summary.PDMPMedications ? this.props.summary.PDMPMedications : null;
     return (
       <div className='pdmp-results'>
         <h4>PDMP Results <button onClick={this.togglePDMPResults}>[show/hide]</button></h4>
         <div style={{ display: this.state.displayPDMPResults ? 'block' : 'none' }}>
-          <pre>{externalDataset && externalDataset[key] ? 
-                JSON.stringify(externalDataset[key], null, 2) : 
+          <pre>{pdmpDataset ? 
+                JSON.stringify(pdmpDataset, null, 2) : 
+                'No result'}</pre>
+        </div>
+      </div>
+    );
+  }
+
+
+  renderOccupationResults() {
+    let occupationDataset = this.props.summary.Occupation ? this.props.summary.Occupation : null;
+    return (
+      <div className='occupation-results'>
+        <h4>Occupation Results <button onClick={this.toggleOccupationResults}>[show/hide]</button></h4>
+        <div style={{ display: this.state.displayOccupationResults ? 'block' : 'none' }}>
+          <pre>{occupationDataset ? 
+                JSON.stringify(occupationDataset, null, 2) : 
                 'No result'}</pre>
         </div>
       </div>
@@ -129,6 +149,7 @@ export default class DevTools extends Component {
           {this.renderFHIRQueries()}
           {this.renderCQLResults()}
           {this.renderPDMPResults()}
+          {this.renderOccupationResults()}
         </div>
       </div>
     );

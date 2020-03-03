@@ -1,3 +1,4 @@
+import renderer from 'react-test-renderer';
 import * as formatit from '../../helpers/formatit';
 
 it('formats dates correctly', () => {
@@ -203,4 +204,14 @@ it('formats codeableconcept results correctly',() =>  {
 it('formats substitution text correctly', () => {
   const mockResult = {'resourceType':'medicationOrder'};
   expect(formatit['stringSubstitutionFormat']({}, mockResult, 'Order')).toEqual('Order');
+});
+
+it('formats link correctly', () => {
+  const mockResult = [{'text': 'item1', 'value': '1'}];
+  expect(formatit['listFormat']({}, mockResult)).not.toEqual(null);
+});
+
+it('formats list correctly', () => {
+  const mockResult = [{'title': 'Acute Pain Patient', 'url': 'https://www.doh.wa.gov/Portals/1/Documents/Pubs/631077-AcutePain.pdf'}];
+  expect(formatit['linkFormat']({}, mockResult)).not.toEqual(null);
 });

@@ -12,6 +12,8 @@ import Header from './Header';
 import Summary from './Summary';
 import Spinner from '../elements/Spinner';
 
+import patientEducationReferences from './patientEducationReferences.json';
+
 
 let uuid = 0;
 
@@ -40,6 +42,7 @@ export default class Landing extends Component {
         let result = response[0];
         //add data from other sources, e.g. PDMP
         result['Summary'] = {...result['Summary'], ...response[1]};
+        result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ loading: false });
         this.setState({ result, sectionFlags, flaggedCount });
@@ -74,22 +77,102 @@ export default class Landing extends Component {
    * function for retrieving data from other sources e.g. PDMP
    */
   async getExternalData() {
-      const externalDatasetKey = 'ExternalDataSet';
-      let dataSet = {};
-      dataSet[externalDatasetKey] = {};
-      let response = await fetch(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`)
-      .catch(e => console.log('Error fetching PDMP data: ', e.message));
-    
-      let pdmpDataSet = null;
-      try {
-        const json = await (response.json()).catch(e => console.log('Error parsing PDMP response json: ', e.message));
-        pdmpDataSet = json && json.entry? json.entry: null;
-      } catch(e) {
-        pdmpDataSet = null;
-      } finally {
-        dataSet[externalDatasetKey]['PDMPMedications'] = pdmpDataSet;
-        return dataSet;
+    let dataSet = {};
+    const PDMPDataKey = 'PDMPMedications';
+    const OccupationDataKey = 'Occupation';
+    let results = await Promise.all([
+      //PDMP data
+      this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`, PDMPDataKey, 'entry'),
+      //Occupation data
+      //TODO fix this to use real API endpoint url
+      //this.fetchData(`${process.env.PUBLIC_URL}/ocupacion.json`, 'Occupation', 'entry')
+      this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/Observation`, OccupationDataKey, 'entry'),
+    ]).catch(e => {
+      console.log(`Error parsing external data response json: ${e.message}`);
+      dataSet[PDMPDataKey] = null;
+      dataSet[OccupationDataKey] = null;
+      return dataSet;
+    });
+
+    dataSet[PDMPDataKey] = results[0];
+    dataSet[OccupationDataKey] = this.processOccupationData(results[1]['Occupation']);
+    return dataSet;
+  }
+
+  processOccupationData (result) {
+    if (!result || !result.length) return null;
+
+    /*
+     * filter results for occupation items
+     */
+    result = result.filter(item => {
+      return item['resource']['code']['coding'][0]['code'] === summaryMap['Occupation']['occupationObsCode'];
+    });
+
+    if (!result.length) return null;
+
+    let morphedResult = {'Current': {}, 'Previous': {}};
+    result = result.map(item => item.resource);
+
+    result.forEach((item, index) => {
+      if (index > 1) return true;
+      let key = index === 0 ? 'Current': 'Previous';
+      if (item.valueCodeableConcept && item['valueCodeableConcept']['text']) {
+        morphedResult[key]['jobTitle'] = item['valueCodeableConcept']['text'];
       }
+      if (!item.component) {
+        morphedResult[key]['description'] = [];
+        return true;
+      }
+      let occupaSectionKeys = summaryMap['Occupation']['itemObsCodeKeys'];
+      let description = []
+      /*
+       * select items to display - from json that matched the observation code
+       * display selected items from returned response
+       */
+      occupaSectionKeys.forEach(key => {
+        let matched = (item.component).find(subitem => {
+          if (subitem.code && subitem.code['coding'][0]['code'] === key) {
+            return subitem;
+          }
+          return false;
+        });
+        if (matched) {
+          let value = '';
+          if (matched.valueString) {
+            value = matched.valueString;
+          } else if (matched.valueQuantity) {
+            value = matched.valueQuantity['value'];
+          } else if (matched.valueCodeableConcept) {
+            value = matched.valueCodeableConcept['text'];
+          }
+          description.push({
+            'text': matched.code['text'],
+            'value': value
+          });
+        }
+      });
+      morphedResult[key]['description'] = description;
+    });
+    return morphedResult;
+  }
+
+  async fetchData (url, datasetKey, rootElement) {
+    let dataSet = {};
+    dataSet[datasetKey] = {};
+    let response = await fetch(url)
+    .catch(e => console.log(`Error fetching ${datasetKey} data: ${e.message}`));
+
+    let responseDataSet = null;
+    try {
+      const json = await (response.json()).catch(e => console.log(`Error parsing ${datasetKey} response json: ${e.message}`));
+      responseDataSet  = json && json[rootElement]? json[rootElement]: null;
+    } catch(e) {
+      responseDataSet  = null;
+    } finally {
+      dataSet[datasetKey] = responseDataSet;
+      return dataSet;
+    }
   }
 
   getAnalyticsData(endpoint, apikey, summary) {
@@ -154,7 +237,7 @@ export default class Landing extends Component {
 
     sectionKeys.forEach((sectionKey, i) => { // for each section
       sectionFlags[sectionKey] = {};
-      summaryMap[sectionKey].forEach((subSection) => { // for each sub section
+      summaryMap[sectionKey]["sections"].forEach((subSection) => { // for each sub section
         const keySource = summary[subSection.dataKeySource];
         if (!keySource) {
           return true;
@@ -224,10 +307,11 @@ export default class Landing extends Component {
     const numRiskEntries =
       sumit(summary.RiskConsiderations || {}) +
       sumit(summary.MiscellaneousItems || {}); // TODO: update when CQL updates
-    const numExternalDataEntries = sumit(summary.ExternalDataSet || {});
+    //const numExternalDataEntries = sumit(summary.ExternalDataSet || {});
+    const numPDMPDataEntries = sumit(summary.PDMPMedications || {});
     //const totalEntries = numMedicalHistoryEntries + numPainEntries + numTreatmentsEntries + numRiskEntries;
-    const totalEntries = numTreatmentsEntries + numNonPharTreatmentEntries + numExternalDataEntries;
-
+    const totalEntries = numTreatmentsEntries + numNonPharTreatmentEntries + numPDMPDataEntries;
+    const patientOccupation = summary.Occupation && summary.Occupation.Current? summary.Occupation.Current['jobTitle'] : '';
     return (
       <div className="landing">
         <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>
@@ -236,6 +320,7 @@ export default class Landing extends Component {
           patientName={summary.Patient.Name}
           patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
           patientGender={summary.Patient.Gender}
+          patientOccupation={patientOccupation}
           totalEntries={totalEntries}
           numFlaggedEntries={flaggedCount}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
@@ -251,7 +336,7 @@ export default class Landing extends Component {
           numTreatmentsEntries={numTreatmentsEntries}
           numRiskEntries={numRiskEntries}
           numNonPharTreatmentEntries={numNonPharTreatmentEntries}
-          numExternalDataEntries={numExternalDataEntries}
+          numPDMPDataEntries={numPDMPDataEntries}
         />
       </div>
     );

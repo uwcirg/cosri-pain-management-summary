@@ -10,7 +10,7 @@
       background: $color-white;
 
       &:hover {
-        background-color: lighten($color-blue, 45%);
+        background-color: lighten($color-blue, 53%);
       }
     }
   }
@@ -59,11 +59,13 @@
       padding: 0 16px 2px 0;
       font-weight: 600;
     }
+    
   }
 
   .rt-tbody .rt-td {
     white-space: normal;
     display: block;
     overflow: visible;
+    line-height: 1.45;
   }
 }
