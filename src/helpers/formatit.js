@@ -121,7 +121,7 @@ export function listFormat(result, input) {
   return (
       <ul className="sectionList">
           {input.map(function(item, index){
-              return <li key={ index } className="className"><b>{item.text}:</b> {item.value}</li>;
+              return <li key={ index } className={item.className}><b>{item.text}:</b> {item.value}</li>;
             })}
       </ul>
   );

@@ -195,9 +195,6 @@ export default class Summary extends Component {
           case 'quantityFormat':
             column.sortMethod = sortit.quantityCompare;
             break;
-          case 'linkFormat':
-            column.sortMethod = sortit.linkCompare;
-            break;
           default:
             // do nothing, rely on built-in sort
         }

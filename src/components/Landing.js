@@ -85,8 +85,8 @@ export default class Landing extends Component {
       this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`, PDMPDataKey, 'entry'),
       //Occupation data
       //TODO fix this to use real API endpoint url
-      this.fetchData(`${process.env.PUBLIC_URL}/ocupacion.json`, 'Occupation', 'entry')
-      //this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/Observation`, OccupationDataKey, 'entry'),
+      //this.fetchData(`${process.env.PUBLIC_URL}/ocupacion.json`, 'Occupation', 'entry')
+      this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/Observation`, OccupationDataKey, 'entry'),
     ]).catch(e => {
       console.log(`Error parsing external data response json: ${e.message}`);
       dataSet[PDMPDataKey] = null;
@@ -109,7 +109,7 @@ export default class Landing extends Component {
       return item['resource']['code']['coding'][0]['code'] === summaryMap['Occupation']['occupationObsCode'];
     });
 
-    if (!result.length) return;
+    if (!result.length) return null;
 
     let morphedResult = {'Current': {}, 'Previous': {}};
     result = result.map(item => item.resource);
@@ -128,6 +128,7 @@ export default class Landing extends Component {
       let description = []
       /*
        * select items to display - from json that matched the observation code
+       * display selected items from returned response
        */
       occupaSectionKeys.forEach(key => {
         let matched = (item.component).find(subitem => {
@@ -151,7 +152,7 @@ export default class Landing extends Component {
           });
         }
       });
-      morphedResult[key]["description"] = description;
+      morphedResult[key]['description'] = description;
     });
     return morphedResult;
   }

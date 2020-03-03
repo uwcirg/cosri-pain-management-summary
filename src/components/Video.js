@@ -49,7 +49,7 @@ export default class Video extends Component {
     return (
       <div>
         {/* element for toggling the visibility of video */}
-        <span title={title} onClick={this.handleClick} className={`video-link`}>{title}</span>
+        <span title={title} onClick={this.handleClick} className='video-link'>{title}</span>
         <ChevronDownIcon
           className={`${this.state.isToggleOn?'open': ''} link-toggle`}
           onClick={this.handleClick}
@@ -58,7 +58,7 @@ export default class Video extends Component {
         />
         <div className={`${this.state.isToggleOn?'show': 'hide'} video-container`}>
           <div
-            className="video"
+            className='video'
             style={VideoContainerStyle}
           >
             <IframeElement src={src} title={title} style={IframeStyle} />
