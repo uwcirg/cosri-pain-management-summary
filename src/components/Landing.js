@@ -80,13 +80,12 @@ export default class Landing extends Component {
     let dataSet = {};
     const PDMPDataKey = 'PDMPMedications';
     const OccupationDataKey = 'Occupation';
+  
     let results = await Promise.all([
       //PDMP data
       this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`, PDMPDataKey, 'entry'),
       //Occupation data
-      //TODO fix this to use real API endpoint url
-      //this.fetchData(`${process.env.PUBLIC_URL}/ocupacion.json`, 'Occupation', 'entry')
-      this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/Observation`, OccupationDataKey, 'entry'),
+      this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/Observation`, OccupationDataKey, 'entry')
     ]).catch(e => {
       console.log(`Error parsing external data response json: ${e.message}`);
       dataSet[PDMPDataKey] = null;
@@ -94,8 +93,8 @@ export default class Landing extends Component {
       return dataSet;
     });
 
-    dataSet[PDMPDataKey] = results[0];
-    dataSet[OccupationDataKey] = this.processOccupationData(results[1]['Occupation']);
+    dataSet[PDMPDataKey] = results[0] ? results[0] : null;
+    dataSet[OccupationDataKey] = results[1] ? this.processOccupationData(results[1]['Occupation']) : null;
     return dataSet;
   }
 
@@ -125,7 +124,7 @@ export default class Landing extends Component {
         return true;
       }
       let occupaSectionKeys = summaryMap['Occupation']['itemObsCodeKeys'];
-      let description = []
+      let description = [];
       /*
        * select items to display - from json that matched the observation code
        * display selected items from returned response
@@ -160,12 +159,38 @@ export default class Landing extends Component {
   async fetchData (url, datasetKey, rootElement) {
     let dataSet = {};
     dataSet[datasetKey] = {};
-    let response = await fetch(url)
-    .catch(e => console.log(`Error fetching ${datasetKey} data: ${e.message}`));
+    const MAX_WAIT_TIME = 15000;
+    // Create a promise that rejects in maximum wait time in milliseconds
+    let timeoutPromise = new Promise((resolve, reject) => {
+      let id = setTimeout(() => {
+        clearTimeout(id);
+        reject(`Timed out in ${MAX_WAIT_TIME} ms.`)
+      }, MAX_WAIT_TIME);
+    });
+
+    // let response = await fetch(url)
+    // .catch(e => console.log(`Error fetching ${datasetKey} data: ${e.message}`));
+
+    /*
+     * if for some reason fetching the request data doesn't resolve or reject withing the maximum waittime,
+     * then the timeout promise will kick in
+     */
+    let results = await Promise.race([
+      fetch(url),
+      timeoutPromise
+    ]).catch(e => {
+      console.log(`Error fetching data from ${datasetKey}: ${e.message}`);
+      dataSet[datasetKey] = null;
+      return dataSet;
+    });
+
+    if (!results) {
+      return dataSet;
+    }
 
     let responseDataSet = null;
     try {
-      const json = await (response.json()).catch(e => console.log(`Error parsing ${datasetKey} response json: ${e.message}`));
+      const json = await (results.json()).catch(e => console.log(`Error parsing ${datasetKey} response json: ${e.message}`));
       responseDataSet  = json && json[rootElement]? json[rootElement]: null;
     } catch(e) {
       responseDataSet  = null;
