@@ -366,6 +366,11 @@ export default class Summary extends Component {
     const meetsInclusionCriteria = summary.Patient.MeetsInclusionCriteria;
     if (!summary) { return null; }
 
+    const sectionsToRender = [];
+    Object.keys(summaryMap).forEach(section => {
+      sectionsToRender.push(section);
+    });
+
     return (
       <div className="summary">
         <div className={`${this.state.showNav?'open': ''} summary__nav-wrapper`}><nav className="summary__nav"></nav><div className={`${meetsInclusionCriteria?'close':'hide'}`} title="toggle menu sidebar" onClick={this.handleNavToggle}></div></div>
@@ -382,34 +387,11 @@ export default class Summary extends Component {
           {meetsInclusionCriteria &&
             <div className="sections">
 
-              <Collapsible trigger={this.renderSectionHeader("HistoricalTreatments")} open={true}>
-                {this.renderSection("HistoricalTreatments")}
-              </Collapsible>
-
-              <Collapsible trigger={this.renderSectionHeader("PDMPMedications")} open={true}>
-              {this.renderSection("PDMPMedications")}
-              </Collapsible>
-
-              <Collapsible trigger={this.renderSectionHeader("NonPharmacologicTreatments")} open={true}>
-              {this.renderSection("NonPharmacologicTreatments")}
-              </Collapsible>
-
-
-              <Collapsible trigger={this.renderSectionHeader("PertinentMedicalHistory")} open={true}>
-                {this.renderSection("PertinentMedicalHistory")}
-              </Collapsible>
-
-              <Collapsible trigger={this.renderSectionHeader("RiskConsiderations")} open={true}>
-                {this.renderSection("RiskConsiderations")}
-              </Collapsible>
-
-              <Collapsible trigger={this.renderSectionHeader("Occupation")} open={true}>
-              {this.renderSection("Occupation")}
-              </Collapsible>
-
-              <Collapsible trigger={this.renderSectionHeader("PatientEducationMaterials")} open={true}>
-              {this.renderSection("PatientEducationMaterials")}
-              </Collapsible>
+              {sectionsToRender.map(section => {
+                return <Collapsible trigger={this.renderSectionHeader(section)} open={true}>
+                  {this.renderSection(section)}
+                </Collapsible>
+              })}
 
               {/*
                 <Collapsible tabIndex={0} trigger={this.renderSectionHeader("PainAssessments")} open={true}>
