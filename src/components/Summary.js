@@ -367,6 +367,9 @@ export default class Summary extends Component {
     if (!summary) { return null; }
 
     const sectionsToRender = [];
+    /*
+     * sections to be rendered
+     */
     Object.keys(summaryMap).forEach(section => {
       sectionsToRender.push(section);
     });
@@ -387,8 +390,8 @@ export default class Summary extends Component {
           {meetsInclusionCriteria &&
             <div className="sections">
 
-              {sectionsToRender.map(section => {
-                return <Collapsible trigger={this.renderSectionHeader(section)} open={true}>
+              {sectionsToRender.map((section, index) => {
+                return <Collapsible trigger={this.renderSectionHeader(section)} open={true} key={index}>
                   {this.renderSection(section)}
                 </Collapsible>
               })}
