@@ -703,7 +703,7 @@
   "Occupation": {
     "title":"Occupational Health",
     "dataSource": {
-      "endpoint": "{env.PUBLIC_URL}/v/r2/fhir/Observation",
+      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/Observation",
       "dataKey": "Occupation",
       "dataKeySource": "entry",
       "processFunction": "processOccupationData"
