@@ -657,6 +657,11 @@
   "PDMPMedications": {
     "title":"State PMP Prescriptions",
     "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
+    "dataSource": {
+      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder",
+      "dataKey": "PDMPMedications",
+      "dataKeySource": "entry"
+    },
     "sections": [
       {
         "name": "PMP Prescriptions",
@@ -697,6 +702,12 @@
   },
   "Occupation": {
     "title":"Occupational Health",
+    "dataSource": {
+      "endpoint": "{env.PUBLIC_URL}/v/r2/fhir/Observation",
+      "dataKey": "Occupation",
+      "dataKeySource": "entry",
+      "processFunction": "processOccupationData"
+    },
     "occupationObsCode": "11341-5",
     "itemObsCodeKeys": ["10161-8", "87707-6", "85107-8", "87512-0", "74160-3", "80427-8"],
     "sections": [
