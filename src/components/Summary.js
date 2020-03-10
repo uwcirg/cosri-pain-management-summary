@@ -308,7 +308,7 @@ export default class Summary extends Component {
       {subSections}
       <DataInfo
             contentText={summaryMap[section].provenanceText}
-            queryDateTime={formatit.currentDateTimeFormat()}
+            queryDateTime={summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat()}
           />
     </div>);
   }

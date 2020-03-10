@@ -702,8 +702,10 @@
   },
   "Occupation": {
     "title":"Occupational Health",
+    "provenanceText": "The data is made available by Carevolution.",
+    "lastUpdated": "March 6th 2020, 12:00:00 a.m.",
     "dataSource": {
-      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/Observation",
+      "endpoint": "{env.PUBLIC_URL}/ocupacion.json",
       "dataKey": "Occupation",
       "dataKeySource": "entry",
       "processFunction": "processOccupationData"
