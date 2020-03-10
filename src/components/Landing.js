@@ -78,23 +78,43 @@ export default class Landing extends Component {
    */
   async getExternalData() {
     let dataSet = {};
-    const PDMPDataKey = 'PDMPMedications';
-    const OccupationDataKey = 'Occupation';
-  
-    let results = await Promise.all([
-      //PDMP data
-      this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder`, PDMPDataKey, 'entry'),
-      //Occupation data
-      this.fetchData(`${process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/Observation`, OccupationDataKey, 'entry')
-    ]).catch(e => {
+    const promiseResultSet = [];
+
+    /*
+     * retrieve entries from Summary map, i.e. summary.json that requires fetching data via external API
+     */
+    for (let key in summaryMap) {
+      if (summaryMap[key].dataSource) {
+        promiseResultSet.push(summaryMap[key].dataSource);
+      }
+    }
+
+    if (!promiseResultSet.length) {
+      return dataSet;
+    }
+
+    let results = await Promise.all(promiseResultSet.map(item => {
+      let endpoint = (item.endpoint)
+                    .replace('{env.REACT_APP_CONF_API_URL}', process.env.REACT_APP_CONF_API_URL)
+                    .replace('{env.PUBLIC_URL}', process.env.PUBLIC_URL);
+      return this.fetchData(`${endpoint}`, item.dataKey, item.dataKeySource)
+    })).catch(e => {
       console.log(`Error parsing external data response json: ${e.message}`);
-      dataSet[PDMPDataKey] = null;
-      dataSet[OccupationDataKey] = null;
+      promiseResultSet.forEach(item => {
+        dataSet[item.dataKey] = null;
+      });
       return dataSet;
     });
 
-    dataSet[PDMPDataKey] = results[0] ? results[0] : null;
-    dataSet[OccupationDataKey] = results[1] ? this.processOccupationData(results[1]['Occupation']) : null;
+    promiseResultSet.forEach((item, index) => {
+      let result = results[index];
+      //require additional processing of result data
+      if (item.processFunction && this[item.processFunction]) {
+        result = this[item.processFunction](results[index][item.dataKey]);
+      }
+      dataSet[item.dataKey] = result ? result: null;
+
+    });
     return dataSet;
   }
 
@@ -179,7 +199,7 @@ export default class Landing extends Component {
       fetch(url),
       timeoutPromise
     ]).catch(e => {
-      console.log(`Error fetching data from ${datasetKey}: ${e.message}`);
+      console.log(`Error fetching data from ${datasetKey}: ${e}`);
       dataSet[datasetKey] = null;
       return dataSet;
     });

@@ -27,7 +27,7 @@ export default class DataInfo extends Component {
             </div>
             <div className={`${this.state.isToggleOn?'display': ''} content`}>
                 <div className={`${contentText?'show':'hide'} text`}><b>{'Data Provenance:'}</b> {contentText}</div>
-                <div className={'query-info'}><b>{'The query was executed at: '}</b> {`${queryDateTime}`}</div>
+                <div className={'query-info'}><b>{'The query was last executed at: '}</b> {`${queryDateTime}`}</div>
             </div>
         </div>
     );
