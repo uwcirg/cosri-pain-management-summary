@@ -280,7 +280,7 @@
             color: transparent;
 
             &.flagged {
-              color: $color-red;
+              color: $color-orange-light;
             }
           }
         }
@@ -361,7 +361,7 @@
               cursor: default;
 
               &.flagged {
-                color: $color-red;
+                color: $color-orange-light;
               }
             }
           }
@@ -406,6 +406,25 @@
 
       a {
         margin: 0 5px;
+      }
+    }
+    .legend {
+      margin: 10px 40px 20px 40px;
+      line-height: 1.6;
+      .icon {
+        display: inline-block;
+        vertical-align: bottom;
+        width: 18px;
+        height: 18px;
+        position: relative;
+        top: -4px;
+        margin-right: 8px;
+        &.red {
+          background: $color-red;
+        }
+        &.orange {
+          background: $color-orange-light;
+        }
       }
     }
 
@@ -503,4 +522,15 @@
 
 .summary-tooltip {
   font-size: 1em;
+}
+
+.red {
+  .flagged {
+    color: $color-red !important;
+  }
+}
+.orange {
+  .flagged {
+    color: $color-orange-light !important;
+  }
 }

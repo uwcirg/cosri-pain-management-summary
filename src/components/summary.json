@@ -489,6 +489,7 @@
         "name": "Carisoprodol Medications",
         "dataKey": "CarisoprodolMedications",
         "dataKeySource": "RiskConsiderations",
+        "flagScheme": "red",
         "info": [
           {
             "type": "elements",
