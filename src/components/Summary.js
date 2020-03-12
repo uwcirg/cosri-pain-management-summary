@@ -404,7 +404,7 @@ export default class Summary extends Component {
 
           <div class="legend">
             <div>
-              <span class="icon orange"></span>CDC guidelines in accordance with Washington State rules
+              <span class="icon orange"></span>CDC guidelines in accordance with Washington State guideline
             </div>
             <div>
               <span class="icon red"></span>Washington State guideline exclusively
