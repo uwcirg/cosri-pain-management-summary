@@ -1,4 +1,167 @@
 {
+  "HistoricalTreatments": {
+    "title": "EHR Medications",
+    "sections": [
+       {
+         "name": "Opioid Medications",
+         "dataKey": "OpioidMedications",
+         "dataKeySource": "HistoricalTreatments",
+         "info": [
+           {
+             "type": "elements",
+             "description": "Opioid Medications queries the following elements:",
+             "elements": [
+               {
+                 "name": "Opioid medication statements and orders",
+                 "status": "any",
+                 "lookback": "2 years"
+               }
+             ]
+           }
+         ],
+         "tables": [
+           {
+             "headers": {
+               "Drug Description": "Name",
+               "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+               "Written Date": { "key": "Start", "formatter": "datishFormat" },
+               "Dispensed": { "key": "End", "formatter": "datishFormat" },
+               "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+               "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+             }
+           }
+         ]
+       },
+       {
+         "name": "Non-Opioid Medications",
+         "dataKey": "NonOpioidMedications",
+         "dataKeySource": "HistoricalTreatments",
+         "info": [
+           {
+             "type": "elements",
+             "description": "Non-Opioid Medications queries the following elements:",
+             "elements": [
+               {
+                 "name": "Non-opioid medication statements and orders",
+                 "status": "any",
+                 "lookback": "2 years"
+               }
+             ]
+           }
+         ],
+         "tables": [
+           {
+             "headers": {
+               "Drug Description": "Name",
+               "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+               "Written Date": { "key": "Start", "formatter": "datishFormat" },
+               "Dispensed": { "key": "End", "formatter": "datishFormat" },
+               "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+               "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+             },
+             "flags": [
+               {
+                 "flag": "ifNone",
+                 "flagText": "CDC Guideline #1: Opioids are not first-line therapy."
+               }
+             ]
+           }
+         ]
+       },
+       {
+         "name": "Stool Softeners and Laxatives",
+         "dataKey": "StoolSoftenersAndLaxatives",
+         "dataKeySource": "HistoricalTreatments",
+         "info": [
+           {
+             "type": "elements",
+             "description": "Stool Softeners and Laxatives queries the following elements:",
+             "elements": [
+               {
+                 "name": "Stool softeners / laxatives medication statements and orders",
+                 "status": "any",
+                 "lookback": "6 months"
+               }
+             ]
+           }
+         ],
+         "tables": [
+           {
+             "headers": {
+               "Drug Description": "Name",
+               "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+               "Written Date": { "key": "Start", "formatter": "datishFormat" },
+               "Dispensed": { "key": "End", "formatter": "datishFormat" },
+               "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+               "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+             },
+             "flags": [
+               {
+                 "flag": {
+                   "ifAnd": [
+                     "ifNone",
+                     {
+                       "ifOneOrMore": {
+                         "table": "OpioidMedications",
+                         "source": "HistoricalTreatments"
+                       }
+                     }
+                   ]
+                 },
+                 "flagText": "CDC Guideline #3: To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
+               }
+             ]
+           }
+         ]
+       }
+     ]
+  },
+  "PDMPMedications": {
+    "title":"State PMP Prescriptions",
+    "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
+    "dataSource": {
+      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder",
+      "dataKey": "PDMPMedications",
+      "dataKeySource": "entry"
+    },
+    "sections": [
+      {
+        "name": "PMP Prescriptions",
+        "dataKey": "PDMPMedications",
+        "dataKeySource": "PDMPMedications",
+        "omitTitle": true,
+        "info": [
+          {
+            "type": "elements",
+            "description": "The medication order queries the following elements:",
+            "elements": [
+              {
+                "name": "MedicationOrder",
+                "status": "any",
+                "lookback": "1 year"
+              }
+            ]
+          }
+        ],
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": {
+                "key": "medicationCodeableConcept",
+                "formatter": "codeableConceptFormat",
+                "formatterArguments": ["medicationCodeableConcept", "text"]
+              },
+              "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
+              "Dispensed": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false },
+              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+            }
+          }
+        ]
+      }
+    ]
+  },
   "PertinentMedicalHistory": {
     "title": "Pertinent Medical History",
     "sections": [
@@ -148,234 +311,44 @@
       }
     ]
   },
-  "PainAssessments": {
-    "title": "Pain Assessments",
+  "NonPharmacologicTreatments": {
+    "title":"Non-Pharmacologic Treatments",
     "sections": [
-        {
-          "name": "Numeric Pain Intensity Assessments",
-          "dataKey": "NumericPainIntensityAssessments",
-          "dataKeySource": "PainAssessments",
-          "info": [
-            {
-              "type": "elements",
-              "description": "Numeric Pain Intensity Assessments queries the following elements:",
-              "elements": [
-                {
-                  "name": "Numeric pain intensity assessment",
-                  "status": "final or amended",
-                  "lookback": "2 years"
-                }
-              ]
-            }
-          ],
-          "tables": [
-            {
-              "headers": {
-                "Name": "Name",
-                "Score": { "key": "Score", "formatter": "quantityFormat" },
-                "Date": { "key": "Date", "formatter": "datishFormat" }
+      {
+        "name": "Non-Pharmacologic Treatments",
+        "dataKey": "NonPharmacologicTreatments",
+        "dataKeySource": "HistoricalTreatments",
+        "omitTitle": true,
+        "info": [
+          {
+            "type": "elements",
+            "description": "Non-Pharmacologic Treatments queries the following elements:",
+            "elements": [
+              {
+                "name": "Non-pharmacologic procedures",
+                "status": "any",
+                "lookback": "2 years"
               }
-            }
-          ]
-        },
-        {
-          "name": "Pain Enjoyment General Activity (PEG) Assessments",
-          "dataKey": "PainEnjoymentGeneralActivityAssessments",
-          "dataKeySource": "PainAssessments",
-          "info": [
-            {
-              "type": "elements",
-              "description": "Pain Enjoyment General Activity (PEG) Assessments queries the following elements:",
-              "elements": [
-                {
-                  "name": "Pain Enjoyment General Activity (PEG) Assessment",
-                  "status": "final or amended",
-                  "lookback": "2 years"
-                }
-              ]
+            ]
+          }
+        ],
+        "tables": [
+          {
+            "headers": {
+              "Name": "Name",
+              "Date": { "key": "Date", "formatter": "datishFormat" },
+              "Type": "Type"
             },
-            {
-              "type": "reference",
-              "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2686775/",
-              "title": "Development and Initial Validation of the PEG, a Three-item Scale Assessing Pain Intensity and Interference",
-              "details": "The PEG is freely available in the public domain. Publications and reports should cite the original publication: Krebs EE, Lorenz KA, Bair MJ, Damush TA, Wu J, Sutherland JM, Asch SM, Kroenke K. Development and initial validation of the PEG, a 3-item scale assessing pain intensity and interference. Journal of General Internal Medicine. 2009 Jun;24:733-738."
-            }
-          ],
-          "tables": [
-            {
-              "headers": {
-                "Name": "Name",
-                "Score": { "key": "Score", "formatter": "quantityFormat" },
-                "Question": {
-                  "key": "Questions",
-                  "formatter": "arrayFlatten",
-                  "formatterArguments": ["Name", "Score", true],
-                  "sortable": false,
-                  "minWidth": 200
-                },
-                "Question Score": {
-                  "key": "Questions",
-                  "formatter": "arrayFlatten",
-                  "formatterArguments": ["Score", null, false],
-                  "sortable": false,
-                  "minWidth": 150
-                },
-                "Date": { "key": "Date", "formatter": "datishFormat" }
+            "flags": [
+              {
+                "flag": "ifNone",
+                "flagText": "CDC Guideline #1: Opioids are not first-line therapy."
               }
-            }
-          ]
-        },
-        {
-          "name": "STarT Back Assessments",
-          "dataKey": "STarTBackAssessments",
-          "dataKeySource": "PainAssessments",
-          "info": [
-            {
-              "type": "elements",
-              "description": "STarT Back Assessments queries the following elements:",
-              "elements": [
-                {
-                  "name": "STarT Back Screening Tool",
-                  "status": "final or amended",
-                  "lookback": "2 years"
-                }
-              ]
-            },
-            {
-              "type": "reference",
-              "url": "https://www.keele.ac.uk/sbst/",
-              "title": "STarT Back",
-              "details": "Copyright (©2007) University of Keele. No license is required for non-commercial use.  If you would like to incorporate the tool in any way into commercial product materials, please contact Keele University for further advice."
-            }
-          ],
-          "tables": [
-            {
-              "headers": {
-                "Name": "Name",
-                "Score": { "key": "Score", "formatter": "quantityFormat" },
-                "Date": { "key": "Date", "formatter": "datishFormat" }
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "HistoricalTreatments": {
-     "title": "EHR Medications",
-     "sections": [
-        {
-          "name": "Opioid Medications",
-          "dataKey": "OpioidMedications",
-          "dataKeySource": "HistoricalTreatments",
-          "info": [
-            {
-              "type": "elements",
-              "description": "Opioid Medications queries the following elements:",
-              "elements": [
-                {
-                  "name": "Opioid medication statements and orders",
-                  "status": "any",
-                  "lookback": "2 years"
-                }
-              ]
-            }
-          ],
-          "tables": [
-            {
-              "headers": {
-                "Drug Description": "Name",
-                "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Dispensed": { "key": "End", "formatter": "datishFormat" },
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
-              }
-            }
-          ]
-        },
-        {
-          "name": "Non-Opioid Medications",
-          "dataKey": "NonOpioidMedications",
-          "dataKeySource": "HistoricalTreatments",
-          "info": [
-            {
-              "type": "elements",
-              "description": "Non-Opioid Medications queries the following elements:",
-              "elements": [
-                {
-                  "name": "Non-opioid medication statements and orders",
-                  "status": "any",
-                  "lookback": "2 years"
-                }
-              ]
-            }
-          ],
-          "tables": [
-            {
-              "headers": {
-                "Drug Description": "Name",
-                "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Dispensed": { "key": "End", "formatter": "datishFormat" },
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
-              },
-              "flags": [
-                {
-                  "flag": "ifNone",
-                  "flagText": "CDC Guideline #1: Opioids are not first-line therapy."
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Stool Softeners and Laxatives",
-          "dataKey": "StoolSoftenersAndLaxatives",
-          "dataKeySource": "HistoricalTreatments",
-          "info": [
-            {
-              "type": "elements",
-              "description": "Stool Softeners and Laxatives queries the following elements:",
-              "elements": [
-                {
-                  "name": "Stool softeners / laxatives medication statements and orders",
-                  "status": "any",
-                  "lookback": "6 months"
-                }
-              ]
-            }
-          ],
-          "tables": [
-            {
-              "headers": {
-                "Drug Description": "Name",
-                "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Dispensed": { "key": "End", "formatter": "datishFormat" },
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
-              },
-              "flags": [
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifNone",
-                      {
-                        "ifOneOrMore": {
-                          "table": "OpioidMedications",
-                          "source": "HistoricalTreatments"
-                        }
-                      }
-                    ]
-                  },
-                  "flagText": "CDC Guideline #3: To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
-                }
-              ]
-            }
-          ]
-        }
-      ]
+            ]
+          }
+        ]
+      }
+    ]
   },
   "RiskConsiderations": {
     "title": "Risk Considerations",
@@ -516,6 +489,7 @@
         "name": "Carisoprodol Medications",
         "dataKey": "CarisoprodolMedications",
         "dataKeySource": "RiskConsiderations",
+        "flagScheme": "red",
         "info": [
           {
             "type": "elements",
@@ -610,91 +584,6 @@
                 "flagText": "CDC Guideline #8: Use strategies to mitigate risk."
               }
             ]
-          }
-        ]
-      }
-    ]
-  },
-  "NonPharmacologicTreatments": {
-    "title":"Non-Pharmacologic Treatments",
-    "sections": [
-      {
-        "name": "Non-Pharmacologic Treatments",
-        "dataKey": "NonPharmacologicTreatments",
-        "dataKeySource": "HistoricalTreatments",
-        "omitTitle": true,
-        "info": [
-          {
-            "type": "elements",
-            "description": "Non-Pharmacologic Treatments queries the following elements:",
-            "elements": [
-              {
-                "name": "Non-pharmacologic procedures",
-                "status": "any",
-                "lookback": "2 years"
-              }
-            ]
-          }
-        ],
-        "tables": [
-          {
-            "headers": {
-              "Name": "Name",
-              "Date": { "key": "Date", "formatter": "datishFormat" },
-              "Type": "Type"
-            },
-            "flags": [
-              {
-                "flag": "ifNone",
-                "flagText": "CDC Guideline #1: Opioids are not first-line therapy."
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  "PDMPMedications": {
-    "title":"State PMP Prescriptions",
-    "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
-    "dataSource": {
-      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder",
-      "dataKey": "PDMPMedications",
-      "dataKeySource": "entry"
-    },
-    "sections": [
-      {
-        "name": "PMP Prescriptions",
-        "dataKey": "PDMPMedications",
-        "dataKeySource": "PDMPMedications",
-        "omitTitle": true,
-        "info": [
-          {
-            "type": "elements",
-            "description": "The medication order queries the following elements:",
-            "elements": [
-              {
-                "name": "MedicationOrder",
-                "status": "any",
-                "lookback": "1 year"
-              }
-            ]
-          }
-        ],
-        "tables": [
-          {
-            "headers": {
-              "Drug Description": {
-                "key": "medicationCodeableConcept",
-                "formatter": "codeableConceptFormat",
-                "formatterArguments": ["medicationCodeableConcept", "text"]
-              },
-              "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
-              "Dispensed": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false },
-              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
-            }
           }
         ]
       }

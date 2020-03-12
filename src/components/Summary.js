@@ -113,7 +113,7 @@ export default class Summary extends Component {
     const flagText = sectionElement ? sectionElement[subSection.dataKey] : '';
     const tooltip = flagged ? flagText : '';
     return (
-      <div className="table">
+      <div className={`table ${subSection.flagScheme}`}>
         <div className="no-entries">
           <div>
             <FontAwesomeIcon
@@ -247,7 +247,6 @@ export default class Summary extends Component {
 
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
-
     const subSections = sectionMap.map((subSection) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
@@ -257,9 +256,8 @@ export default class Summary extends Component {
       const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
       const flaggedClass = flagged ? 'flagged' : '';
       const omitTitleClass = subSection.omitTitle ? 'sub-section-notitle' : '';
-
       return (
-        <div key={subSection.dataKey} className="sub-section h3-wrapper">
+        <div key={subSection.dataKey} className={`sub-section h3-wrapper ${subSection.flagScheme}`}>
           <h3 id={subSection.dataKey} className={`sub-section__header ${omitTitleClass}`}>
             <FontAwesomeIcon
               className={`flag flag-nav ${flaggedClass}`}
@@ -403,6 +401,15 @@ export default class Summary extends Component {
               */}
             </div>
           }
+
+          <div class="legend">
+            <div>
+              <span class="icon orange"></span>CDC guidelines in accordance with Washington State guideline
+            </div>
+            <div>
+              <span class="icon red"></span>Washington State guideline exclusively
+            </div>
+          </div>
 
           <div className="cdc-disclaimer">
             Please see the

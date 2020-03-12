@@ -299,7 +299,7 @@ export default class Landing extends Component {
             const entryFlag = flagit(entry, subSection, summary);
 
             if (entryFlag) {
-              flaggedEntries.push({ 'entryId': entry._id, 'flagText': entryFlag });
+              flaggedEntries.push({ 'entryId': entry._id, 'flagText': entryFlag});
               flaggedCount += 1;
             }
 
