@@ -22,9 +22,9 @@ export default class ExclusionBanner extends Component {
         <FontAwesomeIcon className="close-button" icon="times" title="close" onClick={this.handleClose} />
 
         <div className="exclusion-banner__description">
-          <strong><FontAwesomeIcon icon="exclamation-circle" title="notice" /> TAKE NOTICE:</strong> This summary is not
-          intended for patients who are undergoing <b>end-of-life care</b> (hospice or palliative), <b>inpatient treatment</b>, 
-          or <b>active cancer treatment</b>.
+          <strong><FontAwesomeIcon icon="exclamation-circle" title="notice" /> TAKE NOTICE:</strong> The decision support provided is
+          intended for patients <b>not</b> undergoing <b>end-of-life care</b> (hospice or palliative), <b>inpatient treatment</b>, 
+          or <b>active cancer treatment</b>. However, some suggestions, such as co-prescribing a laxative with an opioid, are encouraged regardless.
         </div>
       </div>
     );
