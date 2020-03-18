@@ -1,4 +1,50 @@
 {
+  "PDMPMedications": {
+    "title":"State PMP Prescriptions",
+    "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
+    "dataSource": {
+      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder",
+      "dataKey": "PDMPMedications",
+      "dataKeySource": "entry"
+    },
+    "sections": [
+      {
+        "name": "PMP Prescriptions",
+        "dataKey": "PDMPMedications",
+        "dataKeySource": "PDMPMedications",
+        "omitTitle": true,
+        "info": [
+          {
+            "type": "elements",
+            "description": "The medication order queries the following elements:",
+            "elements": [
+              {
+                "name": "MedicationOrder",
+                "status": "any",
+                "lookback": "1 year"
+              }
+            ]
+          }
+        ],
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": {
+                "key": "medicationCodeableConcept",
+                "formatter": "codeableConceptFormat",
+                "formatterArguments": ["medicationCodeableConcept", "text"]
+              },
+              "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
+              "Dispensed": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false },
+              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+            }
+          }
+        ]
+      }
+    ]
+  },
   "HistoricalTreatments": {
     "title": "EHR Medications",
     "sections": [
@@ -115,52 +161,6 @@
          ]
        }
      ]
-  },
-  "PDMPMedications": {
-    "title":"State PMP Prescriptions",
-    "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
-    "dataSource": {
-      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder",
-      "dataKey": "PDMPMedications",
-      "dataKeySource": "entry"
-    },
-    "sections": [
-      {
-        "name": "PMP Prescriptions",
-        "dataKey": "PDMPMedications",
-        "dataKeySource": "PDMPMedications",
-        "omitTitle": true,
-        "info": [
-          {
-            "type": "elements",
-            "description": "The medication order queries the following elements:",
-            "elements": [
-              {
-                "name": "MedicationOrder",
-                "status": "any",
-                "lookback": "1 year"
-              }
-            ]
-          }
-        ],
-        "tables": [
-          {
-            "headers": {
-              "Drug Description": {
-                "key": "medicationCodeableConcept",
-                "formatter": "codeableConceptFormat",
-                "formatterArguments": ["medicationCodeableConcept", "text"]
-              },
-              "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
-              "Dispensed": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false },
-              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
-            }
-          }
-        ]
-      }
-    ]
   },
   "PertinentMedicalHistory": {
     "title": "Pertinent Medical History",
