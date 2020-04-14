@@ -28,7 +28,8 @@ export default class Landing extends Component {
       result: null,
       loading: true,
       collector: [],
-      externals: {}
+      externals: {},
+      loadDataErrorMessagesList: []
     };
 
     this.tocInitialized = false;
@@ -44,13 +45,13 @@ export default class Landing extends Component {
         result['Summary'] = {...result['Summary'], ...response[1]};
         result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-        this.setState({ loading: false });
+        this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
       }
     )
     .catch((err) => {
       console.error(err);
-      this.setState({ loading: false });
+      this.setState({ loading: false});
     });
   }
 
@@ -200,6 +201,11 @@ export default class Landing extends Component {
       timeoutPromise
     ]).catch(e => {
       console.log(`Error fetching data from ${datasetKey}: ${e}`);
+      this.setState(state => {
+        const list = state.loadDataErrorMessagesList;
+        list.push(`Error fetching data from ${datasetKey}: ${e}`);
+        return {loadDataErrorMessagesList: list};
+      });
       dataSet[datasetKey] = null;
       return dataSet;
     });
@@ -382,6 +388,7 @@ export default class Landing extends Component {
           numRiskEntries={numRiskEntries}
           numNonPharTreatmentEntries={numNonPharTreatmentEntries}
           numPDMPDataEntries={numPDMPDataEntries}
+          errorMessagesList={this.state.loadDataErrorMessagesList}
         />
       </div>
     );

@@ -2,6 +2,13 @@
   display: flex;
   min-height: calc(100vh - 100px);
 
+  .error {
+    color: $color-red-darker;
+    font-weight: 600;
+    margin-left: 36px;
+    margin-bottom: 24px;
+  }
+
   &__nav {
     color: $color-white;
     padding: 38px 0 20px;

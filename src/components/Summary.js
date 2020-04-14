@@ -360,7 +360,7 @@ export default class Summary extends Component {
   };
 
   render() {
-    const { summary, collector, result } = this.props;
+    const { summary, collector, result, errorMessagesList } = this.props;
     const meetsInclusionCriteria = summary.Patient.MeetsInclusionCriteria;
     if (!summary) { return null; }
 
@@ -402,12 +402,18 @@ export default class Summary extends Component {
             </div>
           }
 
-          <div class="legend">
+          <div className="error">{
+            errorMessagesList.map((item, key) => {
+              return (<div key={key}>{item}</div>);
+            })
+          }</div>
+
+          <div className="legend">
             <div>
-              <span class="icon orange"></span>CDC guidelines in accordance with Washington State guideline
+              <span className="icon orange"></span>CDC guidelines in accordance with Washington State guideline
             </div>
             <div>
-              <span class="icon red"></span>Washington State guideline exclusively
+              <span className="icon red"></span>Washington State guideline exclusively
             </div>
           </div>
 
@@ -463,5 +469,6 @@ Summary.propTypes = {
   numTreatmentsEntries: PropTypes.number.isRequired,
   numRiskEntries: PropTypes.number.isRequired,
   numNonPharTreatmentEntries: PropTypes.number.isRequired,
-  numPDMPDataEntries: PropTypes.number.isRequired
+  numPDMPDataEntries: PropTypes.number.isRequired,
+  errorMessagesList: PropTypes.array
 };
