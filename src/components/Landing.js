@@ -28,8 +28,7 @@ export default class Landing extends Component {
       result: null,
       loading: true,
       collector: [],
-      externals: {},
-      loadDataErrorMessagesList: []
+      externals: {}
     };
 
     this.tocInitialized = false;
@@ -201,11 +200,9 @@ export default class Landing extends Component {
       timeoutPromise
     ]).catch(e => {
       console.log(`Error fetching data from ${datasetKey}: ${e}`);
-      this.setState(state => {
-        const list = state.loadDataErrorMessagesList;
-        list.push(`Error fetching data from ${datasetKey}: ${e}`);
-        return {loadDataErrorMessagesList: list};
-      });
+      if (summaryMap[datasetKey]) {
+        summaryMap[datasetKey]["errorMessage"] = `There was error fetching data: ${e}`;
+      }
       dataSet[datasetKey] = null;
       return dataSet;
     });
@@ -388,7 +385,6 @@ export default class Landing extends Component {
           numRiskEntries={numRiskEntries}
           numNonPharTreatmentEntries={numNonPharTreatmentEntries}
           numPDMPDataEntries={numPDMPDataEntries}
-          errorMessagesList={this.state.loadDataErrorMessagesList}
         />
       </div>
     );

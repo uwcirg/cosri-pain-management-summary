@@ -5,8 +5,6 @@
   .error {
     color: $color-red-darker;
     font-weight: 600;
-    margin-left: 36px;
-    margin-bottom: 24px;
   }
 
   &__nav {
@@ -444,8 +442,13 @@
       cursor: pointer;
 
       .title {
-        text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
         margin-top: 16px;
+        .error {
+          vertical-align: top;
+        }
       }
       .content {
         box-shadow: 1px 2px 2px $color-box-shadow;
@@ -455,17 +458,20 @@
         padding: 0 36px;
         overflow:hidden;
         opacity: 0;
+        height: 0;
         &.display {
           line-height: 1.5;
           padding: 16px 36px;
           opacity: 1;
+          height: auto;
         }
         b {
           font-weight: 600;
         }
-      }
-      .text {
-       // margin-bottom: 8px;
+        .error {
+          margin-top: 16px;
+          margin-bottom: 16px;
+        }
       }
       button {
         background-color: transparent;
@@ -475,6 +481,7 @@
         border: 0;
         cursor: pointer;
         margin-bottom: 8px;
+        margin-right: 8px;
         opacity: 0.8;
         padding: 0;
 
