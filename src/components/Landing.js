@@ -223,7 +223,17 @@ export default class Landing extends Component {
       this.setDataError(datasetKey, `There was error fetching data: ${e}`);
     });
 
-    if (!results) {
+    let json = null;
+    if (results) {
+      try {
+        json = JSON.parse(results);
+      } catch(e) {
+        this.setDataError(datasetKey, `There was error parsing data: ${e}`);
+        json = null;
+      }
+    }
+    
+    if (!json) {
       let demoData = this.getDemoData(datasetKey);
       //if unable to fetch data, set data to demo data if any
       if (demoData) {
@@ -234,20 +244,11 @@ export default class Landing extends Component {
       dataSet[datasetKey] = null;
       return dataSet;
     }
-
     let responseDataSet = null;
     try {
-      let json = await (results.json()).catch(e => {
-        console.log(`Error parsing ${datasetKey} response json: ${e.message}`);
-        this.setDataError(datasetKey, `There was error parsing data: ${e}`);
-        let demoData = this.getDemoData(datasetKey);
-        if (demoData) {
-          json = demoData;
-          this.setDemoDataFlag(datasetKey);
-        }
-      });
       responseDataSet  = json && json[rootElement]? json[rootElement]: null;
     } catch(e) {
+      this.setDataError(datasetKey, `Data does not contained the required root element ${rootElement}`);
       responseDataSet  = null;
     } finally {
       dataSet[datasetKey] = responseDataSet;
