@@ -7,6 +7,18 @@
       "dataKey": "PDMPMedications",
       "dataKeySource": "entry"
     },
+    "demoData": {
+        "entry": [
+          {
+            "dateWritten": "2020-04-23T16:05:57.023-04:00",
+            "medicationCodeableConcept": "OxyCONTIN 60 MG T12A"
+          },
+          {
+            "dateWritten":"2019-04-15T15:05:57.023-04:00",
+            "medicationCodeableConcept": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          }
+        ]
+    },
     "sections": [
       {
         "name": "PMP Prescriptions",

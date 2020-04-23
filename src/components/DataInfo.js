@@ -20,13 +20,14 @@ export default class DataInfo extends Component {
     const {
         contentText,
         queryDateTime,
-        errorMessage
+        errorMessage,
+        warningText
     } = this.props;
     return (
         <div className="data-provenance">
             <div className="title">
                 <button onClick={this.handleClick}>[data quality info]</button>
-                <span className={`${errorMessage?'show-inline':'hide'} error`}>
+                <span className={`${errorMessage?'show-inline':'hide'} error`} onClick={this.handleClick}>
                   <FontAwesomeIcon
                     className="error"
                     icon="exclamation-circle"
@@ -39,6 +40,7 @@ export default class DataInfo extends Component {
             <div className={`${this.state.isToggleOn?'display': ''} content`}>
                 <div className={`${contentText?'show':'hide'} text`}><b>{'Data Provenance:'}</b> {contentText}</div>
                 <div className={`${errorMessage?'show':'hide'} error`}>{errorMessage}</div>
+                <div className={`${warningText?'show':'hide'} flag-text`}>{warningText}</div>
                 <div className={'query-info'}><b>{'The query was last executed at: '}</b> {`${queryDateTime}`}</div>
             </div>
         </div>
@@ -47,6 +49,7 @@ export default class DataInfo extends Component {
 }
 DataInfo.propTypes = {
     contentText: PropTypes.string,
+    warningText: PropTypes.string,
     queryDateTime: PropTypes.string.isRequired,
     errorMessage: PropTypes.string
 };

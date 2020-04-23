@@ -43,6 +43,7 @@ export default class Landing extends Component {
         //add data from other sources, e.g. PDMP
         result['Summary'] = {...result['Summary'], ...response[1]};
         result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
+        console.log("results ", result['Summary'])
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
@@ -176,6 +177,19 @@ export default class Landing extends Component {
     return morphedResult;
   }
 
+  getDemoData(datasetKey) {
+    if (!datasetKey || !summaryMap[datasetKey]) return null;
+    if (summaryMap[datasetKey]["demoData"]) {
+      return summaryMap[datasetKey]["demoData"];
+    }
+  }
+
+  setDemoDataFlag(datasetKey) {
+    if (summaryMap[datasetKey]) {
+      summaryMap[datasetKey].usedemoflag = true;
+    }
+  }
+
   async fetchData (url, datasetKey, rootElement) {
     let dataSet = {};
     dataSet[datasetKey] = {};
@@ -203,20 +217,32 @@ export default class Landing extends Component {
       if (summaryMap[datasetKey]) {
         summaryMap[datasetKey]["errorMessage"] = `There was error fetching data: ${e}`;
       }
-      dataSet[datasetKey] = null;
-      return dataSet;
     });
 
     if (!results) {
+      let demoData = this.getDemoData(datasetKey);
+      //if unable to fetch data, set data to demo data if any
+      if (demoData && demoData[rootElement]) {
+        dataSet[datasetKey] = demoData[rootElement];
+        this.setDemoDataFlag(datasetKey);
+        return dataSet;
+      }
+      dataSet[datasetKey] = null;
       return dataSet;
     }
 
     let responseDataSet = null;
     try {
-      const json = await (results.json()).catch(e => {
+      let json = await (results.json()).catch(e => {
         console.log(`Error parsing ${datasetKey} response json: ${e.message}`);
         if (summaryMap[datasetKey]) {
           summaryMap[datasetKey]["errorMessage"] = `There was error parsing data: ${e}`;
+          let demoData = this.getDemoData(datasetKey);
+          if (demoData) {
+            json = demoData;
+            this.setDemoDataFlag(datasetKey);
+            return dataSet;
+          }
         }
       });
       responseDataSet  = json && json[rootElement]? json[rootElement]: null;

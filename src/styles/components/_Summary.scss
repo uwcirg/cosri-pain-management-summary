@@ -469,8 +469,13 @@
           font-weight: 600;
         }
         .error {
-          margin-top: 16px;
-          margin-bottom: 16px;
+          margin-top: 8px;
+          margin-bottom: 8px;
+        }
+        .flag-text {
+          color: $color-red-darker;
+          margin-bottom: 8px;
+          font-weight: 600;
         }
       }
       button {
@@ -481,7 +486,7 @@
         border: 0;
         cursor: pointer;
         margin-bottom: 8px;
-        margin-right: 8px;
+        margin-right: 4px;
         opacity: 0.8;
         padding: 0;
 

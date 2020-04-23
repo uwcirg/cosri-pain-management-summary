@@ -308,6 +308,7 @@ export default class Summary extends Component {
             errorMessage={summaryMap[section].errorMessage}
             contentText={summaryMap[section].provenanceText}
             queryDateTime={summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat()}
+            warningText={summaryMap[section].usedemoflag ? "Demo data is used": ""}
           />
     </div>);
   }
