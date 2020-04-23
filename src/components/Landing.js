@@ -240,7 +240,6 @@ export default class Landing extends Component {
           if (demoData) {
             json = demoData;
             this.setDemoDataFlag(datasetKey);
-            return dataSet;
           }
         }
       });
