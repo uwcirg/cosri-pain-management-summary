@@ -189,6 +189,13 @@ export default class Landing extends Component {
     }
   }
 
+  setDataError(datasetKey, message) {
+    if (!summaryMap[datasetKey] || !message) {
+      return;
+    }
+    summaryMap[datasetKey]["errorMessage"] = message;
+  }
+
   async fetchData (url, datasetKey, rootElement) {
     let dataSet = {};
     dataSet[datasetKey] = {};
@@ -213,15 +220,13 @@ export default class Landing extends Component {
       timeoutPromise
     ]).catch(e => {
       console.log(`Error fetching data from ${datasetKey}: ${e}`);
-      if (summaryMap[datasetKey]) {
-        summaryMap[datasetKey]["errorMessage"] = `There was error fetching data: ${e}`;
-      }
+      this.setDataError(datasetKey, `There was error fetching data: ${e}`);
     });
 
     if (!results) {
       let demoData = this.getDemoData(datasetKey);
       //if unable to fetch data, set data to demo data if any
-      if (demoData && demoData[rootElement]) {
+      if (demoData) {
         dataSet[datasetKey] = demoData[rootElement];
         this.setDemoDataFlag(datasetKey);
         return dataSet;
@@ -234,13 +239,11 @@ export default class Landing extends Component {
     try {
       let json = await (results.json()).catch(e => {
         console.log(`Error parsing ${datasetKey} response json: ${e.message}`);
-        if (summaryMap[datasetKey]) {
-          summaryMap[datasetKey]["errorMessage"] = `There was error parsing data: ${e}`;
-          let demoData = this.getDemoData(datasetKey);
-          if (demoData) {
-            json = demoData;
-            this.setDemoDataFlag(datasetKey);
-          }
+        this.setDataError(datasetKey, `There was error parsing data: ${e}`);
+        let demoData = this.getDemoData(datasetKey);
+        if (demoData) {
+          json = demoData;
+          this.setDemoDataFlag(datasetKey);
         }
       });
       responseDataSet  = json && json[rootElement]? json[rootElement]: null;
