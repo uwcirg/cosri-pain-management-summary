@@ -43,7 +43,6 @@ export default class Landing extends Component {
         //add data from other sources, e.g. PDMP
         result['Summary'] = {...result['Summary'], ...response[1]};
         result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
-        console.log("results ", result['Summary'])
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
