@@ -8,6 +8,7 @@
       "dataKeySource": "entry"
     },
     "demoData": {
+        "advisoryText": "Demo data is used here.",
         "entry": [
           {
             "dateWritten": "2020-04-23T16:05:57.023-04:00",

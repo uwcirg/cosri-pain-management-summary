@@ -245,6 +245,17 @@ export default class Summary extends Component {
     );
   }
 
+  getWarningText(section) {
+    if (!summaryMap[section]) {
+      return "";
+    }
+    if (summaryMap[section].usedemoflag && summaryMap[section]["demoData"]) {
+      return summaryMap[section]["demoData"].advisoryText;
+    }
+    //possibly add other configurable warning text if need be
+    return "";
+  }
+
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
     const subSections = sectionMap.map((subSection) => {
@@ -308,7 +319,7 @@ export default class Summary extends Component {
             errorMessage={summaryMap[section].errorMessage}
             contentText={summaryMap[section].provenanceText}
             queryDateTime={summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat()}
-            warningText={summaryMap[section].usedemoflag ? "Demo data is used": ""}
+            warningText={this.getWarningText(section)}
           />
     </div>);
   }
