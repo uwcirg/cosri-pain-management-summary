@@ -10,8 +10,7 @@ export default class DevTools extends Component {
       displayDevTools: false,
       displayFhirQueries: false,
       displayCQLResults: false,
-      displayPDMPResults: false,
-      displayOccupationResults: false
+      displayPDMPResults: false
     };
   }
 
@@ -33,11 +32,6 @@ export default class DevTools extends Component {
   togglePDMPResults = (event) => {
     event.preventDefault();
     this.setState({ displayPDMPResults: !this.state.displayPDMPResults});
-  }
-
-  toggleOccupationResults = (event) => {
-    event.preventDefault();
-    this.setState({ displayOccupationResults: !this.state.displayOccupationResults});
   }
 
   errorMessage(er, i) {
@@ -118,21 +112,6 @@ export default class DevTools extends Component {
     );
   }
 
-
-  renderOccupationResults() {
-    let occupationDataset = this.props.summary.Occupation ? this.props.summary.Occupation : null;
-    return (
-      <div className='occupation-results'>
-        <h4>Occupation Results <button onClick={this.toggleOccupationResults}>[show/hide]</button></h4>
-        <div style={{ display: this.state.displayOccupationResults ? 'block' : 'none' }}>
-          <pre>{occupationDataset ? 
-                JSON.stringify(occupationDataset, null, 2) : 
-                'No result'}</pre>
-        </div>
-      </div>
-    );
-  }
-
   render() {
     if (!this.props.collector) { return null; }
 
@@ -149,7 +128,6 @@ export default class DevTools extends Component {
           {this.renderFHIRQueries()}
           {this.renderCQLResults()}
           {this.renderPDMPResults()}
-          {this.renderOccupationResults()}
         </div>
       </div>
     );
