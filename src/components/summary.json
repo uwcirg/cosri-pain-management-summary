@@ -602,63 +602,6 @@
       }
     ]
   },
-  "Occupation": {
-    "title":"Occupational Health",
-    "provenanceText": "The data is made available by CareEvolution.",
-    "lastUpdated": "March 6th 2020, 12:00:00 a.m.",
-    "dataSource": {
-      "endpoint": "{env.PUBLIC_URL}/ocupacion.json",
-      "dataKey": "Occupation",
-      "dataKeySource": "entry",
-      "processFunction": "processOccupationData"
-    },
-    "occupationObsCode": "11341-5",
-    "itemObsCodeKeys": ["10161-8", "87707-6", "85107-8", "87512-0", "74160-3", "80427-8"],
-    "sections": [
-      {
-        "name": "Current Occupation",
-        "dataKey": "Current",
-        "dataKeySource": "Occupation",
-        "tables": [
-          {
-            "headers": {
-              "Job Title": {
-                "key": "jobTitle",
-                "sortable": false,
-                "formatter": false
-              },
-              "Description": {
-                "key": "description",
-                "formatter": "listFormat",
-                "sortable" : false
-              }
-            }
-          }
-        ]
-      },
-      {
-        "name": "Previous Occupation",
-        "dataKey": "Previous",
-        "dataKeySource": "Occupation",
-        "tables": [
-          {
-            "headers": {
-              "Job Title": {
-                "key": "jobTitle",
-                "sortable": false,
-                "formatter": false
-              },
-              "Description": {
-                "key": "description",
-                "formatter": "listFormat",
-                "sortable" : false
-              }
-            }
-          }
-        ]
-      }
-    ]
-  },
   "PatientEducationMaterials": {
     "title":"Patient Education Materials",
     "sections": [
