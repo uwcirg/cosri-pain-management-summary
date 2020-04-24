@@ -226,13 +226,17 @@ export default class Landing extends Component {
     let json = null;
     if (results) {
       try {
-        json = JSON.parse(results);
+        //read response stream
+        json = await (results.json()).catch(e => {
+          console.log(`Error parsing ${datasetKey} response json: ${e.message}`);
+          this.setDataError(datasetKey, `There was error parsing data: ${e.message}`);
+        });
       } catch(e) {
         this.setDataError(datasetKey, `There was error parsing data: ${e}`);
         json = null;
       }
     }
-    
+
     if (!json) {
       let demoData = this.getDemoData(datasetKey);
       //if unable to fetch data, set data to demo data if any
