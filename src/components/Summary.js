@@ -245,6 +245,17 @@ export default class Summary extends Component {
     );
   }
 
+  getWarningText(section) {
+    if (!summaryMap[section]) {
+      return "";
+    }
+    if (summaryMap[section].usedemoflag && summaryMap[section]["demoData"]) {
+      return summaryMap[section]["demoData"].advisoryText;
+    }
+    //possibly add other configurable warning text if need be
+    return "";
+  }
+
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
     const subSections = sectionMap.map((subSection) => {
@@ -305,8 +316,10 @@ export default class Summary extends Component {
     return (<div>
       {subSections}
       <DataInfo
+            errorMessage={summaryMap[section].errorMessage}
             contentText={summaryMap[section].provenanceText}
             queryDateTime={summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat()}
+            warningText={this.getWarningText(section)}
           />
     </div>);
   }
@@ -402,12 +415,12 @@ export default class Summary extends Component {
             </div>
           }
 
-          <div class="legend">
+          <div className="legend">
             <div>
-              <span class="icon orange"></span>CDC guidelines in accordance with Washington State guideline
+              <span className="icon orange"></span>CDC guidelines in accordance with Washington State guideline
             </div>
             <div>
-              <span class="icon red"></span>Washington State guideline exclusively
+              <span className="icon red"></span>Washington State guideline exclusively
             </div>
           </div>
 

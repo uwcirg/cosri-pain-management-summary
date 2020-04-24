@@ -44,13 +44,13 @@ export default class Landing extends Component {
         result['Summary'] = {...result['Summary'], ...response[1]};
         result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-        this.setState({ loading: false });
+        this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
       }
     )
     .catch((err) => {
       console.error(err);
-      this.setState({ loading: false });
+      this.setState({ loading: false});
     });
   }
 
@@ -176,6 +176,26 @@ export default class Landing extends Component {
     return morphedResult;
   }
 
+  getDemoData(datasetKey) {
+    if (!datasetKey || !summaryMap[datasetKey]) return null;
+    if (summaryMap[datasetKey]["demoData"]) {
+      return summaryMap[datasetKey]["demoData"];
+    }
+  }
+
+  setDemoDataFlag(datasetKey) {
+    if (summaryMap[datasetKey]) {
+      summaryMap[datasetKey].usedemoflag = true;
+    }
+  }
+
+  setDataError(datasetKey, message) {
+    if (!summaryMap[datasetKey] || !message) {
+      return;
+    }
+    summaryMap[datasetKey]["errorMessage"] = message;
+  }
+
   async fetchData (url, datasetKey, rootElement) {
     let dataSet = {};
     dataSet[datasetKey] = {};
@@ -200,19 +220,35 @@ export default class Landing extends Component {
       timeoutPromise
     ]).catch(e => {
       console.log(`Error fetching data from ${datasetKey}: ${e}`);
-      dataSet[datasetKey] = null;
-      return dataSet;
+      this.setDataError(datasetKey, `There was error fetching data: ${e}`);
     });
 
-    if (!results) {
+    let json = null;
+    if (results) {
+      try {
+        json = JSON.parse(results);
+      } catch(e) {
+        this.setDataError(datasetKey, `There was error parsing data: ${e}`);
+        json = null;
+      }
+    }
+    
+    if (!json) {
+      let demoData = this.getDemoData(datasetKey);
+      //if unable to fetch data, set data to demo data if any
+      if (demoData) {
+        dataSet[datasetKey] = demoData[rootElement];
+        this.setDemoDataFlag(datasetKey);
+        return dataSet;
+      }
+      dataSet[datasetKey] = null;
       return dataSet;
     }
-
     let responseDataSet = null;
     try {
-      const json = await (results.json()).catch(e => console.log(`Error parsing ${datasetKey} response json: ${e.message}`));
       responseDataSet  = json && json[rootElement]? json[rootElement]: null;
     } catch(e) {
+      this.setDataError(datasetKey, `Data does not contained the required root element ${rootElement}`);
       responseDataSet  = null;
     } finally {
       dataSet[datasetKey] = responseDataSet;
