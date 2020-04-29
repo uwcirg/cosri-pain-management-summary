@@ -116,10 +116,10 @@ export default class MMEGraph extends Component {
         </svg>
         <legend>
             <div>
-                <span className="icon CDC"></span>CDC guideline
+                <span className="icon CDC"></span>CDC recommended maximum
             </div>
             <div>
-                <span className="icon WA"></span>Washington State guideline
+                <span className="icon WA"></span>Washington State recommended maximum
             </div>
         </legend>
       </div>

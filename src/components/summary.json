@@ -16,14 +16,14 @@
             "medicationCodeableConcept": "OxyCONTIN 60 MG T12A",
             "quantity": 30,
             "prescriber": "Eleanor Chen",
-            "pharmacy": "Walgreen"
+            "pharmacy": "Walgreens"
           },
           {
             "dateWritten":"2019-04-15T15:05:57.023-04:00",
             "dateDispensed":"2019-04-15T15:05:57.023-04:00",
             "medicationCodeableConcept": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet",
             "prescriber": "Eleanor Chen",
-            "pharmacy": "Walgreen",
+            "pharmacy": "Walgreens",
             "quantity": 10
           }
         ]
