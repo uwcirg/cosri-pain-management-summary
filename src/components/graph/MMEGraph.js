@@ -64,7 +64,7 @@ export default class MMEGraph extends Component {
 
     return (
       <div className="MMEgraph">
-        <div className="title">MME Trend Graph</div>
+        <div className="title">Morphine Milligram Equivalency Trend Graph</div>
         <svg
           className="MMEChartSvg"
           width={width + margins.left + margins.right}
