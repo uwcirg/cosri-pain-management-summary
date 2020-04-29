@@ -347,6 +347,9 @@ export default class Landing extends Component {
               }
             });
             if (graphData.length) {
+              graphData.sort(function(a, b) {
+                return parseInt(b["_id"]) - parseInt(a["_id"]);
+              });
               summary[subSection.dataKeySource+"_graphdata"] = graphData;
             }
           }

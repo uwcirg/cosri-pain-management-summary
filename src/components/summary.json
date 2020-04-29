@@ -35,7 +35,7 @@
         "dataKeySource": "PDMPMedications",
         "omitTitle": true,
         "graph": {
-          "fields": ["dateWritten", "MMEValue"]
+          "fields": ["dateWritten", "MMEValue", "_id"]
         },
         "info": [
           {
