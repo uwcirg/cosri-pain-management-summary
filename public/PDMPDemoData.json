@@ -16,7 +16,6 @@
         }
       },
       "quantity": 60,
-      "MMEValue": 5,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -38,8 +37,8 @@
         }
       },
       "quantity": 5,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Matthew Thompson",
+      "pharmacy": "CVS Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 2
     },
@@ -59,8 +58,8 @@
         }
       },
       "quantity": 30,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Edward Kim",
+      "pharmacy": "Bartell Drug Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 3
     },
@@ -80,8 +79,8 @@
         }
       },
       "quantity": 30,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Michael Wagner",
+      "pharmacy": "UW Medicine Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 4
     },
@@ -123,8 +122,8 @@
         }
       },
       "quantity": 14,
-      "MMEValue": 40,
-      "prescriber": "Eleanor Chen",
+      "MMEValue": 55,
+      "prescriber": "Jose Mantilla",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
       "_id": 6
@@ -145,7 +144,7 @@
         }
       },
       "quantity": 14,
-      "MMEValue": 40,
+      "MMEValue": 55,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -167,8 +166,8 @@
         }
       },
       "quantity": 30,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Gabrielle Krane",
+      "pharmacy": "Target Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 8
     },
@@ -188,8 +187,8 @@
         }
       },
       "quantity": 10,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Lynette Sholl",
+      "pharmacy": "CVS Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 9
     },
@@ -209,7 +208,6 @@
         }
       },
       "quantity": 30,
-      "MMEValue": 5,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -231,8 +229,8 @@
         }
       },
       "quantity": 10,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Elizabeth Morgan",
+      "pharmacy": "Bartell Drug Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 11
     },
@@ -252,8 +250,8 @@
         }
       },
       "quantity": 10,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Edward Kim",
+      "pharmacy": "UW Medicine Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 12
     },
@@ -273,7 +271,7 @@
         }
       },
       "quantity": 20,
-      "prescriber": "Eleanor Chen",
+      "prescriber": "Kristina Wakeman",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
       "_id": 13
@@ -294,8 +292,8 @@
         }
       },
       "quantity": 6,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Christopher Fletcher",
+      "pharmacy": "CVS Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 14
     },
@@ -336,7 +334,7 @@
         }
       },
       "quantity": 8,
-      "prescriber": "Eleanor Chen",
+      "prescriber": "Teresa Kim",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
       "_id": 16
@@ -357,7 +355,7 @@
         }
       },
       "quantity": 14,
-      "MMEValue": 40,
+      "MMEValue": 100,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -379,8 +377,8 @@
         }
       },
       "quantity": 6,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Elizabeth Loggers",
+      "pharmacy": "Rite Aid Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 18
     },
@@ -400,7 +398,7 @@
         }
       },
       "quantity": 6,
-      "prescriber": "Eleanor Chen",
+      "prescriber": "Michael Wagner",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
       "_id": 19
@@ -421,7 +419,7 @@
         }
       },
       "quantity": 14,
-      "MMEValue": 40,
+      "MMEValue": 100,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -443,7 +441,6 @@
         }
       },
       "quantity": 30,
-      "MMEValue": 5,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -465,9 +462,9 @@
         }
       },
       "quantity": 14,
-      "MMEValue": 40,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "MMEValue": 100,
+      "prescriber": "Lee Cranmer",
+      "pharmacy": "CVS Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 22
     },
@@ -508,7 +505,6 @@
         }
       },
       "quantity": 60,
-      "MMEValue": 5,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -530,7 +526,6 @@
         }
       },
       "quantity": 60,
-      "MMEValue": 5,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -552,7 +547,6 @@
         }
       },
       "quantity": 14,
-      "MMEValue": 10,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -791,6 +785,7 @@
         }
       },
       "quantity": 14,
+      "MMEValue": 40,
       "prescriber": "Eleanor Chen",
       "pharmacy": "Walgreens",
       "resourceType": "MedicationOrder",
@@ -812,8 +807,8 @@
         }
       },
       "quantity": 5,
-      "prescriber": "Eleanor Chen",
-      "pharmacy": "Walgreens",
+      "prescriber": "Stephanie Schultz",
+      "pharmacy": "CVS Pharmacy",
       "resourceType": "MedicationOrder",
       "_id": 38
     }
