@@ -6,39 +6,7 @@ import { line, curveMonotoneX } from 'd3-shape';
 import { transition } from 'd3-transition';
 
 export default class MMEGraph extends Component {
-//   constructor() {
-//     super();
-//     // this.state = {
-//     //   data: [
-//     //     { name: 'Jan', value: 30 },
-//     //     { name: 'Feb', value: 10 },
-//     //     { name: 'Mar', value: 50 },
-//     //     { name: 'Apr', value: 20 },
-//     //     { name: 'May', value: 80 },
-//     //     { name: 'Jun', value: 30 },
-//     //     { name: 'July', value: 0 },
-//     //     { name: 'Aug', value: 20 },
-//     //     { name: 'Sep', value: 100 },
-//     //     { name: 'Oct', value: 55 },
-//     //     { name: 'Nov', value: 60 },
-//     //     { name: 'Dec', value: 80 },
-//     //   ],
-//     // }
-//   }
-//   randomData = (e) => {
-//     e.preventDefault();
-//     this.setState((prevState) => {
-//       const data = prevState.data.map(d => ({
-//         name: d.name,
-//         value: Math.floor((Math.random() * 100) + 1)
-//       }))
-//       return {
-//         data
-//       }
-//     })
-//   }
   render() {
-   // const { data } = this.state;
     const data  = this.props.data;
     const parentWidth = 820;
     let WAData = [];
@@ -55,11 +23,6 @@ export default class MMEGraph extends Component {
             "dateWritten": d.dateWritten
         });
     })
-    // console.log("clone? ", cloneData)
-    // const WAData = cloneData.map(d => {
-    //     d.MMEValue = 120;
-    //     return d;
-    // });
 
     const margins = {
       top: 20,

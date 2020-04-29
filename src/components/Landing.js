@@ -44,7 +44,6 @@ export default class Landing extends Component {
         result['Summary'] = {...result['Summary'], ...response[1]};
         result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-        console.log("results? ", result.Summary)
         this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
       }
@@ -349,34 +348,7 @@ export default class Landing extends Component {
             });
             if (graphData.length) {
               summary[subSection.dataKeySource+"_graphdata"] = graphData;
-              console.log("graph data? ", graphData);
             }
-
-            
-            // let graphFields = subSection.graph["fields"];
-            // if (graphFields && graphFields.length) {
-            //   let graphData = [];
-            //   let filterData = entries.map(item => {
-            //     let keys = Object.keys(item);
-            //     let o = {};
-            //     graphFields.forEach(f => {
-            //       if (item[f]) {
-            //         o[f] = item[f];
-            //         return true;
-            //       }
-            //       o[f] = null;
-            //     });
-            //   });
-            //   entries.forEach(entry => {
-            //     let toInclude = true;
-            //     graphFields.forEach(f => {
-            //       if (!toInclude) {
-            //         return true;
-            //       }
-            //       if (!entry[f]) toInclude = false;
-            //     });
-            //   });
-            // }
           }
           sectionFlags[sectionKey][subSection.dataKey] = entries.reduce((flaggedEntries, entry) => {
             if (entry._id == null) {
