@@ -38,7 +38,7 @@ class Line extends React.Component {
       .attr('fill', 'none')
       .attr('d', lineGenerator);
     if (this.props.dotted) {
-      currentNode.style("stroke-dasharray", ("3, 3"))  // <== This line here!!
+      currentNode.style("stroke-dasharray", (this.props.dotSpacing || "3, 3"))  // <== This line here!!
     }
 
     // select(node)

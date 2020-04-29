@@ -110,8 +110,8 @@ export default class MMEGraph extends Component {
           <g transform={`translate(${margins.left}, ${margins.top})`}>
             <XYAxis {...{ xScale, yScale, height, ticks, t }} />
             <Line lineID="dataLine" data={data} {...defaultProps} />
-            <Line lineID="WALine" strokeColor="#ecacac" dotted="true" data={WAData} {...defaultProps} />
-            <Line lineID="CDCLine" strokeColor="#e09b1d" dotted="true" data={CDCData} {...defaultProps} />
+            <Line lineID="WALine" strokeColor="#a75454" dotted="true" dotSpacing="3, 3" data={WAData} {...defaultProps} />
+            <Line lineID="CDCLine" strokeColor="#e09b1d" dotted="true" dotSpacing="5, 5" data={CDCData} {...defaultProps} />
           </g>
         </svg>
         <legend>
