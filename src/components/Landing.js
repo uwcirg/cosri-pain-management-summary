@@ -361,6 +361,9 @@ export default class Landing extends Component {
                 if (summary[summarySectionRef.dataKey]) {
                   if (!summary[summarySectionRef.dataKey][summarySectionRef.dataKeySource]) {
                     let resultObj = {};
+                    /*
+                     * assign results to matched key fields
+                     */
                     for (let key in summarySectionRef["keyMatches"]) {
                       let value = graphData[graphData.length-1][key];
                       resultObj[summarySectionRef["keyMatches"][key]] = value ? value: summarySectionRef["display"];
