@@ -22,8 +22,9 @@ import UserIcon from '../icons/UserIcon';
 import InclusionBanner from './InclusionBanner';
 import ExclusionBanner from './ExclusionBanner';
 import DataInfo from './DataInfo';
-import InfoModal from './InfoModal';
 import DevTools from './DevTools';
+import InfoModal from './InfoModal';
+import MMEGraph from './graph/MMEGraph';
 
 export default class Summary extends Component {
   constructor () {
@@ -256,6 +257,10 @@ export default class Summary extends Component {
     return "";
   }
 
+  renderGraph(section, data) {
+    return <MMEGraph data={data}></MMEGraph>;
+  }
+
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
     const subSections = sectionMap.map((subSection) => {
@@ -263,6 +268,10 @@ export default class Summary extends Component {
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
       const hasEntries = entries.length !== 0;
+      const graphData = dataKeySource ? this.props.summary[subSection.dataKey+"_graphdata"] : null;
+      console.log(
+        "contain graphic? ", graphData
+      )
 
       const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
       const flaggedClass = flagged ? 'flagged' : '';
@@ -307,6 +316,7 @@ export default class Summary extends Component {
           </h3>
 
           {!hasEntries && this.renderNoEntries(section, subSection)}
+          {graphData && this.renderGraph(section, graphData)}
           {hasEntries && subSection.tables.map((table, index) =>
             this.renderTable(table, entries, section, subSection, index))
           }

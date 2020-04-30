@@ -3,7 +3,7 @@
     "title":"State PMP Prescriptions",
     "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
     "dataSource": {
-      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder",
+      "endpoint": "{env.PUBLIC_URL}/PDMPDemoData.json",
       "dataKey": "PDMPMedications",
       "dataKeySource": "entry"
     },
@@ -12,11 +12,19 @@
         "entry": [
           {
             "dateWritten": "2020-04-23T16:05:57.023-04:00",
-            "medicationCodeableConcept": "OxyCONTIN 60 MG T12A"
+            "dateDispensed": "2020-04-23T16:05:57.023-04:00",
+            "medicationCodeableConcept": "OxyCONTIN 60 MG T12A",
+            "quantity": 30,
+            "prescriber": "Eleanor Chen",
+            "pharmacy": "Walgreens"
           },
           {
             "dateWritten":"2019-04-15T15:05:57.023-04:00",
-            "medicationCodeableConcept": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            "dateDispensed":"2019-04-15T15:05:57.023-04:00",
+            "medicationCodeableConcept": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet",
+            "prescriber": "Eleanor Chen",
+            "pharmacy": "Walgreens",
+            "quantity": 10
           }
         ]
     },
@@ -26,6 +34,9 @@
         "dataKey": "PDMPMedications",
         "dataKeySource": "PDMPMedications",
         "omitTitle": true,
+        "graph": {
+          "fields": ["dateWritten", "MMEValue", "_id"]
+        },
         "info": [
           {
             "type": "elements",
@@ -47,11 +58,11 @@
                 "formatter": "codeableConceptFormat",
                 "formatterArguments": ["medicationCodeableConcept", "text"]
               },
-              "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Quantity": "quantity",
               "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
-              "Dispensed": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false },
-              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+              "Dispensed": { "key": "dateDispensed", "formatter": "datishFormat"},
+              "Prescriber": "prescriber",
+              "Pharmacy": "pharmacy"
             }
           }
         ]

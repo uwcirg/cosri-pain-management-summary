@@ -331,11 +331,32 @@ export default class Landing extends Component {
         const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
 
         if (entries.length > 0) {
+          if (subSection.graph) {
+            let graphFields = subSection.graph["fields"] || [];
+            let graphData = [];
+            entries.forEach(item => {
+              let matchedKeys = Object.keys(item).filter(key => {
+                return graphFields.indexOf(key) !== -1;
+              });
+              if (matchedKeys.length === graphFields.length) {
+                let o = {};
+                matchedKeys.forEach(key => {
+                  o[key] = item[key];
+                });
+                graphData.push(o);
+              }
+            });
+            if (graphData.length) {
+              graphData.sort(function(a, b) {
+                return parseInt(b["_id"]) - parseInt(a["_id"]);
+              });
+              summary[subSection.dataKeySource+"_graphdata"] = graphData;
+            }
+          }
           sectionFlags[sectionKey][subSection.dataKey] = entries.reduce((flaggedEntries, entry) => {
             if (entry._id == null) {
               entry._id = generateUuid();
             }
-
             const entryFlag = flagit(entry, subSection, summary);
 
             if (entryFlag) {
