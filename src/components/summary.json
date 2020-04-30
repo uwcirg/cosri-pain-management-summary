@@ -35,7 +35,17 @@
         "dataKeySource": "PDMPMedications",
         "omitTitle": true,
         "graph": {
-          "fields": ["dateWritten", "MMEValue", "_id"]
+          "fields": ["dateWritten", "MMEValue", "_id"],
+          "summarySection": {
+            "dataKey": "RiskConsiderations",
+            "dataKeySource": "MostRecentMME",
+            "keyMatches": {
+              "dateWritten": "Date",
+              "MMEValue": "Result",
+              "Name": "Name"
+            },
+            "display": "Morphine Milligram Equivalent (MME)"
+          }
         },
         "info": [
           {
