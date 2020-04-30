@@ -346,11 +346,31 @@ export default class Landing extends Component {
                 graphData.push(o);
               }
             });
+            /*
+             *  TODO: Remove or modify after demo, based on demo data, not accurate
+             *
+             */
             if (graphData.length) {
               graphData.sort(function(a, b) {
                 return parseInt(b["_id"]) - parseInt(a["_id"]);
               });
               summary[subSection.dataKeySource+"_graphdata"] = graphData;
+              if (subSection.graph.summarySection) {
+                let summarySectionRef = subSection.graph.summarySection;
+                if (summary[summarySectionRef.dataKey]) {
+                  if (!summary[summarySectionRef.dataKey][summarySectionRef.dataKeySource]) {
+                    let resultObj = {};
+                    /*
+                     * assign results to matched key fields
+                     */
+                    for (let key in summarySectionRef["keyMatches"]) {
+                      let value = graphData[graphData.length-1][key];
+                      resultObj[summarySectionRef["keyMatches"][key]] = value ? value: summarySectionRef["display"];
+                    }
+                    summary[summarySectionRef.dataKey][summarySectionRef.dataKeySource] = [resultObj];
+                  }
+                }
+              }
             }
           }
           sectionFlags[sectionKey][subSection.dataKey] = entries.reduce((flaggedEntries, entry) => {

@@ -269,10 +269,6 @@ export default class Summary extends Component {
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
       const hasEntries = entries.length !== 0;
       const graphData = dataKeySource ? this.props.summary[subSection.dataKey+"_graphdata"] : null;
-      console.log(
-        "contain graphic? ", graphData
-      )
-
       const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
       const flaggedClass = flagged ? 'flagged' : '';
       const omitTitleClass = subSection.omitTitle ? 'sub-section-notitle' : '';
