@@ -110,11 +110,47 @@ export default class Landing extends Component {
       let result = results[index];
       //require additional processing of result data
       if (item.processFunction && this[item.processFunction]) {
-        result = this[item.processFunction](results[index][item.dataKey]);
+        result = this[item.processFunction](results[index][item.dataKey], item.dataKey);
       }
       dataSet[item.dataKey] = result ? result: null;
 
     });
+    return dataSet;
+  }
+
+  processMedicationOrder(result, dataKey) {
+    let dataSet = {};
+    /*
+     * dealing with deeply nested FHIR response data, reformat for ease of rendering
+     */
+    result.forEach(item => {
+      if (item["prescriber"]) {
+        item["_prescriber"] = item["prescriber"]["display"];
+      }
+      let dispenseRequest = item.dispenseRequest;
+      if (!dispenseRequest) {
+        return true;
+      }
+      if (dispenseRequest["quantity"]) {
+        item["_quantity"] = dispenseRequest["quantity"]["value"]|| "";
+      }
+      if (!dispenseRequest["extension"]) {
+        return true;
+      }
+      let dObj = dispenseRequest["extension"].filter(o => o.valueDate);
+      if (dObj.length) {
+        item["_dateDispensed"] = dObj[0].valueDate;
+      }
+      let pObj = dispenseRequest["extension"].filter(o => o.valueString);
+      if (pObj.length) {
+        item["_pharmacy"] = pObj[0].valueString;
+      }
+    });
+    /*
+     * TODO: add MME converted value for each opioid med here?
+     * so we can use these values to draw graph??
+     */
+    dataSet[dataKey] = result;
     return dataSet;
   }
 
@@ -331,29 +367,13 @@ export default class Landing extends Component {
         const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
 
         if (entries.length > 0) {
-          if (subSection.graph) {
-            let graphFields = subSection.graph["fields"] || [];
-            let graphData = [];
-            entries.forEach(item => {
-              let matchedKeys = Object.keys(item).filter(key => {
-                return graphFields.indexOf(key) !== -1;
-              });
-              if (matchedKeys.length === graphFields.length) {
-                let o = {};
-                matchedKeys.forEach(key => {
-                  o[key] = item[key];
-                });
-                graphData.push(o);
-              }
-            });
+          if (subSection.graph && subSection.graph.data) {
             /*
              *  TODO: Remove or modify after demo, based on demo data, not accurate
              *
              */
-            if (graphData.length) {
-              graphData.sort(function(a, b) {
-                return parseInt(b["_id"]) - parseInt(a["_id"]);
-              });
+            if (subSection.graph.data.length) {
+              let graphData = subSection.graph.data;
               summary[subSection.dataKeySource+"_graphdata"] = graphData;
               if (subSection.graph.summarySection) {
                 let summarySectionRef = subSection.graph.summarySection;

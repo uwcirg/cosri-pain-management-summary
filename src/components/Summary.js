@@ -257,8 +257,12 @@ export default class Summary extends Component {
     return "";
   }
 
-  renderGraph(section, data) {
-    return <MMEGraph data={data}></MMEGraph>;
+  renderGraph(section, data, type) {
+    if (type === "MME") {
+      return <MMEGraph data={data}></MMEGraph>;
+    }
+    //can return other type of graph depending on the section
+    return <div className="graph-placeholder"></div>;
   }
 
   renderSection(section) {
@@ -269,6 +273,7 @@ export default class Summary extends Component {
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
       const hasEntries = entries.length !== 0;
       const graphData = dataKeySource ? this.props.summary[subSection.dataKey+"_graphdata"] : null;
+      const graphType = subSection.graph? subSection.graph.type: "";
       const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
       const flaggedClass = flagged ? 'flagged' : '';
       const omitTitleClass = subSection.omitTitle ? 'sub-section-notitle' : '';
@@ -312,7 +317,7 @@ export default class Summary extends Component {
           </h3>
 
           {!hasEntries && this.renderNoEntries(section, subSection)}
-          {graphData && this.renderGraph(section, graphData)}
+          {graphData && this.renderGraph(section, graphData, graphType)}
           {hasEntries && subSection.tables.map((table, index) =>
             this.renderTable(table, entries, section, subSection, index))
           }

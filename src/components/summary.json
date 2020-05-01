@@ -3,30 +3,31 @@
     "title":"State PMP Prescriptions",
     "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
     "dataSource": {
-      "endpoint": "{env.PUBLIC_URL}/PDMPDemoData.json",
+      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder",
       "dataKey": "PDMPMedications",
-      "dataKeySource": "entry"
+      "dataKeySource": "entry",
+      "processFunction": "processMedicationOrder"
     },
     "demoData": {
-        "advisoryText": "Demo data is used here.",
-        "entry": [
-          {
-            "dateWritten": "2020-04-23T16:05:57.023-04:00",
-            "dateDispensed": "2020-04-23T16:05:57.023-04:00",
-            "medicationCodeableConcept": "OxyCONTIN 60 MG T12A",
-            "quantity": 30,
-            "prescriber": "Eleanor Chen",
-            "pharmacy": "Walgreens"
-          },
-          {
-            "dateWritten":"2019-04-15T15:05:57.023-04:00",
-            "dateDispensed":"2019-04-15T15:05:57.023-04:00",
-            "medicationCodeableConcept": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet",
-            "prescriber": "Eleanor Chen",
-            "pharmacy": "Walgreens",
-            "quantity": 10
-          }
-        ]
+      "advisoryText": "Demo data is used here.",
+      "entry": [
+        {
+          "dateWritten": "2020-04-23T16:05:57.023-04:00",
+          "_dateDispensed": "2020-04-23T16:05:57.023-04:00",
+          "medicationCodeableConcept": "OxyCONTIN 60 MG T12A",
+          "_quantity": 30,
+          "_prescriber": "Eleanor Chen",
+          "_pharmacy": "Walgreens"
+        },
+        {
+          "dateWritten":"2019-04-15T15:05:57.023-04:00",
+          "_dateDispensed":"2019-04-15T15:05:57.023-04:00",
+          "medicationCodeableConcept": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet",
+          "_prescriber": "Eleanor Chen",
+          "_pharmacy": "Walgreens",
+          "_quantity": 10
+        }
+      ]
     },
     "sections": [
       {
@@ -35,7 +36,8 @@
         "dataKeySource": "PDMPMedications",
         "omitTitle": true,
         "graph": {
-          "fields": ["dateWritten", "MMEValue", "_id"],
+          "type": "MME",
+          "data": [{"dateWritten":"2019-04-01","MMEValue":40,"_id":37},{"dateWritten":"2019-04-15","MMEValue":40,"_id":34},{"dateWritten":"2019-05-01","MMEValue":40,"_id":32},{"dateWritten":"2019-05-15","MMEValue":40,"_id":31},{"dateWritten":"2019-06-01","MMEValue":40,"_id":30},{"dateWritten":"2019-06-15","MMEValue":40,"_id":29},{"dateWritten":"2019-07-01","MMEValue":40,"_id":28},{"dateWritten":"2019-07-15","MMEValue":40,"_id":27},{"dateWritten":"2019-07-30","MMEValue":100,"_id":22},{"dateWritten":"2019-10-01","MMEValue":100,"_id":20},{"dateWritten":"2019-10-15","MMEValue":100,"_id":17},{"dateWritten":"2019-11-01","MMEValue":55,"_id":7},{"dateWritten":"2019-11-15","MMEValue":55,"_id":6},{"dateWritten":"2019-12-01","MMEValue":40,"_id":5}],
           "summarySection": {
             "dataKey": "RiskConsiderations",
             "dataKeySource": "MostRecentMME",
@@ -68,11 +70,11 @@
                 "formatter": "codeableConceptFormat",
                 "formatterArguments": ["medicationCodeableConcept", "text"]
               },
-              "Quantity": "quantity",
+              "Quantity": "_quantity",
               "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
-              "Dispensed": { "key": "dateDispensed", "formatter": "datishFormat"},
-              "Prescriber": "prescriber",
-              "Pharmacy": "pharmacy"
+              "Dispensed": { "key": "_dateDispensed", "formatter": "datishFormat"},
+              "Prescriber": "_prescriber",
+              "Pharmacy": "_pharmacy"
             }
           }
         ]

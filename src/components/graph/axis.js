@@ -1,5 +1,6 @@
 import React from "react";
 import { select, selectAll } from "d3-selection";
+import {timeFormat} from "d3-time-format";
 import { axisBottom, axisLeft } from "d3-axis";
 import { transition } from 'd3-transition';
 
@@ -15,12 +16,16 @@ class Axis extends React.Component {
     this.updateAxis();
   }
   renderAxis() {
-    const { scale, orient, ticks } = this.props;
+    const { scale, orient, ticks, tickType, tickFormat } = this.props;
     const node = this.ref.current;
     let axis;
 
     if (orient === "bottom") {
       axis = axisBottom(scale);
+      if (tickType === "date") {
+        axis.tickFormat(timeFormat(tickFormat ||"%d %b %y"));
+      }
+      //TODO allow other tick type and formatting here
     }
     if (orient === "left") {
       axis = axisLeft(scale)

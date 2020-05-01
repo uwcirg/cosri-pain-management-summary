@@ -227,19 +227,30 @@
         }
       }
       .MMEgraph {
+        margin-top: 32px;
         margin-bottom: 24px;
-        border-bottom: 1px solid $color-gray-lightest;
-        padding-bottom: 24px;
+        border-bottom: 1px solid $color-gray-lighter;
+        padding-bottom: 32px;
         .title {
-          margin-left: 68px;
+          margin-left: 42px;
           font-weight: 600;
           
         }
-        .axis.bottom {
+        .axis-group {
           text {
-            transform: translate(12px, 40px) rotate(90deg);
+            font-size: 12px;
+          }
+          .axis.bottom {
+            text {
+              transform: translateY(12px);
+            }
           }
         }
+        // .axis.bottom {
+        //   text {
+        //     transform: translate(12px, 40px) rotate(90deg);
+        //   }
+        // }
         legend {
           margin-left: 42px;
           margin-top: 8px;
