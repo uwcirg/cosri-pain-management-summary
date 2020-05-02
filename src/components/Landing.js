@@ -94,10 +94,7 @@ export default class Landing extends Component {
     }
 
     let results = await Promise.all(promiseResultSet.map(item => {
-      let endpoint = (item.endpoint)
-                    .replace('{env.REACT_APP_CONF_API_URL}', process.env.REACT_APP_CONF_API_URL)
-                    .replace('{env.PUBLIC_URL}', process.env.PUBLIC_URL);
-      return this.fetchData(`${endpoint}`, item.dataKey, item.dataKeySource)
+      return this.fetchData(this.processEndPoint(item.endpoint), item.dataKey, item.dataKeySource)
     })).catch(e => {
       console.log(`Error parsing external data response json: ${e.message}`);
       promiseResultSet.forEach(item => {
@@ -108,17 +105,30 @@ export default class Landing extends Component {
 
     promiseResultSet.forEach((item, index) => {
       let result = results[index];
+      console.log("results? ", results[index][item.dataKey])
       //require additional processing of result data
       if (item.processFunction && this[item.processFunction]) {
-        result = this[item.processFunction](results[index][item.dataKey], item.dataKey);
+        result = this[item.processFunction](results[index] ? results[index][item.dataKey] : null, item.dataKey);
       }
+      console.log("result? ", result)
       dataSet[item.dataKey] = result ? result: null;
 
     });
     return dataSet;
   }
 
+  processEndPoint(endpoint) {
+    if (!endpoint) return "";
+    return (endpoint)
+    .replace('{env.REACT_APP_CONF_API_URL}', process.env.REACT_APP_CONF_API_URL)
+    .replace('{env.PUBLIC_URL}', process.env.PUBLIC_URL);
+  }
+
   processMedicationOrder(result, dataKey) {
+
+    if (!result) {
+      return false;
+    }
     let dataSet = {};
     /*
      * dealing with deeply nested FHIR response data, reformat for ease of rendering
@@ -212,11 +222,12 @@ export default class Landing extends Component {
     return morphedResult;
   }
 
-  getDemoData(datasetKey) {
-    if (!datasetKey || !summaryMap[datasetKey]) return null;
-    if (summaryMap[datasetKey]["demoData"]) {
-      return summaryMap[datasetKey]["demoData"];
+  async getDemoData(section) {
+    if (!section || !section["demoData"]) return null;
+    if (!section["demoData"]["endpoint"]) {
+      return null;
     }
+    return fetch(this.processEndPoint(section["demoData"]["endpoint"]));
   }
 
   setDemoDataFlag(datasetKey) {
@@ -274,7 +285,14 @@ export default class Landing extends Component {
     }
 
     if (!json) {
-      let demoData = this.getDemoData(datasetKey);
+      let dresult = await this.getDemoData(summaryMap[datasetKey]).catch(e => {
+        console.log(`Error fetching demo data for ${datasetKey}: ${e}`);
+        this.setDataError(datasetKey, `There was error fetching demo data: ${e}`);
+      });
+      let demoData = await(dresult.json()).catch(e => {
+        console.log(`Error parsing demo ${datasetKey} response json: ${e.message}`);
+        this.setDataError(datasetKey, `There was error parsing demo data: ${e.message}`);
+      });
       //if unable to fetch data, set data to demo data if any
       if (demoData) {
         dataSet[datasetKey] = demoData[rootElement];

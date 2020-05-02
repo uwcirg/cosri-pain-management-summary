@@ -10,24 +10,7 @@
     },
     "demoData": {
       "advisoryText": "Demo data is used here.",
-      "entry": [
-        {
-          "dateWritten": "2020-04-23T16:05:57.023-04:00",
-          "_dateDispensed": "2020-04-23T16:05:57.023-04:00",
-          "medicationCodeableConcept": "OxyCONTIN 60 MG T12A",
-          "_quantity": 30,
-          "_prescriber": "Eleanor Chen",
-          "_pharmacy": "Walgreens"
-        },
-        {
-          "dateWritten":"2019-04-15T15:05:57.023-04:00",
-          "_dateDispensed":"2019-04-15T15:05:57.023-04:00",
-          "medicationCodeableConcept": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet",
-          "_prescriber": "Eleanor Chen",
-          "_pharmacy": "Walgreens",
-          "_quantity": 10
-        }
-      ]
+      "endpoint": "{env.PUBLIC_URL}/assets/data/PDMPDemoData.json"
     },
     "sections": [
       {
