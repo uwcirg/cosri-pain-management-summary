@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { scaleLinear, scaleTime } from 'd3-scale';
+import { line, curveMonotoneX } from 'd3-shape';
 import XYAxis from './xy-axis';
 import Line from './line';
-import { line, curveMonotoneX } from 'd3-shape';
 
 
 export default class MMEGraph extends Component {
@@ -118,3 +119,7 @@ export default class MMEGraph extends Component {
     );
   }
 }
+
+MMEGraph.propTypes = {
+  data: PropTypes.object.isRequired
+};
