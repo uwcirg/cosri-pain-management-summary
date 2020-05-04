@@ -105,12 +105,14 @@ export default class Landing extends Component {
 
     promiseResultSet.forEach((item, index) => {
       let result = results[index];
-      console.log("results? ", results[index][item.dataKey])
       //require additional processing of result data
       if (item.processFunction && this[item.processFunction]) {
-        result = this[item.processFunction](results[index] ? results[index][item.dataKey] : null, item.dataKey);
+        try {
+          result = this[item.processFunction](results[index] ? results[index][item.dataKey] : null, item.dataKey);
+        } catch(e) {
+          console.log(`Error processing data result via processing function ${item.processFunction}: ${e}`);
+        }
       }
-      console.log("result? ", result)
       dataSet[item.dataKey] = result ? result: null;
 
     });
@@ -126,32 +128,36 @@ export default class Landing extends Component {
 
   processMedicationOrder(result, dataKey) {
 
-    if (!result) {
+    if (!result || !result.length) {
       return false;
     }
     let dataSet = {};
     /*
      * dealing with deeply nested FHIR response data, reformat for ease of rendering
      */
+    let getValue = (obj, prop) => {
+      return obj && obj[prop] ? obj[prop] : "";
+    }
     result.forEach(item => {
-      if (item["prescriber"]) {
-        item["_prescriber"] = item["prescriber"]["display"];
-      }
+      //prescriber
+      item["_prescriber"] = getValue(item["prescriber"], "display");
       let dispenseRequest = item.dispenseRequest;
       if (!dispenseRequest) {
         return true;
       }
-      if (dispenseRequest["quantity"]) {
-        item["_quantity"] = dispenseRequest["quantity"]["value"]|| "";
-      }
-      if (!dispenseRequest["extension"]) {
+      //quantity
+      item["_quantity"] = getValue(dispenseRequest["quantity"], "value"); 
+      let extensionObj = dispenseRequest["extension"];
+      if (!extensionObj.length) {
         return true;
       }
-      let dObj = dispenseRequest["extension"].filter(o => o.valueDate);
+      //date dispensed
+      let dObj = extensionObj.filter(o => o.valueDate);
       if (dObj.length) {
         item["_dateDispensed"] = dObj[0].valueDate;
       }
-      let pObj = dispenseRequest["extension"].filter(o => o.valueString);
+      // pharmacy
+      let pObj = extensionObj.filter(o => o.valueString);
       if (pObj.length) {
         item["_pharmacy"] = pObj[0].valueString;
       }
@@ -162,64 +168,6 @@ export default class Landing extends Component {
      */
     dataSet[dataKey] = result;
     return dataSet;
-  }
-
-  processOccupationData (result) {
-    if (!result || !result.length) return null;
-
-    /*
-     * filter results for occupation items
-     */
-    result = result.filter(item => {
-      return item['resource']['code']['coding'][0]['code'] === summaryMap['Occupation']['occupationObsCode'];
-    });
-
-    if (!result.length) return null;
-
-    let morphedResult = {'Current': {}, 'Previous': {}};
-    result = result.map(item => item.resource);
-
-    result.forEach((item, index) => {
-      if (index > 1) return true;
-      let key = index === 0 ? 'Current': 'Previous';
-      if (item.valueCodeableConcept && item['valueCodeableConcept']['text']) {
-        morphedResult[key]['jobTitle'] = item['valueCodeableConcept']['text'];
-      }
-      if (!item.component) {
-        morphedResult[key]['description'] = [];
-        return true;
-      }
-      let occupaSectionKeys = summaryMap['Occupation']['itemObsCodeKeys'];
-      let description = [];
-      /*
-       * select items to display - from json that matched the observation code
-       * display selected items from returned response
-       */
-      occupaSectionKeys.forEach(key => {
-        let matched = (item.component).find(subitem => {
-          if (subitem.code && subitem.code['coding'][0]['code'] === key) {
-            return subitem;
-          }
-          return false;
-        });
-        if (matched) {
-          let value = '';
-          if (matched.valueString) {
-            value = matched.valueString;
-          } else if (matched.valueQuantity) {
-            value = matched.valueQuantity['value'];
-          } else if (matched.valueCodeableConcept) {
-            value = matched.valueCodeableConcept['text'];
-          }
-          description.push({
-            'text': matched.code['text'],
-            'value': value
-          });
-        }
-      });
-      morphedResult[key]['description'] = description;
-    });
-    return morphedResult;
   }
 
   async getDemoData(section) {
@@ -240,6 +188,7 @@ export default class Landing extends Component {
     if (!summaryMap[datasetKey] || !message) {
       return;
     }
+    console.log(message); //display error in console
     summaryMap[datasetKey]["errorMessage"] = message;
   }
 
@@ -266,7 +215,6 @@ export default class Landing extends Component {
       fetch(url),
       timeoutPromise
     ]).catch(e => {
-      console.log(`Error fetching data from ${datasetKey}: ${e}`);
       this.setDataError(datasetKey, `There was error fetching data: ${e}`);
     });
 
@@ -275,7 +223,6 @@ export default class Landing extends Component {
       try {
         //read response stream
         json = await (results.json()).catch(e => {
-          console.log(`Error parsing ${datasetKey} response json: ${e.message}`);
           this.setDataError(datasetKey, `There was error parsing data: ${e.message}`);
         });
       } catch(e) {
@@ -285,33 +232,26 @@ export default class Landing extends Component {
     }
 
     if (!json) {
-      let dresult = await this.getDemoData(summaryMap[datasetKey]).catch(e => {
-        console.log(`Error fetching demo data for ${datasetKey}: ${e}`);
+      let demoResult = await this.getDemoData(summaryMap[datasetKey]).catch(e => {
         this.setDataError(datasetKey, `There was error fetching demo data: ${e}`);
       });
-      let demoData = await(dresult.json()).catch(e => {
-        console.log(`Error parsing demo ${datasetKey} response json: ${e.message}`);
+      //if unable to fetch data, set data to demo data if any
+      json = await(demoResult.json()).catch(e => {
         this.setDataError(datasetKey, `There was error parsing demo data: ${e.message}`);
       });
-      //if unable to fetch data, set data to demo data if any
-      if (demoData) {
-        dataSet[datasetKey] = demoData[rootElement];
+      if (json && json[rootElement]) {
         this.setDemoDataFlag(datasetKey);
-        return dataSet;
       }
-      dataSet[datasetKey] = null;
-      return dataSet;
     }
     let responseDataSet = null;
     try {
-      responseDataSet  = json && json[rootElement]? json[rootElement]: null;
+      responseDataSet = json[rootElement];
     } catch(e) {
-      this.setDataError(datasetKey, `Data does not contained the required root element ${rootElement}`);
+      this.setDataError(datasetKey, `Data does not contained the required root element ${rootElement}: ${e}`);
       responseDataSet  = null;
-    } finally {
-      dataSet[datasetKey] = responseDataSet;
-      return dataSet;
     }
+    dataSet[datasetKey] = responseDataSet;
+    return dataSet;
   }
 
   getAnalyticsData(endpoint, apikey, summary) {
