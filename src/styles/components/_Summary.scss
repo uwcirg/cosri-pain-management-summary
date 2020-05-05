@@ -241,6 +241,11 @@
             font-size: 12px;
             font-weight: 600;
           }
+          .axis.left {
+            text {
+              transform: translateX(-4px);
+            }
+          }
           .axis.bottom {
             text {
               transform: translateY(12px);

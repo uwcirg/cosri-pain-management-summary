@@ -49,6 +49,25 @@ export function dateCompare(a, b) {
   return stringCompare(aDate, bDate);
 }
 
+export function dateTimeCompare(a, b) {
+  if (a == null && b != null) {
+    return 1;
+  } else if (a != null && b == null) {
+    return -1;
+  } else if (a == null && b == null) {
+    return 0;
+  }
+  let aIsDate = dateRE.test(a);
+  let bIsDate = dateRE.test(b);
+  if (aIsDate) {
+    a = new Date(a).getTime();
+  }
+  if (bIsDate) {
+    b = new Date(b).getTime();
+  }
+  return b > a ? 1 : -1;
+}
+
 export function ageCompare(a, b) {
   const toDays = (input) => {
     const m = ageRE.exec(input);
@@ -128,7 +147,7 @@ export function datishCompare(a, b) {
     if (aIsDate !== bIsDate) {
       return aIsDate ? -1 : 1;
     }
-    return dateCompare(aVal, bVal);
+    return dateTimeCompare(aVal, bVal);
   } else if (aIsAge || bIsAge) {
     if (aIsAge !== bIsAge) {
       return aIsAge ? -1 : 1;

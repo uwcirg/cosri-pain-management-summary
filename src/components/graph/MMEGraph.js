@@ -111,7 +111,7 @@ export default class MMEGraph extends Component {
 
     return (
       <div className="MMEgraph">
-        <div className="title">Morphine Equivalent Dose</div>
+        <div className="title">Morphine Equivalent Dose (MED)</div>
         <svg
           className="MMEChartSvg"
           width={width + margins.left + margins.right}
@@ -121,7 +121,7 @@ export default class MMEGraph extends Component {
             <XYAxis {...{xSettings, ySettings}} />
             <Line lineID="dataLine" data={data} {...defaultProps} />
             <Line lineID="WALine" strokeColor="#a75454" dotted="true" dotSpacing="3, 3" data={WAData} {...defaultProps} />
-            <Line lineID="CDCLine" strokeColor="#e09b1d" dotted="true" dotSpacing="5, 5" data={CDCData} {...defaultProps} />
+            <Line lineID="CDCLine" strokeColor="#e09b1d" dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
             <text {...WALegendSettings}>Washington State consultation threshold</text>
             <text {...CDCLegendSettings}>CDC recommended maximum</text>
           </g>

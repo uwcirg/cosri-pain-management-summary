@@ -169,7 +169,7 @@ export default class Summary extends Component {
 
       const column = {
         id: header,
-        Header: () => <span className="col-header">{header}</span>,
+        Header: () => <span className={`col-header col-${header}`}>{header}</span>,
         accessor: (entry) => {
           let value = entry[headerKey];
           if (headerKey.formatter) {
@@ -185,6 +185,9 @@ export default class Summary extends Component {
       if (column.sortable && headerKey.formatter) {
         //column.sortMethod = this.getSortMethod(headerKey.formatter);
         switch(headerKey.formatter) {
+          case 'dateTimeFormat':
+            column.sortMethod = sortit.dateTimeCompare;
+            break;
           case 'dateFormat': case 'dateAgeFormat':
             column.sortMethod = sortit.dateCompare;
             break;
@@ -455,8 +458,7 @@ export default class Summary extends Component {
           </div>
 
 	       <div  className="cdc-disclaimer">
-            This application was built using CDS Connect from AHRQ.  Funding was provided by.....
-			Lorem ipsum dolor sit amet, consectetur adipibore et dolore magna aliqua.
+         COSRI incorporates the Clinical Pain Management Summary application, released as open-source software by CDS Connect project at the Agency for Healthcare Research and Quality (AHRQ). We have extended ARHQ's work to provide enhanced security, improved decision support, integration with state Prescription Drug Monitoring Program databases, standalone operation, and other features. For a description of our open source release, contact <a href="mailto:info@cosri.app">info@cosri.app</a>. Support for the development of COSRI was provided by the Washington State Department of Health and the Washington State Health Care Authority through the CMS Support Act.
           </div>
 
 
