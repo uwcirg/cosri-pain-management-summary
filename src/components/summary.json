@@ -57,8 +57,7 @@
               "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
               "Dispensed": { "key": "_dateDispensed", "formatter": "datishFormat"},
               "Prescriber": "_prescriber",
-              "Pharmacy": "_pharmacy",
-              "id": "_id"
+              "Pharmacy": "_pharmacy"
             },
             "defaultSorted": {
               "id": "_dateDispensed",
