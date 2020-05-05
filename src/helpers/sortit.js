@@ -147,7 +147,7 @@ export function datishCompare(a, b) {
     if (aIsDate !== bIsDate) {
       return aIsDate ? -1 : 1;
     }
-    return dateTimeCompare(aVal, bVal);
+    return dateCompare(aVal, bVal);
   } else if (aIsAge || bIsAge) {
     if (aIsAge !== bIsAge) {
       return aIsAge ? -1 : 1;

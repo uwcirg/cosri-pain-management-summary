@@ -54,14 +54,10 @@
                 "formatterArguments": ["medicationCodeableConcept", "text"]
               },
               "Quantity": "_quantity",
-              "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
-              "Dispensed": { "key": "_dateDispensed", "formatter": "datishFormat"},
+              "Written Date": { "key": "dateWritten", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
+              "Dispensed": { "key": "_dateDispensed", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
               "Prescriber": "_prescriber",
               "Pharmacy": "_pharmacy"
-            },
-            "defaultSorted": {
-              "id": "_dateDispensed",
-              "desc": true
             }
           }
         ]

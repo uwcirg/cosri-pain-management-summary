@@ -182,9 +182,9 @@ export default class Summary extends Component {
         sortable: headerKey.sortable !== false
       };
 
-      if (column.sortable && headerKey.formatter) {
-        //column.sortMethod = this.getSortMethod(headerKey.formatter);
-        switch(headerKey.formatter) {
+      let columnFormatter = headerKey.sorter?headerKey.sorter: headerKey.formatter;
+      if (column.sortable && columnFormatter) {
+        switch(columnFormatter) {
           case 'dateTimeFormat':
             column.sortMethod = sortit.dateTimeCompare;
             break;

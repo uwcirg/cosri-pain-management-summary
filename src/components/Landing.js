@@ -6,6 +6,7 @@ import executeElm from '../utils/executeELM';
 import sumit from '../helpers/sumit';
 import flagit from '../helpers/flagit';
 import {datishFormat} from '../helpers/formatit';
+import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
 import Header from './Header';
@@ -161,6 +162,12 @@ export default class Landing extends Component {
       if (pObj.length) {
         item["_pharmacy"] = pObj[0].valueString;
       }
+    });
+    /*
+     * a hack, until figure out why react table is not sorting the date correctly by default
+     */
+    result = result.sort(function(a, b) {
+      return dateTimeCompare(a._dateDispensed, b._dateDispensed);
     });
     /*
      * TODO: add MME converted value for each opioid med here?
