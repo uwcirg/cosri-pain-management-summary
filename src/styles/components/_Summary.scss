@@ -239,6 +239,7 @@
         .axis-group {
           text {
             font-size: 12px;
+            font-weight: 600;
           }
           .axis.bottom {
             text {
@@ -250,6 +251,7 @@
           margin-left: 42px;
           margin-top: 8px;
           font-size: 14px;
+          font-weight: 600;
           .icon {
             width: 20px;
             height: 4px;
@@ -491,6 +493,11 @@
           vertical-align: top;
         }
       }
+      .query-text {
+        display: inline-block;
+        position: relative;
+        top: -4px;
+      }
       .content {
         box-shadow: 1px 2px 2px $color-box-shadow;
         background: #FFF;
@@ -501,7 +508,7 @@
         opacity: 0;
         height: 0;
         &.display {
-          line-height: 1.5;
+          line-height: 1.55;
           padding: 16px 36px;
           opacity: 1;
           height: auto;
@@ -528,8 +535,13 @@
         cursor: pointer;
         margin-bottom: 8px;
         margin-right: 4px;
+        margin-left: 8px;
         opacity: 0.8;
         padding: 0;
+
+        .text {
+          color: $color-black;
+        }
 
         &:focus {
           outline: none;

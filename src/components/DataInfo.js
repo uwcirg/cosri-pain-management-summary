@@ -23,10 +23,12 @@ export default class DataInfo extends Component {
         errorMessage,
         warningText
     } = this.props;
+    const hasContent = contentText || errorMessage || warningText;
     return (
         <div className="data-provenance">
             <div className="title">
-                <button onClick={this.handleClick}>[data quality info]</button>
+                <span className="query-text">{`The query was last executed at ${queryDateTime}.`}</span>
+                <button onClick={this.handleClick}  className={`${hasContent?'show-inline':'hide'}`}><span>[see additional data quality information]</span></button>
                 <span className={`${errorMessage?'show-inline':'hide'} error`} onClick={this.handleClick}>
                   <FontAwesomeIcon
                     className="error"

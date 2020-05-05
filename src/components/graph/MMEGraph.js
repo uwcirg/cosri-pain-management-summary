@@ -49,7 +49,7 @@ export default class MMEGraph extends Component {
     const margins = {
       top: 40,
       right: 40,
-      bottom: 60,
+      bottom: 52,
       left: 70,
     };
 
@@ -82,7 +82,7 @@ export default class MMEGraph extends Component {
       scale: xScale,
       orient: 'bottom',
       transform: `translate(0, ${height})`,
-      tickFormat: "%d %b %y",
+      tickFormat: "%b %y",
       tickType: "date"
     };
     const ySettings = {
@@ -92,9 +92,26 @@ export default class MMEGraph extends Component {
       ticks: 6,
     };
 
+    const defaultLegendSettings = {
+      "fontFamily": "sans-serif",
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "x": margins.left - 44
+    };
+    const WALegendSettings = {
+      "y": 25,
+      "fill": "#a75454",
+      ...defaultLegendSettings
+    };
+    const CDCLegendSettings = {
+      "y": 74,
+      "fill": "#e09b1d",
+      ...defaultLegendSettings
+    }
+
     return (
       <div className="MMEgraph">
-        <div className="title">Morphine Milligram Equivalency Trend Graph</div>
+        <div className="title">Morphine Equivalent Dose</div>
         <svg
           className="MMEChartSvg"
           width={width + margins.left + margins.right}
@@ -105,21 +122,23 @@ export default class MMEGraph extends Component {
             <Line lineID="dataLine" data={data} {...defaultProps} />
             <Line lineID="WALine" strokeColor="#a75454" dotted="true" dotSpacing="3, 3" data={WAData} {...defaultProps} />
             <Line lineID="CDCLine" strokeColor="#e09b1d" dotted="true" dotSpacing="5, 5" data={CDCData} {...defaultProps} />
+            <text {...WALegendSettings}>Washington State consultation threshold</text>
+            <text {...CDCLegendSettings}>CDC recommended maximum</text>
           </g>
         </svg>
-        <legend>
+        {/* <legend>
             <div>
                 <span className="icon CDC"></span>CDC recommended maximum
             </div>
             <div>
-                <span className="icon WA"></span>Washington State recommended maximum
+                <span className="icon WA"></span>Washington State consultation threshold
             </div>
-        </legend>
+        </legend> */}
       </div>
     );
   }
 }
 
 MMEGraph.propTypes = {
-  data: PropTypes.object.isRequired
+  data: PropTypes.array.isRequired
 };

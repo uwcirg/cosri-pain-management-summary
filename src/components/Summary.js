@@ -132,6 +132,27 @@ export default class Summary extends Component {
     );
   }
 
+  getSortMethod(formatterKey) {
+    let sortMethod = "";
+    switch(formatterKey) {
+      case 'dateFormat': case 'dateAgeFormat':
+        sortMethod = sortit.dateCompare;
+        break;
+      case 'datishFormat': case 'datishAgeFormat':
+        sortMethod = sortit.datishCompare;
+        break;
+      case 'ageFormat':
+        sortMethod = sortit.ageCompare;
+        break;
+      case 'quantityFormat':
+        sortMethod = sortit.quantityCompare;
+        break;
+      default:
+        // do nothing, rely on built-in sort
+    }
+    return sortMethod;
+  }
+ 
   renderTable(table, entries, section, subSection, index) {
     // If a filter is provided, only render those things that have the filter field (or don't have it when it's negated)
     let filteredEntries = entries;
@@ -183,6 +204,7 @@ export default class Summary extends Component {
       };
 
       if (column.sortable && headerKey.formatter) {
+        //column.sortMethod = this.getSortMethod(headerKey.formatter);
         switch(headerKey.formatter) {
           case 'dateFormat': case 'dateAgeFormat':
             column.sortMethod = sortit.dateCompare;
@@ -215,6 +237,13 @@ export default class Summary extends Component {
     //ReactTable needs an ID for aria-describedby
     let tableID = subSection.name.replace(/ /g,"_") + "-table";
     let customProps = {id:tableID};
+    let defaultSorted = [];
+    let defaultSortMethod = null;
+    if (table.defaultSorted) {
+      defaultSorted.push(table.defaultSorted);
+      defaultSortMethod = this.getSortMethod(table.defaultSorted.useSortMethod);
+      console.log("default sort method? ", defaultSortMethod)
+    }
     //getTheadThProps solution courtesy of:
     //https://spectrum.chat/react-table/general/is-there-a-way-to-activate-sort-via-onkeypress~66656e87-7f5c-4767-8b23-ddf35d73f8af
     return (
@@ -228,6 +257,7 @@ export default class Summary extends Component {
             showPagination={filteredEntries.length > 10}
             pageSizeOptions={[10, 20, 50, 100]}
             defaultPageSize={10}
+            defaultSorted={defaultSorted}
             resizable={false}
             getProps={() => customProps}
             getTheadThProps={(state,rowInfo,column,instance) => {
@@ -267,6 +297,7 @@ export default class Summary extends Component {
 
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
+    const queryDateTime = summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat();
     const subSections = sectionMap.map((subSection) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
@@ -329,7 +360,7 @@ export default class Summary extends Component {
       <DataInfo
             errorMessage={summaryMap[section].errorMessage}
             contentText={summaryMap[section].provenanceText}
-            queryDateTime={summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat()}
+            queryDateTime={queryDateTime}
             warningText={this.getWarningText(section)}
           />
     </div>);

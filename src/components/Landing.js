@@ -122,8 +122,8 @@ export default class Landing extends Component {
   processEndPoint(endpoint) {
     if (!endpoint) return "";
     return (endpoint)
-    .replace('{env.REACT_APP_CONF_API_URL}', process.env.REACT_APP_CONF_API_URL)
-    .replace('{env.PUBLIC_URL}', process.env.PUBLIC_URL);
+    .replace('{process.env.REACT_APP_CONF_API_URL}', process.env.REACT_APP_CONF_API_URL)
+    .replace('{process.env.PUBLIC_URL}', process.env.PUBLIC_URL);
   }
 
   processMedicationOrder(result, dataKey) {

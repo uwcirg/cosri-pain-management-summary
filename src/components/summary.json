@@ -3,14 +3,14 @@
     "title":"State PMP Prescriptions",
     "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
     "dataSource": {
-      "endpoint": "{env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder",
+      "endpoint": "{process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder",
       "dataKey": "PDMPMedications",
       "dataKeySource": "entry",
       "processFunction": "processMedicationOrder"
     },
     "demoData": {
       "advisoryText": "Demo data is used here.",
-      "endpoint": "{env.PUBLIC_URL}/assets/data/PDMPDemoData.json"
+      "endpoint": "{process.env.PUBLIC_URL}/assets/data/PDMPDemoData.json"
     },
     "sections": [
       {
@@ -29,7 +29,7 @@
               "MMEValue": "Result",
               "Name": "Name"
             },
-            "display": "Morphine Milligram Equivalent (MME)"
+            "display": "Morphine Equivalent Dose (MED)"
           }
         },
         "info": [
@@ -57,7 +57,12 @@
               "Written Date": { "key": "dateWritten", "formatter": "datishFormat" },
               "Dispensed": { "key": "_dateDispensed", "formatter": "datishFormat"},
               "Prescriber": "_prescriber",
-              "Pharmacy": "_pharmacy"
+              "Pharmacy": "_pharmacy",
+              "id": "_id"
+            },
+            "defaultSorted": {
+              "id": "_dateDispensed",
+              "desc": true
             }
           }
         ]
@@ -373,16 +378,16 @@
     "title": "Risk Considerations",
     "sections":[
       {
-        "name": "Most Recent MME",
+        "name": "Most Recent MED",
         "dataKey": "MostRecentMME",
         "dataKeySource": "RiskConsiderations",
         "info": [
           {
             "type": "elements",
-            "description": "Most Recent MME queries the following elements:",
+            "description": "Most Recent MED queries the following elements:",
             "elements": [
               {
-                "name": "Morphine Milligram Equivalent (MME)",
+                "name": "Morphine Equivalent Dose (MED)",
                 "status": "final or amended",
                 "lookback": "most recent in past 6 months"
               }
