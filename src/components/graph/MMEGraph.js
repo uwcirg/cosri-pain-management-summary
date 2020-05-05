@@ -89,7 +89,7 @@ export default class MMEGraph extends Component {
       scale: yScale,
       orient: 'left',
       transform: 'translate(0, 0)',
-      ticks: 6,
+      ticks: 10,
     };
 
     const defaultLegendSettings = {

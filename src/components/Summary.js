@@ -131,27 +131,6 @@ export default class Summary extends Component {
       </div>
     );
   }
-
-  getSortMethod(formatterKey) {
-    let sortMethod = "";
-    switch(formatterKey) {
-      case 'dateFormat': case 'dateAgeFormat':
-        sortMethod = sortit.dateCompare;
-        break;
-      case 'datishFormat': case 'datishAgeFormat':
-        sortMethod = sortit.datishCompare;
-        break;
-      case 'ageFormat':
-        sortMethod = sortit.ageCompare;
-        break;
-      case 'quantityFormat':
-        sortMethod = sortit.quantityCompare;
-        break;
-      default:
-        // do nothing, rely on built-in sort
-    }
-    return sortMethod;
-  }
  
   renderTable(table, entries, section, subSection, index) {
     // If a filter is provided, only render those things that have the filter field (or don't have it when it's negated)
@@ -238,11 +217,8 @@ export default class Summary extends Component {
     let tableID = subSection.name.replace(/ /g,"_") + "-table";
     let customProps = {id:tableID};
     let defaultSorted = [];
-    let defaultSortMethod = null;
     if (table.defaultSorted) {
       defaultSorted.push(table.defaultSorted);
-      defaultSortMethod = this.getSortMethod(table.defaultSorted.useSortMethod);
-      console.log("default sort method? ", defaultSortMethod)
     }
     //getTheadThProps solution courtesy of:
     //https://spectrum.chat/react-table/general/is-there-a-way-to-activate-sort-via-onkeypress~66656e87-7f5c-4767-8b23-ddf35d73f8af
