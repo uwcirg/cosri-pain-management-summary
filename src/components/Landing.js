@@ -42,7 +42,6 @@ export default class Landing extends Component {
         result['Summary'] = {...result['Summary'], ...response[1]};
         //result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-        console.log("summary? ", result['Summary'])
         this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
       }

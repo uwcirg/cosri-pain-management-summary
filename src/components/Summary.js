@@ -319,7 +319,6 @@ export default class Summary extends Component {
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
      // const graphData = dataKeySource ? this.props.summary[subSection.dataKey+"_graphdata"] : null;
     //  const graphType = subSection.graph? subSection.graph.type: "";
-    console.log("subsection panels? ", subSection.panels)
       const panels = subSection.panels;
       const hasEntries = entries.length !== 0;
       const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
