@@ -266,29 +266,67 @@ export default class Summary extends Component {
     return "";
   }
 
-  renderGraph(section, data, type) {
-    if (type === "MME") {
+  renderGraph(data, type) {
+    if (type === "MED") {
       return <MMEGraph data={data}></MMEGraph>;
     }
     //can return other type of graph depending on the section
     return <div className="graph-placeholder"></div>;
   }
 
+  renderInfoPanel(panel) {
+    let statsContent = (panel.statsData.data).map(item => {
+      let objResult = Object.entries(item);
+      return(
+        <div>{objResult[0][0]}<span class="divider">{objResult[0][1]}</span></div>
+      )
+    });
+    let alertsContent = (panel.alertsData.data).map(item => {
+      return <div><FontAwesomeIcon
+      className="flag"
+      icon="exclamation-circle"
+    />{item}</div>;
+    })
+    return (<div className="sub-section__infopanel">
+        <div className="panel-title">{panel.title}</div>
+        <div className="stats-container">
+          <div className="title">{panel.statsData.title}</div>
+          <div className="content">{statsContent}</div>
+        </div>
+        <div className="alerts-container">
+          <div className="title">{panel.alertsData.title}</div>
+          <div className="content">{alertsContent}</div>
+        </div>
+      </div>)
+  }
+
+  renderPanel(panels) {
+    let content = panels.map((panel, index) => {
+      return (<div key={`panel_${index}`} className="panel">
+          {panel.type === "graph" && this.renderGraph(panel.data, panel.graphType)}
+          {panel.type === "info" && this.renderInfoPanel(panel)}
+        </div>);
+    });
+    return (<div className="sub-section__panel">{content}</div>);
+  }
+
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
     const queryDateTime = summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat();
-    const subSections = sectionMap.map((subSection) => {
+    const subSections = sectionMap.map((subSection, index) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
+     // const graphData = dataKeySource ? this.props.summary[subSection.dataKey+"_graphdata"] : null;
+    //  const graphType = subSection.graph? subSection.graph.type: "";
+    console.log("subsection panels? ", subSection.panels)
+      const panels = subSection.panels;
       const hasEntries = entries.length !== 0;
-      const graphData = dataKeySource ? this.props.summary[subSection.dataKey+"_graphdata"] : null;
-      const graphType = subSection.graph? subSection.graph.type: "";
       const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
       const flaggedClass = flagged ? 'flagged' : '';
       const omitTitleClass = subSection.omitTitle ? 'sub-section-notitle' : '';
       return (
-        <div key={subSection.dataKey} className={`sub-section h3-wrapper ${subSection.flagScheme}`}>
+        <div key={`${subSection.dataKey}_${index}`} className={`sub-section h3-wrapper ${subSection.flagScheme}`}>
           <h3 id={subSection.dataKey} className={`sub-section__header ${omitTitleClass}`}>
             <FontAwesomeIcon
               className={`flag flag-nav ${flaggedClass}`}
@@ -326,8 +364,10 @@ export default class Summary extends Component {
 
           </h3>
 
-          {!hasEntries && this.renderNoEntries(section, subSection)}
-          {graphData && this.renderGraph(section, graphData, graphType)}
+          {panels && this.renderPanel(panels)}
+
+          {!hasEntries && !panels && this.renderNoEntries(section, subSection)}
+          {/* {this.renderGraph(section, graphData, graphType)} */}
           {hasEntries && subSection.tables.map((table, index) =>
             this.renderTable(table, entries, section, subSection, index))
           }
@@ -336,12 +376,12 @@ export default class Summary extends Component {
     });
     return (<div>
       {subSections}
-      <DataInfo
+      {!summaryMap[section].skipDataInfo && <DataInfo
             errorMessage={summaryMap[section].errorMessage}
             contentText={summaryMap[section].provenanceText}
             queryDateTime={queryDateTime}
             warningText={this.getWarningText(section)}
-          />
+          />}
     </div>);
   }
 

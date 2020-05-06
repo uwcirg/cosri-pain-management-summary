@@ -226,11 +226,13 @@
           }
         }
       }
+      
       .MMEgraph {
         margin-top: 32px;
         margin-bottom: 24px;
-        border-bottom: 1px solid $color-gray-lighter;
-        padding-bottom: 32px;
+        //border-bottom: 1px solid $color-gray-lighter;
+        //padding-bottom: 32px;
+        padding-bottom: 12px;
         .title {
           margin-left: 42px;
           font-weight: 600;
@@ -270,6 +272,45 @@
             }
             &.WA {
               border-bottom: 2px $color-red-darker solid;
+            }
+          }
+        }
+      }
+
+      .sub-section__panel {
+        display: flex;
+        justify-content: flex-start;
+        color: $color-black;
+        .sub-section__infopanel {
+          width: 250px;
+          border: 2px solid;
+          padding: 12px;
+          margin-top: 52px;
+          margin-left: 24px;
+          .panel-title {
+            font-weight: 600;
+            margin-bottom: 16px;
+          }
+          .title {
+            font-weight: 600;
+          }
+          .content {
+            padding:8px;
+          }
+          .stats-container {
+            background: $color-red-lighter;
+            padding: 16px;
+            .divider {
+              display: inline-block;
+              margin-left:8px;
+              margin-right:8px;
+            }
+          }
+          .alerts-container {
+            margin-top: 16px;
+            .flag {
+              color: $color-red-darker;
+              margin-right: 8px;
             }
           }
         }

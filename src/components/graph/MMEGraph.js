@@ -7,18 +7,37 @@ import Line from './line';
 
 
 export default class MMEGraph extends Component {
+  getDefaultDataSet() {
+    let index = 0, data = [];
+    while(index < 10) {
+      let date = new Date();
+      if (index > 0) {
+        date.setDate((new Date()).getDate() + index*30);
+      }
+      data.push({
+        "dateWritten": date.toLocaleString(),
+        "MMEValue": 0
+      });
+      index++;
+    }
+    return data;
+  }
+
   render() {
     /*
      *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, {"dateWritten":"2019-04-15","MMEValue":40}]
      */
     let data  = this.props.data;
-    const parentWidth = 840;
+    const parentWidth = 640;
     const WA_MAX_VALUE = 120;
     const CDC_MAX_VALUE = 90;
     const xFieldName = "dateWritten";
     const yFieldName = "MMEValue";
     let WAData = [];
     let CDCData = [];
+    let noEntry = !data || !data.length;
+
+    data = data || this.getDefaultDataSet();
     data = data.map(d => {
       let dObj = new Date(d.dateWritten);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
@@ -27,11 +46,17 @@ export default class MMEGraph extends Component {
       return d;
     });
     let arrayDates = data.map(d => {
-    
       return d.dateWritten;
     });
-    let maxDate = new Date(Math.max.apply(null, arrayDates));
-    let minDate = new Date(Math.min.apply(null, arrayDates));
+    let maxDate = new Date();
+    let minDate = new Date();
+    minDate.setDate(maxDate.getDate() - 365); 
+    if (arrayDates.length) {
+      maxDate = new Date(Math.max.apply(null, arrayDates));
+      minDate = new Date(Math.min.apply(null, arrayDates));
+    }
+
+    console.log("max date: ", maxDate, " min date ", minDate)
     
     data.forEach(d => {
       let waObj = {};
@@ -124,6 +149,9 @@ export default class MMEGraph extends Component {
             <Line lineID="CDCLine" strokeColor="#e09b1d" dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
             <text {...WALegendSettings}>Washington State consultation threshold</text>
             <text {...CDCLegendSettings}>CDC recommended maximum</text>
+            {noEntry && 
+              <text {...defaultLegendSettings} x={width/2 - 20} y={height/2} strokeColor="#777" fill="#777">No entry found</text>
+            }
           </g>
         </svg>
         {/* <legend>
@@ -140,5 +168,5 @@ export default class MMEGraph extends Component {
 }
 
 MMEGraph.propTypes = {
-  data: PropTypes.array.isRequired
+  data: PropTypes.array
 };
