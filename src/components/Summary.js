@@ -275,17 +275,18 @@ export default class Summary extends Component {
   }
 
   renderInfoPanel(panel) {
-    let statsContent = (panel.statsData.data).map(item => {
+    let statsContent = (panel.statsData.data).map((item, index) => {
       let objResult = Object.entries(item);
       return(
-        <div>{objResult[0][0]}<span class="divider">{objResult[0][1]}</span></div>
+        <div key={`stats_${index}`}>{objResult[0][0]}<span className="divider">{objResult[0][1]}</span></div>
       )
     });
-    let alertsContent = (panel.alertsData.data).map(item => {
-      return <div><FontAwesomeIcon
-      className="flag"
-      icon="exclamation-circle"
-    />{item}</div>;
+    let alertsContent = (panel.alertsData.data).map((item, index) => {
+      return <div key={`alert_${index}`}>
+        <FontAwesomeIcon
+          className="flag"
+          icon="exclamation-circle"
+        />{item}</div>;
     })
     return (<div className="sub-section__infopanel">
         <div className="panel-title">{panel.title}</div>
