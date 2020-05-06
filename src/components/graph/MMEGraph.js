@@ -55,8 +55,6 @@ export default class MMEGraph extends Component {
       maxDate = new Date(Math.max.apply(null, arrayDates));
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
-
-    console.log("max date: ", maxDate, " min date ", minDate)
     
     data.forEach(d => {
       let waObj = {};
