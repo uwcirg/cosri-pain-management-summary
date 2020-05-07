@@ -131,7 +131,7 @@ export default class Summary extends Component {
       </div>
     );
   }
-
+ 
   renderTable(table, entries, section, subSection, index) {
     // If a filter is provided, only render those things that have the filter field (or don't have it when it's negated)
     let filteredEntries = entries;
@@ -169,7 +169,7 @@ export default class Summary extends Component {
 
       const column = {
         id: header,
-        Header: () => <span className="col-header">{header}</span>,
+        Header: () => <span className={`col-header col-${header}`}>{header}</span>,
         accessor: (entry) => {
           let value = entry[headerKey];
           if (headerKey.formatter) {
@@ -182,8 +182,12 @@ export default class Summary extends Component {
         sortable: headerKey.sortable !== false
       };
 
-      if (column.sortable && headerKey.formatter) {
-        switch(headerKey.formatter) {
+      let columnFormatter = headerKey.sorter?headerKey.sorter: headerKey.formatter;
+      if (column.sortable && columnFormatter) {
+        switch(columnFormatter) {
+          case 'dateTimeFormat':
+            column.sortMethod = sortit.dateTimeCompare;
+            break;
           case 'dateFormat': case 'dateAgeFormat':
             column.sortMethod = sortit.dateCompare;
             break;
@@ -215,6 +219,10 @@ export default class Summary extends Component {
     //ReactTable needs an ID for aria-describedby
     let tableID = subSection.name.replace(/ /g,"_") + "-table";
     let customProps = {id:tableID};
+    let defaultSorted = [];
+    if (table.defaultSorted) {
+      defaultSorted.push(table.defaultSorted);
+    }
     //getTheadThProps solution courtesy of:
     //https://spectrum.chat/react-table/general/is-there-a-way-to-activate-sort-via-onkeypress~66656e87-7f5c-4767-8b23-ddf35d73f8af
     return (
@@ -228,6 +236,7 @@ export default class Summary extends Component {
             showPagination={filteredEntries.length > 10}
             pageSizeOptions={[10, 20, 50, 100]}
             defaultPageSize={10}
+            defaultSorted={defaultSorted}
             resizable={false}
             getProps={() => customProps}
             getTheadThProps={(state,rowInfo,column,instance) => {
@@ -257,23 +266,67 @@ export default class Summary extends Component {
     return "";
   }
 
-  renderGraph(section, data) {
-    return <MMEGraph data={data}></MMEGraph>;
+  renderGraph(data, type) {
+    if (type === "MED") {
+      return <MMEGraph data={data}></MMEGraph>;
+    }
+    //can return other type of graph depending on the section
+    return <div className="graph-placeholder"></div>;
+  }
+
+  renderInfoPanel(panel) {
+    let statsContent = (panel.statsData.data).map((item, index) => {
+      let objResult = Object.entries(item);
+      return(
+        <div key={`stats_${index}`}>{objResult[0][0]}<span className="divider">{objResult[0][1]}</span></div>
+      )
+    });
+    let alertsContent = (panel.alertsData.data).map((item, index) => {
+      return <div key={`alert_${index}`}>
+        <FontAwesomeIcon
+          className="flag"
+          icon="exclamation-circle"
+        />{item}</div>;
+    })
+    return (<div className="sub-section__infopanel">
+        <div className="panel-title">{panel.title}</div>
+        <div className="stats-container">
+          <div className="title">{panel.statsData.title}</div>
+          <div className="content">{statsContent}</div>
+        </div>
+        <div className="alerts-container">
+          <div className="title">{panel.alertsData.title}</div>
+          <div className="content">{alertsContent}</div>
+        </div>
+      </div>)
+  }
+
+  renderPanel(panels) {
+    let content = panels.map((panel, index) => {
+      return (<div key={`panel_${index}`} className="panel">
+          {panel.type === "graph" && this.renderGraph(panel.data, panel.graphType)}
+          {panel.type === "info" && this.renderInfoPanel(panel)}
+        </div>);
+    });
+    return (<div className="sub-section__panel">{content}</div>);
   }
 
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
-    const subSections = sectionMap.map((subSection) => {
+    const queryDateTime = summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat();
+    const subSections = sectionMap.map((subSection, index) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
+     // const graphData = dataKeySource ? this.props.summary[subSection.dataKey+"_graphdata"] : null;
+    //  const graphType = subSection.graph? subSection.graph.type: "";
+      const panels = subSection.panels;
       const hasEntries = entries.length !== 0;
-      const graphData = dataKeySource ? this.props.summary[subSection.dataKey+"_graphdata"] : null;
       const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
       const flaggedClass = flagged ? 'flagged' : '';
       const omitTitleClass = subSection.omitTitle ? 'sub-section-notitle' : '';
       return (
-        <div key={subSection.dataKey} className={`sub-section h3-wrapper ${subSection.flagScheme}`}>
+        <div key={`${subSection.dataKey}_${index}`} className={`sub-section h3-wrapper ${subSection.flagScheme}`}>
           <h3 id={subSection.dataKey} className={`sub-section__header ${omitTitleClass}`}>
             <FontAwesomeIcon
               className={`flag flag-nav ${flaggedClass}`}
@@ -311,8 +364,10 @@ export default class Summary extends Component {
 
           </h3>
 
-          {!hasEntries && this.renderNoEntries(section, subSection)}
-          {graphData && this.renderGraph(section, graphData)}
+          {panels && this.renderPanel(panels)}
+
+          {!hasEntries && !panels && this.renderNoEntries(section, subSection)}
+          {/* {this.renderGraph(section, graphData, graphType)} */}
           {hasEntries && subSection.tables.map((table, index) =>
             this.renderTable(table, entries, section, subSection, index))
           }
@@ -321,12 +376,12 @@ export default class Summary extends Component {
     });
     return (<div>
       {subSections}
-      <DataInfo
+      {!summaryMap[section].skipDataInfo && <DataInfo
             errorMessage={summaryMap[section].errorMessage}
             contentText={summaryMap[section].provenanceText}
-            queryDateTime={summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat()}
+            queryDateTime={queryDateTime}
             warningText={this.getWarningText(section)}
-          />
+          />}
     </div>);
   }
 
@@ -443,8 +498,7 @@ export default class Summary extends Component {
           </div>
 
 	       <div  className="cdc-disclaimer">
-            This application was built using CDS Connect from AHRQ.  Funding was provided by.....
-			Lorem ipsum dolor sit amet, consectetur adipibore et dolore magna aliqua.
+         COSRI incorporates the Clinical Pain Management Summary application, released as open-source software by CDS Connect project at the Agency for Healthcare Research and Quality (AHRQ). We have extended ARHQ's work to provide enhanced security, improved decision support, integration with state Prescription Drug Monitoring Program databases, standalone operation, and other features. For a description of our open source release, contact <a href="mailto:info@cosri.app">info@cosri.app</a>. Support for the development of COSRI was provided by the Washington State Department of Health and the Washington State Health Care Authority through the CMS Support Act.
           </div>
 
 

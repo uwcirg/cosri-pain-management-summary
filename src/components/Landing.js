@@ -6,14 +6,12 @@ import executeElm from '../utils/executeELM';
 import sumit from '../helpers/sumit';
 import flagit from '../helpers/flagit';
 import {datishFormat} from '../helpers/formatit';
+import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
 import Header from './Header';
 import Summary from './Summary';
 import Spinner from '../elements/Spinner';
-
-import patientEducationReferences from './patientEducationReferences.json';
-
 
 let uuid = 0;
 
@@ -42,7 +40,7 @@ export default class Landing extends Component {
         let result = response[0];
         //add data from other sources, e.g. PDMP
         result['Summary'] = {...result['Summary'], ...response[1]};
-        result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
+        //result['Summary']['PatientEducationMaterials'] = patientEducationReferences;
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
@@ -94,10 +92,7 @@ export default class Landing extends Component {
     }
 
     let results = await Promise.all(promiseResultSet.map(item => {
-      let endpoint = (item.endpoint)
-                    .replace('{env.REACT_APP_CONF_API_URL}', process.env.REACT_APP_CONF_API_URL)
-                    .replace('{env.PUBLIC_URL}', process.env.PUBLIC_URL);
-      return this.fetchData(`${endpoint}`, item.dataKey, item.dataKeySource)
+      return this.fetchData(this.processEndPoint(item.endpoint), item.dataKey, item.dataKeySource)
     })).catch(e => {
       console.log(`Error parsing external data response json: ${e.message}`);
       promiseResultSet.forEach(item => {
@@ -110,7 +105,11 @@ export default class Landing extends Component {
       let result = results[index];
       //require additional processing of result data
       if (item.processFunction && this[item.processFunction]) {
-        result = this[item.processFunction](results[index][item.dataKey]);
+        try {
+          result = this[item.processFunction](results[index] ? results[index][item.dataKey] : null, item.dataKey);
+        } catch(e) {
+          console.log(`Error processing data result via processing function ${item.processFunction}: ${e}`);
+        }
       }
       dataSet[item.dataKey] = result ? result: null;
 
@@ -118,69 +117,69 @@ export default class Landing extends Component {
     return dataSet;
   }
 
-  processOccupationData (result) {
-    if (!result || !result.length) return null;
-
-    /*
-     * filter results for occupation items
-     */
-    result = result.filter(item => {
-      return item['resource']['code']['coding'][0]['code'] === summaryMap['Occupation']['occupationObsCode'];
-    });
-
-    if (!result.length) return null;
-
-    let morphedResult = {'Current': {}, 'Previous': {}};
-    result = result.map(item => item.resource);
-
-    result.forEach((item, index) => {
-      if (index > 1) return true;
-      let key = index === 0 ? 'Current': 'Previous';
-      if (item.valueCodeableConcept && item['valueCodeableConcept']['text']) {
-        morphedResult[key]['jobTitle'] = item['valueCodeableConcept']['text'];
-      }
-      if (!item.component) {
-        morphedResult[key]['description'] = [];
-        return true;
-      }
-      let occupaSectionKeys = summaryMap['Occupation']['itemObsCodeKeys'];
-      let description = [];
-      /*
-       * select items to display - from json that matched the observation code
-       * display selected items from returned response
-       */
-      occupaSectionKeys.forEach(key => {
-        let matched = (item.component).find(subitem => {
-          if (subitem.code && subitem.code['coding'][0]['code'] === key) {
-            return subitem;
-          }
-          return false;
-        });
-        if (matched) {
-          let value = '';
-          if (matched.valueString) {
-            value = matched.valueString;
-          } else if (matched.valueQuantity) {
-            value = matched.valueQuantity['value'];
-          } else if (matched.valueCodeableConcept) {
-            value = matched.valueCodeableConcept['text'];
-          }
-          description.push({
-            'text': matched.code['text'],
-            'value': value
-          });
-        }
-      });
-      morphedResult[key]['description'] = description;
-    });
-    return morphedResult;
+  processEndPoint(endpoint) {
+    if (!endpoint) return "";
+    return (endpoint)
+    .replace('{process.env.REACT_APP_CONF_API_URL}', process.env.REACT_APP_CONF_API_URL)
+    .replace('{process.env.PUBLIC_URL}', process.env.PUBLIC_URL);
   }
 
-  getDemoData(datasetKey) {
-    if (!datasetKey || !summaryMap[datasetKey]) return null;
-    if (summaryMap[datasetKey]["demoData"]) {
-      return summaryMap[datasetKey]["demoData"];
+  processMedicationOrder(result, dataKey) {
+
+    if (!result || !result.length) {
+      return false;
     }
+    let dataSet = {};
+    /*
+     * dealing with deeply nested FHIR response data, reformat for ease of rendering
+     */
+    let getValue = (obj, prop) => {
+      return obj && obj[prop] ? obj[prop] : "";
+    }
+    result.forEach(item => {
+      //prescriber
+      item["_prescriber"] = getValue(item["prescriber"], "display");
+      let dispenseRequest = item.dispenseRequest;
+      if (!dispenseRequest) {
+        return true;
+      }
+      //quantity
+      item["_quantity"] = getValue(dispenseRequest["quantity"], "value"); 
+      let extensionObj = dispenseRequest["extension"];
+      if (!extensionObj.length) {
+        return true;
+      }
+      //date dispensed
+      let dObj = extensionObj.filter(o => o.valueDate);
+      if (dObj.length) {
+        item["_dateDispensed"] = dObj[0].valueDate;
+      }
+      // pharmacy
+      let pObj = extensionObj.filter(o => o.valueString);
+      if (pObj.length) {
+        item["_pharmacy"] = pObj[0].valueString;
+      }
+    });
+    /*
+     * a hack, until figure out why react table is not sorting the date correctly by default
+     */
+    result = result.sort(function(a, b) {
+      return dateTimeCompare(a._dateDispensed, b._dateDispensed);
+    });
+    /*
+     * TODO: add MME converted value for each opioid med here?
+     * so we can use these values to draw graph??
+     */
+    dataSet[dataKey] = result;
+    return dataSet;
+  }
+
+  async getDemoData(section) {
+    if (!section || !section["demoData"]) return null;
+    if (!section["demoData"]["endpoint"]) {
+      return null;
+    }
+    return fetch(this.processEndPoint(section["demoData"]["endpoint"]));
   }
 
   setDemoDataFlag(datasetKey) {
@@ -193,6 +192,7 @@ export default class Landing extends Component {
     if (!summaryMap[datasetKey] || !message) {
       return;
     }
+    console.log(message); //display error in console
     summaryMap[datasetKey]["errorMessage"] = message;
   }
 
@@ -219,7 +219,6 @@ export default class Landing extends Component {
       fetch(url),
       timeoutPromise
     ]).catch(e => {
-      console.log(`Error fetching data from ${datasetKey}: ${e}`);
       this.setDataError(datasetKey, `There was error fetching data: ${e}`);
     });
 
@@ -228,7 +227,6 @@ export default class Landing extends Component {
       try {
         //read response stream
         json = await (results.json()).catch(e => {
-          console.log(`Error parsing ${datasetKey} response json: ${e.message}`);
           this.setDataError(datasetKey, `There was error parsing data: ${e.message}`);
         });
       } catch(e) {
@@ -238,26 +236,26 @@ export default class Landing extends Component {
     }
 
     if (!json) {
-      let demoData = this.getDemoData(datasetKey);
+      let demoResult = await this.getDemoData(summaryMap[datasetKey]).catch(e => {
+        this.setDataError(datasetKey, `There was error fetching demo data: ${e}`);
+      });
       //if unable to fetch data, set data to demo data if any
-      if (demoData) {
-        dataSet[datasetKey] = demoData[rootElement];
+      json = await(demoResult.json()).catch(e => {
+        this.setDataError(datasetKey, `There was error parsing demo data: ${e.message}`);
+      });
+      if (json && json[rootElement]) {
         this.setDemoDataFlag(datasetKey);
-        return dataSet;
       }
-      dataSet[datasetKey] = null;
-      return dataSet;
     }
     let responseDataSet = null;
     try {
-      responseDataSet  = json && json[rootElement]? json[rootElement]: null;
+      responseDataSet = json[rootElement];
     } catch(e) {
-      this.setDataError(datasetKey, `Data does not contained the required root element ${rootElement}`);
+      this.setDataError(datasetKey, `Data does not contained the required root element ${rootElement}: ${e}`);
       responseDataSet  = null;
-    } finally {
-      dataSet[datasetKey] = responseDataSet;
-      return dataSet;
     }
+    dataSet[datasetKey] = responseDataSet;
+    return dataSet;
   }
 
   getAnalyticsData(endpoint, apikey, summary) {
@@ -329,50 +327,34 @@ export default class Landing extends Component {
         }
         const data = keySource[subSection.dataKey];
         const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
-
-        if (entries.length > 0) {
-          if (subSection.graph) {
-            let graphFields = subSection.graph["fields"] || [];
-            let graphData = [];
-            entries.forEach(item => {
-              let matchedKeys = Object.keys(item).filter(key => {
-                return graphFields.indexOf(key) !== -1;
-              });
-              if (matchedKeys.length === graphFields.length) {
-                let o = {};
-                matchedKeys.forEach(key => {
-                  o[key] = item[key];
-                });
-                graphData.push(o);
-              }
-            });
-            /*
-             *  TODO: Remove or modify after demo, based on demo data, not accurate
-             *
-             */
-            if (graphData.length) {
-              graphData.sort(function(a, b) {
-                return parseInt(b["_id"]) - parseInt(a["_id"]);
-              });
-              summary[subSection.dataKeySource+"_graphdata"] = graphData;
-              if (subSection.graph.summarySection) {
-                let summarySectionRef = subSection.graph.summarySection;
-                if (summary[summarySectionRef.dataKey]) {
-                  if (!summary[summarySectionRef.dataKey][summarySectionRef.dataKeySource]) {
-                    let resultObj = {};
-                    /*
-                     * assign results to matched key fields
-                     */
-                    for (let key in summarySectionRef["keyMatches"]) {
-                      let value = graphData[graphData.length-1][key];
-                      resultObj[summarySectionRef["keyMatches"][key]] = value ? value: summarySectionRef["display"];
-                    }
-                    summary[summarySectionRef.dataKey][summarySectionRef.dataKeySource] = [resultObj];
+        if (subSection.graph && subSection.graph.data) {
+          /*
+           *  TODO: Remove or modify after demo, based on demo data, not accurate
+           *
+           */
+          if (subSection.graph.data.length) {
+            let graphData = subSection.graph.data;
+            summary[subSection.dataKeySource+"_graphdata"] = graphData;
+            if (subSection.graph.summarySection) {
+              let summarySectionRef = subSection.graph.summarySection;
+              if (summary[summarySectionRef.dataKey]) {
+                if (!summary[summarySectionRef.dataKey][summarySectionRef.dataKeySource]) {
+                  let resultObj = {};
+                  /*
+                   * assign results to matched key fields
+                   */
+                  for (let key in summarySectionRef["keyMatches"]) {
+                    let value = graphData[graphData.length-1][key];
+                    resultObj[summarySectionRef["keyMatches"][key]] = value ? value: summarySectionRef["display"];
                   }
+                  summary[summarySectionRef.dataKey][summarySectionRef.dataKeySource] = [resultObj];
                 }
               }
             }
           }
+        }
+
+        if (entries.length > 0) {
           sectionFlags[sectionKey][subSection.dataKey] = entries.reduce((flaggedEntries, entry) => {
             if (entry._id == null) {
               entry._id = generateUuid();
