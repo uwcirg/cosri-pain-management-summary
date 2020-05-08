@@ -108,25 +108,28 @@ export default class Summary extends Component {
   }
 
   renderNoEntries(section, subSection) {
-    const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
-    const flaggedClass = flagged ? 'flagged' : '';
-    const sectionElement = this.props.sectionFlags[section];
-    const flagText = sectionElement ? sectionElement[subSection.dataKey] : '';
-    const tooltip = flagged ? flagText : '';
-    return (
-      <div className={`table ${subSection.flagScheme}`}>
-        <div className="no-entries">
-          <div>
-            <FontAwesomeIcon
-              className={`flag flag-no-entry ${flaggedClass}`}
+    let guidelineElement = subSection["guideline"] ? subSection["guideline"]: null;
+    let guidelineContent = "";
+    if (guidelineElement) {
+      guidelineContent = guidelineElement.map( (item, index) => {
+        return <div key={`guideline_${index}`} className={`flag-no-entry ${item.type}`}>
+          <FontAwesomeIcon
+              className="flag"
               icon="exclamation-circle"
-      //       data-tip={flagText}
-              title={`flag: ${tooltip}`}
+              title="guideline"
               role="tooltip"
               tabIndex={0}
-            />
-            no entries found</div>
-          <div className="flag-text">{flagText}</div>
+          /> <span className="text">{item.text}</span>
+        </div>
+      });
+    }
+    return (
+      <div className={`table`}>
+        <div className="no-entries">
+          <div>no entries found</div>
+          <div className="guideline-content">
+            {guidelineContent}
+          </div>
         </div>
       </div>
     );
@@ -275,19 +278,19 @@ export default class Summary extends Component {
   }
 
   renderInfoPanel(panel) {
-    let statsContent = (panel.statsData.data).map((item, index) => {
+    let statsContent = (this.props.summary[panel.statsData.dataSectionRefKey]).map((item, index) => {
       let objResult = Object.entries(item);
       return(
-        <div key={`stats_${index}`}>{objResult[0][0]}<span className="divider">{objResult[0][1]}</span></div>
+        <div key={`stats_${index}`}>{`${objResult[0][0]} :`}<span className="divider">{objResult[0][1]}</span></div>
       )
     });
-    let alertsContent = (panel.alertsData.data).map((item, index) => {
-      return <div key={`alert_${index}`}>
+    let alertsContent = (this.props.summary[panel.alertsData.dataSectionRefKey]).map((item, index) => {
+      return <div key={`alert_${index}`} className="alert-item">
         <FontAwesomeIcon
           className="flag"
           icon="exclamation-circle"
         />{item}</div>;
-    })
+    });
     return (<div className="sub-section__infopanel">
         <div className="panel-title">{panel.title}</div>
         <div className="stats-container">
@@ -301,14 +304,14 @@ export default class Summary extends Component {
       </div>)
   }
 
-  renderPanel(panels) {
+  renderPanel(section, panels) {
     let content = panels.map((panel, index) => {
       return (<div key={`panel_${index}`} className="panel">
           {panel.type === "graph" && this.renderGraph(panel.data, panel.graphType)}
           {panel.type === "info" && this.renderInfoPanel(panel)}
         </div>);
     });
-    return (<div className="sub-section__panel">{content}</div>);
+    return (<div className={`${section}-sub-section__panel sub-section__panel`}>{content}</div>);
   }
 
   renderSection(section) {
@@ -326,7 +329,7 @@ export default class Summary extends Component {
       const flaggedClass = flagged ? 'flagged' : '';
       const omitTitleClass = subSection.omitTitle ? 'sub-section-notitle' : '';
       return (
-        <div key={`${subSection.dataKey}_${index}`} className={`sub-section h3-wrapper ${subSection.flagScheme}`}>
+        <div key={`${subSection.dataKey}_${index}`} className={`sub-section h3-wrapper`}>
           <h3 id={subSection.dataKey} className={`sub-section__header ${omitTitleClass}`}>
             <FontAwesomeIcon
               className={`flag flag-nav ${flaggedClass}`}
@@ -364,7 +367,7 @@ export default class Summary extends Component {
 
           </h3>
 
-          {panels && this.renderPanel(panels)}
+          {panels && this.renderPanel(section, panels)}
 
           {!hasEntries && !panels && this.renderNoEntries(section, subSection)}
           {/* {this.renderGraph(section, graphData, graphType)} */}

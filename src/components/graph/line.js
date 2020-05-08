@@ -13,7 +13,7 @@ class Line extends React.Component {
   }
   componentDidMount() {
     const node = this.ref.current;
-    const { data, lineGenerator, xName, yName } = this.props;
+    const { data, lineGenerator, xName, yName, xScale, yScale, dataPoints } = this.props;
     
     this.setState({
       xName: xName,
@@ -32,7 +32,22 @@ class Line extends React.Component {
       currentNode.style("stroke-dasharray", (this.props.dotSpacing || "3, 3"))  // <== This line here!!
     }
 
-    this.updateChart()
+    if (dataPoints) {
+      select(node)
+      .selectAll('circle')
+      .data(data)
+      .enter()
+      .append('circle')
+      .attr('class', 'circle')
+      .attr('stroke', dataPoints.strokeColor)
+      .attr('stroke-width', dataPoints.strokeWidth)
+      .attr('fill', dataPoints.strokeFill)
+      .attr('r', 3)
+      .attr('cx', d => xScale(d[xName]))
+      .attr('cy', d => yScale(d[yName]));
+    }
+
+    this.updateChart();
   }
   componentDidUpdate() {
     this.updateChart();

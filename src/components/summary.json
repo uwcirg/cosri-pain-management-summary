@@ -3,6 +3,26 @@
     "title": "Patient Risk Overview",
     "type": "overview",
     "skipDataInfo": true,
+    "statsConfig": {
+      "dataKey": "PDMPMedications",
+      "dataKeySource":"PDMPMedications",
+      "data": [
+        {
+          "title": "Total Prescriptions",
+          "type": "count"
+        },
+        {
+          "title": "Total Prescriptions",
+          "keyMatch": "_prescriber",
+          "type": "count"
+        },
+        {
+          "title": "Total Pharmacies",
+          "keyMatch": "_pharmacy",
+          "type": "count"
+        }
+      ]
+    },
     "sections": [
       {
         "name": "Patient Risk Overview",
@@ -28,15 +48,13 @@
             "title": "Patient Risk Assessment",
             "statsData": {
               "title": "At A Glance",
-              "data": [
-                {"Total Opioid Rx": 20}, {"Total Prescribers": 7}, {"Total Pharmacies": 4}
-              ]
+              "type": "stats",
+              "dataSectionRefKey": "PatientRiskOverview_stats"
             },
             "alertsData": {
               "title": "Alerts",
-              "data": [
-                "1 Benzodiazepine found"
-              ]
+              "type": "alerts",
+              "dataSectionRefKey": "PatientRiskOverview_alerts"
             }
           }
         ]
@@ -131,6 +149,12 @@
          "name": "Non-Opioid Medications",
          "dataKey": "NonOpioidMedications",
          "dataKeySource": "HistoricalTreatments",
+         "guideline": [
+           {
+             "type": "CDC",
+             "text":"CDC Guideline #1: Opioids are not first-line therapy."
+           }
+          ],
          "info": [
            {
              "type": "elements",
@@ -157,7 +181,7 @@
              "flags": [
                {
                  "flag": "ifNone",
-                 "flagText": "CDC Guideline #1: Opioids are not first-line therapy."
+                 "flagText": "Absence of non-opioid medications"
                }
              ]
            }
@@ -167,6 +191,12 @@
          "name": "Stool Softeners and Laxatives",
          "dataKey": "StoolSoftenersAndLaxatives",
          "dataKeySource": "HistoricalTreatments",
+         "guideline": [
+           {
+             "type": "CDC",
+             "text": "CDC Guideline #3: To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
+           }
+         ],
          "info": [
            {
              "type": "elements",
@@ -203,7 +233,7 @@
                      }
                    ]
                  },
-                 "flagText": "CDC Guideline #3: To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
+                 "flagText": "Absence of stool softeners/laxative with presence of at least one opioid medication"
                }
              ]
            }
@@ -258,6 +288,16 @@
         "name": "Risk Factors for Opioid-related Harms",
         "dataKey": "RiskFactorsForOpioidRelatedHarms",
         "dataKeySource": "PertinentMedicalHistory",
+        "guideline": [
+          {
+            "type": "CDC",
+            "text":  "CDC Guideline #8: Mitigate risk"
+          },
+          {
+            "type": "WA",
+            "text": "WA AMDG Guideline: Avoid opioids if there is any FDA or clinical contraindications."
+          }
+        ],
         "info": [
           {
             "type": "elements",
@@ -335,7 +375,7 @@
             "flags": [
               {
                 "flag": "always",
-                "flagText": "CDC Guideline #8: Mitigate risk; WA AMDG Guideline: Avoid opioids if there is any FDA or clinical contraindications."
+                "flagText": "Factor that may place the patient at risk for an opioid-related harm."
               }
             ]
           },
@@ -367,6 +407,12 @@
         "name": "Non-Pharmacologic Treatments",
         "dataKey": "NonPharmacologicTreatments",
         "dataKeySource": "HistoricalTreatments",
+        "guideline": [
+          {
+            "type": "CDC",
+            "text": "CDC Guideline #1: Opioids are not first-line therapy."
+          }
+        ],
         "omitTitle": true,
         "info": [
           {
@@ -391,7 +437,7 @@
             "flags": [
               {
                 "flag": "ifNone",
-                "flagText": "CDC Guideline #1: Opioids are not first-line therapy."
+                "flagText": "Absence of non-pharmacologic treatments"
               }
             ]
           }
@@ -406,6 +452,12 @@
         "name": "Most Recent MED",
         "dataKey": "MostRecentMME",
         "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "CDC",
+            "text": "CDC Guideline #5: Use lowest effective dose."
+          }
+        ],
         "info": [
           {
             "type": "elements",
@@ -434,7 +486,7 @@
                     "value": 50
                   }
                 },
-                "flagText": "CDC Guideline #5: Use lowest effective dose."
+                "flagText": "Most recent MME assessment is 50+ MME/day"
               }
             ]
           }
@@ -444,6 +496,12 @@
         "name": "Urine Drug Screens",
         "dataKey": "UrineDrugScreens",
         "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "CDC",
+            "text": "CDC Guideline #10: Use urine drug testing."
+          }
+        ],
         "info": [
           {
             "type": "elements",
@@ -478,7 +536,7 @@
                     }
                   ]
                 },
-                "flagText": "CDC Guideline #10: Use urine drug testing."
+                "flagText": "Absence of urine drug screen and at least one opioid medication"
               }
             ]
           }
@@ -488,6 +546,12 @@
         "name": "Benzodiazepine Medications",
         "dataKey": "BenzodiazepineMedications",
         "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "CDC",
+            "text": "CDC Guideline #11: Avoid concurrent opioid and benzodiazepine prescribing."
+          }
+        ],
         "info": [
           {
             "type": "elements",
@@ -524,11 +588,11 @@
                     }
                   ]
                 },
-                "flagText": "CDC Guideline #11: Avoid concurrent opioid and benzodiazepine prescribing."
+                "flagText": "Benzodiazepine medication and at least one opioid medication"
               },
               {
                 "flag": "ifOneOrMore",
-                "flagText": "CDC Guideline #11: Avoid concurrent opioid and benzodiazepine prescribing."
+                "flagText": "Evidence of Benzodiazepine medication"
               }
             ]
           }
@@ -538,7 +602,6 @@
         "name": "Carisoprodol Medications",
         "dataKey": "CarisoprodolMedications",
         "dataKeySource": "RiskConsiderations",
-        "flagScheme": "red",
         "info": [
           {
             "type": "elements",
@@ -588,6 +651,12 @@
         "name": "Naloxone Medications",
         "dataKey": "NaloxoneMedications",
         "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "CDC",
+            "text": "CDC Guideline #8: Use strategies to mitigate risk."
+          }
+        ],
         "info": [
           {
             "type": "elements",
@@ -626,11 +695,11 @@
                     }
                   ]
                 },
-                "flagText": "CDC Guideline #8: Use strategies to mitigate risk."
+                "flagText": "Absence of Naloxone medication and most recent MME assessment is 50+ MME/day"
               },
               {
                 "flag": "ifOneOrMore",
-                "flagText": "CDC Guideline #8: Use strategies to mitigate risk."
+                "flagText": "Evidence of Naloxone medication"
               }
             ]
           }
