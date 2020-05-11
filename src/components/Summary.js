@@ -322,11 +322,11 @@ export default class Summary extends Component {
         <div className="panel-title">{panel.title}</div>
         <div className="stats-container">
           <div className="title">{panel.statsData.title}</div>
-          <div className="content">{statsContent || "No entries"}</div>
+          <div className="content">{statsContent || "No statistic entry found."}</div>
         </div>
         <div className="alerts-container">
           <div className="title">{panel.alertsData.title}</div>
-          <div className="content">{alertsContent || "No alert entries found."}</div>
+          <div className="content">{alertsContent || "No alert entry found."}</div>
         </div>
       </div>)
   }
