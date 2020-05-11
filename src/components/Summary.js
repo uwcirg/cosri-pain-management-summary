@@ -123,13 +123,38 @@ export default class Summary extends Component {
         </div>
       });
     }
+    const { sectionFlags } = this.props;
+    let subSectionFlags = sectionFlags[section][subSection.dataKey];
+    let flagEntries = [];
+    let flagContent = "";
+    if (subSectionFlags) {
+      flagEntries = subSectionFlags.map((flag) => {
+        return flag.flagText;
+      });
+    }
+    if (flagEntries.length) {
+      flagContent = flagEntries.map( (item, index) => {
+        return <div key={`flag_${index}`}>
+          <FontAwesomeIcon
+              className="flag"
+              icon="exclamation-circle"
+              title="flag"
+              role="tooltip"
+              tabIndex={0}
+          /> <span className="text">{item}</span>
+        </div>
+      });
+    }
     return (
-      <div className={`table`}>
+      <div id={`${subSection.dataKey}_table`} className={`table`}>
         <div className="no-entries">
           <div>no entries found</div>
-          <div className="guideline-content">
-            {guidelineContent}
-          </div>
+            <div className="flag-guideline-content">
+              <div>{flagContent}</div>
+              <div className="guideline-content">
+                {guidelineContent}
+              </div>
+            </div>
         </div>
       </div>
     );
@@ -229,7 +254,7 @@ export default class Summary extends Component {
     //getTheadThProps solution courtesy of:
     //https://spectrum.chat/react-table/general/is-there-a-way-to-activate-sort-via-onkeypress~66656e87-7f5c-4767-8b23-ddf35d73f8af
     return (
-      <div key={index} className="table" role="table"
+      <div key={index} id={`${subSection.dataKey}_table`} className="table" role="table"
            aria-label={subSection.name} aria-describedby={customProps.id}>
           <ReactTable
             className={`sub-section__table ${columns.length <= 2? 'single-column': ''}`}
@@ -277,7 +302,7 @@ export default class Summary extends Component {
     return <div className="graph-placeholder"></div>;
   }
 
-  renderInfoPanel(panel) {
+  renderOverviewPanel(panel) {
     let statsContent = (this.props.summary[panel.statsData.dataSectionRefKey]).map((item, index) => {
       let objResult = Object.entries(item);
       return(
@@ -286,10 +311,12 @@ export default class Summary extends Component {
     });
     let alertsContent = (this.props.summary[panel.alertsData.dataSectionRefKey]).map((item, index) => {
       return <div key={`alert_${index}`} className="alert-item">
-        <FontAwesomeIcon
+        <a href={`#${item.id}_table`}><FontAwesomeIcon
           className="flag"
           icon="exclamation-circle"
-        />{item}</div>;
+          data-tip={`go to ${item.name}`}
+          role="tooltip"
+        /></a>{item.text}</div>;
     });
     return (<div className="sub-section__infopanel">
         <div className="panel-title">{panel.title}</div>
@@ -308,7 +335,7 @@ export default class Summary extends Component {
     let content = panels.map((panel, index) => {
       return (<div key={`panel_${index}`} className="panel">
           {panel.type === "graph" && this.renderGraph(panel.data, panel.graphType)}
-          {panel.type === "info" && this.renderInfoPanel(panel)}
+          {panel.type === "overview" && this.renderOverviewPanel(panel)}
         </div>);
     });
     return (<div className={`${section}-sub-section__panel sub-section__panel`}>{content}</div>);

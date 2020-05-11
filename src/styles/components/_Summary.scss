@@ -312,11 +312,16 @@
             .alert-item {
               display: flex;
               align-items: flex-start;
+              margin-bottom: 8px;
             }
             .flag {
               color: $color-red-darker;
               margin-right: 8px;
-              margin-top: 6px;
+              font-size: 24px;
+              &:hover {
+                color: $color-red;
+                cursor: pointer;
+              }
             }
           }
         }
@@ -375,7 +380,10 @@
             color: $color-gold;
             font-size: 0.95em;
           }
-          .guideline-content {
+          .flag-guideline-content {
+            .flag {
+              color: $color-red;
+            }
             margin-top: 12px;
           }
           .flag-no-entry {
@@ -470,7 +478,7 @@
               cursor: default;
 
               &.flagged {
-                color: $color-orange-light;
+                color: $color-red;
               }
             }
           }
@@ -529,7 +537,7 @@
         top: -4px;
         margin-right: 8px;
         &.red {
-          background: $color-red;
+          background: $color-red-darker;
         }
         &.orange {
           background: $color-orange-light;
@@ -659,7 +667,7 @@
 
 .red {
   .flagged {
-    color: $color-red !important;
+    color: $color-red-darker !important;
   }
 }
 .orange {

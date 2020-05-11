@@ -43,6 +43,7 @@ export default class Landing extends Component {
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.processOverviewData(result['Summary'], sectionFlags);
         console.log("results ", result['Summary']);
+        console.log("collector? ", this.state.collector)
         this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
       }
@@ -151,11 +152,25 @@ export default class Landing extends Component {
               alerts.push(subsection[1]);
             }
             if (typeof subsection[1] === "object") {
-              subsection[1].forEach(subitem => {
-                if (subitem.flagText) {
-                  alerts.push(subitem.flagText);
+              if (Array.isArray(subsection[1])) {
+                subsection[1].forEach(subitem => {
+                  if (subitem.flagText) {
+                    alerts.push({
+                      id: subitem.subSection.dataKey,
+                      name: subitem.subSection.name,
+                      text: subitem.flagText
+                    });
+                  }
+                });
+              } else {
+                if (subsection[1].flagText) {
+                  alerts.push({
+                    id: subsection[1].subSection.dataKey,
+                    name: subsection[1].subSection.name,
+                    text: subsection[1].flagText
+                  });
                 }
-              });
+              }
             }
           }
         }
@@ -385,7 +400,7 @@ export default class Landing extends Component {
             const entryFlag = flagit(entry, subSection, summary);
 
             if (entryFlag) {
-              flaggedEntries.push({ 'entryId': entry._id, 'flagText': entryFlag});
+              flaggedEntries.push({ 'entryId': entry._id, 'subSection': subSection, 'flagText': entryFlag});
               flaggedCount += 1;
             }
 
@@ -393,9 +408,11 @@ export default class Landing extends Component {
           }, []);
         } else {
           const sectionFlagged = flagit(null, subSection, summary);
-          sectionFlags[sectionKey][subSection.dataKey] = sectionFlagged;
-
           if (sectionFlagged) {
+            sectionFlags[sectionKey][subSection.dataKey] = [{
+              'flagText': sectionFlagged,
+              'subSection': subSection
+            }];
             flaggedCount += 1;
           }
         }
