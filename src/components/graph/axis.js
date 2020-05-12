@@ -24,6 +24,7 @@ class Axis extends React.Component {
       axis = axisBottom(scale);
       if (tickType === "date") {
         axis.tickFormat(timeFormat(tickFormat ||"%d %b %y"));
+        axis.ticks(ticks);
       }
       //TODO allow other tick type and formatting here
     }
