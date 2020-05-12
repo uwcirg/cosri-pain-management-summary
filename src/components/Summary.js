@@ -336,13 +336,13 @@ export default class Summary extends Component {
       )
     });
     let alertsContent = (this.props.summary[panel.alertsData.dataSectionRefKey]).map((item, index) => {
-      return <div key={`alert_${index}`} className="alert-item" ref={this.elementRef} onClick={this.handleSectionLocation} data-ref={`${item.id}_table`}>
+      return <div key={`alert_${index}`} className="alert-item" ref={this.elementRef} data-ref={`${item.id}_table`}>
         <FontAwesomeIcon
           className="flag"
           icon="exclamation-circle"
-          data-tip={`Go to ${item.name}`}
-          data-ref={`${item.id}_table`}
-          role="tooltip"
+          // data-tip={`Go to ${item.name}`}
+          // data-ref={`${item.id}_table`}
+          // role="tooltip"
         />{item.text}</div>;
     });
     return (<div className="sub-section__infopanel">
