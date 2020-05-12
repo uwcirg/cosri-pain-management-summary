@@ -41,8 +41,9 @@ export default class MMEGraph extends Component {
     let maxDate = new Date();
     let minDate = new Date();
     minDate.setDate(maxDate.getDate() - 365); 
-    const parentWidth = 600;
+    const parentWidth = 616;
     const WA_MAX_VALUE = 120;
+    const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
     const xFieldName = "dateWritten";
     const yFieldName = "MMEValue";
@@ -70,6 +71,7 @@ export default class MMEGraph extends Component {
     }
 
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, minDate, maxDate, xIntervals, xFieldName, yFieldName);
+    let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, minDate, maxDate, xIntervals, xFieldName, yFieldName);
     let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, minDate, maxDate, xIntervals, xFieldName, yFieldName);
     
     const margins = {
@@ -134,14 +136,15 @@ export default class MMEGraph extends Component {
       "fontWeight": "600",
       "x": 8
     };
+    const WA_COLOR = "#a75454";
+    const CDC_COLOR = "#e09b1d";
     const WALegendSettings = {
       "y": 25,
-      "fill": "#a75454",
+      "fill": WA_COLOR,
       ...defaultLegendSettings
     };
     const CDCLegendSettings = {
-      "y": 74,
-      "fill": "#e09b1d",
+      "fill": CDC_COLOR,
       ...defaultLegendSettings
     }
 
@@ -158,23 +161,17 @@ export default class MMEGraph extends Component {
           <g transform={`translate(${margins.left}, ${margins.top})`}>
             <XYAxis {...{xSettings, ySettings}} />
             <Line lineID="dataLine" data={data} {...dataLineProps} />
-            <Line lineID="WALine" strokeColor="#a75454" dotted="true" dotSpacing="3, 3" data={WAData} {...defaultProps} />
-            <Line lineID="CDCLine" strokeColor="#e09b1d" dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
+            <Line lineID="WALine" strokeColor={WA_COLOR} dotted="true" dotSpacing="3, 3" data={WAData} {...defaultProps} />
+            <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
+            <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
             <text {...WALegendSettings}>Washington State consultation threshold</text>
-            <text {...CDCLegendSettings}>CDC recommended maximum</text>
+            <text {...CDCLegendSettings} y="138">CDC extra precautions threshold</text>
+            <text {...CDCLegendSettings} y="74">CDC avoid/justify threshold</text>
             {noEntry && 
               <text {...defaultLegendSettings} x={width/2 - 20} y={height/2} strokeColor="#777" fill="#777">No entry found</text>
             }
           </g>
         </svg>
-        {/* <legend>
-            <div>
-                <span className="icon CDC"></span>CDC recommended maximum
-            </div>
-            <div>
-                <span className="icon WA"></span>Washington State consultation threshold
-            </div>
-        </legend> */}
       </div>
     );
   }

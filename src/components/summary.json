@@ -8,11 +8,11 @@
       "dataKeySource":"PDMPMedications",
       "data": [
         {
-          "title": "Total Prescriptions",
+          "title": "Total Opioid Rx",
           "type": "count"
         },
         {
-          "title": "Total Prescriptions",
+          "title": "Total Prescribers",
           "keyMatch": "_prescriber",
           "type": "count"
         },
@@ -113,7 +113,7 @@
     ]
   },
   "HistoricalTreatments": {
-    "title": "EHR Medications",
+    "title": "EHR Opioid and Related Medications",
     "sections": [
        {
          "name": "Opioid Medications",
@@ -181,7 +181,7 @@
              "flags": [
                {
                  "flag": "ifNone",
-                 "flagText": "Absence of non-opioid medications"
+                 "flagText": "Absence of non-opioid medications."
                }
              ]
            }
@@ -233,7 +233,7 @@
                      }
                    ]
                  },
-                 "flagText": "Absence of stool softeners/laxative with presence of at least one opioid medication"
+                 "flagText": "Absence of stool softeners/laxative with presence of at least one opioid medication."
                }
              ]
            }
@@ -392,7 +392,7 @@
             "flags": [
               {
                 "flag": "always",
-                "flagText": "Factor that may place the patient at risk for an opioid-related harm"
+                "flagText": "Factor that may place the patient at risk for an opioid-related harm."
               }
             ]
           }
@@ -437,7 +437,7 @@
             "flags": [
               {
                 "flag": "ifNone",
-                "flagText": "Absence of non-pharmacologic treatments"
+                "flagText": "Absence of non-pharmacologic treatments."
               }
             ]
           }
@@ -486,7 +486,7 @@
                     "value": 50
                   }
                 },
-                "flagText": "Most recent MME assessment is 50+ MME/day"
+                "flagText": "Most recent MME assessment is 50+ MME/day."
               }
             ]
           }
@@ -536,7 +536,7 @@
                     }
                   ]
                 },
-                "flagText": "Absence of urine drug screen and at least one opioid medication"
+                "flagText": "Absence of urine drug screen and at least one opioid medication."
               }
             ]
           }
@@ -588,7 +588,7 @@
                     }
                   ]
                 },
-                "flagText": "Benzodiazepine medication and at least one opioid medication"
+                "flagText": "Concurrent sedative found (Benzodiazepine medication and at least one opioid medication)."
               },
               {
                 "flag": "ifOneOrMore",
@@ -637,11 +637,11 @@
                     }
                   ]
                 },
-                "flagText": "Carisoprodol medication and at least one opioid medication"
+                "flagText": "Carisoprodol medication and at least one opioid medication."
               },
               {
                 "flag": "ifOneOrMore",
-                "flagText": "Evidence of Carisoprodol medication"
+                "flagText": "Evidence of Carisoprodol medication."
               }
             ]
           }
@@ -695,11 +695,11 @@
                     }
                   ]
                 },
-                "flagText": "Absence of Naloxone medication and most recent MME assessment is 50+ MME/day"
+                "flagText": "Absence of Naloxone medication and most recent MME assessment is 50+ MME/day."
               },
               {
                 "flag": "ifOneOrMore",
-                "flagText": "Evidence of Naloxone medication"
+                "flagText": "Evidence of Naloxone medication."
               }
             ]
           }

@@ -10,13 +10,13 @@ import summaryMap from './summary.json';
 import * as formatit from '../helpers/formatit';
 import * as sortit from '../helpers/sortit';
 
+import ChartIcon from '../icons/ChartIcon';
 import MedicalHistoryIcon from '../icons/MedicalHistoryIcon';
+import MedicineIcon from '../icons/MedicineIcon';
 import PainIcon from '../icons/PainIcon';
-import TreatmentsIcon from '../icons/TreatmentsIcon';
 import RiskIcon from '../icons/RiskIcon';
 import RxIcon from '../icons/RxIcon';
-import MedicineIcon from '../icons/MedicineIcon';
-import OccupationIcon from '../icons/OccupationIcon';
+import TreatmentsIcon from '../icons/TreatmentsIcon';
 import UserIcon from '../icons/UserIcon';
 
 import InclusionBanner from './InclusionBanner';
@@ -36,8 +36,11 @@ export default class Summary extends Component {
       modalSubSection: null
     };
 
+    this.elementRef = React.createRef();
+
      // This binding is necessary to make `this` work in the callback
      this.handleNavToggle= this.handleNavToggle.bind(this);
+     this.handleSectionLocation= this.handleSectionLocation.bind(this);
 
     this.subsectionTableProps = { id: 'react_sub-section__table'};
 
@@ -49,6 +52,15 @@ export default class Summary extends Component {
     this.setState(state => ({
       showNav: !state.showNav
     }));
+  }
+
+  handleSectionLocation(e) {
+    e.preventDefault();
+    let loc = this.elementRef.current.getAttribute("data-ref");
+    if (loc) {
+      window.location = `#${loc}`;
+    }
+    return true;
   }
 
   handleOpenModal = (modalSubSection,event) => {
@@ -77,6 +89,24 @@ export default class Summary extends Component {
     }
 
     return false;
+  }
+
+  getSectionFlagCount(section) {
+    const { sectionFlags } = this.props;
+    const subSections = sectionFlags[section] ? Object.keys(sectionFlags[section]): null;
+
+    if (!subSections) {
+      return false;
+    }
+
+    let count = 0;
+    for (let i = 0; i < subSections.length; ++i) {
+      if (this.isSubsectionFlagged(section, subSections[i])) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
   isSubsectionFlagged(section, subSection) {
@@ -116,8 +146,6 @@ export default class Summary extends Component {
           <FontAwesomeIcon
               className="flag"
               icon="exclamation-circle"
-              title="guideline"
-              role="tooltip"
               tabIndex={0}
           /> <span className="text">{item.text}</span>
         </div>
@@ -138,8 +166,6 @@ export default class Summary extends Component {
           <FontAwesomeIcon
               className="flag"
               icon="exclamation-circle"
-              title="flag"
-              role="tooltip"
               tabIndex={0}
           /> <span className="text">{item}</span>
         </div>
@@ -181,8 +207,8 @@ export default class Summary extends Component {
           <FontAwesomeIcon
             className={`flag flag-entry ${props.value ? 'flagged' : ''}`}
             icon="exclamation-circle"
-            title={props.value ? `flag: ${props.value}` : 'flag'}
-            data-tip={props.value ? props.value : ''}
+            title={props.value ? props.value : 'flag'}
+            data-tip={props.value ? props.value : 'flag'}
             role="tooltip"
             tabIndex={0}
           />,
@@ -310,13 +336,14 @@ export default class Summary extends Component {
       )
     });
     let alertsContent = (this.props.summary[panel.alertsData.dataSectionRefKey]).map((item, index) => {
-      return <div key={`alert_${index}`} className="alert-item">
-        <a href={`#${item.id}_table`}><FontAwesomeIcon
+      return <div key={`alert_${index}`} className="alert-item" ref={this.elementRef} onClick={this.handleSectionLocation} data-ref={`${item.id}_table`}>
+        <FontAwesomeIcon
           className="flag"
           icon="exclamation-circle"
-          data-tip={`go to ${item.name}`}
+          data-tip={`Go to ${item.name}`}
+          data-ref={`${item.id}_table`}
           role="tooltip"
-        /></a>{item.text}</div>;
+        />{item.text}</div>;
     });
     return (<div className="sub-section__infopanel">
         <div className="panel-title">{panel.title}</div>
@@ -348,8 +375,6 @@ export default class Summary extends Component {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
-     // const graphData = dataKeySource ? this.props.summary[subSection.dataKey+"_graphdata"] : null;
-    //  const graphType = subSection.graph? subSection.graph.type: "";
       const panels = subSection.panels;
       const hasEntries = entries.length !== 0;
       const flagged = this.isSubsectionFlagged(section, subSection.dataKey);
@@ -380,15 +405,6 @@ export default class Summary extends Component {
                     role="tooltip"
                     tabIndex={0}
                     >more info</span>
-
-                    {/* {<FontAwesomeIcon
-                      className='info-icon'
-                      icon="info-circle"
-                      title={`more info: ${subSection.name}`}
-                      data-tip="more info"
-                      role="tooltip"
-                      tabIndex={0}
-                    />} */}
                   </div>
               }</span>
 
@@ -397,7 +413,6 @@ export default class Summary extends Component {
           {panels && this.renderPanel(section, panels)}
 
           {!hasEntries && !panels && this.renderNoEntries(section, subSection)}
-          {/* {this.renderGraph(section, graphData, graphType)} */}
           {hasEntries && subSection.tables.map((table, index) =>
             this.renderTable(table, entries, section, subSection, index))
           }
@@ -418,13 +433,17 @@ export default class Summary extends Component {
   renderSectionHeader(section) {
     const flagged = this.isSectionFlagged(section);
     const flaggedClass = flagged ? 'flagged' : '';
+    const flagCount = this.getSectionFlagCount(section);
+    const flaggedText = flagged? `${flagCount ? flagCount + ' flag entr' + (flagCount > 1?'ies': 'y') + ' found': ''}` : "";
     const { numMedicalHistoryEntries, numPainEntries, numTreatmentsEntries, numRiskEntries, numNonPharTreatmentEntries, numPDMPDataEntries } = this.props;
 
     let icon = '';
     let sourceTitle = summaryMap[section]['title'];
     let title = sourceTitle;
-    if (section === 'PertinentMedicalHistory') {
-      icon = <MedicalHistoryIcon width="25" height="35" />;
+    if (section === 'PatientRiskOverview') {
+      icon = <ChartIcon width="25" height="35" />;
+    } else if (section === 'PertinentMedicalHistory') {
+      icon = <MedicalHistoryIcon width="35" height="35" />;
       title += ` (${numMedicalHistoryEntries})`;
     } else if (section === 'PainAssessments') {
       icon = <PainIcon width="35"  height="35" />;
@@ -441,8 +460,6 @@ export default class Summary extends Component {
     } else if (section === 'NonPharmacologicTreatments') {
       icon =  <TreatmentsIcon width="36" height="38" />;
       title += ` (${numNonPharTreatmentEntries})`;
-    } else if (section === 'Occupation') {
-      icon = <OccupationIcon className={`sectionIcon`} title={`${sourceTitle}`}/>;
     } else if (section === 'PatientEducationMaterials') {
       icon = <UserIcon className={`sectionIcon`} title={`${sourceTitle}`} />;
     }
@@ -451,10 +468,9 @@ export default class Summary extends Component {
       <h2 id={section} className="section__header">
         <div className="section__header-title">
           {icon}
-
           <span>
             {title}
-            <FontAwesomeIcon className={`flag flag-header ${flaggedClass}`} icon="exclamation-circle" title="flag" />
+            <FontAwesomeIcon className={`flag flag-header ${flaggedClass}`} icon="exclamation-circle" title={flaggedText} role="tooltip" data-tip={flaggedText} data-place="right" />
           </span>
         </div>
 

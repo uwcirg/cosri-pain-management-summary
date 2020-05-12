@@ -400,8 +400,8 @@ export default class Landing extends Component {
             const entryFlag = flagit(entry, subSection, summary);
 
             if (entryFlag) {
-              flaggedEntries.push({ 'entryId': entry._id, 'subSection': subSection, 'flagText': entryFlag});
               flaggedCount += 1;
+              flaggedEntries.push({'entryId': entry._id, 'subSection': subSection, 'flagText': entryFlag, 'flagCount': flaggedCount});
             }
 
             return flaggedEntries;
@@ -409,11 +409,12 @@ export default class Landing extends Component {
         } else {
           const sectionFlagged = flagit(null, subSection, summary);
           if (sectionFlagged) {
+            flaggedCount += 1;
             sectionFlags[sectionKey][subSection.dataKey] = [{
               'flagText': sectionFlagged,
+              'flagCount': flaggedCount,
               'subSection': subSection
             }];
-            flaggedCount += 1;
           }
         }
       });
