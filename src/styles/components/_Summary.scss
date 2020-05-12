@@ -505,44 +505,21 @@
               }
             }
           }
-
-          .pagination-bottom {
-            margin-top: 20px;
-            input,
-            select {
-              border-radius: 0;
-            }
-            input {
-              height: 24px;
-            }
-            select {
-              height: 32px;
-            }
-            .-pageJump {
-              input {
-                border-radius: 0;
-              }
-            }
-
-            .-pagination {
-              box-shadow: none;
-              border-top: 1px solid $color-gray-lighter;
-              padding-top: 16px;
-
-              button {
-                width: 65%;
-                margin: 4px auto;
-                padding: 4px;
-                height: 32px;
-              }
-            }
-          }
         }
       }
     }
 
     .cdc-disclaimer {
       margin: 10px 40px 0 40px;
+      &.data-source {
+        padding: 16px 24px;
+        box-shadow: 1px 2px 2px $color-box-shadow;
+        border-top: 1px solid $color-gray-lightest;
+        border-left: 1px solid $color-gray-lightest;
+        line-height: 1.5;
+        background-color: #FFF;
+        margin-top: 24px;
+      }
 
       a {
         margin: 0 5px;

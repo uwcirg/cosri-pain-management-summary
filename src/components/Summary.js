@@ -543,7 +543,7 @@ export default class Summary extends Component {
             for additional information and prescribing guidance.
           </div>
 
-	       <div  className="cdc-disclaimer">
+	       <div  className="cdc-disclaimer data-source">
          COSRI incorporates the Clinical Pain Management Summary application, released as open-source software by CDS Connect project at the Agency for Healthcare Research and Quality (AHRQ). We have extended ARHQ's work to provide enhanced security, improved decision support, integration with state Prescription Drug Monitoring Program databases, standalone operation, and other features. For a description of our open source release, contact <a href="mailto:info@cosri.app">info@cosri.app</a>. Support for the development of COSRI was provided by the Washington State Department of Health and the Washington State Health Care Authority through the CMS Support Act.
           </div>
 

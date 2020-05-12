@@ -68,4 +68,43 @@
     overflow: visible;
     line-height: 1.45;
   }
+  .pagination-bottom {
+    margin-top: 20px;
+    input,
+    select {
+      border-radius: 0;
+    }
+    input {
+      height: 24px;
+    }
+    select {
+      height: 32px;
+    }
+    .-pageJump {
+      input {
+        border-radius: 0;
+      }
+    }
+
+    .-pagination {
+      box-shadow: none;
+      border-top: 1px solid $color-gray-lighter;
+      padding-top: 16px;
+
+      button {
+        width: 65%;
+        margin: 4px auto;
+        padding: 4px;
+        height: 32px;
+      }
+      
+      .-btn {
+        background: $color-blue;
+        color: #FFF;
+        &:hover {
+          background: $color-blue-darker;
+        }
+      }
+    }
+  }
 }
