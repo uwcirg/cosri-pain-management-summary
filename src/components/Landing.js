@@ -42,8 +42,6 @@ export default class Landing extends Component {
         result['Summary'] = {...result['Summary'], ...response[1]};
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.processOverviewData(result['Summary'], sectionFlags);
-        console.log("results ", result['Summary']);
-        console.log("collector? ", this.state.collector)
         this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
       }
