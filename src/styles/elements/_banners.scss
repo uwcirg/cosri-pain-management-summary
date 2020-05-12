@@ -15,7 +15,6 @@
   &.inclusion-banner,
   &.exclusion-banner {
     padding: 20px 28px 20px 24px;
-    //margin-bottom: 10px;
     margin-bottom: 4px;
     text-align: left;
     background-color: $color-beige;
@@ -38,14 +37,30 @@
 
     .close-button {
       float: right;
-      color: $color-gray;
+      color: $color-gray-dark;
       font-size: 1.2em;
       cursor: pointer;
+      transition: transform 350ms ease;
+      transform: rotate(0);
+    }
+    .content {
+      display: block;
+    }
+    &.close {
+      .close-button {
+        transform: rotate(-90deg);
+      }
+      .content {
+        display: none;
+      }
     }
   }
 
   &.exclusion-banner {
     font-size: 1.1em;
+    .close-button {
+      margin-right: 12px;
+    }
   }
 
   .exclusion-banner,
