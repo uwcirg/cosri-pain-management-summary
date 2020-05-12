@@ -429,8 +429,7 @@ export default class Landing extends Component {
       })
       .catch(err => { console.log(err) });
 
-    console.log("sectionFlags? ", sectionFlags)
-
+      
     return { sectionFlags, flaggedCount };
   }
 
