@@ -41,14 +41,15 @@ export default class MMEGraph extends Component {
     let maxDate = new Date();
     let minDate = new Date();
     minDate.setDate(maxDate.getDate() - 365); 
-    const parentWidth = 616;
+    const parentWidth = 600;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
     const xFieldName = "dateWritten";
     const yFieldName = "MMEValue";
     const xIntervals = 8;
-    let data  = this.props.data || this.getDefaultDataValueSet(0, minDate, maxDate, xIntervals, xFieldName, yFieldName);
+    let lineParamsSet = [xIntervals, xFieldName, yFieldName];
+    let data  = this.props.data || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
     let noEntry = !data || !data.length;
 
     data = data.map(d => {
@@ -69,10 +70,9 @@ export default class MMEGraph extends Component {
       maxDate = new Date(Math.max(Math.max.apply(null, arrayDates), maxDate))
       minDate = new Date(Math.min(Math.min.apply(null, arrayDates), minDate));
     }
-
-    let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, minDate, maxDate, xIntervals, xFieldName, yFieldName);
-    let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, minDate, maxDate, xIntervals, xFieldName, yFieldName);
-    let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, minDate, maxDate, xIntervals, xFieldName, yFieldName);
+    let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
+    let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
+    let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
     
     const margins = {
       top: 40,
@@ -155,8 +155,7 @@ export default class MMEGraph extends Component {
         <div className="title">Morphine Equivalent Dose (MED)</div>
         <svg
           className="MMEChartSvg"
-          width={width + margins.left + margins.right}
-          height={height + margins.top + margins.bottom}
+          viewBox = {`0 0 ${width + margins.left + margins.right} ${height + margins.top + margins.bottom}`}
         >
           <g transform={`translate(${margins.left}, ${margins.top})`}>
             <XYAxis {...{xSettings, ySettings}} />
@@ -165,7 +164,7 @@ export default class MMEGraph extends Component {
             <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
             <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
             <text {...WALegendSettings}>Washington State consultation threshold</text>
-            <text {...CDCLegendSettings} y="138">CDC extra precautions threshold</text>
+            <text {...CDCLegendSettings} y="140">CDC extra precautions threshold</text>
             <text {...CDCLegendSettings} y="74">CDC avoid/justify threshold</text>
             {noEntry && 
               <text {...defaultLegendSettings} x={width/2 - 20} y={height/2} strokeColor="#777" fill="#777">No entry found</text>

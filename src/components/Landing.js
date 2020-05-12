@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactTooltip from 'react-tooltip';
 import tocbot from 'tocbot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -486,6 +487,8 @@ export default class Landing extends Component {
           numNonPharTreatmentEntries={numNonPharTreatmentEntries}
           numPDMPDataEntries={numPDMPDataEntries}
         />
+
+        <ReactTooltip className="summary-tooltip" id="summaryTooltip" />    
       </div>
     );
   }

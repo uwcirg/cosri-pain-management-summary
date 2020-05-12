@@ -16,12 +16,12 @@
 
     .toc-list.is-collapsible {
       .toc-list-item {
+        margin-bottom: 4px;
         .toc-link {
           font-size: 0.9em;
           //padding: 5px 8px 5px 42px;
           padding: 5px 8px 5px 40px;
           line-height: 1.15em;
-
           .info-icon {
             display: none;
           }
@@ -53,6 +53,11 @@
           line-height: 1.45;
           transition: all 300ms ease;
 
+          .info {
+            display: block;
+            font-size: 14px;
+            opacity: 0.8;
+          }
           &.is-active-link,
           &:hover {
             //background-color: $color-uw-light;
@@ -115,15 +120,14 @@
       font-weight: 600;
       font-size: 1em;
       cursor: pointer;
-      transition: left 350ms ease 50ms, transform 750ms cubic-bezier(0.165, 0.84, 0.44, 1);
+      transition: left 350ms ease, transform 750ms cubic-bezier(0.165, 0.84, 0.44, 1);
       &:hover {
         opacity: 1;
       }
       &::before {
-        content: '>';
+        content: '\203A';
         display: block;
-        width: 50px;
-        height: 50px;
+        font-size: 32px;
         left: 0;
         top: 0;
         position: absolute;
@@ -135,14 +139,16 @@
       .summary__nav {
         opacity: 1;
         z-index: 1;
+        padding: 62px 0 20px 8px;
       }
       .close {
-        left: 268px;
+        left: 272px;
         font-size: 1.05em;
         transform: translateX(0);
         transform-origin: center;
         &::before {
-          content: "X";
+          content: "\2039";
+          display: block;
         }
       }
     }
@@ -235,6 +241,7 @@
         .title {
           margin-left: 42px;
           font-weight: 600;
+          font-size: 18px;
           
         }
         .axis-group {
@@ -282,6 +289,12 @@
         align-items: center;
         color: $color-black;
         padding: 16px;
+        .panel.graph {
+          flex: 100%;
+        }
+        .panel.overview {
+          max-width: 35%;
+        }
         .sub-section__infopanel {
           border: 2px solid;
           padding: 12px;
@@ -289,7 +302,9 @@
           margin-bottom: 16px;
           .panel-title {
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-top: 4px;
+            margin-bottom: 16px;
+            font-size: 18px;
           }
           .title {
             font-weight: 600;
@@ -309,23 +324,27 @@
           }
           .alerts-container {
             margin-top: 16px;
-            .alert-item {
+            a {
+              text-decoration: none;
+              font-weight: 500;
               display: flex;
               align-items: flex-start;
               margin-bottom: 8px;
-              // &:hover {
-              //   color: $color-blue-darker;
-              //   cursor: pointer;
-              // }
+              color: $color-black;
+              &:hover {
+                color: $color-black-darker;
+                cursor: pointer;
+              }
             }
             .flag {
               color: $color-red-darker;
               margin-right: 8px;
-              font-size: 24px;
-              // &:hover {
-              //   color: $color-red;
-              //   cursor: pointer;
-              // }
+              font-size: 28px;
+              margin-top: 4px;
+              &:hover {
+                color: $color-red;
+                cursor: pointer;
+              }
             }
           }
         }
@@ -463,8 +482,8 @@
             .rt-td:nth-child(2) {
               //min-width: calc(60px + 19vw);
               //max-width: calc(60px + 19vw);
-              min-width: calc(60px + 15vw);
-              max-width: calc(60px + 15vw);
+              min-width: calc(60px + 10vw);
+              max-width: calc(60px + 10vw);
             }
             &.single-column {
               .rt-th:nth-child(2),
@@ -486,44 +505,21 @@
               }
             }
           }
-
-          .pagination-bottom {
-            margin-top: 20px;
-            input,
-            select {
-              border-radius: 0;
-            }
-            input {
-              height: 24px;
-            }
-            select {
-              height: 32px;
-            }
-            .-pageJump {
-              input {
-                border-radius: 0;
-              }
-            }
-
-            .-pagination {
-              box-shadow: none;
-              border-top: 1px solid $color-gray-lighter;
-              padding-top: 16px;
-
-              button {
-                width: 65%;
-                margin: 4px auto;
-                padding: 4px;
-                height: 32px;
-              }
-            }
-          }
         }
       }
     }
 
     .cdc-disclaimer {
       margin: 10px 40px 0 40px;
+      &.data-source {
+        padding: 16px 24px;
+        box-shadow: 1px 2px 2px $color-box-shadow;
+        border-top: 1px solid $color-gray-lightest;
+        border-left: 1px solid $color-gray-lightest;
+        line-height: 1.5;
+        background-color: #FFF;
+        margin-top: 24px;
+      }
 
       a {
         margin: 0 5px;

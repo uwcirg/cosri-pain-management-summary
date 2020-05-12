@@ -40,7 +40,6 @@ export default class Summary extends Component {
 
      // This binding is necessary to make `this` work in the callback
      this.handleNavToggle= this.handleNavToggle.bind(this);
-     this.handleSectionLocation= this.handleSectionLocation.bind(this);
 
     this.subsectionTableProps = { id: 'react_sub-section__table'};
 
@@ -52,15 +51,6 @@ export default class Summary extends Component {
     this.setState(state => ({
       showNav: !state.showNav
     }));
-  }
-
-  handleSectionLocation(e) {
-    e.preventDefault();
-    let loc = this.elementRef.current.getAttribute("data-ref");
-    if (loc) {
-      window.location = `#${loc}`;
-    }
-    return true;
   }
 
   handleOpenModal = (modalSubSection,event) => {
@@ -209,6 +199,7 @@ export default class Summary extends Component {
             icon="exclamation-circle"
             title={props.value ? props.value : 'flag'}
             data-tip={props.value ? props.value : 'flag'}
+            data-for="summaryTooltip"
             role="tooltip"
             tabIndex={0}
           />,
@@ -271,7 +262,7 @@ export default class Summary extends Component {
     });
 
     //ReactTable needs an ID for aria-describedby
-    let tableID = subSection.name.replace(/ /g,"_") + "-table";
+    let tableID = `${subSection.dataKey}_table`;
     let customProps = {id:tableID};
     let defaultSorted = [];
     if (table.defaultSorted) {
@@ -280,7 +271,7 @@ export default class Summary extends Component {
     //getTheadThProps solution courtesy of:
     //https://spectrum.chat/react-table/general/is-there-a-way-to-activate-sort-via-onkeypress~66656e87-7f5c-4767-8b23-ddf35d73f8af
     return (
-      <div key={index} id={`${subSection.dataKey}_table`} className="table" role="table"
+      <div key={index} className="table" role="table"
            aria-label={subSection.name} aria-describedby={customProps.id}>
           <ReactTable
             className={`sub-section__table ${columns.length <= 2? 'single-column': ''}`}
@@ -336,14 +327,19 @@ export default class Summary extends Component {
       )
     });
     let alertsContent = (this.props.summary[panel.alertsData.dataSectionRefKey]).map((item, index) => {
-      return <div key={`alert_${index}`} className="alert-item" ref={this.elementRef} data-ref={`${item.id}_table`}>
-        <FontAwesomeIcon
+      return <div key={`alert_${index}`} className="alert-item" ref={this.elementRef} data-ref={`${item.id}_title`}>
+        <a href={`#${item.id}_title`}>
+          <FontAwesomeIcon
           className="flag"
           icon="exclamation-circle"
-          // data-tip={`Go to ${item.name}`}
-          // data-ref={`${item.id}_table`}
-          // role="tooltip"
-        />{item.text}</div>;
+          data-tip={`Go to ${item.name} section`}
+          data-for="overviewTooltip"
+          data-ref={`${item.id}_title`}
+          role="tooltip"
+          data-iscapture="true"
+        />{item.text}
+        </a>
+        </div>;
     });
     return (<div className="sub-section__infopanel">
         <div className="panel-title">{panel.title}</div>
@@ -355,12 +351,13 @@ export default class Summary extends Component {
           <div className="title">{panel.alertsData.title}</div>
           <div className="content">{alertsContent || "No alert entry found."}</div>
         </div>
+        <ReactTooltip className="summary-tooltip" id="overviewTooltip" />
       </div>)
   }
 
   renderPanel(section, panels) {
     let content = panels.map((panel, index) => {
-      return (<div key={`panel_${index}`} className="panel">
+      return (<div key={`panel_${index}`} className={`panel ${panel.type}`}>
           {panel.type === "graph" && this.renderGraph(panel.data, panel.graphType)}
           {panel.type === "overview" && this.renderOverviewPanel(panel)}
         </div>);
@@ -382,7 +379,7 @@ export default class Summary extends Component {
       const omitTitleClass = subSection.omitTitle ? 'sub-section-notitle' : '';
       return (
         <div key={`${subSection.dataKey}_${index}`} className={`sub-section h3-wrapper`}>
-          <h3 id={subSection.dataKey} className={`sub-section__header ${omitTitleClass}`}>
+          <h3 id={`${subSection.dataKey}_title`} className={`sub-section__header ${omitTitleClass}`}>
             <FontAwesomeIcon
               className={`flag flag-nav ${flaggedClass}`}
               icon={'circle'}
@@ -401,7 +398,6 @@ export default class Summary extends Component {
                     className='info-icon'
                     icon="info-circle"
                     title={`more info: ${subSection.name}`}
-                    data-tip="more info"
                     role="tooltip"
                     tabIndex={0}
                     >more info</span>
@@ -440,26 +436,27 @@ export default class Summary extends Component {
     let icon = '';
     let sourceTitle = summaryMap[section]['title'];
     let title = sourceTitle;
+    let entryCount = "";
     if (section === 'PatientRiskOverview') {
-      icon = <ChartIcon width="25" height="35" />;
+      icon = <ChartIcon width="35" height="35" />;
     } else if (section === 'PertinentMedicalHistory') {
       icon = <MedicalHistoryIcon width="35" height="35" />;
-      title += ` (${numMedicalHistoryEntries})`;
+      entryCount = ` (${numMedicalHistoryEntries})`;
     } else if (section === 'PainAssessments') {
       icon = <PainIcon width="35"  height="35" />;
-      title += ` (${numPainEntries})`
+      entryCount = ` (${numPainEntries})`
     } else if (section === 'HistoricalTreatments') {
       icon = <MedicineIcon className={`sectionIcon`} title={`${sourceTitle}`} />;
-      title += ` (${numTreatmentsEntries})`
+      entryCount = ` (${numTreatmentsEntries})`
     } else if (section === 'RiskConsiderations') {
       icon = <RiskIcon width="35" height="34" />;
-      title += ` (${numRiskEntries})`;
+      entryCount = ` (${numRiskEntries})`;
     } else if (section === 'PDMPMedications') {
       icon = <RxIcon width="20" height="25" className={`sectionIcon`} title={`${sourceTitle}`}/>;
-      title += ` (${numPDMPDataEntries})`;
+      entryCount = ` (${numPDMPDataEntries})`;
     } else if (section === 'NonPharmacologicTreatments') {
       icon =  <TreatmentsIcon width="36" height="38" />;
-      title += ` (${numNonPharTreatmentEntries})`;
+      entryCount = ` (${numNonPharTreatmentEntries})`;
     } else if (section === 'PatientEducationMaterials') {
       icon = <UserIcon className={`sectionIcon`} title={`${sourceTitle}`} />;
     }
@@ -470,7 +467,10 @@ export default class Summary extends Component {
           {icon}
           <span>
             {title}
-            <FontAwesomeIcon className={`flag flag-header ${flaggedClass}`} icon="exclamation-circle" title={flaggedText} role="tooltip" data-tip={flaggedText} data-place="right" />
+            <span className="info">
+              {entryCount && entryCount}
+              <FontAwesomeIcon className={`flag flag-header ${flaggedClass}`} icon="exclamation-circle" title={flaggedText} role="tooltip" data-tip={flaggedText} data-place="right" data-type="error" data-for="summaryTooltip" />
+            </span>
           </span>
         </div>
 
@@ -522,14 +522,14 @@ export default class Summary extends Component {
             </div>
           }
 
-          <div className="legend">
+          {meetsInclusionCriteria && <div className="legend">
             <div>
               <span className="icon orange"></span>CDC guidelines in accordance with Washington State guideline
             </div>
             <div>
               <span className="icon red"></span>Washington State guideline exclusively
             </div>
-          </div>
+          </div>}
 
           <div className="cdc-disclaimer">
             Please see the
@@ -543,7 +543,7 @@ export default class Summary extends Component {
             for additional information and prescribing guidance.
           </div>
 
-	       <div  className="cdc-disclaimer">
+	       <div  className="cdc-disclaimer data-source">
          COSRI incorporates the Clinical Pain Management Summary application, released as open-source software by CDS Connect project at the Agency for Healthcare Research and Quality (AHRQ). We have extended ARHQ's work to provide enhanced security, improved decision support, integration with state Prescription Drug Monitoring Program databases, standalone operation, and other features. For a description of our open source release, contact <a href="mailto:info@cosri.app">info@cosri.app</a>. Support for the development of COSRI was provided by the Washington State Department of Health and the Washington State Health Care Authority through the CMS Support Act.
           </div>
 
@@ -553,8 +553,6 @@ export default class Summary extends Component {
             result={result}
             summary={summary}
           />
-
-          <ReactTooltip className="summary-tooltip" />
 
           <ReactModal
             className="modal"
