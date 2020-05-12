@@ -40,7 +40,6 @@ export default class Summary extends Component {
 
      // This binding is necessary to make `this` work in the callback
      this.handleNavToggle= this.handleNavToggle.bind(this);
-     this.handleSectionLocation= this.handleSectionLocation.bind(this);
 
     this.subsectionTableProps = { id: 'react_sub-section__table'};
 
@@ -52,16 +51,6 @@ export default class Summary extends Component {
     this.setState(state => ({
       showNav: !state.showNav
     }));
-  }
-
-  handleSectionLocation(e) {
-    e.preventDefault();
-    let loc = this.elementRef.current ? this.elementRef.current.getAttribute("data-ref") : null;
-    // if (loc) {
-    //   window.location = `#${loc}`;
-    // }
-    document.querySelector(`#${loc}`).scrollIntoView();
-    return true;
   }
 
   handleOpenModal = (modalSubSection,event) => {
@@ -409,8 +398,6 @@ export default class Summary extends Component {
                     className='info-icon'
                     icon="info-circle"
                     title={`more info: ${subSection.name}`}
-                    data-tip="more info"
-                    data-for="summaryTooltip"
                     role="tooltip"
                     tabIndex={0}
                     >more info</span>

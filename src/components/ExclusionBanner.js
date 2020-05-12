@@ -28,7 +28,6 @@ export default class ExclusionBanner extends Component {
       <div
         className={`exclusion-banner banner ${conditionalClass}`}
         role="banner">
-        {/* <FontAwesomeIcon className="close-button" icon="times" title="close" onClick={this.handleClose} /> */}
         <ChevronDownIcon className="close-button" icon="times" title="close" onClick={this.handleCloseToggle} width="25" height="25" />
 
         <div className="exclusion-banner__description">
