@@ -4,7 +4,6 @@ import tocbot from 'tocbot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
-import sumit from '../helpers/sumit';
 import flagit from '../helpers/flagit';
 import {datishFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
@@ -448,19 +447,7 @@ export default class Landing extends Component {
     }
     const patientResource = this.state.collector[0]['data'];
     const summary = this.state.result.Summary;
-    const { sectionFlags, flaggedCount } = this.state;
-    const numMedicalHistoryEntries = sumit(summary.PertinentMedicalHistory || {});
-    const numPainEntries = sumit(summary.PainAssessments || {});
-    const numNonPharTreatmentEntries =  sumit(summary.HistoricalTreatments['NonPharmacologicTreatments'] || {});
-    const numTreatmentsEntries = sumit(summary.HistoricalTreatments || {}) - numNonPharTreatmentEntries;
-    const numRiskEntries =
-      sumit(summary.RiskConsiderations || {}) +
-      sumit(summary.MiscellaneousItems || {}); // TODO: update when CQL updates
-    //const numExternalDataEntries = sumit(summary.ExternalDataSet || {});
-    const numPDMPDataEntries = sumit(summary.PDMPMedications || {});
-    //const totalEntries = numMedicalHistoryEntries + numPainEntries + numTreatmentsEntries + numRiskEntries;
-    const totalEntries = numTreatmentsEntries + numNonPharTreatmentEntries + numPDMPDataEntries;
-    const patientOccupation = summary.Occupation && summary.Occupation.Current? summary.Occupation.Current['jobTitle'] : '';
+    const { sectionFlags } = this.state;
     return (
       <div className="landing">
         <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>
@@ -469,9 +456,6 @@ export default class Landing extends Component {
           patientName={summary.Patient.Name}
           patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
           patientGender={summary.Patient.Gender}
-          patientOccupation={patientOccupation}
-          totalEntries={totalEntries}
-          numFlaggedEntries={flaggedCount}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
         />
 
@@ -480,12 +464,6 @@ export default class Landing extends Component {
           sectionFlags={sectionFlags}
           collector={this.state.collector}
           result={this.state.result}
-          numMedicalHistoryEntries={numMedicalHistoryEntries}
-          numPainEntries={numPainEntries}
-          numTreatmentsEntries={numTreatmentsEntries}
-          numRiskEntries={numRiskEntries}
-          numNonPharTreatmentEntries={numNonPharTreatmentEntries}
-          numPDMPDataEntries={numPDMPDataEntries}
         />
 
         <ReactTooltip className="summary-tooltip" id="summaryTooltip" />    

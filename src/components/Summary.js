@@ -13,7 +13,6 @@ import * as sortit from '../helpers/sortit';
 import ChartIcon from '../icons/ChartIcon';
 import MedicalHistoryIcon from '../icons/MedicalHistoryIcon';
 import MedicineIcon from '../icons/MedicineIcon';
-import PainIcon from '../icons/PainIcon';
 import RiskIcon from '../icons/RiskIcon';
 import RxIcon from '../icons/RxIcon';
 import TreatmentsIcon from '../icons/TreatmentsIcon';
@@ -63,6 +62,22 @@ export default class Summary extends Component {
 
   handleCloseModal = () => {
     this.setState({ showModal: false });
+  }
+
+  getSectionEntryCounts(section) {
+    let summary = this.props.summary;
+    let count = 0;
+    if (summary[section] && summaryMap[section]["sections"]) {
+      let sections = summaryMap[section]["sections"];
+      for (let subSection in sections) {
+        let dataKeySource = sections[subSection]["dataKeySource"];
+        let dataKey = sections[subSection]["dataKey"];
+        if (summary[dataKeySource] && Object.keys(summary[dataKeySource]).indexOf(dataKey) !== -1) {
+          count += summary[dataKeySource][dataKey] ? summary[dataKeySource][dataKey].length : 0;
+        }
+      }
+    }
+    return count;
   }
 
   isSectionFlagged(section) {
@@ -143,7 +158,7 @@ export default class Summary extends Component {
       });
     }
     const { sectionFlags } = this.props;
-    let subSectionFlags = sectionFlags[section][subSection.dataKey];
+    let subSectionFlags = sectionFlags[section]? sectionFlags[section][subSection.dataKey] : null;
     let flagEntries = [];
     let flagContent = "";
     if (subSectionFlags) {
@@ -319,13 +334,15 @@ export default class Summary extends Component {
   }
 
   renderOverviewPanel(panel) {
-    let statsContent = (this.props.summary[panel.statsData.dataSectionRefKey]).map((item, index) => {
+    let statsData = this.props.summary[panel.statsData.dataSectionRefKey] || [];
+    let alertsData = this.props.summary[panel.alertsData.dataSectionRefKey] || [];
+    let statsContent = (statsData).map((item, index) => {
       let objResult = Object.entries(item);
       return(
         <div key={`stats_${index}`}>{`${objResult[0][0]} :`}<span className="divider">{objResult[0][1]}</span></div>
       )
     });
-    let alertsContent = (this.props.summary[panel.alertsData.dataSectionRefKey]).map((item, index) => {
+    let alertsContent = (alertsData).map((item, index) => {
       return <div key={`alert_${index}`} className="alert-item" ref={this.elementRef} data-ref={`${item.id}_title`}>
         <a href={`#${item.id}_title`}>
           <FontAwesomeIcon
@@ -430,34 +447,41 @@ export default class Summary extends Component {
     const flaggedClass = flagged ? 'flagged' : '';
     const flagCount = this.getSectionFlagCount(section);
     const flaggedText = flagged? `${flagCount ? flagCount + ' flag entr' + (flagCount > 1?'ies': 'y') + ' found': ''}` : "";
-    const { numMedicalHistoryEntries, numPainEntries, numTreatmentsEntries, numRiskEntries, numNonPharTreatmentEntries, numPDMPDataEntries } = this.props;
-
+  
     let icon = '';
     let sourceTitle = summaryMap[section]['title'];
     let title = sourceTitle;
     let entryCount = "";
+    let iconProps = {
+      width: 35,
+      height: 35,
+      className: "sectionIcon",
+      title: sourceTitle
+    };
+    let summary = this.props.summary;
+    if (summary[section] &&
+      !summaryMap[section]["omitCountDisplay"]
+      && summaryMap[section]["sections"]) {
+      let count = this.getSectionEntryCounts(section);
+      if (count > 0) {
+        entryCount = `(${count})`;
+      }
+    }
+
     if (section === 'PatientRiskOverview') {
-      icon = <ChartIcon width="35" height="35" />;
+      icon = <ChartIcon {...iconProps} />;
     } else if (section === 'PertinentMedicalHistory') {
-      icon = <MedicalHistoryIcon width="35" height="35" />;
-      entryCount = ` (${numMedicalHistoryEntries})`;
-    } else if (section === 'PainAssessments') {
-      icon = <PainIcon width="35"  height="35" />;
-      entryCount = ` (${numPainEntries})`
+      icon = <MedicalHistoryIcon {...iconProps} />;
     } else if (section === 'HistoricalTreatments') {
-      icon = <MedicineIcon className={`sectionIcon`} title={`${sourceTitle}`} />;
-      entryCount = ` (${numTreatmentsEntries})`
+      icon = <MedicineIcon {...iconProps} />;
     } else if (section === 'RiskConsiderations') {
-      icon = <RiskIcon width="35" height="34" />;
-      entryCount = ` (${numRiskEntries})`;
+      icon = <RiskIcon {...iconProps} />;
     } else if (section === 'PDMPMedications') {
-      icon = <RxIcon width="20" height="25" className={`sectionIcon`} title={`${sourceTitle}`}/>;
-      entryCount = ` (${numPDMPDataEntries})`;
+      icon = <RxIcon {...iconProps}/>;
     } else if (section === 'NonPharmacologicTreatments') {
-      icon =  <TreatmentsIcon width="36" height="38" />;
-      entryCount = ` (${numNonPharTreatmentEntries})`;
+      icon =  <TreatmentsIcon {...iconProps} />;
     } else if (section === 'PatientEducationMaterials') {
-      icon = <UserIcon className={`sectionIcon`} title={`${sourceTitle}`} />;
+      icon = <UserIcon {...iconProps} />;
     }
 
     return (
@@ -537,12 +561,6 @@ export default class Summary extends Component {
                   {this.renderSection(section)}
                 </Collapsible>
               })}
-
-              {/*
-                <Collapsible tabIndex={0} trigger={this.renderSectionHeader("PainAssessments")} open={true}>
-                  {this.renderSection("PainAssessments")}
-                </Collapsible>
-              */}
             </div>
           }
 
@@ -598,11 +616,5 @@ Summary.propTypes = {
   summary: PropTypes.object.isRequired,
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
-  result: PropTypes.object.isRequired,
-  numMedicalHistoryEntries: PropTypes.number.isRequired,
-  numPainEntries: PropTypes.number.isRequired,
-  numTreatmentsEntries: PropTypes.number.isRequired,
-  numRiskEntries: PropTypes.number.isRequired,
-  numNonPharTreatmentEntries: PropTypes.number.isRequired,
-  numPDMPDataEntries: PropTypes.number.isRequired
+  result: PropTypes.object.isRequired
 };
