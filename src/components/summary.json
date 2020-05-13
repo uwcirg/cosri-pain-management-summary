@@ -486,7 +486,7 @@
                     "value": 50
                   }
                 },
-                "flagText": "Most recent MME assessment is 50+ MME/day."
+                "flagText": "Most recent MED assessment is 50+ MED/day."
               }
             ]
           }
@@ -588,7 +588,7 @@
                     }
                   ]
                 },
-                "flagText": "Concurrent sedative found (Benzodiazepine medication and at least one opioid medication)."
+                "flagText": "Benzodiazepine medication and at least one opioid medication."
               },
               {
                 "flag": "ifOneOrMore",
@@ -695,7 +695,7 @@
                     }
                   ]
                 },
-                "flagText": "Absence of Naloxone medication and most recent MME assessment is 50+ MME/day."
+                "flagText": "Absence of Naloxone medication and most recent MED assessment is 50+ MED/day."
               },
               {
                 "flag": "ifOneOrMore",

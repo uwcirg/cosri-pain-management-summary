@@ -104,6 +104,9 @@
         &:hover {
           background: $color-blue-darker;
         }
+        &[disabled]:hover {
+          background: $color-blue;
+        }
       }
     }
   }
