@@ -21,7 +21,9 @@
           font-size: 0.9em;
           //padding: 5px 8px 5px 42px;
           padding: 5px 8px 5px 40px;
-          line-height: 1.15em;
+          line-height: 1.45;
+          width: 75%;
+          max-width: 100%;
           .info-icon {
             display: none;
           }
@@ -111,9 +113,9 @@
     }
     .close {
       position: fixed;
-      top: 142px;
+      top: 144px;
       color: #FFF;
-      left: 20px;
+      left: 18px;
       font-weight: 500;
       opacity: 0.6;
       z-index: 5;
@@ -125,9 +127,9 @@
         opacity: 1;
       }
       &::before {
-        content: '\203A';
+        content: '\203A\203A';
         display: block;
-        font-size: 32px;
+        font-size: 28px;
         left: 0;
         top: 0;
         position: absolute;
@@ -142,12 +144,12 @@
         padding: 62px 0 20px 8px;
       }
       .close {
-        left: 272px;
-        font-size: 1.05em;
+        // left: 272px;
+        left: 22px;
         transform: translateX(0);
         transform-origin: center;
         &::before {
-          content: "\2039";
+          content: "\2039\2039";
           display: block;
         }
       }

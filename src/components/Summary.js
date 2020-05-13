@@ -37,6 +37,7 @@ export default class Summary extends Component {
     };
 
     this.elementRef = React.createRef();
+    this.navRef = React.createRef();
 
      // This binding is necessary to make `this` work in the callback
      this.handleNavToggle= this.handleNavToggle.bind(this);
@@ -187,6 +188,9 @@ export default class Summary extends Component {
     }
     if (filteredEntries.length === 0) return null;
 
+    //ReactTable needs an ID for aria-describedby
+    let tableID = `${subSection.dataKey}_table`;
+
     const headers = Object.keys(table.headers);
     let columns = [
       {
@@ -198,9 +202,6 @@ export default class Summary extends Component {
             className={`flag flag-entry ${props.value ? 'flagged' : ''}`}
             icon="exclamation-circle"
             title={props.value ? props.value : 'flag'}
-            data-tip={props.value ? props.value : 'flag'}
-            data-for="summaryTooltip"
-            role="tooltip"
             tabIndex={0}
           />,
         sortable: false,
@@ -261,8 +262,6 @@ export default class Summary extends Component {
       columns.push(column);
     });
 
-    //ReactTable needs an ID for aria-describedby
-    let tableID = `${subSection.dataKey}_table`;
     let customProps = {id:tableID};
     let defaultSorted = [];
     if (table.defaultSorted) {
@@ -469,7 +468,16 @@ export default class Summary extends Component {
             {title}
             <span className="info">
               {entryCount && entryCount}
-              <FontAwesomeIcon className={`flag flag-header ${flaggedClass}`} icon="exclamation-circle" title={flaggedText} role="tooltip" data-tip={flaggedText} data-place="right" data-type="error" data-for="summaryTooltip" />
+              <FontAwesomeIcon 
+                className={`flag flag-header ${flaggedClass}`}
+                icon="exclamation-circle"
+                title={flaggedText}
+                role="tooltip"
+                data-tip={flaggedText}
+                data-place="right"
+                data-type="error"
+                data-for="summaryTooltip"
+              />
             </span>
           </span>
         </div>
@@ -492,9 +500,25 @@ export default class Summary extends Component {
       sectionsToRender.push(section);
     });
 
+    const navToggleToolTip = this.state.showNav ? "collapse side navigation menu" : "expand side navigation menu"; 
+
     return (
       <div className="summary">
-        <div className={`${this.state.showNav?'open': ''} summary__nav-wrapper`}><nav className="summary__nav"></nav><div className={`${meetsInclusionCriteria?'close':'hide'}`} title="toggle menu sidebar" onClick={this.handleNavToggle}></div></div>
+        <div className={`${this.state.showNav?'open': ''} summary__nav-wrapper`}>
+          <ReactTooltip className="summary-tooltip" id="navTooltip" />
+          <nav className="summary__nav"></nav>
+          <div 
+            ref={ref => this.navRef = ref}
+            data-for="navTooltip"
+            data-tip={navToggleToolTip}
+            data-place="right"
+            className={`${meetsInclusionCriteria?'close':'hide'}`}
+            title="toggle side navigation menu"
+            onClick={(e) => {
+              this.handleNavToggle(e);
+              ReactTooltip.hide(this.navRef);
+            }}></div>
+        </div>
 
         <div className="summary__display" id="maincontent">
           <div className="summary__display-title">
