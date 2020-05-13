@@ -592,7 +592,7 @@
               },
               {
                 "flag": "ifOneOrMore",
-                "flagText": "Evidence of Benzodiazepine medication"
+                "flagText": "Evidence of Benzodiazepine medication."
               }
             ]
           }
@@ -714,6 +714,7 @@
       "dataKey": "PatientEducationMaterials",
       "dataKeySource": "PatientEducationMaterials"
     },
+    "omitCountDisplay": true,
     "sections": [
       {
         "name": "Resources",
