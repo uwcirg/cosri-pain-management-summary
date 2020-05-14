@@ -336,13 +336,13 @@ export default class Summary extends Component {
   renderOverviewPanel(panel) {
     let statsData = this.props.summary[panel.statsData.dataSectionRefKey] || [];
     let alertsData = this.props.summary[panel.alertsData.dataSectionRefKey] || [];
-    let statsContent = (statsData).map((item, index) => {
+    let statsContent = statsData.length ? (statsData).map((item, index) => {
       let objResult = Object.entries(item);
       return(
         <div key={`stats_${index}`}>{`${objResult[0][0]} :`}<span className="divider">{objResult[0][1]}</span></div>
       )
-    });
-    let alertsContent = (alertsData).map((item, index) => {
+    }) : "No statistics available";
+    let alertsContent = alertsData.length ? (alertsData).map((item, index) => {
       return <div key={`alert_${index}`} className="alert-item" ref={this.elementRef} data-ref={`${item.id}_title`}>
         <a href={`#${item.id}_title`}>
           <FontAwesomeIcon
@@ -356,16 +356,16 @@ export default class Summary extends Component {
         />{item.text}
         </a>
         </div>;
-    });
+    }) : "No alert entries found";
     return (<div className="sub-section__infopanel">
         <div className="panel-title">{panel.title}</div>
         <div className="stats-container">
           <div className="title">{panel.statsData.title}</div>
-          <div className="content">{statsContent || "No statistic entry found."}</div>
+          <div className="content">{statsContent}</div>
         </div>
         <div className="alerts-container">
           <div className="title">{panel.alertsData.title}</div>
-          <div className="content">{alertsContent || "No alert entry found."}</div>
+          <div className="content">{alertsContent}</div>
         </div>
         <ReactTooltip className="summary-tooltip" id="overviewTooltip" />
       </div>)
@@ -394,8 +394,8 @@ export default class Summary extends Component {
       const flaggedClass = flagged ? 'flagged' : '';
       const omitTitleClass = subSection.omitTitle ? 'sub-section-notitle' : '';
       return (
-        <div key={`${subSection.dataKey}_${index}`} className={`sub-section h3-wrapper`}>
-          <h3 id={`${subSection.dataKey}_title`} className={`sub-section__header ${omitTitleClass}`}>
+        <div key={`${subSection.dataKey}_${index}`} className={`sub-section h3-wrapper  ${omitTitleClass}`}>
+          <h3 id={`${subSection.dataKey}_title`} className={`sub-section__header`}>
             <FontAwesomeIcon
               className={`flag flag-nav ${flaggedClass}`}
               icon={'circle'}

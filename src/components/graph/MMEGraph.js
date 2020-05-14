@@ -41,7 +41,7 @@ export default class MMEGraph extends Component {
     let maxDate = new Date();
     let minDate = new Date();
     minDate.setDate(maxDate.getDate() - 365); 
-    const parentWidth = 600;
+    const parentWidth = 540;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
@@ -82,7 +82,7 @@ export default class MMEGraph extends Component {
     };
 
     const width = parentWidth - margins.left - margins.right;
-    const height = 320 - margins.top - margins.bottom;
+    const height = 360 - margins.top - margins.bottom;
     const xScale = scaleTime().domain([minDate, maxDate]).rangeRound([0, width]).nice();
 
     const yScale = scaleLinear()
@@ -139,7 +139,7 @@ export default class MMEGraph extends Component {
     const WA_COLOR = "#a75454";
     const CDC_COLOR = "#e09b1d";
     const WALegendSettings = {
-      "y": 25,
+      "y": 30,
       "fill": WA_COLOR,
       ...defaultLegendSettings
     };
@@ -164,8 +164,8 @@ export default class MMEGraph extends Component {
             <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
             <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
             <text {...WALegendSettings}>Washington State consultation threshold</text>
-            <text {...CDCLegendSettings} y="140">CDC extra precautions threshold</text>
-            <text {...CDCLegendSettings} y="74">CDC avoid/justify threshold</text>
+            <text {...CDCLegendSettings} y="164">CDC extra precautions threshold</text>
+            <text {...CDCLegendSettings} y="88">CDC avoid/justify threshold</text>
             {noEntry && 
               <text {...defaultLegendSettings} x={width/2 - 20} y={height/2} strokeColor="#777" fill="#777">No entry found</text>
             }
