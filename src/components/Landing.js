@@ -41,7 +41,7 @@ export default class Landing extends Component {
         //add data from other sources, e.g. PDMP
         result['Summary'] = {...result['Summary'], ...response[1]};
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-        console.log("Result", result['Summary'])
+
         this.processOverviewData(result['Summary'], sectionFlags);
         this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
@@ -449,7 +449,7 @@ export default class Landing extends Component {
     const patientResource = this.state.collector[0]['data'];
     const summary = this.state.result.Summary;
     const { sectionFlags } = this.state;
-    console.log("sectionFlags?  ", sectionFlags)
+
     return (
       <div className="landing">
         <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>
