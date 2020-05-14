@@ -27,6 +27,7 @@
       {
         "name": "Patient Risk Overview",
         "omitTitle": true,
+        "dataKey": "PatientRiskOverview",
         "panels": [
           {
             "type": "graph",
@@ -375,7 +376,8 @@
             "flags": [
               {
                 "flag": "always",
-                "flagText": "Factor that may place the patient at risk for an opioid-related harm."
+                "flagText": "Factor that may place the patient at risk for an opioid-related harm.",
+                "key": "Name"
               }
             ]
           },

@@ -8,20 +8,24 @@ export default function flagit(entry, subSection, summary) {
 
   const flagResults = flags.reduce((accumulator, flag) => {
     const flagRule = flag.flag;
+    let elementText = "";
+    if (entry && flag.key && entry[flag.key]) {
+      elementText = entry[flag.key];
+    }
     if (flagRule === 'always') {
       if (entry != null) {
-        accumulator.push(flag.flagText);
+        accumulator.push(`${flag.flagText} ${elementText}`);
       }
     } else if (flagRule === 'ifNone' && entry == null) {
       accumulator.push(flag.flagText);
     } else if (typeof flagRule === 'string') {
       if (functions[flagRule](entry, entry, subSection, summary)) {
-        accumulator.push(flag.flagText);
+        accumulator.push(`${flag.flagText} ${elementText}`);
       }
     } else if (typeof flagRule === 'object') {
       const rule = Object.keys(flagRule)[0];
       if (functions[rule](flagRule[rule], entry, subSection, summary)) {
-        accumulator.push(flag.flagText);
+        accumulator.push(`${flag.flagText} ${elementText}`);
       }
     }
 

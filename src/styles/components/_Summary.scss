@@ -296,6 +296,7 @@
         }
         .panel.overview {
           max-width: 35%;
+          min-width: 250px;
         }
         .sub-section__infopanel {
           border: 2px solid;
@@ -322,6 +323,9 @@
               display: inline-block;
               margin-left:8px;
               margin-right:8px;
+            }
+            .content {
+              padding-left: 20px;
             }
           }
           .alerts-container {
@@ -427,6 +431,14 @@
           }
         }
 
+        &.sub-section-notitle {
+          padding-top: 20px;
+          .sub-section__header {
+            display: none;
+          }
+        }
+
+
         &__header {
           display: flex;
           align-items: center;
@@ -434,15 +446,6 @@
           padding: 20px 40px;
           font-weight: 700;
           ////color: $color-black;
-          &.sub-section-notitle {
-            border-bottom: 0;
-            padding: 0 0;
-            .sub-section__header__name,
-            .sub-section__header__info {
-              display: none;
-            }
-          }
-
           .flag-nav {
             display: none;
           }
