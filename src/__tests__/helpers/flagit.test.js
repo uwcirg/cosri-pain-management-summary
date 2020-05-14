@@ -24,7 +24,7 @@ it('flags "Risk Factors for Opioid-related Harms" entries correctly', () => {
     "Abatement": null,
     "Visit": null
   };
-  const mockFlag = "Factor that may place the patient at risk for an opioid-related harm.";
+  const mockFlag = "Factor that may place the patient at risk for an opioid-related harm - Agoraphobia with panic attacks (disorder).";
   expect(flagit(mockEntry, subSection, mockSummaryA)).toEqual(mockFlag);
   expect(flagit(null, subSection, mockSummaryA)).toEqual(false);
 });

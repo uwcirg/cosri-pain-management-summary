@@ -376,7 +376,7 @@
             "flags": [
               {
                 "flag": "always",
-                "flagText": "Factor that may place the patient at risk for an opioid-related harm.",
+                "flagText": "Factor that may place the patient at risk for an opioid-related harm {name}.",
                 "key": "Name"
               }
             ]
