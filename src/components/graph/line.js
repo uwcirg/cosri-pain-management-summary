@@ -1,6 +1,8 @@
 import React from 'react';
 import { select } from 'd3-selection';
+import {timeFormat} from "d3-time-format";
 import { transition } from 'd3-transition';
+
 
 class Line extends React.Component {
   constructor() {
@@ -19,6 +21,8 @@ class Line extends React.Component {
       xName: xName,
       yName: yName
     });
+    
+    let formatDate = timeFormat(`%Y-%b-%d`);
 
     let currentNode = select(node)
       .append('path')
@@ -33,6 +37,9 @@ class Line extends React.Component {
     }
 
     if (dataPoints) {
+      const radiusWidth  = 3;
+      const expandedRadiusWidth = 6;
+      const animationDuration = 100;
       select(node)
       .selectAll('circle')
       .data(data)
@@ -42,11 +49,40 @@ class Line extends React.Component {
       .attr('stroke', dataPoints.strokeColor)
       .attr('stroke-width', dataPoints.strokeWidth)
       .attr('fill', dataPoints.strokeFill)
-      .attr('r', 3)
+      .attr('r', radiusWidth)
+      .attr('id', (d, i) => `circle_${i}`)
       .attr('cx', d => xScale(d[xName]))
-      .attr('cy', d => yScale(d[yName]));
+      .attr('cy', d => yScale(d[yName]))
+      .on("mouseover", (d, i) => {
+        select(`#circle_${i}`)
+        .transition()
+        .duration(animationDuration)
+        .attr("r", expandedRadiusWidth);
+        select(`#dataText_${i}`).attr("class", "show");
+      })
+      .on("mouseout", (d, i) => {
+        select("#circle_"+i)
+        .transition()
+        .duration(animationDuration)
+        .attr("r", radiusWidth);
+        select(`#dataText_${i}`).attr("class", "hide"); 
+      });
+      //tooltip
+      select(node)
+      .selectAll('text')
+      .data(data)
+      .enter()
+      .append('text')
+      .attr('id', (d, i) => `dataText_${i}`)
+      .attr('x', (d) => xScale(d[xName]) - 48)
+      .attr('y', d => yScale(d[yName]) + 16)
+      .attr('class', 'hide')
+      .attr('font-size', 10)
+      .attr('font-weight', 600)
+      .text(function(d) {
+        return `(${formatDate(d[xName])}, ${d[yName]})`
+      })
     }
-
     this.updateChart();
   }
   componentDidUpdate() {

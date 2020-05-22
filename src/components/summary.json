@@ -8,7 +8,7 @@
       "dataKeySource":"PDMPMedications",
       "data": [
         {
-          "title": "Total Opioid Rx",
+          "title": "Total PMP Rx",
           "type": "count"
         },
         {

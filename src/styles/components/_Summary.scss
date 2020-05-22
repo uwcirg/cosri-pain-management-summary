@@ -290,6 +290,7 @@
         justify-content: flex-start;
         align-items: center;
         color: $color-black;
+        flex-wrap: wrap;
         padding: 16px;
         .panel.graph {
           flex: 100%;
@@ -352,6 +353,11 @@
               }
             }
           }
+        }
+      }
+      @media (min-width: 992px) {
+        .sub-section__panel {
+          flex-wrap:nowrap;
         }
       }
 
