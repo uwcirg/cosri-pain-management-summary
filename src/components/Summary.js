@@ -464,7 +464,7 @@ export default class Summary extends Component {
       && summaryMap[section]["sections"]) {
       let count = this.getSectionEntryCounts(section);
       if (count > 0) {
-        entryCount = `(${count})`;
+        entryCount = ` (${count})`;
       }
     }
 
