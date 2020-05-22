@@ -75,9 +75,9 @@ class Line extends React.Component {
       .append('text')
       .attr('id', (d, i) => `dataText_${i}`)
       .attr('x', (d) => xScale(d[xName]) - 48)
-      .attr('y', d => yScale(d[yName]) + 16)
+      .attr('y', d => yScale(d[yName]) + 20)
       .attr('class', 'hide')
-      .attr('font-size', 10)
+      .attr('font-size', 11)
       .attr('font-weight', 600)
       .text(function(d) {
         return `(${formatDate(d[xName])}, ${d[yName]})`
