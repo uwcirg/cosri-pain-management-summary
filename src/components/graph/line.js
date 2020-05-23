@@ -59,6 +59,7 @@ class Line extends React.Component {
         .duration(animationDuration)
         .attr("r", expandedRadiusWidth);
         select(`#dataText_${i}`).attr("class", "show");
+        select(`#dataRect_${i}`).attr("class", "show");
       })
       .on("mouseout", (d, i) => {
         select("#circle_"+i)
@@ -66,7 +67,25 @@ class Line extends React.Component {
         .duration(animationDuration)
         .attr("r", radiusWidth);
         select(`#dataText_${i}`).attr("class", "hide"); 
+        select(`#dataRect_${i}`).attr("class", "hide"); 
       });
+
+      //rect
+      select(node)
+      .selectAll('rect')
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr('id', (d, i) => `dataRect_${i}`)
+      .attr("x", (d) => xScale(d[xName]) - 52)
+      .attr('y', d => yScale(d[yName]) + 6)
+      .attr("width", 100)
+      .attr("height", 20)
+      .attr('class', 'hide')
+      .style("stroke", "black")
+      .style("stroke-width", "0.25")
+      .style("fill", "#FFF");
+
       //tooltip
       select(node)
       .selectAll('text')
@@ -81,7 +100,7 @@ class Line extends React.Component {
       .attr('font-weight', 600)
       .text(function(d) {
         return `(${formatDate(d[xName])}, ${d[yName]})`
-      })
+      });
     }
     this.updateChart();
   }
