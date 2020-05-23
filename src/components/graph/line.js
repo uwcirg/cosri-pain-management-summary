@@ -38,7 +38,7 @@ class Line extends React.Component {
 
     if (dataPoints) {
       const radiusWidth  = 3;
-      const expandedRadiusWidth = 6;
+      const expandedRadiusWidth = radiusWidth * 3;
       const animationDuration = 100;
       select(node)
       .selectAll('circle')
@@ -78,7 +78,7 @@ class Line extends React.Component {
       .append("rect")
       .attr('id', (d, i) => `dataRect_${i}`)
       .attr("x", (d) => xScale(d[xName]) - 52)
-      .attr('y', d => yScale(d[yName]) + 6)
+      .attr('y', d => yScale(d[yName]) + 12)
       .attr("width", 100)
       .attr("height", 20)
       .attr('class', 'hide')
@@ -94,9 +94,10 @@ class Line extends React.Component {
       .append('text')
       .attr('id', (d, i) => `dataText_${i}`)
       .attr('x', (d) => xScale(d[xName]) - 48)
-      .attr('y', d => yScale(d[yName]) + 20)
+      .attr('y', d => yScale(d[yName]) + 26)
       .attr('class', 'hide')
       .attr('font-size', 11)
+      .attr("text-anchor", "start")
       .attr('font-weight', 600)
       .text(function(d) {
         return `(${formatDate(d[xName])}, ${d[yName]})`

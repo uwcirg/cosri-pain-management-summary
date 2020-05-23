@@ -75,9 +75,9 @@ export default class MMEGraph extends Component {
     
     const margins = {
       top: 40,
-      right: 40,
+      right: 52,
       bottom: 52,
-      left: 40,
+      left: 52,
     };
 
     const width = parentWidth - margins.left - margins.right;
