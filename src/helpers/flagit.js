@@ -18,7 +18,7 @@ export default function flagit(entry, subSection, summary) {
         accumulator.push(displayText);
       }
     } else if (flagRule === 'ifNone' && entry == null) {
-      accumulator.push(flag.flagText);
+      accumulator.push(displayText);
     } else if (typeof flagRule === 'string') {
       if (functions[flagRule](entry, entry, subSection, summary)) {
         accumulator.push(displayText);

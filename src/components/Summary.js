@@ -149,11 +149,12 @@ export default class Summary extends Component {
     if (guidelineElement) {
       guidelineContent = guidelineElement.map( (item, index) => {
         return <div key={`guideline_${index}`} className={`flag-no-entry ${item.type}`}>
-          <FontAwesomeIcon
+          {/* <FontAwesomeIcon
               className="flag"
               icon="exclamation-circle"
               tabIndex={0}
-          /> <span className="text">{item.text}</span>
+          /> <span className="text">{item.text}</span> */}
+          <span className="text"><b className="title">{item.title}</b>: {item.text}</span>
         </div>
       });
     }
@@ -183,9 +184,10 @@ export default class Summary extends Component {
           <div>no entries found</div>
             <div className="flag-guideline-content">
               <div>{flagContent}</div>
+              {guidelineContent && 
               <div className="guideline-content">
                 {guidelineContent}
-              </div>
+              </div>}
             </div>
         </div>
       </div>
@@ -564,14 +566,14 @@ export default class Summary extends Component {
             </div>
           }
 
-          {meetsInclusionCriteria && <div className="legend">
+          {/* {meetsInclusionCriteria && <div className="legend">
             <div>
               <span className="icon orange"></span>CDC guidelines in accordance with Washington State guideline
             </div>
             <div>
               <span className="icon red"></span>Washington State guideline exclusively
             </div>
-          </div>}
+          </div>} */}
 
           <div className="cdc-disclaimer">
             Please see the

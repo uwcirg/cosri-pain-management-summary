@@ -153,7 +153,8 @@
          "guideline": [
            {
              "type": "CDC",
-             "text":"CDC Guideline #1: Opioids are not first-line therapy."
+             "title": "CDC Guideline #1",
+             "text":"Opioids are not first-line therapy."
            }
           ],
          "info": [
@@ -195,7 +196,8 @@
          "guideline": [
            {
              "type": "CDC",
-             "text": "CDC Guideline #3: To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
+             "title": "CDC Guideline #3",
+             "text": "To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
            }
          ],
          "info": [
@@ -292,13 +294,16 @@
         "guideline": [
           {
             "type": "CDC",
-            "text":  "CDC Guideline #8: Mitigate risk"
+            "title": "CDC Guideline #8",
+            "text":  "Mitigate risk"
           },
           {
             "type": "WA",
-            "text": "WA AMDG Guideline: Avoid opioids if there is any FDA or clinical contraindications."
+            "title": "WA AMDG Guideline",
+            "text": "Avoid opioids if there is any FDA or clinical contraindications."
           }
         ],
+        "alertPriority": 1,
         "info": [
           {
             "type": "elements",
@@ -377,7 +382,8 @@
               {
                 "flag": "always",
                 "flagText": "Factor that may place the patient at risk for an opioid-related harm {name}.",
-                "key": "Name"
+                "key": "Name",
+                "priority": 1
               }
             ]
           },
@@ -412,7 +418,8 @@
         "guideline": [
           {
             "type": "CDC",
-            "text": "CDC Guideline #1: Opioids are not first-line therapy."
+            "title": "CDC Guideline #1",
+            "text": "Opioids are not first-line therapy."
           }
         ],
         "omitTitle": true,
@@ -457,7 +464,8 @@
         "guideline": [
           {
             "type": "CDC",
-            "text": "CDC Guideline #5: Use lowest effective dose."
+            "title": "CDC Guideline #5",
+            "text": "Use lowest effective dose."
           }
         ],
         "info": [
@@ -501,7 +509,8 @@
         "guideline": [
           {
             "type": "CDC",
-            "text": "CDC Guideline #10: Use urine drug testing."
+            "title": "CDC Guideline #10",
+            "text": "Use urine drug testing."
           }
         ],
         "info": [
@@ -551,7 +560,8 @@
         "guideline": [
           {
             "type": "CDC",
-            "text": "CDC Guideline #11: Avoid concurrent opioid and benzodiazepine prescribing."
+            "title": "CDC Guideline #11",
+            "text": "Avoid concurrent opioid and benzodiazepine prescribing."
           }
         ],
         "info": [
@@ -656,7 +666,8 @@
         "guideline": [
           {
             "type": "CDC",
-            "text": "CDC Guideline #8: Use strategies to mitigate risk."
+            "title": "CDC Guideline #8",
+            "text": "Use strategies to mitigate risk."
           }
         ],
         "info": [
