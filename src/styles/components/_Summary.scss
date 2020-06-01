@@ -296,7 +296,7 @@
           flex: 100%;
         }
         .panel.overview {
-          max-width: 35%;
+          max-width: 37.5%;
           min-width: 250px;
         }
         .sub-section__infopanel {
@@ -419,6 +419,19 @@
               color: $color-red;
             }
             margin-top: 12px;
+            .guideline-content {
+              margin-top: 16px;
+              font-style: normal;
+              .title {
+                font-weight: 600;
+              }
+              // .CDC .text {
+              //   color: $color-orange;
+              // }
+              // .WA .text {
+              //   color: $color-red-darker;
+              // }
+            }
           }
           .flag-no-entry {
             margin-right: 12px;

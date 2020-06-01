@@ -157,7 +157,8 @@ export default class Landing extends Component {
                     alerts.push({
                       id: subitem.subSection.dataKey,
                       name: subitem.subSection.name,
-                      text: subitem.flagText
+                      text: subitem.flagText,
+                      priority: subitem.priority || 0
                     });
                   }
                 });
@@ -166,7 +167,8 @@ export default class Landing extends Component {
                   alerts.push({
                     id: subsection[1].subSection.dataKey,
                     name: subsection[1].subSection.name,
-                    text: subsection[1].flagText
+                    text: subsection[1].flagText,
+                    priority: subsection[1].priority || 0
                   });
                 }
               }
@@ -175,6 +177,10 @@ export default class Landing extends Component {
         }
       }
     }
+    alerts.sort(function (a, b) {
+      return b.priority - a.priority;
+    });
+    
     summary[overviewSectionKey+"_stats"] = stats;
     summary[overviewSectionKey+"_alerts"] = alerts.filter((item,index,thisRef)=>thisRef.findIndex(t=>(t.text === item.text))===index);
 
@@ -400,7 +406,7 @@ export default class Landing extends Component {
 
             if (entryFlag) {
               flaggedCount += 1;
-              flaggedEntries.push({'entryId': entry._id, 'subSection': subSection, 'flagText': entryFlag, 'flagCount': flaggedCount});
+              flaggedEntries.push({'entryId': entry._id, 'subSection': subSection, 'flagText': entryFlag, 'flagCount': flaggedCount, 'priority': subSection.alertPriority || 0});
             }
 
             return flaggedEntries;
@@ -412,13 +418,15 @@ export default class Landing extends Component {
             sectionFlags[sectionKey][subSection.dataKey] = [{
               'flagText': sectionFlagged,
               'flagCount': flaggedCount,
-              'subSection': subSection
+              'subSection': subSection,
+              'priority': subSection.alertPriority || 0
             }];
           }
         }
       });
     });
 
+    console.log("sectionFlags ", sectionFlags);
     // Get the configured endpoint to use for POST for app analytics
     fetch(`${process.env.PUBLIC_URL}/config.json`)
       .then(response => response.json())
