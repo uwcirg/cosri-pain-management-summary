@@ -105,7 +105,12 @@ export function linkFormat(result, input) {
     );
   } 
   return (
-    <a href={input['url']} title={input['title']} target='_blank' rel='noopener noreferrer' className={input['className']}>{input['title']}</a>
+    <div className="link-container">
+      <a href={input['url']} title={input['title']} target='_blank' rel='noopener noreferrer' className={input['className']}>{input['title']}</a>
+      {
+        input['type'] === "PDF" && <span className="muted info">({input['type']}, size: {input['size']})</span>
+      }
+    </div>
   );
 }
 /*
