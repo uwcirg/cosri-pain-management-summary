@@ -325,6 +325,11 @@
                 "lookback": "n/a"
               },
               {
+                "name": "Opioid overdose and poisoning",
+                "status": "any",
+                "lookback": "n/a"
+              },
+              {
                 "name": "Suicide attempt",
                 "status": "any",
                 "lookback": "n/a"
