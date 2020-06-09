@@ -426,7 +426,7 @@ export default class Landing extends Component {
       });
     });
 
-    console.log("sectionFlags ", sectionFlags);
+    //console.log("sectionFlags ", sectionFlags);
     // Get the configured endpoint to use for POST for app analytics
     fetch(`${process.env.PUBLIC_URL}/config.json`)
       .then(response => response.json())

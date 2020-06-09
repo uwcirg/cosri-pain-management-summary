@@ -745,7 +745,7 @@
               "Resources": {
                 "key": "link",
                 "formatter": "linkFormat",
-                "formatterArguments": ["title","url"],
+                "formatterArguments": ["title","url", "type", "size"],
                 "minWidth": 200,
                 "sortable": false
               }
