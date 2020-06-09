@@ -335,44 +335,6 @@ export default class Summary extends Component {
     return <div className="graph-placeholder"></div>;
   }
 
-  //New section to modify alert language
-  mapAlertContent(content) {
-    if (content.includes("epression")) {
-      return "Depression"
-    }
-    else if (content.includes("verdose")) {
-      return "Opioid related overdose"
-    } 
-    else if (content.includes("nxiety")) {
-      return "Anxiety"
-    } 
-    else if (content.includes("ubstance use")) {
-      return "Substance use disorder"
-    }
-    else if (content.includes("uicide")) {
-      return "Suicide attempt"
-    } 
-    else if (content.includes("sleep")) {
-      return "Sleep-disordered breathing"
-    }
-    else if (content.includes("renal")) {
-      return "Renal dysfunction"
-    }
-    else if (content.includes("hepatic")) {
-      return "Hepatic dysfunction"
-    }
-    else if (content.includes("pregnan")) {
-      return "Pregnancy"
-    }
-    else if (content.includes("65")) {
-      return "Age >= 65"
-    }
-    else {
-      return content
-    }
-  }
-
-  
   renderOverviewPanel(panel) {
     let statsData = this.props.summary[panel.statsData.dataSectionRefKey] || [];
     let alertsData = this.props.summary[panel.alertsData.dataSectionRefKey] || [];
@@ -393,7 +355,7 @@ export default class Summary extends Component {
           data-ref={`${item.id}_title`}
           role="tooltip"
           data-iscapture="true"
-        />{this.mapAlertContent(item.text)}
+        />{item.text}
         </a>
         </div>;
     }) : "No alert entries found";
