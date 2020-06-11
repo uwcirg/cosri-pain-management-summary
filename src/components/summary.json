@@ -325,6 +325,11 @@
                 "lookback": "n/a"
               },
               {
+                "name": "Opioid overdose and poisoning",
+                "status": "any",
+                "lookback": "n/a"
+              },
+              {
                 "name": "Suicide attempt",
                 "status": "any",
                 "lookback": "n/a"
@@ -382,6 +387,52 @@
               {
                 "flag": "always",
                 "flagText": "Factor that may place the patient at risk for an opioid-related harm {name}.",
+                "flagTextMapping": [
+                  {
+                    "pattern": "epression",
+                    "name": "Depression"
+                  },
+                  {
+                    "pattern": "verdose",
+                    "name": "Opioid related overdose"
+                  },
+                  {
+                    "pattern": "poisoning by other opioids",
+                    "name": "Opioid related overdose"
+                  },
+                  {
+                    "pattern": "nxiety",
+                    "name": "Anxiety"
+                  },
+                  {
+                    "pattern": "ubstance use",
+                    "name": "Substance use disorder"
+                  },
+                  {
+                    "pattern": "uicide",
+                    "name": "Suicide attempt"
+                  },
+                  {
+                    "pattern": "sleep",
+                    "name": "Sleep-disordered breathing"
+                  },
+                  {
+                    "pattern": "renal",
+                    "name": "Renal dysfunction"
+                  },
+                  {
+                    "pattern": "hepatic",
+                    "name": "Hepatic dysfunction"
+                  },
+                  {
+                    "pattern": "pregnan",
+                    "name": "Pregnancy"
+                  },
+                  {
+                    "pattern": "65",
+                    "name": "Age >= 65"
+                  }
+                ],
                 "key": "Name",
                 "priority": 1
               }

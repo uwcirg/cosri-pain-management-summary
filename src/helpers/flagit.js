@@ -13,6 +13,17 @@ export default function flagit(entry, subSection, summary) {
       elementText = entry[flag.key];
     }
     let displayText = flag.flagText.replace('{name}', `- ${elementText}`);
+    if (displayText && flag.flagTextMapping) {
+      //specific mapping specified for each flag text
+      //convert text when matching pattern found
+      for (const item of flag.flagTextMapping) {
+        let regex = RegExp(item.pattern, 'gi');
+        if (regex.test(displayText)) {
+          displayText = item.name;
+          break;
+        }
+      }
+    }
     if (flagRule === 'always') {
       if (entry != null) {
         accumulator.push(displayText);
