@@ -385,6 +385,12 @@
           font-weight: 600;
           color: $link-color;
         }
+        .link-container {
+          .info {
+            font-size: 12px;
+            margin-left: 10px;
+          }
+        }
         .link-toggle {
           margin-left: 6px;
           cursor: pointer;
@@ -511,8 +517,8 @@
             &.single-column {
               .rt-th:nth-child(2),
               .rt-td:nth-child(2) {
-                min-width: calc(80px + 20vw);
-                max-width: calc(80px + 20vw);
+                min-width: calc(90px + 27vw);
+                max-width: calc(90px + 27vw);
               }
             }
 
