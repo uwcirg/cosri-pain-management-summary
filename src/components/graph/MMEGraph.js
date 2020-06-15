@@ -40,7 +40,7 @@ export default class MMEGraph extends Component {
     let maxDate = new Date();
     let minDate = new Date();
     minDate.setDate(maxDate.getDate() - 365); 
-    const parentWidth = 640;
+    const parentWidth = 536;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
@@ -154,8 +154,10 @@ export default class MMEGraph extends Component {
         <div className="title">Morphine Equivalent Dose (MED)</div>
         <svg
           className="MMEChartSvg"
-          //width={width + margins.left + margins.right}
-          //height={height + margins.top + margins.bottom}
+          // width={width + margins.left + margins.right}
+          // height={height + margins.top + margins.bottom}
+          preserveAspectRatio="none"
+          width="100%"
           viewBox = {`0 0 ${width + margins.left + margins.right} ${height + margins.top + margins.bottom}`}
         >
           <g transform={`translate(${margins.left}, ${margins.top})`}>
