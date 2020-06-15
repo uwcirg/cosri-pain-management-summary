@@ -156,7 +156,7 @@ export default class MMEGraph extends Component {
           className="MMEChartSvg"
           // width={width + margins.left + margins.right}
           // height={height + margins.top + margins.bottom}
-          preserveAspectRatio="none"
+          //preserveAspectRatio="none"
           width="100%"
           viewBox = {`0 0 ${width + margins.left + margins.right} ${height + margins.top + margins.bottom}`}
         >
