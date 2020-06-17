@@ -233,7 +233,20 @@
           }
         }
       }
-      
+      .MME-svg-container {
+        position: relative;
+        height: 0;
+        width: 100%;
+        padding: 0;
+        padding-bottom: 67%;
+      }
+      .MMEChartSvg {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+      }
       .MMEgraph {
         margin-top: 32px;
         margin-bottom: 24px;
@@ -346,6 +359,7 @@
               color: $color-red-darker;
               margin-right: 8px;
               font-size: 28px;
+              min-width: 28px;
               margin-top: 4px;
               &:hover {
                 color: $color-red;

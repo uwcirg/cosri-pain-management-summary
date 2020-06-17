@@ -40,7 +40,7 @@ export default class MMEGraph extends Component {
     let maxDate = new Date();
     let minDate = new Date();
     minDate.setDate(maxDate.getDate() - 365); 
-    const parentWidth = 640;
+    const parentWidth = 536;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
@@ -148,30 +148,36 @@ export default class MMEGraph extends Component {
     }
 
     const dataLineProps = {...defaultProps, ...additionalProps};
+    const graphWidth = width + margins.left + margins.right;
+    const graphHeight = height + margins.top + margins.bottom;
 
     return (
       <div className="MMEgraph">
         <div className="title">Morphine Equivalent Dose (MED)</div>
-        <svg
-          className="MMEChartSvg"
-          //width={width + margins.left + margins.right}
-          //height={height + margins.top + margins.bottom}
-          viewBox = {`0 0 ${width + margins.left + margins.right} ${height + margins.top + margins.bottom}`}
-        >
-          <g transform={`translate(${margins.left}, ${margins.top})`}>
-            <XYAxis {...{xSettings, ySettings}} />
-            <Line lineID="WALine" strokeColor={WA_COLOR} dotted="true" dotSpacing="3, 3" data={WAData} {...defaultProps} />
-            <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
-            <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
-            <text {...WALegendSettings}>Washington State consultation threshold</text>
-            <text {...CDCLegendSettings} y="164">CDC extra precautions threshold</text>
-            <text {...CDCLegendSettings} y="88">CDC avoid/justify threshold</text>
-            <Line lineID="dataLine" data={data} {...dataLineProps} />
-            {noEntry && 
-              <text {...defaultLegendSettings} x={width/2 - 20} y={height/2} strokeColor="#777" fill="#777">No entry found</text>
-            }
-          </g>
-        </svg>
+        <div className="MME-svg-container">
+          <svg
+            className="MMEChartSvg"
+            // width={width + margins.left + margins.right}
+            // height={height + margins.top + margins.bottom}
+            //preserveAspectRatio="none"
+            width="100%"
+            viewBox = {`0 0 ${graphWidth} ${graphHeight}`}
+          >
+            <g transform={`translate(${margins.left}, ${margins.top})`}>
+              <XYAxis {...{xSettings, ySettings}} />
+              <Line lineID="WALine" strokeColor={WA_COLOR} dotted="true" dotSpacing="3, 3" data={WAData} {...defaultProps} />
+              <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
+              <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
+              <text {...WALegendSettings}>Washington State consultation threshold</text>
+              <text {...CDCLegendSettings} y="164">CDC extra precautions threshold</text>
+              <text {...CDCLegendSettings} y="88">CDC avoid/justify threshold</text>
+              <Line lineID="dataLine" data={data} {...dataLineProps} />
+              {noEntry && 
+                <text {...defaultLegendSettings} x={width/2 - 20} y={height/2} strokeColor="#777" fill="#777">No entry found</text>
+              }
+            </g>
+          </svg>
+        </div>
       </div>
     );
   }
