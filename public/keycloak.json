@@ -1,0 +1,8 @@
+{
+  "realm": "cosri-launcher",
+  "auth-server-url": "https://keycloak-dev.cirg.washington.edu/auth",
+  "ssl-required": "external",
+  "resource": "cosri-test-launcher",
+  "public-client": true,
+  "confidential-port": 0
+}

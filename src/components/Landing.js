@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import tocbot from 'tocbot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Keycloak from 'keycloak-js';
 
 import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
@@ -26,30 +27,36 @@ export default class Landing extends Component {
       result: null,
       loading: true,
       collector: [],
-      externals: {}
+      externals: {},
+      keycloak: null,
+      authenticated: false
     };
 
     this.tocInitialized = false;
   }
 
   componentDidMount() {
-    Promise.all([executeElm(this.state.collector), this.getExternalData()])
-    .then(
-      response => {
-        //set result from data from EPIC
-        let result = response[0];
-        //add data from other sources, e.g. PDMP
-        result['Summary'] = {...result['Summary'], ...response[1]};
-        const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-
-        this.processOverviewData(result['Summary'], sectionFlags);
+    const keycloak = Keycloak(`${process.env.PUBLIC_URL}/keycloak.json`);
+    keycloak.init({onLoad: 'login-required'}).then(authenticated => {
+      this.setState({ keycloak: keycloak, authenticated: authenticated });
+      Promise.all([executeElm(this.state.collector), this.getExternalData()])
+      .then(
+        response => {
+          //set result from data from EPIC
+          let result = response[0];
+          //add data from other sources, e.g. PDMP
+          result['Summary'] = {...result['Summary'], ...response[1]};
+          const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+  
+          this.processOverviewData(result['Summary'], sectionFlags);
+          this.setState({ loading: false});
+          this.setState({ result, sectionFlags, flaggedCount });
+        }
+      )
+      .catch((err) => {
+        console.error(err);
         this.setState({ loading: false});
-        this.setState({ result, sectionFlags, flaggedCount });
-      }
-    )
-    .catch((err) => {
-      console.error(err);
-      this.setState({ loading: false});
+      });
     });
   }
 
