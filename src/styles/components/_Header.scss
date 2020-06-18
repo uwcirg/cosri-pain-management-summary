@@ -110,7 +110,19 @@
 
     &-dashboard {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
+
+      .user-info {
+        margin-right: 12px;
+        .title {
+          font-size: 14px;
+          text-transform: lowercase;
+          line-height: 1.6;
+        }
+        .item {
+          font-weight: 600;
+        }
+      }
 
       .entries {
         display: flex;

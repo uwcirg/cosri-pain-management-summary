@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import UserInfo from "./auth/UserInfo";
+import Logout from "./auth/Logout";
 
 export default class Header extends Component {
   render() {
@@ -38,6 +40,8 @@ export default class Header extends Component {
             <div className="entries">
               <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" />
             </div>
+            <UserInfo authProvider={this.props.authProvider} />
+            <Logout authProvider={this.props.authProvider} />
           </div>
         </div>
       </header>

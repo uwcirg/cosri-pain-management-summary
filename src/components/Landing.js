@@ -29,7 +29,8 @@ export default class Landing extends Component {
       collector: [],
       externals: {},
       keycloak: null,
-      authenticated: false
+      authenticated: false,
+      authError: false
     };
 
     this.tocInitialized = false;
@@ -38,7 +39,7 @@ export default class Landing extends Component {
   componentDidMount() {
     const keycloak = Keycloak(`${process.env.PUBLIC_URL}/keycloak.json`);
     keycloak.init({onLoad: 'login-required'}).then(authenticated => {
-      this.setState({ keycloak: keycloak, authenticated: authenticated });
+      this.setState({ keycloak: keycloak, authenticated: authenticated, authError: false });
       Promise.all([executeElm(this.state.collector), this.getExternalData()])
       .then(
         response => {
@@ -57,6 +58,10 @@ export default class Landing extends Component {
         console.error(err);
         this.setState({ loading: false});
       });
+    })
+    .catch((error) => {
+      console.error(error);
+      this.setState({loading: false, authError: true});
     });
   }
 
@@ -458,6 +463,9 @@ export default class Landing extends Component {
     if (this.state.result == null) {
       return (
         <div className="banner error">
+          {
+            this.state.authError && <div><FontAwesomeIcon icon="exclamation-circle" title="error" /> Authentication Error </div>
+          }
           <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See console for details.
         </div>
       );
@@ -475,6 +483,7 @@ export default class Landing extends Component {
           patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
           patientGender={summary.Patient.Gender}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
+          authProvider={this.state.keycloak}
         />
 
         <Summary
@@ -483,7 +492,6 @@ export default class Landing extends Component {
           collector={this.state.collector}
           result={this.state.result}
         />
-
         <ReactTooltip className="summary-tooltip" id="summaryTooltip" />    
       </div>
     );

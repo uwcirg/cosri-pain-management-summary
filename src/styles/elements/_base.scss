@@ -18,4 +18,13 @@ a {
   //color: $color-gold;
   font-weight: 600;
 }
+.btn-primary {
+  background-color: transparent;
+  border: 0;
+  font-weight: 600;
+  background: $link-color;
+  color: #FFF;
+  padding: 8px;
+  border-radius: 4px;
+}
 
