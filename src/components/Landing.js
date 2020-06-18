@@ -10,6 +10,7 @@ import {datishFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
+import AuthSource from "./auth/AuthSource";
 import Header from './Header';
 import Summary from './Summary';
 import Spinner from '../elements/Spinner';
@@ -28,7 +29,7 @@ export default class Landing extends Component {
       loading: true,
       collector: [],
       externals: {},
-      keycloak: null,
+      authProvider: null,
       authenticated: false,
       authError: false
     };
@@ -37,9 +38,9 @@ export default class Landing extends Component {
   }
 
   componentDidMount() {
-    const keycloak = Keycloak(`${process.env.PUBLIC_URL}/keycloak.json`);
-    keycloak.init({onLoad: 'login-required'}).then(authenticated => {
-      this.setState({ keycloak: keycloak, authenticated: authenticated, authError: false });
+    const authProvider = Keycloak(AuthSource);
+    authProvider.init({onLoad: 'login-required'}).then(authenticated => {
+      this.setState({ authProvider: authProvider, authenticated: authenticated, authError: false });
       Promise.all([executeElm(this.state.collector), this.getExternalData()])
       .then(
         response => {
@@ -84,6 +85,7 @@ export default class Landing extends Component {
       document.title = `Pain Management Summary - ${patientName}`;
     }
   }
+
   /*
    * function for retrieving data from other sources e.g. PDMP
    */
@@ -483,7 +485,7 @@ export default class Landing extends Component {
           patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
           patientGender={summary.Patient.Gender}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
-          authProvider={this.state.keycloak}
+          authProvider={this.state.authProvider}
         />
 
         <Summary
