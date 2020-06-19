@@ -27,8 +27,8 @@ write_env_to_json() {
     local json_file="$1"
 
     # only write environment variables containing "REACT_"
-    json_contents="{$(printenv | grep REACT_ | sed 's/^\|$/"/g' | sed 's|=|":"|' | paste -sd, -)}"
-    echo "$json_contents" > $json_file
+    local json_contents="{$(printenv | grep REACT_ | sed 's/^\|$/"/g' | sed 's|=|":"|' | paste -sd, -)}"
+    echo "$json_contents" > "$json_file"
 }
 
 
