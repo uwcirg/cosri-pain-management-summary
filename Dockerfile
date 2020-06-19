@@ -1,11 +1,12 @@
-FROM node:10
+FROM node:10 as build-deps
 
 WORKDIR /opt/app
 
 COPY . .
 
-RUN yarn --modules-folder=/opt/node_modules
+RUN yarn
 
-# yarn ignores its own config (--modules-folder); symlink node_modules where it expects
-# https://github.com/yarnpkg/yarn/issues/3900
-CMD ln -fs /opt/node_modules && yarn start
+RUN yarn build
+
+FROM httpd:2.4
+COPY --from=build-deps /opt/app/build /usr/local/apache2/htdocs/
