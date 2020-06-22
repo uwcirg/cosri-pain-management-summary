@@ -6,6 +6,7 @@ export function fetchEnvData() {
         let arrLoaded = envKeys.filter(item => {
             return item.startsWith("REACT_");
         });
+        console.log("filtered env array? ", arrLoaded);
         if (arrLoaded.length) {
             //REACT environmental variables have been loaded, note, this is true in dev environment
             console.log("env vars loaded!")
