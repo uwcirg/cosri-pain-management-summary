@@ -100,7 +100,7 @@
               "Drug Description": {
                 "key": "medicationCodeableConcept",
                 "formatter": "codeableConceptFormat",
-                "formatterArguments": ["medicationCodeableConcept", "text"]
+                "formatterArguments": ["text"]
               },
               "Quantity": "_quantity",
               "Written Date": { "key": "dateWritten", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
