@@ -1,12 +1,14 @@
 export function fetchEnvData() {
     const envDefined = (typeof process !== "undefined") && process.env;
     if (envDefined) {
+        console.log("ENVIRONMENT DEFINED??? ", process.env);
         let envKeys = Object.keys(process.env);
         let arrLoaded = envKeys.filter(item => {
             return item.startsWith("REACT_");
         });
         if (arrLoaded.length) {
             //REACT environmental variables have been loaded, note, this is true in dev environment
+            console.log("env vars loaded!")
             return;
         }
     }
@@ -27,6 +29,7 @@ export function fetchEnvData() {
         for (var key in envObj) {
             window["process"]["env"][key] = envObj[key];
         }
+        console.log("loaded from env json ", window["process"]["env"])
     };
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/env.json", false);
