@@ -52,24 +52,6 @@ export default class Landing extends Component {
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
      */
     fetchEnvData();
-    // Promise.all([executeElm(this.state.collector), this.getExternalData()])
-    // .then(
-    //   response => {
-    //     //set result from data from EPIC
-    //     let result = response[0];
-    //     //add data from other sources, e.g. PDMP
-    //     result['Summary'] = {...result['Summary'], ...response[1]};
-    //     const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-
-    //     this.processOverviewData(result['Summary'], sectionFlags);
-    //     this.setState({ loading: false});
-    //     this.setState({ result, sectionFlags, flaggedCount });
-    //   }
-    // )
-    // .catch((err) => {
-    //   console.error(err);
-    //   this.setState({ loading: false});
-    // });
     let result = {};
     Promise.all([executeElm(this.state.collector)])
     .then(
