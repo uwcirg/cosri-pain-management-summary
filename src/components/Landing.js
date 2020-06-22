@@ -36,6 +36,9 @@ export default class Landing extends Component {
 
   setPatientId() {
     if (!this.state.collector) return;
+    /*
+     * passed down via fhir.js
+     */
     let patientBundle = (this.state.collector).filter(item => item.data && item.data.resourceType.toLowerCase() === "patient");
     if (patientBundle.length) {
       this.setState({
