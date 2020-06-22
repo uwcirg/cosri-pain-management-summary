@@ -14,12 +14,12 @@ export function fetchEnvData() {
         var envObj = JSON.parse(xhr.responseText);
         window["appConfig"] = {};
         //assign window process env variables for access by app
+        //won't be overridden when Node initializing env variables
         for (var key in envObj) {
             if (!window["appConfig"][key]) {
                 window["appConfig"][key] = envObj[key];
             }
         }
-        console.log("loaded from env json ",  window["appConfig"])
     };
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/env.json", false);
