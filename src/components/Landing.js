@@ -9,6 +9,7 @@ import {datishFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
+import {fetchEnvData} from '../utils/envConfig';
 import Header from './Header';
 import Summary from './Summary';
 import Spinner from '../elements/Spinner';
@@ -33,6 +34,10 @@ export default class Landing extends Component {
   }
 
   componentDidMount() {
+    /*
+     * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
+     */
+    fetchEnvData();
     Promise.all([executeElm(this.state.collector), this.getExternalData()])
     .then(
       response => {

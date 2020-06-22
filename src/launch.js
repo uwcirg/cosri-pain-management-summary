@@ -1,6 +1,10 @@
 import 'react-app-polyfill/ie11';
 import 'react-app-polyfill/stable';
 import FHIR from 'fhirclient';
+import {fetchEnvData} from './utils/envConfig';
+
+//make sure REACT environmental variables have been populated;
+fetchEnvData();
 
 // retrieve launch context from backend, if configured
 let context_url = process.env.PUBLIC_URL + '/launch-context.json';
