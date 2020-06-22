@@ -1,20 +1,6 @@
 export function fetchEnvData() {
-    //const envDefined = (typeof process !== "undefined") && process.env;
-    // if (envDefined) {
-    //     console.log("ENVIRONMENT DEFINED??? ", process.env);
-    //     let envKeys = Object.keys(process.env);
-    //     let arrLoaded = envKeys.filter(item => {
-    //         return item.startsWith("REACT_");
-    //     });
-    //     console.log("filtered env array? ", arrLoaded);
-    //     if (arrLoaded.length) {
-    //         //REACT environmental variables have been loaded, note, this is true in dev environment
-    //         console.log("env vars loaded!")
-    //         //return;
-    //     }
-    // }
     if (window["appConfig"] && Object.keys(window["appConfig"]).length) {
-        console.log("window config Added? ")
+        console.log("Window config variables added. ");
         return;
     }
     const setConfig = function () {
@@ -26,16 +12,10 @@ export function fetchEnvData() {
             return;
         }
         var envObj = JSON.parse(xhr.responseText);
-        // if (!envDefined) {
-        //     window["process"] = {};
-        //     window["process"]["env"] = {};
-        // }
         window["appConfig"] = {};
         //assign window process env variables for access by app
         for (var key in envObj) {
-            console.log("GET KEY ? ", key, " value? ", envObj[key])
             if (!window["appConfig"][key]) {
-                console.log("ONLY GET HERE IF NOT DEFINED ", key)
                 window["appConfig"][key] = envObj[key];
             }
         }
@@ -62,7 +42,9 @@ export function fetchEnvData() {
 
 export function getEnv (key) {
     const envDefined = (typeof process !== "undefined") && process.env;
+    //enviroment variables as defined by Node 
     if (envDefined && process.env[key]) return process.env[key];
+    //window application global variables
     if (window["appConfig"] && window["appConfig"][key]) return window["appConfig"][key];
     return "";
 }

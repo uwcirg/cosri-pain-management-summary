@@ -27,10 +27,21 @@ export default class Landing extends Component {
       result: null,
       loading: true,
       collector: [],
-      externals: {}
+      externals: {},
+      patientId: ""
     };
 
     this.tocInitialized = false;
+  }
+
+  setPatientId() {
+    if (!this.state.collector) return;
+    let patientBundle = (this.state.collector).filter(item => item.data && item.data.resourceType.toLowerCase() === "patient");
+    if (patientBundle.length) {
+      this.setState({
+        patientId: patientBundle[0].data.id
+      });
+    }
   }
 
   componentDidMount() {
@@ -38,24 +49,57 @@ export default class Landing extends Component {
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
      */
     fetchEnvData();
-    Promise.all([executeElm(this.state.collector), this.getExternalData()])
+    // Promise.all([executeElm(this.state.collector), this.getExternalData()])
+    // .then(
+    //   response => {
+    //     //set result from data from EPIC
+    //     let result = response[0];
+    //     //add data from other sources, e.g. PDMP
+    //     result['Summary'] = {...result['Summary'], ...response[1]};
+    //     const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+
+    //     this.processOverviewData(result['Summary'], sectionFlags);
+    //     this.setState({ loading: false});
+    //     this.setState({ result, sectionFlags, flaggedCount });
+    //   }
+    // )
+    // .catch((err) => {
+    //   console.error(err);
+    //   this.setState({ loading: false});
+    // });
+    let result = {};
+    Promise.all([executeElm(this.state.collector)])
     .then(
       response => {
         //set result from data from EPIC
-        let result = response[0];
-        //add data from other sources, e.g. PDMP
-        result['Summary'] = {...result['Summary'], ...response[1]};
+        let EPICData = response[0];
+        result['Summary'] = {...EPICData['Summary']};
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-
-        this.processOverviewData(result['Summary'], sectionFlags);
-        this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
+        this.setPatientId();
+        //add data from other sources, e.g. PDMP
+        Promise.all([this.getExternalData()]).then(
+          externalData => {
+            console.log("external data? ", externalData[0]);
+            console.log("state collector? ", this.state.collector);
+            console.log("patient id? ", this.state.patientId)
+            result['Summary'] = {...result['Summary'], ...externalData[0]};
+            console.log("Result ? ", result)
+            const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+            this.processOverviewData(result['Summary'], sectionFlags);
+            this.setState({ result, sectionFlags, flaggedCount });
+            this.setState({ loading: false});
+        }).catch((err) => {
+          console.log(err);
+          this.setState({ loading: false});
+        });
       }
     )
     .catch((err) => {
       console.error(err);
       this.setState({ loading: false});
     });
+    
   }
 
   componentDidUpdate() {
@@ -195,7 +239,8 @@ export default class Landing extends Component {
     if (!endpoint) return "";
     return (endpoint)
     .replace('{process.env.REACT_APP_CONF_API_URL}', getEnv("REACT_APP_CONF_API_URL"))
-    .replace('{process.env.PUBLIC_URL}', getEnv("PUBLIC_URL"));
+    .replace('{process.env.PUBLIC_URL}', getEnv("PUBLIC_URL"))
+    .replace('{patientId}', this.state.patientId);
   }
 
   processMedicationOrder(result, dataKey) {
