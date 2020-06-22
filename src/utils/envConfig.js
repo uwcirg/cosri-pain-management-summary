@@ -9,7 +9,7 @@ export function fetchEnvData() {
         if (arrLoaded.length) {
             //REACT environmental variables have been loaded, note, this is true in dev environment
             console.log("env vars loaded!")
-            return;
+            //return;
         }
     }
     const setConfig = function () {
@@ -21,15 +21,19 @@ export function fetchEnvData() {
             return;
         }
         var envObj = JSON.parse(xhr.responseText);
-        if (!window["process"]) {
+        if (!envDefined) {
             window["process"] = {};
             window["process"]["env"] = {};
         }
         //assign window process env variables for access by app
         for (var key in envObj) {
-            window["process"]["env"][key] = envObj[key];
+            console.log("GET KEY ? ", key, " value? ", envObj[key])
+            if (!process["env"][key]) {
+                console.log("ONLY GET HERE IF NOT DEFINED ", key)
+                process["env"][key] = envObj[key];
+            }
         }
-        console.log("loaded from env json ", window["process"]["env"])
+        console.log("loaded from env json ", process["env"])
     };
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/env.json", false);
