@@ -9,7 +9,7 @@ import {datishFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
-import {fetchEnvData} from '../utils/envConfig';
+import {getEnv, fetchEnvData} from '../utils/envConfig';
 import Header from './Header';
 import Summary from './Summary';
 import Spinner from '../elements/Spinner';
@@ -194,8 +194,8 @@ export default class Landing extends Component {
   processEndPoint(endpoint) {
     if (!endpoint) return "";
     return (endpoint)
-    .replace('{process.env.REACT_APP_CONF_API_URL}', process.env.REACT_APP_CONF_API_URL)
-    .replace('{process.env.PUBLIC_URL}', process.env.PUBLIC_URL);
+    .replace('{process.env.REACT_APP_CONF_API_URL}', getEnv("REACT_APP_CONF_API_URL"))
+    .replace('{process.env.PUBLIC_URL}', getEnv("PUBLIC_URL"));
   }
 
   processMedicationOrder(result, dataKey) {
@@ -434,7 +434,7 @@ export default class Landing extends Component {
 
     //console.log("sectionFlags ", sectionFlags);
     // Get the configured endpoint to use for POST for app analytics
-    fetch(`${process.env.PUBLIC_URL}/config.json`)
+    fetch(`${getEnv("PUBLIC_URL")}/config.json`)
       .then(response => response.json())
       .then(config => {
         // Only provide analytics if the endpoint has been set
