@@ -3,8 +3,7 @@ export function fetchEnvData() {
     if (envDefined) {
         let envKeys = Object.keys(process.env);
         let arrLoaded = envKeys.filter(item => {
-            let regex = RegExp("react_", "gi");
-            return regex.test(item);
+            return item.startsWith("REACT_");
         });
         if (arrLoaded.length) {
             //REACT environmental variables have been loaded, note, this is true in dev environment
