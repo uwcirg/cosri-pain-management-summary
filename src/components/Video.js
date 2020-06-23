@@ -12,10 +12,24 @@ export default class Video extends Component {
     };
     // This binding is necessary to make `this` work in the callback
     this.handleClick = this.handleClick.bind(this);
+    this.iframeRef = React.createRef();
   }
 
   handleClick(e) {
     e.preventDefault();
+    /*
+     * dynamically assigned src to iframe
+     * only assign when it hasn't been assigned
+     */
+    if (!(this.iframeRef.current).src) {
+      setTimeout(function() {
+        (this.iframeRef.current).src = this.props.src;
+      }.bind(this), 5);
+
+      // this.setState({
+      //   videoLoaded: true
+      // });
+    }
     this.setState(state => ({
       isToggleOn: !state.isToggleOn
     }));
@@ -23,7 +37,7 @@ export default class Video extends Component {
 
   render() {
     const {
-      title, src, toggleable
+      title, toggleable
     } = this.props;
 
     /*
@@ -44,8 +58,12 @@ export default class Video extends Component {
     };
 
     if (!toggleable) {
-      return (<IframeElement src={src} title={title} style={IframeStyle} />);
+      return (<IframeElement title={title} style={IframeStyle} ref={this.iframeRef} />);
     }
+    const VideoElement = React.forwardRef((props, ref) => (
+      <IframeElement {...props} forwardRef={ref}/>
+    ));
+
     return (
       <div>
         {/* element for toggling the visibility of video */}
@@ -61,7 +79,9 @@ export default class Video extends Component {
             className='video'
             style={VideoContainerStyle}
           >
-            <IframeElement src={src} title={title} style={IframeStyle} />
+          <span>loading...</span>
+          <VideoElement ref={this.iframeRef} title={title} style={IframeStyle}  frameBorder="0"
+          id="ifVideo" allowFullScreen></VideoElement>
           </div>
         </div>
       </div>
