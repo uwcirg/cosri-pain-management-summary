@@ -54,12 +54,13 @@ export default class Video extends Component {
       height: 0
     };
 
-    if (!toggleable) {
-      return (<IframeElement title={title} style={IframeStyle} ref={this.iframeRef} />);
-    }
     const VideoElement = React.forwardRef((props, ref) => (
       <IframeElement {...props} forwardRef={ref}/>
     ));
+
+    if (!toggleable) {
+      return (<VideoElement title={title} style={IframeStyle} ref={this.iframeRef} />);
+    }
 
     return (
       <div>
@@ -78,7 +79,7 @@ export default class Video extends Component {
           >
           <span>loading...</span>
           <VideoElement ref={this.iframeRef} title={title} style={IframeStyle}  frameBorder="0"
-          id="ifVideo" allowFullScreen></VideoElement>
+          allowFullScreen></VideoElement>
           </div>
         </div>
       </div>
