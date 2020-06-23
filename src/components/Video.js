@@ -25,10 +25,6 @@ export default class Video extends Component {
       setTimeout(function() {
         (this.iframeRef.current).src = this.props.src;
       }.bind(this), 5);
-
-      // this.setState({
-      //   videoLoaded: true
-      // });
     }
     this.setState(state => ({
       isToggleOn: !state.isToggleOn
