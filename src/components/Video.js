@@ -19,6 +19,7 @@ export default class Video extends Component {
     e.preventDefault();
     /*
      * dynamically assigned src to iframe
+     * this allows video to be loaded on demand
      * only assign when it hasn't been assigned
      */
     if (!(this.iframeRef.current).src) {
