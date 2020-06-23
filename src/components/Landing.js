@@ -9,7 +9,7 @@ import {datishFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
-import {fetchEnvData} from '../utils/envConfig';
+import {getEnv, fetchEnvData} from '../utils/envConfig';
 import Header from './Header';
 import Summary from './Summary';
 import Spinner from '../elements/Spinner';
@@ -27,10 +27,27 @@ export default class Landing extends Component {
       result: null,
       loading: true,
       collector: [],
-      externals: {}
+      externals: {},
+      patientId: ""
     };
 
     this.tocInitialized = false;
+  }
+
+  setPatientId() {
+    if (!this.state.collector) return;
+    /*
+     * passed down via fhir.js
+     */
+    let patientBundle = (this.state.collector).filter(item => item.data && item.data.resourceType.toLowerCase() === "patient");
+    if (patientBundle.length) {
+      this.setState({
+        patientId: patientBundle[0].data.id
+      });
+    }
+  }
+  getPatientId() {
+    return this.state.patientId;
   }
 
   componentDidMount() {
@@ -38,24 +55,35 @@ export default class Landing extends Component {
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
      */
     fetchEnvData();
-    Promise.all([executeElm(this.state.collector), this.getExternalData()])
+    let result = {};
+    Promise.all([executeElm(this.state.collector)])
     .then(
       response => {
         //set result from data from EPIC
-        let result = response[0];
-        //add data from other sources, e.g. PDMP
-        result['Summary'] = {...result['Summary'], ...response[1]};
+        let EPICData = response[0];
+        result['Summary'] = {...EPICData['Summary']};
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
-
-        this.processOverviewData(result['Summary'], sectionFlags);
-        this.setState({ loading: false});
         this.setState({ result, sectionFlags, flaggedCount });
+        this.setPatientId();
+        //add data from other sources, e.g. PDMP
+        Promise.all([this.getExternalData()]).then(
+          externalData => {
+            result['Summary'] = {...result['Summary'], ...externalData[0]};
+            const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+            this.processOverviewData(result['Summary'], sectionFlags);
+            this.setState({ result, sectionFlags, flaggedCount });
+            this.setState({ loading: false});
+        }).catch((err) => {
+          console.log(err);
+          this.setState({ loading: false});
+        });
       }
     )
     .catch((err) => {
       console.error(err);
       this.setState({ loading: false});
     });
+    
   }
 
   componentDidUpdate() {
@@ -194,8 +222,9 @@ export default class Landing extends Component {
   processEndPoint(endpoint) {
     if (!endpoint) return "";
     return (endpoint)
-    .replace('{process.env.REACT_APP_CONF_API_URL}', process.env.REACT_APP_CONF_API_URL)
-    .replace('{process.env.PUBLIC_URL}', process.env.PUBLIC_URL);
+    .replace('{process.env.REACT_APP_CONF_API_URL}', getEnv("REACT_APP_CONF_API_URL"))
+    .replace('{process.env.PUBLIC_URL}', getEnv("PUBLIC_URL"))
+    .replace('{patientId}', this.getPatientId());
   }
 
   processMedicationOrder(result, dataKey) {
@@ -434,7 +463,7 @@ export default class Landing extends Component {
 
     //console.log("sectionFlags ", sectionFlags);
     // Get the configured endpoint to use for POST for app analytics
-    fetch(`${process.env.PUBLIC_URL}/config.json`)
+    fetch(`${getEnv("PUBLIC_URL")}/config.json`)
       .then(response => response.json())
       .then(config => {
         // Only provide analytics if the endpoint has been set

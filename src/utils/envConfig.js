@@ -1,14 +1,7 @@
 export function fetchEnvData() {
-    const envDefined = (typeof process !== "undefined") && process.env;
-    if (envDefined) {
-        let envKeys = Object.keys(process.env);
-        let arrLoaded = envKeys.filter(item => {
-            return item.startsWith("REACT_");
-        });
-        if (arrLoaded.length) {
-            //REACT environmental variables have been loaded, note, this is true in dev environment
-            return;
-        }
+    if (window["appConfig"] && Object.keys(window["appConfig"]).length) {
+        console.log("Window config variables added. ");
+        return;
     }
     const setConfig = function () {
         if (!xhr.readyState === xhr.DONE) {
@@ -19,13 +12,13 @@ export function fetchEnvData() {
             return;
         }
         var envObj = JSON.parse(xhr.responseText);
-        if (!window["process"]) {
-            window["process"] = {};
-            window["process"]["env"] = {};
-        }
+        window["appConfig"] = {};
         //assign window process env variables for access by app
+        //won't be overridden when Node initializing env variables
         for (var key in envObj) {
-            window["process"]["env"][key] = envObj[key];
+            if (!window["appConfig"][key]) {
+                window["appConfig"][key] = envObj[key];
+            }
         }
     };
     var xhr = new XMLHttpRequest();
@@ -45,4 +38,13 @@ export function fetchEnvData() {
         // XMLHttpRequest timed out.
         console.log("request to fetch env.json file timed out ", e);
     };
+}
+
+export function getEnv (key) {
+    const envDefined = (typeof process !== "undefined") && process.env;
+    //enviroment variables as defined by Node 
+    if (envDefined && process.env[key]) return process.env[key];
+    //window application global variables
+    if (window["appConfig"] && window["appConfig"][key]) return window["appConfig"][key];
+    return "";
 }

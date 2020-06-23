@@ -6,7 +6,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -18,19 +18,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "65162062750", 
-              "display": "TRAMADOL HCL 50 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "TRAMADOL HCL 50 MG TABLET"
-        }
-      },
+        "coding": [
+          {
+            "code": "65162062750", 
+            "display": "TRAMADOL HCL 50 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "TRAMADOL HCL 50 MG TABLET"
+      }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -40,7 +38,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "CVS Pharmacy"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -52,19 +50,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00591024110", 
-              "display": "LORAZEPAM 1 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "LORAZEPAM 1 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00591024110", 
+            "display": "LORAZEPAM 1 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "LORAZEPAM 1 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Lee Kramer"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -74,7 +70,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Bartell Drug Pharmacy"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -86,19 +82,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Elizabeth Morgan"
+        "display": "TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -108,7 +102,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "UW Medicine Pharmacy"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -120,19 +114,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062201", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062201", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -142,7 +134,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -154,19 +146,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Lynette Scholl"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -176,7 +166,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -188,19 +178,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Christopher Fletcher"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -210,7 +198,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "CVS Pharmacy"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -222,19 +210,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -244,7 +230,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -256,19 +242,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00002254902", 
-              "display": "MORPHINE 10 MG SOLUBLE TAB", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "MORPHINE 10 MG SOLUBLE TAB"
-        }
+        "coding": [
+          {
+            "code": "00002254902", 
+            "display": "MORPHINE 10 MG SOLUBLE TAB", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "MORPHINE 10 MG SOLUBLE TAB"
       }, 
       "prescriber": {
-        "display": "Robert Wagner"
+        "display": "TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -278,7 +262,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "UW Medicine Pharmacy"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -290,19 +274,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00009041701", 
-              "display": "DEPO-TESTOSTERONE 200 MG/ML", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "DEPO-TESTOSTERONE 200 MG/ML"
-        }
+        "coding": [
+          {
+            "code": "00009041701", 
+            "display": "DEPO-TESTOSTERONE 200 MG/ML", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "DEPO-TESTOSTERONE 200 MG/ML"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -312,7 +294,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -324,19 +306,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "63187006320", 
-              "display": "TRAMADOL HCL 50 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "TRAMADOL HCL 50 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "63187006320", 
+            "display": "TRAMADOL HCL 50 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "TRAMADOL HCL 50 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -346,7 +326,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -358,19 +338,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Jose Mantilla"
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -380,7 +358,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "UW Medicine Pharmacy"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -392,19 +370,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00009041701", 
-              "display": "DEPO-TESTOSTERONE 200 MG/ML", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "DEPO-TESTOSTERONE 200 MG/ML"
-        }
+        "coding": [
+          {
+            "code": "00009041701", 
+            "display": "DEPO-TESTOSTERONE 200 MG/ML", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "DEPO-TESTOSTERONE 200 MG/ML"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -414,7 +390,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -426,19 +402,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -448,7 +422,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -460,19 +434,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00009041701", 
-              "display": "DEPO-TESTOSTERONE 200 MG/ML", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "DEPO-TESTOSTERONE 200 MG/ML"
-        }
+        "coding": [
+          {
+            "code": "00009041701", 
+            "display": "DEPO-TESTOSTERONE 200 MG/ML", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "DEPO-TESTOSTERONE 200 MG/ML"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -482,7 +454,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -494,19 +466,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -516,7 +486,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -528,19 +498,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -550,7 +518,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -562,19 +530,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -584,7 +550,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -596,19 +562,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -618,7 +582,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -630,19 +594,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -652,7 +614,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -664,19 +626,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -686,7 +646,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -698,19 +658,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "HID TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -720,7 +678,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -732,19 +690,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -754,7 +710,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -766,19 +722,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "12496120803", 
-              "display": "SUBOXONE 8 MG-2 MG SL FILM", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "SUBOXONE 8 MG-2 MG SL FILM"
-        }
+        "coding": [
+          {
+            "code": "12496120803", 
+            "display": "SUBOXONE 8 MG-2 MG SL FILM", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "SUBOXONE 8 MG-2 MG SL FILM"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -788,7 +742,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -800,19 +754,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00093005801", 
-              "display": "TRAMADOL HCL 50 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "TRAMADOL HCL 50 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00093005801", 
+            "display": "TRAMADOL HCL 50 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "TRAMADOL HCL 50 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -822,7 +774,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -834,19 +786,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "63187006320", 
-              "display": "TRAMADOL HCL 50 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "TRAMADOL HCL 50 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "63187006320", 
+            "display": "TRAMADOL HCL 50 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "TRAMADOL HCL 50 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -856,7 +806,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -868,19 +818,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00002254902", 
-              "display": "MORPHINE 10 MG SOLUBLE TAB", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "MORPHINE 10 MG SOLUBLE TAB"
-        }
+        "coding": [
+          {
+            "code": "00002254902", 
+            "display": "MORPHINE 10 MG SOLUBLE TAB", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "MORPHINE 10 MG SOLUBLE TAB"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -890,7 +838,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -902,19 +850,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -924,7 +870,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -936,19 +882,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -958,7 +902,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -970,19 +914,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -992,7 +934,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -1004,19 +946,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -1026,7 +966,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -1038,19 +978,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -1060,7 +998,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -1072,19 +1010,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -1094,7 +1030,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -1106,155 +1042,17 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
-      }, 
-      "prescriber": {
-        "display": "Eleanor Chen"
-      }, 
-      "resourceType": "MedicationOrder"
-    }, 
-    {
-      "dateWritten": "2019-04-25", 
-      "dispenseRequest": {
-        "extension": [
+        "coding": [
           {
-            "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
-          }, 
-          {
-            "url": "http://cosri.org/fhir/last_fill", 
-            "valueDate": "2019-04-25"
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
           }
         ], 
-        "quantity": {
-          "value": 10
-        }
-      }, 
-      "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "text": "METHADONE HCL 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
-      }, 
-      "resourceType": "MedicationOrder"
-    }, 
-    {
-      "dateWritten": "2019-01-01", 
-      "dispenseRequest": {
-        "extension": [
-          {
-            "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
-          }, 
-          {
-            "url": "http://cosri.org/fhir/last_fill", 
-            "valueDate": "2019-01-01"
-          }
-        ], 
-        "quantity": {
-          "value": 10
-        }
-      }, 
-      "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
-      }, 
-      "prescriber": {
-        "display": "Eleanor Chen"
-      }, 
-      "resourceType": "MedicationOrder"
-    }, 
-    {
-      "dateWritten": "2019-04-01", 
-      "dispenseRequest": {
-        "extension": [
-          {
-            "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
-          }, 
-          {
-            "url": "http://cosri.org/fhir/last_fill", 
-            "valueDate": "2019-04-01"
-          }
-        ], 
-        "quantity": {
-          "value": 1
-        }
-      }, 
-      "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "00406577101", 
-              "display": "METHADONE HCL 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "METHADONE HCL 10 MG TABLET"
-        }
-      },
-      "prescriber": {
-        "display": "Eleanor Chen"
-      }, 
-      "resourceType": "MedicationOrder"
-    }, 
-    {
-      "dateWritten": "2019-02-24", 
-      "dispenseRequest": {
-        "extension": [
-          {
-            "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
-          }, 
-          {
-            "url": "http://cosri.org/fhir/last_fill", 
-            "valueDate": "2019-02-24"
-          }
-        ], 
-        "quantity": {
-          "value": 5
-        }
-      }, 
-      "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062202", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
-      }, 
-      "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST TEST"
       }, 
       "resourceType": "MedicationOrder"
     }, 
@@ -1264,7 +1062,7 @@
         "extension": [
           {
             "url": "http://cosri.org/fhir/pharmacy_name", 
-            "valueString": "Walgreens"
+            "valueString": "TEST, DOCTOR"
           }, 
           {
             "url": "http://cosri.org/fhir/last_fill", 
@@ -1276,19 +1074,145 @@
         }
       }, 
       "medicationCodeableConcept": {
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "code": "16714062201", 
-              "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
-              "system": "http://hl7.org/fhir/sid/ndc"
-            }
-          ], 
-          "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
-        }
+        "coding": [
+          {
+            "code": "16714062201", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
       }, 
       "prescriber": {
-        "display": "Eleanor Chen"
+        "display": "TEST PRESCRIBER"
+      }, 
+      "resourceType": "MedicationOrder"
+    }, 
+    {
+      "dateWritten": "2019-02-24", 
+      "dispenseRequest": {
+        "extension": [
+          {
+            "url": "http://cosri.org/fhir/pharmacy_name", 
+            "valueString": "TEST, DOCTOR"
+          }, 
+          {
+            "url": "http://cosri.org/fhir/last_fill", 
+            "valueDate": "2019-02-24"
+          }
+        ], 
+        "quantity": {
+          "value": 5
+        }
+      }, 
+      "medicationCodeableConcept": {
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
+      }, 
+      "prescriber": {
+        "display": "HID PRESCRIBER"
+      }, 
+      "resourceType": "MedicationOrder"
+    }, 
+    {
+      "dateWritten": "2019-04-01", 
+      "dispenseRequest": {
+        "extension": [
+          {
+            "url": "http://cosri.org/fhir/pharmacy_name", 
+            "valueString": "TEST, DOCTOR"
+          }, 
+          {
+            "url": "http://cosri.org/fhir/last_fill", 
+            "valueDate": "2019-04-01"
+          }
+        ], 
+        "quantity": {
+          "value": 1
+        }
+      }, 
+      "medicationCodeableConcept": {
+        "coding": [
+          {
+            "code": "00406577101", 
+            "display": "METHADONE HCL 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "METHADONE HCL 10 MG TABLET"
+      }, 
+      "prescriber": {
+        "display": "TEST TEST"
+      }, 
+      "resourceType": "MedicationOrder"
+    }, 
+    {
+      "dateWritten": "2019-01-01", 
+      "dispenseRequest": {
+        "extension": [
+          {
+            "url": "http://cosri.org/fhir/pharmacy_name", 
+            "valueString": "TEST, DOCTOR"
+          }, 
+          {
+            "url": "http://cosri.org/fhir/last_fill", 
+            "valueDate": "2019-01-01"
+          }
+        ], 
+        "quantity": {
+          "value": 10
+        }
+      }, 
+      "medicationCodeableConcept": {
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
+      }, 
+      "prescriber": {
+        "display": "HID PRESCRIBER"
+      }, 
+      "resourceType": "MedicationOrder"
+    }, 
+    {
+      "dateWritten": "2019-04-25", 
+      "dispenseRequest": {
+        "extension": [
+          {
+            "url": "http://cosri.org/fhir/pharmacy_name", 
+            "valueString": "TEST, DOCTOR"
+          }, 
+          {
+            "url": "http://cosri.org/fhir/last_fill", 
+            "valueDate": "2019-04-25"
+          }
+        ], 
+        "quantity": {
+          "value": 10
+        }
+      }, 
+      "medicationCodeableConcept": {
+        "coding": [
+          {
+            "code": "16714062202", 
+            "display": "ZOLPIDEM TARTRATE 10 MG TABLET", 
+            "system": "http://hl7.org/fhir/sid/ndc"
+          }
+        ], 
+        "text": "ZOLPIDEM TARTRATE 10 MG TABLET"
+      }, 
+      "prescriber": {
+        "display": "HID PRESCRIBER"
       }, 
       "resourceType": "MedicationOrder"
     }
