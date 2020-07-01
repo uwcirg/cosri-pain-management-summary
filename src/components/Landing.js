@@ -88,9 +88,7 @@ export default class Landing extends Component {
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData(), this.getPatientOccupation()]).then(
           externalData => {
-            console.log(externalData[1])
             result['Summary'] = {...result['Summary'], ...externalData[0], ...externalData[1]};
-            console.log("summary? ", result['Summary'])
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
