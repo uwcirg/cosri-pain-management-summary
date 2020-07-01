@@ -66,7 +66,7 @@
     display: flex;
     justify-content: space-between;
     flex: 1;
-    margin: 0 40px;
+    margin: 0 24px;
 
     &-patient {
       display: flex;
@@ -76,9 +76,9 @@
         font-size: 2em;
         color: $color-blue;
         //color: $color-uw-icon;
-        margin-right: 30px;
+        margin-right: 16px;
         position: relative;
-        top: -.75em;
+        top: -1em;
       }
 
       .patient-name {
@@ -93,7 +93,7 @@
         display: flex;
         justify-content: flex-end;
         flex-direction: column;
-        align-items: flex-end;
+        align-items: flex-start;
         color: $color-gray;
         font-weight: 600;
         text-transform: uppercase;
@@ -103,7 +103,7 @@
         .patient-age { margin-right: 16px; }
         .patient-occupation {
           font-weight: 500;
-          font-size: 0.95em;
+          font-size: 0.9em;
         }
       }
     }

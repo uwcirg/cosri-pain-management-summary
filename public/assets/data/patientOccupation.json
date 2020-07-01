@@ -1,0 +1,83 @@
+{
+    "resourceType":"Observation",
+    "text":{
+       "div":"<div xmlns=\"http://www.w3.org/1999/xhtml\">This observation resource contains the industry and occupation for a patient</div>"
+    },
+    "contained":[
+       {
+          "resourceType":"Organization",
+          "id":"localOrganization",
+          "name":"Awesome Sauce Software Co",
+          "address":[
+             {
+                "state":"TN"
+             },
+             {
+                "city":"Somewhereville"
+             },
+             {
+                "postalCode":"37174"
+             },
+             {
+                "line":[
+                   "12 Radical St"
+                ]
+             }
+          ]
+       }
+    ],
+    "extension":[
+       {
+          "id":"odh-Employer-extension",
+          "url":"http://hl7.org/fhir/us/odh/StructureDefinition/odh-Employer-extension",
+          "valueReference":{
+             "reference":"#localOrganization"
+          }
+       }
+    ],
+    "status":"final",
+    "subject":{
+       "reference":"Patient/d92adee0-9991-4a21-8c89-a74bd42a9798"
+    },
+    "component":[
+       {
+          "code":{
+             "coding":[
+                {
+                   "code":"45-3011.00.000032"
+                },
+                {
+                   "display":"Abalone Fisherman [Fishers and Related Fishing Workers]"
+                },
+                {
+                   "system":"20191121"
+                },
+                {
+                   "userSelected":true
+                }
+             ],
+             "text":"Abalone Fisherman [Fishers and Related Fishing Workers]"
+          }
+       },
+       {
+          "code":{
+             "coding":[
+                {
+                   "code":"114111.000573"
+                },
+                {
+                   "display":"Anchovy fishing [Finfish Fishing ]"
+                },
+                {
+                   "system":"20191121"
+                },
+                {
+                   "userSelected":true
+                }
+             ],
+             "text":"Anchovy fishing [Finfish Fishing ]"
+          }
+       }
+    ]
+ }
+ 

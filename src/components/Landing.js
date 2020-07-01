@@ -50,6 +50,26 @@ export default class Landing extends Component {
     return this.state.patientId;
   }
 
+  async getPatientOccupation() {
+    let result = {};
+    //TODO this is a sample data URL, fix this
+    //TODO pass in patient id here?
+    let response = await fetch(`${getEnv("PUBLIC_URL")}/assets/data/patientOccupation.json`)
+                  .catch(e => console.log(`Error fetching data: ${e.message}`));
+    try {
+      let json = await response.json();
+      result["occupation"] = json["component"] && json["component"].length ?
+      //TODO fix here if data structure changes 
+      json["component"].map(item => {
+        return item.code ? item.code.text: "";
+      })[0]: "";
+    } catch(e) {
+      result["occupation"] = null;
+      console.log("error occurred parsiong data: ", e);
+    }
+    return result;
+  }
+
   componentDidMount() {
     /*
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
@@ -66,9 +86,11 @@ export default class Landing extends Component {
         this.setState({ result, sectionFlags, flaggedCount });
         this.setPatientId();
         //add data from other sources, e.g. PDMP
-        Promise.all([this.getExternalData()]).then(
+        Promise.all([this.getExternalData(), this.getPatientOccupation()]).then(
           externalData => {
-            result['Summary'] = {...result['Summary'], ...externalData[0]};
+            console.log(externalData[1])
+            result['Summary'] = {...result['Summary'], ...externalData[0], ...externalData[1]};
+            console.log("summary? ", result['Summary'])
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
@@ -501,6 +523,7 @@ export default class Landing extends Component {
           patientName={summary.Patient.Name}
           patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
           patientGender={summary.Patient.Gender}
+          patientOccupation={summary.occupation}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
         />
 

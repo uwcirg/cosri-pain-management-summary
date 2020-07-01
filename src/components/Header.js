@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export default class Header extends Component {
   render() {
     const {
-      patientName, patientDOB, patientGender
+      patientName, patientDOB, patientGender, patientOccupation
     } = this.props;
 
     return (
@@ -31,6 +31,7 @@ export default class Header extends Component {
               <div className="patient-demographics">
                 <span className="patient-dob" aria-label="Date of birth">DOB: {patientDOB}</span>
                 <span className="patient-gender">{patientGender}</span>
+                <span className="patient-occupation">{patientOccupation}</span>
               </div>
             </div>
           </div>
@@ -48,5 +49,6 @@ export default class Header extends Component {
 Header.propTypes = {
   patientName: PropTypes.string.isRequired,
   patientDOB: PropTypes.string.isRequired,
-  patientGender: PropTypes.string.isRequired
+  patientGender: PropTypes.string.isRequired,
+  patientOccupation: PropTypes.string
 };
