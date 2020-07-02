@@ -250,6 +250,7 @@
       .MMEgraph {
         margin-top: 32px;
         margin-bottom: 24px;
+        max-width: 100%;
         //border-bottom: 1px solid $color-gray-lighter;
         //padding-bottom: 32px;
         padding-bottom: 12px;
@@ -299,7 +300,7 @@
       }
 
       .sub-section__panel {
-        display: flex;
+        display: block;
         justify-content: flex-start;
         align-items: center;
         color: $color-black;
@@ -307,10 +308,13 @@
         padding: 16px;
         .panel.graph {
           flex: 1;
+          .MMEgraph {
+            width: 80%;
+          }
         }
         .panel.overview {
-          max-width: 35%;
-          min-width: 35%;
+          max-width: 100%;
+          min-width: 100%;
         }
         .sub-section__infopanel {
           border: 2px solid;
@@ -365,6 +369,21 @@
                 color: $color-red;
                 cursor: pointer;
               }
+            }
+          }
+        }
+      }
+      @media (min-width: 768px) {
+        .sub-section__panel {
+          display: flex;
+          .panel.overview {
+            max-width: 35%;
+            min-width: 35%;
+          }
+          .panel.graph {
+            flex: 1;
+            .MMEgraph {
+              width: 100%;
             }
           }
         }
