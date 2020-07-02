@@ -306,11 +306,11 @@
         flex-wrap: wrap;
         padding: 16px;
         .panel.graph {
-          flex: 100%;
+          flex: 1;
         }
         .panel.overview {
-          max-width: 37.5%;
-          min-width: 32.5%;
+          max-width: 35%;
+          min-width: 35%;
         }
         .sub-section__infopanel {
           border: 2px solid;
@@ -372,6 +372,13 @@
       @media (min-width: 992px) {
         .sub-section__panel {
           flex-wrap:nowrap;
+        }
+      }
+      @media (min-width: 1500px) {
+        .sub-section__panel {
+          .panel.graph {
+            flex: 0.8;
+          }
         }
       }
 
