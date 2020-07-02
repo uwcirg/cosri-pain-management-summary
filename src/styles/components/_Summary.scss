@@ -250,8 +250,7 @@
       .MMEgraph {
         margin-top: 32px;
         margin-bottom: 24px;
-        //border-bottom: 1px solid $color-gray-lighter;
-        //padding-bottom: 32px;
+        max-width: 100%;
         padding-bottom: 12px;
         .title {
           margin-left: 42px;
@@ -299,19 +298,12 @@
       }
 
       .sub-section__panel {
-        display: flex;
+        display: block;
         justify-content: flex-start;
         align-items: center;
         color: $color-black;
         flex-wrap: wrap;
         padding: 16px;
-        .panel.graph {
-          flex: 100%;
-        }
-        .panel.overview {
-          max-width: 37.5%;
-          min-width: 32.5%;
-        }
         .sub-section__infopanel {
           border: 2px solid;
           padding: 12px;
@@ -369,12 +361,28 @@
           }
         }
       }
-      @media (min-width: 992px) {
+  
+      @media (min-width: 768px) {
         .sub-section__panel {
+          display: flex;
           flex-wrap:nowrap;
+          .panel.overview {
+            flex-grow: 1;
+            flex-basis: 40%;
+          }
+          .panel.graph {
+            flex-grow: 1;
+            flex-basis: 100%;
+          }
         }
       }
-
+      @media (min-width: 1200px) {
+        .sub-section__panel {
+          .panel.graph {
+            flex-basis: 60%;
+          }
+        }
+      }
       .sub-section {
         background-color: $color-white;
         box-shadow: 1px 2px 2px $color-box-shadow;

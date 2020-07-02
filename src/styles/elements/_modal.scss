@@ -20,6 +20,7 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 500;
 }
 
 body.ReactModal__Body--open {
@@ -46,7 +47,8 @@ body.ReactModal__Body--open {
 
     .close-icon {
       cursor: pointer;
-
+      position: relative;
+      z-index: 999;
       &:hover {
         color: $color-gray-light;
       }
