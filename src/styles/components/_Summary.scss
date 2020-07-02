@@ -302,7 +302,7 @@
         justify-content: flex-start;
         align-items: center;
         color: $color-black;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         padding: 16px;
         .sub-section__infopanel {
           border: 2px solid;
@@ -365,6 +365,7 @@
       @media (min-width: 768px) {
         .sub-section__panel {
           display: flex;
+          flex-wrap:nowrap;
           .panel.overview {
             flex-grow: 1;
             flex-basis: 40%;
