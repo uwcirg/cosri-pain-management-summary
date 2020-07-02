@@ -251,8 +251,6 @@
         margin-top: 32px;
         margin-bottom: 24px;
         max-width: 100%;
-        //border-bottom: 1px solid $color-gray-lighter;
-        //padding-bottom: 32px;
         padding-bottom: 12px;
         .title {
           margin-left: 42px;
@@ -304,18 +302,8 @@
         justify-content: flex-start;
         align-items: center;
         color: $color-black;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         padding: 16px;
-        .panel.graph {
-          flex: 1;
-          .MMEgraph {
-            width: 80%;
-          }
-        }
-        .panel.overview {
-          max-width: 100%;
-          min-width: 100%;
-        }
         .sub-section__infopanel {
           border: 2px solid;
           padding: 12px;
@@ -373,42 +361,27 @@
           }
         }
       }
-      @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-        /* IE10+ CSS styles go here */
-        .panel.graph {
-          .MMEgraph {
-            width: 100%;
-          }
-        }
-      }
+  
       @media (min-width: 768px) {
         .sub-section__panel {
           display: flex;
           .panel.overview {
-            max-width: 35%;
-            min-width: 35%;
+            flex-grow: 1;
+            flex-basis: 50%;
           }
           .panel.graph {
-            flex: 1;
-            .MMEgraph {
-              width: 100%;
-            }
+            flex-grow: 1;
+            flex-basis: 100%;
           }
         }
       }
-      @media (min-width: 992px) {
-        .sub-section__panel {
-          flex-wrap:nowrap;
-        }
-      }
-      @media (min-width: 1500px) {
+      @media (min-width: 1200px) {
         .sub-section__panel {
           .panel.graph {
-            flex: 0.8;
+            flex-basis: 60%;
           }
         }
       }
-
       .sub-section {
         background-color: $color-white;
         box-shadow: 1px 2px 2px $color-box-shadow;
