@@ -32,6 +32,13 @@ export default class MMEGraph extends Component {
     }
     return data;
   }
+  compareDate(a, b) {
+    let calcA = (new Date(a.dateWritten)).getTime();
+    let calcB = (new Date(b.dateWritten)).getTime();
+    if (calcA > calcB) return 1;
+    if (calcB > calcA) return -1;
+    return 0;
+  }
 
   render() {
     /*
@@ -48,7 +55,9 @@ export default class MMEGraph extends Component {
     const yFieldName = "MMEValue";
     const xIntervals = 8;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
-    let data  = this.props.data || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
+    //need to make sure the dates are sorted for line to draw correctly
+    let computedData = this.props.data? (this.props.data).sort(this.compareDate): null;
+    let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
     let noEntry = !data || !data.length;
 
     data = data.map(d => {
@@ -65,8 +74,15 @@ export default class MMEGraph extends Component {
       maxDate = new Date(Math.max.apply(null, arrayDates))
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
-    if (arrayDates.length < xIntervals) {
-      maxDate = new Date(Math.max(Math.max.apply(null, arrayDates), maxDate))
+    if (arrayDates.length < (xIntervals - 2)) {
+      /*
+       * make sure graph has appropiate end points on the graph if the total count of data points is less than the initial set number of intervals
+       */
+      let calcMinDate = new Date(minDate.valueOf());
+      let calcMaxDate = new Date(maxDate.valueOf());
+      minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
+      maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
+      maxDate = new Date(Math.max(Math.max.apply(null, arrayDates), new Date()))
       minDate = new Date(Math.min(Math.min.apply(null, arrayDates), minDate));
     }
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
@@ -133,7 +149,7 @@ export default class MMEGraph extends Component {
       "fontFamily": "sans-serif",
       "fontSize": "12px",
       "fontWeight": "600",
-      "x": 8
+      "x": 16
     };
     const WA_COLOR = "#a75454";
     const CDC_COLOR = "#e09b1d";
