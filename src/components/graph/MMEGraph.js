@@ -75,6 +75,9 @@ export default class MMEGraph extends Component {
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
     if (arrayDates.length < (xIntervals - 2)) {
+      /*
+       * make sure graph has appropiate end points on the graph if the total count of data points is less than the initial set number of intervals
+       */
       let calcMinDate = new Date(minDate.valueOf());
       let calcMaxDate = new Date(maxDate.valueOf());
       minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
