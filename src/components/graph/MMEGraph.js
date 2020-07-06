@@ -76,7 +76,7 @@ export default class MMEGraph extends Component {
     }
     if (arrayDates.length < (xIntervals - 2)) {
       let calcMinDate = new Date(minDate.valueOf());
-      let calcMaxDate = new Date(maxDate.valueOf);
+      let calcMaxDate = new Date(maxDate.valueOf());
       minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
       maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
       maxDate = new Date(Math.max(Math.max.apply(null, arrayDates), new Date()))
