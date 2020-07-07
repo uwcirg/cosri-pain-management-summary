@@ -58,12 +58,14 @@ function executeELM(collector) {
 }
 
 function getLibrary(release) {
+  console.log("CQL Library loaded ", release);
   switch(release) {
+    // case 2:
+    //   return new cql.Library(dstu2FactorsELM, new cql.Repository({
+    //     CDS_Connect_Commons_for_FHIRv102: dstu2CommonsELM,
+    //     FHIRHelpers: dstu2HelpersELM
+    //   }));
     case 2:
-      return new cql.Library(dstu2FactorsELM, new cql.Repository({
-        CDS_Connect_Commons_for_FHIRv102: dstu2CommonsELM,
-        FHIRHelpers: dstu2HelpersELM
-      }));
     case 4:
       return new cql.Library(r4FactorsELM, new cql.Repository({
         CDS_Connect_Commons_for_FHIRv102: r4CommonsELM,
@@ -75,9 +77,11 @@ function getLibrary(release) {
 }
 
 function getPatientSource(release) {
+  console.log("patient resource loaded? ", release);
   switch(release) {
+    // case 2:
+    //   return cqlfhir.PatientSource.FHIRv102();
     case 2:
-      return cqlfhir.PatientSource.FHIRv102();
     case 4:
       return cqlfhir.PatientSource.FHIRv400();
     default:

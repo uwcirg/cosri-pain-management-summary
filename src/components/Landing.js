@@ -39,7 +39,7 @@ export default class Landing extends Component {
     /*
      * passed down via fhir.js
      */
-    let patientBundle = (this.state.collector).filter(item => item.data && item.data.resourceType.toLowerCase() === "patient");
+    let patientBundle = (this.state.collector).filter(item => item.data && item.data.resourceType && item.data.resourceType.toLowerCase() === "patient");
     if (patientBundle.length) {
       this.setState({
         patientId: patientBundle[0].data.id
