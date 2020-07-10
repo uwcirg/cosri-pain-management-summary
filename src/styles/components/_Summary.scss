@@ -308,6 +308,8 @@
           border: 2px solid;
           padding: 12px;
           margin-bottom: 16px;
+          margin-top: 16px;
+          max-width: 420px;
           .panel-title {
             font-weight: 600;
             margin-top: 4px;
@@ -372,7 +374,7 @@
           }
           .panel.graph {
             flex-grow: 1;
-            flex-basis: 100%;
+            flex-basis: 65%;
           }
         }
       }
@@ -380,6 +382,20 @@
         .sub-section__panel {
           .panel.graph {
             flex-basis: 60%;
+          }
+        }
+      }
+      @media (min-width: 1400px) {
+        .sub-section__panel {
+          .panel.graph {
+            flex-basis: 50%;
+          }
+        }
+      }
+      @media (min-width: 1600px) {
+        .sub-section__panel {
+          .panel.graph {
+            flex-basis: 25%;
           }
         }
       }
