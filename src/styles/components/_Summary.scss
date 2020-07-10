@@ -309,7 +309,7 @@
           padding: 12px;
           margin-bottom: 16px;
           margin-top: 16px;
-          max-width: 420px;
+          max-width: 400px;
           .panel-title {
             font-weight: 600;
             margin-top: 4px;
@@ -381,7 +381,7 @@
       @media (min-width: 1200px) {
         .sub-section__panel {
           .panel.graph {
-            flex-basis: 60%;
+            flex-basis: 55%;
           }
         }
       }
@@ -396,6 +396,9 @@
         .sub-section__panel {
           .panel.graph {
             flex-basis: 25%;
+          }
+          .panel.overview {
+            margin-left: 16px;
           }
         }
       }
