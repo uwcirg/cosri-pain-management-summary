@@ -233,12 +233,24 @@
           }
         }
       }
-      
+      .MME-svg-container {
+        position: relative;
+        height: 0;
+        width: 100%;
+        padding: 0;
+        padding-bottom: 67%;
+      }
+      .MMEChartSvg {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+      }
       .MMEgraph {
         margin-top: 32px;
         margin-bottom: 24px;
-        //border-bottom: 1px solid $color-gray-lighter;
-        //padding-bottom: 32px;
+        max-width: 100%;
         padding-bottom: 12px;
         .title {
           margin-left: 42px;
@@ -286,23 +298,18 @@
       }
 
       .sub-section__panel {
-        display: flex;
+        display: block;
         justify-content: flex-start;
         align-items: center;
         color: $color-black;
         flex-wrap: wrap;
         padding: 16px;
-        .panel.graph {
-          flex: 100%;
-        }
-        .panel.overview {
-          max-width: 37.5%;
-          min-width: 250px;
-        }
         .sub-section__infopanel {
           border: 2px solid;
           padding: 12px;
           margin-bottom: 16px;
+          margin-top: 16px;
+          max-width: 360px;
           .panel-title {
             font-weight: 600;
             margin-top: 4px;
@@ -317,7 +324,7 @@
             font-size: 0.95em;
           }
           .stats-container {
-            background: $color-red-lighter;
+            background: $color-gray-lightest;            ;
             padding: 16px;
             .divider {
               display: inline-block;
@@ -346,6 +353,7 @@
               color: $color-red-darker;
               margin-right: 8px;
               font-size: 28px;
+              min-width: 28px;
               margin-top: 4px;
               &:hover {
                 color: $color-red;
@@ -355,12 +363,45 @@
           }
         }
       }
-      @media (min-width: 992px) {
+  
+      @media (min-width: 768px) {
         .sub-section__panel {
+          display: flex;
           flex-wrap:nowrap;
+          .panel.overview {
+            flex-grow: 1;
+            flex-basis: 40%;
+          }
+          .panel.graph {
+            flex-grow: 1;
+            flex-basis: 65%;
+          }
         }
       }
-
+      @media (min-width: 1200px) {
+        .sub-section__panel {
+          .panel.graph {
+            flex-basis: 57.5%;
+          }
+        }
+      }
+      @media (min-width: 1400px) {
+        .sub-section__panel {
+          .panel.graph {
+            flex-basis: 50%;
+          }
+        }
+      }
+      @media (min-width: 1600px) {
+        .sub-section__panel {
+          .panel.graph {
+            flex-basis: 25%;
+          }
+          .panel.overview {
+            margin-left: 16px;
+          }
+        }
+      }
       .sub-section {
         background-color: $color-white;
         box-shadow: 1px 2px 2px $color-box-shadow;

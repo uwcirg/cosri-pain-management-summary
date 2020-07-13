@@ -4,15 +4,13 @@ import React from 'react';
  * embedded iframe element
  */
 
-const Iframe = ({ src, title, className, style}) => {
+const Iframe = (props) => {
+    const {forwardRef, ...rest} = props;
     return (
         <iframe
-        className={className}
-        style={style}
-        title={title}
-        src={`${src}`}
-        frameBorder="0"
-        allowFullScreen
+        title={props.title ||"iframe element"} //required attribute for iframe or browser complains
+        {...rest}
+        ref={forwardRef}
         />
     );
 };

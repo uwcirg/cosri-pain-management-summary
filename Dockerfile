@@ -1,11 +1,19 @@
-FROM node:10
+FROM node:10 as build-deps
 
 WORKDIR /opt/app
 
 COPY . .
 
-RUN yarn --modules-folder=/opt/node_modules
+RUN yarn
 
-# yarn ignores its own config (--modules-folder); symlink node_modules where it expects
-# https://github.com/yarnpkg/yarn/issues/3900
-CMD ln -fs /opt/node_modules && yarn start
+RUN yarn build
+
+
+FROM nginx
+COPY docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
+COPY --from=build-deps /opt/app/build /usr/share/nginx/html
+
+# write environment variables to config file and start
+ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
+
+CMD ["nginx","-g","daemon off;"]

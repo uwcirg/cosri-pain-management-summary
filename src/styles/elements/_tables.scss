@@ -5,6 +5,7 @@
 .ReactTable {
   .rt-tbody .rt-tr-group {
     border: 0;
+    overflow: hidden;
 
     .rt-tr {
       background: $color-white;
