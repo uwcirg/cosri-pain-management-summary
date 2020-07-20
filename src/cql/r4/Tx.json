@@ -1,0 +1,242 @@
+{
+   "library" : {
+      "annotation" : [ {
+         "translatorOptions" : "",
+         "type" : "CqlToElmInfo"
+      } ],
+      "identifier" : {
+         "id" : "Tx",
+         "version" : "3.0.0"
+      },
+      "schemaIdentifier" : {
+         "id" : "urn:hl7-org:elm",
+         "version" : "r1"
+      },
+      "usings" : {
+         "def" : [ {
+            "localIdentifier" : "System",
+            "uri" : "urn:hl7-org:elm-types:r1"
+         } ]
+      },
+      "codeSystems" : {
+         "def" : [ {
+            "name" : "ActCode",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ActMood",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ActMood",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ActPriority",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ActPriority",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ActReason",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ActRelationshipType",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ActRelationshipType",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ActStatus",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ActStatus",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "AddressUse",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-AddressUse",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "AdministrativeGender",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "AdministrativeSex",
+            "id" : "http://terminology.hl7.org/CodeSystem/v2-0001",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "CPT",
+            "id" : "http://www.ama-assn.org/go/cpt",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "CPT-CAT-II",
+            "id" : "http://www.ama-assn.org/go/cpt",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "CVX",
+            "id" : "http://hl7.org/fhir/sid/cvx",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "Confidentiality",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "DischargeDisposition",
+            "id" : "http://terminology.hl7.org/CodeSystem/discharge-disposition",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "EntityNamePartQualifier",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "EntityNameUse",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-EntityNameUse",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "HCPCS",
+            "id" : "http://terminology.hl7.org/CodeSystem/HCPCS",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "HCPCS Level I: CPT",
+            "id" : "http://terminology.hl7.org/CodeSystem/HCPCS",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "HCPCS Level II",
+            "id" : "urn:oid:2.16.840.1.113883.6.285",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ICD10",
+            "id" : "http://terminology.hl7.org/CodeSystem/icd10",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ICD10CM",
+            "id" : "http://hl7.org/fhir/sid/icd-10-cm",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ICD10PCS",
+            "id" : "http://www.cms.gov/Medicare/Coding/ICD10",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ICD9",
+            "id" : "http://terminology.hl7.org/CodeSystem/icd9",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ICD9CM",
+            "id" : "http://terminology.hl7.org/CodeSystem/icd9cm",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "LOINC",
+            "id" : "http://loinc.org",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "LanguageAbilityMode",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-LanguageAbilityMode",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "LanguageAbilityProficiency",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-LanguageAbilityProficiency",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "LivingArrangement",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-LivingArrangement",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "MaritalStatus",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "NCI",
+            "id" : "http://ncithesaurus-stage.nci.nih.gov",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "NDFRT",
+            "id" : "http://terminology.hl7.org/CodeSystem/nciVersionOfNDF-RT",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "NUCCPT",
+            "id" : "http://nucc.org/provider-taxonomy",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "NullFlavor",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ObservationInterpretation",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ObservationValue",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ParticipationFunction",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ParticipationFunction",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ParticipationMode",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ParticipationMode",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ParticipationType",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "RXNORM",
+            "id" : "http://www.nlm.nih.gov/research/umls/rxnorm",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "ReligiousAffiliation",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-ReligiousAffiliation",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "RoleClass",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-RoleClass",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "RoleCode",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "RoleStatus",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-RoleStatus",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "SNOMEDCT",
+            "id" : "http://snomed.info/sct",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "UBREV",
+            "id" : "http://terminology.hl7.org/CodeSystem/nubc-UB92",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "UBTOB",
+            "id" : "http://terminology.hl7.org/CodeSystem/nubc-UB92",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "POS",
+            "id" : "http://terminology.hl7.org/CodeSystem/POS",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "CDCREC",
+            "id" : "http://terminology.hl7.org/CodeSystem/PHRaceAndEthnicityCDC",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "Modifier",
+            "id" : "http://www.ama-assn.org/go/cpt",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "CDT",
+            "id" : "http://terminology.hl7.org/CodeSystem/CD2",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "mediaType",
+            "id" : "http://terminology.hl7.org/CodeSystem/v3-mediatypes",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "SOP",
+            "id" : "urn:oid:2.16.840.1.113883.3.221.5",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "UCUM",
+            "id" : "http://unitsofmeasure.org",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "UMLS",
+            "id" : "http://terminology.hl7.org/CodeSystem/umls",
+            "accessLevel" : "Public"
+         } ]
+      }
+   }
+}
+

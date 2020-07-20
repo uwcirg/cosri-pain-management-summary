@@ -12,7 +12,7 @@
 //
 // NOTE: This is a FHIR R4 port of the original FHIR DSTU2 CQL piloted for CDS Connect.  In addition to the changes
 // to support FHIR R4, it contains the following additional changes from the artifact that was piloted:
-// - Added the following value sets for identifying Risk Factors for Opiod-Related Harms (in addition to existing ones)
+// - Added the following value sets for identifying Risk Factors for Opioid-Related Harms (in addition to existing ones)
 //   - Depression Diagnosis ICD9 (2.16.840.1.113883.3.600.143)
 //   - Anxiety Disorders ICD9 (2.16.840.1.113883.3.1240.2017.3.2.1015)
 //   - Substance Abuse (2.16.840.1.113883.3.464.1003.106.11.1010)
@@ -33,23 +33,30 @@
 //    Removed inclusion criteria excepting age 18
 //    Added opioid overdose for ICD-10 and SNOMED
 //    Changed lookback for opioids, non-opioids, and benzos from 2 to 100 years
-//Update 20200227
+// Update 20200227
 //    Added carisoprodol as another risk factor for co-prescribing with opioids
 //    Also removed an old superfluous function
+// Update 20200617
+//    Added MME calculator
+
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 // # Data model #
-
-// The FHIR R4 model is used for testing purposes only.  It has not been piloted.
-using FHIR version '4.0.0'
+using FHIR version '4.0.1'
 
 // # Referenced libraries #
 
 // The CDS Connect Commons for FHIRv400 library provides functions representing commonly used CDS logic and patterns.
-include CDS_Connect_Commons_for_FHIRv400 version '1.0.1' called C3F
+include CDS_Connect_Commons_for_FHIRv400 version '1.0.2' called C3F
 // The FHIRHelpers library provides common functions for simplifying interaction w/ the FHIR R4 data model.
-include FHIRHelpers version '4.0.0' called FHIRHelpers
+include FHIRHelpers version '4.0.1' called FHIRHelpers
+// MED_Calculator library provides logic for the MME calculator
+//include MED_Calculator version '1.0.0' called Calc
+include FHIRCommon version '3.0.0'
+include OMTKLogic version '3.0.0'
+include Tx version '3.0.0'
+
 
 // # Value sets and codes #
 
@@ -123,8 +130,8 @@ valueset "Pregnancy": '2.16.840.1.113883.3.526.3.378'
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.80/expansion)
 valueset "Pregnancy (New ICD10 codes published in 2018 and 2019)": '2.16.840.1.113762.1.4.1032.80'
 
-// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.26/expansion)
-valueset "Non opiod pain medications": '2.16.840.1.113762.1.4.1032.26'
+// [See value set in VSAC](htt11ps://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.26/expansion)
+valueset "Non opioid pain medications": '2.16.840.1.113762.1.4.1032.26'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.36/expansion)
 valueset "Non pharmacologic treatments for chronic pain": '2.16.840.1.113762.1.4.1032.36'
@@ -834,13 +841,13 @@ define ReportOpioidMedications:
 
 define NonOpioidMedicationRequests:
   C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Non opiod pain medications"],
+    [MedicationRequest: "Non opioid pain medications"],
     100 years //changed from 2 to 100
   ))
 
 define NonOpioidMedicationStatements:
   C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Non opiod pain medications"],
+    [MedicationStatement: "Non opioid pain medications"],
     100 years //changed from 2 to 100
   ))
 
@@ -946,26 +953,184 @@ define ReportStoolSoftenersAndLaxatives:
   (ReportStoolSoftenersAndLaxativesRequests union ReportStoolSoftenersAndLaxativesStatements) M
   sort by Start desc, End desc
 
+
+
 // RISK CONSIDERATIONS
+/*
+// MME Calculator 
+define function Prescriptions(orders List<MedicationRequest>):
+  orders O
+    let
+      // NOTE: Assuming medication is specified as a CodeableConcept with a single RxNorm code
+      rxNormCode: FHIRHelpers.ToCode((O.medication as FHIR.CodeableConcept).coding[0]),
+      medicationName: Calc.GetMedicationName(rxNormCode),
+      // NOTE: Assuming a single dosage instruction element
+      dosageInstruction: O.dosageInstruction[0],
+      // NOTE: Assuming a single dose and rate element
+      doseAndRate: dosageInstruction.doseAndRate[0],
+      repeat: dosageInstruction.timing.repeat,
+      frequency: Coalesce(repeat.frequencyMax.value, repeat.frequency.value),
+      period: System.Quantity { value: repeat.period.value, unit: repeat.periodUnit.value },
+      doseDescription:
+        Coalesce(
+          // There should be a conversion from FHIR.SimpleQuantity to System.Quantity
+          if doseAndRate.dose is FHIR.Range
+            then ToString((doseAndRate.dose as FHIR.Range).low)
+                + '-' + ToString((doseAndRate.dose as FHIR.Range).high)
+                + (doseAndRate.dose as FHIR.Range).high.unit.value
+            else ToString(FHIRHelpers.ToQuantity(doseAndRate.dose as FHIR.SimpleQuantity)),
+            ''
+        ),
+      frequencyDescription:
+        ToString(dosageInstruction.timing.repeat.frequency.value) +
+          Coalesce(
+            '-' + ToString(dosageInstruction.timing.repeat.frequencyMax.value),
+            ''
+          )
+    return {
+      rxNormCode: rxNormCode,
+      isDraft: O.status.value = 'draft',
+      // NOTE: Assuming asNeeded is expressed as a boolean
+      isPRN: dosageInstruction.asNeeded,
+      prescription:
+        if dosageInstruction.text is not null then
+          medicationName + ' ' + dosageInstruction.text.value
+        else
+          // TODO: Shouldn't need the .value here on asNeededBoolean
+          medicationName + ' ' + doseDescription + ' q' + frequencyDescription + (if dosageInstruction.asNeeded then ' PRN' else ''),
+      dose: if doseAndRate.dose is FHIR.Range
+            then (doseAndRate.dose as FHIR.Range).high
+            else FHIRHelpers.ToQuantity(doseAndRate.dose as FHIR.SimpleQuantity),
+      dosesPerDay: Coalesce(Calc.ToDaily(frequency, period), 1.0)
+    }
 
-// MME (MOST RECENT w/ lookback 6 months) - amount and date
+//define TestPrescriptions:
+//  Prescriptions({ { rxNormCode: Code '313993' from RxNorm, doseQuantity: Quantity { value: 14, unit: 'mg' }, dosesPerDay: 2.00 } })
 
+define function MME(prescriptions List<MedicationRequest>):
+  (Prescriptions(prescriptions)) P
+    let mmePerIngredient: Calc.CalculateMMEs({ { rxNormCode: P.rxNormCode, doseQuantity: P.dose, dosesPerDay: P.dosesPerDay } })
+    return {
+      rxNormCode: P.rxNormCode,
+      isDraft: P.isDraft,
+      isPRN: P.isPRN,
+      prescription: P.prescription,
+      dailyDose: Combine(mmePerIngredient X return X.dailyDoseDescription, '\r\n'),
+      mme: Sum(mmePerIngredient X return X.mme)
+    }
+
+define function TotalMME(prescriptions List<MedicationRequest>):
+  System.Quantity {
+    value: Sum((MME(prescriptions)) M return M.mme.value),
+    unit: 'mg/d'
+  }
+
+define ReportMME:
+  TotalMME
+*/
+
+//(MOST RECENT w/ lookback 6 months) - amount and date
+/*
 define MostRecentMME:
   C3F.MostRecent(C3F.Verified(C3F.ObservationLookBack([Observation: "Morphine Milligram Equivalent (MME)"], 6 months)))
+*/
 
+//define MostRecentMME:
+  //OMTK.CalculateMMEs({})
+  //C3F.MostRecent(OMTK.CalculateMMEs())
+
+/*
 define ReportMostRecentMME:
   if MostRecentMME is null
   then null
   else
     (MostRecentMME) M
     return {
-      Name:   ConceptText(M.code),
-      Result: QuantityText(M.value as FHIR.Quantity),
-      Date:   ObservationDate(M)
+      Name:   ConceptText(M.rxnormCode),
+      Count: QuantityText(M.doseQuantity as FHIR.Quantity),
+      DailyDose: QuantityText(M.dosesPerDay as FHIR.Quantity),
+      Result: QuantityText(M.mme as FHIR.Quantity)
+      //Date:   Observa,otionDate(M)
+    }*/
+
+
+
+//MME Calculator, attempt 2001
+
+  // code from MMECalculator.cql
+define function Prescriptions(Orders List<MedicationRequest>):
+  Orders O
+    let
+      // NOTE: Assuming medication is specified as a CodeableConcept with a single RxNorm code
+      rxNormCode: FHIRHelpers.ToCode((O.medication as FHIR.CodeableConcept).coding[0]),
+      medicationName: OMTKLogic.GetMedicationName(rxNormCode),
+      // NOTE: Assuming a single dosage instruction element
+      dosageInstruction: O.dosageInstruction[0],
+      // NOTE: Assuming a single dose and rate element
+      doseAndRate: dosageInstruction.doseAndRate[0],
+      repeat: dosageInstruction.timing.repeat,
+      frequency: Coalesce(repeat.frequencyMax.value, repeat.frequency.value),
+      period: System.Quantity { value: repeat.period.value, unit: repeat.periodUnit.value },
+      doseDescription:
+        Coalesce(
+          // There should be a conversion from FHIR.SimpleQuantity to System.Quantity
+          if doseAndRate.dose is FHIR.Range
+            then ToString((doseAndRate.dose as FHIR.Range).low)
+                + '-' + ToString((doseAndRate.dose as FHIR.Range).high)
+                + (doseAndRate.dose as FHIR.Range).high.unit.value
+            else ToString(FHIRHelpers.ToQuantity(doseAndRate.dose as FHIR.SimpleQuantity)),
+            ''
+        ),
+      frequencyDescription:
+        ToString(dosageInstruction.timing.repeat.frequency.value) +
+          Coalesce(
+            '-' + ToString(dosageInstruction.timing.repeat.frequencyMax.value),
+            ''
+          )
+    return {
+      rxNormCode: rxNormCode,
+      isDraft: O.status.value = 'draft',
+      // NOTE: Assuming asNeeded is expressed as a boolean
+      isPRN: dosageInstruction.asNeeded,
+      prescription:
+        if dosageInstruction.text is not null then
+          medicationName + ' ' + dosageInstruction.text.value
+        else
+          // TODO: Shouldn't need the .value here on asNeededBoolean
+          medicationName + ' ' + doseDescription + ' q' + frequencyDescription + (if dosageInstruction.asNeeded then ' PRN' else ''),
+      dose: if doseAndRate.dose is FHIR.Range
+            then FHIRHelpers.ToQuantity((doseAndRate.dose as FHIR.Range).high)
+            else FHIRHelpers.ToQuantity(doseAndRate.dose as FHIR.SimpleQuantity),
+      dosesPerDay: Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0)
     }
 
-// Urine drug screen - dates and results (all screens w/ lookback of 1 year)
 
+define function MME(prescriptions List<MedicationRequest>):
+  (Prescriptions(prescriptions)) P
+    let mmePerIngredient: OMTKLogic.CalculateMMEs({ { rxNormCode: P.rxNormCode, doseQuantity: P.dose, dosesPerDay: P.dosesPerDay } })
+    return {
+      rxNormCode: P.rxNormCode,
+      isDraft: P.isDraft,
+      isPRN: P.isPRN,
+      prescription: P.prescription,
+      dailyDose: Combine(mmePerIngredient X return X.dailyDoseDescription, '\r\n'),
+      mme: Sum(mmePerIngredient X return X.mme)
+    }
+
+
+define function TotalMME(prescriptions List<MedicationRequest>):
+  System.Quantity {
+    value: Sum((MME(prescriptions)) M return M.mme.value),
+    unit: 'mg/d'
+  }
+
+
+define ReportMME:
+  return TotalMME(Prescriptions(Orders))
+
+
+
+// Urine drug screen - dates and results (all screens w/ lookback of 1 year)
 define UrineDrugScreens:
   C3F.Verified(C3F.ObservationLookBack([Observation: "Urine drug screen for pain management"], 1 year))
 
@@ -982,6 +1147,8 @@ define ReportUrineDrugScreens:
     Date:           ObservationDate(S)
   }
   sort by Date desc
+
+
 
 // Benzodiazepine Medications (lookback of 2 years)-  orders and statements with dates
 
@@ -1029,6 +1196,8 @@ define ReportBenzodiazepineMedicationStatements:
 define ReportBenzodiazepineMedications:
   (ReportBenzodiazepineMedicationRequests union ReportBenzodiazepineMedicationStatements) M
   sort by Start desc, End desc
+
+
 
 
 // Carisoprodol Medications -  orders and statements with dates
@@ -1088,6 +1257,8 @@ define ReportCarisoprodolMedications:
   sort by Start desc, End desc
 
 
+
+
 // Naloxone Medications (unrestricted lookback) - orders and statements with dates
 
 define NaloxoneMedicationRequests:
@@ -1121,6 +1292,8 @@ define ReportNaloxoneMedicationStatements:
 define ReportNaloxoneMedications:
   (ReportNaloxoneMedicationRequests union ReportNaloxoneMedicationStatements) M
   sort by Start desc, End desc
+
+
 
 // Risk screenings relevant to pain management - overall scores and dates (MOST RECENT w/ lookback 1 year)
 
@@ -1177,7 +1350,8 @@ define Summary: {
     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
   },
   RiskConsiderations: {
-    MostRecentMME: ReportMostRecentMME,
+    //MostRecentMME: ReportMostRecentMME,
+    MostRecentMME: ReportMME,
     UrineDrugScreens: ReportUrineDrugScreens,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     CarisoprodolMedications: ReportCarisoprodolMedications,

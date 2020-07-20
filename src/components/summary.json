@@ -128,7 +128,7 @@
                {
                  "name": "Opioid medication statements and orders",
                  "status": "any",
-                 "lookback": "2 years"
+                 "lookback": "100 years"
                }
              ]
            }
@@ -165,7 +165,7 @@
                {
                  "name": "Non-opioid medication statements and orders",
                  "status": "any",
-                 "lookback": "2 years"
+                 "lookback": "100 years"
                }
              ]
            }

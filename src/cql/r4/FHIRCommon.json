@@ -1,0 +1,3372 @@
+{
+   "library" : {
+      "annotation" : [ {
+         "translatorOptions" : "",
+         "type" : "CqlToElmInfo"
+      } ],
+      "identifier" : {
+         "id" : "FHIRCommon",
+         "version" : "3.0.0"
+      },
+      "schemaIdentifier" : {
+         "id" : "urn:hl7-org:elm",
+         "version" : "r1"
+      },
+      "usings" : {
+         "def" : [ {
+            "localIdentifier" : "System",
+            "uri" : "urn:hl7-org:elm-types:r1"
+         }, {
+            "localIdentifier" : "FHIR",
+            "uri" : "http://hl7.org/fhir",
+            "version" : "4.0.1"
+         } ]
+      },
+      "includes" : {
+         "def" : [ {
+            "localIdentifier" : "Tx",
+            "path" : "Tx",
+            "version" : "3.0.0"
+         }, {
+            "localIdentifier" : "FHIRHelpers",
+            "path" : "FHIRHelpers",
+            "version" : "4.0.1"
+         } ]
+      },
+      "parameters" : {
+         "def" : [ {
+            "name" : "ErrorLevel",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "Warning",
+               "type" : "Literal"
+            },
+            "parameterTypeSpecifier" : {
+               "name" : "{urn:hl7-org:elm-types:r1}String",
+               "type" : "NamedTypeSpecifier"
+            }
+         } ]
+      },
+      "statements" : {
+         "def" : [ {
+            "name" : "Patient",
+            "context" : "Patient",
+            "expression" : {
+               "type" : "SingletonFrom",
+               "operand" : {
+                  "dataType" : "{http://hl7.org/fhir}Patient",
+                  "templateId" : "http://hl7.org/fhir/StructureDefinition/Patient",
+                  "type" : "Retrieve"
+               }
+            }
+         }, {
+            "name" : "GetId",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Last",
+               "source" : {
+                  "type" : "Split",
+                  "stringToSplit" : {
+                     "name" : "uri",
+                     "type" : "OperandRef"
+                  },
+                  "separator" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                     "value" : "/",
+                     "type" : "Literal"
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "uri",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}String",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
+            "name" : "Normalize Onset",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "If",
+               "condition" : {
+                  "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                  "type" : "As",
+                  "operand" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "name" : "onset",
+                        "type" : "OperandRef"
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}dateTime",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  }
+               },
+               "then" : {
+                  "lowClosed" : true,
+                  "highClosed" : true,
+                  "type" : "Interval",
+                  "low" : {
+                     "name" : "ToDateTime",
+                     "libraryName" : "FHIRHelpers",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "onset",
+                           "type" : "OperandRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}dateTime",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     } ]
+                  },
+                  "high" : {
+                     "name" : "ToDateTime",
+                     "libraryName" : "FHIRHelpers",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "onset",
+                           "type" : "OperandRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}dateTime",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     } ]
+                  }
+               },
+               "else" : {
+                  "type" : "If",
+                  "condition" : {
+                     "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                     "type" : "As",
+                     "operand" : {
+                        "type" : "Is",
+                        "operand" : {
+                           "name" : "onset",
+                           "type" : "OperandRef"
+                        },
+                        "isTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}Period",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     }
+                  },
+                  "then" : {
+                     "name" : "ToInterval",
+                     "libraryName" : "FHIRHelpers",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "onset",
+                           "type" : "OperandRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}Period",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     } ]
+                  },
+                  "else" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Is",
+                           "operand" : {
+                              "name" : "onset",
+                              "type" : "OperandRef"
+                           },
+                           "isTypeSpecifier" : {
+                              "name" : "{http://hl7.org/fhir}string",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }
+                     },
+                     "then" : {
+                        "type" : "Message",
+                        "source" : {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           },
+                           "asTypeSpecifier" : {
+                              "type" : "IntervalTypeSpecifier",
+                              "pointType" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }
+                        },
+                        "condition" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                           "value" : "true",
+                           "type" : "Literal"
+                        },
+                        "code" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "1",
+                           "type" : "Literal"
+                        },
+                        "severity" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Error",
+                           "type" : "Literal"
+                        },
+                        "message" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Cannot compute an interval from a String value",
+                           "type" : "Literal"
+                        }
+                     },
+                     "else" : {
+                        "type" : "Interval",
+                        "low" : {
+                           "type" : "ToDateTime",
+                           "operand" : {
+                              "path" : "low",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "If",
+                                 "condition" : {
+                                    "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                    "type" : "As",
+                                    "operand" : {
+                                       "type" : "Is",
+                                       "operand" : {
+                                          "name" : "onset",
+                                          "type" : "OperandRef"
+                                       },
+                                       "isTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Age",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 },
+                                 "then" : {
+                                    "lowClosed" : true,
+                                    "highClosed" : false,
+                                    "type" : "Interval",
+                                    "low" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "name" : "onset",
+                                                "type" : "OperandRef"
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Age",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          } ]
+                                       } ]
+                                    },
+                                    "high" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "strict" : false,
+                                                "type" : "As",
+                                                "operand" : {
+                                                   "name" : "onset",
+                                                   "type" : "OperandRef"
+                                                },
+                                                "asTypeSpecifier" : {
+                                                   "name" : "{http://hl7.org/fhir}Age",
+                                                   "type" : "NamedTypeSpecifier"
+                                                }
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "value" : 1,
+                                          "unit" : "year",
+                                          "type" : "Quantity"
+                                       } ]
+                                    }
+                                 },
+                                 "else" : {
+                                    "type" : "If",
+                                    "condition" : {
+                                       "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                       "type" : "As",
+                                       "operand" : {
+                                          "type" : "Is",
+                                          "operand" : {
+                                             "name" : "onset",
+                                             "type" : "OperandRef"
+                                          },
+                                          "isTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Range",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }
+                                    },
+                                    "then" : {
+                                       "lowClosed" : true,
+                                       "highClosed" : false,
+                                       "type" : "Interval",
+                                       "low" : {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "low",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "strict" : false,
+                                                   "type" : "As",
+                                                   "operand" : {
+                                                      "name" : "onset",
+                                                      "type" : "OperandRef"
+                                                   },
+                                                   "asTypeSpecifier" : {
+                                                      "name" : "{http://hl7.org/fhir}Range",
+                                                      "type" : "NamedTypeSpecifier"
+                                                   }
+                                                }
+                                             } ]
+                                          } ]
+                                       },
+                                       "high" : {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "type" : "Add",
+                                             "operand" : [ {
+                                                "name" : "ToDate",
+                                                "libraryName" : "FHIRHelpers",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "path" : "birthDate",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "name" : "Patient",
+                                                      "type" : "ExpressionRef"
+                                                   }
+                                                } ]
+                                             }, {
+                                                "name" : "ToQuantity",
+                                                "libraryName" : "FHIRHelpers",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "path" : "high",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "strict" : false,
+                                                      "type" : "As",
+                                                      "operand" : {
+                                                         "name" : "onset",
+                                                         "type" : "OperandRef"
+                                                      },
+                                                      "asTypeSpecifier" : {
+                                                         "name" : "{http://hl7.org/fhir}Range",
+                                                         "type" : "NamedTypeSpecifier"
+                                                      }
+                                                   }
+                                                } ]
+                                             } ]
+                                          }, {
+                                             "value" : 1,
+                                             "unit" : "year",
+                                             "type" : "Quantity"
+                                          } ]
+                                       }
+                                    },
+                                    "else" : {
+                                       "type" : "As",
+                                       "operand" : {
+                                          "type" : "Null"
+                                       },
+                                       "asTypeSpecifier" : {
+                                          "type" : "IntervalTypeSpecifier",
+                                          "pointType" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        },
+                        "lowClosedExpression" : {
+                           "path" : "lowClosed",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "If",
+                              "condition" : {
+                                 "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                 "type" : "As",
+                                 "operand" : {
+                                    "type" : "Is",
+                                    "operand" : {
+                                       "name" : "onset",
+                                       "type" : "OperandRef"
+                                    },
+                                    "isTypeSpecifier" : {
+                                       "name" : "{http://hl7.org/fhir}Age",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }
+                              },
+                              "then" : {
+                                 "lowClosed" : true,
+                                 "highClosed" : false,
+                                 "type" : "Interval",
+                                 "low" : {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "name" : "ToDate",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "birthDate",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "Patient",
+                                             "type" : "ExpressionRef"
+                                          }
+                                       } ]
+                                    }, {
+                                       "name" : "ToQuantity",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "name" : "onset",
+                                             "type" : "OperandRef"
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Age",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    } ]
+                                 },
+                                 "high" : {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "name" : "onset",
+                                                "type" : "OperandRef"
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Age",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          } ]
+                                       } ]
+                                    }, {
+                                       "value" : 1,
+                                       "unit" : "year",
+                                       "type" : "Quantity"
+                                    } ]
+                                 }
+                              },
+                              "else" : {
+                                 "type" : "If",
+                                 "condition" : {
+                                    "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                    "type" : "As",
+                                    "operand" : {
+                                       "type" : "Is",
+                                       "operand" : {
+                                          "name" : "onset",
+                                          "type" : "OperandRef"
+                                       },
+                                       "isTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Range",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 },
+                                 "then" : {
+                                    "lowClosed" : true,
+                                    "highClosed" : false,
+                                    "type" : "Interval",
+                                    "low" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "low",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "strict" : false,
+                                                "type" : "As",
+                                                "operand" : {
+                                                   "name" : "onset",
+                                                   "type" : "OperandRef"
+                                                },
+                                                "asTypeSpecifier" : {
+                                                   "name" : "{http://hl7.org/fhir}Range",
+                                                   "type" : "NamedTypeSpecifier"
+                                                }
+                                             }
+                                          } ]
+                                       } ]
+                                    },
+                                    "high" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "high",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "strict" : false,
+                                                   "type" : "As",
+                                                   "operand" : {
+                                                      "name" : "onset",
+                                                      "type" : "OperandRef"
+                                                   },
+                                                   "asTypeSpecifier" : {
+                                                      "name" : "{http://hl7.org/fhir}Range",
+                                                      "type" : "NamedTypeSpecifier"
+                                                   }
+                                                }
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "value" : 1,
+                                          "unit" : "year",
+                                          "type" : "Quantity"
+                                       } ]
+                                    }
+                                 },
+                                 "else" : {
+                                    "type" : "As",
+                                    "operand" : {
+                                       "type" : "Null"
+                                    },
+                                    "asTypeSpecifier" : {
+                                       "type" : "IntervalTypeSpecifier",
+                                       "pointType" : {
+                                          "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        },
+                        "high" : {
+                           "type" : "ToDateTime",
+                           "operand" : {
+                              "path" : "high",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "If",
+                                 "condition" : {
+                                    "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                    "type" : "As",
+                                    "operand" : {
+                                       "type" : "Is",
+                                       "operand" : {
+                                          "name" : "onset",
+                                          "type" : "OperandRef"
+                                       },
+                                       "isTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Age",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 },
+                                 "then" : {
+                                    "lowClosed" : true,
+                                    "highClosed" : false,
+                                    "type" : "Interval",
+                                    "low" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "name" : "onset",
+                                                "type" : "OperandRef"
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Age",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          } ]
+                                       } ]
+                                    },
+                                    "high" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "strict" : false,
+                                                "type" : "As",
+                                                "operand" : {
+                                                   "name" : "onset",
+                                                   "type" : "OperandRef"
+                                                },
+                                                "asTypeSpecifier" : {
+                                                   "name" : "{http://hl7.org/fhir}Age",
+                                                   "type" : "NamedTypeSpecifier"
+                                                }
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "value" : 1,
+                                          "unit" : "year",
+                                          "type" : "Quantity"
+                                       } ]
+                                    }
+                                 },
+                                 "else" : {
+                                    "type" : "If",
+                                    "condition" : {
+                                       "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                       "type" : "As",
+                                       "operand" : {
+                                          "type" : "Is",
+                                          "operand" : {
+                                             "name" : "onset",
+                                             "type" : "OperandRef"
+                                          },
+                                          "isTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Range",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }
+                                    },
+                                    "then" : {
+                                       "lowClosed" : true,
+                                       "highClosed" : false,
+                                       "type" : "Interval",
+                                       "low" : {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "low",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "strict" : false,
+                                                   "type" : "As",
+                                                   "operand" : {
+                                                      "name" : "onset",
+                                                      "type" : "OperandRef"
+                                                   },
+                                                   "asTypeSpecifier" : {
+                                                      "name" : "{http://hl7.org/fhir}Range",
+                                                      "type" : "NamedTypeSpecifier"
+                                                   }
+                                                }
+                                             } ]
+                                          } ]
+                                       },
+                                       "high" : {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "type" : "Add",
+                                             "operand" : [ {
+                                                "name" : "ToDate",
+                                                "libraryName" : "FHIRHelpers",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "path" : "birthDate",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "name" : "Patient",
+                                                      "type" : "ExpressionRef"
+                                                   }
+                                                } ]
+                                             }, {
+                                                "name" : "ToQuantity",
+                                                "libraryName" : "FHIRHelpers",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "path" : "high",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "strict" : false,
+                                                      "type" : "As",
+                                                      "operand" : {
+                                                         "name" : "onset",
+                                                         "type" : "OperandRef"
+                                                      },
+                                                      "asTypeSpecifier" : {
+                                                         "name" : "{http://hl7.org/fhir}Range",
+                                                         "type" : "NamedTypeSpecifier"
+                                                      }
+                                                   }
+                                                } ]
+                                             } ]
+                                          }, {
+                                             "value" : 1,
+                                             "unit" : "year",
+                                             "type" : "Quantity"
+                                          } ]
+                                       }
+                                    },
+                                    "else" : {
+                                       "type" : "As",
+                                       "operand" : {
+                                          "type" : "Null"
+                                       },
+                                       "asTypeSpecifier" : {
+                                          "type" : "IntervalTypeSpecifier",
+                                          "pointType" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        },
+                        "highClosedExpression" : {
+                           "path" : "highClosed",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "If",
+                              "condition" : {
+                                 "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                 "type" : "As",
+                                 "operand" : {
+                                    "type" : "Is",
+                                    "operand" : {
+                                       "name" : "onset",
+                                       "type" : "OperandRef"
+                                    },
+                                    "isTypeSpecifier" : {
+                                       "name" : "{http://hl7.org/fhir}Age",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }
+                              },
+                              "then" : {
+                                 "lowClosed" : true,
+                                 "highClosed" : false,
+                                 "type" : "Interval",
+                                 "low" : {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "name" : "ToDate",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "birthDate",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "Patient",
+                                             "type" : "ExpressionRef"
+                                          }
+                                       } ]
+                                    }, {
+                                       "name" : "ToQuantity",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "name" : "onset",
+                                             "type" : "OperandRef"
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Age",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    } ]
+                                 },
+                                 "high" : {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "name" : "onset",
+                                                "type" : "OperandRef"
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Age",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          } ]
+                                       } ]
+                                    }, {
+                                       "value" : 1,
+                                       "unit" : "year",
+                                       "type" : "Quantity"
+                                    } ]
+                                 }
+                              },
+                              "else" : {
+                                 "type" : "If",
+                                 "condition" : {
+                                    "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                    "type" : "As",
+                                    "operand" : {
+                                       "type" : "Is",
+                                       "operand" : {
+                                          "name" : "onset",
+                                          "type" : "OperandRef"
+                                       },
+                                       "isTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Range",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 },
+                                 "then" : {
+                                    "lowClosed" : true,
+                                    "highClosed" : false,
+                                    "type" : "Interval",
+                                    "low" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "low",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "strict" : false,
+                                                "type" : "As",
+                                                "operand" : {
+                                                   "name" : "onset",
+                                                   "type" : "OperandRef"
+                                                },
+                                                "asTypeSpecifier" : {
+                                                   "name" : "{http://hl7.org/fhir}Range",
+                                                   "type" : "NamedTypeSpecifier"
+                                                }
+                                             }
+                                          } ]
+                                       } ]
+                                    },
+                                    "high" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "high",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "strict" : false,
+                                                   "type" : "As",
+                                                   "operand" : {
+                                                      "name" : "onset",
+                                                      "type" : "OperandRef"
+                                                   },
+                                                   "asTypeSpecifier" : {
+                                                      "name" : "{http://hl7.org/fhir}Range",
+                                                      "type" : "NamedTypeSpecifier"
+                                                   }
+                                                }
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "value" : 1,
+                                          "unit" : "year",
+                                          "type" : "Quantity"
+                                       } ]
+                                    }
+                                 },
+                                 "else" : {
+                                    "type" : "As",
+                                    "operand" : {
+                                       "type" : "Null"
+                                    },
+                                    "asTypeSpecifier" : {
+                                       "type" : "IntervalTypeSpecifier",
+                                       "pointType" : {
+                                          "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "onset",
+               "operandTypeSpecifier" : {
+                  "type" : "ChoiceTypeSpecifier",
+                  "choice" : [ {
+                     "name" : "{http://hl7.org/fhir}dateTime",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}Age",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}Period",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}Range",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}string",
+                     "type" : "NamedTypeSpecifier"
+                  } ]
+               }
+            } ]
+         }, {
+            "name" : "Normalize Abatement",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "If",
+               "condition" : {
+                  "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                  "type" : "As",
+                  "operand" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "path" : "abatement",
+                        "type" : "Property",
+                        "source" : {
+                           "name" : "condition",
+                           "type" : "OperandRef"
+                        }
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}dateTime",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  }
+               },
+               "then" : {
+                  "lowClosed" : true,
+                  "highClosed" : true,
+                  "type" : "Interval",
+                  "low" : {
+                     "name" : "ToDateTime",
+                     "libraryName" : "FHIRHelpers",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "path" : "abatement",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "condition",
+                              "type" : "OperandRef"
+                           }
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}dateTime",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     } ]
+                  },
+                  "high" : {
+                     "name" : "ToDateTime",
+                     "libraryName" : "FHIRHelpers",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "path" : "abatement",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "condition",
+                              "type" : "OperandRef"
+                           }
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}dateTime",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     } ]
+                  }
+               },
+               "else" : {
+                  "type" : "If",
+                  "condition" : {
+                     "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                     "type" : "As",
+                     "operand" : {
+                        "type" : "Is",
+                        "operand" : {
+                           "path" : "abatement",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "condition",
+                              "type" : "OperandRef"
+                           }
+                        },
+                        "isTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}Period",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     }
+                  },
+                  "then" : {
+                     "name" : "ToInterval",
+                     "libraryName" : "FHIRHelpers",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "path" : "abatement",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "condition",
+                              "type" : "OperandRef"
+                           }
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}Period",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     } ]
+                  },
+                  "else" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Is",
+                           "operand" : {
+                              "path" : "abatement",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "condition",
+                                 "type" : "OperandRef"
+                              }
+                           },
+                           "isTypeSpecifier" : {
+                              "name" : "{http://hl7.org/fhir}string",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }
+                     },
+                     "then" : {
+                        "type" : "Message",
+                        "source" : {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           },
+                           "asTypeSpecifier" : {
+                              "type" : "IntervalTypeSpecifier",
+                              "pointType" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }
+                        },
+                        "condition" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                           "value" : "true",
+                           "type" : "Literal"
+                        },
+                        "code" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "1",
+                           "type" : "Literal"
+                        },
+                        "severity" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Error",
+                           "type" : "Literal"
+                        },
+                        "message" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Cannot compute an interval from a String value",
+                           "type" : "Literal"
+                        }
+                     },
+                     "else" : {
+                        "type" : "If",
+                        "condition" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Is",
+                              "operand" : {
+                                 "path" : "abatement",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "condition",
+                                    "type" : "OperandRef"
+                                 }
+                              },
+                              "isTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}Age",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }
+                        },
+                        "then" : {
+                           "type" : "Interval",
+                           "low" : {
+                              "type" : "ToDateTime",
+                              "operand" : {
+                                 "path" : "low",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "lowClosed" : true,
+                                    "highClosed" : false,
+                                    "type" : "Interval",
+                                    "low" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "path" : "abatement",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "condition",
+                                                   "type" : "OperandRef"
+                                                }
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Age",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          } ]
+                                       } ]
+                                    },
+                                    "high" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "strict" : false,
+                                                "type" : "As",
+                                                "operand" : {
+                                                   "path" : "abatement",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "name" : "condition",
+                                                      "type" : "OperandRef"
+                                                   }
+                                                },
+                                                "asTypeSpecifier" : {
+                                                   "name" : "{http://hl7.org/fhir}Age",
+                                                   "type" : "NamedTypeSpecifier"
+                                                }
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "value" : 1,
+                                          "unit" : "year",
+                                          "type" : "Quantity"
+                                       } ]
+                                    }
+                                 }
+                              }
+                           },
+                           "lowClosedExpression" : {
+                              "path" : "lowClosed",
+                              "type" : "Property",
+                              "source" : {
+                                 "lowClosed" : true,
+                                 "highClosed" : false,
+                                 "type" : "Interval",
+                                 "low" : {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "name" : "ToDate",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "birthDate",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "Patient",
+                                             "type" : "ExpressionRef"
+                                          }
+                                       } ]
+                                    }, {
+                                       "name" : "ToQuantity",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "path" : "abatement",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "condition",
+                                                "type" : "OperandRef"
+                                             }
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Age",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    } ]
+                                 },
+                                 "high" : {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "path" : "abatement",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "condition",
+                                                   "type" : "OperandRef"
+                                                }
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Age",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          } ]
+                                       } ]
+                                    }, {
+                                       "value" : 1,
+                                       "unit" : "year",
+                                       "type" : "Quantity"
+                                    } ]
+                                 }
+                              }
+                           },
+                           "high" : {
+                              "type" : "ToDateTime",
+                              "operand" : {
+                                 "path" : "high",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "lowClosed" : true,
+                                    "highClosed" : false,
+                                    "type" : "Interval",
+                                    "low" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "path" : "abatement",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "condition",
+                                                   "type" : "OperandRef"
+                                                }
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Age",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          } ]
+                                       } ]
+                                    },
+                                    "high" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "strict" : false,
+                                                "type" : "As",
+                                                "operand" : {
+                                                   "path" : "abatement",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "name" : "condition",
+                                                      "type" : "OperandRef"
+                                                   }
+                                                },
+                                                "asTypeSpecifier" : {
+                                                   "name" : "{http://hl7.org/fhir}Age",
+                                                   "type" : "NamedTypeSpecifier"
+                                                }
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "value" : 1,
+                                          "unit" : "year",
+                                          "type" : "Quantity"
+                                       } ]
+                                    }
+                                 }
+                              }
+                           },
+                           "highClosedExpression" : {
+                              "path" : "highClosed",
+                              "type" : "Property",
+                              "source" : {
+                                 "lowClosed" : true,
+                                 "highClosed" : false,
+                                 "type" : "Interval",
+                                 "low" : {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "name" : "ToDate",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "birthDate",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "Patient",
+                                             "type" : "ExpressionRef"
+                                          }
+                                       } ]
+                                    }, {
+                                       "name" : "ToQuantity",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "path" : "abatement",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "condition",
+                                                "type" : "OperandRef"
+                                             }
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Age",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    } ]
+                                 },
+                                 "high" : {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "path" : "abatement",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "condition",
+                                                   "type" : "OperandRef"
+                                                }
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Age",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          } ]
+                                       } ]
+                                    }, {
+                                       "value" : 1,
+                                       "unit" : "year",
+                                       "type" : "Quantity"
+                                    } ]
+                                 }
+                              }
+                           }
+                        },
+                        "else" : {
+                           "type" : "If",
+                           "condition" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Is",
+                                 "operand" : {
+                                    "path" : "abatement",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "condition",
+                                       "type" : "OperandRef"
+                                    }
+                                 },
+                                 "isTypeSpecifier" : {
+                                    "name" : "{http://hl7.org/fhir}Range",
+                                    "type" : "NamedTypeSpecifier"
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "type" : "Interval",
+                              "low" : {
+                                 "type" : "ToDateTime",
+                                 "operand" : {
+                                    "path" : "low",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "lowClosed" : true,
+                                       "highClosed" : false,
+                                       "type" : "Interval",
+                                       "low" : {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "low",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "strict" : false,
+                                                   "type" : "As",
+                                                   "operand" : {
+                                                      "path" : "abatement",
+                                                      "type" : "Property",
+                                                      "source" : {
+                                                         "name" : "condition",
+                                                         "type" : "OperandRef"
+                                                      }
+                                                   },
+                                                   "asTypeSpecifier" : {
+                                                      "name" : "{http://hl7.org/fhir}Range",
+                                                      "type" : "NamedTypeSpecifier"
+                                                   }
+                                                }
+                                             } ]
+                                          } ]
+                                       },
+                                       "high" : {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "type" : "Add",
+                                             "operand" : [ {
+                                                "name" : "ToDate",
+                                                "libraryName" : "FHIRHelpers",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "path" : "birthDate",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "name" : "Patient",
+                                                      "type" : "ExpressionRef"
+                                                   }
+                                                } ]
+                                             }, {
+                                                "name" : "ToQuantity",
+                                                "libraryName" : "FHIRHelpers",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "path" : "high",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "strict" : false,
+                                                      "type" : "As",
+                                                      "operand" : {
+                                                         "path" : "abatement",
+                                                         "type" : "Property",
+                                                         "source" : {
+                                                            "name" : "condition",
+                                                            "type" : "OperandRef"
+                                                         }
+                                                      },
+                                                      "asTypeSpecifier" : {
+                                                         "name" : "{http://hl7.org/fhir}Range",
+                                                         "type" : "NamedTypeSpecifier"
+                                                      }
+                                                   }
+                                                } ]
+                                             } ]
+                                          }, {
+                                             "value" : 1,
+                                             "unit" : "year",
+                                             "type" : "Quantity"
+                                          } ]
+                                       }
+                                    }
+                                 }
+                              },
+                              "lowClosedExpression" : {
+                                 "path" : "lowClosed",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "lowClosed" : true,
+                                    "highClosed" : false,
+                                    "type" : "Interval",
+                                    "low" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "low",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "strict" : false,
+                                                "type" : "As",
+                                                "operand" : {
+                                                   "path" : "abatement",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "name" : "condition",
+                                                      "type" : "OperandRef"
+                                                   }
+                                                },
+                                                "asTypeSpecifier" : {
+                                                   "name" : "{http://hl7.org/fhir}Range",
+                                                   "type" : "NamedTypeSpecifier"
+                                                }
+                                             }
+                                          } ]
+                                       } ]
+                                    },
+                                    "high" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "high",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "strict" : false,
+                                                   "type" : "As",
+                                                   "operand" : {
+                                                      "path" : "abatement",
+                                                      "type" : "Property",
+                                                      "source" : {
+                                                         "name" : "condition",
+                                                         "type" : "OperandRef"
+                                                      }
+                                                   },
+                                                   "asTypeSpecifier" : {
+                                                      "name" : "{http://hl7.org/fhir}Range",
+                                                      "type" : "NamedTypeSpecifier"
+                                                   }
+                                                }
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "value" : 1,
+                                          "unit" : "year",
+                                          "type" : "Quantity"
+                                       } ]
+                                    }
+                                 }
+                              },
+                              "high" : {
+                                 "type" : "ToDateTime",
+                                 "operand" : {
+                                    "path" : "high",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "lowClosed" : true,
+                                       "highClosed" : false,
+                                       "type" : "Interval",
+                                       "low" : {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "low",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "strict" : false,
+                                                   "type" : "As",
+                                                   "operand" : {
+                                                      "path" : "abatement",
+                                                      "type" : "Property",
+                                                      "source" : {
+                                                         "name" : "condition",
+                                                         "type" : "OperandRef"
+                                                      }
+                                                   },
+                                                   "asTypeSpecifier" : {
+                                                      "name" : "{http://hl7.org/fhir}Range",
+                                                      "type" : "NamedTypeSpecifier"
+                                                   }
+                                                }
+                                             } ]
+                                          } ]
+                                       },
+                                       "high" : {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "type" : "Add",
+                                             "operand" : [ {
+                                                "name" : "ToDate",
+                                                "libraryName" : "FHIRHelpers",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "path" : "birthDate",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "name" : "Patient",
+                                                      "type" : "ExpressionRef"
+                                                   }
+                                                } ]
+                                             }, {
+                                                "name" : "ToQuantity",
+                                                "libraryName" : "FHIRHelpers",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "path" : "high",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "strict" : false,
+                                                      "type" : "As",
+                                                      "operand" : {
+                                                         "path" : "abatement",
+                                                         "type" : "Property",
+                                                         "source" : {
+                                                            "name" : "condition",
+                                                            "type" : "OperandRef"
+                                                         }
+                                                      },
+                                                      "asTypeSpecifier" : {
+                                                         "name" : "{http://hl7.org/fhir}Range",
+                                                         "type" : "NamedTypeSpecifier"
+                                                      }
+                                                   }
+                                                } ]
+                                             } ]
+                                          }, {
+                                             "value" : 1,
+                                             "unit" : "year",
+                                             "type" : "Quantity"
+                                          } ]
+                                       }
+                                    }
+                                 }
+                              },
+                              "highClosedExpression" : {
+                                 "path" : "highClosed",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "lowClosed" : true,
+                                    "highClosed" : false,
+                                    "type" : "Interval",
+                                    "low" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "birthDate",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "Patient",
+                                                "type" : "ExpressionRef"
+                                             }
+                                          } ]
+                                       }, {
+                                          "name" : "ToQuantity",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "path" : "low",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "strict" : false,
+                                                "type" : "As",
+                                                "operand" : {
+                                                   "path" : "abatement",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "name" : "condition",
+                                                      "type" : "OperandRef"
+                                                   }
+                                                },
+                                                "asTypeSpecifier" : {
+                                                   "name" : "{http://hl7.org/fhir}Range",
+                                                   "type" : "NamedTypeSpecifier"
+                                                }
+                                             }
+                                          } ]
+                                       } ]
+                                    },
+                                    "high" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "type" : "Add",
+                                          "operand" : [ {
+                                             "name" : "ToDate",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "birthDate",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "name" : "Patient",
+                                                   "type" : "ExpressionRef"
+                                                }
+                                             } ]
+                                          }, {
+                                             "name" : "ToQuantity",
+                                             "libraryName" : "FHIRHelpers",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "path" : "high",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "strict" : false,
+                                                   "type" : "As",
+                                                   "operand" : {
+                                                      "path" : "abatement",
+                                                      "type" : "Property",
+                                                      "source" : {
+                                                         "name" : "condition",
+                                                         "type" : "OperandRef"
+                                                      }
+                                                   },
+                                                   "asTypeSpecifier" : {
+                                                      "name" : "{http://hl7.org/fhir}Range",
+                                                      "type" : "NamedTypeSpecifier"
+                                                   }
+                                                }
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "value" : 1,
+                                          "unit" : "year",
+                                          "type" : "Quantity"
+                                       } ]
+                                    }
+                                 }
+                              }
+                           },
+                           "else" : {
+                              "type" : "If",
+                              "condition" : {
+                                 "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                 "type" : "As",
+                                 "operand" : {
+                                    "type" : "Is",
+                                    "operand" : {
+                                       "path" : "abatement",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "condition",
+                                          "type" : "OperandRef"
+                                       }
+                                    },
+                                    "isTypeSpecifier" : {
+                                       "name" : "{http://hl7.org/fhir}boolean",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }
+                              },
+                              "then" : {
+                                 "lowClosed" : true,
+                                 "highClosed" : false,
+                                 "type" : "Interval",
+                                 "low" : {
+                                    "type" : "End",
+                                    "operand" : {
+                                       "name" : "Normalize Onset",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "onset",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "condition",
+                                             "type" : "OperandRef"
+                                          }
+                                       } ]
+                                    }
+                                 },
+                                 "high" : {
+                                    "name" : "ToDateTime",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "recordedDate",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "condition",
+                                          "type" : "OperandRef"
+                                       }
+                                    } ]
+                                 }
+                              },
+                              "else" : {
+                                 "type" : "As",
+                                 "operand" : {
+                                    "type" : "Null"
+                                 },
+                                 "asTypeSpecifier" : {
+                                    "type" : "IntervalTypeSpecifier",
+                                    "pointType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "condition",
+               "operandTypeSpecifier" : {
+                  "name" : "{http://hl7.org/fhir}Condition",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
+            "name" : "Prevalence Period",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "lowClosed" : true,
+               "highClosed" : false,
+               "type" : "Interval",
+               "low" : {
+                  "type" : "Start",
+                  "operand" : {
+                     "name" : "Normalize Onset",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "path" : "onset",
+                        "type" : "Property",
+                        "source" : {
+                           "name" : "condition",
+                           "type" : "OperandRef"
+                        }
+                     } ]
+                  }
+               },
+               "high" : {
+                  "type" : "End",
+                  "operand" : {
+                     "name" : "Normalize Abatement",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "condition",
+                        "type" : "OperandRef"
+                     } ]
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "condition",
+               "operandTypeSpecifier" : {
+                  "name" : "{http://hl7.org/fhir}Condition",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
+            "name" : "Normalize Interval",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Case",
+               "caseItem" : [ {
+                  "when" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "name" : "choice",
+                        "type" : "OperandRef"
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}dateTime",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  },
+                  "then" : {
+                     "lowClosed" : true,
+                     "highClosed" : true,
+                     "type" : "Interval",
+                     "low" : {
+                        "name" : "ToDateTime",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "name" : "choice",
+                              "type" : "OperandRef"
+                           },
+                           "asTypeSpecifier" : {
+                              "name" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        } ]
+                     },
+                     "high" : {
+                        "name" : "ToDateTime",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "name" : "choice",
+                              "type" : "OperandRef"
+                           },
+                           "asTypeSpecifier" : {
+                              "name" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        } ]
+                     }
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "name" : "choice",
+                        "type" : "OperandRef"
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}Period",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  },
+                  "then" : {
+                     "name" : "ToInterval",
+                     "libraryName" : "FHIRHelpers",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "choice",
+                           "type" : "OperandRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}Period",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     } ]
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "name" : "choice",
+                        "type" : "OperandRef"
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}instant",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  },
+                  "then" : {
+                     "lowClosed" : true,
+                     "highClosed" : true,
+                     "type" : "Interval",
+                     "low" : {
+                        "name" : "ToDateTime",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "name" : "choice",
+                              "type" : "OperandRef"
+                           },
+                           "asTypeSpecifier" : {
+                              "name" : "{http://hl7.org/fhir}instant",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        } ]
+                     },
+                     "high" : {
+                        "name" : "ToDateTime",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "name" : "choice",
+                              "type" : "OperandRef"
+                           },
+                           "asTypeSpecifier" : {
+                              "name" : "{http://hl7.org/fhir}instant",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        } ]
+                     }
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "name" : "choice",
+                        "type" : "OperandRef"
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}Age",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  },
+                  "then" : {
+                     "type" : "Interval",
+                     "low" : {
+                        "type" : "ToDateTime",
+                        "operand" : {
+                           "path" : "low",
+                           "type" : "Property",
+                           "source" : {
+                              "lowClosed" : true,
+                              "highClosed" : false,
+                              "type" : "Interval",
+                              "low" : {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "name" : "ToDate",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "birthDate",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "Patient",
+                                          "type" : "ExpressionRef"
+                                       }
+                                    } ]
+                                 }, {
+                                    "name" : "ToQuantity",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "strict" : false,
+                                       "type" : "As",
+                                       "operand" : {
+                                          "name" : "choice",
+                                          "type" : "OperandRef"
+                                       },
+                                       "asTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Age",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    } ]
+                                 } ]
+                              },
+                              "high" : {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "name" : "ToDate",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "birthDate",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "Patient",
+                                             "type" : "ExpressionRef"
+                                          }
+                                       } ]
+                                    }, {
+                                       "name" : "ToQuantity",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "name" : "choice",
+                                             "type" : "OperandRef"
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Age",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    } ]
+                                 }, {
+                                    "value" : 1,
+                                    "unit" : "year",
+                                    "type" : "Quantity"
+                                 } ]
+                              }
+                           }
+                        }
+                     },
+                     "lowClosedExpression" : {
+                        "path" : "lowClosed",
+                        "type" : "Property",
+                        "source" : {
+                           "lowClosed" : true,
+                           "highClosed" : false,
+                           "type" : "Interval",
+                           "low" : {
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "name" : "ToDate",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "birthDate",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "Patient",
+                                       "type" : "ExpressionRef"
+                                    }
+                                 } ]
+                              }, {
+                                 "name" : "ToQuantity",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "strict" : false,
+                                    "type" : "As",
+                                    "operand" : {
+                                       "name" : "choice",
+                                       "type" : "OperandRef"
+                                    },
+                                    "asTypeSpecifier" : {
+                                       "name" : "{http://hl7.org/fhir}Age",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           },
+                           "high" : {
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "name" : "ToDate",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "birthDate",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "Patient",
+                                          "type" : "ExpressionRef"
+                                       }
+                                    } ]
+                                 }, {
+                                    "name" : "ToQuantity",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "strict" : false,
+                                       "type" : "As",
+                                       "operand" : {
+                                          "name" : "choice",
+                                          "type" : "OperandRef"
+                                       },
+                                       "asTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Age",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    } ]
+                                 } ]
+                              }, {
+                                 "value" : 1,
+                                 "unit" : "year",
+                                 "type" : "Quantity"
+                              } ]
+                           }
+                        }
+                     },
+                     "high" : {
+                        "type" : "ToDateTime",
+                        "operand" : {
+                           "path" : "high",
+                           "type" : "Property",
+                           "source" : {
+                              "lowClosed" : true,
+                              "highClosed" : false,
+                              "type" : "Interval",
+                              "low" : {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "name" : "ToDate",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "birthDate",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "Patient",
+                                          "type" : "ExpressionRef"
+                                       }
+                                    } ]
+                                 }, {
+                                    "name" : "ToQuantity",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "strict" : false,
+                                       "type" : "As",
+                                       "operand" : {
+                                          "name" : "choice",
+                                          "type" : "OperandRef"
+                                       },
+                                       "asTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Age",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    } ]
+                                 } ]
+                              },
+                              "high" : {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "name" : "ToDate",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "birthDate",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "Patient",
+                                             "type" : "ExpressionRef"
+                                          }
+                                       } ]
+                                    }, {
+                                       "name" : "ToQuantity",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "name" : "choice",
+                                             "type" : "OperandRef"
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Age",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    } ]
+                                 }, {
+                                    "value" : 1,
+                                    "unit" : "year",
+                                    "type" : "Quantity"
+                                 } ]
+                              }
+                           }
+                        }
+                     },
+                     "highClosedExpression" : {
+                        "path" : "highClosed",
+                        "type" : "Property",
+                        "source" : {
+                           "lowClosed" : true,
+                           "highClosed" : false,
+                           "type" : "Interval",
+                           "low" : {
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "name" : "ToDate",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "birthDate",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "Patient",
+                                       "type" : "ExpressionRef"
+                                    }
+                                 } ]
+                              }, {
+                                 "name" : "ToQuantity",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "strict" : false,
+                                    "type" : "As",
+                                    "operand" : {
+                                       "name" : "choice",
+                                       "type" : "OperandRef"
+                                    },
+                                    "asTypeSpecifier" : {
+                                       "name" : "{http://hl7.org/fhir}Age",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           },
+                           "high" : {
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "name" : "ToDate",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "birthDate",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "Patient",
+                                          "type" : "ExpressionRef"
+                                       }
+                                    } ]
+                                 }, {
+                                    "name" : "ToQuantity",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "strict" : false,
+                                       "type" : "As",
+                                       "operand" : {
+                                          "name" : "choice",
+                                          "type" : "OperandRef"
+                                       },
+                                       "asTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Age",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    } ]
+                                 } ]
+                              }, {
+                                 "value" : 1,
+                                 "unit" : "year",
+                                 "type" : "Quantity"
+                              } ]
+                           }
+                        }
+                     }
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "name" : "choice",
+                        "type" : "OperandRef"
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}Range",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  },
+                  "then" : {
+                     "type" : "Interval",
+                     "low" : {
+                        "type" : "ToDateTime",
+                        "operand" : {
+                           "path" : "low",
+                           "type" : "Property",
+                           "source" : {
+                              "lowClosed" : true,
+                              "highClosed" : false,
+                              "type" : "Interval",
+                              "low" : {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "name" : "ToDate",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "birthDate",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "Patient",
+                                          "type" : "ExpressionRef"
+                                       }
+                                    } ]
+                                 }, {
+                                    "name" : "ToQuantity",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "low",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "name" : "choice",
+                                             "type" : "OperandRef"
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Range",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }
+                                    } ]
+                                 } ]
+                              },
+                              "high" : {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "name" : "ToDate",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "birthDate",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "Patient",
+                                             "type" : "ExpressionRef"
+                                          }
+                                       } ]
+                                    }, {
+                                       "name" : "ToQuantity",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "high",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "name" : "choice",
+                                                "type" : "OperandRef"
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Range",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          }
+                                       } ]
+                                    } ]
+                                 }, {
+                                    "value" : 1,
+                                    "unit" : "year",
+                                    "type" : "Quantity"
+                                 } ]
+                              }
+                           }
+                        }
+                     },
+                     "lowClosedExpression" : {
+                        "path" : "lowClosed",
+                        "type" : "Property",
+                        "source" : {
+                           "lowClosed" : true,
+                           "highClosed" : false,
+                           "type" : "Interval",
+                           "low" : {
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "name" : "ToDate",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "birthDate",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "Patient",
+                                       "type" : "ExpressionRef"
+                                    }
+                                 } ]
+                              }, {
+                                 "name" : "ToQuantity",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "low",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "strict" : false,
+                                       "type" : "As",
+                                       "operand" : {
+                                          "name" : "choice",
+                                          "type" : "OperandRef"
+                                       },
+                                       "asTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Range",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 } ]
+                              } ]
+                           },
+                           "high" : {
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "name" : "ToDate",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "birthDate",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "Patient",
+                                          "type" : "ExpressionRef"
+                                       }
+                                    } ]
+                                 }, {
+                                    "name" : "ToQuantity",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "high",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "name" : "choice",
+                                             "type" : "OperandRef"
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Range",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }
+                                    } ]
+                                 } ]
+                              }, {
+                                 "value" : 1,
+                                 "unit" : "year",
+                                 "type" : "Quantity"
+                              } ]
+                           }
+                        }
+                     },
+                     "high" : {
+                        "type" : "ToDateTime",
+                        "operand" : {
+                           "path" : "high",
+                           "type" : "Property",
+                           "source" : {
+                              "lowClosed" : true,
+                              "highClosed" : false,
+                              "type" : "Interval",
+                              "low" : {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "name" : "ToDate",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "birthDate",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "Patient",
+                                          "type" : "ExpressionRef"
+                                       }
+                                    } ]
+                                 }, {
+                                    "name" : "ToQuantity",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "low",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "name" : "choice",
+                                             "type" : "OperandRef"
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Range",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }
+                                    } ]
+                                 } ]
+                              },
+                              "high" : {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "type" : "Add",
+                                    "operand" : [ {
+                                       "name" : "ToDate",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "birthDate",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "Patient",
+                                             "type" : "ExpressionRef"
+                                          }
+                                       } ]
+                                    }, {
+                                       "name" : "ToQuantity",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "high",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "strict" : false,
+                                             "type" : "As",
+                                             "operand" : {
+                                                "name" : "choice",
+                                                "type" : "OperandRef"
+                                             },
+                                             "asTypeSpecifier" : {
+                                                "name" : "{http://hl7.org/fhir}Range",
+                                                "type" : "NamedTypeSpecifier"
+                                             }
+                                          }
+                                       } ]
+                                    } ]
+                                 }, {
+                                    "value" : 1,
+                                    "unit" : "year",
+                                    "type" : "Quantity"
+                                 } ]
+                              }
+                           }
+                        }
+                     },
+                     "highClosedExpression" : {
+                        "path" : "highClosed",
+                        "type" : "Property",
+                        "source" : {
+                           "lowClosed" : true,
+                           "highClosed" : false,
+                           "type" : "Interval",
+                           "low" : {
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "name" : "ToDate",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "birthDate",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "Patient",
+                                       "type" : "ExpressionRef"
+                                    }
+                                 } ]
+                              }, {
+                                 "name" : "ToQuantity",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "low",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "strict" : false,
+                                       "type" : "As",
+                                       "operand" : {
+                                          "name" : "choice",
+                                          "type" : "OperandRef"
+                                       },
+                                       "asTypeSpecifier" : {
+                                          "name" : "{http://hl7.org/fhir}Range",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 } ]
+                              } ]
+                           },
+                           "high" : {
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "type" : "Add",
+                                 "operand" : [ {
+                                    "name" : "ToDate",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "birthDate",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "Patient",
+                                          "type" : "ExpressionRef"
+                                       }
+                                    } ]
+                                 }, {
+                                    "name" : "ToQuantity",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "high",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "strict" : false,
+                                          "type" : "As",
+                                          "operand" : {
+                                             "name" : "choice",
+                                             "type" : "OperandRef"
+                                          },
+                                          "asTypeSpecifier" : {
+                                             "name" : "{http://hl7.org/fhir}Range",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }
+                                    } ]
+                                 } ]
+                              }, {
+                                 "value" : 1,
+                                 "unit" : "year",
+                                 "type" : "Quantity"
+                              } ]
+                           }
+                        }
+                     }
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "name" : "choice",
+                        "type" : "OperandRef"
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}Timing",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  },
+                  "then" : {
+                     "type" : "Message",
+                     "source" : {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "IntervalTypeSpecifier",
+                           "pointType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }
+                     },
+                     "condition" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "value" : "true",
+                        "type" : "Literal"
+                     },
+                     "code" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "1",
+                        "type" : "Literal"
+                     },
+                     "severity" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Error",
+                        "type" : "Literal"
+                     },
+                     "message" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Cannot compute a single interval from a Timing type",
+                        "type" : "Literal"
+                     }
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "name" : "choice",
+                        "type" : "OperandRef"
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}string",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  },
+                  "then" : {
+                     "type" : "Message",
+                     "source" : {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "IntervalTypeSpecifier",
+                           "pointType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }
+                     },
+                     "condition" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "value" : "true",
+                        "type" : "Literal"
+                     },
+                     "code" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "1",
+                        "type" : "Literal"
+                     },
+                     "severity" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Error",
+                        "type" : "Literal"
+                     },
+                     "message" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Cannot compute an interval from a String value",
+                        "type" : "Literal"
+                     }
+                  }
+               } ],
+               "else" : {
+                  "strict" : false,
+                  "type" : "As",
+                  "operand" : {
+                     "type" : "Null"
+                  },
+                  "asTypeSpecifier" : {
+                     "type" : "IntervalTypeSpecifier",
+                     "pointType" : {
+                        "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "choice",
+               "operandTypeSpecifier" : {
+                  "type" : "ChoiceTypeSpecifier",
+                  "choice" : [ {
+                     "name" : "{http://hl7.org/fhir}dateTime",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}Period",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}Timing",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}instant",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}string",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}Age",
+                     "type" : "NamedTypeSpecifier"
+                  }, {
+                     "name" : "{http://hl7.org/fhir}Range",
+                     "type" : "NamedTypeSpecifier"
+                  } ]
+               }
+            } ]
+         }, {
+            "name" : "MedicationCode",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "If",
+               "condition" : {
+                  "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                  "type" : "As",
+                  "operand" : {
+                     "type" : "Is",
+                     "operand" : {
+                        "path" : "medication",
+                        "type" : "Property",
+                        "source" : {
+                           "name" : "Request",
+                           "type" : "OperandRef"
+                        }
+                     },
+                     "isTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}CodeableConcept",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  }
+               },
+               "then" : {
+                  "name" : "ToCode",
+                  "libraryName" : "FHIRHelpers",
+                  "type" : "FunctionRef",
+                  "operand" : [ {
+                     "type" : "SingletonFrom",
+                     "operand" : {
+                        "type" : "Query",
+                        "source" : [ {
+                           "alias" : "C",
+                           "expression" : {
+                              "path" : "coding",
+                              "type" : "Property",
+                              "source" : {
+                                 "strict" : false,
+                                 "type" : "As",
+                                 "operand" : {
+                                    "path" : "medication",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "Request",
+                                       "type" : "OperandRef"
+                                    }
+                                 },
+                                 "asTypeSpecifier" : {
+                                    "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                    "type" : "NamedTypeSpecifier"
+                                 }
+                              }
+                           }
+                        } ],
+                        "relationship" : [ ],
+                        "where" : {
+                           "type" : "InCodeSystem",
+                           "code" : {
+                              "name" : "ToCode",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "name" : "C",
+                                 "type" : "AliasRef"
+                              } ]
+                           },
+                           "codesystem" : {
+                              "name" : "RXNORM",
+                              "libraryName" : "Tx"
+                           }
+                        }
+                     }
+                  } ]
+               },
+               "else" : {
+                  "name" : "ToCode",
+                  "libraryName" : "FHIRHelpers",
+                  "type" : "FunctionRef",
+                  "operand" : [ {
+                     "type" : "SingletonFrom",
+                     "operand" : {
+                        "type" : "Query",
+                        "source" : [ {
+                           "alias" : "C",
+                           "expression" : {
+                              "path" : "coding",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "code",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "type" : "SingletonFrom",
+                                    "operand" : {
+                                       "dataType" : "{http://hl7.org/fhir}Medication",
+                                       "templateId" : "http://hl7.org/fhir/StructureDefinition/Medication",
+                                       "codeProperty" : "id",
+                                       "type" : "Retrieve",
+                                       "codes" : {
+                                          "type" : "ToList",
+                                          "operand" : {
+                                             "name" : "GetId",
+                                             "type" : "FunctionRef",
+                                             "operand" : [ {
+                                                "name" : "ToString",
+                                                "libraryName" : "FHIRHelpers",
+                                                "type" : "FunctionRef",
+                                                "operand" : [ {
+                                                   "path" : "reference",
+                                                   "type" : "Property",
+                                                   "source" : {
+                                                      "path" : "medication",
+                                                      "type" : "Property",
+                                                      "source" : {
+                                                         "name" : "Request",
+                                                         "type" : "OperandRef"
+                                                      }
+                                                   }
+                                                } ]
+                                             } ]
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        } ],
+                        "relationship" : [ ],
+                        "where" : {
+                           "type" : "InCodeSystem",
+                           "code" : {
+                              "name" : "ToCode",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "name" : "C",
+                                 "type" : "AliasRef"
+                              } ]
+                           },
+                           "codesystem" : {
+                              "name" : "RXNORM",
+                              "libraryName" : "Tx"
+                           }
+                        }
+                     }
+                  } ]
+               }
+            },
+            "operand" : [ {
+               "name" : "Request",
+               "operandTypeSpecifier" : {
+                  "name" : "{http://hl7.org/fhir}MedicationRequest",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         } ]
+      }
+   }
+}
+

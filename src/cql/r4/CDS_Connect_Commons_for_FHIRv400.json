@@ -1,8 +1,12 @@
 {
    "library" : {
+      "annotation" : [ {
+         "translatorOptions" : "",
+         "type" : "CqlToElmInfo"
+      } ],
       "identifier" : {
          "id" : "CDS_Connect_Commons_for_FHIRv400",
-         "version" : "1.0.1"
+         "version" : "1.0.2"
       },
       "schemaIdentifier" : {
          "id" : "urn:hl7-org:elm",
@@ -15,14 +19,14 @@
          }, {
             "localIdentifier" : "FHIR",
             "uri" : "http://hl7.org/fhir",
-            "version" : "4.0.0"
+            "version" : "4.0.1"
          } ]
       },
       "includes" : {
          "def" : [ {
             "localIdentifier" : "FHIRHelpers",
             "path" : "FHIRHelpers",
-            "version" : "4.0.0"
+            "version" : "4.0.1"
          } ]
       },
       "codeSystems" : {
@@ -290,6 +294,7 @@
                   "alias" : "O",
                   "expression" : {
                      "dataType" : "{http://hl7.org/fhir}Observation",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/Observation",
                      "type" : "Retrieve"
                   }
                } ],
@@ -927,6 +932,7 @@
                   "alias" : "C",
                   "expression" : {
                      "dataType" : "{http://hl7.org/fhir}Condition",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/Condition",
                      "type" : "Retrieve"
                   }
                } ],
@@ -1354,6 +1360,7 @@
                   "alias" : "P",
                   "expression" : {
                      "dataType" : "{http://hl7.org/fhir}Procedure",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/Procedure",
                      "type" : "Retrieve"
                   }
                } ],
@@ -1838,6 +1845,7 @@
                   "alias" : "M",
                   "expression" : {
                      "dataType" : "{http://hl7.org/fhir}MedicationStatement",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationStatement",
                      "type" : "Retrieve"
                   }
                } ],
@@ -1885,6 +1893,7 @@
                   "alias" : "M",
                   "expression" : {
                      "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
                      "type" : "Retrieve"
                   }
                } ],
@@ -2427,6 +2436,7 @@
                   "alias" : "E",
                   "expression" : {
                      "dataType" : "{http://hl7.org/fhir}Encounter",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/Encounter",
                      "type" : "Retrieve"
                   }
                } ],
@@ -2522,6 +2532,7 @@
                   "alias" : "A",
                   "expression" : {
                      "dataType" : "{http://hl7.org/fhir}AllergyIntolerance",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/AllergyIntolerance",
                      "type" : "Retrieve"
                   }
                } ],
