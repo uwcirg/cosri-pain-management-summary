@@ -665,6 +665,13 @@
         "name": "Carisoprodol Medications",
         "dataKey": "CarisoprodolMedications",
         "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "WA",
+            "title": "WA Guideline",
+            "text": "Washington State Rules require documentation of decision making when coprescribing carisoprodol with opioids."
+          }
+        ],
         "info": [
           {
             "type": "elements",
