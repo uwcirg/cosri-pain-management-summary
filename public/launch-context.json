@@ -1,5 +1,5 @@
 {
-  "clientId": "a0f32a02-c124-4ba7-858b-5a52b9591de6",
+  "clientId": "51e82bf7-2426-42dd-87bb-5a344fa04b10",
   "scope": "patient/*.read launch openid profile",
   "completeInTarget": true
 }
