@@ -461,37 +461,24 @@
             color: $color-gold;
             font-size: 0.95em;
           }
+          .guideline-wrapper {
+            margin-left: 0;
+            padding-bottom: 0;
+          }
           .flag-guideline-content {
             .flag {
               color: $color-red;
             }
             margin-top: 12px;
             .guideline-content {
-              margin-top: 16px;
+              margin-top: 12px;
               font-style: normal;
-              .title {
-                font-weight: 600;
-              }
               // .CDC .text {
               //   color: $color-orange;
               // }
               // .WA .text {
               //   color: $color-red-darker;
               // }
-            }
-          }
-          .flag-no-entry {
-            margin-right: 12px;
-            font-size: 1em;
-            &.CDC {
-              .flag {
-                color: $color-orange-light;
-              }
-            }
-            &.WA {
-              .flag {
-                color: $color-red-darker;
-              }
             }
           }
         }
@@ -575,6 +562,32 @@
               }
             }
           }
+        }
+      }
+    }
+
+    .flag-no-entry {
+      margin-right: 12px;
+      font-size: 1em;
+      // &.CDC {
+      //   .flag {
+      //     color: $color-orange-light;
+      //   }
+      // }
+      // &.WA {
+      //   .flag {
+      //     color: $color-red-darker;
+      //   }
+      // }
+    }
+    .sub-section {
+      .guideline-wrapper {
+        margin-left: 40px;
+        padding-bottom: 20px;
+        font-size: 0.95em;
+        line-height: 1.5;
+        .title {
+          font-weight: 600;
         }
       }
     }

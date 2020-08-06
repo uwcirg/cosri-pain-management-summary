@@ -143,25 +143,34 @@ export default class Summary extends Component {
     return flagged;
   }
 
-  renderNoEntries(section, subSection) {
+  renderGuideLine(subSection) {
+    if (!subSection) return "";
     let guidelineElement = subSection["guideline"] ? subSection["guideline"]: null;
+    if (!guidelineElement) return "";
     let guidelineContent = "";
-    if (guidelineElement) {
-      guidelineContent = guidelineElement.map( (item, index) => {
-        return <div key={`guideline_${index}`} className={`flag-no-entry ${item.type}`}>
-          {/* <FontAwesomeIcon
-              className="flag"
-              icon="exclamation-circle"
-              tabIndex={0}
-          /> <span className="text">{item.text}</span> */}
-          <span className="text"><b className="title">{item.title}</b>: {item.text}</span>
-        </div>
-      });
-    }
+    guidelineContent = (<div className="guideline-wrapper">
+        {
+          guidelineElement.map( (item, index) => {
+          return <div key={`guideline_${index}`} className={`${item.type}`}>
+            {/* <FontAwesomeIcon
+                className="flag"
+                icon="exclamation-circle"
+                tabIndex={0}
+            /> <span className="text">{item.text}</span> */}
+            <span className="text"><b className="title">{item.title}</b>: {item.text}</span>
+          </div>
+          })
+        }
+      </div>);
+    return guidelineContent;
+  }
+
+  renderNoEntries(section, subSection) {
     const { sectionFlags } = this.props;
     let subSectionFlags = sectionFlags[section]? sectionFlags[section][subSection.dataKey] : null;
     let flagEntries = [];
     let flagContent = "";
+    let guidelineContent = this.renderGuideLine(subSection);
     if (subSectionFlags) {
       flagEntries = subSectionFlags.map((flag) => {
         return flag.flagText;
@@ -459,7 +468,6 @@ export default class Summary extends Component {
                     >more info</span>
                   </div>
               }</span>
-
           </h3>
 
           {panels && this.renderPanel(section, panels)}
@@ -468,6 +476,7 @@ export default class Summary extends Component {
           {hasEntries && subSection.tables.map((table, index) =>
             this.renderTable(table, entries, section, subSection, index))
           }
+          {hasEntries && this.isSubsectionFlagged(section, subSection.dataKey) && this.renderGuideLine(subSection)}
          </div>
       );
     });
