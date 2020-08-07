@@ -1,5 +1,9 @@
 {
    "library" : {
+      "annotation" : [ {
+         "translatorOptions" : "",
+         "type" : "CqlToElmInfo"
+      } ],
       "identifier" : {
          "id" : "Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400",
          "version" : "1.0.0"
@@ -2594,8 +2598,9 @@
                      "codeProperty" : "code",
                      "type" : "Retrieve",
                      "codes" : {
-                        "type" : "ToList",
-                        "operand" : {
+                        "path" : "codes",
+                        "type" : "Property",
+                        "source" : {
                            "name" : "Pregnancy status",
                            "type" : "ConceptRef"
                         }
@@ -4060,8 +4065,9 @@
                      "codeProperty" : "code",
                      "type" : "Retrieve",
                      "codes" : {
-                        "type" : "ToList",
-                        "operand" : {
+                        "path" : "codes",
+                        "type" : "Property",
+                        "source" : {
                            "name" : "Pain severity Wong-Baker FACES Scale",
                            "type" : "ConceptRef"
                         }
@@ -4193,8 +4199,9 @@
                         "codeProperty" : "code",
                         "type" : "Retrieve",
                         "codes" : {
-                           "type" : "ToList",
-                           "operand" : {
+                           "path" : "codes",
+                           "type" : "Property",
+                           "source" : {
                               "name" : "Mean score [PEG]",
                               "type" : "ConceptRef"
                            }
@@ -4204,8 +4211,9 @@
                         "codeProperty" : "code",
                         "type" : "Retrieve",
                         "codes" : {
-                           "type" : "ToList",
-                           "operand" : {
+                           "path" : "codes",
+                           "type" : "Property",
+                           "source" : {
                               "name" : "Pain Enjoyment General Activity (PEG) Assessment LEGACY",
                               "type" : "ConceptRef"
                            }
@@ -4565,8 +4573,9 @@
                         "codeProperty" : "code",
                         "type" : "Retrieve",
                         "codes" : {
-                           "type" : "ToList",
-                           "operand" : {
+                           "path" : "codes",
+                           "type" : "Property",
+                           "source" : {
                               "name" : "Total score [STarT Back]",
                               "type" : "ConceptRef"
                            }
@@ -4576,8 +4585,9 @@
                         "codeProperty" : "code",
                         "type" : "Retrieve",
                         "codes" : {
-                           "type" : "ToList",
-                           "operand" : {
+                           "path" : "codes",
+                           "type" : "Property",
+                           "source" : {
                               "name" : "STarT Back Screening Tool LEGACY",
                               "type" : "ConceptRef"
                            }
@@ -4813,6 +4823,17 @@
                            }
                         }
                      }, {
+                        "name" : "Quantity",
+                        "value" : {
+                           "path" : "quantity",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "dispenseRequest",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
                         "name" : "Status",
                         "value" : {
                            "path" : "value",
@@ -4951,11 +4972,175 @@
                   "expression" : {
                      "type" : "Union",
                      "operand" : [ {
-                        "name" : "ReportOpioidMedicationRequests",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportOpioidMedicationRequests",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{http://hl7.org/fhir}Quantity",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      }, {
-                        "name" : "ReportOpioidMedicationStatements",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportOpioidMedicationStatements",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{http://hl7.org/fhir}Quantity",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      } ]
                   }
                } ],
@@ -5091,6 +5276,17 @@
                            "asTypeSpecifier" : {
                               "name" : "{urn:hl7-org:elm-types:r1}String",
                               "type" : "NamedTypeSpecifier"
+                           }
+                        }
+                     }, {
+                        "name" : "Quantity",
+                        "value" : {
+                           "path" : "quantity",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "dispenseRequest",
+                              "scope" : "O",
+                              "type" : "Property"
                            }
                         }
                      }, {
@@ -5232,11 +5428,175 @@
                   "expression" : {
                      "type" : "Union",
                      "operand" : [ {
-                        "name" : "ReportNonOpioidMedicationRequests",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportNonOpioidMedicationRequests",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{http://hl7.org/fhir}Quantity",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      }, {
-                        "name" : "ReportNonOpioidMedicationStatements",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportNonOpioidMedicationStatements",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{http://hl7.org/fhir}Quantity",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      } ]
                   }
                } ],
@@ -5782,8 +6142,9 @@
                         "codeProperty" : "code",
                         "type" : "Retrieve",
                         "codes" : {
-                           "type" : "ToList",
-                           "operand" : {
+                           "path" : "codes",
+                           "type" : "Property",
+                           "source" : {
                               "name" : "Morphine Milligram Equivalent (MME)",
                               "type" : "ConceptRef"
                            }
@@ -6919,8 +7280,9 @@
                            "codeProperty" : "code",
                            "type" : "Retrieve",
                            "codes" : {
-                              "type" : "ToList",
-                              "operand" : {
+                              "path" : "codes",
+                              "type" : "Property",
+                              "source" : {
                                  "name" : "Single question r/t ETOH use",
                                  "type" : "ConceptRef"
                               }
@@ -6931,8 +7293,9 @@
                         "codeProperty" : "code",
                         "type" : "Retrieve",
                         "codes" : {
-                           "type" : "ToList",
-                           "operand" : {
+                           "path" : "codes",
+                           "type" : "Property",
+                           "source" : {
                               "name" : "Single question r/t drug use",
                               "type" : "ConceptRef"
                            }

@@ -811,6 +811,8 @@ define ReportOpioidMedicationRequests:
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     End:   null as String, // MedicationRequest end date not supported in R4,
+    //Amount: QuantityText(O.value as FHIR.Quantity),
+    Quantity: O.dispenseRequest.quantity,
     Status: O.status.value
   }
   sort by Start desc, End desc
@@ -822,6 +824,8 @@ define ReportOpioidMedicationStatements:
     Name:  ConceptText(S.medication as FHIR.CodeableConcept),
     Start: MedicationStatementDate(S),
     End:   DateTimeText((S.effective as FHIR.Period)."end"),
+    //Amount: QuantityText(S.value as FHIR.Quantity),
+    //Quantity: S.dispenseRequest.quantity,
     Status: S.status.value
   }
   sort by Start desc, End desc
@@ -851,6 +855,8 @@ define ReportNonOpioidMedicationRequests:
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     End:   null as String, // MedicationRequest end date not supported in R4,
+    //Amount: QuantityText(O.value as FHIR.Quantity),
+    Quantity: O.dispenseRequest.quantity,
     Status: O.status.value
   }
   sort by Start desc, End desc
@@ -862,6 +868,8 @@ define ReportNonOpioidMedicationStatements:
     Name:  ConceptText(S.medication as FHIR.CodeableConcept),
     Start: MedicationStatementDate(S),
     End:   DateTimeText((S.effective as FHIR.Period)."end"),
+    //Quantity: QuantityText(S.value as FHIR.Quantity),
+    //Quantity: S.dispenseRequest.quantity,
     Status: S.status.value
   }
   sort by Start desc, End desc
