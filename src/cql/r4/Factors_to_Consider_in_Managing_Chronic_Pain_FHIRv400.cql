@@ -810,9 +810,13 @@ define ReportOpioidMedicationRequests:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
-    End:   null as String, // MedicationRequest end date not supported in R4,
+    //provided by the extension dateValue, may not always be there
+    End: DateText(O.dispenseRequest.extension[1].value),
+    //End:   null as String, // MedicationRequest end date not supported in R4,
     //Amount: QuantityText(O.value as FHIR.Quantity),
-    Quantity: O.dispenseRequest.quantity,
+    //provided by the extension valueString, may not always be there
+    Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+    Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
     Status: O.status.value
   }
   sort by Start desc, End desc
@@ -825,7 +829,6 @@ define ReportOpioidMedicationStatements:
     Start: MedicationStatementDate(S),
     End:   DateTimeText((S.effective as FHIR.Period)."end"),
     //Amount: QuantityText(S.value as FHIR.Quantity),
-    //Quantity: S.dispenseRequest.quantity,
     Status: S.status.value
   }
   sort by Start desc, End desc
@@ -846,7 +849,7 @@ define NonOpioidMedicationStatements:
   C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
     [MedicationStatement: "Non opiod pain medications"],
     100 years //changed from 2 to 100
-  ))
+  )) 
 
 define ReportNonOpioidMedicationRequests:
   (NonOpioidMedicationRequests) O
@@ -854,9 +857,11 @@ define ReportNonOpioidMedicationRequests:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
-    End:   null as String, // MedicationRequest end date not supported in R4,
+    //End:   null as String, // MedicationRequest end date not supported in R4,
     //Amount: QuantityText(O.value as FHIR.Quantity),
-    Quantity: O.dispenseRequest.quantity,
+    Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+    End: DateText(O.dispenseRequest.extension[1].value),
+    Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
     Status: O.status.value
   }
   sort by Start desc, End desc
@@ -869,7 +874,6 @@ define ReportNonOpioidMedicationStatements:
     Start: MedicationStatementDate(S),
     End:   DateTimeText((S.effective as FHIR.Period)."end"),
     //Quantity: QuantityText(S.value as FHIR.Quantity),
-    //Quantity: S.dispenseRequest.quantity,
     Status: S.status.value
   }
   sort by Start desc, End desc

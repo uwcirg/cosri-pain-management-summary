@@ -718,6 +718,30 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
+        "requester": {
+          "display": "ROBERT MOSS"
+        },
+        "dispenseRequest": {
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "CAROL'S PHARMACY CHAIN (WA)"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-06-16"
+            }
+          ],
+          "quantity": {
+            "value": 813.0
+          },
+          "expectedSupplyDuration": {
+            "value": 67.0,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
+        },
         "authoredOn": "2019-04-15T16:02:00.000Z"
       }
     },
@@ -740,6 +764,30 @@
             }
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "requester": {
+          "display": "ROBERT MOSS"
+        },
+        "dispenseRequest": {
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "ALICE'S PHARMACY (WA)"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2019-11-15"
+            }
+          ],
+          "quantity": {
+            "value": 60.0
+          },
+          "expectedSupplyDuration": {
+            "value": 30.0,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
         },
         "authoredOn": "2019-01-15T16:02:00.000Z"
       }
@@ -1223,6 +1271,27 @@
             }
           ],
           "text": "Ibuprofen 600 MG Oral Tablet"
+        },
+        "dispenseRequest": {
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "SCRIPT FACTORY (WA)"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-04-27"
+            }
+          ],
+          "quantity": {
+            "value": 30.0
+          },
+          "expectedSupplyDuration": {
+            "value": 10.0,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
         },
         "authoredOn": "2016-12-02T16:00:00.000Z"
       }

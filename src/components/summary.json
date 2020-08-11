@@ -137,11 +137,11 @@
            {
              "headers": {
                "Drug Description": "Name",
-               "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": true},
+               "Quantity": { "key": "Quantity", "sortable": true},
                "Written Date": { "key": "Start", "formatter": "datishFormat" },
                "Dispensed": { "key": "End", "formatter": "datishFormat" },
-               "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": true},
-               "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": true}
+               "Prescriber": { "key": "Prescriber", "sortable": true},
+               "Pharmacy": { "key": "Pharmacy", "sortable": true}
              }
            }
          ]
@@ -174,11 +174,11 @@
            {
              "headers": {
                "Drug Description": "Name",
-               "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": true},
+               "Quantity": { "key": "Quantity", "sortable": true},
                "Written Date": { "key": "Start", "formatter": "datishFormat" },
                "Dispensed": { "key": "End", "formatter": "datishFormat" },
-               "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": true},
-               "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": true}
+               "Prescriber": { "key": "Prescriber", "sortable": true},
+               "Pharmacy": { "key": "Pharmacy", "sortable": true}
              },
              "flags": [
                {
