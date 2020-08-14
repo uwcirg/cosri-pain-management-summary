@@ -850,7 +850,7 @@ define NonOpioidMedicationStatements:
   C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
     [MedicationStatement: "Non opiod pain medications"],
     100 years //changed from 2 to 100
-  )) 
+  ))
 
 define ReportNonOpioidMedicationRequests:
   (NonOpioidMedicationRequests) O
