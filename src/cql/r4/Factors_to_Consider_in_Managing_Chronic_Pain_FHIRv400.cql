@@ -816,6 +816,7 @@ define ReportOpioidMedicationRequests:
     //Amount: QuantityText(O.value as FHIR.Quantity),
     //provided by the extension valueString, may not always be there
     Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+    Prescriber: O.requester.display.value,
     Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
     Status: O.status.value
   }
@@ -858,9 +859,10 @@ define ReportNonOpioidMedicationRequests:
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     //End:   null as String, // MedicationRequest end date not supported in R4,
+    End: DateText(O.dispenseRequest.extension[1].value),
     //Amount: QuantityText(O.value as FHIR.Quantity),
     Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
-    End: DateText(O.dispenseRequest.extension[1].value),
+    Prescriber: O.requester.display.value,
     Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
     Status: O.status.value
   }

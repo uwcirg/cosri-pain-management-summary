@@ -1272,6 +1272,9 @@
           ],
           "text": "Ibuprofen 600 MG Oral Tablet"
         },
+        "requester": {
+          "display": "ROBERT MOSS"
+        },
         "dispenseRequest": {
           "extension": [
             {
