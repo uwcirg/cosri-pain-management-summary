@@ -19,14 +19,14 @@
          }, {
             "localIdentifier" : "FHIR",
             "uri" : "http://hl7.org/fhir",
-            "version" : "4.0.1"
+            "version" : "4.0.0"
          } ]
       },
       "includes" : {
          "def" : [ {
             "localIdentifier" : "FHIRHelpers",
             "path" : "FHIRHelpers",
-            "version" : "4.0.1"
+            "version" : "4.0.0"
          }, {
             "localIdentifier" : "FHIRCommon",
             "path" : "FHIRCommon",

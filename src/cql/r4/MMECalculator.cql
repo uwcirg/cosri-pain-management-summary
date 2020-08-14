@@ -4,9 +4,9 @@ library MMECalculator version '3.0.0'
 FHIR R4 surfacing of the OMTKLogic to provide MME calculation based on MedicationRequest data
 */
 
-using FHIR version '4.0.1'
+using FHIR version '4.0.0'
 
-include FHIRHelpers version '4.0.1'
+include FHIRHelpers version '4.0.0'
 
 include FHIRCommon version '3.0.0'
 include OMTKLogic version '3.0.0'
