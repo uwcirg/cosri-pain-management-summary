@@ -51,11 +51,12 @@ using FHIR version '4.0.1'
 include CDS_Connect_Commons_for_FHIRv400 version '1.0.2' called C3F
 // The FHIRHelpers library provides common functions for simplifying interaction w/ the FHIR R4 data model.
 include FHIRHelpers version '4.0.1' called FHIRHelpers
+include MMECalculator version '3.0.0' called MMECalculator
 // MED_Calculator library provides logic for the MME calculator
 //include MED_Calculator version '1.0.0' called Calc
-include FHIRCommon version '3.0.0'
-include OMTKLogic version '3.0.0'
-include Tx version '3.0.0'
+//include FHIRCommon version '3.0.0'
+//include OMTKLogic version '3.0.0'
+//include Tx version '3.0.0'
 
 
 // # Value sets and codes #
@@ -1055,8 +1056,8 @@ define ReportMostRecentMME:
 
 
 
-//MME Calculator, attempt 2001
-
+//MME Calculator
+/*
   // code from MMECalculator.cql
 define function Prescriptions(Orders List<MedicationRequest>):
   Orders O
@@ -1127,6 +1128,46 @@ define function TotalMME(prescriptions List<MedicationRequest>):
 
 define ReportMME:
   return TotalMME(Prescriptions(Orders))
+*/
+
+// MME (MOST RECENT w/ lookback 6 months) - amount and date
+/*define MostRecentMME:
+  C3F.MostRecent(C3F.Verified(C3F.ObservationLookBack([Observation: "Morphine Milligram Equivalent (MME)"], 6 months)))
+
+define ReportMostRecentMME:
+{
+  if MostRecentMME is null
+  then null
+  else
+    (MostRecentMME) M
+    return {
+      Name:   ConceptText(M.code),
+      Result: QuantityText(M.value as FHIR.Quantity),
+      Date:   ObservationDate(M)
+    }
+}*/
+
+
+// MME Calculation
+define ActiveOpioidMedications:
+  C3F.ActiveMedicationRequest([MedicationRequest: "Opioid Pain Medications"])
+
+define CurrentMME:
+  MMECalculator.TotalMME(ActiveOpioidMedications)
+
+define ReportCurrentMME:
+{
+  if CurrentMME is null then
+    null
+    else
+      (CurrentMME) M
+      return {
+        Name: 'Current Milligram Morphine Equivalent',
+        Result: ToString(M),
+        Date: ToString(Today())
+      }
+}
+
 
 
 
@@ -1157,13 +1198,6 @@ define BenzodiazepineMedicationRequests:
     [MedicationRequest: "Benzodiazepine medications"],
     100 years //changed from 2 to 100
   ))
-
-// I think this function is superfluous 
-//define function MedicationStatementLookBack(MedList List<MedicationStatement>, LookBack System.Quantity):
-//MedList M
-//  let LookBackInterval: Interval[Now() - LookBack, Now()]
-//  where (M.effective as FHIR.dateTime).value in LookBackInterval
-//    or C3F.PeriodToInterval(M.effective as FHIR.Period) overlaps LookBackInterval
 
 define BenzodiazepineMedicationStatements:
   C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
@@ -1350,8 +1384,8 @@ define Summary: {
     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
   },
   RiskConsiderations: {
+    CurrentMME: ReportCurrentMME,
     //MostRecentMME: ReportMostRecentMME,
-    MostRecentMME: ReportMME,
     UrineDrugScreens: ReportUrineDrugScreens,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     CarisoprodolMedications: ReportCarisoprodolMedications,
