@@ -257,7 +257,7 @@ function GetDailyDose(ingredientCode, strength, doseFormCode, doseQuantity, dose
   }
 
   /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
-  if (String(doseQuantity.unit) === 'mL' && (strength.unit.indexOf('/mL') == strength.unit.length - 3)) {
+  if (String(doseQuantity.unit) === 'mL' && (String(strength.unit).indexOf('/mL') === strength.unit.length - 3)) {
     return { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit) }
   }
 
