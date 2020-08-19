@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
-import {datishFormat, dateFormat} from '../helpers/formatit';
+import {datishFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
@@ -250,7 +250,7 @@ export default class Landing extends Component {
         console.log("matched ", medRequests)
         let arrMME = [];
         medRequests[0].forEach(item => {
-          let rxNormCode = 0;
+        //  let rxNormCode = 0;
           let medRequest = item.resource;
           // if (medRequest.medicationCodeableConcept && medRequest.medicationCodeableConcept.coding) {
           //   (medRequest.medicationCodeableConcept.coding).forEach(item => {

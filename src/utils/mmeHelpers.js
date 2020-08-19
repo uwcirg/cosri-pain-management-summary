@@ -114,7 +114,7 @@ function GetConversionFactor(ingredientCode, dailyDose, doseFormCode) {
 function EnsureMicrogramQuantity(strength){
     strength = strength || {};
     // TODO: This should be possible with just quantity arithmetic
-    if (strength.value < 0.1 && strength.unit.indexOf("mg") == 0) 
+    if (strength.value < 0.1 && strength.unit.indexOf("mg") === 0) 
         return {
           value: strength.value * 1000,
           unit: 'mcg' & strength.unit.substring(2)
@@ -146,7 +146,7 @@ GetIngredients:
 */
 function GetIngredients(rxNormCode) {
   rxNormCode = rxNormCode || {};
-  let dSet = drugIngridients.filter(item => item.drugCode == parseInt(rxNormCode));
+  let dSet = drugIngridients.filter(item => item.drugCode === parseInt(rxNormCode));
   if (!dSet.length) return false;
   let DI = dSet[0];
   return {
@@ -257,7 +257,7 @@ function GetDailyDose(ingredientCode, strength, doseFormCode, doseQuantity, dose
   }
 
   /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
-  if (doseQuantity.unit == 'mL' && (strength.unit.indexOf('/mL') == strength.unit.length - 3)) {
+  if (String(doseQuantity.unit) === 'mL' && (strength.unit.indexOf('/mL') == strength.unit.length - 3)) {
     return { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit) }
   }
 
@@ -315,7 +315,6 @@ function ToPrescription(medication) {
     dosageInstruction: dosageInstruction,
     doseAndRate: doseAndRate,
     period: period,
-    doseQuantity: doseQuantity,
     frequency: frequency,
     dateWritten: dateFormat("", medication.authoredOn, "YYYY-MM-DD")
   }
