@@ -40,6 +40,16 @@ export default class MMEGraph extends Component {
     return 0;
   }
 
+  getMaxMMEValue(data) {
+    let maxValue =  0;
+    let CAP_MAX_VALUE = 500;
+    data.forEach(item => {
+      if (item["MMEValue"] > CAP_MAX_VALUE) return true;
+      maxValue = Math.max(maxValue, item["MMEValue"]);
+    });
+    return maxValue;
+  }
+
   render() {
     /*
      *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, {"dateWritten":"2019-04-15","MMEValue":40}]
@@ -55,20 +65,27 @@ export default class MMEGraph extends Component {
     const yFieldName = "MMEValue";
     const xIntervals = 8;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
+    //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
-    let computedData = this.props.data? (this.props.data).sort(this.compareDate): null;
+    let computedData = this.props.data? (this.props.data).map(item => {
+      return {
+        ...item
+      }
+    }): null;
+    computedData = computedData? (computedData).sort(this.compareDate): null;
     let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
     let noEntry = !data || !data.length;
 
     data = data.map(d => {
-      let dObj = new Date(d.dateWritten);
+      let dObj = new Date(d[xFieldName]);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
       dObj.setTime(dObj.getTime() + tzOffset);
       d.dateWritten = dObj;
       return d;
     });
-    let arrayDates = data.map(d => {
-      return d.dateWritten;
+    let arrayDates = data.filter(d => d.dateWritten);
+    arrayDates = arrayDates.map(d => {
+      return d[xFieldName];
     });
     if (arrayDates.length) {
       maxDate = new Date(Math.max.apply(null, arrayDates))
@@ -99,11 +116,12 @@ export default class MMEGraph extends Component {
     const width = parentWidth - margins.left - margins.right;
     const height = 360 - margins.top - margins.bottom;
     const xScale = scaleTime().domain([minDate, maxDate]).rangeRound([0, width]).nice();
-
+    const xMaxValue = Math.max(140, this.getMaxMMEValue(data));
     const yScale = scaleLinear()
-      .domain([0, 140])
+      .domain([0, xMaxValue])
       .range([height, 0])
       .nice();
+    console.log(yScale(30))
 
     const lineGenerator = line()
       .x(d => xScale(d[xFieldName]))
@@ -153,8 +171,9 @@ export default class MMEGraph extends Component {
     };
     const WA_COLOR = "#a75454";
     const CDC_COLOR = "#e09b1d";
+    const textMargin = 4;
     const WALegendSettings = {
-      "y": 30,
+      "y": yScale(120 + textMargin),
       "fill": WA_COLOR,
       ...defaultLegendSettings
     };
@@ -185,8 +204,8 @@ export default class MMEGraph extends Component {
               <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
               <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
               <text {...WALegendSettings}>Washington State consultation threshold</text>
-              <text {...CDCLegendSettings} y="164">CDC extra precautions threshold</text>
-              <text {...CDCLegendSettings} y="88">CDC avoid/justify threshold</text>
+              <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>CDC extra precautions threshold</text>
+              <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>CDC avoid/justify threshold</text>
               <Line lineID="dataLine" data={data} {...dataLineProps} />
               {noEntry && 
                 <text {...defaultLegendSettings} x={width/2 - 20} y={height/2} strokeColor="#777" fill="#777">No entry found</text>

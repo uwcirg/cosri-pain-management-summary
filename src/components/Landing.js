@@ -5,11 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
-import {datishFormat} from '../helpers/formatit';
+import {datishFormat, dateFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
 import {getEnv, fetchEnvData} from '../utils/envConfig';
+import {CalculateMME} from '../utils/mmeHelpers';
 import Header from './Header';
 import Summary from './Summary';
 import Spinner from '../elements/Spinner';
@@ -62,6 +63,7 @@ export default class Landing extends Component {
         //set result from data from EPIC
         let EPICData = response[0];
         result['Summary'] = EPICData ? {...EPICData['Summary']} : {};
+        console.log("summary? ", summaryMap)
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ result, sectionFlags, flaggedCount });
         this.setPatientId();
@@ -69,6 +71,9 @@ export default class Landing extends Component {
         Promise.all([this.getExternalData()]).then(
           externalData => {
             result['Summary'] = {...result['Summary'], ...externalData[0]};
+            let mmeData = this.processMMEData();
+            result['Summary']['RiskConsiderations']['CurrentMME'] = mmeData;
+            console.log("summary data ", result['Summary'])
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
@@ -214,6 +219,11 @@ export default class Landing extends Component {
       return b.priority - a.priority;
     });
     
+    if (overviewSection.graphConfig) {
+      // summary[overviewSectionKey+"_graph"] = [{"dateWritten":"2019-04-01","MMEValue":40,"_id":37},{"dateWritten":"2019-04-15","MMEValue":40,"_id":34},{"dateWritten":"2019-05-01","MMEValue":40,"_id":32},{"dateWritten":"2019-05-15","MMEValue":40,"_id":31},{"dateWritten":"2019-06-01","MMEValue":40,"_id":30},{"dateWritten":"2019-06-15","MMEValue":40,"_id":29},{"dateWritten":"2019-07-01","MMEValue":40,"_id":28},{"dateWritten":"2019-07-15","MMEValue":40,"_id":27},{"dateWritten":"2019-07-30","MMEValue":100,"_id":22},{"dateWritten":"2019-10-01","MMEValue":100,"_id":20},{"dateWritten":"2019-10-15","MMEValue":100,"_id":17},{"dateWritten":"2019-11-01","MMEValue":55,"_id":7},{"dateWritten":"2019-11-15","MMEValue":55,"_id":6},{"dateWritten":"2019-12-01","MMEValue":40,"_id":5}]
+      summary[overviewSectionKey+"_graph"] = summary[overviewSection.graphConfig.dataKey][overviewSection.graphConfig.dataKeySource];
+    }
+
     summary[overviewSectionKey+"_stats"] = stats;
     summary[overviewSectionKey+"_alerts"] = alerts.filter((item,index,thisRef)=>thisRef.findIndex(t=>(t.text === item.text))===index);
 
@@ -225,6 +235,72 @@ export default class Landing extends Component {
     .replace('{process.env.REACT_APP_CONF_API_URL}', getEnv("REACT_APP_CONF_API_URL"))
     .replace('{process.env.PUBLIC_URL}', getEnv("PUBLIC_URL"))
     .replace('{patientId}', this.getPatientId());
+  }
+
+  processMMEData() {
+    console.log("collector ", this.state.collector)
+        let medRequests = (this.state.collector).filter(item => {
+          return (/medicationrequest/gi).test(item.url)
+        });
+        if (medRequests.length) {
+          medRequests = medRequests.map(item => {
+            return item.data.entry;
+          })
+        }
+        console.log("matched ", medRequests)
+        let arrMME = [];
+        medRequests[0].forEach(item => {
+          let rxNormCode = 0;
+          let medRequest = item.resource;
+          // if (medRequest.medicationCodeableConcept && medRequest.medicationCodeableConcept.coding) {
+          //   (medRequest.medicationCodeableConcept.coding).forEach(item => {
+          //     if (rxNormCode) return true;
+          //     if (/rxnorm/i.test(item.system)) {
+          //       rxNormCode = item.code;
+          //     }
+          //   })
+          // }
+          // let quantity = medRequest.dispenseRequest ? medRequest.dispenseRequest.quantity.value: 1;
+          // let dosageInstruction = medRequest.dosageInstruction? medRequest.dosageInstruction[0]: {};
+          // let doseAndRate = dosageInstruction.doseAndRate && dosageInstruction.doseAndRate.length? dosageInstruction.doseAndRate[0]: {};
+          // let repeat = dosageInstruction.timing? dosageInstruction.timing.repeat: null;
+          // let frequency = repeat ? Math.max(repeat.frequencyMax.value, repeat.frequency.value) : 1;
+          // let duration = medRequest.dispenseRequest ? medRequest.dispenseRequest.expectedSupplyDuration: null;
+          // let period = repeat ? { value: repeat.period.value, unit: repeat.periodUnit.value } : duration;
+          // let doseQuantity = {
+          //   value: quantity,
+          //   unit: duration? duration.unit: ""
+          // };
+          // if (doseAndRate && doseAndRate.doseQuantity) {
+          //   doseQuantity = doseAndRate.doseQuantity;
+          // }
+          // if (doseAndRate && doseAndRate.doseRange && doseAndRate.doseRange.high) {
+          //   doseQuantity = doseAndRate.doseRange.high;
+          // }
+          //let daysSupply = item.expectedSupplyDuration && item.expectedSupplyDuration.value ? item.expectedSupplyDuration.value : 1;
+          let mmeObject = CalculateMME(medRequest);
+          //let medName = medRequest.medicationCodeableConcept.text;
+          //let dateWritten = dateFormat("", medRequest.authoredOn, "YYYY-MM-DD");
+          // console.log("rxnorm code? ", rxNormCode)
+          // console.log("quantity ", quantity)
+          // console.log("duration ", duration)
+          //console.log("authored? ", dateFormat("", medRequest.authoredOn, "YYYY-MM-DD"))
+          // console.log(mmeObject)
+          if (mmeObject && mmeObject.MMEValue) {
+            console.log("MME OBJECT, " , mmeObject)
+            arrMME.push(mmeObject);
+            // let existingMed = arrMME.filter(item => {
+            //   return item.dateWritten == dateWritten;
+            // })
+            // if (existingMed.length) {
+            //   existingMed[0].MMEValue = existingMed.MMEValue + mmeObject.MMEValue;
+            // } else {
+            //   arrMME.push(mmeObject)
+            // }
+          }
+        })
+        console.log("MMEObject ", arrMME)
+        return arrMME;
   }
 
   processMedicationOrder(result, dataKey) {

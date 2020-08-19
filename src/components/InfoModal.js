@@ -80,10 +80,20 @@ export default class InfoModal extends Component {
     );
   }
 
+  renderText(text) {
+    return (
+      <div className="text-reference" role="table"
+           aria-label="reference">
+       {text[0].description}
+      </div>
+    );
+  }
+
   render() {
     const { subSection, closeModal } = this.props;
     const elements = subSection.info.find((el) => el.type === "elements");
     const references = subSection.info.filter((el) => el.type === "reference");
+    const textElement = subSection.info.filter((el) => el.type === "text");
 
     return (
       <div className="info-modal">
@@ -103,6 +113,12 @@ export default class InfoModal extends Component {
             <div className="references">
               <h4>References:</h4>
               {this.renderReferences(references)}
+            </div>
+          }
+
+          {textElement.length > 0 &&
+            <div className="text">
+              {this.renderText(textElement)}
             </div>
           }
         </div>
