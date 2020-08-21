@@ -1,6 +1,28 @@
 import drugIngridients from "./drugIngridients";
 import {dateFormat} from '../helpers/formatit';
 
+/*
+This library provides functionality for calculating Milligram Morphine
+Equivalents (MME) for opioid medications, as described in the CDC Opioid
+Prescribing Guideline.
+The functionality in this library was developed based on the Java-based
+implementation described [here](http://build.fhir.org/ig/cqframework/opioid-cds-r4/service-documentation.html#solution-component-3-core-logic-processing-java-class),
+as well as the MME conversion calculation published as part of the CDC Opioid
+Prescribing Guideline.
+The version of the OMTKLogic library to which this source code is based on uses the OMTKData library as the
+source for drug ingredient and strength information, rather than the
+OMTK data source. The library has no external dependencies.
+NOTE: For performance, all terminology comparisons in this library use
+direct integer comparison of the RxNorm codes.
+This product uses publicly available data courtesy of the U.S. National Library of Medicine (NLM),
+National Institutes of Health, Department of Health and Human Services; NLM is not responsible for
+the product and does not endorse or recommend this or any other product.
+Nelson SJ, Zeng K, Kilbourne J, Powell T, Moore R. Normalized names for clinical drugs: RxNorm at 6 years.
+J Am Med Inform Assoc. 2011 Jul-Aug;18(4)441-8. doi: 10.1136/amiajnl-2011-000116.
+Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
+[Full text](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3128404/)
+*/
+
 function ToUCUM(unit) {
     switch(unit){
         case 'MG': return 'mg';
@@ -211,7 +233,6 @@ function StripPer(unit){
 function ToDaily(frequency, period){
   frequency = frequency || 1;
   period = period || {};
-  console.log("period ", period)
   switch (period.unit) {
     case 'h' : return frequency * (24.0 / period.value);
     case 'min' : return frequency * (24.0 / period.value) * 60
@@ -250,7 +271,7 @@ function GetDailyDose(ingredientCode, strength, doseFormCode, doseQuantity, dose
   let strengthUnit = (strength ? strength.unit : "");
 
   /* if patch --> daily dose = dose value (e.g, number patches with doseQuantity unit = "patch") * per-hour strength */
-  console.log("dose per day? ", dosesPerDay, " quantity ", quantity, " strength ", strengthValue)
+  //console.log("Parameters to GetDailyDose: dose per day? ", dosesPerDay, " quantity ", quantity, " strength ", strengthValue)
   if (ToInteger(doseFormCode.code) === 316987) {
     /* buprenorphine or fentanyl patch */
     if ([1819, 4337].indexOf(ToInteger(ingredientCode.code)) !== -1) 
@@ -281,7 +302,6 @@ function ToInteger(item) {
 }
 
 function ToPrescription(medication) {
-  console.log("medication? ", medication)
   if (!medication) {
     return false;
   }
@@ -352,16 +372,16 @@ function ToPrescription(medication) {
 */
 export function CalculateMME(medication) {
   let M = ToPrescription(medication);
-  console.log("return med? ", M)
+  //console.log("return med? ", M)
   let I =  GetIngredients(M.rxNormCode);
-  console.log("ingredient? ", I)
- // if (!I) return false;
+  //console.log("ingredient? ", I)
+  if (!I) return false;
   let adjustedDoseQuantity = EnsureMicrogramQuantity(M.doseQuantity);
-  console.log("adjusted dose? ", adjustedDoseQuantity)
+  //console.log("adjusted dose? ", adjustedDoseQuantity)
   let dosesPerDay = ToDaily(M.frequency, M.period);
-  console.log("doses per day ", dosesPerDay)
+  //console.log("doses per day ", dosesPerDay)
   let dailyDose = GetDailyDose(I.ingredientCode, I.strength, I.doseFormCode, adjustedDoseQuantity, dosesPerDay);
-  console.log("dailyDose ", dailyDose)
+  //console.log("dailyDose ", dailyDose)
   let factor =  GetConversionFactor(I.ingredientCode, dailyDose, I.doseFormCode);
   return {
     name: (M.name ? M.name : GetIngredientName(I.ingredientCode)),
@@ -383,3 +403,4 @@ export function CalculateMME(medication) {
     authoredOn: M.authoredOn
   }
 }
+

@@ -273,9 +273,15 @@ export default class Landing extends Component {
     const OPIOID_MEDS_SECTION_DATAKEY = "HistoricalTreatments";
     const OPIOID_MEDS_SECTION_DATAKEYSOURCE = "OpioidMedications";
     console.log("collector ", this.state.collector)
+        /*
+         * MedicationRequest
+         */
         let medRequests = (this.state.collector).filter(item => {
           return (/medicationrequest/gi).test(item.url)
         });
+        /*
+         * MedicationOrder
+         */
         if (!medRequests.length) {
           medRequests = (this.state.collector).filter(item => {
             return (/medicationorder/gi).test(item.url)
@@ -290,33 +296,35 @@ export default class Landing extends Component {
         // console.log("example json ", MedicationRequestExample.entry)
         // medRequests = [MedicationRequestExample.entry]
         let arrMME = [];
+        /*
+         * calculate MED value for each
+         */
         if (medRequests.length) {
         medRequests[0].forEach(item => {
           let medRequest = item.resource ? item.resource: item;
           let mmeObject = CalculateMME(medRequest);
           if (mmeObject && mmeObject[MME_FIELD_NAME]) {
-            console.log("MME OBJECT, " , mmeObject)
             arrMME.push(mmeObject);
           }
         });
       }
-        console.log("MMEObject ", arrMME)
-        result["Summary"] = result["Summary"] || {}
-        result['Summary']['MME_Values'] = arrMME;
-        result['Summary'][OPIOID_MEDS_SECTION_DATAKEY] = result['Summary'][OPIOID_MEDS_SECTION_DATAKEY] || {};
-        let sectionRef = result['Summary'][OPIOID_MEDS_SECTION_DATAKEY][OPIOID_MEDS_SECTION_DATAKEYSOURCE];
-        if (sectionRef && sectionRef.length) {
-          (result['Summary'][OPIOID_MEDS_SECTION_DATAKEY][OPIOID_MEDS_SECTION_DATAKEYSOURCE]).forEach(item => {
-            let match = arrMME.filter(med => {
-              return dateFormat("", med.authoredOn, "YYYY-MM-DD") === dateFormat("", item.Start , "YYYY-MM-DD") && med.name === item.Name
-            });
-            if (match.length) {
-              item[MME_FIELD_NAME] = match[0][MME_FIELD_NAME];
-            }
+      result["Summary"] = result["Summary"] || {}
+      result['Summary']['MME_Values'] = arrMME;
+      result['Summary'][OPIOID_MEDS_SECTION_DATAKEY] = result['Summary'][OPIOID_MEDS_SECTION_DATAKEY] || {};
+      let sectionRef = result['Summary'][OPIOID_MEDS_SECTION_DATAKEY][OPIOID_MEDS_SECTION_DATAKEYSOURCE];
+      if (sectionRef && sectionRef.length) {
+        (result['Summary'][OPIOID_MEDS_SECTION_DATAKEY][OPIOID_MEDS_SECTION_DATAKEYSOURCE]).forEach(item => {
+          let match = arrMME.filter(med => {
+            return dateFormat("", med.authoredOn, "YYYY-MM-DD") === dateFormat("", item.Start , "YYYY-MM-DD") && 
+            med.name === item.Name
           });
-        }
-        this.setState({result: result});
-        return arrMME;
+          if (match.length) {
+            item[MME_FIELD_NAME] = match[0][MME_FIELD_NAME];
+          }
+        });
+      }
+      this.setState({result: result});
+      return arrMME;
   }
 
   processMedicationOrder(result, dataKey) {
