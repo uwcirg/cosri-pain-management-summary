@@ -24,6 +24,7 @@ export default class MMEGraph extends Component {
     }
     let index = 0;
     let increment = Math.ceil((maxDate.getTime() - minDate.getTime()) / total);
+    console.log("increment? ", increment)
     while(index <= total) {
       let addTime = minDate.getTime() + increment*index;
       let item = {};
@@ -96,10 +97,11 @@ export default class MMEGraph extends Component {
        */
       let calcMinDate = new Date(minDate.valueOf());
       let calcMaxDate = new Date(maxDate.valueOf());
-      minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
-      maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
-      maxDate = new Date(Math.max(Math.max.apply(null, arrayDates), maxDate))
-      minDate = new Date(Math.min(Math.min.apply(null, arrayDates), minDate));
+      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * ((xIntervals-arrayDates.length)/2-1)));
+      maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + (30 * ((xIntervals-arrayDates.length)/2-1)));
+      maxDate = new Date(maxDate);
+      minDate = new Date(minDate);
+      console.log("min date ", minDate, " max date ", maxDate)
     }
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
     let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, minDate, maxDate, ...lineParamsSet);

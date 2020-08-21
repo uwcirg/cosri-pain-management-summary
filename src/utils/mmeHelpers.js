@@ -397,10 +397,9 @@ export function CalculateMME(medication) {
     dailyDoseDescription: getDailyDoseDescription(dailyDose),
     conversionFactor: factor,
     MMEValue: ToInteger(dailyDose.value * factor),
-    unit: '{MME}/d',
+    MMEUnit: '{MME}/d',
     prescription: M.prescription,
     dateWritten: M.dateWritten,
     authoredOn: M.authoredOn
   }
 }
-
