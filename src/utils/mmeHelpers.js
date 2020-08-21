@@ -169,7 +169,7 @@ function GetIngredientName(ingredientCode){
     return ingredientCode.display;
   }
   let dSet = drugIngridients.filter(item => {
-      return item.ingredientCode.code === parseInt(ingredientCode.code);
+    return item.ingredientCode.code === parseInt(ingredientCode.code);
   });
   if (dSet.length) {
     return dSet[0].ingredientCode.display;
@@ -243,26 +243,32 @@ function ToDaily(frequency, period){
 function GetDailyDose(ingredientCode, strength, doseFormCode, doseQuantity, dosesPerDay){
   doseFormCode = doseFormCode || {};
   dosesPerDay = dosesPerDay || 1;
+  ingredientCode = ingredientCode || {};
+  let strengthValue = strength && strength.value? strength.value: 1;
+  let quantity = doseQuantity && doseQuantity.value ? doseQuantity.value: 1;
+  let quantityUnit = doseQuantity && doseQuantity.unit? doseQuantity.unit: "";
+  let strengthUnit = (strength ? strength.unit : "");
+
   /* if patch --> daily dose = dose value (e.g, number patches with doseQuantity unit = "patch") * per-hour strength */
-  console.log("dose per day? ", dosesPerDay, " quantity ", doseQuantity.value, " strength ", strength.value)
+  console.log("dose per day? ", dosesPerDay, " quantity ", quantity, " strength ", strengthValue)
   if (ToInteger(doseFormCode.code) === 316987) {
     /* buprenorphine or fentanyl patch */
     if ([1819, 4337].indexOf(ToInteger(ingredientCode.code)) !== -1) 
-      return { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit }
+      return { value: dosesPerDay * quantity * strengthValue, unit: strengthUnit }
     return null;
   }
   /* if dose unit in actual mass units (mg or mcg -- when it's a single med) --> daily dose = numTimesPerDay * dose */
-  if (['mg', 'mcg'].indexOf(doseQuantity.unit) !== -1) {
-    return { value: dosesPerDay * doseQuantity.value, unit: doseQuantity.unit };
+  if (['mg', 'mcg'].indexOf(quantityUnit) !== -1) {
+    return { value: dosesPerDay * quantity, unit: quantityUnit };
   }
 
   /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
-  if (String(doseQuantity.unit) === 'mL' && (String(strength.unit).indexOf('/mL') === strength.unit.length - 3)) {
-    return { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit) }
+  if (String(quantityUnit) === 'mL' && (String(strengthUnit).indexOf('/mL') === String(strengthUnit).length - 3)) {
+    return { value: dosesPerDay * quantity * strengthValue, unit: StripPer(strengthUnit) }
   }
 
   /* if doseQuantity is not in actual units (e.g., 1 tab, 1 spray -- when it's a combo med with a unit of tablet, or it's mg/actuat) -->  daily dose = numTimesPerDay * dose value * strength value */
-  return { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit)}
+  return { value: dosesPerDay * quantity * strengthValue, unit: StripPer(strengthUnit)}
 }
 
 function getDailyDoseDescription(dailyDose) {
@@ -288,25 +294,30 @@ function ToPrescription(medication) {
       }
     });
   }
-  let quantity = medication.dispenseRequest ? medication.dispenseRequest.quantity.value: 1;
+  let medicationName = medication.medicationCodeableConcept ? medication.medicationCodeableConcept.text: "";
+  let quantity = medication.dispenseRequest && medication.dispenseRequest.quantity && medication.dispenseRequest.quantity.value ? medication.dispenseRequest.quantity.value: 1;
   let dosageInstruction = medication.dosageInstruction? medication.dosageInstruction[0]: {};
   let doseAndRate = dosageInstruction.doseAndRate && dosageInstruction.doseAndRate.length? dosageInstruction.doseAndRate[0]: {};
+  let doseRange = doseAndRate.doseRange;
   let repeat = dosageInstruction.timing? dosageInstruction.timing.repeat: null;
-  let frequency = repeat ? Math.max(repeat.frequencyMax.value, repeat.frequency.value) : 1;
+  let frequencyMax = repeat && repeat.frequencyMax && repeat.frequencyMax? repeat.frequencyMax : 1;
+  let repeatFrequency = repeat && repeat.frequency && repeat.frequency ? repeat.frequency : 1;
+  let frequency = repeat ? Math.max(frequencyMax, repeatFrequency) : 1;
+  let frequencyDescription = frequency + (frequencyMax ? ("-" + frequencyMax): "");
   let duration = medication.dispenseRequest ? medication.dispenseRequest.expectedSupplyDuration: null;
-  let period = repeat ? { value: repeat.period.value, unit: repeat.periodUnit.value } : duration;
+  let period = repeat && repeat.period ? { value: repeat.period, unit: repeat.periodUnit } : duration;
   let doseQuantity = {
     value: quantity,
     unit: duration? duration.unit: ""
   };
   if (doseAndRate && doseAndRate.doseQuantity) {
-    doseQuantity = doseAndRate.doseQuantity;
+    doseQuantity = doseAndRate.doseQuantity.value;
   }
-  if (doseAndRate && doseAndRate.doseRange && doseAndRate.doseRange.high) {
-    doseQuantity = doseAndRate.doseRange.high;
+  if (doseRange && doseRange.high) {
+    doseQuantity = doseRange.high.value;
   }
-  //let dateWritten =  dateFormat("", medication.authoredOn, "YYYY-MM-DD");
-  //console.log("WTF? ", dateFormat("", medication.authoredOn, "YYYY-MM-DD"))
+  let doseDescription = doseRange ? (doseRange.low + '-' + doseRange.high + doseRange.high.unit.value) : doseQuantity;
+  let authoredOn = {...medication}.authoredOn ? {...medication}.authoredOn : {...medication}.dateWritten;
   return {
     name: medication.medicationCodeableConcept.text,
     rxNormCode: rxNormCode,
@@ -314,9 +325,12 @@ function ToPrescription(medication) {
     isPRN: dosageInstruction.asNeeded,
     dosageInstruction: dosageInstruction,
     doseAndRate: doseAndRate,
+    doseDescription: doseDescription,
     period: period,
     frequency: frequency,
-    dateWritten: dateFormat("", medication.authoredOn, "YYYY-MM-DD")
+    prescription: dosageInstruction.text? (medicationName + " " + dosageInstruction.text) : (medicationName + " " + doseDescription + " q" + frequencyDescription +  (dosageInstruction.asNeeded? " PRN": "")),
+    dateWritten: dateFormat("", authoredOn, "YYYY-MM-DD"),
+    authoredOn: medication.authoredOn ? medication.authoredOn: medication.dateWritten
   }
 }
 
@@ -341,7 +355,7 @@ export function CalculateMME(medication) {
   console.log("return med? ", M)
   let I =  GetIngredients(M.rxNormCode);
   console.log("ingredient? ", I)
-  if (!I) return false;
+ // if (!I) return false;
   let adjustedDoseQuantity = EnsureMicrogramQuantity(M.doseQuantity);
   console.log("adjusted dose? ", adjustedDoseQuantity)
   let dosesPerDay = ToDaily(M.frequency, M.period);
@@ -364,6 +378,8 @@ export function CalculateMME(medication) {
     conversionFactor: factor,
     MMEValue: ToInteger(dailyDose.value * factor),
     unit: '{MME}/d',
-    dateWritten: M.dateWritten
+    prescription: M.prescription,
+    dateWritten: M.dateWritten,
+    authoredOn: M.authoredOn
   }
 }

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
-import {datishFormat} from '../helpers/formatit';
+import {datishFormat, dateFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
@@ -16,6 +16,7 @@ import Summary from './Summary';
 import Spinner from '../elements/Spinner';
 
 let uuid = 0;
+const MME_FIELD_NAME = "MMEValue";
 
 function generateUuid() {
   return ++uuid; // eslint-disable-line no-plusplus
@@ -71,10 +72,9 @@ export default class Landing extends Component {
         Promise.all([this.getExternalData()]).then(
           externalData => {
             result['Summary'] = {...result['Summary'], ...externalData[0]};
-            let mmeData = this.processMMEData();
-            result['Summary']['RiskConsiderations']['CurrentMME'] = mmeData;
             console.log("summary data ", result['Summary'])
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+            this.processMMEData();
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
             this.setState({ loading: false});
@@ -220,8 +220,33 @@ export default class Landing extends Component {
     });
     
     if (overviewSection.graphConfig) {
-      // summary[overviewSectionKey+"_graph"] = [{"dateWritten":"2019-04-01","MMEValue":40,"_id":37},{"dateWritten":"2019-04-15","MMEValue":40,"_id":34},{"dateWritten":"2019-05-01","MMEValue":40,"_id":32},{"dateWritten":"2019-05-15","MMEValue":40,"_id":31},{"dateWritten":"2019-06-01","MMEValue":40,"_id":30},{"dateWritten":"2019-06-15","MMEValue":40,"_id":29},{"dateWritten":"2019-07-01","MMEValue":40,"_id":28},{"dateWritten":"2019-07-15","MMEValue":40,"_id":27},{"dateWritten":"2019-07-30","MMEValue":100,"_id":22},{"dateWritten":"2019-10-01","MMEValue":100,"_id":20},{"dateWritten":"2019-10-15","MMEValue":100,"_id":17},{"dateWritten":"2019-11-01","MMEValue":55,"_id":7},{"dateWritten":"2019-11-15","MMEValue":55,"_id":6},{"dateWritten":"2019-12-01","MMEValue":40,"_id":5}]
-      summary[overviewSectionKey+"_graph"] = summary[overviewSection.graphConfig.dataKey][overviewSection.graphConfig.dataKeySource];
+      let graphDataSource = summary[overviewSection.graphConfig.dataKey];
+      let dedupedGraphDataSource = []
+      if (graphDataSource && graphDataSource.length) {
+
+        graphDataSource.forEach(item => {
+          let hasSameItem = dedupedGraphDataSource.filter(o => {
+            return o.name === item.name && o.dateWritten === item.dateWritten
+          });
+          if (hasSameItem.length) {
+            return true;
+          }
+          let sameDateEntry = false;
+          dedupedGraphDataSource.forEach((o, index) => {
+            if (o.name !== item.name && o.dateWritten === item.dateWritten) {
+              console.log("existing MME ",o[MME_FIELD_NAME], " item MME ", item[MME_FIELD_NAME])
+              o[MME_FIELD_NAME] = o[MME_FIELD_NAME] + item[MME_FIELD_NAME];
+              console.log("same date? changed MME ", o)
+              sameDateEntry = true;
+            }
+          });
+          if (sameDateEntry) {
+            return true;
+          }
+          dedupedGraphDataSource.push(item)
+        })
+      }
+      summary[overviewSectionKey+"_graph"] = dedupedGraphDataSource;
     }
 
     summary[overviewSectionKey+"_stats"] = stats;
@@ -238,68 +263,59 @@ export default class Landing extends Component {
   }
 
   processMMEData() {
+    if (!this.state.collector) {
+      return;
+    }
+    let result  = this.state.result;
+    if (!result) {
+      return;
+    }
+    const OPIOID_MEDS_SECTION_DATAKEY = "HistoricalTreatments";
+    const OPIOID_MEDS_SECTION_DATAKEYSOURCE = "OpioidMedications";
     console.log("collector ", this.state.collector)
         let medRequests = (this.state.collector).filter(item => {
           return (/medicationrequest/gi).test(item.url)
         });
+        if (!medRequests.length) {
+          medRequests = (this.state.collector).filter(item => {
+            return (/medicationorder/gi).test(item.url)
+          });
+        }
         if (medRequests.length) {
           medRequests = medRequests.map(item => {
             return item.data.entry;
           })
         }
         console.log("matched ", medRequests)
+        // console.log("example json ", MedicationRequestExample.entry)
+        // medRequests = [MedicationRequestExample.entry]
         let arrMME = [];
+        if (medRequests.length) {
         medRequests[0].forEach(item => {
-        //  let rxNormCode = 0;
-          let medRequest = item.resource;
-          // if (medRequest.medicationCodeableConcept && medRequest.medicationCodeableConcept.coding) {
-          //   (medRequest.medicationCodeableConcept.coding).forEach(item => {
-          //     if (rxNormCode) return true;
-          //     if (/rxnorm/i.test(item.system)) {
-          //       rxNormCode = item.code;
-          //     }
-          //   })
-          // }
-          // let quantity = medRequest.dispenseRequest ? medRequest.dispenseRequest.quantity.value: 1;
-          // let dosageInstruction = medRequest.dosageInstruction? medRequest.dosageInstruction[0]: {};
-          // let doseAndRate = dosageInstruction.doseAndRate && dosageInstruction.doseAndRate.length? dosageInstruction.doseAndRate[0]: {};
-          // let repeat = dosageInstruction.timing? dosageInstruction.timing.repeat: null;
-          // let frequency = repeat ? Math.max(repeat.frequencyMax.value, repeat.frequency.value) : 1;
-          // let duration = medRequest.dispenseRequest ? medRequest.dispenseRequest.expectedSupplyDuration: null;
-          // let period = repeat ? { value: repeat.period.value, unit: repeat.periodUnit.value } : duration;
-          // let doseQuantity = {
-          //   value: quantity,
-          //   unit: duration? duration.unit: ""
-          // };
-          // if (doseAndRate && doseAndRate.doseQuantity) {
-          //   doseQuantity = doseAndRate.doseQuantity;
-          // }
-          // if (doseAndRate && doseAndRate.doseRange && doseAndRate.doseRange.high) {
-          //   doseQuantity = doseAndRate.doseRange.high;
-          // }
-          //let daysSupply = item.expectedSupplyDuration && item.expectedSupplyDuration.value ? item.expectedSupplyDuration.value : 1;
+          let medRequest = item.resource ? item.resource: item;
           let mmeObject = CalculateMME(medRequest);
-          //let medName = medRequest.medicationCodeableConcept.text;
-          //let dateWritten = dateFormat("", medRequest.authoredOn, "YYYY-MM-DD");
-          // console.log("rxnorm code? ", rxNormCode)
-          // console.log("quantity ", quantity)
-          // console.log("duration ", duration)
-          //console.log("authored? ", dateFormat("", medRequest.authoredOn, "YYYY-MM-DD"))
-          // console.log(mmeObject)
-          if (mmeObject && mmeObject.MMEValue) {
+          if (mmeObject && mmeObject[MME_FIELD_NAME]) {
             console.log("MME OBJECT, " , mmeObject)
             arrMME.push(mmeObject);
-            // let existingMed = arrMME.filter(item => {
-            //   return item.dateWritten == dateWritten;
-            // })
-            // if (existingMed.length) {
-            //   existingMed[0].MMEValue = existingMed.MMEValue + mmeObject.MMEValue;
-            // } else {
-            //   arrMME.push(mmeObject)
-            // }
           }
-        })
+        });
+      }
         console.log("MMEObject ", arrMME)
+        result["Summary"] = result["Summary"] || {}
+        result['Summary']['MME_Values'] = arrMME;
+        result['Summary'][OPIOID_MEDS_SECTION_DATAKEY] = result['Summary'][OPIOID_MEDS_SECTION_DATAKEY] || {};
+        let sectionRef = result['Summary'][OPIOID_MEDS_SECTION_DATAKEY][OPIOID_MEDS_SECTION_DATAKEYSOURCE];
+        if (sectionRef && sectionRef.length) {
+          (result['Summary'][OPIOID_MEDS_SECTION_DATAKEY][OPIOID_MEDS_SECTION_DATAKEYSOURCE]).forEach(item => {
+            let match = arrMME.filter(med => {
+              return dateFormat("", med.authoredOn, "YYYY-MM-DD") === dateFormat("", item.Start , "YYYY-MM-DD") && med.name === item.Name
+            });
+            if (match.length) {
+              item[MME_FIELD_NAME] = match[0][MME_FIELD_NAME];
+            }
+          });
+        }
+        this.setState({result: result});
         return arrMME;
   }
 
@@ -338,6 +354,12 @@ export default class Landing extends Component {
       if (pObj.length) {
         item["_pharmacy"] = pObj[0].valueString;
       }
+      if (!item.dateWritten && item.authoredOn) {
+        item.dateWritten = item.authoredOn;
+      }
+      //mme value
+      let mmeObj = CalculateMME(item);
+      item[MME_FIELD_NAME] = mmeObj ? mmeObj[MME_FIELD_NAME] : "";
     });
     /*
      * a hack, until figure out why react table is not sorting the date correctly by default

@@ -24,8 +24,7 @@
       ]
     },
     "graphConfig": {
-      "dataKey": "RiskConsiderations",
-      "dataKeySource": "CurrentMME"
+      "dataKey": "MME_Values"
     },
     "sections": [
       {
@@ -75,7 +74,6 @@
         "name": "PMP Prescriptions",
         "dataKey": "PDMPMedications",
         "dataKeySource": "PDMPMedications",
-        "omitTitle": true,
         "info": [
           {
             "type": "elements",
@@ -83,10 +81,13 @@
             "elements": [
               {
                 "name": "MedicationOrder",
-                "status": "any",
-                "lookback": "1 year"
+                "status": "any"
               }
             ]
+          },
+          {
+            "type": "text",
+            "description": "Morphine Equivalent Dose (MED) is calculated based on multiplying calculated daily dose for a medication by the corresponding conversion factor according to the CDC guideline."
           }
         ],
         "tables": [
@@ -98,6 +99,7 @@
                 "formatterArguments": ["text"]
               },
               "Quantity": "_quantity",
+              "MED": "MMEValue",
               "Written Date": { "key": "dateWritten", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
               "Dispensed": { "key": "_dateDispensed", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
               "Prescriber": "_prescriber",
@@ -126,6 +128,10 @@
                  "lookback": "2 years"
                }
              ]
+           },
+           {
+             "type": "text",
+             "description": "Morphine Equivalent Dose (MED) is calculated based on multiplying calculated daily dose for a medication by the corresponding conversion factor according to the CDC guideline."
            }
          ],
          "tables": [
@@ -133,6 +139,7 @@
              "headers": {
                "Drug Description": "Name",
                "Quantity": { "key": "Quantity", "sortable": true},
+               "MED": {"key": "MMEValue", "sortable": true},
                "Written Date": { "key": "Start", "formatter": "datishFormat" },
                "Dispensed": { "key": "End", "formatter": "datishFormat" },
                "Prescriber": { "key": "Prescriber", "sortable": true},
@@ -504,8 +511,8 @@
     "title": "Risk Considerations",
     "sections":[
       {
-        "name": "Current MED",
-        "dataKey": "CurrentMME",
+        "name": "Most Recent MED",
+        "dataKey": "MostRecentMME",
         "dataKeySource": "RiskConsiderations",
         "guideline": [
           {
@@ -516,18 +523,23 @@
         ],
         "info": [
           {
-            "type": "text",
-            "description": "MED is calculated by based on the production of the conversion factor for a given medication (see CDC Guideline: https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf) and the computed daily dose."
+            "type": "elements",
+            "description": "Most Recent MED queries the following elements:",
+            "elements": [
+              {
+                "name": "Morphine Equivalent Dose (MED)",
+                "status": "final or amended",
+                "lookback": "most recent in past 6 months"
+              }
+            ]
           }
         ],
         "tables": [
           {
             "headers": {
-              "Drug Description": "name",
-              "Quantity": "quantity",
-              "Daily Dose": "dailyDoseDescription",
-              "MED Value": { "key": "MMEValue", "formatter": "quantityFormat" },
-              "Date": "dateWritten"
+              "Name": "Name",
+              "Result": { "key": "Result", "formatter": "quantityFormat" },
+              "Date": { "key": "Date", "formatter": "datishFormat" }
             },
             "flags": [
               {

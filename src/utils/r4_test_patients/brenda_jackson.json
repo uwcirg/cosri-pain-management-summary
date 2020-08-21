@@ -733,7 +733,7 @@
             }
           ],
           "quantity": {
-            "value": 813.0
+            "value": 100.0
           },
           "expectedSupplyDuration": {
             "value": 67.0,
@@ -776,7 +776,7 @@
             },
             {
               "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2019-11-15"
+              "valueDate": "2020-07-15"
             }
           ],
           "quantity": {
@@ -789,7 +789,7 @@
             "code": "d"
           }
         },
-        "authoredOn": "2019-01-15T16:02:00.000Z"
+        "authoredOn": "2020-07-15T16:02:00.000Z"
       }
     },
     {
@@ -828,12 +828,79 @@
         "medicationCodeableConcept": {
           "coding": [
             {
+              "system": "http://hl7.org/fhir/sid/ndc",
+              "code": "00228315603",
+              "display": "BUPRENORPHINE 2 MG TABLET SL"
+            },
+            {
               "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "351264",
+              "display": "BUPRENORPHINE 2 MG TABLET SL"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "BUPRENORPHINE 2 MG TABLET SL"
+        },
+        "dispenseRequest": {
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "REAL CHAIN STORE 2 (ID)"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2018-07-22"
+            }
+          ],
+          "quantity": {
+            "value": 14.0
+          },
+          "expectedSupplyDuration": {
+            "value": 7.0,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
+        },
+        "dosageInstruction": [
+          {
+            "sequence": 1,
+            "text": "2 MG per day",
+            "additionalInstruction": [
+              {
+                "text": "Rapidly increase dose until tolerated"
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "duration": 7,
+                "durationUnit": "d",
+                "frequency": 1,
+                "period": 7,
+                "periodUnit": "d"
+              }
+            },
+            "doseAndRate": [
+              {
+                "type": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/dose-rate-type",
+                      "code": "ordered",
+                      "display": "Ordered"
+                    }
+                  ]
+                },
+                "doseQuantity": {
+                  "value": 14,
+                  "unit": "mg",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg"
+                }
+              }
+            ]
+          }],
+        "requester": {
+          "display": "ALEX VAISMAN"
         },
         "authoredOn": "2018-07-15T16:02:00.000Z"
       }

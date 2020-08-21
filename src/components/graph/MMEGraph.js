@@ -5,6 +5,8 @@ import { line, curveMonotoneX } from 'd3-shape';
 import XYAxis from './xy-axis';
 import Line from './line';
 
+const xFieldName = "dateWritten";
+const yFieldName = "MMEValue";
 export default class MMEGraph extends Component {
 
   getDefaultDataValueSet(value, minDate, maxDate, total, xFieldName, yFieldName) {
@@ -33,8 +35,8 @@ export default class MMEGraph extends Component {
     return data;
   }
   compareDate(a, b) {
-    let calcA = (new Date(a.dateWritten)).getTime();
-    let calcB = (new Date(b.dateWritten)).getTime();
+    let calcA = (new Date(a[xFieldName])).getTime();
+    let calcB = (new Date(b[xFieldName])).getTime();
     if (calcA > calcB) return 1;
     if (calcB > calcA) return -1;
     return 0;
@@ -61,8 +63,6 @@ export default class MMEGraph extends Component {
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
-    const xFieldName = "dateWritten";
-    const yFieldName = "MMEValue";
     const xIntervals = 8;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
     //make a copy of the data so as not to accidentally mutate it
@@ -72,19 +72,18 @@ export default class MMEGraph extends Component {
         ...item
       }
     }): null;
-    computedData = computedData? (computedData).sort(this.compareDate): null;
-    let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
+    let data = computedData? (computedData).sort(this.compareDate): [];
+    //let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
     let noEntry = !data || !data.length;
-
+    data = data.filter(d => d[xFieldName]);
     data = data.map(d => {
       let dObj = new Date(d[xFieldName]);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
       dObj.setTime(dObj.getTime() + tzOffset);
-      d.dateWritten = dObj;
+      d[xFieldName] = dObj;
       return d;
     });
-    let arrayDates = data.filter(d => d.dateWritten);
-    arrayDates = arrayDates.map(d => {
+    let arrayDates = data.map(d => {
       return d[xFieldName];
     });
     if (arrayDates.length) {
@@ -99,7 +98,7 @@ export default class MMEGraph extends Component {
       let calcMaxDate = new Date(maxDate.valueOf());
       minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
       maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
-      maxDate = new Date(Math.max(Math.max.apply(null, arrayDates), new Date()))
+      maxDate = new Date(Math.max(Math.max.apply(null, arrayDates), maxDate))
       minDate = new Date(Math.min(Math.min.apply(null, arrayDates), minDate));
     }
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
@@ -121,7 +120,6 @@ export default class MMEGraph extends Component {
       .domain([0, xMaxValue])
       .range([height, 0])
       .nice();
-    console.log(yScale(30))
 
     const lineGenerator = line()
       .x(d => xScale(d[xFieldName]))
@@ -144,7 +142,7 @@ export default class MMEGraph extends Component {
       additionalProps["dataPoints"] = {
         "strokeColor": "#217684",
         "strokeFill": "#217684",
-        "strokeWidth": 2
+        "strokeWidth": data.length <= 2 ? 4 : 2
       }
     //}
 
@@ -185,7 +183,12 @@ export default class MMEGraph extends Component {
     const dataLineProps = {...defaultProps, ...additionalProps};
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
-
+    if (noEntry) {
+      return  (<div className="MMEgraph no-entry">
+                <div className="title">Morphine Equivalent Dose (MED)</div>
+                <div className="no-entry">No entry found</div>
+              </div>);
+    }
     return (
       <div className="MMEgraph">
         <div className="title">Morphine Equivalent Dose (MED)</div>
@@ -207,9 +210,6 @@ export default class MMEGraph extends Component {
               <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>CDC extra precautions threshold</text>
               <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>CDC avoid/justify threshold</text>
               <Line lineID="dataLine" data={data} {...dataLineProps} />
-              {noEntry && 
-                <text {...defaultLegendSettings} x={width/2 - 20} y={height/2} strokeColor="#777" fill="#777">No entry found</text>
-              }
             </g>
           </svg>
         </div>
