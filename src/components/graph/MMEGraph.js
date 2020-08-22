@@ -167,7 +167,7 @@ export default class MMEGraph extends Component {
       "fontFamily": "sans-serif",
       "fontSize": "12px",
       "fontWeight": "600",
-      "x": 16
+      "x": xScale(minDate)
     };
     const WA_COLOR = "#a75454";
     const CDC_COLOR = "#e09b1d";
