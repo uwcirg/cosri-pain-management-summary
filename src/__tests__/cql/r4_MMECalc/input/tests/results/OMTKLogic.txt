@@ -1,0 +1,25 @@
+Running tests.
+Data path: C:\Users\Maggie\FHIR\MME_Calculator\input\tests\OMTKLogic
+Terminology path: C:\Users\Maggie\FHIR\MME_Calculator\input\vocabulary\valueset
+Test patient-mme-greater-than-fifty
+Mon Aug 24 2020 13:10:19 GMT-0700 (Pacific Daylight Time)
+TestGetIngredients = [Tuple {
+	doseFormCode -> Code { code: 317007, system: http://www.nlm.nih.gov/research/umls/rxnorm, version: null, display: Sublingual Tablet }
+	strength -> 8.0 mg
+	ingredientCode -> Code { code: 1819, system: http://www.nlm.nih.gov/research/umls/rxnorm, version: null, display: Buprenorphine }
+	rxNormCode -> Code { code: 351267, system: http://www.nlm.nih.gov/research/umls/rxnorm, version: null, display: Buprenorphine 8 MG / Naloxone 2 MG Sublingual Tablet }
+}]
+TestDailyDose = 16.000 1
+TestCalculateMMEs = [Tuple {
+	dosesPerDay -> 2.00
+	doseFormCode -> Code { code: 317007, system: http://www.nlm.nih.gov/research/umls/rxnorm, version: null, display: Sublingual Tablet }
+	strength -> 8.0 mg
+	mme -> 480.000 {MME}/d
+	doseQuantity -> 1 tab
+	dailyDose -> 16.000 mg
+	conversionFactor -> 30
+	dailyDoseDescription -> Buprenorphine Sublingual Tablet: 2.00/d * 1 'tab' * 8.0 'mg' = 16.000 'mg' * factor: 30
+	ingredientCode -> Code { code: 1819, system: http://www.nlm.nih.gov/research/umls/rxnorm, version: null, display: Buprenorphine }
+	rxNormCode -> Code { code: 351267, system: http://www.nlm.nih.gov/research/umls/rxnorm, version: null, display: null }
+}]
+elapsed: 5.995 seconds

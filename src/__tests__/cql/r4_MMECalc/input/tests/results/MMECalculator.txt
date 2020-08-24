@@ -1,0 +1,48 @@
+Running tests.
+Data path: C:\Users\Maggie\FHIR\MME_Calculator\input\tests\MMECalculator
+Terminology path: C:\Users\Maggie\FHIR\MME_Calculator\input\vocabulary\valueset
+Test patient-mme-greater-than-fifty
+Sun Aug 23 2020 21:38:10 GMT-0700 (Pacific Daylight Time)
+Patient = org.hl7.fhir.r4.model.Patient@89266c62
+elapsed: 10.786 seconds
+
+Running tests.
+Data path: C:\Users\Maggie\FHIR\MME_Calculator\input\tests\MMECalculator
+Terminology path: C:\Users\Maggie\FHIR\MME_Calculator\input\vocabulary\valueset
+Test patient-mme-greater-than-fifty
+Sun Aug 23 2020 21:53:03 GMT-0700 (Pacific Daylight Time)
+Patient = org.hl7.fhir.r4.model.Patient@2151f803
+TestPrescriptions = [Tuple {
+	dose -> 1.0 null
+	dosesPerDay -> 0.33333333
+	prescription -> 72 HR Fentanyl 0.075 MG/HR Transdermal System 1.0 'null' q1
+	isDraft -> false
+	rxNormCode -> Code { code: 197696, system: http://www.nlm.nih.gov/research/umls/rxnorm, version: null, display: 72 HR Fentanyl 0.075 MG/HR Transdermal System }
+	isPRN -> BooleanType[false]
+}]
+elapsed: 10.184 seconds
+
+Running tests.
+Data path: C:\Users\Maggie\FHIR\MME_Calculator\input\tests\MMECalculator
+Terminology path: C:\Users\Maggie\FHIR\MME_Calculator\input\vocabulary\valueset
+Test patient-mme-greater-than-fifty
+Sun Aug 23 2020 21:55:34 GMT-0700 (Pacific Daylight Time)
+Patient = org.hl7.fhir.r4.model.Patient@6b8e9f96
+TestPrescriptions = [Tuple {
+	dose -> 1.0 null
+	dosesPerDay -> 0.33333333
+	prescription -> 72 HR Fentanyl 0.075 MG/HR Transdermal System 1.0 'null' q1
+	isDraft -> false
+	rxNormCode -> Code { code: 197696, system: http://www.nlm.nih.gov/research/umls/rxnorm, version: null, display: 72 HR Fentanyl 0.075 MG/HR Transdermal System }
+	isPRN -> BooleanType[false]
+}]
+TestMME = [Tuple {
+	mme -> 59.99999940 {MME}/d
+	prescription -> 72 HR Fentanyl 0.075 MG/HR Transdermal System 1.0 'null' q1
+	dailyDose -> Fentanyl patch: 1.0 * 0.33333333/d * 75.000 'ug/h' = 24.99999975 'ug/h' * factor: 2.4
+	isDraft -> false
+	rxNormCode -> Code { code: 197696, system: http://www.nlm.nih.gov/research/umls/rxnorm, version: null, display: 72 HR Fentanyl 0.075 MG/HR Transdermal System }
+	isPRN -> BooleanType[false]
+}]
+TestTotalMME = 59.99999940 mg/d
+elapsed: 10.396 seconds
