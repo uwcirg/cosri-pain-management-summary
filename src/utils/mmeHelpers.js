@@ -305,15 +305,7 @@ function ToPrescription(medication) {
   if (!medication) {
     return false;
   }
-  let rxNormCode = 0;
-  if (medication.medicationCodeableConcept && medication.medicationCodeableConcept.coding) {
-    (medication.medicationCodeableConcept.coding).forEach(item => {
-      if (rxNormCode) return true;
-      if (/rxnorm/i.test(item.system)) {
-        rxNormCode = item.code;
-      }
-    });
-  }
+  let rxNormCode = GetMedicationCode(medication);
   let medicationName = medication.medicationCodeableConcept ? medication.medicationCodeableConcept.text: "";
   let quantity = medication.dispenseRequest && medication.dispenseRequest.quantity && medication.dispenseRequest.quantity.value ? medication.dispenseRequest.quantity.value: 1;
   let dosageInstruction = medication.dosageInstruction? medication.dosageInstruction[0]: {};
@@ -352,6 +344,21 @@ function ToPrescription(medication) {
     dateWritten: dateFormat("", authoredOn, "YYYY-MM-DD"),
     authoredOn: medication.authoredOn ? medication.authoredOn: medication.dateWritten
   }
+}
+
+export function GetMedicationCode(medication) {
+  if (!medication) return 0;
+  let rxNormCode = 0;
+  if (medication.medicationCodeableConcept && medication.medicationCodeableConcept.coding) {
+    (medication.medicationCodeableConcept.coding).forEach(item => {
+      if (rxNormCode) return true;
+      if (/rxnorm/i.test(item.system)) {
+        rxNormCode = item.code;
+      }
+    });
+  }
+  return rxNormCode;
+
 }
 
 /*
@@ -403,3 +410,4 @@ export function CalculateMME(medication) {
     authoredOn: M.authoredOn
   }
 }
+

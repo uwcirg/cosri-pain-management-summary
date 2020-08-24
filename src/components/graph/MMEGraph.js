@@ -169,6 +169,7 @@ export default class MMEGraph extends Component {
       "fontWeight": "600",
       "x": xScale(minDate)
     };
+    console.log("x scale? ", xScale(minDate))
     const WA_COLOR = "#a75454";
     const CDC_COLOR = "#e09b1d";
     const textMargin = 4;

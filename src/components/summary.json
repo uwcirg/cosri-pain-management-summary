@@ -24,7 +24,7 @@
       ]
     },
     "graphConfig": {
-      "dataKey": "MME_Values"
+      "dataKey": "MME_Graph_Data"
     },
     "sections": [
       {

@@ -8,6 +8,7 @@ import flagit from '../helpers/flagit';
 import {datishFormat, dateFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
+//import ExampleMedicationOrders from './MedicationRequest.json';
 
 import {getEnv, fetchEnvData} from '../utils/envConfig';
 import {CalculateMME} from '../utils/mmeHelpers';
@@ -16,7 +17,6 @@ import Summary from './Summary';
 import Spinner from '../elements/Spinner';
 
 let uuid = 0;
-const MME_FIELD_NAME = "MMEValue";
 
 function generateUuid() {
   return ++uuid; // eslint-disable-line no-plusplus
@@ -220,33 +220,33 @@ export default class Landing extends Component {
     });
     
     if (overviewSection.graphConfig) {
-      let graphDataSource = summary[overviewSection.graphConfig.dataKey];
-      let dedupedGraphDataSource = []
-      if (graphDataSource && graphDataSource.length) {
+      // let graphDataSource = summary[overviewSection.graphConfig.dataKey];
+      // let dedupedGraphDataSource = []
+      // if (graphDataSource && graphDataSource.length) {
 
-        graphDataSource.forEach(item => {
-          let hasSameItem = dedupedGraphDataSource.filter(o => {
-            return o.name === item.name && o.dateWritten === item.dateWritten
-          });
-          if (hasSameItem.length) {
-            return true;
-          }
-          let sameDateEntry = false;
-          dedupedGraphDataSource.forEach((o, index) => {
-            if (o.name !== item.name && o.dateWritten === item.dateWritten) {
-              console.log("existing MME ",o[MME_FIELD_NAME], " item MME ", item[MME_FIELD_NAME])
-              o[MME_FIELD_NAME] = o[MME_FIELD_NAME] + item[MME_FIELD_NAME];
-              console.log("same date? changed MME ", o)
-              sameDateEntry = true;
-            }
-          });
-          if (sameDateEntry) {
-            return true;
-          }
-          dedupedGraphDataSource.push(item)
-        })
-      }
-      summary[overviewSectionKey+"_graph"] = dedupedGraphDataSource;
+      //   graphDataSource.forEach(item => {
+      //     let hasSameItem = dedupedGraphDataSource.filter(o => {
+      //       return o.name === item.name && o.dateWritten === item.dateWritten
+      //     });
+      //     if (hasSameItem.length) {
+      //       return true;
+      //     }
+      //     let sameDateEntry = false;
+      //     dedupedGraphDataSource.forEach((o, index) => {
+      //       if (o.name !== item.name && o.dateWritten === item.dateWritten) {
+      //         console.log("existing MME ",o[MME_FIELD_NAME], " item MME ", item[MME_FIELD_NAME])
+      //         o[MME_FIELD_NAME] = o[MME_FIELD_NAME] + item[MME_FIELD_NAME];
+      //         console.log("same date? changed MME ", o)
+      //         sameDateEntry = true;
+      //       }
+      //     });
+      //     if (sameDateEntry) {
+      //       return true;
+      //     }
+      //     dedupedGraphDataSource.push(item)
+      //   })
+      // }
+      summary[overviewSectionKey+"_graph"] = summary[overviewSection.graphConfig.dataKey] || [];
     }
 
     summary[overviewSectionKey+"_stats"] = stats;
@@ -270,8 +270,8 @@ export default class Landing extends Component {
     if (!result) {
       return;
     }
-    const OPIOID_MEDS_SECTION_DATAKEY = "HistoricalTreatments";
-    const OPIOID_MEDS_SECTION_DATAKEYSOURCE = "OpioidMedications";
+    const MME_FIELD_NAME = "MMEValue";
+    const DATE_FIELD_NAME = "dateWritten";
     console.log("collector ", this.state.collector)
         /*
          * MedicationRequest
@@ -294,7 +294,7 @@ export default class Landing extends Component {
         }
         console.log("matched ", medRequests)
         // console.log("example json ", MedicationRequestExample.entry)
-        // medRequests = [MedicationRequestExample.entry]
+        //medRequests = [ExampleMedicationOrders.entry]
         let arrMME = [];
         /*
          * calculate MED value for each
@@ -310,19 +310,64 @@ export default class Landing extends Component {
       }
       result["Summary"] = result["Summary"] || {}
       result['Summary']['MME_Values'] = arrMME;
-      result['Summary'][OPIOID_MEDS_SECTION_DATAKEY] = result['Summary'][OPIOID_MEDS_SECTION_DATAKEY] || {};
-      let sectionRef = result['Summary'][OPIOID_MEDS_SECTION_DATAKEY][OPIOID_MEDS_SECTION_DATAKEYSOURCE];
-      if (sectionRef && sectionRef.length) {
-        (result['Summary'][OPIOID_MEDS_SECTION_DATAKEY][OPIOID_MEDS_SECTION_DATAKEYSOURCE]).forEach(item => {
-          let match = arrMME.filter(med => {
-            return dateFormat("", med.authoredOn, "YYYY-MM-DD") === dateFormat("", item.Start , "YYYY-MM-DD") && 
-            med.name === item.Name
-          });
-          if (match.length) {
-            item[MME_FIELD_NAME] = match[0][MME_FIELD_NAME];
-          }
+      let copyArrMME = (arrMME).map(item => {
+        return {
+          ...item
+        }
+      });
+      let graph_data = copyArrMME.reduce((o, current) => {
+
+        const existingIndex = o.findIndex(item => {
+          return item.name !== current.name &&
+          item.dateWritten === current.dateWritten
         });
-      }
+        if (existingIndex !== -1) {
+          o[existingIndex][MME_FIELD_NAME] = o[existingIndex][MME_FIELD_NAME] + current[MME_FIELD_NAME];
+          return o;
+        }
+
+        const x = o.find(item => {
+          return item.name === current.name &&
+          item.dateWritten === current.dateWritten
+        });
+        if (!x) {
+          return o.concat([{
+            "MMEValue" : current[MME_FIELD_NAME],
+            "dateWritten": current[DATE_FIELD_NAME]
+          }]);
+        } else {
+          return o;
+        }
+      }, []);
+      console.log("graph data? ", graph_data)
+      result["Summary"]["MME_Graph_Data"] = graph_data;
+
+      const opioidMedsSections = [{
+        "section_key": "HistoricalTreatments",
+        "section_data_source_key": "OpioidMedications"
+      },
+      {
+        "section_key": "PDMPMedications",
+        "section_data_source_key": "PDMPMedications"
+      }];
+      opioidMedsSections.forEach(section => {
+        result['Summary'][section.section_key] = result['Summary'][section.section_key] || {};
+        let sectionRef = result['Summary'][section.section_key][section.section_data_source_key];
+        if (sectionRef && sectionRef.length) {
+          (result['Summary'][section.section_key][section.section_data_source_key]).forEach(item => {
+            let match = arrMME.filter(med => {
+              return (
+              dateFormat("", med.authoredOn, "YYYY-MM-DD") === dateFormat("", (item.Start||item.dateWritten) , "YYYY-MM-DD") && 
+              med.name === item.Name
+              )
+            });
+            if (match.length) {
+              item[MME_FIELD_NAME] = match[0][MME_FIELD_NAME];
+            }
+          });
+        }
+      });
+      console.log("med obj ", arrMME)
       this.setState({result: result});
       return arrMME;
   }
@@ -366,8 +411,8 @@ export default class Landing extends Component {
         item.dateWritten = item.authoredOn;
       }
       //mme value
-      let mmeObj = CalculateMME(item);
-      item[MME_FIELD_NAME] = mmeObj ? mmeObj[MME_FIELD_NAME] : "";
+      // let mmeObj = CalculateMME(item);
+      // item[MME_FIELD_NAME] = mmeObj ? mmeObj[MME_FIELD_NAME] : "";
     });
     /*
      * a hack, until figure out why react table is not sorting the date correctly by default
