@@ -848,11 +848,7 @@ define NonOpioidMedicationRequests:
 
 define PDMPMedicationRequests:
   [MedicationRequest: "Opioid Pain Medications"] M 
-  where M.identifier is not null and (
-    M.identifier[0].system ~ 'https://github.com/uwcirg/script-fhir-facade/'
-    or M.identifier[0].value ~ 'WA-PDMP'
-    or M.identifier[0].value ~ 'ID-PDMP'
-  )
+  where M.identifier is not null and M.identifier[0].system ~ 'https://github.com/uwcirg/script-fhir-facade/'
 
 define ReportPDMPMedicationRequests:
   (PDMPMedicationRequests) O
