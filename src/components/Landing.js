@@ -160,7 +160,7 @@ export default class Landing extends Component {
     let stats = [];
     let config = overviewSection.statsConfig;
     if (config) {
-      let dataSource = summary[config.dataKeySource][config.dataKey];
+      let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: null;
       let statsSource = dataSource ? dataSource : [];
       if (config.data) {
         config.data.forEach(item => {

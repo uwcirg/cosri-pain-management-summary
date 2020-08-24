@@ -846,6 +846,29 @@ define NonOpioidMedicationRequests:
     100 years //changed from 2 to 100
   ))
 
+define PDMPMedicationRequests:
+  [MedicationRequest: "Opioid Pain Medications"] M 
+  where M.identifier is not null and (
+    M.identifier[0].system ~ 'https://github.com/uwcirg/script-fhir-facade/'
+    or M.identifier[0].value ~ 'WA-PDMP'
+    or M.identifier[0].value ~ 'ID-PDMP'
+  )
+
+define ReportPDMPMedicationRequests:
+  (PDMPMedicationRequests) O
+  return {
+    Type:  'Request',
+    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+    Start: DateTimeText(O.authoredOn),
+    //provided by the extension dateValue, may not always be there
+    End: DateText(O.dispenseRequest.extension[1].value),
+    Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+    Prescriber: O.requester.display.value,
+    Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
+    Status: O.status.value
+  }
+  sort by Start desc, End desc
+
 define NonOpioidMedicationStatements:
   C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
     [MedicationStatement: "Non opiod pain medications"],
@@ -1197,5 +1220,8 @@ define Summary: {
     CarisoprodolMedications: ReportCarisoprodolMedications,
     NaloxoneMedications: ReportNaloxoneMedications,
     RiskScreeningsRelevantToPainManagement: ReportRiskScreeningsRelevantToPainManagement
+  },
+  PDMPMedications: {
+    PDMPMedications: ReportPDMPMedicationRequests
   }
 }

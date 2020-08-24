@@ -65,16 +65,6 @@
   "PDMPMedications": {
     "title":"State PMP Prescriptions",
     "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
-    "dataSource": {
-      "endpoint": "{process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder?patient={patientId}",
-      "dataKey": "PDMPMedications",
-      "dataKeySource": "entry",
-      "processFunction": "processMedicationOrder"
-    },
-    "demoData": {
-      "advisoryText": "Demo data is used here.",
-      "endpoint": "{process.env.PUBLIC_URL}/assets/data/PDMPDemoData.json"
-    },
     "sections": [
       {
         "name": "PMP Prescriptions",
@@ -97,16 +87,12 @@
         "tables": [
           {
             "headers": {
-              "Drug Description": {
-                "key": "medicationCodeableConcept",
-                "formatter": "codeableConceptFormat",
-                "formatterArguments": ["text"]
-              },
-              "Quantity": "_quantity",
-              "Written Date": { "key": "dateWritten", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
-              "Dispensed": { "key": "_dateDispensed", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
-              "Prescriber": "_prescriber",
-              "Pharmacy": "_pharmacy"
+              "Drug Description": "Name",
+              "Quantity": "Quantity",
+              "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
+              "Dispensed": { "key": "End", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
+              "Prescriber": "Prescriber",
+              "Pharmacy": "Pharmacy"
             }
           }
         ]
