@@ -849,6 +849,8 @@ define NonOpioidMedicationRequests:
     100 years //changed from 2 to 100
   ))
 
+// medication requests from PDMP
+// using relevant system identifier for filtering
 define PDMPMedicationRequests:
   [MedicationRequest] M 
   where M.identifier is not null and M.identifier[0].system ~ PDMP_SYSTEM_VALUE
