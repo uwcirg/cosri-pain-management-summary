@@ -804,6 +804,9 @@ define OpioidMedicationStatements:
     100 years //changed from 2 to 100
   ))
 
+define PDMP_SYSTEM_VALUE:
+  'https://github.com/uwcirg/script-fhir-facade/'
+
 define ReportOpioidMedicationRequests:
   (OpioidMedicationRequests) O
   return {
@@ -847,8 +850,8 @@ define NonOpioidMedicationRequests:
   ))
 
 define PDMPMedicationRequests:
-  [MedicationRequest: "Opioid Pain Medications"] M 
-  where M.identifier is not null and M.identifier[0].system ~ 'https://github.com/uwcirg/script-fhir-facade/'
+  [MedicationRequest] M 
+  where M.identifier is not null and M.identifier[0].system ~ PDMP_SYSTEM_VALUE
 
 define ReportPDMPMedicationRequests:
   (PDMPMedicationRequests) O

@@ -4815,6 +4815,15 @@
                } ]
             }
          }, {
+            "name" : "PDMP_SYSTEM_VALUE",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "https://github.com/uwcirg/script-fhir-facade/",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "ReportOpioidMedicationRequests",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -5356,13 +5365,7 @@
                   "alias" : "M",
                   "expression" : {
                      "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-                     "codeProperty" : "medication",
-                     "codeComparator" : "in",
-                     "type" : "Retrieve",
-                     "codes" : {
-                        "name" : "Opioid Pain Medications",
-                        "type" : "ValueSetRef"
-                     }
+                     "type" : "Retrieve"
                   }
                } ],
                "relationship" : [ ],
@@ -5401,9 +5404,8 @@
                            }
                         } ]
                      }, {
-                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                        "value" : "https://github.com/uwcirg/script-fhir-facade/",
-                        "type" : "Literal"
+                        "name" : "PDMP_SYSTEM_VALUE",
+                        "type" : "ExpressionRef"
                      } ]
                   } ]
                }
