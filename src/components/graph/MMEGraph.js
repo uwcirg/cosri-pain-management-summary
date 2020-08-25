@@ -12,7 +12,7 @@ export default class MMEGraph extends Component {
   getDefaultDataValueSet(value, minDate, maxDate, total, xFieldName, yFieldName) {
     let data = [];
     value = value || 0;
-    total = total || 10;
+    total = total || 8;
     xFieldName = xFieldName || "dateWritten";
     yFieldName = yFieldName || "MMEValue";
     if (!maxDate) {

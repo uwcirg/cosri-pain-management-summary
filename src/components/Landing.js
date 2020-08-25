@@ -220,32 +220,6 @@ export default class Landing extends Component {
     });
     
     if (overviewSection.graphConfig) {
-      // let graphDataSource = summary[overviewSection.graphConfig.dataKey];
-      // let dedupedGraphDataSource = []
-      // if (graphDataSource && graphDataSource.length) {
-
-      //   graphDataSource.forEach(item => {
-      //     let hasSameItem = dedupedGraphDataSource.filter(o => {
-      //       return o.name === item.name && o.dateWritten === item.dateWritten
-      //     });
-      //     if (hasSameItem.length) {
-      //       return true;
-      //     }
-      //     let sameDateEntry = false;
-      //     dedupedGraphDataSource.forEach((o, index) => {
-      //       if (o.name !== item.name && o.dateWritten === item.dateWritten) {
-      //         console.log("existing MME ",o[MME_FIELD_NAME], " item MME ", item[MME_FIELD_NAME])
-      //         o[MME_FIELD_NAME] = o[MME_FIELD_NAME] + item[MME_FIELD_NAME];
-      //         console.log("same date? changed MME ", o)
-      //         sameDateEntry = true;
-      //       }
-      //     });
-      //     if (sameDateEntry) {
-      //       return true;
-      //     }
-      //     dedupedGraphDataSource.push(item)
-      //   })
-      // }
       summary[overviewSectionKey+"_graph"] = summary[overviewSection.graphConfig.dataKey] || [];
     }
 
@@ -321,6 +295,12 @@ export default class Landing extends Component {
           return item.name !== current.name &&
           item.dateWritten === current.dateWritten
         });
+
+        /*
+         *
+         *
+         */
+
         if (existingIndex !== -1) {
           o[existingIndex][MME_FIELD_NAME] = o[existingIndex][MME_FIELD_NAME] + current[MME_FIELD_NAME];
           return o;
@@ -330,6 +310,7 @@ export default class Landing extends Component {
           return item.name === current.name &&
           item.dateWritten === current.dateWritten
         });
+
         if (!x) {
           return o.concat([{
             "MMEValue" : current[MME_FIELD_NAME],

@@ -301,52 +301,114 @@ function ToInteger(item) {
   return parseInt(item);
 }
 
-function ToPrescription(medication) {
-  if (!medication) {
-    return false;
-  }
-  let rxNormCode = GetMedicationCode(medication);
-  let medicationName = medication.medicationCodeableConcept ? medication.medicationCodeableConcept.text: "";
-  let quantity = medication.dispenseRequest && medication.dispenseRequest.quantity && medication.dispenseRequest.quantity.value ? medication.dispenseRequest.quantity.value: 1;
-  let dosageInstruction = medication.dosageInstruction? medication.dosageInstruction[0]: {};
-  let doseAndRate = dosageInstruction.doseAndRate && dosageInstruction.doseAndRate.length? dosageInstruction.doseAndRate[0]: {};
-  let doseRange = doseAndRate.doseRange;
-  let repeat = dosageInstruction.timing? dosageInstruction.timing.repeat: null;
-  let frequencyMax = repeat && repeat.frequencyMax && repeat.frequencyMax? repeat.frequencyMax : 1;
-  let repeatFrequency = repeat && repeat.frequency && repeat.frequency ? repeat.frequency : 1;
-  let frequency = repeat ? Math.max(frequencyMax, repeatFrequency) : 1;
-  let frequencyDescription = frequency + (frequencyMax ? ("-" + frequencyMax): "");
-  let duration = medication.dispenseRequest ? medication.dispenseRequest.expectedSupplyDuration: null;
-  let period = repeat && repeat.period ? { value: repeat.period, unit: repeat.periodUnit } : duration;
+function GetQuantity(medication) {
+  if (!medication) return 0;
+  return (
+    medication.dispenseRequest && 
+    medication.dispenseRequest.quantity && 
+    medication.dispenseRequest.quantity.value ? medication.dispenseRequest.quantity.value: 1);
+}
+
+function GetMedicationName(medication) {
+  if (!medication) return "";
+  return medication.medicationCodeableConcept ? medication.medicationCodeableConcept.text: "";
+}
+
+function GetDoseInstruction(medication) {
+  if (!medication) return null;
+  return (
+    medication.dosageInstruction &&
+    medication.dosageInstruction.length ? medication.dosageInstruction[0]: {});
+}
+
+function GetDoseAndRate(medication) {
+  if (!medication) return null;
+  let dosageInstruction = GetDoseInstruction(medication);
+  return (
+    dosageInstruction.doseAndRate && 
+    dosageInstruction.doseAndRate.length? dosageInstruction.doseAndRate[0]: {}
+  );
+}
+
+function GetDoseRange(medication) {
+  if (!medication) return null;
+  let doseAndRate = GetDoseAndRate(medication);
+  return doseAndRate.doseRange;
+}
+
+function GetRepeat(medication) {
+  if (!medication) return null;
+  let dosageInstruction = GetDoseInstruction(medication);
+  return dosageInstruction.timing? dosageInstruction.timing.repeat: null;
+}
+
+function GetFrequencyMax(medication) {
+  if (!medication) return null;
+  let repeat = GetRepeat(medication);
+  return (
+    repeat && 
+    repeat.frequencyMax && 
+    repeat.frequencyMax ? repeat.frequencyMax : 1
+  );
+}
+
+function GetRepeatFrequency(medication) {
+  if (!medication) return null;
+  let repeat = GetRepeat(medication);
+  return (
+    repeat && 
+    repeat.frequency ? repeat.frequency : 1
+  )
+}
+
+function GetFrequency(medication) {
+  return Math.max(GetFrequencyMax(medication), GetRepeatFrequency(medication), 1);
+}
+
+function GetFrequencyDescription(medication) {
+  let frequencyMax = GetFrequencyMax(medication);
+  return GetFrequency(medication) + (frequencyMax ? ("-" + frequencyMax): "");
+}
+
+function GetDispenseDuration(medication) {
+  if (!medication) return null;
+  return  medication.dispenseRequest ? medication.dispenseRequest.expectedSupplyDuration: null;
+}
+
+function GetPeriod(medication) {
+  if (!medication) return null;
+  let repeat = GetRepeat(medication);
+  return (
+    repeat && repeat.period ? { value: repeat.period, unit: repeat.periodUnit } : GetDispenseDuration(medication)
+  );
+}
+
+function GetDoseQuantity(medication) {
+  let quantity = GetQuantity(medication);
+  let duration = GetDispenseDuration(medication);
+  let doseAndRate = GetDoseAndRate(medication);
   let doseQuantity = {
     value: quantity,
     unit: duration? duration.unit: ""
   };
-  if (doseAndRate && doseAndRate.doseQuantity) {
+  let doseRange = GetDoseRange(medication);
+  if (doseAndRate && doseAndRate.doseQuantity && doseAndRate.doseQuantity.value) {
     doseQuantity = doseAndRate.doseQuantity.value;
   }
-  if (doseRange && doseRange.high) {
+  if (doseRange && doseRange.high && doseRange.high.value) {
     doseQuantity = doseRange.high.value;
   }
-  let doseDescription = doseRange ? (doseRange.low + '-' + doseRange.high + doseRange.high.unit.value) : doseQuantity;
-  let authoredOn = {...medication}.authoredOn ? {...medication}.authoredOn : {...medication}.dateWritten;
-  return {
-    name: medication.medicationCodeableConcept.text,
-    rxNormCode: rxNormCode,
-    doseQuantity: doseQuantity,
-    isPRN: dosageInstruction.asNeeded,
-    dosageInstruction: dosageInstruction,
-    doseAndRate: doseAndRate,
-    doseDescription: doseDescription,
-    period: period,
-    frequency: frequency,
-    prescription: dosageInstruction.text? (medicationName + " " + dosageInstruction.text) : (medicationName + " " + doseDescription + " q" + frequencyDescription +  (dosageInstruction.asNeeded? " PRN": "")),
-    dateWritten: dateFormat("", authoredOn, "YYYY-MM-DD"),
-    authoredOn: medication.authoredOn ? medication.authoredOn: medication.dateWritten
-  }
+  return doseQuantity;
 }
 
-export function GetMedicationCode(medication) {
+function GetDoseDescription(medication) {
+  let doseRange = GetDoseRange(medication);
+  return (
+    doseRange ? (doseRange.low + '-' + doseRange.high + doseRange.high.unit.value) : GetDoseQuantity(medication)
+  )
+}
+
+function GetMedicationCode(medication) {
   if (!medication) return 0;
   let rxNormCode = 0;
   if (medication.medicationCodeableConcept && medication.medicationCodeableConcept.coding) {
@@ -359,6 +421,37 @@ export function GetMedicationCode(medication) {
   }
   return rxNormCode;
 
+}
+
+function ToPrescription(medication) {
+  if (!medication) {
+    return false;
+  }
+  let rxNormCode = GetMedicationCode(medication);
+  let medicationName = GetMedicationName(medication);
+  let dosageInstruction = GetDoseInstruction(medication);
+  let doseAndRate = GetDoseAndRate(medication);
+  let frequency = GetFrequency(medication);
+  let frequencyDescription = GetFrequencyDescription(medication);
+  let period = GetPeriod(medication);
+  let doseQuantity = GetDoseQuantity(medication);
+  let doseDescription = GetDoseDescription(medication);
+  let authoredOn = {...medication}.authoredOn ? {...medication}.authoredOn : {...medication}.dateWritten;
+  return {
+    name: medicationName,
+    rxNormCode: rxNormCode,
+    doseQuantity: doseQuantity,
+    isPRN: dosageInstruction.asNeeded,
+    dosageInstruction: dosageInstruction,
+    doseAndRate: doseAndRate,
+    doseDescription: doseDescription,
+    period: period,
+    frequency: frequency,
+    prescription: dosageInstruction.text? (medicationName + " " + dosageInstruction.text) : (medicationName + " " + doseDescription + " q" + frequencyDescription +  (dosageInstruction.asNeeded? " PRN": "")),
+    dateWritten: dateFormat("", authoredOn, "YYYY-MM-DD"),
+    authoredOn: medication.authoredOn ? medication.authoredOn: medication.dateWritten,
+    status: medication.status
+  }
 }
 
 /*
@@ -407,7 +500,7 @@ export function CalculateMME(medication) {
     MMEUnit: '{MME}/d',
     prescription: M.prescription,
     dateWritten: M.dateWritten,
-    authoredOn: M.authoredOn
+    authoredOn: M.authoredOn,
+    status: M.status
   }
 }
-
