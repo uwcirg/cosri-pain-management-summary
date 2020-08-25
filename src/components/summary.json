@@ -13,12 +13,12 @@
         },
         {
           "title": "Total Prescribers",
-          "keyMatch": "_prescriber",
+          "keyMatch": "Prescriber",
           "type": "count"
         },
         {
           "title": "Total Pharmacies",
-          "keyMatch": "_pharmacy",
+          "keyMatch": "Pharmacy",
           "type": "count"
         }
       ]
