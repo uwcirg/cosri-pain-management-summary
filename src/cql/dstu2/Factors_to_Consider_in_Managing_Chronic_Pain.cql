@@ -795,8 +795,32 @@ define OpioidMedicationStatements:
     100 years //changed from 2 to 100
   ))
 
+define PDMP_SYSTEM_VALUE:
+  'https://github.com/uwcirg/script-fhir-facade/'
+
+// medication orders from PDMP
+// using relevant system identifier for filtering
+define PDMPMedicationOrders:
+  [MedicationOrder] M 
+  where M.identifier is not null and M.identifier[0].system ~ PDMP_SYSTEM_VALUE
+
+define ReportPDMPMedicationOrders:
+  (PDMPMedicationOrders) O
+  return {
+    Type:  'Order',
+    Name:  ConceptText(O.medicationCodeableConcept),
+    Start: DateTimeText(O.dateWritten),
+    End: DateTimeText(O.dateEnded),
+     //provided by the extension dateValue, may not always be there
+    Quantity: QuantityText(O.dispenseRequest.quantity),
+    Prescriber: O.prescriber.display.value,
+    Status: O.status.value
+  }
+  sort by Start desc, End desc
+
 define ReportOpioidMedicationOrders:
   (OpioidMedicationOrders) O
+  where not(O.identifier is not null and O.identifier[0].system ~ PDMP_SYSTEM_VALUE)
   return {
     Type:  'Order',
     Name:  ConceptText(O.medicationCodeableConcept),
@@ -1155,5 +1179,8 @@ define Summary: {
     CarisoprodolMedications: ReportCarisoprodolMedications,
     NaloxoneMedications: ReportNaloxoneMedications,
     RiskScreeningsRelevantToPainManagement: ReportRiskScreeningsRelevantToPainManagement
+  },
+  PDMPMedications: {
+    PDMPMedications: ReportPDMPMedicationOrders
   }
 }

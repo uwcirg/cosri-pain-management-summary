@@ -4837,6 +4837,49 @@
                   }
                } ],
                "relationship" : [ ],
+               "where" : {
+                  "type" : "Not",
+                  "operand" : {
+                     "type" : "And",
+                     "operand" : [ {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "path" : "identifier",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "type" : "Equivalent",
+                        "operand" : [ {
+                           "name" : "ToString",
+                           "libraryName" : "FHIRHelpers",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "system",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "path" : "identifier",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
+                              }
+                           } ]
+                        }, {
+                           "name" : "PDMP_SYSTEM_VALUE",
+                           "type" : "ExpressionRef"
+                        } ]
+                     } ]
+                  }
+               },
                "return" : {
                   "expression" : {
                      "type" : "Tuple",

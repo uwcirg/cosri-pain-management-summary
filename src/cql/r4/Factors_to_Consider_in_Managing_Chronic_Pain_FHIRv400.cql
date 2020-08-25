@@ -809,6 +809,7 @@ define PDMP_SYSTEM_VALUE:
 
 define ReportOpioidMedicationRequests:
   (OpioidMedicationRequests) O
+  where not(O.identifier is not null and O.identifier[0].system ~ PDMP_SYSTEM_VALUE)
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
