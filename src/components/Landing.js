@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
+//import {dateFormat, datishFormat} from '../helpers/formatit';
 import {datishFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
@@ -213,6 +214,89 @@ export default class Landing extends Component {
     alerts.sort(function (a, b) {
       return b.priority - a.priority;
     });
+
+    //process graph data
+    if (overviewSection.graphConfig && overviewSection.graphConfig.summaryDataSource) {
+      //get the data from summary data
+      let sections = overviewSection.graphConfig.summaryDataSource;
+      // let dataSet = [];
+      // const MME_VALUE_FIELD_NAME = "MMEValue";
+      // const END_DATE_FIELD_NAME = "End";
+      // const MEDICATION_NAME_FIELD_NAME = "Name";
+      // sections.forEach(item => {
+      //   if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
+      //     summary[item.section_key][item.subSection_key].forEach(o => {
+      //       if (o.MMEValue && o.End) { //both value and date fields should not be null
+      //         let dataPoint = {};
+      //         dataPoint[MEDICATION_NAME_FIELD_NAME] = o[MEDICATION_NAME_FIELD_NAME];
+      //         dataPoint[MME_VALUE_FIELD_NAME] = o[MME_VALUE_FIELD_NAME];
+      //         dataPoint[END_DATE_FIELD_NAME] = dateFormat("", o[END_DATE_FIELD_NAME], "YYYY-MM-DD")
+      //         dataSet.push(dataPoint);
+      //       }
+      //     });
+      //   }
+      // });
+      // let graph_data = dataSet.reduce((o, current) => {
+
+      //   /*
+      //    * find existing item with the same date
+      //    */
+      //   const existingIndex = o.findIndex(item => {
+      //     return (
+      //       item[MEDICATION_NAME_FIELD_NAME] !== current[MEDICATION_NAME_FIELD_NAME] &&
+      //       item[END_DATE_FIELD_NAME] === current[END_DATE_FIELD_NAME]
+      //     )
+      //   });
+
+      //   /*
+      //    * add MM value if existing item with same date found
+      //    */
+      //   if (existingIndex !== -1) {
+      //     o[existingIndex][MME_VALUE_FIELD_NAME] = o[existingIndex][MME_VALUE_FIELD_NAME] + current[MME_VALUE_FIELD_NAME];
+      //     return o;
+      //   }
+
+
+      //   // const x = o.find(item => {
+      //   //   return (
+      //   //     item[MEDICATION_NAME_FIELD_NAME] === current[MEDICATION_NAME_FIELD_NAME] &&
+      //   //     item[END_DATE_FIELD_NAME] === current[END_DATE_FIELD_NAME]
+      //   //   )
+      //   // });
+
+      //   // if (!x) {
+      //   //   return o.concat([current]);
+      //   // } else {
+      //   //   return o;
+      //   // }
+
+      //   return o.concat([current]);
+      // }, []);
+
+
+      let graph_data = [];
+      sections.forEach(item => {
+        if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
+          // summary[item.section_key][item.subSection_key].forEach(o => {
+          //   if (o.MMEValue && o.End) { //both value and date fields should not be null
+          //     let dataPoint = {};
+          //     dataPoint[MEDICATION_NAME_FIELD_NAME] = o[MEDICATION_NAME_FIELD_NAME];
+          //     dataPoint[MME_VALUE_FIELD_NAME] = o[MME_VALUE_FIELD_NAME];
+          //     dataPoint[END_DATE_FIELD_NAME] = dateFormat("", o[END_DATE_FIELD_NAME], "YYYY-MM-DD")
+          //     dataSet.push(dataPoint);
+          //   }
+          // });
+          console.log("section data? ", summary[item.section_key][item.subSection_key])
+          graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]]
+          //graph_data.concat(summary[item.section_key][item.subSection_key]);
+        }
+      });
+
+
+      summary[overviewSectionKey+"_graph"] = graph_data;
+      console.log("graph data? ", graph_data)
+    }
+
     
     summary[overviewSectionKey+"_stats"] = stats;
     summary[overviewSectionKey+"_alerts"] = alerts.filter((item,index,thisRef)=>thisRef.findIndex(t=>(t.text === item.text))===index);

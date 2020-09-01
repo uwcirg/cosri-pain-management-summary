@@ -108,6 +108,8 @@ define function Prescriptions(Orders List<MedicationRequest>):
       dose: if doseRange is not null
             then ToQuantity(doseRange.high)
             else ToQuantity(doseQuantity),
+      doseQuantity: ToQuantity(doseQuantity),
+      doseRange: doseRange,
       dosesPerDay: Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0)
     }
 

@@ -525,6 +525,11 @@
             } ]
          } ]
       },
+      "contexts" : {
+         "def" : [ {
+            "name" : "Patient"
+         } ]
+      },
       "statements" : {
          "def" : [ {
             "name" : "Patient",
@@ -2042,6 +2047,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Condition",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Conditions associated with chronic pain",
@@ -2080,6 +2086,7 @@
                         "operand" : [ {
                            "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                            "codeProperty" : "medication",
+                           "codeComparator" : "in",
                            "type" : "Retrieve",
                            "codes" : {
                               "name" : "Opioid Pain Medications",
@@ -2104,6 +2111,7 @@
                         "operand" : [ {
                            "dataType" : "{http://hl7.org/fhir}MedicationStatement",
                            "codeProperty" : "medication",
+                           "codeComparator" : "in",
                            "type" : "Retrieve",
                            "codes" : {
                               "name" : "Opioid Pain Medications",
@@ -2136,6 +2144,7 @@
                         "operand" : [ {
                            "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                            "codeProperty" : "medication",
+                           "codeComparator" : "in",
                            "type" : "Retrieve",
                            "codes" : {
                               "name" : "Adjuvant Analgesic Medications",
@@ -2160,6 +2169,7 @@
                         "operand" : [ {
                            "dataType" : "{http://hl7.org/fhir}MedicationStatement",
                            "codeProperty" : "medication",
+                           "codeComparator" : "in",
                            "type" : "Retrieve",
                            "codes" : {
                               "name" : "Adjuvant Analgesic Medications",
@@ -2295,6 +2305,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}Condition",
                         "codeProperty" : "code",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Major Depression",
@@ -2313,6 +2324,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}Condition",
                         "codeProperty" : "code",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Depression Diagnosis ICD9",
@@ -2339,6 +2351,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}Condition",
                         "codeProperty" : "code",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Anxiety",
@@ -2357,6 +2370,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}Condition",
                         "codeProperty" : "code",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Anxiety Disorders ICD9",
@@ -2379,6 +2393,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Condition",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Substance use disorder",
@@ -2392,6 +2407,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Condition",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Substance Abuse",
@@ -2413,6 +2429,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Condition",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Opioid overdose and poisoning (ICD10CM)",
@@ -2426,6 +2443,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Condition",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Opioid overdose and poisoning (SNOMED)",
@@ -2445,6 +2463,7 @@
                "operand" : [ {
                   "dataType" : "{http://hl7.org/fhir}Condition",
                   "codeProperty" : "code",
+                  "codeComparator" : "in",
                   "type" : "Retrieve",
                   "codes" : {
                      "name" : "Suicide Attempt",
@@ -2467,6 +2486,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Condition",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Sleep-disordered breathing",
@@ -2490,6 +2510,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Condition",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Kidney Failure",
@@ -2515,6 +2536,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}Condition",
                         "codeProperty" : "code",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Chronic Liver Disease",
@@ -2533,6 +2555,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}Condition",
                         "codeProperty" : "code",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Liver Disease",
@@ -2563,6 +2586,7 @@
                         "operand" : [ {
                            "dataType" : "{http://hl7.org/fhir}Condition",
                            "codeProperty" : "code",
+                           "codeComparator" : "in",
                            "type" : "Retrieve",
                            "codes" : {
                               "name" : "Pregnancy",
@@ -2572,6 +2596,7 @@
                      }, {
                         "dataType" : "{http://hl7.org/fhir}Condition",
                         "codeProperty" : "code",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Pregnancy (New ICD10 codes published in 2018 and 2019)",
@@ -2600,6 +2625,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Observation",
                      "codeProperty" : "code",
+                     "codeComparator" : "~",
                      "type" : "Retrieve",
                      "codes" : {
                         "path" : "codes",
@@ -2790,7 +2816,8 @@
                                                                } ]
                                                             },
                                                             "valueset" : {
-                                                               "name" : "Major Depression"
+                                                               "name" : "Major Depression",
+                                                               "type" : "ValueSetRef"
                                                             }
                                                          }, {
                                                             "type" : "InValueSet",
@@ -2804,7 +2831,8 @@
                                                                } ]
                                                             },
                                                             "valueset" : {
-                                                               "name" : "Depression Diagnosis ICD9"
+                                                               "name" : "Depression Diagnosis ICD9",
+                                                               "type" : "ValueSetRef"
                                                             }
                                                          } ]
                                                       }, {
@@ -2819,7 +2847,8 @@
                                                             } ]
                                                          },
                                                          "valueset" : {
-                                                            "name" : "Anxiety"
+                                                            "name" : "Anxiety",
+                                                            "type" : "ValueSetRef"
                                                          }
                                                       } ]
                                                    }, {
@@ -2834,7 +2863,8 @@
                                                          } ]
                                                       },
                                                       "valueset" : {
-                                                         "name" : "Anxiety Disorders ICD9"
+                                                         "name" : "Anxiety Disorders ICD9",
+                                                         "type" : "ValueSetRef"
                                                       }
                                                    } ]
                                                 }, {
@@ -2849,7 +2879,8 @@
                                                       } ]
                                                    },
                                                    "valueset" : {
-                                                      "name" : "Substance use disorder"
+                                                      "name" : "Substance use disorder",
+                                                      "type" : "ValueSetRef"
                                                    }
                                                 } ]
                                              }, {
@@ -2864,7 +2895,8 @@
                                                    } ]
                                                 },
                                                 "valueset" : {
-                                                   "name" : "Substance Abuse"
+                                                   "name" : "Substance Abuse",
+                                                   "type" : "ValueSetRef"
                                                 }
                                              } ]
                                           }, {
@@ -2879,7 +2911,8 @@
                                                 } ]
                                              },
                                              "valueset" : {
-                                                "name" : "Opioid overdose and poisoning (ICD10CM)"
+                                                "name" : "Opioid overdose and poisoning (ICD10CM)",
+                                                "type" : "ValueSetRef"
                                              }
                                           } ]
                                        }, {
@@ -2894,7 +2927,8 @@
                                              } ]
                                           },
                                           "valueset" : {
-                                             "name" : "Opioid overdose and poisoning (SNOMED)"
+                                             "name" : "Opioid overdose and poisoning (SNOMED)",
+                                             "type" : "ValueSetRef"
                                           }
                                        } ]
                                     }, {
@@ -2909,7 +2943,8 @@
                                           } ]
                                        },
                                        "valueset" : {
-                                          "name" : "Suicide Attempt"
+                                          "name" : "Suicide Attempt",
+                                          "type" : "ValueSetRef"
                                        }
                                     } ]
                                  }, {
@@ -2924,7 +2959,8 @@
                                        } ]
                                     },
                                     "valueset" : {
-                                       "name" : "Sleep-disordered breathing"
+                                       "name" : "Sleep-disordered breathing",
+                                       "type" : "ValueSetRef"
                                     }
                                  } ]
                               }, {
@@ -2939,7 +2975,8 @@
                                     } ]
                                  },
                                  "valueset" : {
-                                    "name" : "Kidney Failure"
+                                    "name" : "Kidney Failure",
+                                    "type" : "ValueSetRef"
                                  }
                               } ]
                            }, {
@@ -2954,7 +2991,8 @@
                                  } ]
                               },
                               "valueset" : {
-                                 "name" : "Chronic Liver Disease"
+                                 "name" : "Chronic Liver Disease",
+                                 "type" : "ValueSetRef"
                               }
                            } ]
                         }, {
@@ -2969,7 +3007,8 @@
                               } ]
                            },
                            "valueset" : {
-                              "name" : "Liver Disease"
+                              "name" : "Liver Disease",
+                              "type" : "ValueSetRef"
                            }
                         } ]
                      }
@@ -3178,7 +3217,8 @@
                                                          } ]
                                                       },
                                                       "valueset" : {
-                                                         "name" : "Major Depression"
+                                                         "name" : "Major Depression",
+                                                         "type" : "ValueSetRef"
                                                       }
                                                    }, {
                                                       "type" : "InValueSet",
@@ -3192,7 +3232,8 @@
                                                          } ]
                                                       },
                                                       "valueset" : {
-                                                         "name" : "Depression Diagnosis ICD9"
+                                                         "name" : "Depression Diagnosis ICD9",
+                                                         "type" : "ValueSetRef"
                                                       }
                                                    } ]
                                                 }, {
@@ -3207,7 +3248,8 @@
                                                       } ]
                                                    },
                                                    "valueset" : {
-                                                      "name" : "Anxiety"
+                                                      "name" : "Anxiety",
+                                                      "type" : "ValueSetRef"
                                                    }
                                                 } ]
                                              }, {
@@ -3222,7 +3264,8 @@
                                                    } ]
                                                 },
                                                 "valueset" : {
-                                                   "name" : "Anxiety Disorders ICD9"
+                                                   "name" : "Anxiety Disorders ICD9",
+                                                   "type" : "ValueSetRef"
                                                 }
                                              } ]
                                           }, {
@@ -3237,7 +3280,8 @@
                                                 } ]
                                              },
                                              "valueset" : {
-                                                "name" : "Substance use disorder"
+                                                "name" : "Substance use disorder",
+                                                "type" : "ValueSetRef"
                                              }
                                           } ]
                                        }, {
@@ -3252,7 +3296,8 @@
                                              } ]
                                           },
                                           "valueset" : {
-                                             "name" : "Substance Abuse"
+                                             "name" : "Substance Abuse",
+                                             "type" : "ValueSetRef"
                                           }
                                        } ]
                                     }, {
@@ -3267,7 +3312,8 @@
                                           } ]
                                        },
                                        "valueset" : {
-                                          "name" : "Opioid overdose and poisoning (ICD10CM)"
+                                          "name" : "Opioid overdose and poisoning (ICD10CM)",
+                                          "type" : "ValueSetRef"
                                        }
                                     } ]
                                  }, {
@@ -3282,7 +3328,8 @@
                                        } ]
                                     },
                                     "valueset" : {
-                                       "name" : "Opioid overdose and poisoning (SNOMED)"
+                                       "name" : "Opioid overdose and poisoning (SNOMED)",
+                                       "type" : "ValueSetRef"
                                     }
                                  } ]
                               }, {
@@ -3297,7 +3344,8 @@
                                     } ]
                                  },
                                  "valueset" : {
-                                    "name" : "Suicide Attempt"
+                                    "name" : "Suicide Attempt",
+                                    "type" : "ValueSetRef"
                                  }
                               } ]
                            }, {
@@ -3312,7 +3360,8 @@
                                  } ]
                               },
                               "valueset" : {
-                                 "name" : "Sleep-disordered breathing"
+                                 "name" : "Sleep-disordered breathing",
+                                 "type" : "ValueSetRef"
                               }
                            } ]
                         }, {
@@ -3327,7 +3376,8 @@
                               } ]
                            },
                            "valueset" : {
-                              "name" : "Kidney Failure"
+                              "name" : "Kidney Failure",
+                              "type" : "ValueSetRef"
                            }
                         } ]
                      }, {
@@ -3342,7 +3392,8 @@
                            } ]
                         },
                         "valueset" : {
-                           "name" : "Chronic Liver Disease"
+                           "name" : "Chronic Liver Disease",
+                           "type" : "ValueSetRef"
                         }
                      } ]
                   }, {
@@ -3357,7 +3408,8 @@
                         } ]
                      },
                      "valueset" : {
-                        "name" : "Liver Disease"
+                        "name" : "Liver Disease",
+                        "type" : "ValueSetRef"
                      }
                   } ]
                },
@@ -4064,6 +4116,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Observation",
                      "codeProperty" : "code",
+                     "codeComparator" : "~",
                      "type" : "Retrieve",
                      "codes" : {
                         "path" : "codes",
@@ -4198,6 +4251,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}Observation",
                         "codeProperty" : "code",
+                        "codeComparator" : "~",
                         "type" : "Retrieve",
                         "codes" : {
                            "path" : "codes",
@@ -4210,6 +4264,7 @@
                      }, {
                         "dataType" : "{http://hl7.org/fhir}Observation",
                         "codeProperty" : "code",
+                        "codeComparator" : "~",
                         "type" : "Retrieve",
                         "codes" : {
                            "path" : "codes",
@@ -4572,6 +4627,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}Observation",
                         "codeProperty" : "code",
+                        "codeComparator" : "~",
                         "type" : "Retrieve",
                         "codes" : {
                            "path" : "codes",
@@ -4584,6 +4640,7 @@
                      }, {
                         "dataType" : "{http://hl7.org/fhir}Observation",
                         "codeProperty" : "code",
+                        "codeComparator" : "~",
                         "type" : "Retrieve",
                         "codes" : {
                            "path" : "codes",
@@ -4703,6 +4760,65 @@
                }
             }
          }, {
+            "name" : "GetExtensionEndDate",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Last",
+               "source" : {
+                  "type" : "Query",
+                  "source" : [ {
+                     "alias" : "E",
+                     "expression" : {
+                        "name" : "extensions",
+                        "type" : "OperandRef"
+                     }
+                  } ],
+                  "relationship" : [ ],
+                  "where" : {
+                     "type" : "Not",
+                     "operand" : {
+                        "type" : "IsNull",
+                        "operand" : {
+                           "path" : "url",
+                           "scope" : "E",
+                           "type" : "Property"
+                        }
+                     }
+                  },
+                  "return" : {
+                     "expression" : {
+                        "name" : "DateText",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "path" : "value",
+                              "scope" : "E",
+                              "type" : "Property"
+                           },
+                           "asTypeSpecifier" : {
+                              "name" : "{http://hl7.org/fhir}date",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        } ]
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "extensions",
+               "operandTypeSpecifier" : {
+                  "type" : "ListTypeSpecifier",
+                  "elementType" : {
+                     "name" : "{http://hl7.org/fhir}Extension",
+                     "type" : "NamedTypeSpecifier"
+                  }
+               }
+            } ]
+         }, {
             "name" : "OpioidMedicationRequests",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -4717,6 +4833,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                      "codeProperty" : "medication",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Opioid Pain Medications",
@@ -4744,6 +4861,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}MedicationStatement",
                      "codeProperty" : "medication",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Opioid Pain Medications",
@@ -4767,6 +4885,21 @@
                   "expression" : {
                      "name" : "OpioidMedicationRequests",
                      "type" : "ExpressionRef"
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "MME_Object",
+                  "expression" : {
+                     "name" : "MME",
+                     "libraryName" : "MMECalculator",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "type" : "ToList",
+                        "operand" : {
+                           "name" : "O",
+                           "type" : "AliasRef"
+                        }
+                     } ]
                   }
                } ],
                "relationship" : [ ],
@@ -4813,30 +4946,15 @@
                      }, {
                         "name" : "End",
                         "value" : {
-                           "name" : "DateText",
+                           "name" : "GetExtensionEndDate",
                            "type" : "FunctionRef",
                            "operand" : [ {
-                              "asType" : "{http://hl7.org/fhir}date",
-                              "type" : "As",
-                              "operand" : {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "type" : "Indexer",
-                                    "operand" : [ {
-                                       "path" : "extension",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "path" : "dispenseRequest",
-                                          "scope" : "O",
-                                          "type" : "Property"
-                                       }
-                                    }, {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "1",
-                                       "type" : "Literal"
-                                    } ]
-                                 }
+                              "path" : "extension",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "dispenseRequest",
+                                 "scope" : "O",
+                                 "type" : "Property"
                               }
                            } ]
                         }
@@ -4921,6 +5039,27 @@
                               "path" : "status",
                               "scope" : "O",
                               "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "MMEValue",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "mme",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "name" : "MME_Object",
+                                    "type" : "QueryLetRef"
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
+                              }
                            }
                         }
                      } ]
@@ -5143,6 +5282,12 @@
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
                                     }
+                                 }, {
+                                    "name" : "MMEValue",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
                                  } ]
                               } ]
                            }
@@ -5240,6 +5385,12 @@
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
                                     }
+                                 }, {
+                                    "name" : "MMEValue",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
                                  } ]
                               } ]
                            }
@@ -5275,6 +5426,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                      "codeProperty" : "medication",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Non opiod pain medications",
@@ -5302,6 +5454,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}MedicationStatement",
                      "codeProperty" : "medication",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Non opiod pain medications",
@@ -5371,30 +5524,15 @@
                      }, {
                         "name" : "End",
                         "value" : {
-                           "name" : "DateText",
+                           "name" : "GetExtensionEndDate",
                            "type" : "FunctionRef",
                            "operand" : [ {
-                              "asType" : "{http://hl7.org/fhir}date",
-                              "type" : "As",
-                              "operand" : {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "type" : "Indexer",
-                                    "operand" : [ {
-                                       "path" : "extension",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "path" : "dispenseRequest",
-                                          "scope" : "O",
-                                          "type" : "Property"
-                                       }
-                                    }, {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "1",
-                                       "type" : "Literal"
-                                    } ]
-                                 }
+                              "path" : "extension",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "dispenseRequest",
+                                 "scope" : "O",
+                                 "type" : "Property"
                               }
                            } ]
                         }
@@ -5833,6 +5971,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Procedure",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Non pharmacologic treatments for chronic pain",
@@ -5948,6 +6087,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}ServiceRequest",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Non pharmacologic treatments for chronic pain",
@@ -6060,6 +6200,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                      "codeProperty" : "medication",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Stool softeners and laxatives",
@@ -6087,6 +6228,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}MedicationStatement",
                      "codeProperty" : "medication",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Stool softeners and laxatives",
@@ -6345,6 +6487,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}Observation",
                         "codeProperty" : "code",
+                        "codeComparator" : "~",
                         "type" : "Retrieve",
                         "codes" : {
                            "path" : "codes",
@@ -6479,6 +6622,7 @@
                "operand" : [ {
                   "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                   "codeProperty" : "medication",
+                  "codeComparator" : "in",
                   "type" : "Retrieve",
                   "codes" : {
                      "name" : "Opioid Pain Medications",
@@ -6590,6 +6734,264 @@
                } ]
             }
          }, {
+            "name" : "ReportMME",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                     "codeProperty" : "medication",
+                     "codeComparator" : "in",
+                     "type" : "Retrieve",
+                     "codes" : {
+                        "name" : "Opioid Pain Medications",
+                        "type" : "ValueSetRef"
+                     }
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "MME_Object",
+                  "expression" : {
+                     "name" : "MME",
+                     "libraryName" : "MMECalculator",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "type" : "ToList",
+                        "operand" : {
+                           "name" : "O",
+                           "type" : "AliasRef"
+                        }
+                     } ]
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Type",
+                        "value" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Request",
+                           "type" : "Literal"
+                        }
+                     }, {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "strict" : false,
+                              "type" : "As",
+                              "operand" : {
+                                 "path" : "medication",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              },
+                              "asTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "End",
+                        "value" : {
+                           "name" : "GetExtensionEndDate",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "extension",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "dispenseRequest",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "Status",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "status",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "MMEValue",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "mme",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "name" : "MME_Object",
+                                    "type" : "QueryLetRef"
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
+                              }
+                           }
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "ReportMMEByDates",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "R",
+                  "expression" : {
+                     "name" : "ReportMME",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "Filter_List",
+                  "expression" : {
+                     "name" : "R",
+                     "type" : "AliasRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "where" : {
+                  "type" : "And",
+                  "operand" : [ {
+                     "type" : "Not",
+                     "operand" : {
+                        "type" : "IsNull",
+                        "operand" : {
+                           "path" : "End",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }
+                  }, {
+                     "type" : "Not",
+                     "operand" : {
+                        "type" : "IsNull",
+                        "operand" : {
+                           "path" : "MMEValue",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }
+                  } ]
+               },
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "End",
+                        "value" : {
+                           "path" : "End",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "Filter_List",
+                              "type" : "QueryLetRef"
+                           }
+                        }
+                     }, {
+                        "name" : "MMEValue",
+                        "value" : {
+                           "type" : "Sum",
+                           "source" : {
+                              "type" : "Query",
+                              "source" : [ {
+                                 "alias" : "M",
+                                 "expression" : {
+                                    "name" : "ReportMME",
+                                    "type" : "ExpressionRef"
+                                 }
+                              } ],
+                              "relationship" : [ ],
+                              "where" : {
+                                 "type" : "Equal",
+                                 "operand" : [ {
+                                    "path" : "End",
+                                    "scope" : "M",
+                                    "type" : "Property"
+                                 }, {
+                                    "path" : "End",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "Filter_List",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 } ]
+                              },
+                              "return" : {
+                                 "expression" : {
+                                    "path" : "MMEValue",
+                                    "scope" : "M",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "asc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "ReportPrescriptions",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "M",
+                  "expression" : {
+                     "name" : "OpioidMedicationRequests",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "name" : "Prescriptions",
+                     "libraryName" : "MMECalculator",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "type" : "ToList",
+                        "operand" : {
+                           "name" : "M",
+                           "type" : "AliasRef"
+                        }
+                     } ]
+                  }
+               }
+            }
+         }, {
             "name" : "UrineDrugScreens",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -6604,6 +7006,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}Observation",
                      "codeProperty" : "code",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Urine drug screen for pain management",
@@ -6748,6 +7151,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                      "codeProperty" : "medication",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Benzodiazepine medications",
@@ -6775,6 +7179,7 @@
                   "operand" : [ {
                      "dataType" : "{http://hl7.org/fhir}MedicationStatement",
                      "codeProperty" : "medication",
+                     "codeComparator" : "in",
                      "type" : "Retrieve",
                      "codes" : {
                         "name" : "Benzodiazepine medications",
@@ -7031,6 +7436,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                         "codeProperty" : "medication",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Carisoprodol",
@@ -7039,6 +7445,7 @@
                      }, {
                         "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                         "codeProperty" : "medication",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Aspirin / Carisoprodol",
@@ -7069,6 +7476,7 @@
                      "operand" : [ {
                         "dataType" : "{http://hl7.org/fhir}MedicationStatement",
                         "codeProperty" : "medication",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Carisoprodol",
@@ -7077,6 +7485,7 @@
                      }, {
                         "dataType" : "{http://hl7.org/fhir}MedicationStatement",
                         "codeProperty" : "medication",
+                        "codeComparator" : "in",
                         "type" : "Retrieve",
                         "codes" : {
                            "name" : "Aspirin / Carisoprodol",
@@ -7328,6 +7737,7 @@
                "operand" : [ {
                   "dataType" : "{http://hl7.org/fhir}MedicationRequest",
                   "codeProperty" : "medication",
+                  "codeComparator" : "in",
                   "type" : "Retrieve",
                   "codes" : {
                      "name" : "Naloxone medications",
@@ -7346,6 +7756,7 @@
                "operand" : [ {
                   "dataType" : "{http://hl7.org/fhir}MedicationStatement",
                   "codeProperty" : "medication",
+                  "codeComparator" : "in",
                   "type" : "Retrieve",
                   "codes" : {
                      "name" : "Naloxone medications",
@@ -7599,6 +8010,7 @@
                         "operand" : [ {
                            "dataType" : "{http://hl7.org/fhir}Observation",
                            "codeProperty" : "code",
+                           "codeComparator" : "in",
                            "type" : "Retrieve",
                            "codes" : {
                               "name" : "Risk assessments relevant to pain management",
@@ -7607,6 +8019,7 @@
                         }, {
                            "dataType" : "{http://hl7.org/fhir}Observation",
                            "codeProperty" : "code",
+                           "codeComparator" : "~",
                            "type" : "Retrieve",
                            "codes" : {
                               "path" : "codes",
@@ -7620,6 +8033,7 @@
                      }, {
                         "dataType" : "{http://hl7.org/fhir}Observation",
                         "codeProperty" : "code",
+                        "codeComparator" : "~",
                         "type" : "Retrieve",
                         "codes" : {
                            "path" : "codes",
@@ -8023,6 +8437,18 @@
                         "name" : "CurrentMME",
                         "value" : {
                            "name" : "ReportCurrentMME",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "ReportMME",
+                        "value" : {
+                           "name" : "ReportMME",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "ReportMMEByDates",
+                        "value" : {
+                           "name" : "ReportMMEByDates",
                            "type" : "ExpressionRef"
                         }
                      }, {

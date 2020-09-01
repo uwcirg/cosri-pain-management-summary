@@ -48,6 +48,11 @@
             }
          } ]
       },
+      "contexts" : {
+         "def" : [ {
+            "name" : "Patient"
+         } ]
+      },
       "statements" : {
          "def" : [ {
             "name" : "Patient",
@@ -813,6 +818,22 @@
                                  "type" : "QueryLetRef"
                               } ]
                            }
+                        }
+                     }, {
+                        "name" : "doseQuantity",
+                        "value" : {
+                           "name" : "ToQuantity",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "doseQuantity",
+                              "type" : "QueryLetRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "doseRange",
+                        "value" : {
+                           "name" : "doseRange",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "dosesPerDay",

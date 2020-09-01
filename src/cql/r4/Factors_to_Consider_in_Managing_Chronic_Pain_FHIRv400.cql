@@ -796,6 +796,16 @@ define ReportSTarTBackAssessments:
   }
   sort by Date desc
 
+define function GetExtensionEndDate(extensions List<Extension>):
+  Last(
+    extensions E
+    //let dateItem: singleton from E where FHIRHelpers.ToString(E.value as FHIR.url) ~ 'http://cosri.org/fhir/date_ended'
+    //where E.url contains 'http://cosri.org/fhir/date_ended'
+    where E.url is not null
+    //return DateText(S.value as FHIR.date)
+    return DateText(E.value as FHIR.date)
+  )
+
 // HISTORICAL TREATMENTS
 
 // Opioid medication orders and statements with dates (lookback 2 years)
@@ -814,19 +824,21 @@ define OpioidMedicationStatements:
 
 define ReportOpioidMedicationRequests:
   (OpioidMedicationRequests) O
+  let MME_Object: MMECalculator.MME(O)
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     //provided by the extension dateValue, may not always be there
-    End: DateText(O.dispenseRequest.extension[1].value),
+    End: GetExtensionEndDate(O.dispenseRequest.extension),
     //End:   null as String, // MedicationRequest end date not supported in R4,
     //Amount: QuantityText(O.value as FHIR.Quantity),
     //provided by the extension valueString, may not always be there
     Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
     Prescriber: O.requester.display.value,
     Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
-    Status: O.status.value
+    Status: O.status.value,
+    MMEValue: MME_Object[0].mme.value
   }
   sort by Start desc, End desc
 
@@ -867,7 +879,7 @@ define ReportNonOpioidMedicationRequests:
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     //End:   null as String, // MedicationRequest end date not supported in R4,
-    End: DateText(O.dispenseRequest.extension[1].value),
+    End: GetExtensionEndDate(O.dispenseRequest.extension),
     //Amount: QuantityText(O.value as FHIR.Quantity),
     Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
     Prescriber: O.requester.display.value,
@@ -992,6 +1004,9 @@ define ActiveOpioidMedications:
   C3F.ActiveMedicationRequest([MedicationRequest: "Opioid Pain Medications"])
 
 define CurrentMME:
+ //(OpioidMedicationRequests) M
+  //where M.status.value = 'active'
+  //return MMECalculator.TotalMME(M)
   MMECalculator.TotalMME(ActiveOpioidMedications)
 
 define ReportCurrentMME:
@@ -1006,6 +1021,31 @@ define ReportCurrentMME:
       Date: ToString(Today())
     }
 }
+
+define ReportMME: 
+  [MedicationRequest: "Opioid Pain Medications"] O
+  let MME_Object: MMECalculator.MME(O)
+  return {
+    Type:  'Request',
+    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+    End: GetExtensionEndDate(O.dispenseRequest.extension),
+    Status: O.status.value,
+    MMEValue: MME_Object[0].mme.value
+  }
+  sort by End desc
+
+define ReportMMEByDates:
+(ReportMME) R
+let Filter_List: R where R.End is not null and R.MMEValue is not null
+return {
+  End: Filter_List.End,
+  MMEValue: Sum(ReportMME M where M.End = Filter_List.End return M.MMEValue)
+}
+sort by End
+
+define ReportPrescriptions: 
+  (OpioidMedicationRequests) M
+  return MMECalculator.Prescriptions(M)
 
 // Urine drug screen - dates and results (all screens w/ lookback of 1 year)
 
@@ -1222,6 +1262,10 @@ define Summary: {
   RiskConsiderations: {
     MostRecentMME: ReportMostRecentMME,
     CurrentMME: ReportCurrentMME,
+    ReportMME: ReportMME,
+    ReportMMEByDates: ReportMMEByDates,
+    //for debugging, uncomment to test
+    //ReportPrescriptions: ReportPrescriptions,
     UrineDrugScreens: ReportUrineDrugScreens,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     CarisoprodolMedications: ReportCarisoprodolMedications,
