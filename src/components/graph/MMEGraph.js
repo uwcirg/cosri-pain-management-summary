@@ -91,7 +91,11 @@ export default class MMEGraph extends Component {
       maxDate = new Date(Math.max.apply(null, arrayDates))
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
-    if (arrayDates.length < (xIntervals - 2)) {
+    const diffTime = Math.abs(maxDate - minDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    console.log("difference ? ", diffDays)
+   // if (arrayDates.length < (xIntervals - 2)) {
+    if (diffDays < 60 && arrayDates.length < (xIntervals - 2)) {
       /*
        * make sure graph has appropiate end points on the graph if the total count of data points is less than the initial set number of intervals
        */

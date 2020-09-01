@@ -799,8 +799,8 @@ define ReportSTarTBackAssessments:
 define function GetExtensionEndDate(extensions List<Extension>):
   Last(
     extensions E
-    //let dateItem: singleton from E where FHIRHelpers.ToString(E.value as FHIR.url) ~ 'http://cosri.org/fhir/date_ended'
-    //where E.url contains 'http://cosri.org/fhir/date_ended'
+    //this doesnot work!
+    //where E.url ~ 'http://cosri.org/fhir/date_ended'
     where E.url is not null
     //return DateText(S.value as FHIR.date)
     return DateText(E.value as FHIR.date)
@@ -822,8 +822,13 @@ define OpioidMedicationStatements:
     100 years //changed from 2 to 100
   ))
 
+define PDMP_SYSTEM_VALUE:
+  'https://github.com/uwcirg/script-fhir-facade/'
+
 define ReportOpioidMedicationRequests:
-  (OpioidMedicationRequests) O
+  ( OpioidMedicationRequests M
+    where not(M.identifier is not null and M.identifier[0].system ~ PDMP_SYSTEM_VALUE)
+  ) O
   let MME_Object: MMECalculator.MME(O)
   return {
     Type:  'Request',
@@ -841,6 +846,28 @@ define ReportOpioidMedicationRequests:
     MMEValue: MME_Object[0].mme.value
   }
   sort by Start desc, End desc
+
+// medication requests from PDMP
+// using relevant system identifier for filtering
+define PDMPMedicationRequests:
+  [MedicationRequest] M 
+  where M.identifier is not null and M.identifier[0].system ~ PDMP_SYSTEM_VALUE
+
+define ReportPDMPMedicationRequests:
+  (PDMPMedicationRequests) O
+  return {
+    Type:  'Request',
+    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+    Start: DateTimeText(O.authoredOn),
+    //provided by the extension dateValue, may not always be there
+    End: DateText(O.dispenseRequest.extension[1].value),
+    Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+    Prescriber: O.requester.display.value,
+    Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
+    Status: O.status.value
+  }
+  sort by Start desc, End desc
+
 
 define ReportOpioidMedicationStatements:
   (OpioidMedicationStatements) S
@@ -1035,13 +1062,13 @@ define ReportMME:
   sort by End desc
 
 define ReportMMEByDates:
-(ReportMME) R
-let Filter_List: R where R.End is not null and R.MMEValue is not null
-return {
-  End: Filter_List.End,
-  MMEValue: Sum(ReportMME M where M.End = Filter_List.End return M.MMEValue)
-}
-sort by End
+  (ReportMME) R
+  let Filter_List: R where R.End is not null and R.MMEValue is not null
+  return {
+    End: Filter_List.End,
+    MMEValue: Sum(ReportMME M where M.End = Filter_List.End return M.MMEValue)
+  }
+  sort by End
 
 define ReportPrescriptions: 
   (OpioidMedicationRequests) M
@@ -1271,5 +1298,8 @@ define Summary: {
     CarisoprodolMedications: ReportCarisoprodolMedications,
     NaloxoneMedications: ReportNaloxoneMedications,
     RiskScreeningsRelevantToPainManagement: ReportRiskScreeningsRelevantToPainManagement
+  },
+  PDMPMedications: {
+    PDMPMedications: ReportPDMPMedicationRequests
   }
 }

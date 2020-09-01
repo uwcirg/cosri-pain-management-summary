@@ -870,6 +870,9 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
+        "identifier": {
+          "system": "https://github.com/uwcirg/script-fhir-facade/"
+        },
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
@@ -953,7 +956,6 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
@@ -966,7 +968,68 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "authoredOn": "2018-04-15T16:02:00.000Z"
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseRange": {
+                  "low": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  },
+                  "high": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  }
+                }
+              },
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2016-07-15",
+            "end": "2016-07-15"
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 1,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name", 
+              "valueString": "TEST, DOCTOR"
+            }, 
+            {
+              "url": "http://cosri.org/fhir/last_fill", 
+              "valueDate": "2016-07-15"
+            }, 
+            {
+              "url": "http://cosri.org/fhir/date_ended", 
+              "valueDate": "2016-07-15"
+            }
+          ]
+        },
+        "authoredOn": "2016-04-15T16:02:00.000Z"
       }
     },
     {
@@ -989,7 +1052,68 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "authoredOn": "2018-01-15T16:02:00.000Z"
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseRange": {
+                  "low": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  },
+                  "high": {
+                    "value": 2,
+                    "unit": "mg",
+                    "code": "mg"
+                  }
+                }
+              },
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2016-07-15",
+            "end": "2016-07-15"
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 1,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name", 
+              "valueString": "TEST, DOCTOR"
+            }, 
+            {
+              "url": "http://cosri.org/fhir/last_fill", 
+              "valueDate": "2016-07-15"
+            }, 
+            {
+              "url": "http://cosri.org/fhir/date_ended", 
+              "valueDate": "2016-07-15"
+            }
+          ]
+        },
+        "authoredOn": "2016-07-15T16:02:00.000Z"
       }
     },
     {
@@ -1012,7 +1136,7 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "authoredOn": "2017-10-15T16:02:00.000Z"
+        "authoredOn": "2016-07-15T16:02:00.000Z"
       }
     },
     {

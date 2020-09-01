@@ -161,7 +161,7 @@ export default class Landing extends Component {
     let stats = [];
     let config = overviewSection.statsConfig;
     if (config) {
-      let dataSource = summary[config.dataKeySource][config.dataKey];
+      let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: null;
       let statsSource = dataSource ? dataSource : [];
       if (config.data) {
         config.data.forEach(item => {
@@ -219,76 +219,11 @@ export default class Landing extends Component {
     if (overviewSection.graphConfig && overviewSection.graphConfig.summaryDataSource) {
       //get the data from summary data
       let sections = overviewSection.graphConfig.summaryDataSource;
-      // let dataSet = [];
-      // const MME_VALUE_FIELD_NAME = "MMEValue";
-      // const END_DATE_FIELD_NAME = "End";
-      // const MEDICATION_NAME_FIELD_NAME = "Name";
-      // sections.forEach(item => {
-      //   if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
-      //     summary[item.section_key][item.subSection_key].forEach(o => {
-      //       if (o.MMEValue && o.End) { //both value and date fields should not be null
-      //         let dataPoint = {};
-      //         dataPoint[MEDICATION_NAME_FIELD_NAME] = o[MEDICATION_NAME_FIELD_NAME];
-      //         dataPoint[MME_VALUE_FIELD_NAME] = o[MME_VALUE_FIELD_NAME];
-      //         dataPoint[END_DATE_FIELD_NAME] = dateFormat("", o[END_DATE_FIELD_NAME], "YYYY-MM-DD")
-      //         dataSet.push(dataPoint);
-      //       }
-      //     });
-      //   }
-      // });
-      // let graph_data = dataSet.reduce((o, current) => {
-
-      //   /*
-      //    * find existing item with the same date
-      //    */
-      //   const existingIndex = o.findIndex(item => {
-      //     return (
-      //       item[MEDICATION_NAME_FIELD_NAME] !== current[MEDICATION_NAME_FIELD_NAME] &&
-      //       item[END_DATE_FIELD_NAME] === current[END_DATE_FIELD_NAME]
-      //     )
-      //   });
-
-      //   /*
-      //    * add MM value if existing item with same date found
-      //    */
-      //   if (existingIndex !== -1) {
-      //     o[existingIndex][MME_VALUE_FIELD_NAME] = o[existingIndex][MME_VALUE_FIELD_NAME] + current[MME_VALUE_FIELD_NAME];
-      //     return o;
-      //   }
-
-
-      //   // const x = o.find(item => {
-      //   //   return (
-      //   //     item[MEDICATION_NAME_FIELD_NAME] === current[MEDICATION_NAME_FIELD_NAME] &&
-      //   //     item[END_DATE_FIELD_NAME] === current[END_DATE_FIELD_NAME]
-      //   //   )
-      //   // });
-
-      //   // if (!x) {
-      //   //   return o.concat([current]);
-      //   // } else {
-      //   //   return o;
-      //   // }
-
-      //   return o.concat([current]);
-      // }, []);
-
-
       let graph_data = [];
       sections.forEach(item => {
         if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
-          // summary[item.section_key][item.subSection_key].forEach(o => {
-          //   if (o.MMEValue && o.End) { //both value and date fields should not be null
-          //     let dataPoint = {};
-          //     dataPoint[MEDICATION_NAME_FIELD_NAME] = o[MEDICATION_NAME_FIELD_NAME];
-          //     dataPoint[MME_VALUE_FIELD_NAME] = o[MME_VALUE_FIELD_NAME];
-          //     dataPoint[END_DATE_FIELD_NAME] = dateFormat("", o[END_DATE_FIELD_NAME], "YYYY-MM-DD")
-          //     dataSet.push(dataPoint);
-          //   }
-          // });
           console.log("section data? ", summary[item.section_key][item.subSection_key])
           graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]]
-          //graph_data.concat(summary[item.section_key][item.subSection_key]);
         }
       });
 
