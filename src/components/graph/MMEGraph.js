@@ -93,7 +93,7 @@ export default class MMEGraph extends Component {
     }
     const diffTime = Math.abs(maxDate - minDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    console.log("difference ? ", diffDays)
+ 
    // if (arrayDates.length < (xIntervals - 2)) {
     if (diffDays < 60 && arrayDates.length < (xIntervals - 2)) {
       /*
@@ -105,7 +105,7 @@ export default class MMEGraph extends Component {
       maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + (30 * ((xIntervals-arrayDates.length)/2-1)));
       maxDate = new Date(maxDate);
       minDate = new Date(minDate);
-      console.log("min date ", minDate, " max date ", maxDate)
+      //console.log("min date ", minDate, " max date ", maxDate)
     }
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
     let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, minDate, maxDate, ...lineParamsSet);

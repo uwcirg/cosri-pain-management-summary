@@ -222,14 +222,14 @@ export default class Landing extends Component {
       let graph_data = [];
       sections.forEach(item => {
         if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
-          console.log("section data? ", summary[item.section_key][item.subSection_key])
+          //console.log("section data? ", summary[item.section_key][item.subSection_key])
           graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]]
         }
       });
 
 
       summary[overviewSectionKey+"_graph"] = graph_data;
-      console.log("graph data? ", graph_data)
+      //console.log("graph data? ", graph_data)
     }
 
     
