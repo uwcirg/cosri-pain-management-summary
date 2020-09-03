@@ -1087,17 +1087,14 @@ define ReportMME:
   }
   sort by End desc
 
-define ActiveOpioidMedicationRequests:
+define ActiveOpioidMedicationRequestsByEndDate:
   [MedicationRequest: "Opioid Pain Medications"] O
     let CalculatedEnd: GetMedicationRequestEndDate(O)
     where CalculatedEnd same or after Today()
 
 define CurrentMME:
- //(OpioidMedicationRequests) M
-  //where M.status.value = 'active'
-  //return MMECalculator.TotalMME(M)
   //MMECalculator.TotalMME(ActiveOpioidMedications)
-  MMECalculator.TotalMME(ActiveOpioidMedicationRequests)
+  MMECalculator.TotalMME(ActiveOpioidMedicationRequestsByEndDate)
 
 define ReportMMEByDates:
   (ReportMME) R

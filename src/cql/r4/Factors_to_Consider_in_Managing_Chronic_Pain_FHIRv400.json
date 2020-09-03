@@ -7089,7 +7089,7 @@
                } ]
             }
          }, {
-            "name" : "ActiveOpioidMedicationRequests",
+            "name" : "ActiveOpioidMedicationRequestsByEndDate",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -7141,7 +7141,7 @@
                "libraryName" : "MMECalculator",
                "type" : "FunctionRef",
                "operand" : [ {
-                  "name" : "ActiveOpioidMedicationRequests",
+                  "name" : "ActiveOpioidMedicationRequestsByEndDate",
                   "type" : "ExpressionRef"
                } ]
             }
