@@ -40,7 +40,6 @@
           {
             "type": "graph",
             "graphType": "MED",
-            "data": [{"dateWritten":"2019-04-01","MMEValue":40,"_id":37},{"dateWritten":"2019-04-15","MMEValue":40,"_id":34},{"dateWritten":"2019-05-01","MMEValue":40,"_id":32},{"dateWritten":"2019-05-15","MMEValue":40,"_id":31},{"dateWritten":"2019-06-01","MMEValue":40,"_id":30},{"dateWritten":"2019-06-15","MMEValue":40,"_id":29},{"dateWritten":"2019-07-01","MMEValue":40,"_id":28},{"dateWritten":"2019-07-15","MMEValue":40,"_id":27},{"dateWritten":"2019-07-30","MMEValue":100,"_id":22},{"dateWritten":"2019-10-01","MMEValue":100,"_id":20},{"dateWritten":"2019-10-15","MMEValue":100,"_id":17},{"dateWritten":"2019-11-01","MMEValue":55,"_id":7},{"dateWritten":"2019-11-15","MMEValue":55,"_id":6},{"dateWritten":"2019-12-01","MMEValue":40,"_id":5}],
             "dataSectionRefKey": "PatientRiskOverview_graph"
           },
           {
