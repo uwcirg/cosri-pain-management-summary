@@ -763,21 +763,7 @@
             "unit": "days",
             "system": "http://unitsofmeasure.org",
             "code": "d"
-          },
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name", 
-              "valueString": "TEST, DOCTOR"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/last_fill", 
-              "valueDate": "2020-09-05"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/date_ended", 
-              "valueDate": "2020-09-05"
-            }
-          ]
+          }
         }
       }
     },
@@ -844,21 +830,7 @@
             "unit": "days",
             "system": "http://unitsofmeasure.org",
             "code": "d"
-          },
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name", 
-              "valueString": "TEST, DOCTOR"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/last_fill", 
-              "valueDate": "2018-07-15"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/date_ended", 
-              "valueDate": "2018-07-15"
-            }
-          ]
+          }
         },
         "authoredOn": "2018-07-15T16:02:00.000Z"
       }
@@ -939,10 +911,6 @@
             {
               "url": "http://cosri.org/fhir/last_fill", 
               "valueDate": "2018-07-15"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/date_ended", 
-              "valueDate": "2018-07-15"
             }
           ]
         },
@@ -1004,8 +972,8 @@
         ],
         "dispenseRequest": {
           "validityPeriod": {
-            "start": "2016-07-15",
-            "end": "2016-07-15"
+            "start": "2018-07-15",
+            "end": "2018-07-15"
           },
           "numberOfRepeatsAllowed": 1,
           "expectedSupplyDuration": {
@@ -1013,23 +981,9 @@
             "unit": "days",
             "system": "http://unitsofmeasure.org",
             "code": "d"
-          },
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name", 
-              "valueString": "TEST, DOCTOR"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/last_fill", 
-              "valueDate": "2016-07-15"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/date_ended", 
-              "valueDate": "2016-07-15"
-            }
-          ]
+          }
         },
-        "authoredOn": "2016-04-15T16:02:00.000Z"
+        "authoredOn": "2018-07-15T16:02:00.000Z"
       }
     },
     {
@@ -1097,21 +1051,7 @@
             "unit": "days",
             "system": "http://unitsofmeasure.org",
             "code": "d"
-          },
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name", 
-              "valueString": "TEST, DOCTOR"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/last_fill", 
-              "valueDate": "2016-07-15"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/date_ended", 
-              "valueDate": "2016-07-15"
-            }
-          ]
+          }
         },
         "authoredOn": "2016-07-15T16:02:00.000Z"
       }
