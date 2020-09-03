@@ -267,6 +267,9 @@ parameter InclusionMedicationsLookbackPeriod default 180 days
 
 context Patient
 
+//system url from PDMP identifier
+define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
+
 // ## Re-usable functions ##
 
 // The summary logic contains many constructs that are needed throughout the logic. Where possible, these constructs
@@ -796,13 +799,12 @@ define ReportSTarTBackAssessments:
   }
   sort by Date desc
 
+
 define function GetExtensionEndDate(extensions List<Extension>):
   Last(
     extensions E
-    //this doesnot work!
-    //where E.url ~ 'http://cosri.org/fhir/date_ended'
-    where E.url is not null
-    //return DateText(S.value as FHIR.date)
+    //conditional clause does not work, can use this if this works
+    //where DateText(E.value as FHIR.date) ~ '2018-07-15'
     return DateText(E.value as FHIR.date)
   )
 
@@ -822,20 +824,34 @@ define OpioidMedicationStatements:
     100 years //changed from 2 to 100
   ))
 
-define PDMP_SYSTEM_VALUE:
-  'https://github.com/uwcirg/script-fhir-facade/'
+define function GetMedicationRequestEndDate(medRequest MedicationRequest):
+  (medRequest) O
+   let 
+    CalculatedDuration: 
+      if O.dispenseRequest.expectedSupplyDuration is not null
+      then  O.dispenseRequest.expectedSupplyDuration.value.value
+      else 0,
+    CalculatedDurationUnit:
+      if O.dispenseRequest.expectedSupplyDuration is not null
+      then  O.dispenseRequest.expectedSupplyDuration.unit.value
+      else 'days'
+    return O.authoredOn + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit}
 
 define ReportOpioidMedicationRequests:
   ( OpioidMedicationRequests M
     where not(M.identifier is not null and M.identifier[0].system ~ PDMP_SYSTEM_VALUE)
   ) O
-  let MME_Object: MMECalculator.MME(O)
+  let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     //provided by the extension dateValue, may not always be there
-    End: GetExtensionEndDate(O.dispenseRequest.extension),
+    //End: GetExtensionEndDate(O.dispenseRequest.extension),
+    //of type datetime
+    CalculatedEnd: CalculatedEnd,
+    //of type string
+    End: ToString(CalculatedEnd),
     //End:   null as String, // MedicationRequest end date not supported in R4,
     //Amount: QuantityText(O.value as FHIR.Quantity),
     //provided by the extension valueString, may not always be there
@@ -843,7 +859,7 @@ define ReportOpioidMedicationRequests:
     Prescriber: O.requester.display.value,
     Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
     Status: O.status.value,
-    MMEValue: MME_Object[0].mme.value
+    dispenseExtension: O.dispenseRequest.extension
   }
   sort by Start desc, End desc
 
@@ -855,18 +871,24 @@ define PDMPMedicationRequests:
 
 define ReportPDMPMedicationRequests:
   (PDMPMedicationRequests) O
-  return {
-    Type:  'Request',
-    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-    Start: DateTimeText(O.authoredOn),
-    //provided by the extension dateValue, may not always be there
-    End: DateText(O.dispenseRequest.extension[1].value),
-    Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
-    Prescriber: O.requester.display.value,
-    Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
-    Status: O.status.value
-  }
-  sort by Start desc, End desc
+  let 
+    CalculatedEnd: GetMedicationRequestEndDate(O)
+    return {
+      Type:  'Request',
+      Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+      Start: DateTimeText(O.authoredOn),
+      //provided by the extension dateValue, may not always be there
+      //End: GetExtensionEndDate(O.dispenseRequest.extension),
+      //of datetime type
+      CalculatedEnd: CalculatedEnd,
+      //of string type
+      End: ToString(CalculatedEnd),
+      Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+      Prescriber: O.requester.display.value,
+      Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
+      Status: O.status.value
+    }
+    sort by Start desc, End desc
 
 
 define ReportOpioidMedicationStatements:
@@ -901,13 +923,16 @@ define NonOpioidMedicationStatements:
 
 define ReportNonOpioidMedicationRequests:
   (NonOpioidMedicationRequests) O
+  let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     //End:   null as String, // MedicationRequest end date not supported in R4,
-    End: GetExtensionEndDate(O.dispenseRequest.extension),
+    //End: GetExtensionEndDate(O.dispenseRequest.extension),
     //Amount: QuantityText(O.value as FHIR.Quantity),
+    CalculatedEnd: CalculatedEnd,
+    End: ToString(CalculatedEnd),
     Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
     Prescriber: O.requester.display.value,
     Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
@@ -1030,12 +1055,6 @@ define ReportMostRecentMME:
 define ActiveOpioidMedications:
   C3F.ActiveMedicationRequest([MedicationRequest: "Opioid Pain Medications"])
 
-define CurrentMME:
- //(OpioidMedicationRequests) M
-  //where M.status.value = 'active'
-  //return MMECalculator.TotalMME(M)
-  MMECalculator.TotalMME(ActiveOpioidMedications)
-
 define ReportCurrentMME:
 {
   if CurrentMME is null then
@@ -1051,22 +1070,41 @@ define ReportCurrentMME:
 
 define ReportMME: 
   [MedicationRequest: "Opioid Pain Medications"] O
-  let MME_Object: MMECalculator.MME(O)
+  let 
+    MME_Object: MMECalculator.MME(O),
+    CalculatedEnd: GetMedicationRequestEndDate(O),
+    CalculatedStatus: 
+      if CalculatedEnd same or after Today() then 'active' else null
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-    End: GetExtensionEndDate(O.dispenseRequest.extension),
-    Status: O.status.value,
+    //End: GetExtensionEndDate(O.dispenseRequest.extension),
+    CalculatedEnd: CalculatedEnd,
+    End: ToString(CalculatedEnd),
+    //Status: O.status.value,
+    Status: CalculatedStatus,
     MMEValue: MME_Object[0].mme.value
   }
   sort by End desc
 
+define ActiveOpioidMedicationRequests:
+  [MedicationRequest: "Opioid Pain Medications"] O
+    let CalculatedEnd: GetMedicationRequestEndDate(O)
+    where CalculatedEnd same or after Today()
+
+define CurrentMME:
+ //(OpioidMedicationRequests) M
+  //where M.status.value = 'active'
+  //return MMECalculator.TotalMME(M)
+  //MMECalculator.TotalMME(ActiveOpioidMedications)
+  MMECalculator.TotalMME(ActiveOpioidMedicationRequests)
+
 define ReportMMEByDates:
   (ReportMME) R
-  let Filter_List: R where R.End is not null and R.MMEValue is not null
+  let Filtered_List: R where R.End is not null and R.MMEValue is not null
   return {
-    End: Filter_List.End,
-    MMEValue: Sum(ReportMME M where M.End = Filter_List.End return M.MMEValue)
+    End: Filtered_List.End,
+    MMEValue: Filtered_List.MMEValue
   }
   sort by End
 

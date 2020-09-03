@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
-//import {dateFormat, datishFormat} from '../helpers/formatit';
 import {datishFormat} from '../helpers/formatit';
 import {dateTimeCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
@@ -224,6 +223,10 @@ export default class Landing extends Component {
         if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
           //console.log("section data? ", summary[item.section_key][item.subSection_key])
           graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]]
+          // graph_data = graph_data.map(item => {
+          //   item["End"] = dateFormat("", item["End"], "YYYY-MM-DD");
+          //   return item;
+          // })
         }
       });
 

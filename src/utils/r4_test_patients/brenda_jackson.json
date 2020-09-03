@@ -717,7 +717,7 @@
             }
           ]
         },
-        "authoredOn": "2020-06-26",
+        "authoredOn": "2020-09-05",
         "dosageInstruction": [
           {
             "timing": {
@@ -754,7 +754,7 @@
         ],
         "dispenseRequest": {
           "validityPeriod": {
-            "start": "2020-06-25",
+            "start": "2020-09-05",
             "end": "2020-12-25"
           },
           "numberOfRepeatsAllowed": 3,
@@ -771,11 +771,11 @@
             }, 
             {
               "url": "http://cosri.org/fhir/last_fill", 
-              "valueDate": "2020-07-26"
+              "valueDate": "2020-09-05"
             }, 
             {
               "url": "http://cosri.org/fhir/date_ended", 
-              "valueDate": "2020-07-26"
+              "valueDate": "2020-09-05"
             }
           ]
         }

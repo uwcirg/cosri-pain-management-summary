@@ -81,6 +81,7 @@ export default class MMEGraph extends Component {
       let dObj = new Date(d[xFieldName]);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
       dObj.setTime(dObj.getTime() + tzOffset);
+      console.log("d? ", dObj)
       d[xFieldName] = dObj;
       return d;
     });
@@ -91,14 +92,16 @@ export default class MMEGraph extends Component {
       maxDate = new Date(Math.max.apply(null, arrayDates))
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
-    const diffTime = Math.abs(maxDate - minDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
- 
+    console.log("maxDate: ", maxDate, " minDate ", minDate)
+   const diffTime = Math.abs(maxDate - minDate);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
    // if (arrayDates.length < (xIntervals - 2)) {
     if (diffDays < 60 && arrayDates.length < (xIntervals - 2)) {
       /*
        * make sure graph has appropiate end points on the graph if the total count of data points is less than the initial set number of intervals
        */
+      console.log("HERE?")
       let calcMinDate = new Date(minDate.valueOf());
       let calcMaxDate = new Date(maxDate.valueOf());
       minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * ((xIntervals-arrayDates.length)/2-1)));

@@ -542,6 +542,15 @@
                }
             }
          }, {
+            "name" : "PDMP_SYSTEM_VALUE",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "https://github.com/uwcirg/script-fhir-facade/",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "ConceptText",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -4776,17 +4785,6 @@
                      }
                   } ],
                   "relationship" : [ ],
-                  "where" : {
-                     "type" : "Not",
-                     "operand" : {
-                        "type" : "IsNull",
-                        "operand" : {
-                           "path" : "url",
-                           "scope" : "E",
-                           "type" : "Property"
-                        }
-                     }
-                  },
                   "return" : {
                      "expression" : {
                         "name" : "DateText",
@@ -4875,14 +4873,155 @@
                } ]
             }
          }, {
-            "name" : "PDMP_SYSTEM_VALUE",
+            "name" : "GetMedicationRequestEndDate",
             "context" : "Patient",
             "accessLevel" : "Public",
+            "type" : "FunctionDef",
             "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "https://github.com/uwcirg/script-fhir-facade/",
-               "type" : "Literal"
-            }
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "name" : "medRequest",
+                     "type" : "OperandRef"
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "CalculatedDuration",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "expectedSupplyDuration",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "dispenseRequest",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "expectedSupplyDuration",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "dispenseRequest",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     },
+                     "else" : {
+                        "type" : "ToDecimal",
+                        "operand" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "value" : "0",
+                           "type" : "Literal"
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "CalculatedDurationUnit",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "expectedSupplyDuration",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "dispenseRequest",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "unit",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "expectedSupplyDuration",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "dispenseRequest",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     },
+                     "else" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "days",
+                        "type" : "Literal"
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Add",
+                     "operand" : [ {
+                        "name" : "ToDateTime",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "path" : "authoredOn",
+                           "scope" : "O",
+                           "type" : "Property"
+                        } ]
+                     }, {
+                        "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
+                        "type" : "Instance",
+                        "element" : [ {
+                           "name" : "value",
+                           "value" : {
+                              "name" : "CalculatedDuration",
+                              "type" : "QueryLetRef"
+                           }
+                        }, {
+                           "name" : "unit",
+                           "value" : {
+                              "name" : "CalculatedDurationUnit",
+                              "type" : "QueryLetRef"
+                           }
+                        } ]
+                     } ]
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "medRequest",
+               "operandTypeSpecifier" : {
+                  "name" : "{http://hl7.org/fhir}MedicationRequest",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
          }, {
             "name" : "ReportOpioidMedicationRequests",
             "context" : "Patient",
@@ -4947,17 +5086,13 @@
                   }
                } ],
                "let" : [ {
-                  "identifier" : "MME_Object",
+                  "identifier" : "CalculatedEnd",
                   "expression" : {
-                     "name" : "MME",
-                     "libraryName" : "MMECalculator",
+                     "name" : "GetMedicationRequestEndDate",
                      "type" : "FunctionRef",
                      "operand" : [ {
-                        "type" : "ToList",
-                        "operand" : {
-                           "name" : "O",
-                           "type" : "AliasRef"
-                        }
+                        "name" : "O",
+                        "type" : "AliasRef"
                      } ]
                   }
                } ],
@@ -5003,19 +5138,19 @@
                            } ]
                         }
                      }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
-                           "name" : "GetExtensionEndDate",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "extension",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "dispenseRequest",
-                                 "scope" : "O",
-                                 "type" : "Property"
-                              }
-                           } ]
+                           "type" : "ToString",
+                           "operand" : {
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
+                           }
                         }
                      }, {
                         "name" : "Quantity",
@@ -5101,24 +5236,14 @@
                            }
                         }
                      }, {
-                        "name" : "MMEValue",
+                        "name" : "dispenseExtension",
                         "value" : {
-                           "path" : "value",
+                           "path" : "extension",
                            "type" : "Property",
                            "source" : {
-                              "path" : "mme",
-                              "type" : "Property",
-                              "source" : {
-                                 "type" : "Indexer",
-                                 "operand" : [ {
-                                    "name" : "MME_Object",
-                                    "type" : "QueryLetRef"
-                                 }, {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "0",
-                                    "type" : "Literal"
-                                 } ]
-                              }
+                              "path" : "dispenseRequest",
+                              "scope" : "O",
+                              "type" : "Property"
                            }
                         }
                      } ]
@@ -5204,6 +5329,17 @@
                      "type" : "ExpressionRef"
                   }
                } ],
+               "let" : [ {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               } ],
                "relationship" : [ ],
                "return" : {
                   "expression" : {
@@ -5246,34 +5382,19 @@
                            } ]
                         }
                      }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
-                           "name" : "DateText",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "asType" : "{http://hl7.org/fhir}date",
-                              "type" : "As",
-                              "operand" : {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "type" : "Indexer",
-                                    "operand" : [ {
-                                       "path" : "extension",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "path" : "dispenseRequest",
-                                          "scope" : "O",
-                                          "type" : "Property"
-                                       }
-                                    }, {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "1",
-                                       "type" : "Literal"
-                                    } ]
-                                 }
-                              }
-                           } ]
+                           "type" : "ToString",
+                           "operand" : {
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
+                           }
                         }
                      }, {
                         "name" : "Quantity",
@@ -5516,36 +5637,9 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
-                                    "name" : "End",
+                                    "name" : "CalculatedEnd",
                                     "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Status",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "TupleTypeSpecifier",
-                                 "element" : [ {
-                                    "name" : "Type",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Name",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Start",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
@@ -5579,9 +5673,45 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
-                                    "name" : "MMEValue",
+                                    "name" : "dispenseExtension",
                                     "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "ListTypeSpecifier",
+                                       "elementType" : {
+                                          "name" : "{http://hl7.org/fhir}Extension",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  } ]
@@ -5619,36 +5749,9 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
-                                    "name" : "End",
+                                    "name" : "CalculatedEnd",
                                     "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Status",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "TupleTypeSpecifier",
-                                 "element" : [ {
-                                    "name" : "Type",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Name",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Start",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
@@ -5682,9 +5785,45 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
-                                    "name" : "MMEValue",
+                                    "name" : "dispenseExtension",
                                     "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "ListTypeSpecifier",
+                                       "elementType" : {
+                                          "name" : "{http://hl7.org/fhir}Extension",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  } ]
@@ -5776,6 +5915,17 @@
                      "type" : "ExpressionRef"
                   }
                } ],
+               "let" : [ {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               } ],
                "relationship" : [ ],
                "return" : {
                   "expression" : {
@@ -5818,19 +5968,19 @@
                            } ]
                         }
                      }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
-                           "name" : "GetExtensionEndDate",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "extension",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "dispenseRequest",
-                                 "scope" : "O",
-                                 "type" : "Property"
-                              }
-                           } ]
+                           "type" : "ToString",
+                           "operand" : {
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
+                           }
                         }
                      }, {
                         "name" : "Quantity",
@@ -6073,7 +6223,31 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "CalculatedEnd",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Prescriber",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Pharmacy",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -6107,24 +6281,6 @@
                                     }
                                  }, {
                                     "name" : "End",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Quantity",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Prescriber",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Pharmacy",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -6170,7 +6326,31 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "CalculatedEnd",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Prescriber",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Pharmacy",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -6204,24 +6384,6 @@
                                     }
                                  }, {
                                     "name" : "End",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Quantity",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Prescriber",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Pharmacy",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -6927,6 +7089,50 @@
                } ]
             }
          }, {
+            "name" : "ActiveOpioidMedicationRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                     "codeProperty" : "medication",
+                     "codeComparator" : "in",
+                     "type" : "Retrieve",
+                     "codes" : {
+                        "name" : "Opioid Pain Medications",
+                        "type" : "ValueSetRef"
+                     }
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               } ],
+               "relationship" : [ ],
+               "where" : {
+                  "type" : "SameOrAfter",
+                  "operand" : [ {
+                     "name" : "CalculatedEnd",
+                     "type" : "QueryLetRef"
+                  }, {
+                     "type" : "ToDateTime",
+                     "operand" : {
+                        "type" : "Today"
+                     }
+                  } ]
+               }
+            }
+         }, {
             "name" : "CurrentMME",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -6935,7 +7141,7 @@
                "libraryName" : "MMECalculator",
                "type" : "FunctionRef",
                "operand" : [ {
-                  "name" : "ActiveOpioidMedications",
+                  "name" : "ActiveOpioidMedicationRequests",
                   "type" : "ExpressionRef"
                } ]
             }
@@ -7062,6 +7268,49 @@
                         }
                      } ]
                   }
+               }, {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "CalculatedStatus",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "SameOrAfter",
+                           "operand" : [ {
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
+                           }, {
+                              "type" : "ToDateTime",
+                              "operand" : {
+                                 "type" : "Today"
+                              }
+                           } ]
+                        }
+                     },
+                     "then" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "active",
+                        "type" : "Literal"
+                     },
+                     "else" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}String",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
+                     }
+                  }
                } ],
                "relationship" : [ ],
                "return" : {
@@ -7094,30 +7343,25 @@
                            } ]
                         }
                      }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
-                           "name" : "GetExtensionEndDate",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "extension",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "dispenseRequest",
-                                 "scope" : "O",
-                                 "type" : "Property"
-                              }
-                           } ]
+                           "type" : "ToString",
+                           "operand" : {
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
+                           }
                         }
                      }, {
                         "name" : "Status",
                         "value" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "status",
-                              "scope" : "O",
-                              "type" : "Property"
-                           }
+                           "name" : "CalculatedStatus",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "MMEValue",
@@ -7165,7 +7409,7 @@
                   }
                } ],
                "let" : [ {
-                  "identifier" : "Filter_List",
+                  "identifier" : "Filtered_List",
                   "expression" : {
                      "name" : "R",
                      "type" : "AliasRef"
@@ -7205,46 +7449,18 @@
                            "path" : "End",
                            "type" : "Property",
                            "source" : {
-                              "name" : "Filter_List",
+                              "name" : "Filtered_List",
                               "type" : "QueryLetRef"
                            }
                         }
                      }, {
                         "name" : "MMEValue",
                         "value" : {
-                           "type" : "Sum",
+                           "path" : "MMEValue",
+                           "type" : "Property",
                            "source" : {
-                              "type" : "Query",
-                              "source" : [ {
-                                 "alias" : "M",
-                                 "expression" : {
-                                    "name" : "ReportMME",
-                                    "type" : "ExpressionRef"
-                                 }
-                              } ],
-                              "relationship" : [ ],
-                              "where" : {
-                                 "type" : "Equal",
-                                 "operand" : [ {
-                                    "path" : "End",
-                                    "scope" : "M",
-                                    "type" : "Property"
-                                 }, {
-                                    "path" : "End",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "Filter_List",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 } ]
-                              },
-                              "return" : {
-                                 "expression" : {
-                                    "path" : "MMEValue",
-                                    "scope" : "M",
-                                    "type" : "Property"
-                                 }
-                              }
+                              "name" : "Filtered_List",
+                              "type" : "QueryLetRef"
                            }
                         }
                      } ]
