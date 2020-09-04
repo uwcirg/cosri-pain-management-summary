@@ -19,15 +19,10 @@
 //   - Pregnancy (New ICD10 codes published in 2018 and 2019)": '2.16.840.1.113762.1.4.1032.80'
 // - Changed the Suicide Attempt value set to 2.16.840.1.113762.1.4.1032.102
 // - Removed specific inclusion of SNOMED-CT 86849004 since it is now in the Suicide Attempt value set
-// - Added LOINC codes for the Pain intensity, Enjoyment of life, General activity scale [PEG]
-//   - Previous local codes are still supported (but discouraged)
-// - Added logic to normalize long LOINC display text for PEG codes to shorter names
-// - Added LOINC code for the STarT Back Screening Tool
-//   - Previous local code is still supported (but discouraged)
-// - Added logic to display range for Opioid Risk Tool (ORT)
 // - Updated QuantityText logic to not include '{score}' units (since scalar number is enough in those cases)
 //
-// ##Source guideline: [CDC Guideline for Opioid Prescribing for Chronic Pain](https://www.cdc.gov/drugoverdose/prescribing/guideline.html)
+// ##Source guideline 1: [CDC Guideline for Opioid Prescribing for Chronic Pain](https://www.cdc.gov/drugoverdose/prescribing/guideline.html)
+// ##Source guideline 2: [Washington State Prescribing Rules](
 
 // Update 20200224
 //    Removed inclusion criteria excepting age 18
@@ -38,13 +33,19 @@
 //    Also removed an old superfluous function
 // Update 20200819
 //    Updated to include MME Calculation
+// Update 20200904
+//    Code cleaning
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
+
+
 // # Data model #
 
-// The FHIR R4 model is used for testing purposes only.  It has not been piloted.
+// FHIR Version
 using FHIR version '4.0.0'
+
+
 
 // # Referenced libraries #
 
@@ -55,21 +56,16 @@ include FHIRHelpers version '4.0.0' called FHIRHelpers
 // The MMECalculator library is used to compute the patient's MME/MED 
 include MMECalculator version '3.0.0' called MMECalculator
 
+
+
 // # Value sets and codes #
 
 // ## Code Systems ##
-
 codesystem "LOINC": 'http://loinc.org'
 codesystem "SNOMED-CT": 'http://snomed.info/sct'
 
-// Several concepts needed by the Pain Management Summary CDS do not yet have standardized codes associated with them.
-// The CDS logic authors have registered new Logical Object Identifier Names and Codes (LOINC) codes, but they are
-// not yet available.  Once available, the CDS will be updated.  Until then, CDS implementors will need to map to
-// local codes (signified by the LOCAL code system below) or replace them with their own codes.
-codesystem "LOCAL": 'http://cds.ahrq.gov/cdsconnect/pms'
 
 // ## Value sets ##
-
 // List value sets used by the artifact. The links to the Value Set Authority Center (VSAC) point to the latest
 // expansion of each value set available.
 
@@ -154,121 +150,35 @@ valueset "Urine drug screen for pain management": '2.16.840.1.113762.1.4.1032.28
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.44/expansion)
 valueset "Stool softeners and laxatives": '2.16.840.1.113762.1.4.1032.44'
 
-// ## Individual codes ##
 
-// list individual codes from code systems used directly in the CQL logic. Individual codes are used when there is
+// ## Individual codes ##
+// List of individual codes from code systems used directly in the CQL logic. Individual codes are used when there is
 // a single code from a particular vocabulary standard used to represent a clinical concept. It is considered
 // best-practice not to create value sets containing a single code.
-
 code "Pregnancy status code": '82810-3' from "LOINC" display 'Pregnancy status'
 code "Pregnant code": '77386006' from "SNOMED-CT" display 'Patient currently pregnant (finding)'
-code "Patient Health Questionnaire 2 item (PHQ-2) total score [Reported] code":
-  '55758-7' from "LOINC" display 'Patient Health Questionnaire 2 item (PHQ-2) total score [Reported]'
-code "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported] code":
-  '44261-6' from "LOINC" display 'Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]'
-code "Generalized anxiety disorder 7 item (GAD-7) total score [Reported.PHQ] code":
-  '70274-6' from "LOINC" display 'Generalized anxiety disorder 7 item (GAD-7) total score [Reported.PHQ]'
-code "Total score [AUDIT] code": '75624-7' from "LOINC" display 'Total score [AUDIT]'
-code "Total score [AUDIT-C] code": '75626-2' from "LOINC" display 'Total score [AUDIT-C]'
-code "Total score [DAST-10] code": '82667-7' from "LOINC" display 'Total score [DAST-10]'
-code "Total score ORT code": '91392-1' from "LOINC" display 'Total score ORT'
-code "Pain severity Wong-Baker FACES Scale code": '38221-8' from "LOINC" display 'Pain severity Wong-Baker FACES Scale'
 
-// The Pain intensity, Enjoyment of life, General activity scale [PEG] now has standardized LOINC codes available.
-// These LOINC codes were not available when the initial version of the Pain Management Summary was developed.
-// New systems implementing the Pain Management Summary should use the standardized codes, but the legacy local codes
-// are also retained in order to allow existing systems to continue to function. Existing systems, however, are
-// strongly encouraged to adopt the standardized LOINC codes.
-
-code "Mean score [PEG] code": '91147-9' from "LOINC" display 'Mean score [PEG]'
-code "Pain severity in the past week - 0-10 numeric rating [Reported] code":
-  '75893-8' from "LOINC" display 'Pain severity in the past week - 0-10 numeric rating [Reported]'
-code "What number best describes how pain has interfered with your enjoyment of life during the past week code":
-  '91145-3' from "LOINC" display 'What number best describes how pain has interfered with your enjoyment of life during the past week'
-code "What number best describes how pain has interfered with your general activity during the past week code":
-  '91146-1' from "LOINC" display 'What number best describes how pain has interfered with your general activity during the past week'
-
-// Legacy local codes for the Pain intensity, Enjoyment of life, General activity scale [PEG].
-// New systems should use the LOINC codes above instead.
-
-code "Pain Enjoyment General Activity (PEG) Assessment LEGACY code":
-  'PEGASSESSMENT' from "LOCAL" display 'Pain Enjoyment General Activity (PEG) Assessment'
-code "Pain LEGACY code": 'PEGPAIN' from "LOCAL" display 'Pain'
-code "Enjoyment of life LEGACY code": 'PEGENJOYMENT' from "LOCAL" display 'Enjoyment of life'
-code "General activity LEGACY code": 'PEGGENERALACTIVITY' from "LOCAL" display 'General activity'
-
-// The STarT Back Screening Tool now has a standardized LOINC code available. This LOINC code was not available
-// when the initial version of the Pain Management Summary was developed. New systems implementing the Pain Management
-// Summary should use the standardized code, but the legacy local code is also retained in order to allow existing
-// systems to continue to function. Existing systems, however, are strongly encouraged to adopt the standardized LOINC
-// code.
-
-code "Total score [STarT Back] code": '91351-7' from "LOINC" display 'Total score [STarT Back]'
-
-// Legacy local code for the STarT Back Screening Tool. New systems should use the LOINC codes above instead.
-
-code "STarT Back Screening Tool LEGACY code": 'STARTBACK' from "LOCAL" display 'STarT Back Screening Tool'
-
-// The following codes do not yet have standardized codes associated with them so are expressed as LOCAL codes.
-// As standardized codes become available, this CDS will be updated to use standard codes rather than LOCAL codes.
-
-code "Single question r/t ETOH use code": 'SQETOHUSE' from "LOCAL" display 'Single question r/t ETOH use'
-code "Single question r/t drug use code": 'SQDRUGUSE' from "LOCAL" display 'Single question r/t drug use'
-code "Morphine Milligram Equivalent (MME) code": 'MME' from "LOCAL" display 'Morphine Milligram Equivalent (MME)'
 
 // CQL currently requires concept declarations to contain references to code declarations.
-
 concept "Pregnancy status": { "Pregnancy status code" } display 'Pregnancy status'
 concept "Pregnant": { "Pregnant code" } display 'Patient currently pregnant (finding)'
-concept "Patient Health Questionnaire 2 item (PHQ-2) total score [Reported]":
-  { "Patient Health Questionnaire 2 item (PHQ-2) total score [Reported] code" }
-  display 'Patient Health Questionnaire 2 item (PHQ-2) total score [Reported]'
-concept "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]":
-  { "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported] code" }
-  display 'Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]'
-concept "Generalized anxiety disorder 7 item (GAD-7) total score [Reported.PHQ]":
-  { "Generalized anxiety disorder 7 item (GAD-7) total score [Reported.PHQ] code" }
-  display 'Generalized anxiety disorder 7 item (GAD-7) total score [Reported.PHQ]'
-concept "Total score [AUDIT]": { "Total score [AUDIT] code" } display 'Total score [AUDIT]'
-concept "Total score [AUDIT-C]": { "Total score [AUDIT-C] code" } display 'Total score [AUDIT-C]'
-concept "Total score [DAST-10]": { "Total score [DAST-10] code" } display 'Total score [DAST-10]'
-concept "Total score ORT": { "Total score ORT code" } display 'Total score ORT'
-concept "Pain severity Wong-Baker FACES Scale":
-  { "Pain severity Wong-Baker FACES Scale code" } display 'Pain severity Wong-Baker FACES Scale'
-concept "Pain severity in the past week - 0-10 numeric rating [Reported]":
-  { "Pain severity in the past week - 0-10 numeric rating [Reported] code" }
-  display 'Pain severity in the past week - 0-10 numeric rating [Reported]'
-concept "What number best describes how pain has interfered with your enjoyment of life during the past week":
-  { "What number best describes how pain has interfered with your enjoyment of life during the past week code" }
-  display 'What number best describes how pain has interfered with your enjoyment of life during the past week'
-concept "What number best describes how pain has interfered with your general activity during the past week":
-  { "What number best describes how pain has interfered with your general activity during the past week code" }
-  display 'What number best describes how pain has interfered with your general activity during the past week'
-concept "Mean score [PEG]": { "Mean score [PEG] code" } display 'Mean score [PEG]'
-concept "Pain Enjoyment General Activity (PEG) Assessment LEGACY":
-  { "Pain Enjoyment General Activity (PEG) Assessment LEGACY code" } display 'Pain Enjoyment General Activity (PEG) Assessment'
-concept "Pain LEGACY": { "Pain LEGACY code" } display 'Pain'
-concept "Enjoyment of life LEGACY": { "Enjoyment of life LEGACY code" } display 'Enjoyment of life'
-concept "General activity LEGACY": { "General activity LEGACY code" } display 'General activity'
-concept "Total score [STarT Back]": { "Total score [STarT Back] code" } display 'Total score [STarT Back]'
-concept "STarT Back Screening Tool LEGACY": { "STarT Back Screening Tool LEGACY code" } display 'STarT Back Screening Tool'
-concept "Single question r/t ETOH use": { "Single question r/t ETOH use code" } display 'Single question r/t ETOH use'
-concept "Single question r/t drug use": { "Single question r/t drug use code" } display 'Single question r/t drug use'
-concept "Morphine Milligram Equivalent (MME)":
-  { "Morphine Milligram Equivalent (MME) code" } display 'Morphine Milligram Equivalent (MME)'
+
+
 
 // # Parameters #
 
 // The InclusionMedicationsLookbackPeriod allows CDS implementors to specify how far the inclusion logic should look
 // back for qualifying active medications. By default, the inclusion logic will look back 180 days.
-parameter InclusionMedicationsLookbackPeriod default 180 days
-
-// # CDS logic #
-
-context Patient
+parameter InclusionMedicationsLookbackPeriod default 180 days //DO WE NEED THIS?
 
 //system url from PDMP identifier
 define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
+
+
+
+// # CDS logic #
+context Patient
+
 
 // ## Re-usable functions ##
 
@@ -279,50 +189,8 @@ define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
 // `display` on each `coding` until it finds a non-null value.  Some PEG codes are normalized due to length.
 // @param c - a FHIR CodeableConcept to get text from
 // @returns {System.String} the display text or null if none is found
-
 define function ConceptText(c FHIR.CodeableConcept):
-  if c ~ "Mean score [PEG]" or c ~ "Pain Enjoyment General Activity (PEG) Assessment LEGACY"
-    then 'Mean score [PEG]'
-  else if c ~ "Pain severity in the past week - 0-10 numeric rating [Reported]" or c ~ "Pain LEGACY"
-    then 'Pain'
-  else if c ~ "What number best describes how pain has interfered with your enjoyment of life during the past week"
-       or c ~ "Enjoyment of life LEGACY"
-    then 'Enjoyment of life'
-  else if c ~ "What number best describes how pain has interfered with your general activity during the past week"
-       or c ~ "General activity LEGACY"
-    then 'General activity'
-  else
     Coalesce(c.text.value, Coalesce((c.coding) c2 return c2.display.value))
-
-// We do not reliably get ranges back from EHR data, but ranges are important to understanding assessment scores in
-// the summary.  This function adds ranges to the name for known assessments.
-// @param c - a FHIR CodeableConcept to get the updated text for
-// @returns {System.String} the display text with range information appended
-define function ConceptTextWithRange(c FHIR.CodeableConcept):
-  if c ~ "Patient Health Questionnaire 2 item (PHQ-2) total score [Reported]"
-    then ConceptText(c) + ' [Range: 0-6]'
-  else if c ~ "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]"
-    then ConceptText(c) + ' [Range: 0-27]'
-  else if c ~ "Generalized anxiety disorder 7 item (GAD-7) total score [Reported.PHQ]"
-    then ConceptText(c) + ' [Range: 0-21]'
-  else if c ~ "Total score [AUDIT]"
-    then ConceptText(c) + ' [Range: 0-40]'
-  else if c ~ "Total score [AUDIT-C]"
-    then ConceptText(c) + ' [Range: 0-12]'
-  else if c ~ "Total score [DAST-10]"
-    then ConceptText(c) + ' [Range: 0-10]'
-  else if c ~ "Total score ORT"
-    then ConceptText(c) + ' [Range: 0-26]'
-  else if c ~ "Pain severity Wong-Baker FACES Scale"
-    then ConceptText(c) + ' [Range: 0-10]'
-  else if c ~ "Mean score [PEG]"
-       or c ~ "Pain Enjoyment General Activity (PEG) Assessment LEGACY"
-    then ConceptText(c) + ' [Range: 0-10]'
-  else if c ~ "Total score [STarT Back]"
-       or c ~ "STarT Back Screening Tool LEGACY"
-    then ConceptText(c) + ' [Range: 0-9]'
-  else
-    ConceptText(c)
 
 // Returns a text representation of a date using the CQL `ToString` function.
 // @param d - a FHIR date to get text for
@@ -422,86 +290,58 @@ define function Abatement(c FHIR.Condition):
     (c.abatement as FHIR.string).value
   })
 
+// Returns the predicted last date for the prescription, based on the supply duration and quantity
+define function GetMedicationRequestEndDate(medRequest MedicationRequest):
+  (medRequest) O
+   let 
+    CalculatedDuration: 
+      if O.dispenseRequest.expectedSupplyDuration is not null
+      then  O.dispenseRequest.expectedSupplyDuration.value.value
+      else 0,
+    CalculatedDurationUnit:
+      if O.dispenseRequest.expectedSupplyDuration is not null
+      then  O.dispenseRequest.expectedSupplyDuration.unit.value
+      else 'days'
+    return date from (O.authoredOn + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
+
+
 // ## Target population ##
 
 // INCLUSIONS
-
 // Determines if patient's age, in years, at the time CQL is run, is at least 18 years old
 define Is18orOlder:
   AgeInYears() >= 18
 
-// Conditions associated with chronic pain
-define ConditionsAssociatedWithChronicPain:
-  C3F.Confirmed(C3F.ActiveOrRecurring([Condition: "Conditions associated with chronic pain"]))
-
-// Determines if the patient has any of the conditions associated with chronic pain
-define HasConditionAssociatedWithChronicPain:
-  exists(ConditionsAssociatedWithChronicPain)
-
-// Determines if the patient has any record of opioid pain medications in the lookback period
-//       - Medication Request within past 180 days (lookback can be made a parameter)
-//       - Medication Statement by patient within past 180 days (lookback can be made a parameter)
-define HasRecentOpioidPainMedication:
-  exists(C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Opioid Pain Medications"],
-    InclusionMedicationsLookbackPeriod)
-  ))
-  or exists(C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Opioid Pain Medications"],
-    InclusionMedicationsLookbackPeriod)
-  ))
-
-// Determines if the patient has any record of adjuvant analgesic medications in the lookback period
-//       - Medication Request within past 180 days (lookback can be made a parameter)
-//       - Medication Statement by patient within past 180 days (lookback can be made a parameter)
-define HasRecentAdjuvantAnalgesicMedication:
-  exists(C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Adjuvant Analgesic Medications"],
-    InclusionMedicationsLookbackPeriod)
-  ))
-  or exists(C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Adjuvant Analgesic Medications"],
-    InclusionMedicationsLookbackPeriod)
-  ))
-
 // Determines if the patient meets the inclusion criteria for the CDS. Inclusion criteria is:
 // - Age >=18 years
-// - AND
-//   - OR Conditions associated with chronic pain
-//   - OR Opioid pain medication
-//   - OR Adjuvant analgesic medication
 define MeetsInclusionCriteria:
   Is18orOlder
 
-// REMOVING AHRQ APP INCLUSION CRITERIA FOR COSRI 
-//  and (
-//    HasConditionAssociatedWithChronicPain
-//    or HasRecentOpioidPainMedication
-//    or HasRecentAdjuvantAnalgesicMedication
-//  )
-
-
 
 // EXCLUSIONS
-
 // TAKE NOTICE: This CDS is not intended for patients who meet any of the following criteria:
 // 1. Younger than 18 years of age
 // 2. Undergoing end-of-life care (hospice or palliative)
 // 3. Undergoing active cancer treatment
-//
+
 // The first exclusion is explicitly accounted for under INCLUSIONS.
 // The second and third exclusions cannot be realiably detected for all patients using just EHR data. For that reason
 // they are not implemented in this CDS. Care providers should use their judgement when applying this CDS to their
 // patients.
 
-// ## Intervention(s) ##
 
+
+// # Intervention(s) #
 // DISPLAY and POPULATE a Pain Management Summary of the following items:
+
 
 // PERTINENT MEDICAL HISTORY
 
-// Conditions associated with chronic pain and their dates of onset
+// Conditions associated with chronic pain
+define ConditionsAssociatedWithChronicPain:
+  C3F.Confirmed(C3F.ActiveOrRecurring([Condition: "Conditions associated with chronic pain"]))
 
+// Conditions associated with chronic pain and their dates of onset
 define ReportConditionsAssociatedWithChronicPain:
   (ConditionsAssociatedWithChronicPain) C
   return {
@@ -512,9 +352,9 @@ define ReportConditionsAssociatedWithChronicPain:
   }
   sort by (Onset as String) desc
 
+
 // Conditions that are risk factors for opioid-related harms and their dates of onset
 // This is a union of nine value sets (w/ different filtering criteria)
-
 define DepressionConditions:
   C3F.Confirmed(C3F.ActiveOrRecurring([Condition: "Major Depression"]))
   union C3F.Confirmed(C3F.ActiveOrRecurring([Condition: "Depression Diagnosis ICD9"]))
@@ -574,12 +414,12 @@ define ConditionRiskFactorsForOpioidRelatedHarms:
   union HepaticDysfunctionConditions
   union PregnancyConditions
 
+
 // Encounter diagnoses that are risk factors for opioid-related harms and their dates of onset. Some risk factors may
 // not exist on the problem list, and therefore may not be represented as Conditions (depending on EHR implementation).
 // For this, the logic also looks at the patient's encounters, trying to find risk factors recorded as encounter
 // diagnosis codes. We do not look at the reasonReference field because the Conditions referred to would already be
 // reflected in the expression that queries over Conditions.
-
 define EncounterRiskFactorsForOpioidRelatedHarms:
   [Encounter] E where exists(
     E.reasonCode R where
@@ -598,6 +438,7 @@ define EncounterRiskFactorsForOpioidRelatedHarms:
       or FHIRHelpers.ToConcept(R) in "Liver Disease"
       // Pregnancy not considered in Encounter diagnoses because this is an unrestricted lookback.
   )
+
 
 // NOTE: As a convention, if an expression's name starts with "Report", its purpose is to format data for the purpose
 // of building the final summary object.
@@ -699,152 +540,24 @@ define ReportRiskFactorsForOpioidRelatedHarms:
       union ReportMostRecentPositivePregnancyObservation) C
   sort by (if Onset is not null then Onset as String else Visit.Start) desc, Visit.End desc, (Abatement as String) desc
 
-// PAIN ASSESSMENT
-
-// Numeric pain intensity assessment - scores and dates (lookback 2 years)
-
-define NumericPainIntensityAssessments:
-  C3F.Verified(C3F.ObservationLookBack([Observation: "Pain severity Wong-Baker FACES Scale"], 2 years))
-
-define ReportNumericPainIntensityAssessments:
-  (NumericPainIntensityAssessments) A
-  return {
-    Name:           ConceptTextWithRange(A.code),
-    Score:          QuantityText(A.value as FHIR.Quantity),
-    Interpretation: Coalesce( ConceptText(First(A.interpretation)),  ConceptText(A.value as FHIR.CodeableConcept) ),
-    Date:           ObservationDate(A)
-  }
-  sort by Date desc
-
-// Pain Enjoyment General Activity (PEG) Assessment - scores and dates (lookback 2 years)
-// Note: this includes listing the response to each of the 3 questions, plus the total score.  The Pain Management
-// Sumnmary currently supports both the LOINC representations and the legacy local code representations.
-//
-// 1. Observation w/ LOINC mean score as primary code and mean score as valueQuantity
-//    * code: LOINC 91147-9 "Mean score [PEG]"
-//    * valueQuantity: (mean score)
-//    * component:
-//      -
-//        * code: LOINC 75893-8 "What number best describes your pain on average in the past week?"
-//        * valueQuantity: (pain score)
-//      -
-//        * code: LOINC 91145-3 "What number best describes how, during the past week, pain has interfered with your enjoyment of life?"
-//        * valueQuantity: (enjoyment of life score)
-//      -
-//        * code: LOINC 91146-1 "What number best describes how, during the past week, pain has interfered with your general activity?"
-//        * valueQuantity: (general activity score)
-//
-// 2. LEGACY: Observation w/ LOCAL code as primary code and mean score as valueQuantity
-//    * code: LOCAL PEGASSESSMENT "Pain Enjoyment General Activity (PEG) Assessment"
-//    * valueQuantity: (mean score)
-//    * component:
-//      -
-//        * code: LOCAL PEGPAIN "Pain"
-//        * valueQuantity: (pain score)
-//      -
-//        * code: LOCAL PEGENJOYMENT "Enjoyment of life"
-//        * valueQuantity: (enjoyment of life score)
-//      -
-//        * code: LOCAL PEGGENERALACTIVITY "General activity"
-//        * valueQuantity: (general activity score)
-
-define PainEnjoymentGeneralActivityAssessments:
-  C3F.Verified(C3F.ObservationLookBack(
-    [Observation: "Mean score [PEG]"]
-      union [Observation: "Pain Enjoyment General Activity (PEG) Assessment LEGACY"],
-    2 years
-  ))
-
-define ReportPainEnjoymentGeneralActivityAssessments:
-  (PainEnjoymentGeneralActivityAssessments) A
-  let
-    Pain: (A.component) C
-      where C.code ~ "Pain severity in the past week - 0-10 numeric rating [Reported]"
-      or C.code ~ "Pain LEGACY",
-    Enjoyment: (A.component) C
-      where C.code ~ "What number best describes how pain has interfered with your enjoyment of life during the past week"
-      or C.code ~ "Enjoyment of life LEGACY",
-    GeneralActivity: (A.component) C
-      where C.code ~ "What number best describes how pain has interfered with your general activity during the past week"
-      or C.code ~ "General activity LEGACY"
-  where true // grammar needs a where statement to separate the "let" from the "return"
-  return {
-    // NOTE: Hard-code in names because the real LOINC code displays are quite long
-    Name:           ConceptTextWithRange(A.code),
-    Score:          QuantityText(A.value as FHIR.Quantity),
-    Interpretation: Coalesce( ConceptText(First(A.interpretation)),  ConceptText(A.value as FHIR.CodeableConcept) ),
-    Questions:      ({ First(Pain), First(Enjoyment), First(GeneralActivity) }) C
-                      where C is not null
-                      return { "Name": ConceptText(C.code), "Score": QuantityText(C.value as FHIR.Quantity) },
-    Date:           ObservationDate(A)
-  }
-  sort by Date desc
-
-// STarT Back Screening Tool - Overall score and dates (lookback 2 years)
-
-define STarTBackAssessments:
-  C3F.Verified(C3F.ObservationLookBack(
-    [Observation: "Total score [STarT Back]"]
-      union [Observation: "STarT Back Screening Tool LEGACY"],
-    2 years
-  ))
-
-define ReportSTarTBackAssessments:
-  (STarTBackAssessments) A
-  return {
-    Name:           ConceptTextWithRange(A.code),
-    Score:          QuantityText(A.value as FHIR.Quantity),
-    Interpretation: Coalesce( ConceptText(First(A.interpretation)),  ConceptText(A.value as FHIR.CodeableConcept) ),
-    Date:           ObservationDate(A)
-  }
-  sort by Date desc
 
 
-define function GetExtensionEndDate(extensions List<Extension>):
-  Last(
-    extensions E
-    //conditional clause does not work, can use this if this works
-    //where DateText(E.value as FHIR.date) ~ '2018-07-15'
-    return DateText(E.value as FHIR.date)
-  )
+
 
 // HISTORICAL TREATMENTS
 
-// Opioid medication orders and statements with dates (lookback 2 years)
-
+// Opioid medication orders and statements with dates
 define OpioidMedicationRequests:
-  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-  //  [MedicationRequest: "Opioid Pain Medications"],
-  //  100 years //changed from 2 to 100
-  //))
-  //remove consideration for the status field
   C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Opioid Pain Medications"],
-    100 years //changed from 2 to 100
+    [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
+    100 years 
   )
 
 define OpioidMedicationStatements:
-  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-  //  [MedicationStatement: "Opioid Pain Medications"],
-  //  100 years //changed from 2 to 100
-  //))
   C3F.MedicationStatementLookBack(
     [MedicationStatement: "Opioid Pain Medications"],
-    100 years //changed from 2 to 100
+    100 years
   )
-
-define function GetMedicationRequestEndDate(medRequest MedicationRequest):
-  (medRequest) O
-   let 
-    CalculatedDuration: 
-      if O.dispenseRequest.expectedSupplyDuration is not null
-      then  O.dispenseRequest.expectedSupplyDuration.value.value
-      else 0,
-    CalculatedDurationUnit:
-      if O.dispenseRequest.expectedSupplyDuration is not null
-      then  O.dispenseRequest.expectedSupplyDuration.unit.value
-      else 'days'
-    return date from (O.authoredOn + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
 
 define ReportOpioidMedicationRequests:
   ( OpioidMedicationRequests M
@@ -856,14 +569,8 @@ define ReportOpioidMedicationRequests:
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     //provided by the extension dateValue, may not always be there
-    //End: GetExtensionEndDate(O.dispenseRequest.extension),
-    //of type datetime
-    CalculatedEnd: CalculatedEnd,
-    //of type string
-    End: ToString(CalculatedEnd),
-    //End:   null as String, // MedicationRequest end date not supported in R4,
-    //Amount: QuantityText(O.value as FHIR.Quantity),
-    //provided by the extension valueString, may not always be there
+    CalculatedEnd: CalculatedEnd, //of type datetime
+    End: ToString(CalculatedEnd), //of type string
     Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
     Prescriber: O.requester.display.value,
     Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
@@ -871,6 +578,22 @@ define ReportOpioidMedicationRequests:
     dispenseExtension: O.dispenseRequest.extension
   }
   sort by Start desc, End desc
+
+define ReportOpioidMedicationStatements:
+  (OpioidMedicationStatements) S
+  return {
+    Type:  'Statement',
+    Name:  ConceptText(S.medication as FHIR.CodeableConcept),
+    Start: MedicationStatementDate(S),
+    End:   DateTimeText((S.effective as FHIR.Period)."end"),
+    Status: S.status.value
+  }
+  sort by Start desc, End desc
+
+define ReportOpioidMedications:
+  (ReportOpioidMedicationRequests union ReportOpioidMedicationStatements) M
+  sort by Start desc, End desc
+
 
 // medication requests from PDMP
 // using relevant system identifier for filtering
@@ -887,11 +610,8 @@ define ReportPDMPMedicationRequests:
       Name:  ConceptText(O.medication as FHIR.CodeableConcept),
       Start: DateTimeText(O.authoredOn),
       //provided by the extension dateValue, may not always be there
-      //End: GetExtensionEndDate(O.dispenseRequest.extension),
-      //of datetime type
-      CalculatedEnd: CalculatedEnd,
-      //of string type
-      End: ToString(CalculatedEnd),
+      CalculatedEnd: CalculatedEnd, //of datetime type
+      End: ToString(CalculatedEnd), //of string type
       Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
       Prescriber: O.requester.display.value,
       Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
@@ -900,43 +620,17 @@ define ReportPDMPMedicationRequests:
     sort by Start desc, End desc
 
 
-define ReportOpioidMedicationStatements:
-  (OpioidMedicationStatements) S
-  return {
-    Type:  'Statement',
-    Name:  ConceptText(S.medication as FHIR.CodeableConcept),
-    Start: MedicationStatementDate(S),
-    End:   DateTimeText((S.effective as FHIR.Period)."end"),
-    //Amount: QuantityText(S.value as FHIR.Quantity),
-    Status: S.status.value
-  }
-  sort by Start desc, End desc
-
-define ReportOpioidMedications:
-  (ReportOpioidMedicationRequests union ReportOpioidMedicationStatements) M
-  sort by Start desc, End desc
-
 // Non-opioid medication orders and statements with dates (lookback 2 years)
-
 define NonOpioidMedicationRequests:
-  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-  //  [MedicationRequest: "Non opiod pain medications"],
-  //  100 years //changed from 2 to 100
-  //))
-  //remove consideration for the status field
   C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Non opiod pain medications"],
-    100 years //changed from 2 to 100
+    [MedicationRequest: "Non opiod pain medications"], //remove consideration for the status field
+    100 years 
   )
 
 define NonOpioidMedicationStatements:
-  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-  //  [MedicationStatement: "Non opiod pain medications"],
-  //  100 years //changed from 2 to 100
-  //))
   C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Non opiod pain medications"],
-    100 years //changed from 2 to 100
+    [MedicationStatement: "Non opiod pain medications"], //remove consideration for the status field
+    100 years
   )
 
 define ReportNonOpioidMedicationRequests:
@@ -946,9 +640,6 @@ define ReportNonOpioidMedicationRequests:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
-    //End:   null as String, // MedicationRequest end date not supported in R4,
-    //End: GetExtensionEndDate(O.dispenseRequest.extension),
-    //Amount: QuantityText(O.value as FHIR.Quantity),
     CalculatedEnd: CalculatedEnd,
     End: ToString(CalculatedEnd),
     Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
@@ -974,8 +665,8 @@ define ReportNonOpioidMedications:
   (ReportNonOpioidMedicationRequests union ReportNonOpioidMedicationStatements) M
   sort by Start desc, End desc
 
-// Non-pharmacologic treatments, orders, and referrals with dates (lookback 2 years)
 
+// Non-pharmacologic treatments, orders, and referrals with dates (lookback 2 years)
 define NonPharmacologicTreatmentProcedures:
   C3F.ProcedurePerformance(C3F.ProcedureLookBack([Procedure: "Non pharmacologic treatments for chronic pain"], 2 years))
 
@@ -1010,27 +701,17 @@ define ReportNonPharmacologicTreatments:
     union ReportNonPharmacologicTreatmentServiceRequests) M
   sort by Date desc
 
-// Stool softeners and laxatives - orders and statements with dates (lookback 6 months)
 
+// Stool softeners and laxatives - orders and statements with dates (lookback 6 months)
 define StoolSoftenersAndLaxativesRequests:
-  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-  //  [MedicationRequest: "Stool softeners and laxatives"],
-  //  6 months
-  //))
-  //remove consideration for status field
   C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Stool softeners and laxatives"],
+    [MedicationRequest: "Stool softeners and laxatives"], //remove consideration for status field
     6 months
   )
 
 define StoolSoftenersAndLaxativesStatements:
-  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-  //  [MedicationStatement: "Stool softeners and laxatives"],
-  //  6 months
-  //))
-  //remove consideration for status field
   C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Stool softeners and laxatives"],
+    [MedicationStatement: "Stool softeners and laxatives"], //remove consideration for status field
     6 months
   )
 
@@ -1060,28 +741,18 @@ define ReportStoolSoftenersAndLaxatives:
   (ReportStoolSoftenersAndLaxativesRequests union ReportStoolSoftenersAndLaxativesStatements) M
   sort by Start desc, End desc
 
+
+
 // RISK CONSIDERATIONS
 
-// MME if it already exists in the system
-define MostRecentMME:
-  C3F.MostRecent(C3F.Verified(C3F.ObservationLookBack([Observation: "Morphine Milligram Equivalent (MME)"], 6 months)))
+// Helps calculate active medications based on end date rather than 'active' status
+define ActiveOpioidMedicationRequestsByEndDate:
+  [MedicationRequest: "Opioid Pain Medications"] O
+    let CalculatedEnd: GetMedicationRequestEndDate(O)
+    where CalculatedEnd same or after Today()
 
-define ReportMostRecentMME:
-{
-  if MostRecentMME is null
-  then null
-  else
-    (MostRecentMME) M
-    return {
-      Name:   ConceptText(M.code),
-      Result: QuantityText(M.value as FHIR.Quantity),
-      Date:   ObservationDate(M)
-    }
-}
-
-//NOTE, this only referencing MedicationRequest that has the status field of "active"
-define ActiveOpioidMedications:
-  C3F.ActiveMedicationRequest([MedicationRequest: "Opioid Pain Medications"])
+define CurrentMME:
+  MMECalculator.TotalMME(ActiveOpioidMedicationRequestsByEndDate)
 
 define ReportCurrentMME:
 {
@@ -1091,7 +762,7 @@ define ReportCurrentMME:
     (CurrentMME) M
     return {
       Name: 'Current Milligram Morephine Equivalent',
-      Result: ToString(M),
+      Result: M.value,
       Date: ToString(Today())
     }
 }
@@ -1106,24 +777,12 @@ define ReportMME:
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-    //End: GetExtensionEndDate(O.dispenseRequest.extension),
     CalculatedEnd: CalculatedEnd,
     End: ToString(CalculatedEnd),
-    //Status: O.status.value,
     Status: CalculatedStatus,
     MMEValue: MME_Object[0].mme.value
   }
   sort by End desc
-
-define ActiveOpioidMedicationRequestsByEndDate:
-  [MedicationRequest: "Opioid Pain Medications"] O
-    let CalculatedEnd: GetMedicationRequestEndDate(O)
-    where CalculatedEnd same or after Today()
-
-define CurrentMME:
-  //MMECalculator.TotalMME(ActiveOpioidMedications)
-  MMECalculator.TotalMME(ActiveOpioidMedicationRequestsByEndDate)
-
 
 define MMEDateList: 
   (ReportMME) R
@@ -1133,13 +792,10 @@ define MMEDateList:
   }
 
 define ReportMMEByDates:
-//  (ReportMME) R
-//  let Filtered_List: R where R.End is not null and R.MMEValue is not null
   MMEDateList R
   return {
     End: R.End,
     MMEValue: Sum(ReportMME M where M.End ~ R.End return M.MMEValue)
-    //MMEValue: Filtered_List.MMEValue
   }
   sort by End
 
@@ -1147,8 +803,8 @@ define ReportPrescriptions:
   (OpioidMedicationRequests) M
   return MMECalculator.Prescriptions(M)
 
-// Urine drug screen - dates and results (all screens w/ lookback of 1 year)
 
+// Urine drug screen - dates and results (all screens w/ lookback of 1 year)
 define UrineDrugScreens:
   C3F.Verified(C3F.ObservationLookBack([Observation: "Urine drug screen for pain management"], 1 year))
 
@@ -1166,35 +822,18 @@ define ReportUrineDrugScreens:
   }
   sort by Date desc
 
-// Benzodiazepine Medications (lookback of 2 years)-  orders and statements with dates
 
+// Benzodiazepine Medications (lookback of 2 years)-  orders and statements with dates
 define BenzodiazepineMedicationRequests:
-  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-  //  [MedicationRequest: "Benzodiazepine medications"],
-  //  100 years //changed from 2 to 100
-  //))
-  //remove consideration for status field
   C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Benzodiazepine medications"],
-    100 years //changed from 2 to 100
+    [MedicationRequest: "Benzodiazepine medications"], //remove consideration for status field
+    100 years 
   )
 
-// I think this function is superfluous 
-//define function MedicationStatementLookBack(MedList List<MedicationStatement>, LookBack System.Quantity):
-//MedList M
-//  let LookBackInterval: Interval[Now() - LookBack, Now()]
-//  where (M.effective as FHIR.dateTime).value in LookBackInterval
-//    or C3F.PeriodToInterval(M.effective as FHIR.Period) overlaps LookBackInterval
-
 define BenzodiazepineMedicationStatements:
-  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-  //  [MedicationStatement: "Benzodiazepine medications"],
-  //  100 years //changed from 2 to 100
-  //))
-  //remove consideration for status field
   C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Benzodiazepine medications"],
-    100 years //changed from 2 to 100
+    [MedicationStatement: "Benzodiazepine medications"], //remove consideration for status field
+    100 years 
   )
 
 define ReportBenzodiazepineMedicationRequests:
@@ -1225,44 +864,20 @@ define ReportBenzodiazepineMedications:
 
 
 // Carisoprodol Medications -  orders and statements with dates
-
 define CarisoprodolMedicationRequests:
-  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-  //  [MedicationRequest: "Carisoprodol"]
-  //  union [MedicationRequest: "Aspirin / Carisoprodol"]
-  //, 100 years))
   //remove consideration for status field
   C3F.MedicationRequestLookBack(
     [MedicationRequest: "Carisoprodol"]
     union [MedicationRequest: "Aspirin / Carisoprodol"]
   , 100 years)
 
-//define CarisoprodolMedicationRequests:
-//  C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-//    [MedicationRequest: "Carisoprodol"],
-//    100 years))
-//  union C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
-//    [MedicationRequest: "Aspirin / Carisoprodol"],
-//    100 years))
-
 define CarisoprodolMedicationStatements:
-  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-  //  [MedicationStatement: "Carisoprodol"]
-  //  union [MedicationStatement: "Aspirin / Carisoprodol"]
-  //, 100 years))
   //remove consideration for status field
   C3F.MedicationStatementLookBack(
     [MedicationStatement: "Carisoprodol"]
     union [MedicationStatement: "Aspirin / Carisoprodol"]
   , 100 years)
 
-//define CarisoprodolMedicationStatements:
-//  C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-//    [MedicationRequest: "Carisoprodol"],
-//    100 years))
-//  union C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
-//    [MedicationRequest: "Aspirin / Carisoprodol"],
-//    100 years))
 
 define ReportCarisoprodolMedicationRequests:
   (CarisoprodolMedicationRequests) O
@@ -1292,14 +907,11 @@ define ReportCarisoprodolMedications:
 
 
 // Naloxone Medications (unrestricted lookback) - orders and statements with dates
-
 define NaloxoneMedicationRequests:
-  //C3F.ActiveCompletedOrStoppedMedicationRequest([MedicationRequest: "Naloxone medications"])
   //remove consideration for status
   [MedicationRequest: "Naloxone medications"]
 
 define NaloxoneMedicationStatements:
-  //C3F.ActiveOrCompletedMedicationStatement([MedicationStatement: "Naloxone medications"])
   //remove consideration for status
   [MedicationStatement: "Naloxone medications"]
 
@@ -1329,30 +941,8 @@ define ReportNaloxoneMedications:
   (ReportNaloxoneMedicationRequests union ReportNaloxoneMedicationStatements) M
   sort by Start desc, End desc
 
-// Risk screenings relevant to pain management - overall scores and dates (MOST RECENT w/ lookback 1 year)
 
-define RiskScreeningsRelevantToPainManagement:
-  C3F.Verified(C3F.ObservationLookBack(
-    [Observation: "Risk assessments relevant to pain management"]
-    union [Observation: "Single question r/t ETOH use"]
-    union [Observation: "Single question r/t drug use"]
-  , 1 year))
 
-define ReportRiskScreeningsRelevantToPainManagement:
-  (RiskScreeningsRelevantToPainManagement) S
-  return {
-    Name:           ConceptTextWithRange(S.code),
-    Score:          Coalesce(
-      QuantityText(S.value as FHIR.Quantity),
-      (S.value as FHIR.string).value
-    ),
-    Interpretation: Coalesce(
-      ConceptText(First(S.interpretation)),
-      ConceptText(S.value as FHIR.CodeableConcept)
-    ),
-    Date:           ObservationDate(S)
-  }
-  sort by Date desc
 
 // SUMMARY
 
@@ -1372,11 +962,6 @@ define Summary: {
     ConditionsAssociatedWithChronicPain: ReportConditionsAssociatedWithChronicPain,
     RiskFactorsForOpioidRelatedHarms: ReportRiskFactorsForOpioidRelatedHarms
   },
-  PainAssessments: {
-    NumericPainIntensityAssessments: ReportNumericPainIntensityAssessments,
-    PainEnjoymentGeneralActivityAssessments: ReportPainEnjoymentGeneralActivityAssessments,
-    STarTBackAssessments: ReportSTarTBackAssessments
-  },
   HistoricalTreatments: {
     OpioidMedications: ReportOpioidMedications,
     NonOpioidMedications: ReportNonOpioidMedications,
@@ -1384,7 +969,6 @@ define Summary: {
     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
   },
   RiskConsiderations: {
-    MostRecentMME: ReportMostRecentMME,
     CurrentMME: ReportCurrentMME,
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
@@ -1393,8 +977,7 @@ define Summary: {
     UrineDrugScreens: ReportUrineDrugScreens,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     CarisoprodolMedications: ReportCarisoprodolMedications,
-    NaloxoneMedications: ReportNaloxoneMedications,
-    RiskScreeningsRelevantToPainManagement: ReportRiskScreeningsRelevantToPainManagement
+    NaloxoneMedications: ReportNaloxoneMedications
   },
   PDMPMedications: {
     PDMPMedications: ReportPDMPMedicationRequests

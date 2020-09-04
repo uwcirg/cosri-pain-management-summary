@@ -515,7 +515,7 @@
               {
                 "name": "Morphine Equivalent Dose (MED)",
                 "status": "final or amended",
-                "lookback": "most recent in past 6 months"
+                "lookback": "most recent MED available"
               }
             ]
           }
@@ -746,7 +746,7 @@
                     "ifNone",
                     {
                       "ifGreaterThanOrEqualTo": {
-                        "table": "MostRecentMME",
+                        "table": "CurrentMME",
                         "source": "RiskConsiderations",
                         "header": "Result",
                         "value": 50
