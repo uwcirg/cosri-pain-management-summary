@@ -813,16 +813,25 @@ define function GetExtensionEndDate(extensions List<Extension>):
 // Opioid medication orders and statements with dates (lookback 2 years)
 
 define OpioidMedicationRequests:
-  C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //  [MedicationRequest: "Opioid Pain Medications"],
+  //  100 years //changed from 2 to 100
+  //))
+  //remove consideration for the status field
+  C3F.MedicationRequestLookBack(
     [MedicationRequest: "Opioid Pain Medications"],
     100 years //changed from 2 to 100
-  ))
+  )
 
 define OpioidMedicationStatements:
-  C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //  [MedicationStatement: "Opioid Pain Medications"],
+  //  100 years //changed from 2 to 100
+  //))
+  C3F.MedicationStatementLookBack(
     [MedicationStatement: "Opioid Pain Medications"],
     100 years //changed from 2 to 100
-  ))
+  )
 
 define function GetMedicationRequestEndDate(medRequest MedicationRequest):
   (medRequest) O
@@ -910,16 +919,25 @@ define ReportOpioidMedications:
 // Non-opioid medication orders and statements with dates (lookback 2 years)
 
 define NonOpioidMedicationRequests:
-  C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //  [MedicationRequest: "Non opiod pain medications"],
+  //  100 years //changed from 2 to 100
+  //))
+  //remove consideration for the status field
+  C3F.MedicationRequestLookBack(
     [MedicationRequest: "Non opiod pain medications"],
     100 years //changed from 2 to 100
-  ))
+  )
 
 define NonOpioidMedicationStatements:
-  C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //  [MedicationStatement: "Non opiod pain medications"],
+  //  100 years //changed from 2 to 100
+  //))
+  C3F.MedicationStatementLookBack(
     [MedicationStatement: "Non opiod pain medications"],
     100 years //changed from 2 to 100
-  ))
+  )
 
 define ReportNonOpioidMedicationRequests:
   (NonOpioidMedicationRequests) O
@@ -995,16 +1013,26 @@ define ReportNonPharmacologicTreatments:
 // Stool softeners and laxatives - orders and statements with dates (lookback 6 months)
 
 define StoolSoftenersAndLaxativesRequests:
-  C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //  [MedicationRequest: "Stool softeners and laxatives"],
+  //  6 months
+  //))
+  //remove consideration for status field
+  C3F.MedicationRequestLookBack(
     [MedicationRequest: "Stool softeners and laxatives"],
     6 months
-  ))
+  )
 
 define StoolSoftenersAndLaxativesStatements:
-  C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //  [MedicationStatement: "Stool softeners and laxatives"],
+  //  6 months
+  //))
+  //remove consideration for status field
+  C3F.MedicationStatementLookBack(
     [MedicationStatement: "Stool softeners and laxatives"],
     6 months
-  ))
+  )
 
 define ReportStoolSoftenersAndLaxativesRequests:
   (StoolSoftenersAndLaxativesRequests) O
@@ -1051,7 +1079,7 @@ define ReportMostRecentMME:
     }
 }
 
-//MME Calculation
+//NOTE, this only referencing MedicationRequest that has the status field of "active"
 define ActiveOpioidMedications:
   C3F.ActiveMedicationRequest([MedicationRequest: "Opioid Pain Medications"])
 
@@ -1131,10 +1159,15 @@ define ReportUrineDrugScreens:
 // Benzodiazepine Medications (lookback of 2 years)-  orders and statements with dates
 
 define BenzodiazepineMedicationRequests:
-  C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //  [MedicationRequest: "Benzodiazepine medications"],
+  //  100 years //changed from 2 to 100
+  //))
+  //remove consideration for status field
+  C3F.MedicationRequestLookBack(
     [MedicationRequest: "Benzodiazepine medications"],
     100 years //changed from 2 to 100
-  ))
+  )
 
 // I think this function is superfluous 
 //define function MedicationStatementLookBack(MedList List<MedicationStatement>, LookBack System.Quantity):
@@ -1144,10 +1177,15 @@ define BenzodiazepineMedicationRequests:
 //    or C3F.PeriodToInterval(M.effective as FHIR.Period) overlaps LookBackInterval
 
 define BenzodiazepineMedicationStatements:
-  C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //  [MedicationStatement: "Benzodiazepine medications"],
+  //  100 years //changed from 2 to 100
+  //))
+  //remove consideration for status field
+  C3F.MedicationStatementLookBack(
     [MedicationStatement: "Benzodiazepine medications"],
     100 years //changed from 2 to 100
-  ))
+  )
 
 define ReportBenzodiazepineMedicationRequests:
   (BenzodiazepineMedicationRequests) O
@@ -1179,10 +1217,15 @@ define ReportBenzodiazepineMedications:
 // Carisoprodol Medications -  orders and statements with dates
 
 define CarisoprodolMedicationRequests:
-  C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
+  //  [MedicationRequest: "Carisoprodol"]
+  //  union [MedicationRequest: "Aspirin / Carisoprodol"]
+  //, 100 years))
+  //remove consideration for status field
+  C3F.MedicationRequestLookBack(
     [MedicationRequest: "Carisoprodol"]
     union [MedicationRequest: "Aspirin / Carisoprodol"]
-  , 100 years))
+  , 100 years)
 
 //define CarisoprodolMedicationRequests:
 //  C3F.ActiveCompletedOrStoppedMedicationRequest(C3F.MedicationRequestLookBack(
@@ -1193,10 +1236,15 @@ define CarisoprodolMedicationRequests:
 //    100 years))
 
 define CarisoprodolMedicationStatements:
-  C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
+  //  [MedicationStatement: "Carisoprodol"]
+  //  union [MedicationStatement: "Aspirin / Carisoprodol"]
+  //, 100 years))
+  //remove consideration for status field
+  C3F.MedicationStatementLookBack(
     [MedicationStatement: "Carisoprodol"]
     union [MedicationStatement: "Aspirin / Carisoprodol"]
-  , 100 years))
+  , 100 years)
 
 //define CarisoprodolMedicationStatements:
 //  C3F.ActiveOrCompletedMedicationStatement(C3F.MedicationStatementLookBack(
@@ -1236,10 +1284,14 @@ define ReportCarisoprodolMedications:
 // Naloxone Medications (unrestricted lookback) - orders and statements with dates
 
 define NaloxoneMedicationRequests:
-  C3F.ActiveCompletedOrStoppedMedicationRequest([MedicationRequest: "Naloxone medications"])
+  //C3F.ActiveCompletedOrStoppedMedicationRequest([MedicationRequest: "Naloxone medications"])
+  //remove consideration for status
+  [MedicationRequest: "Naloxone medications"]
 
 define NaloxoneMedicationStatements:
-  C3F.ActiveOrCompletedMedicationStatement([MedicationStatement: "Naloxone medications"])
+  //C3F.ActiveOrCompletedMedicationStatement([MedicationStatement: "Naloxone medications"])
+  //remove consideration for status
+  [MedicationStatement: "Naloxone medications"]
 
 define ReportNaloxoneMedicationRequests:
   (NaloxoneMedicationRequests) O
