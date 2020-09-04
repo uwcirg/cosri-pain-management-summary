@@ -842,9 +842,6 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "identifier": {
-          "system": "https://github.com/uwcirg/script-fhir-facade/"
-        },
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
@@ -1178,7 +1175,6 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
@@ -1191,7 +1187,64 @@
           ],
           "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
         },
-        "authoredOn": "2019-04-15T16:01:00.000Z"
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseRange": {
+                  "low": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  },
+                  "high": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  }
+                }
+              },
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2018-07-15",
+            "end": "2018-07-15"
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 1,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name", 
+              "valueString": "TEST, DOCTOR"
+            }, 
+            {
+              "url": "http://cosri.org/fhir/last_fill", 
+              "valueDate": "2018-07-15"
+            }
+          ]
+        },
+        "authoredOn": "2018-07-15T16:01:00.000Z"
       }
     },
     {

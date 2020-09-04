@@ -5,8 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
-import {dateFormat, datishFormat} from '../helpers/formatit';
-import {dateTimeCompare} from '../helpers/sortit';
+import {datishFormat} from '../helpers/formatit';
 import summaryMap from './summary.json';
 
 import {getEnv, fetchEnvData} from '../utils/envConfig';
@@ -219,51 +218,13 @@ export default class Landing extends Component {
       //get the data from summary data
       let sections = overviewSection.graphConfig.summaryDataSource;
       let graph_data = [];
-      const MME_VALUE_FIELD_NAME = "MMEValue";
-      const END_DATE_FIELD_NAME = "End";
-    
+     
       sections.forEach(item => {
         if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
           //console.log("section data? ", summary[item.section_key][item.subSection_key])
           graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]];
-
-          /*
-           * safe-guard, make sure all the graph item has the required fields
-           */
-          graph_data = graph_data.filter(item => item[END_DATE_FIELD_NAME] && !isNaN(item[MME_VALUE_FIELD_NAME]));
-          
-          /*
-           * re-format dates so they can be compared reliably
-           */
-          graph_data = graph_data.map(item => {
-            item[END_DATE_FIELD_NAME] = dateFormat("", item[END_DATE_FIELD_NAME], "YYYY-MM-DD");
-            return item;
-          });
-        
-          /*
-           * add MME Values for those that fall on the same date
-           */
-          graph_data = graph_data.reduce((o, current) => {
-            /*
-            * find existing item with the same date
-            */
-            const existingIndex = o.findIndex(item => {
-              return (
-                item[END_DATE_FIELD_NAME] === current[END_DATE_FIELD_NAME]
-              );
-            });
-              /*
-              * add MM value if existing item with same date found
-              */
-              if (existingIndex !== -1) {
-                o[existingIndex][MME_VALUE_FIELD_NAME] = o[existingIndex][MME_VALUE_FIELD_NAME] + current[MME_VALUE_FIELD_NAME];
-                return o;
-              }
-              return o.concat([current]);
-          }, []);
         }
       });
-
       summary[overviewSectionKey+"_graph"] = graph_data;
       //console.log("graph data?? ", graph_data)
     }
@@ -280,56 +241,6 @@ export default class Landing extends Component {
     .replace('{process.env.REACT_APP_CONF_API_URL}', getEnv("REACT_APP_CONF_API_URL"))
     .replace('{process.env.PUBLIC_URL}', getEnv("PUBLIC_URL"))
     .replace('{patientId}', this.getPatientId());
-  }
-
-  processMedicationOrder(result, dataKey) {
-
-    if (!result || !result.length) {
-      return false;
-    }
-    let dataSet = {};
-    /*
-     * dealing with deeply nested FHIR response data, reformat for ease of rendering
-     */
-    let getValue = (obj, prop) => {
-      return obj && obj[prop] ? obj[prop] : "";
-    }
-    result.forEach(item => {
-      //prescriber
-      item["_prescriber"] = getValue(item["prescriber"], "display");
-      let dispenseRequest = item.dispenseRequest;
-      if (!dispenseRequest) {
-        return true;
-      }
-      //quantity
-      item["_quantity"] = getValue(dispenseRequest["quantity"], "value"); 
-      let extensionObj = dispenseRequest["extension"];
-      if (!extensionObj.length) {
-        return true;
-      }
-      //date dispensed
-      let dObj = extensionObj.filter(o => o.valueDate);
-      if (dObj.length) {
-        item["_dateDispensed"] = dObj[0].valueDate;
-      }
-      // pharmacy
-      let pObj = extensionObj.filter(o => o.valueString);
-      if (pObj.length) {
-        item["_pharmacy"] = pObj[0].valueString;
-      }
-    });
-    /*
-     * a hack, until figure out why react table is not sorting the date correctly by default
-     */
-    result = result.sort(function(a, b) {
-      return dateTimeCompare(a._dateDispensed, b._dateDispensed);
-    });
-    /*
-     * TODO: add MME converted value for each opioid med here?
-     * so we can use these values to draw graph??
-     */
-    dataSet[dataKey] = result;
-    return dataSet;
   }
 
   async getDemoData(section) {

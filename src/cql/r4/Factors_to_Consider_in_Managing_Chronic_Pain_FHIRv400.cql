@@ -844,7 +844,7 @@ define function GetMedicationRequestEndDate(medRequest MedicationRequest):
       if O.dispenseRequest.expectedSupplyDuration is not null
       then  O.dispenseRequest.expectedSupplyDuration.unit.value
       else 'days'
-    return O.authoredOn + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit}
+    return date from (O.authoredOn + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
 
 define ReportOpioidMedicationRequests:
   ( OpioidMedicationRequests M
@@ -1124,12 +1124,22 @@ define CurrentMME:
   //MMECalculator.TotalMME(ActiveOpioidMedications)
   MMECalculator.TotalMME(ActiveOpioidMedicationRequestsByEndDate)
 
-define ReportMMEByDates:
+
+define MMEDateList: 
   (ReportMME) R
-  let Filtered_List: R where R.End is not null and R.MMEValue is not null
+  where R.End is not null and R.MMEValue is not null
   return {
-    End: Filtered_List.End,
-    MMEValue: Filtered_List.MMEValue
+    End: R.End
+  }
+
+define ReportMMEByDates:
+//  (ReportMME) R
+//  let Filtered_List: R where R.End is not null and R.MMEValue is not null
+  MMEDateList R
+  return {
+    End: R.End,
+    MMEValue: Sum(ReportMME M where M.End ~ R.End return M.MMEValue)
+    //MMEValue: Filtered_List.MMEValue
   }
   sort by End
 
