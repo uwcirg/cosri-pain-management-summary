@@ -109,6 +109,8 @@ function ifGreaterThanOrEqualTo(value, entry, subSection, summary) {
   }
 
   if (targetEntry == null) return false;
-
+  if (Array.isArray(targetEntry) && targetEntry.length) {
+    targetEntry = targetEntry[0]
+  } 
   return parseInt(targetEntry[value.header], 10) >= value.value;
 }
