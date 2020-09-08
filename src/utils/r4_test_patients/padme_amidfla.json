@@ -1,0 +1,1962 @@
+{
+  "resourceType": "Bundle",
+  "id": "padme_amidfla",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "e01b6b02-d1a7-42af-996f-e2e574135947",
+        "name": [
+          {
+            "given": [
+              "Padme"
+            ],
+            "family": "Amidfla"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1945-01-15"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "1a481f75-8d10-417b-830c-2b48fb398d07",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ],
+          "text": "Active"
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ],
+          "text": "Confirmed"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "203082005",
+              "display": "Fibromyalgia (disorder)"
+            }
+          ],
+          "text": "Fibromyalgia (disorder)"
+        },
+        "onsetDateTime": "2013-04-05T16:00:00.000Z",
+        "recordedDate": "2013-04-05T00:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "ca963d7c-3479-4470-8fe8-666cab79a860",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ],
+          "text": "Active"
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ],
+          "text": "Confirmed"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "M54.5",
+              "display": "Low back pain"
+            }
+          ],
+          "text": "Low back pain"
+        },
+        "onsetDateTime": "2008-11-12T16:00:00.000Z",
+        "recordedDate": "2008-11-12T00:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "37a8b86f-08d2-4bee-bb67-ce119f42c615",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ],
+          "text": "Active"
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ],
+          "text": "Confirmed"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "202725007",
+              "display": "Lumbar post-laminectomy syndrome (disorder)"
+            }
+          ],
+          "text": "Lumbar post-laminectomy syndrome (disorder)"
+        },
+        "onsetDateTime": "2012-02-01T16:00:00.000Z",
+        "recordedDate": "2012-02-16T00:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "510bacb8-ab30-4029-aa53-1b94eea524c6",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ],
+          "text": "Active"
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ],
+          "text": "Confirmed"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "832007",
+              "display": "Moderate major depression (disorder)"
+            }
+          ],
+          "text": "Moderate major depression (disorder)"
+        },
+        "onsetDateTime": "2016-12-02T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "cb692a22-7644-414f-a118-b90218bf01df",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "38221-8",
+              "display": "Pain severity Wong-Baker FACES Scale"
+            }
+          ],
+          "text": "Pain severity Wong-Baker FACES Scale"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 10
+        },
+        "interpretation": [
+          {
+            "text": "Hurts Worst"
+          }
+        ],
+        "issued": "2019-06-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "5a7bb60a-cc90-4a21-a996-813831ee632f",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "38221-8",
+              "display": "Pain severity Wong-Baker FACES Scale"
+            }
+          ],
+          "text": "Pain severity Wong-Baker FACES Scale"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 6
+        },
+        "interpretation": [
+          {
+            "text": "Hurts Even More"
+          }
+        ],
+        "issued": "2018-10-09T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "94e20c97-9444-48f8-8366-10b3296bcc3b",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "38221-8",
+              "display": "Pain severity Wong-Baker FACES Scale"
+            }
+          ],
+          "text": "Pain severity Wong-Baker FACES Scale"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 6
+        },
+        "interpretation": [
+          {
+            "text": "Hurts Even More"
+          }
+        ],
+        "issued": "2017-11-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "b568fcd4-5c25-4fd6-9148-472349099df5",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "38221-8",
+              "display": "Pain severity Wong-Baker FACES Scale"
+            }
+          ],
+          "text": "Pain severity Wong-Baker FACES Scale"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 6
+        },
+        "interpretation": [
+          {
+            "text": "Hurts Even More"
+          }
+        ],
+        "issued": "2016-12-02T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "a60890b2-b0a1-4a6a-a7be-0d70e638523a",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "PEGASSESSMENT",
+              "display": "Pain Enjoyment General Activity (PEG) Assessment"
+            }
+          ],
+          "text": "Pain Enjoyment General Activity (PEG) Assessment"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 5
+        },
+        "issued": "2018-10-09T16:00:00.000Z",
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://cds.ahrq.gov/cdsconnect/pms",
+                  "code": "PEGPAIN",
+                  "display": "Pain"
+                }
+              ],
+              "text": "Pain"
+            },
+            "valueQuantity": {
+              "value": 7
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://cds.ahrq.gov/cdsconnect/pms",
+                  "code": "PEGENJOYMENT",
+                  "display": "Enjoyment of life"
+                }
+              ],
+              "text": "Enjoyment of life"
+            },
+            "valueQuantity": {
+              "value": 5
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://cds.ahrq.gov/cdsconnect/pms",
+                  "code": "PEGGENERALACTIVITY",
+                  "display": "General activity"
+                }
+              ],
+              "text": "General activity"
+            },
+            "valueQuantity": {
+              "value": 4
+            }
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "cad07746-3f06-4919-b91b-b96839178bc5",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "PEGASSESSMENT",
+              "display": "Pain Enjoyment General Activity (PEG) Assessment"
+            }
+          ],
+          "text": "Pain Enjoyment General Activity (PEG) Assessment"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 7
+        },
+        "issued": "2017-11-15T16:00:00.000Z",
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://cds.ahrq.gov/cdsconnect/pms",
+                  "code": "PEGPAIN",
+                  "display": "Pain"
+                }
+              ],
+              "text": "Pain"
+            },
+            "valueQuantity": {
+              "value": 8
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://cds.ahrq.gov/cdsconnect/pms",
+                  "code": "PEGENJOYMENT",
+                  "display": "Enjoyment of life"
+                }
+              ],
+              "text": "Enjoyment of life"
+            },
+            "valueQuantity": {
+              "value": 5
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://cds.ahrq.gov/cdsconnect/pms",
+                  "code": "PEGGENERALACTIVITY",
+                  "display": "General activity"
+                }
+              ],
+              "text": "General activity"
+            },
+            "valueQuantity": {
+              "value": 8
+            }
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "aa57e475-d9a6-489f-8e22-2a777f048b8b",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "PEGASSESSMENT",
+              "display": "Pain Enjoyment General Activity (PEG) Assessment"
+            }
+          ],
+          "text": "Pain Enjoyment General Activity (PEG) Assessment"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 8
+        },
+        "issued": "2016-12-02T16:00:00.000Z",
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://cds.ahrq.gov/cdsconnect/pms",
+                  "code": "PEGPAIN",
+                  "display": "Pain"
+                }
+              ],
+              "text": "Pain"
+            },
+            "valueQuantity": {
+              "value": 8
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://cds.ahrq.gov/cdsconnect/pms",
+                  "code": "PEGENJOYMENT",
+                  "display": "Enjoyment of life"
+                }
+              ],
+              "text": "Enjoyment of life"
+            },
+            "valueQuantity": {
+              "value": 6
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://cds.ahrq.gov/cdsconnect/pms",
+                  "code": "PEGGENERALACTIVITY",
+                  "display": "General activity"
+                }
+              ],
+              "text": "General activity"
+            },
+            "valueQuantity": {
+              "value": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "d4abc9d4-60a4-4674-a7b5-4b4135fbd8f7",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "STARTBACK",
+              "display": "STarT Back Screening Tool"
+            }
+          ],
+          "text": "STarT Back Screening Tool"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 4
+        },
+        "interpretation": [
+          {
+            "text": "Medium risk"
+          }
+        ],
+        "issued": "2018-11-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "617c02f3-3183-49b0-b0d1-d34695653886",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "STARTBACK",
+              "display": "STarT Back Screening Tool"
+            }
+          ],
+          "text": "STarT Back Screening Tool"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 3
+        },
+        "interpretation": [
+          {
+            "text": "Low risk"
+          }
+        ],
+        "issued": "2017-11-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "3de75179-ff8c-4eb0-bf42-b3178897fd26",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "STARTBACK",
+              "display": "STarT Back Screening Tool"
+            }
+          ],
+          "text": "STarT Back Screening Tool"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 5
+        },
+        "interpretation": [
+          {
+            "text": "High risk"
+          }
+        ],
+        "issued": "2016-12-02T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "bb3dfa65-41bc-462e-a9d8-bb407561c39e",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2019-04-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "1bb87956-2315-4edf-9395-6da88328a430",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2019-01-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "588e6780-9172-4520-b52d-2a73dfbe1b7a",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2018-10-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "76b72268-a2f3-422d-ad1b-8faed895888f",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2018-07-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "9d402ff5-24e9-4d56-a6de-be0a88792be9",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2018-04-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "dead0371-5b07-4389-95c5-94270a0a858c",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2018-01-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "041414ce-15db-4e63-aff6-6cf3f1f97f12",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2017-10-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "58929910-eac0-4e46-bf5e-d57944b56d88",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2017-07-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "2b174927-708d-4e1f-b6e0-3fb85e655c59",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2017-04-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "b8cb805f-767c-4ae4-ab8c-4f1902441e90",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2017-01-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "25967afb-e122-4216-bf44-cb90b5274443",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049593",
+              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+            }
+          ],
+          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "authoredOn": "2016-10-15T16:02:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "4c2ff8d4-83da-434b-82ac-28179c5a9b45",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2019-04-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "3f793f82-edfa-4570-a40b-543e306e5157",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2019-01-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "2cc7010f-0a24-4ea9-9723-91feeb1c400a",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2018-10-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "ef9164d0-b401-438e-aa8d-30f9b55dd828",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2018-07-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "a1f9c52f-a39c-4cd8-b13f-f9d40a5dc692",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2018-04-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "221364d2-1522-450c-807c-34003dbe0cf0",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2018-01-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "0f32901e-2842-4075-aa86-7f7ee44d68f9",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2017-10-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "660e4c66-9606-4edb-9f9c-42a807e1d772",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2017-07-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "3f8b6bb7-5144-4bb9-b2d2-218eebd5c7b5",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2017-04-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "5c5f33c9-d621-4a5a-a607-a2bd1eeb992c",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2017-01-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "101736c4-9b05-4fe7-a7fd-abbfdd725b88",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049717",
+              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+            }
+          ],
+          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "authoredOn": "2016-10-15T16:01:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "5867947b-1d66-4005-800e-6fd61ef8bead",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "197806",
+              "display": "Ibuprofen 600 MG Oral Tablet"
+            }
+          ],
+          "text": "Ibuprofen 600 MG Oral Tablet"
+        },
+        "authoredOn": "2016-12-02T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "62a65a67-f924-4ba5-b4bd-585745467806",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "198440",
+              "display": "Acetaminophen 500 MG Oral Tablet"
+            }
+          ],
+          "text": "Acetaminophen 500 MG Oral Tablet"
+        },
+        "authoredOn": "2016-12-02T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "aacca6cf-dcfd-483a-bd52-940353189903",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "197806",
+              "display": "Ibuprofen 600 MG Oral Tablet"
+            }
+          ],
+          "text": "Ibuprofen 600 MG Oral Tablet"
+        },
+        "authoredOn": "2017-11-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "bbfe0253-755a-4a2e-9bdb-4d3521fe7718",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "198440",
+              "display": "Acetaminophen 500 MG Oral Tablet"
+            }
+          ],
+          "text": "Acetaminophen 500 MG Oral Tablet"
+        },
+        "authoredOn": "2017-11-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "68c5a222-b677-4d45-9aa2-f3d28e8eaab8",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "completed",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "308449000",
+              "display": "Referral to chiropractor (procedure)"
+            }
+          ],
+          "text": "Referral to chiropractor (procedure)"
+        },
+        "performedDateTime": "2016-12-02T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "cda57dcd-1774-4ae9-aa0d-f6378b196f2b",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "completed",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "444831000124102",
+              "display": "Referral for physical therapy (procedure)"
+            }
+          ],
+          "text": "Referral for physical therapy (procedure)"
+        },
+        "performedDateTime": "2016-12-02T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "5c5709fe-c6eb-4c48-99e8-cda282105fdc",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "completed",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "81294000",
+              "display": "Patient referral for psychotherapy (procedure)"
+            }
+          ],
+          "text": "Patient referral for psychotherapy (procedure)"
+        },
+        "performedDateTime": "2017-11-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "bcb0951a-a15f-4780-ac64-e301699cfde5",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "completed",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "308449000",
+              "display": "Referral to chiropractor (procedure)"
+            }
+          ],
+          "text": "Referral to chiropractor (procedure)"
+        },
+        "performedDateTime": "2018-10-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "9aed5c34-1225-43f5-85af-2c0b7a1f248c",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "completed",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "444831000124102",
+              "display": "Referral for physical therapy (procedure)"
+            }
+          ],
+          "text": "Referral for physical therapy (procedure)"
+        },
+        "performedDateTime": "2018-10-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "cb5ab642-b47f-4965-9103-33ba36e109f5",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "876193",
+              "display": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+            }
+          ],
+          "text": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+        },
+        "authoredOn": "2017-05-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "9c25367b-84cb-4250-a156-8bc6908c2cbb",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "876193",
+              "display": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+            }
+          ],
+          "text": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+        },
+        "authoredOn": "2017-11-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "c71c5152-9553-4cef-b2c6-7865685a66dc",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "876193",
+              "display": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+            }
+          ],
+          "text": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+        },
+        "authoredOn": "2018-05-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "24679d4f-c1ca-4e93-9325-f6cbdcb62b88",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "876193",
+              "display": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+            }
+          ],
+          "text": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+        },
+        "authoredOn": "2019-01-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "7705331f-dba5-4f53-8081-078202036201",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "876193",
+              "display": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+            }
+          ],
+          "text": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+        },
+        "authoredOn": "2019-04-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "c1ec23cd-d658-425a-83d6-975770c63174",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "MME",
+              "display": "Morphine Milligram Equivalent (MME)"
+            }
+          ],
+          "text": "Morphine Milligram Equivalent (MME)"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "therapy"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 220,
+          "unit": "{MME}/d",
+          "system": "http://unitsofmeasure.org",
+          "code": "{MME}/d"
+        },
+        "issued": "2019-04-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "b9aa7f6a-5b57-4417-8fe1-5149c3ce3519",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "MME",
+              "display": "Morphine Milligram Equivalent (MME)"
+            }
+          ],
+          "text": "Morphine Milligram Equivalent (MME)"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "therapy"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 220,
+          "unit": "{MME}/d",
+          "system": "http://unitsofmeasure.org",
+          "code": "{MME}/d"
+        },
+        "issued": "2019-01-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "31f7c159-3f62-4dad-ac01-e951e4132619",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "MME",
+              "display": "Morphine Milligram Equivalent (MME)"
+            }
+          ],
+          "text": "Morphine Milligram Equivalent (MME)"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "therapy"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 220,
+          "unit": "{MME}/d",
+          "system": "http://unitsofmeasure.org",
+          "code": "{MME}/d"
+        },
+        "issued": "2018-10-09T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "aed700e3-2264-4f04-8b41-39aa5a46d066",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "MME",
+              "display": "Morphine Milligram Equivalent (MME)"
+            }
+          ],
+          "text": "Morphine Milligram Equivalent (MME)"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "therapy"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 190,
+          "unit": "{MME}/d",
+          "system": "http://unitsofmeasure.org",
+          "code": "{MME}/d"
+        },
+        "issued": "2017-11-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "88d7ecd6-e99d-4266-ae5a-803261e32106",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://cds.ahrq.gov/cdsconnect/pms",
+              "code": "MME",
+              "display": "Morphine Milligram Equivalent (MME)"
+            }
+          ],
+          "text": "Morphine Milligram Equivalent (MME)"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "therapy"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 160,
+          "unit": "{MME}/d",
+          "system": "http://unitsofmeasure.org",
+          "code": "{MME}/d"
+        },
+        "issued": "2016-12-02T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "7ecc2dc7-007e-48b8-9c9a-18427e224ef2",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "19295-5",
+              "display": "Opiates [Presence] in Urine by Screen method"
+            }
+          ],
+          "text": "Opiates [Presence] in Urine by Screen method"
+        },
+        "valueQuantity": {
+          "value": 2500,
+          "unit": "ng/mL",
+          "system": "http://unitsofmeasure.org",
+          "code": "ng/mL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/v2/0078",
+                "code": "POS",
+                "display": "Positive"
+              }
+            ],
+            "text": "Positive"
+          }
+        ],
+        "issued": "2018-10-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "8b3b14e8-7054-4774-b738-fe1b6039aedf",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "19295-5",
+              "display": "Opiates [Presence] in Urine by Screen method"
+            }
+          ],
+          "text": "Opiates [Presence] in Urine by Screen method"
+        },
+        "valueQuantity": {
+          "value": 2500,
+          "unit": "ng/mL",
+          "system": "http://unitsofmeasure.org",
+          "code": "ng/mL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/v2/0078",
+                "code": "POS",
+                "display": "Positive"
+              }
+            ],
+            "text": "Positive"
+          }
+        ],
+        "issued": "2017-11-16T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "4802e827-7794-4eda-91de-73f1cb5598eb",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "19295-5",
+              "display": "Opiates [Presence] in Urine by Screen method"
+            }
+          ],
+          "text": "Opiates [Presence] in Urine by Screen method"
+        },
+        "valueQuantity": {
+          "value": 2200,
+          "unit": "ng/mL",
+          "system": "http://unitsofmeasure.org",
+          "code": "ng/mL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/v2/0078",
+                "code": "POS",
+                "display": "Positive"
+              }
+            ],
+            "text": "Positive"
+          }
+        ],
+        "issued": "2016-12-03T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "c1a9149c-e72e-4266-a00a-5b5d483b944e",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "active",
+        "intent": "order",
+        "doNotPerform": false,
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "905505",
+              "display": "Chlordiazepoxide Hydrochloride 25 MG Oral Tablet"
+            }
+          ],
+          "text": "Chlordiazepoxide Hydrochloride 25 MG Oral Tablet"
+        },
+        "authoredOn": "2013-04-05T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "fde79013-ce3b-4293-99a2-a964c4dcd502",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "44261-6",
+              "display": "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]"
+            }
+          ],
+          "text": "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 8
+        },
+        "interpretation": [
+          {
+            "text": "Mild depression"
+          }
+        ],
+        "issued": "2018-09-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "dbee5bae-ad97-4ebe-af15-92f3ffbc24b0",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "44261-6",
+              "display": "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]"
+            }
+          ],
+          "text": "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 15
+        },
+        "interpretation": [
+          {
+            "text": "Moderately severe depression"
+          }
+        ],
+        "issued": "2017-11-15T16:00:00.000Z"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "3ec242fe-6203-4d18-8f21-030dbeb7ffe0",
+        "subject": {
+          "reference": "Patient/e01b6b02-d1a7-42af-996f-e2e574135947"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "44261-6",
+              "display": "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]"
+            }
+          ],
+          "text": "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "survey"
+              }
+            ]
+          }
+        ],
+        "valueQuantity": {
+          "value": 18
+        },
+        "interpretation": [
+          {
+            "text": "Moderately severe depression"
+          }
+        ],
+        "issued": "2016-12-02T16:00:00.000Z"
+      }
+    }
+  ]
+}
