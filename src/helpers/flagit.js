@@ -107,10 +107,9 @@ function ifGreaterThanOrEqualTo(value, entry, subSection, summary) {
   if (value.table != null && value.source != null) {
     targetEntry = summary[value.source][value.table];
   }
-
-  if (targetEntry == null) return false;
   if (Array.isArray(targetEntry) && targetEntry.length) {
     targetEntry = targetEntry[0]
   } 
+  if (targetEntry == null) return false;
   return parseInt(targetEntry[value.header], 10) >= value.value;
 }
