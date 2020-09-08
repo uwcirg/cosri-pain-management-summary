@@ -115,9 +115,6 @@ export default class Landing extends Component {
      * retrieve entries from Summary map, i.e. summary.json that requires fetching data via external API
      */
     for (let key in summaryMap) {
-      // if (summaryMap[key].dataSource) {
-      //   promiseResultSet.push(summaryMap[key].dataSource);
-      // }
       if (summaryMap[key].dataSource) {
         summaryMap[key].dataSource.forEach(item => {
           promiseResultSet.push(item);
