@@ -518,7 +518,7 @@
             "elements": [
               {
                 "name": "Morphine Equivalent Dose (MED)",
-                "status": "final or amended",
+                "status": "Calculated end date is today or after today",
                 "lookback": "most recent MED available"
               }
             ]
