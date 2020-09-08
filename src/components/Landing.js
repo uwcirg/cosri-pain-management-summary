@@ -115,8 +115,13 @@ export default class Landing extends Component {
      * retrieve entries from Summary map, i.e. summary.json that requires fetching data via external API
      */
     for (let key in summaryMap) {
+      // if (summaryMap[key].dataSource) {
+      //   promiseResultSet.push(summaryMap[key].dataSource);
+      // }
       if (summaryMap[key].dataSource) {
-        promiseResultSet.push(summaryMap[key].dataSource);
+        summaryMap[key].dataSource.forEach(item => {
+          promiseResultSet.push(item);
+        });
       }
     }
 
@@ -125,11 +130,11 @@ export default class Landing extends Component {
     }
 
     let results = await Promise.all(promiseResultSet.map(item => {
-      return this.fetchData(this.processEndPoint(item.endpoint), item.dataKey, item.dataKeySource)
+      return this.fetchData(this.processEndPoint(item.endpoint), item.dataKey, item.dataKey)
     })).catch(e => {
       console.log(`Error parsing external data response json: ${e.message}`);
       promiseResultSet.forEach(item => {
-        dataSet[item.dataKey] = null;
+        dataSet[item.dataKeySource] = null;
       });
       return dataSet;
     });
@@ -144,7 +149,10 @@ export default class Landing extends Component {
           console.log(`Error processing data result via processing function ${item.processFunction}: ${e}`);
         }
       }
-      dataSet[item.dataKey] = result ? result: null;
+      if (!dataSet[item.dataKeySource]) {
+        dataSet[item.dataKeySource] = {}
+      }
+      dataSet[item.dataKeySource][item.dataKey] = result[item.dataKey] ? result[item.dataKey]: result;
 
     });
     return dataSet;
@@ -189,8 +197,8 @@ export default class Landing extends Component {
                     alerts.push({
                       id: subitem.subSection.dataKey,
                       name: subitem.subSection.name,
-                      text: subitem.flagText,
-                      priority: subitem.priority || 0
+                      text: subitem.flagText + (subitem.flagDateText ? ` (${datishFormat('',subitem.flagDateText)})`: ""),
+                      priority: subitem.priority || 100
                     });
                   }
                 });
@@ -200,7 +208,7 @@ export default class Landing extends Component {
                     id: subsection[1].subSection.dataKey,
                     name: subsection[1].subSection.name,
                     text: subsection[1].flagText,
-                    priority: subsection[1].priority || 0
+                    priority: subsection[1].priority || 100
                   });
                 }
               }
@@ -210,7 +218,7 @@ export default class Landing extends Component {
       }
     }
     alerts.sort(function (a, b) {
-      return b.priority - a.priority;
+      return a.priority - b.priority;
     });
 
     //process graph data
@@ -396,6 +404,7 @@ export default class Landing extends Component {
         }
         const data = keySource[subSection.dataKey];
         const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
+        const alertMapping = subSection.alertMapping || {};
 
         if (entries.length > 0) {
           sectionFlags[sectionKey][subSection.dataKey] = entries.reduce((flaggedEntries, entry) => {
@@ -403,23 +412,32 @@ export default class Landing extends Component {
               entry._id = generateUuid();
             }
             const entryFlag = flagit(entry, subSection, summary);
-
             if (entryFlag) {
               flaggedCount += 1;
-              flaggedEntries.push({'entryId': entry._id, 'subSection': subSection, 'flagText': entryFlag, 'flagCount': flaggedCount, 'priority': subSection.alertPriority || 0});
+              let flagDateField = alertMapping.dateField ? alertMapping.dateField : null;
+
+              flaggedEntries.push({
+                'entryId': entry._id,
+                'entry': entry, 'subSection': subSection, 
+                'flagText': entryFlag, 
+                'flagCount': flaggedCount,
+                'flagDateText': entry && entry[flagDateField] ? entry[flagDateField]: "",
+                'priority': alertMapping.priority? alertMapping.priority : 0});
             }
 
             return flaggedEntries;
           }, []);
         } else {
+          
           const sectionFlagged = flagit(null, subSection, summary);
+         // console.log("subSection? ", subSection, " flagged? ", sectionFlagged)
           if (sectionFlagged) {
             flaggedCount += 1;
             sectionFlags[sectionKey][subSection.dataKey] = [{
               'flagText': sectionFlagged,
               'flagCount': flaggedCount,
               'subSection': subSection,
-              'priority': subSection.alertPriority || 0
+              'priority': alertMapping.priority? alertMapping.priority : 0
             }];
           }
         }

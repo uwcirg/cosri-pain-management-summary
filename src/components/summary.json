@@ -65,7 +65,9 @@
     "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
     "demoData": {
       "advisoryText": "Demo data is used here.",
-      "endpoint": "{process.env.PUBLIC_URL}/assets/data/PDMPDemoData.json"
+      "endpoint": "{process.env.PUBLIC_URL}/assets/data/PDMPDemoData.json",
+      "dataKey": "PDMPMedications",
+      "dataKeySource": "PDMPMedications"
     },
     "sections": [
       {
@@ -291,7 +293,6 @@
             "text": "Avoid opioids if there is any FDA or clinical contraindications."
           }
         ],
-        "alertPriority": 1,
         "info": [
           {
             "type": "elements",
@@ -350,6 +351,10 @@
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "Onset"
+        },
         "tables": [
           {
             "headers": {
@@ -421,8 +426,7 @@
                     "name": "Age >= 65"
                   }
                 ],
-                "key": "Name",
-                "priority": 1
+                "key": "Name"
               }
             ]
           },
@@ -520,6 +524,9 @@
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 2
+        },
         "tables": [
           {
             "headers": {
@@ -535,7 +542,8 @@
                     "value": 50
                   }
                 },
-                "flagText": "Most recent MED assessment is 50+ MED/day."
+                "flagText": "Most recent MED assessment is 50+ MED/day.",
+                "flagDateField": "Date"
               }
             ]
           }
@@ -616,6 +624,10 @@
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 3,
+          "dateField": "Start"
+        },
         "tables": [
           {
             "headers": {
@@ -673,6 +685,10 @@
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 4,
+          "dateField": "Start"
+        },
         "tables": [
           {
             "headers": {
@@ -729,6 +745,10 @@
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 5,
+          "dateField": "Start"
+        },
         "tables": [
           {
             "headers": {
@@ -739,6 +759,7 @@
               "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
               "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
+            
             "flags": [
               {
                 "flag": {
@@ -766,24 +787,48 @@
       }
     ]
   },
-  "PatientEducationMaterials": {
-    "title":"Patient Education Materials",
-    "dataSource": {
+  "EducationMaterials": {
+    "title":"Education Materials",
+    "dataSource": [{
       "endpoint": "{process.env.PUBLIC_URL}/assets/data/patientEducationReferences.json",
       "dataKey": "PatientEducationMaterials",
-      "dataKeySource": "PatientEducationMaterials"
+      "dataKeySource": "EducationMaterials"
     },
+    {
+      "endpoint": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json",
+      "dataKey": "ProviderEducationMaterials",
+      "dataKeySource": "EducationMaterials"
+    }],
     "omitCountDisplay": true,
     "sections": [
       {
-        "name": "Resources",
-        "omitTitle": true,
+        "name": "Patient Resources",
         "dataKey": "PatientEducationMaterials",
-        "dataKeySource": "PatientEducationMaterials",
+        "dataKeySource": "EducationMaterials",
+        "omitTitle": true,
         "tables": [
           {
             "headers": {
-              "Resources": {
+              "Patient Resources": {
+                "key": "link",
+                "formatter": "linkFormat",
+                "formatterArguments": ["title","url", "type", "size"],
+                "minWidth": 200,
+                "sortable": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Provider Resources",
+        "dataKey": "ProviderEducationMaterials",
+        "dataKeySource": "EducationMaterials",
+        "omitTitle": true,
+        "tables": [
+          {
+            "headers": {
+              "Provider Resources": {
                 "key": "link",
                 "formatter": "linkFormat",
                 "formatterArguments": ["title","url", "type", "size"],
