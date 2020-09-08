@@ -81,7 +81,6 @@ export default class MMEGraph extends Component {
       let dObj = new Date(d[xFieldName]);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
       dObj.setTime(dObj.getTime() + tzOffset);
-      console.log("d? ", dObj)
       d[xFieldName] = dObj;
       return d;
     });
