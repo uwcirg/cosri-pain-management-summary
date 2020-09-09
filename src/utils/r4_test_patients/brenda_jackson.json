@@ -990,7 +990,6 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
@@ -1039,8 +1038,8 @@
         ],
         "dispenseRequest": {
           "validityPeriod": {
-            "start": "2016-07-15",
-            "end": "2016-07-15"
+            "start": "2019-07-15",
+            "end": "2019-07-15"
           },
           "numberOfRepeatsAllowed": 1,
           "expectedSupplyDuration": {
@@ -1050,7 +1049,7 @@
             "code": "d"
           }
         },
-        "authoredOn": "2016-07-15T16:02:00.000Z"
+        "authoredOn": "2019-07-15T16:02:00.000Z"
       }
     },
     {
