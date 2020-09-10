@@ -41,10 +41,10 @@ export function fetchEnvData() {
 }
 
 export function getEnv (key) {
+    //window application global variables
+    if (window["appConfig"] && window["appConfig"][key]) return window["appConfig"][key];
     const envDefined = (typeof process !== "undefined") && process.env;
     //enviroment variables as defined by Node 
     if (envDefined && process.env[key]) return process.env[key];
-    //window application global variables
-    if (window["appConfig"] && window["appConfig"][key]) return window["appConfig"][key];
     return "";
 }
