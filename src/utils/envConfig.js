@@ -11,6 +11,7 @@ export function fetchEnvData() {
             console.log("Request failed! ");
             return;
         }
+        console.log("RESPONSE? ", xhr.responseText);
         var envObj = JSON.parse(xhr.responseText);
         window["appConfig"] = {};
         //assign window process env variables for access by app
@@ -45,6 +46,9 @@ export function getEnv (key) {
     //enviroment variables as defined by Node 
     if (envDefined && process.env[key]) return process.env[key];
     //window application global variables
+    if (window["appConfig"]) {
+        console.log("window app? ", window["appConfig"]);
+    }
     if (window["appConfig"] && window["appConfig"][key]) return window["appConfig"][key];
     return "";
 }
