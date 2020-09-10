@@ -12,6 +12,7 @@ import r4MMECalculatorELM from '../cql/r4/MMECalculator.json';
 import r4OMTKDataELM from '../cql/r4/OMTKData.json';
 import r4OMTKLogicELM from '../cql/r4/OMTKLogic.json';
 import valueSetDB from '../cql/valueset-db.json';
+import {getEnv, fetchEnvData} from './envConfig';
 
 function executeELM(collector) {
   let client, release, library;
@@ -52,6 +53,8 @@ function executeELM(collector) {
       const patientSource = getPatientSource(release);
       const codeService = new cql.CodeService(valueSetDB);
       const executor = new cql.Executor(library, codeService);
+      //debugging 
+      console.log("bundle loaded? ", bundle)
       patientSource.loadBundles([bundle]);
       const results = executor.exec(patientSource);
       return results.patientResults[Object.keys(results.patientResults)[0]];
@@ -129,9 +132,10 @@ function processPage(uri, collector, resources) {
 }
 
 function updateSearchParams(params, release, type) {
+  fetchEnvData();
   // If this is for Epic, there are some specific modifications needed for the queries to work properly
-  if (process.env.REACT_APP_EPIC_SUPPORTED_QUERIES
-    && process.env.REACT_APP_EPIC_SUPPORTED_QUERIES.toLowerCase() === 'true') {
+  if (getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")
+    && getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES").toLowerCase() === 'true') {
     if (release === 2) {
       switch (type) {
         case 'Observation':
