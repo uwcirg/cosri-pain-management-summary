@@ -1,0 +1,117 @@
+Running tests.
+Data path: C:\Users\Maggie\FHIR\MME_Calculator\input\tests\Factors
+Terminology path: C:\Users\Maggie\FHIR\MME_Calculator\input\vocabulary\valueset
+Test (patient-mme-greater-than-fifty)
+Mon Aug 24 2020 12:34:42 GMT-0700 (Pacific Daylight Time)
+Error: Command failed: "java" -jar C:\Users\Maggie\.atom\packages\language-cql\cli\cli-1.2.0-SNAPSHOT-shaded.jar --lp "C:\Users\Maggie\FHIR\MME_Calculator\input\cql" --ln Factors -m "FHIR=C:\Users\Maggie\FHIR\MME_Calculator\input\tests\Factors" -t "C:\Users\Maggie\FHIR\MME_Calculator\input\vocabulary\valueset" -c Patient=patient-mme-greater-than-fifty -v false
+java.lang.IllegalArgumentException: Unable to locate valueset 2.16.840.1.113762.1.4.1032.34
+	at org.opencds.cqf.cql.service.provider.FileBasedFhirTerminologyProvider.expand(FileBasedFhirTerminologyProvider.java:74)
+	at org.opencds.cqf.cql.service.provider.FileBasedFhirTerminologyProvider.in(FileBasedFhirTerminologyProvider.java:48)
+	at org.opencds.cqf.cql.service.provider.FileBasedFhirRetrieveProvider.checkCodeMembership(FileBasedFhirRetrieveProvider.java:361)
+	at org.opencds.cqf.cql.service.provider.FileBasedFhirRetrieveProvider.retrieve(FileBasedFhirRetrieveProvider.java:251)
+	at org.opencds.cqf.cql.engine.data.CompositeDataProvider.retrieve(CompositeDataProvider.java:73)
+	at org.opencds.cqf.cql.engine.elm.execution.RetrieveEvaluator.internalEvaluate(RetrieveEvaluator.java:59)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.elm.execution.FunctionRefEvaluator.internalEvaluate(FunctionRefEvaluator.java:17)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.elm.execution.FunctionRefEvaluator.internalEvaluate(FunctionRefEvaluator.java:17)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.elm.execution.ExistsEvaluator.internalEvaluate(ExistsEvaluator.java:28)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.elm.execution.OrEvaluator.internalEvaluate(OrEvaluator.java:43)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.elm.execution.ExpressionDefEvaluator.internalEvaluate(ExpressionDefEvaluator.java:17)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.execution.CqlEngine.evaluateExpressions(CqlEngine.java:178)
+	at org.opencds.cqf.cql.engine.execution.CqlEngine.evaluate(CqlEngine.java:156)
+	at org.opencds.cqf.cql.engine.execution.CqlEngine.evaluate(CqlEngine.java:107)
+	at org.opencds.cqf.cql.engine.execution.CqlEngine.evaluate(CqlEngine.java:99)
+	at org.opencds.cqf.cql.service.Service.evaluate(Service.java:164)
+	at org.opencds.cqf.cql.cli.Main.main(Main.java:30)
+Unexpected exception caught during execution: java.lang.IllegalArgumentException: Unable to locate valueset 2.16.840.1.113762.1.4.1032.34
+org.opencds.cqf.cql.engine.exception.CqlException: Unexpected exception caught during execution: java.lang.IllegalArgumentException: Unable to locate valueset 2.16.840.1.113762.1.4.1032.34
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:21)
+	at org.opencds.cqf.cql.engine.elm.execution.FunctionRefEvaluator.internalEvaluate(FunctionRefEvaluator.java:17)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.elm.execution.FunctionRefEvaluator.internalEvaluate(FunctionRefEvaluator.java:17)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.elm.execution.ExistsEvaluator.internalEvaluate(ExistsEvaluator.java:28)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.elm.execution.OrEvaluator.internalEvaluate(OrEvaluator.java:43)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.elm.execution.ExpressionDefEvaluator.internalEvaluate(ExpressionDefEvaluator.java:17)
+	at org.opencds.cqf.cql.engine.elm.execution.Executable.evaluate(Executable.java:14)
+	at org.opencds.cqf.cql.engine.execution.CqlEngine.evaluateExpressions(CqlEngine.java:178)
+	at org.opencds.cqf.cql.engine.execution.CqlEngine.evaluate(CqlEngine.java:156)
+	at org.opencds.cqf.cql.engine.execution.CqlEngine.evaluate(CqlEngine.java:107)
+	at org.opencds.cqf.cql.engine.execution.CqlEngine.evaluate(CqlEngine.java:99)
+	at org.opencds.cqf.cql.service.Service.evaluate(Service.java:164)
+	at org.opencds.cqf.cql.cli.Main.main(Main.java:30)
+
+Running tests.
+Data path: C:\Users\Maggie\FHIR\MME_Calculator\input\tests\Factors
+Terminology path: C:\Users\Maggie\FHIR\MME_Calculator\input\vocabulary\valueset
+Test patient-mme-greater-than-fifty
+Mon Aug 24 2020 12:44:35 GMT-0700 (Pacific Daylight Time)
+Patient = org.hl7.fhir.r4.model.Patient@30daa543
+Is18orOlder = true
+HasRecentOpioidPainMedication = true
+MeetsInclusionCriteria = true
+OpioidMedicationRequests = [org.hl7.fhir.r4.model.MedicationRequest@ce2cd578]
+OpioidMedicationStatements = []
+ReportOpioidMedicationRequests = [Tuple {
+	Status -> active
+	Type -> Request
+	Prescriber -> null
+	Start -> 2020-06-26
+	Pharmacy -> null
+	Quantity -> null
+	End -> null
+	Name -> 72 HR Fentanyl 0.075 MG/HR Transdermal System
+}]
+ReportOpioidMedicationStatements = []
+ReportOpioidMedications = [Tuple {
+	Status -> active
+	Type -> Request
+	Prescriber -> null
+	Start -> 2020-06-26
+	Pharmacy -> null
+	Quantity -> null
+	End -> null
+	Name -> 72 HR Fentanyl 0.075 MG/HR Transdermal System
+}]
+ActiveOpioidMedications = [org.hl7.fhir.r4.model.MedicationRequest@a7add38d]
+CurrentMME = 59.99999940 mg/d
+ReportCurrentMME = [Tuple {
+	Date -> 2020-08-24
+	Name -> Current Milligram Morephine Equivalent
+	Result -> 59.99999940 'mg/d'
+}]
+Summary = Tuple {
+	HistoricalTreatments -> Tuple {
+	OpioidMedications -> [Tuple {
+	Status -> active
+	Type -> Request
+	Prescriber -> null
+	Start -> 2020-06-26
+	Pharmacy -> null
+	Quantity -> null
+	End -> null
+	Name -> 72 HR Fentanyl 0.075 MG/HR Transdermal System
+}]
+}
+	RiskConsiderations -> Tuple {
+	CurrentMME -> [Tuple {
+	Date -> 2020-08-24
+	Name -> Current Milligram Morephine Equivalent
+	Result -> 59.99999940 'mg/d'
+}]
+}
+	Patient -> Tuple {
+	Gender -> female
+	Age -> 38
+	MeetsInclusionCriteria -> true
+	Name -> null
+}
+}
+elapsed: 12.602 seconds

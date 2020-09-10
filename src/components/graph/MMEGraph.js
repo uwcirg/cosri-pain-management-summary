@@ -5,13 +5,15 @@ import { line, curveMonotoneX } from 'd3-shape';
 import XYAxis from './xy-axis';
 import Line from './line';
 
+const xFieldName = "End";
+const yFieldName = "MMEValue";
 export default class MMEGraph extends Component {
 
   getDefaultDataValueSet(value, minDate, maxDate, total, xFieldName, yFieldName) {
     let data = [];
     value = value || 0;
-    total = total || 10;
-    xFieldName = xFieldName || "dateWritten";
+    total = total || 8;
+    xFieldName = xFieldName || "End";
     yFieldName = yFieldName || "MMEValue";
     if (!maxDate) {
       maxDate = new Date();
@@ -22,6 +24,7 @@ export default class MMEGraph extends Component {
     }
     let index = 0;
     let increment = Math.ceil((maxDate.getTime() - minDate.getTime()) / total);
+
     while(index <= total) {
       let addTime = minDate.getTime() + increment*index;
       let item = {};
@@ -33,11 +36,21 @@ export default class MMEGraph extends Component {
     return data;
   }
   compareDate(a, b) {
-    let calcA = (new Date(a.dateWritten)).getTime();
-    let calcB = (new Date(b.dateWritten)).getTime();
+    let calcA = (new Date(a[xFieldName])).getTime();
+    let calcB = (new Date(b[xFieldName])).getTime();
     if (calcA > calcB) return 1;
     if (calcB > calcA) return -1;
     return 0;
+  }
+
+  getMaxMMEValue(data) {
+    let maxValue =  0;
+    let CAP_MAX_VALUE = 500;
+    data.forEach(item => {
+      if (item["MMEValue"] > CAP_MAX_VALUE) return true;
+      maxValue = Math.max(maxValue, item["MMEValue"]);
+    });
+    return maxValue;
   }
 
   render() {
@@ -51,39 +64,49 @@ export default class MMEGraph extends Component {
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
-    const xFieldName = "dateWritten";
-    const yFieldName = "MMEValue";
     const xIntervals = 8;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
+    //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
-    let computedData = this.props.data? (this.props.data).sort(this.compareDate): null;
-    let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
+    let computedData = this.props.data? (this.props.data).map(item => {
+      return {
+        ...item
+      }
+    }): null;
+    let data = computedData? (computedData).sort(this.compareDate): [];
+    //let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
     let noEntry = !data || !data.length;
-
+    data = data.filter(d => d[xFieldName]);
     data = data.map(d => {
-      let dObj = new Date(d.dateWritten);
+      let dObj = new Date(d[xFieldName]);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
       dObj.setTime(dObj.getTime() + tzOffset);
-      d.dateWritten = dObj;
+      d[xFieldName] = dObj;
       return d;
     });
     let arrayDates = data.map(d => {
-      return d.dateWritten;
+      return d[xFieldName];
     });
     if (arrayDates.length) {
       maxDate = new Date(Math.max.apply(null, arrayDates))
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
-    if (arrayDates.length < (xIntervals - 2)) {
+    //console.log("maxDate: ", maxDate, " minDate ", minDate)
+    const diffTime = Math.abs(maxDate - minDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+   // if (arrayDates.length < (xIntervals - 2)) {
+    if (diffDays < 60 && arrayDates.length < (xIntervals - 2)) {
       /*
        * make sure graph has appropiate end points on the graph if the total count of data points is less than the initial set number of intervals
        */
       let calcMinDate = new Date(minDate.valueOf());
       let calcMaxDate = new Date(maxDate.valueOf());
-      minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
-      maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
-      maxDate = new Date(Math.max(Math.max.apply(null, arrayDates), new Date()))
-      minDate = new Date(Math.min(Math.min.apply(null, arrayDates), minDate));
+      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * ((xIntervals-arrayDates.length)/2-1)));
+      maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + (30 * ((xIntervals-arrayDates.length)/2-1)));
+      maxDate = new Date(maxDate);
+      minDate = new Date(minDate);
+      //console.log("min date ", minDate, " max date ", maxDate)
     }
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
     let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
@@ -99,9 +122,9 @@ export default class MMEGraph extends Component {
     const width = parentWidth - margins.left - margins.right;
     const height = 360 - margins.top - margins.bottom;
     const xScale = scaleTime().domain([minDate, maxDate]).rangeRound([0, width]).nice();
-
+    const xMaxValue = Math.max(140, this.getMaxMMEValue(data));
     const yScale = scaleLinear()
-      .domain([0, 140])
+      .domain([0, xMaxValue])
       .range([height, 0])
       .nice();
 
@@ -126,7 +149,7 @@ export default class MMEGraph extends Component {
       additionalProps["dataPoints"] = {
         "strokeColor": "#217684",
         "strokeFill": "#217684",
-        "strokeWidth": 2
+        "strokeWidth": data.length <= 2 ? 4 : 2
       }
     //}
 
@@ -149,12 +172,14 @@ export default class MMEGraph extends Component {
       "fontFamily": "sans-serif",
       "fontSize": "12px",
       "fontWeight": "600",
-      "x": 16
+      "x": xScale(minDate) + 8
     };
+    
     const WA_COLOR = "#a75454";
     const CDC_COLOR = "#e09b1d";
+    const textMargin = 4;
     const WALegendSettings = {
-      "y": 30,
+      "y": yScale(120 + textMargin),
       "fill": WA_COLOR,
       ...defaultLegendSettings
     };
@@ -166,7 +191,12 @@ export default class MMEGraph extends Component {
     const dataLineProps = {...defaultProps, ...additionalProps};
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
-
+    if (noEntry) {
+      return  (<div className="MMEgraph no-entry">
+                <div className="title">Morphine Equivalent Dose (MED)</div>
+                <div className="no-entry">No graph data available</div>
+              </div>);
+    }
     return (
       <div className="MMEgraph">
         <div className="title">Morphine Equivalent Dose (MED)</div>
@@ -185,12 +215,9 @@ export default class MMEGraph extends Component {
               <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
               <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
               <text {...WALegendSettings}>Washington State consultation threshold</text>
-              <text {...CDCLegendSettings} y="164">CDC extra precautions threshold</text>
-              <text {...CDCLegendSettings} y="88">CDC avoid/justify threshold</text>
+              <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>CDC extra precautions threshold</text>
+              <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>CDC avoid/justify threshold</text>
               <Line lineID="dataLine" data={data} {...dataLineProps} />
-              {noEntry && 
-                <text {...defaultLegendSettings} x={width/2 - 20} y={height/2} strokeColor="#777" fill="#777">No entry found</text>
-              }
             </g>
           </svg>
         </div>

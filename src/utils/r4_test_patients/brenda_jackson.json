@@ -712,84 +712,59 @@
           "coding": [
             {
               "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "197696",
+              "display": "72 HR Fentanyl 0.075 MG/HR Transdermal System"
             }
-          ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          ]
         },
-        "requester": {
-          "display": "ROBERT MOSS"
-        },
-        "dispenseRequest": {
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name",
-              "valueString": "CAROL'S PHARMACY CHAIN (WA)"
+        "authoredOn": "2020-09-05",
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 3.0,
+                "periodUnit": "d"
+              }
             },
-            {
-              "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2020-06-16"
-            }
-          ],
-          "quantity": {
-            "value": 813.0
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseRange": {
+                  "low": {
+                    "value": 1,
+                    "unit": "cL",
+                    "code": "cL"
+                  },
+                  "high": {
+                    "value": 3,
+                    "unit": "cL",
+                    "code": "cL"
+                  }
+                }
+              },
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "cL"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2020-09-05",
+            "end": "2020-12-25"
           },
+          "numberOfRepeatsAllowed": 3,
           "expectedSupplyDuration": {
-            "value": 67.0,
+            "value": 30,
             "unit": "days",
             "system": "http://unitsofmeasure.org",
             "code": "d"
           }
-        },
-        "authoredOn": "2019-04-15T16:02:00.000Z"
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "MedicationRequest",
-        "id": "56e7d126-4242-4ec5-b1b5-00ab059cd60e",
-        "subject": {
-          "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
-        },
-        "status": "active",
-        "intent": "order",
-        "doNotPerform": false,
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
-            }
-          ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
-        },
-        "requester": {
-          "display": "ROBERT MOSS"
-        },
-        "dispenseRequest": {
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name",
-              "valueString": "ALICE'S PHARMACY (WA)"
-            },
-            {
-              "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2019-11-15"
-            }
-          ],
-          "quantity": {
-            "value": 60.0
-          },
-          "expectedSupplyDuration": {
-            "value": 30.0,
-            "unit": "days",
-            "system": "http://unitsofmeasure.org",
-            "code": "d"
-          }
-        },
-        "authoredOn": "2019-01-15T16:02:00.000Z"
+        }
       }
     },
     {
@@ -799,20 +774,65 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
           "coding": [
             {
               "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "197696",
+              "display": "72 HR Fentanyl 0.075 MG/HR Transdermal System"
             }
-          ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          ]
         },
-        "authoredOn": "2018-10-15T16:02:00.000Z"
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 3.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseRange": {
+                  "low": {
+                    "value": 1,
+                    "unit": "cL",
+                    "code": "cL"
+                  },
+                  "high": {
+                    "value": 2,
+                    "unit": "cL",
+                    "code": "cL"
+                  }
+                }
+              },
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "cL"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2018-07-15",
+            "end": "2018-08-25"
+          },
+          "numberOfRepeatsAllowed": 3,
+          "expectedSupplyDuration": {
+            "value": 30,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
+        },
+        "authoredOn": "2018-07-15T16:02:00.000Z"
       }
     },
     {
@@ -822,7 +842,6 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
@@ -834,6 +853,63 @@
             }
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+        },
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseRange": {
+                  "low": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  },
+                  "high": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  }
+                }
+              },
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2018-07-15",
+            "end": "2018-07-15"
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 1,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name", 
+              "valueString": "TEST, DOCTOR"
+            }, 
+            {
+              "url": "http://cosri.org/fhir/last_fill", 
+              "valueDate": "2018-07-15"
+            }
+          ]
         },
         "authoredOn": "2018-07-15T16:02:00.000Z"
       }
@@ -845,7 +921,6 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
@@ -858,7 +933,54 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "authoredOn": "2018-04-15T16:02:00.000Z"
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseRange": {
+                  "low": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  },
+                  "high": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  }
+                }
+              },
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2018-07-15",
+            "end": "2018-07-15"
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 1,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
+        },
+        "authoredOn": "2018-07-15T16:02:00.000Z"
       }
     },
     {
@@ -868,7 +990,6 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
@@ -881,7 +1002,54 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "authoredOn": "2018-01-15T16:02:00.000Z"
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseRange": {
+                  "low": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  },
+                  "high": {
+                    "value": 2,
+                    "unit": "mg",
+                    "code": "mg"
+                  }
+                }
+              },
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2019-07-15",
+            "end": "2019-07-15"
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 1,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
+        },
+        "authoredOn": "2019-07-15T16:02:00.000Z"
       }
     },
     {
@@ -904,7 +1072,7 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "authoredOn": "2017-10-15T16:02:00.000Z"
+        "authoredOn": "2016-07-15T16:02:00.000Z"
       }
     },
     {
@@ -1006,7 +1174,6 @@
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
         "intent": "order",
         "doNotPerform": false,
         "medicationCodeableConcept": {
@@ -1019,7 +1186,64 @@
           ],
           "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
         },
-        "authoredOn": "2019-04-15T16:01:00.000Z"
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseRange": {
+                  "low": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  },
+                  "high": {
+                    "value": 1,
+                    "unit": "mg",
+                    "code": "mg"
+                  }
+                }
+              },
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2018-07-15",
+            "end": "2018-07-15"
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 1,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name", 
+              "valueString": "TEST, DOCTOR"
+            }, 
+            {
+              "url": "http://cosri.org/fhir/last_fill", 
+              "valueDate": "2018-07-15"
+            }
+          ]
+        },
+        "authoredOn": "2018-07-15T16:01:00.000Z"
       }
     },
     {
@@ -1275,6 +1499,24 @@
         "requester": {
           "display": "ROBERT MOSS"
         },
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 3.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [{
+              "doseQuantity": {
+                "value": 1.0,
+                "unit": "cL"
+              }
+            }]
+          }
+        ],
         "dispenseRequest": {
           "extension": [
             {
@@ -1289,6 +1531,7 @@
           "quantity": {
             "value": 30.0
           },
+          "numberOfRepeatsAllowed": 3,
           "expectedSupplyDuration": {
             "value": 10.0,
             "unit": "days",
@@ -1556,12 +1799,30 @@
           "coding": [
             {
               "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "876193",
-              "display": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+              "code": "351267",
+              "display": "Buprenorphine 8 MG / Naloxone 2 MG Sublingual Tablet"
             }
           ],
-          "text": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+          "text": "Buprenorphine 8 MG / Naloxone 2 MG Sublingual Tablet"
         },
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 3.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [{
+              "doseQuantity": {
+                "value": 1.0,
+                "unit": "cL"
+              }
+            }]
+          }
+        ],
         "authoredOn": "2019-01-15T16:00:00.000Z"
       }
     },

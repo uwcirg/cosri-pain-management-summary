@@ -252,6 +252,16 @@
         margin-bottom: 24px;
         max-width: 100%;
         padding-bottom: 12px;
+        &.no-entry {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          .no-entry {
+            margin: 32px;
+            padding: 32px;
+          }
+        }
         .title {
           margin-left: 42px;
           font-weight: 600;
@@ -375,6 +385,7 @@
           .panel.graph {
             flex-grow: 1;
             flex-basis: 65%;
+            align-self: stretch;
           }
         }
       }
@@ -395,7 +406,7 @@
       @media (min-width: 1600px) {
         .sub-section__panel {
           .panel.graph {
-            flex-basis: 25%;
+            flex-basis: 40%;
           }
           .panel.overview {
             margin-left: 16px;

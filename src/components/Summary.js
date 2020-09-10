@@ -336,8 +336,9 @@ export default class Summary extends Component {
     return "";
   }
 
-  renderGraph(data, type) {
-    if (type === "MED") {
+  renderGraph(panel) {
+    if (panel.graphType === "MED") {
+      let data = this.props.summary[panel.dataSectionRefKey];
       return <MMEGraph data={data}></MMEGraph>;
     }
     //can return other type of graph depending on the section
@@ -385,7 +386,7 @@ export default class Summary extends Component {
   renderPanel(section, panels) {
     let content = panels.map((panel, index) => {
       return (<div key={`panel_${index}`} className={`panel ${panel.type}`}>
-          {panel.type === "graph" && this.renderGraph(panel.data, panel.graphType)}
+          {panel.type === "graph" && this.renderGraph(panel)}
           {panel.type === "overview" && this.renderOverviewPanel(panel)}
         </div>);
     });

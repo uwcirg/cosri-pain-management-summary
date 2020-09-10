@@ -13,13 +13,21 @@
         },
         {
           "title": "Total Prescribers",
-          "keyMatch": "_prescriber",
+          "keyMatch": "Prescriber",
           "type": "count"
         },
         {
           "title": "Total Pharmacies",
-          "keyMatch": "_pharmacy",
+          "keyMatch": "Pharmacy",
           "type": "count"
+        }
+      ]
+    },
+    "graphConfig": {
+      "summaryDataSource": [
+        {
+          "section_key": "RiskConsiderations",
+          "subSection_key": "ReportMMEByDates"
         }
       ]
     },
@@ -32,17 +40,7 @@
           {
             "type": "graph",
             "graphType": "MED",
-            "data": [{"dateWritten":"2019-04-01","MMEValue":40,"_id":37},{"dateWritten":"2019-04-15","MMEValue":40,"_id":34},{"dateWritten":"2019-05-01","MMEValue":40,"_id":32},{"dateWritten":"2019-05-15","MMEValue":40,"_id":31},{"dateWritten":"2019-06-01","MMEValue":40,"_id":30},{"dateWritten":"2019-06-15","MMEValue":40,"_id":29},{"dateWritten":"2019-07-01","MMEValue":40,"_id":28},{"dateWritten":"2019-07-15","MMEValue":40,"_id":27},{"dateWritten":"2019-07-30","MMEValue":100,"_id":22},{"dateWritten":"2019-10-01","MMEValue":100,"_id":20},{"dateWritten":"2019-10-15","MMEValue":100,"_id":17},{"dateWritten":"2019-11-01","MMEValue":55,"_id":7},{"dateWritten":"2019-11-15","MMEValue":55,"_id":6},{"dateWritten":"2019-12-01","MMEValue":40,"_id":5}],
-            "summarySection": {
-              "dataKey": "RiskConsiderations",
-              "dataKeySource": "MostRecentMME",
-              "keyMatches": {
-                "dateWritten": "Date",
-                "MMEValue": "Result",
-                "Name": "Name"
-              },
-              "display": "Morphine Equivalent Dose (MED)"
-            }
+            "dataSectionRefKey": "PatientRiskOverview_graph"
           },
           {
             "type": "overview",
@@ -65,15 +63,11 @@
   "PDMPMedications": {
     "title":"State PMP Prescriptions",
     "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
-    "dataSource": {
-      "endpoint": "{process.env.REACT_APP_CONF_API_URL}/v/r2/fhir/MedicationOrder?patient={patientId}",
-      "dataKey": "PDMPMedications",
-      "dataKeySource": "entry",
-      "processFunction": "processMedicationOrder"
-    },
     "demoData": {
       "advisoryText": "Demo data is used here.",
-      "endpoint": "{process.env.PUBLIC_URL}/assets/data/PDMPDemoData.json"
+      "endpoint": "{process.env.PUBLIC_URL}/assets/data/PDMPDemoData.json",
+      "dataKey": "PDMPMedications",
+      "dataKeySource": "PDMPMedications"
     },
     "sections": [
       {
@@ -97,16 +91,12 @@
         "tables": [
           {
             "headers": {
-              "Drug Description": {
-                "key": "medicationCodeableConcept",
-                "formatter": "codeableConceptFormat",
-                "formatterArguments": ["text"]
-              },
-              "Quantity": "_quantity",
-              "Written Date": { "key": "dateWritten", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
-              "Dispensed": { "key": "_dateDispensed", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
-              "Prescriber": "_prescriber",
-              "Pharmacy": "_pharmacy"
+              "Drug Description": "Name",
+              "Quantity": "Quantity",
+              "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
+              "Dispensed": { "key": "End", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
+              "Prescriber": "Prescriber",
+              "Pharmacy": "Pharmacy"
             }
           }
         ]
@@ -303,7 +293,6 @@
             "text": "Avoid opioids if there is any FDA or clinical contraindications."
           }
         ],
-        "alertPriority": 1,
         "info": [
           {
             "type": "elements",
@@ -362,6 +351,10 @@
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "Onset"
+        },
         "tables": [
           {
             "headers": {
@@ -433,8 +426,7 @@
                     "name": "Age >= 65"
                   }
                 ],
-                "key": "Name",
-                "priority": 1
+                "key": "Name"
               }
             ]
           },
@@ -510,7 +502,7 @@
     "sections":[
       {
         "name": "Most Recent MED",
-        "dataKey": "MostRecentMME",
+        "dataKey": "CurrentMME",
         "dataKeySource": "RiskConsiderations",
         "guideline": [
           {
@@ -526,12 +518,15 @@
             "elements": [
               {
                 "name": "Morphine Equivalent Dose (MED)",
-                "status": "final or amended",
-                "lookback": "most recent in past 6 months"
+                "status": "Calculated end date is today or after today",
+                "lookback": "most recent MED available"
               }
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 2
+        },
         "tables": [
           {
             "headers": {
@@ -547,7 +542,8 @@
                     "value": 50
                   }
                 },
-                "flagText": "Most recent MED assessment is 50+ MED/day."
+                "flagText": "Most recent MED assessment is 50+ MED/day.",
+                "flagDateField": "Date"
               }
             ]
           }
@@ -628,6 +624,10 @@
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 3,
+          "dateField": "Start"
+        },
         "tables": [
           {
             "headers": {
@@ -685,6 +685,10 @@
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 4,
+          "dateField": "Start"
+        },
         "tables": [
           {
             "headers": {
@@ -741,6 +745,10 @@
             ]
           }
         ],
+        "alertMapping": {
+          "priority": 5,
+          "dateField": "Start"
+        },
         "tables": [
           {
             "headers": {
@@ -751,6 +759,7 @@
               "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
               "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
+            
             "flags": [
               {
                 "flag": {
@@ -758,7 +767,7 @@
                     "ifNone",
                     {
                       "ifGreaterThanOrEqualTo": {
-                        "table": "MostRecentMME",
+                        "table": "CurrentMME",
                         "source": "RiskConsiderations",
                         "header": "Result",
                         "value": 50
@@ -778,24 +787,48 @@
       }
     ]
   },
-  "PatientEducationMaterials": {
-    "title":"Patient Education Materials",
-    "dataSource": {
+  "EducationMaterials": {
+    "title":"Education Materials",
+    "dataSource": [{
       "endpoint": "{process.env.PUBLIC_URL}/assets/data/patientEducationReferences.json",
       "dataKey": "PatientEducationMaterials",
-      "dataKeySource": "PatientEducationMaterials"
+      "dataKeySource": "EducationMaterials"
     },
+    {
+      "endpoint": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json",
+      "dataKey": "ProviderEducationMaterials",
+      "dataKeySource": "EducationMaterials"
+    }],
     "omitCountDisplay": true,
     "sections": [
       {
-        "name": "Resources",
-        "omitTitle": true,
+        "name": "Patient Resources",
         "dataKey": "PatientEducationMaterials",
-        "dataKeySource": "PatientEducationMaterials",
+        "dataKeySource": "EducationMaterials",
+        "omitTitle": true,
         "tables": [
           {
             "headers": {
-              "Resources": {
+              "Patient Resources": {
+                "key": "link",
+                "formatter": "linkFormat",
+                "formatterArguments": ["title","url", "type", "size"],
+                "minWidth": 200,
+                "sortable": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Provider Resources",
+        "dataKey": "ProviderEducationMaterials",
+        "dataKeySource": "EducationMaterials",
+        "omitTitle": true,
+        "tables": [
+          {
+            "headers": {
+              "Provider Resources": {
                 "key": "link",
                 "formatter": "linkFormat",
                 "formatterArguments": ["title","url", "type", "size"],
