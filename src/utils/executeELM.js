@@ -136,7 +136,7 @@ function updateSearchParams(params, release, type) {
   // If this is for Epic, there are some specific modifications needed for the queries to work properly
   console.log("EPIC SUPPORTED ENV ", getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES"));
   if (getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")
-    && getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES").toLowerCase() === 'true') {
+    && String(getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")).toLowerCase() === 'true') {
     if (release === 2) {
       switch (type) {
         case 'Observation':
