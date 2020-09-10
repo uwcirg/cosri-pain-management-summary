@@ -134,7 +134,6 @@ function processPage(uri, collector, resources) {
 function updateSearchParams(params, release, type) {
   fetchEnvData();
   // If this is for Epic, there are some specific modifications needed for the queries to work properly
-  console.log("EPIC SUPPORTED ENV ", getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES"));
   if (getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")
     && String(getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")).toLowerCase() === 'true') {
     if (release === 2) {
