@@ -54,7 +54,7 @@ function executeELM(collector) {
       const codeService = new cql.CodeService(valueSetDB);
       const executor = new cql.Executor(library, codeService);
       //debugging
-      console.log("bundle loaded? ", bundle.entry)
+      console.log("bundle loaded? ", bundle);
       patientSource.loadBundles([bundle]);
       const results = executor.exec(patientSource);
       return results.patientResults[Object.keys(results.patientResults)[0]];
@@ -128,6 +128,7 @@ function processPage(uri, collector, resources) {
     collector.push({ url: url, data: bundle});
     // Add to the resources
     if (bundle.entry) {
+      //prevent addition of null entry
       //each entry is not always wrapped in resource node
       bundle.entry.forEach(e => {
         if (!e) return true;
