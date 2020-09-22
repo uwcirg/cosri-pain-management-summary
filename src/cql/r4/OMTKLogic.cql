@@ -300,7 +300,7 @@ define function GetDoseFormName(doseFormCode Code):
 /*
   Removes the last per argument from a unit
 */
-define function StripPer(unit String):
+define function StripPer(unit String): 
   if LastPositionOf('/', unit) >= 0
     then Substring(unit, 0, LastPositionOf('/', unit))
     else unit
@@ -322,18 +322,15 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
 
     /* if dose unit in actual mass units (mg or ug -- when it's a single med) --> daily dose = numTimesPerDay * dose */
     when doseQuantity.unit in { 'mg', 'ug', '{Dose}' } then
-        Quantity { value: dosesPerDay * doseQuantity.value, unit: doseQuantity.unit }
+      Quantity { value: dosesPerDay * doseQuantity.value, unit: doseQuantity.unit }
     
-   /* when doseQuantity.unit in { '{Dose}' } then
-        Quantity { value: 1.0, unit: 'mg' } */
-
     /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
     when doseQuantity.unit = 'mL' and (PositionOf('/mL', strength.unit) = Length(strength.unit) - 3) then
       Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit) }
 
 		/* if doseQuantity is not in actual units (e.g., 1 tab, 1 spray -- when it's a combo med with a unit of tablet, or it's mg/actuat) -->  daily dose = numTimesPerDay * dose value * strength value */
     else
-      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit) }
+      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: if strength.unit is not null then StripPer(strength.unit) else null }
   end
 
 /*
@@ -404,6 +401,7 @@ define function CalculateMMEs(medications List<Tuple { rxNormCode Code, doseQuan
 
 define function Quantity(value Decimal, unit String):
   case
+    //only display unit if it is present
     when value is not null and unit is not null then
       Quantity { value: value, unit: unit }
     when value is not null then

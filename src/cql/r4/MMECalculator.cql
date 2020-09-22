@@ -66,7 +66,6 @@ define function GetMedicationQuantity(medication MedicationRequest):
       rxNormCode: OMTKLogic.GetMedicationCode(O.medication),
       ingredient: OMTKLogic.GetIngredients(rxNormCode),
       prescription: if ingredient is not null then First(ingredient) else null,
-      //dispensedQuantity: O.dispenseRequest.quantity as FHIR.Quantity,
       dosageInstruction: O.dosageInstruction[0],
       doseAndRate:  if dosageInstruction is not null then dosageInstruction.doseAndRate[0] else null, //either a single doseRange or doseQuantity see specs here:  https://www.hl7.org/fhir/dosage-definitions.html#Dosage.doseAndRate.dose_x_
       dosage: if doseAndRate is not null then doseAndRate.dose else null,
@@ -87,7 +86,6 @@ define function GetMedicationQuantity(medication MedicationRequest):
       return  case 
                 when doseRange is not null and doseRange.high is not null then ToQuantity(doseRange.high)
                 when doseQuantity is not null then doseQuantity
-                //else null as System.Quantity
                 else 
                   System.Quantity {
                      value: 1.0,
@@ -144,6 +142,7 @@ define function Prescriptions(Orders List<MedicationRequest>):
           // TODO: Shouldn't need the .value here on asNeededBoolean
           medicationName + ' ' + doseDescription + ' q' + frequencyDescription + (if dosageInstruction.asNeeded then ' PRN' else ''),
       dose: GetMedicationQuantity(O),
+      doseRange: doseRange,
       doseQuantity: dosage,
       dosesPerDay: Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0)
     }

@@ -1382,6 +1382,12 @@
                            } ]
                         }
                      }, {
+                        "name" : "doseRange",
+                        "value" : {
+                           "name" : "doseRange",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "doseQuantity",
                         "value" : {
                            "name" : "dosage",

@@ -3443,16 +3443,44 @@
                   }, {
                      "name" : "unit",
                      "value" : {
-                        "name" : "StripPer",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "path" : "unit",
-                           "type" : "Property",
-                           "source" : {
-                              "name" : "strength",
-                              "type" : "OperandRef"
+                        "type" : "If",
+                        "condition" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "unit",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "strength",
+                                       "type" : "OperandRef"
+                                    }
+                                 }
+                              }
                            }
-                        } ]
+                        },
+                        "then" : {
+                           "name" : "StripPer",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "unit",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "strength",
+                                 "type" : "OperandRef"
+                              }
+                           } ]
+                        },
+                        "else" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}String",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           }
+                        }
                      }
                   } ]
                }

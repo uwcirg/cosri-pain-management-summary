@@ -6821,12 +6821,6 @@
                            "type" : "ExpressionRef"
                         }
                      }, {
-                        "name" : "ReportPrescriptions",
-                        "value" : {
-                           "name" : "ReportPrescriptions",
-                           "type" : "ExpressionRef"
-                        }
-                     }, {
                         "name" : "UrineDrugScreens",
                         "value" : {
                            "name" : "ReportUrineDrugScreens",
