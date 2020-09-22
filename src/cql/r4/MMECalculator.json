@@ -287,6 +287,537 @@
                }
             } ]
          }, {
+            "name" : "GetMedicationQuantity",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "name" : "medication",
+                     "type" : "OperandRef"
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "rxNormCode",
+                  "expression" : {
+                     "name" : "GetMedicationCode",
+                     "libraryName" : "OMTKLogic",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "ToConcept",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "asType" : "{http://hl7.org/fhir}CodeableConcept",
+                           "type" : "As",
+                           "operand" : {
+                              "path" : "medication",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        } ]
+                     } ]
+                  }
+               }, {
+                  "identifier" : "ingredient",
+                  "expression" : {
+                     "name" : "GetIngredients",
+                     "libraryName" : "OMTKLogic",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "rxNormCode",
+                        "type" : "QueryLetRef"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "prescription",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "ingredient",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
+                        "type" : "First",
+                        "source" : {
+                           "name" : "ingredient",
+                           "type" : "QueryLetRef"
+                        }
+                     },
+                     "else" : {
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "TupleTypeSpecifier",
+                           "element" : [ {
+                              "name" : "rxNormCode",
+                              "type" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}Code",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }, {
+                              "name" : "doseFormCode",
+                              "type" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}Code",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }, {
+                              "name" : "ingredientCode",
+                              "type" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}Code",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }, {
+                              "name" : "unit",
+                              "type" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}String",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }, {
+                              "name" : "strength",
+                              "type" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}Quantity",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "dosageInstruction",
+                  "expression" : {
+                     "type" : "Indexer",
+                     "operand" : [ {
+                        "path" : "dosageInstruction",
+                        "scope" : "O",
+                        "type" : "Property"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "0",
+                        "type" : "Literal"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "doseAndRate",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "dosageInstruction",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
+                        "type" : "Indexer",
+                        "operand" : [ {
+                           "path" : "doseAndRate",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "dosageInstruction",
+                              "type" : "QueryLetRef"
+                           }
+                        }, {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "value" : "0",
+                           "type" : "Literal"
+                        } ]
+                     },
+                     "else" : {
+                        "asType" : "{http://hl7.org/fhir}Dosage.DoseAndRate",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "dosage",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "doseAndRate",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
+                        "path" : "dose",
+                        "type" : "Property",
+                        "source" : {
+                           "name" : "doseAndRate",
+                           "type" : "QueryLetRef"
+                        }
+                     },
+                     "else" : {
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ChoiceTypeSpecifier",
+                           "choice" : [ {
+                              "name" : "{http://hl7.org/fhir}Range",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Quantity",
+                              "type" : "NamedTypeSpecifier"
+                           } ]
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "doseRange",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "dosage",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
+                        "name" : "ToFHIRRange",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "asType" : "{http://hl7.org/fhir}Range",
+                           "type" : "As",
+                           "operand" : {
+                              "name" : "dosage",
+                              "type" : "QueryLetRef"
+                           }
+                        } ]
+                     },
+                     "else" : {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}Range",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "defaultUnit",
+                  "expression" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                     "value" : "{Dose}",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "identifier" : "doseUnit",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "And",
+                           "operand" : [ {
+                              "type" : "And",
+                              "operand" : [ {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "IsNull",
+                                    "operand" : {
+                                       "name" : "prescription",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              }, {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "IsNull",
+                                    "operand" : {
+                                       "path" : "strength",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "prescription",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    }
+                                 }
+                              } ]
+                           }, {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "unit",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "strength",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "prescription",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    }
+                                 }
+                              }
+                           } ]
+                        }
+                     },
+                     "then" : {
+                        "name" : "ToUCUM",
+                        "libraryName" : "OMTKLogic",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "path" : "unit",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "strength",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "prescription",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        } ]
+                     },
+                     "else" : {
+                        "name" : "defaultUnit",
+                        "type" : "QueryLetRef"
+                     }
+                  }
+               }, {
+                  "identifier" : "doseQuantity",
+                  "expression" : {
+                     "type" : "Case",
+                     "caseItem" : [ {
+                        "when" : {
+                           "type" : "And",
+                           "operand" : [ {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "dosage",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }, {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "high",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "dosage",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           } ]
+                        },
+                        "then" : {
+                           "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
+                           "type" : "Instance",
+                           "element" : [ {
+                              "name" : "value",
+                              "value" : {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "dosage",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              }
+                           }, {
+                              "name" : "unit",
+                              "value" : {
+                                 "type" : "If",
+                                 "condition" : {
+                                    "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                    "type" : "As",
+                                    "operand" : {
+                                       "type" : "Not",
+                                       "operand" : {
+                                          "type" : "IsNull",
+                                          "operand" : {
+                                             "name" : "doseUnit",
+                                             "type" : "QueryLetRef"
+                                          }
+                                       }
+                                    }
+                                 },
+                                 "then" : {
+                                    "name" : "doseUnit",
+                                    "type" : "QueryLetRef"
+                                 },
+                                 "else" : {
+                                    "name" : "defaultUnit",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           } ]
+                        }
+                     } ],
+                     "else" : {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{urn:hl7-org:elm-types:r1}Quantity",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Case",
+                     "caseItem" : [ {
+                        "when" : {
+                           "type" : "And",
+                           "operand" : [ {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "doseRange",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }, {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "high",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "doseRange",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              }
+                           } ]
+                        },
+                        "then" : {
+                           "name" : "ToQuantity",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "high",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "doseRange",
+                                 "type" : "QueryLetRef"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "when" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "doseQuantity",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        },
+                        "then" : {
+                           "name" : "doseQuantity",
+                           "type" : "QueryLetRef"
+                        }
+                     } ],
+                     "else" : {
+                        "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
+                        "type" : "Instance",
+                        "element" : [ {
+                           "name" : "value",
+                           "value" : {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "value" : "1.0",
+                              "type" : "Literal"
+                           }
+                        }, {
+                           "name" : "unit",
+                           "value" : {
+                              "type" : "If",
+                              "condition" : {
+                                 "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                 "type" : "As",
+                                 "operand" : {
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "IsNull",
+                                       "operand" : {
+                                          "name" : "doseUnit",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    }
+                                 }
+                              },
+                              "then" : {
+                                 "name" : "doseUnit",
+                                 "type" : "QueryLetRef"
+                              },
+                              "else" : {
+                                 "name" : "defaultUnit",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        } ]
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "medication",
+               "operandTypeSpecifier" : {
+                  "name" : "{http://hl7.org/fhir}MedicationRequest",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
             "name" : "Prescriptions",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -319,6 +850,17 @@
                               "type" : "Property"
                            }
                         } ]
+                     } ]
+                  }
+               }, {
+                  "identifier" : "prescription",
+                  "expression" : {
+                     "name" : "GetIngredients",
+                     "libraryName" : "OMTKLogic",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "rxNormCode",
+                        "type" : "QueryLetRef"
                      } ]
                   }
                }, {
@@ -362,6 +904,16 @@
                         "value" : "0",
                         "type" : "Literal"
                      } ]
+                  }
+               }, {
+                  "identifier" : "dosage",
+                  "expression" : {
+                     "path" : "dose",
+                     "type" : "Property",
+                     "source" : {
+                        "name" : "doseAndRate",
+                        "type" : "QueryLetRef"
+                     }
                   }
                }, {
                   "identifier" : "repeat",
@@ -456,20 +1008,52 @@
                }, {
                   "identifier" : "doseQuantity",
                   "expression" : {
-                     "name" : "ToFHIRQuantity",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "asType" : "{http://hl7.org/fhir}Quantity",
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
                         "type" : "As",
                         "operand" : {
-                           "path" : "dose",
-                           "type" : "Property",
-                           "source" : {
-                              "name" : "doseAndRate",
-                              "type" : "QueryLetRef"
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "dose",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "doseAndRate",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
                            }
                         }
-                     } ]
+                     },
+                     "then" : {
+                        "name" : "ToFHIRQuantity",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "asType" : "{http://hl7.org/fhir}Quantity",
+                           "type" : "As",
+                           "operand" : {
+                              "path" : "dose",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "doseAndRate",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        } ]
+                     },
+                     "else" : {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}Quantity",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     }
                   }
                }, {
                   "identifier" : "doseDescription",
@@ -643,6 +1227,13 @@
                            "type" : "QueryLetRef"
                         }
                      }, {
+                        "name" : "authoredOn",
+                        "value" : {
+                           "path" : "authoredOn",
+                           "scope" : "O",
+                           "type" : "Property"
+                        }
+                     }, {
                         "name" : "isDraft",
                         "value" : {
                            "type" : "Equal",
@@ -783,56 +1374,17 @@
                      }, {
                         "name" : "dose",
                         "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
-                              "type" : "As",
-                              "operand" : {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "name" : "doseRange",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }
-                              }
-                           },
-                           "then" : {
-                              "name" : "ToQuantity",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "path" : "high",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "name" : "doseRange",
-                                    "type" : "QueryLetRef"
-                                 }
-                              } ]
-                           },
-                           "else" : {
-                              "name" : "ToQuantity",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "name" : "doseQuantity",
-                                 "type" : "QueryLetRef"
-                              } ]
-                           }
+                           "name" : "GetMedicationQuantity",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
                         }
                      }, {
                         "name" : "doseQuantity",
                         "value" : {
-                           "name" : "ToQuantity",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "name" : "doseQuantity",
-                              "type" : "QueryLetRef"
-                           } ]
-                        }
-                     }, {
-                        "name" : "doseRange",
-                        "value" : {
-                           "name" : "doseRange",
+                           "name" : "dosage",
                            "type" : "QueryLetRef"
                         }
                      }, {

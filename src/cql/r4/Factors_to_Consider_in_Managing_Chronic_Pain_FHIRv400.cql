@@ -571,7 +571,8 @@ define ReportOpioidMedicationRequests:
     //provided by the extension dateValue, may not always be there
     CalculatedEnd: CalculatedEnd, //of type datetime
     End: ToString(CalculatedEnd), //of type string
-    Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+  //  Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+    Quantity: MMECalculator.GetMedicationQuantity(O).value,
     Prescriber: O.requester.display.value,
     Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
     Status: O.status.value,
@@ -609,10 +610,10 @@ define ReportPDMPMedicationRequests:
       Type:  'Request',
       Name:  ConceptText(O.medication as FHIR.CodeableConcept),
       Start: DateTimeText(O.authoredOn),
-      //provided by the extension dateValue, may not always be there
       CalculatedEnd: CalculatedEnd, //of datetime type
       End: ToString(CalculatedEnd), //of string type
-      Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+      //Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+      Quantity: MMECalculator.GetMedicationQuantity(O).value,
       Prescriber: O.requester.display.value,
       Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
       Status: O.status.value
@@ -642,7 +643,8 @@ define ReportNonOpioidMedicationRequests:
     Start: DateTimeText(O.authoredOn),
     CalculatedEnd: CalculatedEnd,
     End: ToString(CalculatedEnd),
-    Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+    //Quantity: QuantityText(O.dispenseRequest.quantity as FHIR.Quantity),
+    Quantity: MMECalculator.GetMedicationQuantity(O).value,
     Prescriber: O.requester.display.value,
     Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
     Status: O.status.value
@@ -786,7 +788,8 @@ define ReportMME:
 
 define MMEDateList: 
   (ReportMME) R
-  where R.End is not null and R.MMEValue is not null
+  where 
+    R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
   return {
     End: R.End
   }
@@ -973,7 +976,7 @@ define Summary: {
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
     //for debugging, uncomment to test
-    //ReportPrescriptions: ReportPrescriptions,
+    ReportPrescriptions: ReportPrescriptions,
     UrineDrugScreens: ReportUrineDrugScreens,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     CarisoprodolMedications: ReportCarisoprodolMedications,

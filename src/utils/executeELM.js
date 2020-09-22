@@ -57,6 +57,7 @@ function executeELM(collector) {
       console.log("bundle loaded? ", bundle);
       patientSource.loadBundles([bundle]);
       const results = executor.exec(patientSource);
+      console.log("bundle executed results ? ", results)
       return results.patientResults[Object.keys(results.patientResults)[0]];
     });
     resolve(results);

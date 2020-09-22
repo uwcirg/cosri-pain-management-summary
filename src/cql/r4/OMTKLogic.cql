@@ -213,15 +213,17 @@ GetIngredients:
 */
 define function GetIngredients(rxNormCode Code):
   OMTKData.DrugIngredients DI
+    let unit: ToUCUM(DI.strengthUnit)
     where DI.drugCode = ToInteger(rxNormCode.code)
     return {
       rxNormCode: Code { code: ToString(DI.drugCode), system: 'http://www.nlm.nih.gov/research/umls/rxnorm', display: DI.drugName },
       doseFormCode: Code { code: ToString(DI.doseFormCode), system: 'http://www.nlm.nih.gov/research/umls/rxnorm', display: DI.doseFormName },
       ingredientCode: Code { code: ToString(DI.ingredientCode), system: 'http://www.nlm.nih.gov/research/umls/rxnorm', display: DI.ingredientName },
+      unit: unit,
       strength: EnsureMicrogramQuantity(
           Quantity {
             value: DI.strengthValue,
-            unit: ToUCUM(DI.strengthUnit)
+            unit: unit
           }
         )
     }
@@ -319,8 +321,11 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
         Message(null, true, 'OMTKLogic.GetDailyDoseDescription.UnknownPatchIngredient', ErrorLevel, 'Unknown patch ingredient: ' & ingredientCode.code & ':' & ingredientCode.display)
 
     /* if dose unit in actual mass units (mg or ug -- when it's a single med) --> daily dose = numTimesPerDay * dose */
-    when doseQuantity.unit in { 'mg', 'ug' } then
-      Quantity { value: dosesPerDay * doseQuantity.value, unit: doseQuantity.unit }
+    when doseQuantity.unit in { 'mg', 'ug', '{Dose}' } then
+        Quantity { value: dosesPerDay * doseQuantity.value, unit: doseQuantity.unit }
+    
+   /* when doseQuantity.unit in { '{Dose}' } then
+        Quantity { value: 1.0, unit: 'mg' } */
 
     /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
     when doseQuantity.unit = 'mL' and (PositionOf('/mL', strength.unit) = Length(strength.unit) - 3) then
@@ -398,7 +403,11 @@ define function CalculateMMEs(medications List<Tuple { rxNormCode Code, doseQuan
   )
 
 define function Quantity(value Decimal, unit String):
-  if value is not null then
-    Quantity { value: value, unit: unit }
-  else
-    null
+  case
+    when value is not null and unit is not null then
+      Quantity { value: value, unit: unit }
+    when value is not null then
+      Quantity { value: value}
+    else
+      null
+  end
