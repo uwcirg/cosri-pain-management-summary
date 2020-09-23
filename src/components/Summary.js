@@ -492,7 +492,7 @@ export default class Summary extends Component {
       icon = <RxIcon {...iconProps}/>;
     } else if (section === 'NonPharmacologicTreatments') {
       icon =  <TreatmentsIcon {...iconProps} />;
-    } else if (section === 'PatientEducationMaterials') {
+    } else if (section === 'EducationMaterials') {
       icon = <UserIcon {...iconProps} />;
     }
 

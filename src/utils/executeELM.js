@@ -53,8 +53,8 @@ function executeELM(collector) {
       const patientSource = getPatientSource(release);
       const codeService = new cql.CodeService(valueSetDB);
       const executor = new cql.Executor(library, codeService);
-      //debugging 
-      console.log("bundle loaded? ", bundle)
+      //debugging
+      console.log("bundle loaded? ", bundle);
       patientSource.loadBundles([bundle]);
       const results = executor.exec(patientSource);
       return results.patientResults[Object.keys(results.patientResults)[0]];
@@ -123,10 +123,18 @@ function processPage(uri, collector, resources) {
     if (bundle && bundle.link && bundle.link.some(l => l.relation === 'self' && l.url != null)) {
       url = bundle.link.find(l => l.relation === 'self').url;
     }
+    //debugging
+    //console.log("collector url? ", url, ", bundle: ", bundle)
     collector.push({ url: url, data: bundle});
     // Add to the resources
     if (bundle.entry) {
-      bundle.entry.forEach(e => resources.push(e.resource));
+      //prevent addition of null entry
+      //each entry is not always wrapped in resource node
+      bundle.entry.forEach(e => {
+        if (!e) return true;
+        let resource = e.resource? e.resource: e;
+        resources.push(resource)
+      });
     }
   }
 }
