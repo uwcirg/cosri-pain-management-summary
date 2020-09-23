@@ -66,15 +66,16 @@ define function GetMedicationQuantity(medication MedicationRequest):
       ingredient: OMTKLogic.GetIngredients(rxNormCode),
       prescription: if ingredient is not null then First(ingredient) else null,
       dosageInstruction: O.dosageInstruction[0],
+      dispenseRequestQuantity: O.dispenseRequest.quantity.value.value,
       doseAndRate:  if dosageInstruction is not null then dosageInstruction.doseAndRate[0] else null, //either a single doseRange or doseQuantity see specs here:  https://www.hl7.org/fhir/dosage-definitions.html#Dosage.doseAndRate.dose_x_
       dosage: if doseAndRate is not null then doseAndRate.dose else null,
       doseRange: if dosage is not null then ToFHIRRange(dosage) else null as Range,
-      defaultUnit: '{Dose}',
       doseUnit: if prescription is not null and prescription.strength is not null
                 and prescription.strength.unit is not null
-                then OMTKLogic.ToUCUM(prescription.strength.unit) else defaultUnit,
+                then OMTKLogic.ToUCUM(prescription.strength.unit) else null,
       doseQuantity:
               case
+                when dispenseRequestQuantity is not null then dispenseRequestQuantity
                 when dosage is not null and dosage.high is null then
                   System.Quantity {
                       value: dosage.value.value,
@@ -85,11 +86,12 @@ define function GetMedicationQuantity(medication MedicationRequest):
       return  case 
                 when doseRange is not null and doseRange.high is not null then ToQuantity(doseRange.high)
                 when doseQuantity is not null then doseQuantity
-                else
+                else null
+                  /*
                   System.Quantity {
                     value: 1.0,
                     unit: doseUnit
-                  }
+                  } */
               end
 /*
 Extracts the relevant information for prescription calculation from a list of
@@ -108,7 +110,11 @@ define function Prescriptions(Orders List<MedicationRequest>):
       doseAndRate: dosageInstruction.doseAndRate[0],
       repeat: dosageInstruction.timing.repeat,
       frequency: Coalesce(repeat.frequencyMax.value, repeat.frequency.value),
-      period: OMTKLogic.Quantity(repeat.period.value, repeat.periodUnit.value),
+      dispenseRequest: O.dispenseRequest,
+      supplyDuration: if repeat.period is not null then 
+        repeat.period.value else 
+        dispenseRequest.expectedSupplyDuration.value.value,
+      period: OMTKLogic.Quantity(supplyDuration, repeat.periodUnit.value),
       doseRange: ToFHIRRange(doseAndRate.dose),
       doseQuantity: if doseAndRate.dose is not null then ToFHIRQuantity(doseAndRate.dose) else null as Quantity,
       doseDescription:

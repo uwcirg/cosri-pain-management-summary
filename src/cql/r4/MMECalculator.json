@@ -413,6 +413,25 @@
                      } ]
                   }
                }, {
+                  "identifier" : "dispenseRequestQuantity",
+                  "expression" : {
+                     "path" : "value",
+                     "type" : "Property",
+                     "source" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "quantity",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "dispenseRequest",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     }
+                  }
+               }, {
                   "identifier" : "doseAndRate",
                   "expression" : {
                      "type" : "If",
@@ -539,13 +558,6 @@
                      }
                   }
                }, {
-                  "identifier" : "defaultUnit",
-                  "expression" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                     "value" : "{Dose}",
-                     "type" : "Literal"
-                  }
-               }, {
                   "identifier" : "doseUnit",
                   "expression" : {
                      "type" : "If",
@@ -617,8 +629,11 @@
                         } ]
                      },
                      "else" : {
-                        "name" : "defaultUnit",
-                        "type" : "QueryLetRef"
+                        "asType" : "{urn:hl7-org:elm-types:r1}String",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
                      }
                   }
                }, {
@@ -626,6 +641,24 @@
                   "expression" : {
                      "type" : "Case",
                      "caseItem" : [ {
+                        "when" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "dispenseRequestQuantity",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        },
+                        "then" : {
+                           "type" : "ToQuantity",
+                           "operand" : {
+                              "name" : "dispenseRequestQuantity",
+                              "type" : "QueryLetRef"
+                           }
+                        }
+                     }, {
                         "when" : {
                            "type" : "And",
                            "operand" : [ {
@@ -748,22 +781,11 @@
                         }
                      } ],
                      "else" : {
-                        "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
-                        "type" : "Instance",
-                        "element" : [ {
-                           "name" : "value",
-                           "value" : {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                              "value" : "1.0",
-                              "type" : "Literal"
-                           }
-                        }, {
-                           "name" : "unit",
-                           "value" : {
-                              "name" : "doseUnit",
-                              "type" : "QueryLetRef"
-                           }
-                        } ]
+                        "asType" : "{urn:hl7-org:elm-types:r1}Quantity",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
                      }
                   }
                }
@@ -906,12 +928,35 @@
                      } ]
                   }
                }, {
-                  "identifier" : "period",
+                  "identifier" : "dispenseRequest",
                   "expression" : {
-                     "name" : "Quantity",
-                     "libraryName" : "OMTKLogic",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
+                     "path" : "dispenseRequest",
+                     "scope" : "O",
+                     "type" : "Property"
+                  }
+               }, {
+                  "identifier" : "supplyDuration",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "period",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "repeat",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
                         "path" : "value",
                         "type" : "Property",
                         "source" : {
@@ -922,6 +967,33 @@
                               "type" : "QueryLetRef"
                            }
                         }
+                     },
+                     "else" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "expectedSupplyDuration",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "dispenseRequest",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "period",
+                  "expression" : {
+                     "name" : "Quantity",
+                     "libraryName" : "OMTKLogic",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "supplyDuration",
+                        "type" : "QueryLetRef"
                      }, {
                         "path" : "value",
                         "type" : "Property",

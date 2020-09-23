@@ -301,7 +301,7 @@ define function GetDoseFormName(doseFormCode Code):
   Removes the last per argument from a unit
 */
 define function StripPer(unit String):
-    if PositionOf('/', unit) >= 0
+    if LastPositionOf('/', unit) >= 0
       then Substring(unit, 0, LastPositionOf('/', unit))
     else unit
 
@@ -326,11 +326,11 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
     
     /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
     when doseQuantity.unit = 'mL' and (PositionOf('/mL', strength.unit) = Length(strength.unit) - 3) then
-      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit) }
+      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit }
 
 		/* if doseQuantity is not in actual units (e.g., 1 tab, 1 spray -- when it's a combo med with a unit of tablet, or it's mg/actuat) -->  daily dose = numTimesPerDay * dose value * strength value */
     else
-      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit) }
+      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit }
   end
 
 /*

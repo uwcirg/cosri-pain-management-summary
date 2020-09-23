@@ -2966,7 +2966,7 @@
                   "operand" : {
                      "type" : "GreaterOrEqual",
                      "operand" : [ {
-                        "type" : "PositionOf",
+                        "type" : "LastPositionOf",
                         "pattern" : {
                            "valueType" : "{urn:hl7-org:elm-types:r1}String",
                            "value" : "/",
@@ -3393,16 +3393,12 @@
                      }, {
                         "name" : "unit",
                         "value" : {
-                           "name" : "StripPer",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "unit",
-                              "type" : "Property",
-                              "source" : {
-                                 "name" : "strength",
-                                 "type" : "OperandRef"
-                              }
-                           } ]
+                           "path" : "unit",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "strength",
+                              "type" : "OperandRef"
+                           }
                         }
                      } ]
                   }
@@ -3439,16 +3435,12 @@
                   }, {
                      "name" : "unit",
                      "value" : {
-                        "name" : "StripPer",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "path" : "unit",
-                           "type" : "Property",
-                           "source" : {
-                              "name" : "strength",
-                              "type" : "OperandRef"
-                           }
-                        } ]
+                        "path" : "unit",
+                        "type" : "Property",
+                        "source" : {
+                           "name" : "strength",
+                           "type" : "OperandRef"
+                        }
                      }
                   } ]
                }
