@@ -669,29 +669,8 @@
                            }, {
                               "name" : "unit",
                               "value" : {
-                                 "type" : "If",
-                                 "condition" : {
-                                    "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
-                                    "type" : "As",
-                                    "operand" : {
-                                       "type" : "Not",
-                                       "operand" : {
-                                          "type" : "IsNull",
-                                          "operand" : {
-                                             "name" : "doseUnit",
-                                             "type" : "QueryLetRef"
-                                          }
-                                       }
-                                    }
-                                 },
-                                 "then" : {
-                                    "name" : "doseUnit",
-                                    "type" : "QueryLetRef"
-                                 },
-                                 "else" : {
-                                    "name" : "defaultUnit",
-                                    "type" : "QueryLetRef"
-                                 }
+                                 "name" : "doseUnit",
+                                 "type" : "QueryLetRef"
                               }
                            } ]
                         }
@@ -781,29 +760,8 @@
                         }, {
                            "name" : "unit",
                            "value" : {
-                              "type" : "If",
-                              "condition" : {
-                                 "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
-                                 "type" : "As",
-                                 "operand" : {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "name" : "doseUnit",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }
-                                 }
-                              },
-                              "then" : {
-                                 "name" : "doseUnit",
-                                 "type" : "QueryLetRef"
-                              },
-                              "else" : {
-                                 "name" : "defaultUnit",
-                                 "type" : "QueryLetRef"
-                              }
+                              "name" : "doseUnit",
+                              "type" : "QueryLetRef"
                            }
                         } ]
                      }

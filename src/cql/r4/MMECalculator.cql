@@ -78,17 +78,17 @@ define function GetMedicationQuantity(medication MedicationRequest):
                 when dosage is not null and dosage.high is null then
                   System.Quantity {
                       value: dosage.value.value,
-                      unit: if doseUnit is not null then doseUnit else defaultUnit
+                      unit: doseUnit
                   }
                 else null as System.Quantity
               end
       return  case 
                 when doseRange is not null and doseRange.high is not null then ToQuantity(doseRange.high)
                 when doseQuantity is not null then doseQuantity
-                else 
+                else
                   System.Quantity {
-                     value: 1.0,
-                    unit: if doseUnit is not null then doseUnit else defaultUnit
+                    value: 1.0,
+                    unit: doseUnit
                   }
               end
 /*
