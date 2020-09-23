@@ -3,6 +3,7 @@ import { select, selectAll } from "d3-selection";
 import {timeFormat} from "d3-time-format";
 import { axisBottom, axisLeft } from "d3-axis";
 import { transition } from 'd3-transition';
+import { timeMonth} from 'd3-time';
 
 class Axis extends React.Component {
   constructor() {
@@ -24,10 +25,11 @@ class Axis extends React.Component {
       axis = axisBottom(scale);
       if (tickType === "date") {
         axis.tickFormat(timeFormat(tickFormat ||"%d %b %y"));
-        axis.ticks(ticks);
-      }
-      //TODO allow other tick type and formatting here
-    }
+        //spaced out ticks by displaying every four month
+        axis.ticks(timeMonth.every(4));
+      } else axis.ticks(ticks);
+    } 
+    //TODO allow other tick type and formatting here
     if (orient === "left") {
       axis = axisLeft(scale)
         .ticks(ticks);

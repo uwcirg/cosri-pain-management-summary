@@ -86,12 +86,7 @@ define function GetMedicationQuantity(medication MedicationRequest):
       return  case 
                 when doseRange is not null and doseRange.high is not null then ToQuantity(doseRange.high)
                 when doseQuantity is not null then doseQuantity
-                else null
-                  /*
-                  System.Quantity {
-                    value: 1.0,
-                    unit: doseUnit
-                  } */
+                else null as System.Quantity
               end
 /*
 Extracts the relevant information for prescription calculation from a list of

@@ -181,7 +181,6 @@ export default class Landing extends Component {
     }
     let alerts = [];
     if (sectionFlags) {
-      console.log(sectionFlags)
       for (let section in sectionFlags) {
         for (let subsection of Object.entries(sectionFlags[section])) {
           if (subsection[1]) {
@@ -190,19 +189,17 @@ export default class Landing extends Component {
             }
             if (typeof subsection[1] === "object") {
               if (Array.isArray(subsection[1])) {
-                let alertAdded = false;
                 subsection[1].forEach(subitem => {
-                  if (alertAdded) {
-                    return true;
-                  }
-                  if (subitem.flagText) {
+                  //this prevents addition of duplicate alert text
+                  let alertTextExist = alerts.filter(item => item.name === subitem.subSection.name && item.flagText === subitem.flagText);
+                  if (!alertTextExist.length && subitem.flagText) {
                     alerts.push({
                       id: subitem.subSection.dataKey,
                       name: subitem.subSection.name,
+                      flagText: subitem.flagText,
                       text: subitem.flagText + (subitem.flagDateText ? ` (${datishFormat('',subitem.flagDateText)})`: ""),
                       priority: subitem.priority || 100
                     });
-                    alertAdded = true;
                   }
                 });
               } else {
