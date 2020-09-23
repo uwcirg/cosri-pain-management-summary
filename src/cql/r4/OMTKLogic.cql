@@ -326,11 +326,11 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
     
     /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
     when doseQuantity.unit = 'mL' and (PositionOf('/mL', strength.unit) = Length(strength.unit) - 3) then
-      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit }
+      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit } //display unit as it is
 
 		/* if doseQuantity is not in actual units (e.g., 1 tab, 1 spray -- when it's a combo med with a unit of tablet, or it's mg/actuat) -->  daily dose = numTimesPerDay * dose value * strength value */
     else
-      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit }
+      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit } //display unit as it is
   end
 
 /*
