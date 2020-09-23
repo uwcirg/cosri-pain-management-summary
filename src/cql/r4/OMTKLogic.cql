@@ -300,9 +300,9 @@ define function GetDoseFormName(doseFormCode Code):
 /*
   Removes the last per argument from a unit
 */
-define function StripPer(unit String): 
-  if LastPositionOf('/', unit) >= 0
-    then Substring(unit, 0, LastPositionOf('/', unit))
+define function StripPer(unit String):
+    if PositionOf('/', unit) >= 0
+      then Substring(unit, 0, LastPositionOf('/', unit))
     else unit
 
 /*
@@ -321,7 +321,7 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
         Message(null, true, 'OMTKLogic.GetDailyDoseDescription.UnknownPatchIngredient', ErrorLevel, 'Unknown patch ingredient: ' & ingredientCode.code & ':' & ingredientCode.display)
 
     /* if dose unit in actual mass units (mg or ug -- when it's a single med) --> daily dose = numTimesPerDay * dose */
-    when doseQuantity.unit in { 'mg', 'ug', '{Dose}' } then
+    when doseQuantity.unit in { 'mg', 'ug'} then
       Quantity { value: dosesPerDay * doseQuantity.value, unit: doseQuantity.unit }
     
     /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
@@ -330,7 +330,7 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
 
 		/* if doseQuantity is not in actual units (e.g., 1 tab, 1 spray -- when it's a combo med with a unit of tablet, or it's mg/actuat) -->  daily dose = numTimesPerDay * dose value * strength value */
     else
-      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: if strength.unit is not null then StripPer(strength.unit) else null }
+      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit) }
   end
 
 /*

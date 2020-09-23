@@ -906,16 +906,6 @@
                      } ]
                   }
                }, {
-                  "identifier" : "dosage",
-                  "expression" : {
-                     "path" : "dose",
-                     "type" : "Property",
-                     "source" : {
-                        "name" : "doseAndRate",
-                        "type" : "QueryLetRef"
-                     }
-                  }
-               }, {
                   "identifier" : "repeat",
                   "expression" : {
                      "path" : "repeat",
@@ -1390,8 +1380,12 @@
                      }, {
                         "name" : "doseQuantity",
                         "value" : {
-                           "name" : "dosage",
-                           "type" : "QueryLetRef"
+                           "path" : "dose",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "doseAndRate",
+                              "type" : "QueryLetRef"
+                           }
                         }
                      }, {
                         "name" : "dosesPerDay",

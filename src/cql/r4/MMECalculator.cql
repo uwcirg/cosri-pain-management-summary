@@ -56,7 +56,6 @@ define function ToQuantity(quantity FHIR.Quantity):
         unit: quantity.code.value
       }
     else
-      //System.Quantity { value: quantity.value.value, unit: quantity.unit.value }
       Message(null, true, 'MMECalculator.ToQuantity.InvalidFHIRQuantity', ErrorLevel, 'Invalid FHIR Quantity code: ' & quantity.code.value)
   end
 
@@ -107,7 +106,6 @@ define function Prescriptions(Orders List<MedicationRequest>):
       dosageInstruction: O.dosageInstruction[0],
       // NOTE: Assuming a single dose and rate element
       doseAndRate: dosageInstruction.doseAndRate[0],
-      dosage: doseAndRate.dose,
       repeat: dosageInstruction.timing.repeat,
       frequency: Coalesce(repeat.frequencyMax.value, repeat.frequency.value),
       period: OMTKLogic.Quantity(repeat.period.value, repeat.periodUnit.value),
@@ -143,7 +141,7 @@ define function Prescriptions(Orders List<MedicationRequest>):
           medicationName + ' ' + doseDescription + ' q' + frequencyDescription + (if dosageInstruction.asNeeded then ' PRN' else ''),
       dose: GetMedicationQuantity(O),
       doseRange: doseRange,
-      doseQuantity: dosage,
+      doseQuantity: doseAndRate.dose,
       dosesPerDay: Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0)
     }
 

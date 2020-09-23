@@ -2966,7 +2966,7 @@
                   "operand" : {
                      "type" : "GreaterOrEqual",
                      "operand" : [ {
-                        "type" : "LastPositionOf",
+                        "type" : "PositionOf",
                         "pattern" : {
                            "valueType" : "{urn:hl7-org:elm-types:r1}String",
                            "value" : "/",
@@ -3273,10 +3273,6 @@
                            "valueType" : "{urn:hl7-org:elm-types:r1}String",
                            "value" : "ug",
                            "type" : "Literal"
-                        }, {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                           "value" : "{Dose}",
-                           "type" : "Literal"
                         } ]
                      } ]
                   },
@@ -3443,44 +3439,16 @@
                   }, {
                      "name" : "unit",
                      "value" : {
-                        "type" : "If",
-                        "condition" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
-                           "type" : "As",
-                           "operand" : {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "path" : "unit",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "strength",
-                                       "type" : "OperandRef"
-                                    }
-                                 }
-                              }
+                        "name" : "StripPer",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "path" : "unit",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "strength",
+                              "type" : "OperandRef"
                            }
-                        },
-                        "then" : {
-                           "name" : "StripPer",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "unit",
-                              "type" : "Property",
-                              "source" : {
-                                 "name" : "strength",
-                                 "type" : "OperandRef"
-                              }
-                           } ]
-                        },
-                        "else" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}String",
-                           "type" : "As",
-                           "operand" : {
-                              "type" : "Null"
-                           }
-                        }
+                        } ]
                      }
                   } ]
                }
