@@ -2368,6 +2368,18 @@
                      "type" : "ExpressionRef"
                   }
                } ],
+               "let" : [ {
+                  "identifier" : "unit",
+                  "expression" : {
+                     "name" : "ToUCUM",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "path" : "strengthUnit",
+                        "scope" : "DI",
+                        "type" : "Property"
+                     } ]
+                  }
+               } ],
                "relationship" : [ ],
                "where" : {
                   "type" : "Equal",
@@ -2484,6 +2496,12 @@
                            } ]
                         }
                      }, {
+                        "name" : "unit",
+                        "value" : {
+                           "name" : "unit",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "strength",
                         "value" : {
                            "name" : "EnsureMicrogramQuantity",
@@ -2501,13 +2519,8 @@
                               }, {
                                  "name" : "unit",
                                  "value" : {
-                                    "name" : "ToUCUM",
-                                    "type" : "FunctionRef",
-                                    "operand" : [ {
-                                       "path" : "strengthUnit",
-                                       "scope" : "DI",
-                                       "type" : "Property"
-                                    } ]
+                                    "name" : "unit",
+                                    "type" : "QueryLetRef"
                                  }
                               } ]
                            } ]
@@ -3380,16 +3393,12 @@
                      }, {
                         "name" : "unit",
                         "value" : {
-                           "name" : "StripPer",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "unit",
-                              "type" : "Property",
-                              "source" : {
-                                 "name" : "strength",
-                                 "type" : "OperandRef"
-                              }
-                           } ]
+                           "path" : "unit",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "strength",
+                              "type" : "OperandRef"
+                           }
                         }
                      } ]
                   }
@@ -3426,16 +3435,12 @@
                   }, {
                      "name" : "unit",
                      "value" : {
-                        "name" : "StripPer",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "path" : "unit",
-                           "type" : "Property",
-                           "source" : {
-                              "name" : "strength",
-                              "type" : "OperandRef"
-                           }
-                        } ]
+                        "path" : "unit",
+                        "type" : "Property",
+                        "source" : {
+                           "name" : "strength",
+                           "type" : "OperandRef"
+                        }
                      }
                   } ]
                }
@@ -4031,11 +4036,49 @@
             "accessLevel" : "Public",
             "type" : "FunctionDef",
             "expression" : {
-               "type" : "If",
-               "condition" : {
-                  "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
-                  "type" : "As",
-                  "operand" : {
+               "type" : "Case",
+               "caseItem" : [ {
+                  "when" : {
+                     "type" : "And",
+                     "operand" : [ {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "name" : "value",
+                              "type" : "OperandRef"
+                           }
+                        }
+                     }, {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "name" : "unit",
+                              "type" : "OperandRef"
+                           }
+                        }
+                     } ]
+                  },
+                  "then" : {
+                     "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
+                     "type" : "Instance",
+                     "element" : [ {
+                        "name" : "value",
+                        "value" : {
+                           "name" : "value",
+                           "type" : "OperandRef"
+                        }
+                     }, {
+                        "name" : "unit",
+                        "value" : {
+                           "name" : "unit",
+                           "type" : "OperandRef"
+                        }
+                     } ]
+                  }
+               }, {
+                  "when" : {
                      "type" : "Not",
                      "operand" : {
                         "type" : "IsNull",
@@ -4044,25 +4087,19 @@
                            "type" : "OperandRef"
                         }
                      }
-                  }
-               },
-               "then" : {
-                  "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
-                  "type" : "Instance",
-                  "element" : [ {
-                     "name" : "value",
-                     "value" : {
+                  },
+                  "then" : {
+                     "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
+                     "type" : "Instance",
+                     "element" : [ {
                         "name" : "value",
-                        "type" : "OperandRef"
-                     }
-                  }, {
-                     "name" : "unit",
-                     "value" : {
-                        "name" : "unit",
-                        "type" : "OperandRef"
-                     }
-                  } ]
-               },
+                        "value" : {
+                           "name" : "value",
+                           "type" : "OperandRef"
+                        }
+                     } ]
+                  }
+               } ],
                "else" : {
                   "asType" : "{urn:hl7-org:elm-types:r1}Quantity",
                   "type" : "As",

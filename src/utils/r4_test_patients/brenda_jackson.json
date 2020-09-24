@@ -733,20 +733,16 @@
                 "doseRange": {
                   "low": {
                     "value": 1,
-                    "unit": "cL",
-                    "code": "cL"
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/(72.h)",
+                    "unit": "mg/(72.h)"
                   },
                   "high": {
                     "value": 3,
-                    "unit": "cL",
-                    "code": "cL"
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/(72.h)",
+                    "unit": "mg/(72.h)"
                   }
-                }
-              },
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "unit": "cL"
                 }
               }
             ]
@@ -797,23 +793,11 @@
             "asNeededBoolean": false,
             "doseAndRate": [
               {
-                "doseRange": {
-                  "low": {
-                    "value": 1,
-                    "unit": "cL",
-                    "code": "cL"
-                  },
-                  "high": {
-                    "value": 2,
-                    "unit": "cL",
-                    "code": "cL"
-                  }
-                }
-              },
-              {
                 "doseQuantity": {
                   "value": 1.0,
-                  "unit": "cL"
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg/(72.h)",
+                  "unit": "mg/(72.h)"
                 }
               }
             ]
@@ -866,22 +850,10 @@
             "asNeededBoolean": false,
             "doseAndRate": [
               {
-                "doseRange": {
-                  "low": {
-                    "value": 1,
-                    "unit": "mg",
-                    "code": "mg"
-                  },
-                  "high": {
-                    "value": 1,
-                    "unit": "mg",
-                    "code": "mg"
-                  }
-                }
-              },
-              {
                 "doseQuantity": {
                   "value": 1.0,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg",
                   "unit": "mg"
                 }
               }
@@ -899,17 +871,7 @@
             "unit": "days",
             "system": "http://unitsofmeasure.org",
             "code": "d"
-          },
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name", 
-              "valueString": "TEST, DOCTOR"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/last_fill", 
-              "valueDate": "2018-07-15"
-            }
-          ]
+          }
         },
         "authoredOn": "2018-07-15T16:02:00.000Z"
       }
@@ -937,7 +899,7 @@
           {
             "timing": {
               "repeat": {
-                "frequency": 2,
+                "frequency": 1,
                 "period": 1.0,
                 "periodUnit": "d"
               }
@@ -945,22 +907,10 @@
             "asNeededBoolean": false,
             "doseAndRate": [
               {
-                "doseRange": {
-                  "low": {
-                    "value": 1,
-                    "unit": "mg",
-                    "code": "mg"
-                  },
-                  "high": {
-                    "value": 1,
-                    "unit": "mg",
-                    "code": "mg"
-                  }
-                }
-              },
-              {
                 "doseQuantity": {
                   "value": 1.0,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg",
                   "unit": "mg"
                 }
               }
@@ -1006,7 +956,7 @@
           {
             "timing": {
               "repeat": {
-                "frequency": 2,
+                "frequency": 1,
                 "period": 1.0,
                 "periodUnit": "d"
               }
@@ -1014,22 +964,10 @@
             "asNeededBoolean": false,
             "doseAndRate": [
               {
-                "doseRange": {
-                  "low": {
-                    "value": 1,
-                    "unit": "mg",
-                    "code": "mg"
-                  },
-                  "high": {
-                    "value": 2,
-                    "unit": "mg",
-                    "code": "mg"
-                  }
-                }
-              },
-              {
                 "doseQuantity": {
                   "value": 1.0,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg",
                   "unit": "mg"
                 }
               }
@@ -1072,7 +1010,29 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "authoredOn": "2016-07-15T16:02:00.000Z"
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg",
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "authoredOn": "2020-05-15T16:02:00.000Z"
       }
     },
     {
@@ -1095,6 +1055,28 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg",
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
         "authoredOn": "2017-07-15T16:02:00.000Z"
       }
     },
@@ -1118,6 +1100,28 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg",
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
         "authoredOn": "2017-04-15T16:02:00.000Z"
       }
     },
@@ -1141,6 +1145,28 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg",
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
         "authoredOn": "2017-01-15T16:02:00.000Z"
       }
     },
@@ -1164,7 +1190,29 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "authoredOn": "2016-10-15T16:02:00.000Z"
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1.0,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg",
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "authoredOn": "2019-10-15T16:02:00.000Z"
       }
     },
     {
@@ -1201,20 +1249,16 @@
                 "doseRange": {
                   "low": {
                     "value": 1,
-                    "unit": "mg",
-                    "code": "mg"
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg",
+                    "unit": "mg"
                   },
                   "high": {
                     "value": 1,
-                    "unit": "mg",
-                    "code": "mg"
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg",
+                    "unit": "mg"
                   }
-                }
-              },
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "unit": "mg"
                 }
               }
             ]
@@ -1231,17 +1275,7 @@
             "unit": "days",
             "system": "http://unitsofmeasure.org",
             "code": "d"
-          },
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name", 
-              "valueString": "TEST, DOCTOR"
-            }, 
-            {
-              "url": "http://cosri.org/fhir/last_fill", 
-              "valueDate": "2018-07-15"
-            }
-          ]
+          }
         },
         "authoredOn": "2018-07-15T16:01:00.000Z"
       }
@@ -1265,6 +1299,41 @@
             }
           ],
           "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+        },
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 2.0,
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg",
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2019-01-15",
+            "end": "2019-01-15"
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 1,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
         },
         "authoredOn": "2019-01-15T16:01:00.000Z"
       }
@@ -1473,7 +1542,7 @@
           ],
           "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
         },
-        "authoredOn": "2016-10-15T16:01:00.000Z"
+        "authoredOn": "2019-10-15T16:01:00.000Z"
       }
     },
     {
@@ -1496,50 +1565,7 @@
           ],
           "text": "Ibuprofen 600 MG Oral Tablet"
         },
-        "requester": {
-          "display": "ROBERT MOSS"
-        },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 3.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [{
-              "doseQuantity": {
-                "value": 1.0,
-                "unit": "cL"
-              }
-            }]
-          }
-        ],
-        "dispenseRequest": {
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name",
-              "valueString": "SCRIPT FACTORY (WA)"
-            },
-            {
-              "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2020-04-27"
-            }
-          ],
-          "quantity": {
-            "value": 30.0
-          },
-          "numberOfRepeatsAllowed": 3,
-          "expectedSupplyDuration": {
-            "value": 10.0,
-            "unit": "days",
-            "system": "http://unitsofmeasure.org",
-            "code": "d"
-          }
-        },
-        "authoredOn": "2016-12-02T16:00:00.000Z"
+        "authoredOn": "2019-12-02T16:00:00.000Z"
       }
     },
     {
@@ -1818,7 +1844,9 @@
             "doseAndRate": [{
               "doseQuantity": {
                 "value": 1.0,
-                "unit": "cL"
+                "system": "http://unitsofmeasure.org",
+                "code": "mg",
+                "unit": "mg"
               }
             }]
           }
