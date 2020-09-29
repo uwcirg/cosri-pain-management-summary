@@ -1,4 +1,4 @@
-# Pain Management Summary SMART on FHIR Application
+# "COSRI" Clinical Opioid Summary with Rx Integration, developed by https://github.com/uwcirg for Washington State Department of Health, based on the "Pain Management Summary SMART on FHIR Application"
 
 ## About
 
