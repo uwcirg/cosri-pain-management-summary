@@ -98,11 +98,6 @@ export default class Landing extends Component {
 
       this.tocInitialized = true;
     }
-
-    // if (this.state.result && this.state.result.Summary.Patient.Name) {
-    //   const patientName = this.state.result.Summary.Patient.Name;
-    //   document.title = `Pain Management Summary - ${patientName}`;
-    // }
     document.title = "COSRI";
   }
   /*
