@@ -82,7 +82,7 @@ export default class Landing extends Component {
       console.error(err);
       this.setState({ loading: false});
     });
-    
+
   }
 
   componentDidUpdate() {
@@ -99,10 +99,11 @@ export default class Landing extends Component {
       this.tocInitialized = true;
     }
 
-    if (this.state.result && this.state.result.Summary.Patient.Name) {
-      const patientName = this.state.result.Summary.Patient.Name;
-      document.title = `Pain Management Summary - ${patientName}`;
-    }
+    // if (this.state.result && this.state.result.Summary.Patient.Name) {
+    //   const patientName = this.state.result.Summary.Patient.Name;
+    //   document.title = `Pain Management Summary - ${patientName}`;
+    // }
+    document.title = "COSRI";
   }
   /*
    * function for retrieving data from other sources e.g. PDMP
@@ -226,7 +227,7 @@ export default class Landing extends Component {
       //get the data from summary data
       let sections = overviewSection.graphConfig.summaryDataSource;
       let graph_data = [];
-     
+
       sections.forEach(item => {
         if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
           //console.log("section data? ", summary[item.section_key][item.subSection_key])
@@ -237,7 +238,7 @@ export default class Landing extends Component {
       //console.log("graph data?? ", graph_data)
     }
 
-    
+
     summary[overviewSectionKey+"_stats"] = stats;
     summary[overviewSectionKey+"_alerts"] = alerts.filter((item,index,thisRef)=>thisRef.findIndex(t=>(t.text === item.text))===index);
 
@@ -418,8 +419,8 @@ export default class Landing extends Component {
 
               flaggedEntries.push({
                 'entryId': entry._id,
-                'entry': entry, 'subSection': subSection, 
-                'flagText': entryFlag, 
+                'entry': entry, 'subSection': subSection,
+                'flagText': entryFlag,
                 'flagCount': flaggedCount,
                 'flagDateText': entry && entry[flagDateField] ? entry[flagDateField]: "",
                 'priority': alertMapping.priority? alertMapping.priority : 0});
@@ -428,7 +429,7 @@ export default class Landing extends Component {
             return flaggedEntries;
           }, []);
         } else {
-          
+
           const sectionFlagged = flagit(null, subSection, summary);
          // console.log("subSection? ", subSection, " flagged? ", sectionFlagged)
           if (sectionFlagged) {
@@ -457,7 +458,7 @@ export default class Landing extends Component {
       })
       .catch(err => { console.log(err) });
 
-      
+
     return { sectionFlags, flaggedCount };
   }
 
@@ -495,7 +496,7 @@ export default class Landing extends Component {
           result={this.state.result}
         />
 
-        <ReactTooltip className="summary-tooltip" id="summaryTooltip" />    
+        <ReactTooltip className="summary-tooltip" id="summaryTooltip" />
       </div>
     );
   }
