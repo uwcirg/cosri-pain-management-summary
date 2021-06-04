@@ -141,7 +141,7 @@
       .summary__nav {
         opacity: 1;
         z-index: 1;
-        padding: 62px 0 20px 8px;
+        padding: 62px 0 20px 0px;
       }
       .close {
         // left: 272px;
@@ -271,7 +271,7 @@
           margin-left: 42px;
           font-weight: 600;
           font-size: 18px;
-          
+
         }
         .axis-group {
           text {
@@ -378,7 +378,7 @@
           }
         }
       }
-  
+
       @media (min-width: 768px) {
         .sub-section__panel {
           display: flex;
@@ -467,7 +467,7 @@
           font-style: italic;
           color: $color-gray-light;
           margin-left: 24px;
-             
+
           .flag-text {
             font-style: normal;
             margin-top: 8px;
