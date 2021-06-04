@@ -1,4 +1,4 @@
-$link-color: darken($color-blue, 10%);
+$min-header-height: 136px;
 body {
   margin: 0;
   padding: 0;
@@ -8,6 +8,26 @@ body {
   //color: $color-body;
   color: $color-gray-dark;
 }
+/*
+ * handle fixed header
+ */
+body.fixed {
+  .header {
+    position: fixed;
+    top: 0;
+    z-index: 998;
+    background: #FFF;
+    width: 100%;
+    box-shadow: 1px 1px 2px $color-gray-light;
+  }
+  .summary__nav {
+    background: $summary-nav-bg-color;
+    padding: calc(#{$min-header-height} + 24px) 0 20px 0px !important;
+  }
+  .summary {
+    margin-top: $min-header-height;
+  }
+}
 
 h3:focus {
   outline: none;
@@ -15,7 +35,5 @@ h3:focus {
 
 a {
   color: $link-color;
-  //color: $color-gold;
   font-weight: 600;
 }
-

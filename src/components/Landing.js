@@ -11,6 +11,7 @@ import summaryMap from './summary.json';
 import {getEnv, fetchEnvData} from '../utils/envConfig';
 import Header from './Header';
 import Summary from './Summary';
+import {isInViewport} from './Utility';
 import Spinner from '../elements/Spinner';
 
 let uuid = 0;
@@ -86,6 +87,7 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
+    const MIN_HEADER_HEIGHT = 136;
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       tocbot.init({
         tocSelector: '.summary__nav',           // where to render the table of contents
@@ -93,12 +95,31 @@ export default class Landing extends Component {
         headingSelector: 'h2, h3',              // which headings to grab inside of the contentSelector element
         positionFixedSelector: '.summary__nav', // element to add the positionFixedClass to
         collapseDepth: 0,                       // how many heading levels should not be collpased
-        includeHtml: true                       // include the HTML markup from the heading node, not just the text
+        includeHtml: true                       // include the HTML markup from the heading node, not just the text,
+        ,headingsOffset: MIN_HEADER_HEIGHT,
+        scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+        throttleTimeout: 50,
       });
 
       this.tocInitialized = true;
     }
     document.title = "COSRI";
+    this.handleHeaderPos();
+
+  }
+  /*
+   * fixed header when scrolling in the event that it is not within viewport
+   */
+  handleHeaderPos() {
+    window.requestAnimationFrame(() => {
+      document.addEventListener("scroll", function(e) {
+        if (!isInViewport(document.querySelector("#anchorTop"))) {
+          document.querySelector("body").classList.add("fixed");
+          return;
+        }
+        document.querySelector("body").classList.remove("fixed");
+      });
+    });
   }
   /*
    * function for retrieving data from other sources e.g. PDMP
@@ -475,6 +496,7 @@ export default class Landing extends Component {
 
     return (
       <div className="landing">
+        <div id="anchorTop"></div>
         <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>
 
         <Header
