@@ -7,3 +7,4 @@
 /tx_bundle_dump
 /test_patient_dump
 *.css
+.DS_Store
