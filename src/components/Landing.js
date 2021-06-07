@@ -244,7 +244,7 @@ export default class Landing extends Component {
       let sections = overviewSection.graphConfig.summaryDataSource;
       let graph_data = [];
 
-      if (overviewSection.graphConfig.useDemo) {
+      if (getEnv("USE_DEMO") || overviewSection.graphConfig.useDemo) {
         graph_data = overviewSection.graphConfig.demoData;
       } else {
         sections.forEach(item => {
