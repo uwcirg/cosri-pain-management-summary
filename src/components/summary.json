@@ -24,6 +24,25 @@
       ]
     },
     "graphConfig": {
+      "useDemo": true,
+      "demoData": [
+        {
+          "End": "2019-10-05",
+          "MMEValue": 30
+        },
+        {
+          "End": "2019-10-25",
+          "MMEValue": 45
+        },
+        {
+          "End": "2019-11-03",
+          "MMEValue": 30
+        },
+        {
+          "End": "2019-12-08",
+          "MMEValue": 0
+        }
+      ],
       "summaryDataSource": [
         {
           "section_key": "RiskConsiderations",
@@ -759,7 +778,7 @@
               "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
               "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
-            
+
             "flags": [
               {
                 "flag": {

@@ -16,14 +16,13 @@ class Line extends React.Component {
   componentDidMount() {
     const node = this.ref.current;
     const { data, lineGenerator, xName, yName, xScale, yScale, dataPoints } = this.props;
-    
+
     this.setState({
       xName: xName,
       yName: yName
     });
-    
-    let formatDate = timeFormat(`%Y-%b-%d`);
 
+    let formatDate = timeFormat(`%Y-%b-%d`);
     let currentNode = select(node)
       .append('path')
       .datum(data)
@@ -54,6 +53,9 @@ class Line extends React.Component {
       .attr('cx', d => xScale(d[xName]))
       .attr('cy', d => yScale(d[yName]))
       .on("mouseover", (d, i) => {
+        if (d["baseline"]) {
+          return;
+        }
         select(`#circle_${i}`)
         .transition()
         .duration(animationDuration)
@@ -62,12 +64,15 @@ class Line extends React.Component {
         select(`#dataRect_${i}`).attr("class", "show");
       })
       .on("mouseout", (d, i) => {
+        if (d["baseline"]) {
+          return;
+        }
         select("#circle_"+i)
         .transition()
         .duration(animationDuration)
         .attr("r", radiusWidth);
-        select(`#dataText_${i}`).attr("class", "hide"); 
-        select(`#dataRect_${i}`).attr("class", "hide"); 
+        select(`#dataText_${i}`).attr("class", "hide");
+        select(`#dataRect_${i}`).attr("class", "hide");
       });
 
       //rect

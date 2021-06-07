@@ -1340,7 +1340,7 @@
     },
     {
       "resource": {
-        "authoredOn": "2019-10-25",
+        "authoredOn": "2019-10-01",
         "id": "20f04037-b4ed-46ac-9222-c11f1e54580f",
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
@@ -1368,7 +1368,7 @@
             "code": "d",
             "system": "http://unitsofmeasure.org",
             "unit": "days",
-            "value": 30.0
+            "value": 10.0
           },
           "extension": [
             {
@@ -1377,7 +1377,7 @@
             },
             {
               "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2019-10-25"
+              "valueDate": "2019-10-01"
             }
           ],
           "quantity": {
@@ -1422,7 +1422,7 @@
             "doseAndRate": [
               {
                 "doseQuantity": {
-                  "value": 2.0
+                  "value": 3.0
                 }
               }
             ],
@@ -1453,7 +1453,7 @@
             }
           ],
           "quantity": {
-            "value": 30.0
+            "value": 90.0
           }
         },
         "identifier": [

@@ -604,14 +604,15 @@ define PDMPMedicationRequests:
 define ReportPDMPMedicationRequests:
   (PDMPMedicationRequests) O
   let
-    CalculatedEnd: GetMedicationRequestEndDate(O)
+    CalculatedEnd: GetMedicationRequestEndDate(O),
+    dispenseRequest:  O.dispenseRequest
     return {
       Type:  'Request',
       Name:  ConceptText(O.medication as FHIR.CodeableConcept),
       Start: DateTimeText(O.authoredOn),
       CalculatedEnd: CalculatedEnd, //of datetime type
       End: ToString(CalculatedEnd), //of string type
-      Quantity: MMECalculator.GetMedicationQuantity(O).value,
+      Quantity: if dispenseRequest is not null then dispenseRequest.quantity.value.value else null,
       Prescriber: O.requester.display.value,
       Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
       Status: O.status.value

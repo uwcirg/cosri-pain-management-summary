@@ -17,7 +17,7 @@ class Axis extends React.Component {
     this.updateAxis();
   }
   renderAxis() {
-    const { scale, orient, ticks, tickType, tickFormat } = this.props;
+    const { scale, orient, ticks, tickType, tickFormat, tickInterval } = this.props;
     const node = this.ref.current;
     let axis;
 
@@ -26,9 +26,9 @@ class Axis extends React.Component {
       if (tickType === "date") {
         axis.tickFormat(timeFormat(tickFormat ||"%d %b %y"));
         //spaced out ticks by displaying every four month
-        axis.ticks(timeMonth.every(4));
+        axis.ticks(timeMonth.every(tickInterval));
       } else axis.ticks(ticks);
-    } 
+    }
     //TODO allow other tick type and formatting here
     if (orient === "left") {
       axis = axisLeft(scale)
@@ -41,7 +41,7 @@ class Axis extends React.Component {
     const t = transition().duration(1000)
 
     if (orient === "left") {
-      const axis = axisLeft(scale).ticks(ticks); 
+      const axis = axisLeft(scale).ticks(ticks);
       selectAll(`.${orient}`).transition(t).call(axis)
     }
   }

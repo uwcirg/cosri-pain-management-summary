@@ -244,12 +244,16 @@ export default class Landing extends Component {
       let sections = overviewSection.graphConfig.summaryDataSource;
       let graph_data = [];
 
-      sections.forEach(item => {
-        if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
-          //console.log("section data? ", summary[item.section_key][item.subSection_key])
-          graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]];
-        }
-      });
+      if (overviewSection.graphConfig.useDemo) {
+        graph_data = overviewSection.graphConfig.demoData;
+      } else {
+        sections.forEach(item => {
+          if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
+            //console.log("section data? ", summary[item.section_key][item.subSection_key])
+            graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]];
+          }
+        });
+      }
       summary[overviewSectionKey+"_graph"] = graph_data;
       //console.log("graph data?? ", graph_data)
     }
