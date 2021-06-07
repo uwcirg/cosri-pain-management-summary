@@ -53,7 +53,7 @@ using FHIR version '4.0.0'
 include CDS_Connect_Commons_for_FHIRv400 version '1.0.1' called C3F
 // The FHIRHelpers library provides common functions for simplifying interaction w/ the FHIR R4 data model.
 include FHIRHelpers version '4.0.0' called FHIRHelpers
-// The MMECalculator library is used to compute the patient's MME/MED 
+// The MMECalculator library is used to compute the patient's MME/MED
 include MMECalculator version '3.0.0' called MMECalculator
 
 
@@ -96,10 +96,10 @@ valueset "Substance use disorder": '2.16.840.1.113883.3.464.1003.106.12.1004'
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.106.11.1010/expansion)
 valueset "Substance Abuse": '2.16.840.1.113883.3.464.1003.106.11.1010'
 
-// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1146.1008/expansion) 
+// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1146.1008/expansion)
 valueset "Opioid overdose and poisoning (ICD10CM)": '2.16.840.1.113762.1.4.1146.1008'
 
-// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1146.1063/expansion) 
+// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1146.1063/expansion)
 valueset "Opioid overdose and poisoning (SNOMED)": '2.16.840.1.113762.1.4.1146.1063'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.102/expansion)
@@ -293,8 +293,8 @@ define function Abatement(c FHIR.Condition):
 // Returns the predicted last date for the prescription, based on the supply duration and quantity
 define function GetMedicationRequestEndDate(medRequest MedicationRequest):
   (medRequest) O
-   let 
-    CalculatedDuration: 
+   let
+    CalculatedDuration:
       if O.dispenseRequest.expectedSupplyDuration is not null
       then  O.dispenseRequest.expectedSupplyDuration.value.value
       else 0,
@@ -550,7 +550,7 @@ define ReportRiskFactorsForOpioidRelatedHarms:
 define OpioidMedicationRequests:
   C3F.MedicationRequestLookBack(
     [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
-    100 years 
+    100 years
   )
 
 define OpioidMedicationStatements:
@@ -598,12 +598,12 @@ define ReportOpioidMedications:
 // medication requests from PDMP
 // using relevant system identifier for filtering
 define PDMPMedicationRequests:
-  [MedicationRequest] M 
+  [MedicationRequest] M
   where M.identifier is not null and M.identifier[0].system ~ PDMP_SYSTEM_VALUE
 
 define ReportPDMPMedicationRequests:
   (PDMPMedicationRequests) O
-  let 
+  let
     CalculatedEnd: GetMedicationRequestEndDate(O)
     return {
       Type:  'Request',
@@ -623,7 +623,7 @@ define ReportPDMPMedicationRequests:
 define NonOpioidMedicationRequests:
   C3F.MedicationRequestLookBack(
     [MedicationRequest: "Non opiod pain medications"], //remove consideration for the status field
-    100 years 
+    100 years
   )
 
 define NonOpioidMedicationStatements:
@@ -766,12 +766,12 @@ define ReportCurrentMME:
     }
 }
 
-define ReportMME: 
+define ReportMME:
   [MedicationRequest: "Opioid Pain Medications"] O
-  let 
+  let
     MME_Object: MMECalculator.MME(O),
     CalculatedEnd: GetMedicationRequestEndDate(O),
-    CalculatedStatus: 
+    CalculatedStatus:
       if CalculatedEnd same or after Today() then 'active' else null
   return {
     Type:  'Request',
@@ -779,13 +779,15 @@ define ReportMME:
     CalculatedEnd: CalculatedEnd,
     End: ToString(CalculatedEnd),
     Status: CalculatedStatus,
+    doseQuantity: MME_Object[0].doseQuantity,
+    dosesPerDay: MME_Object[0].dosesPerDay,
     MMEValue: MME_Object[0].mme.value
   }
   sort by End desc
 
-define MMEDateList: 
+define MMEDateList:
   (ReportMME) R
-  where 
+  where
     R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
   return {
     End: R.End
@@ -799,7 +801,7 @@ define ReportMMEByDates:
   }
   sort by End
 
-define ReportPrescriptions: 
+define ReportPrescriptions:
   (OpioidMedicationRequests) M
   return MMECalculator.Prescriptions(M)
 
@@ -827,13 +829,13 @@ define ReportUrineDrugScreens:
 define BenzodiazepineMedicationRequests:
   C3F.MedicationRequestLookBack(
     [MedicationRequest: "Benzodiazepine medications"], //remove consideration for status field
-    100 years 
+    100 years
   )
 
 define BenzodiazepineMedicationStatements:
   C3F.MedicationStatementLookBack(
     [MedicationStatement: "Benzodiazepine medications"], //remove consideration for status field
-    100 years 
+    100 years
   )
 
 define ReportBenzodiazepineMedicationRequests:
