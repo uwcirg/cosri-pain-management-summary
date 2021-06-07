@@ -66,7 +66,14 @@ define function GetMedicationQuantity(medication MedicationRequest):
       ingredient: OMTKLogic.GetIngredients(rxNormCode),
       prescription: if ingredient is not null then First(ingredient) else null,
       dosageInstruction: O.dosageInstruction[0],
-      dispenseRequestQuantity: O.dispenseRequest.quantity.value.value,
+      dispenseRequest: O.dispenseRequest,
+      supplyDuration: if dispenseRequest.expectedSupplyDuration is not null then System.Quantity {
+        value: dispenseRequest.expectedSupplyDuration.value,
+        unit: dispenseRequest.expectedSupplyDuration.unit
+      } else null as System.Quantity,
+      dispenseRequestQuantity: dispenseRequest.quantity.value.value,
+      //get dose quantity daily
+      dispenseRequestDoseQuantity: if supplyDuration is not null then dispenseRequestQuantity / supplyDuration.value else null as System.Quantity,
       doseAndRate:  if dosageInstruction is not null then dosageInstruction.doseAndRate[0] else null, //either a single doseRange or doseQuantity see specs here:  https://www.hl7.org/fhir/dosage-definitions.html#Dosage.doseAndRate.dose_x_
       dosage: if doseAndRate is not null then doseAndRate.dose else null,
       doseRange: if dosage is not null then ToFHIRRange(dosage) else null as Range,
@@ -75,15 +82,15 @@ define function GetMedicationQuantity(medication MedicationRequest):
                 then OMTKLogic.ToUCUM(prescription.strength.unit) else null,
       doseQuantity:
               case
-                when dispenseRequestQuantity is not null then dispenseRequestQuantity
                 when dosage is not null and dosage.high is null then
                   System.Quantity {
                       value: dosage.value.value,
                       unit: doseUnit
                   }
+                when dispenseRequestDoseQuantity is not null then dispenseRequestDoseQuantity
                 else null as System.Quantity
               end
-      return  case 
+      return  case
                 when doseRange is not null and doseRange.high is not null then ToQuantity(doseRange.high)
                 when doseQuantity is not null then doseQuantity
                 else null as System.Quantity
@@ -106,8 +113,8 @@ define function Prescriptions(Orders List<MedicationRequest>):
       repeat: dosageInstruction.timing.repeat,
       frequency: Coalesce(repeat.frequencyMax.value, repeat.frequency.value),
       dispenseRequest: O.dispenseRequest,
-      supplyDuration: if repeat.period is not null then 
-        repeat.period.value else 
+      supplyDuration: if repeat.period is not null then
+        repeat.period.value else
         dispenseRequest.expectedSupplyDuration.value.value,
       period: OMTKLogic.Quantity(supplyDuration, repeat.periodUnit.value),
       doseRange: ToFHIRRange(doseAndRate.dose),
@@ -159,6 +166,8 @@ define function MME(prescriptions List<MedicationRequest>):
       isDraft: P.isDraft,
       isPRN: P.isPRN,
       prescription: P.prescription,
+      doseQuantity: P.dose,
+      dosesPerDay: P.dosesPerDay,
       dailyDose: Combine(mmePerIngredient X return X.dailyDoseDescription, '\r\n'),
       mme: Sum(mmePerIngredient X return X.mme)
     }

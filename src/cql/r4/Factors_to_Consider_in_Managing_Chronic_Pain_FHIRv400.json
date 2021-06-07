@@ -5391,6 +5391,40 @@
                            "type" : "QueryLetRef"
                         }
                      }, {
+                        "name" : "doseQuantity",
+                        "value" : {
+                           "path" : "doseQuantity",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     }, {
+                        "name" : "dosesPerDay",
+                        "value" : {
+                           "path" : "dosesPerDay",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     }, {
                         "name" : "MMEValue",
                         "value" : {
                            "path" : "value",
