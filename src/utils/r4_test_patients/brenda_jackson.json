@@ -1340,11 +1340,7 @@
     },
     {
       "resource": {
-<<<<<<< HEAD
-        "authoredOn": "2019-10-01",
-=======
         "authoredOn": "2019-10-25",
->>>>>>> e88fe77edb461390a49c5cadd54d7da46d092fc7
         "id": "20f04037-b4ed-46ac-9222-c11f1e54580f",
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
@@ -1372,11 +1368,7 @@
             "code": "d",
             "system": "http://unitsofmeasure.org",
             "unit": "days",
-<<<<<<< HEAD
             "value": 10.0
-=======
-            "value": 30.0
->>>>>>> e88fe77edb461390a49c5cadd54d7da46d092fc7
           },
           "extension": [
             {
@@ -1385,11 +1377,7 @@
             },
             {
               "url": "http://cosri.org/fhir/last_fill",
-<<<<<<< HEAD
               "valueDate": "2019-10-01"
-=======
-              "valueDate": "2019-10-25"
->>>>>>> e88fe77edb461390a49c5cadd54d7da46d092fc7
             }
           ],
           "quantity": {
@@ -1434,11 +1422,7 @@
             "doseAndRate": [
               {
                 "doseQuantity": {
-<<<<<<< HEAD
                   "value": 3.0
-=======
-                  "value": 2.0
->>>>>>> e88fe77edb461390a49c5cadd54d7da46d092fc7
                 }
               }
             ],
@@ -1469,11 +1453,7 @@
             }
           ],
           "quantity": {
-<<<<<<< HEAD
             "value": 90.0
-=======
-            "value": 30.0
->>>>>>> e88fe77edb461390a49c5cadd54d7da46d092fc7
           }
         },
         "identifier": [
