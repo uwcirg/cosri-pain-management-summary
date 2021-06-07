@@ -41,7 +41,7 @@ class Line extends React.Component {
       const animationDuration = 100;
       select(node)
       .selectAll('circle')
-      .data(data)
+      .data(data.filter(item => item.tip))
       .enter()
       .append('circle')
       .attr('class', 'circle')
@@ -53,7 +53,7 @@ class Line extends React.Component {
       .attr('cx', d => xScale(d[xName]))
       .attr('cy', d => yScale(d[yName]))
       .on("mouseover", (d, i) => {
-        if (d["baseline"]) {
+        if (d["baseline"] || !d["tip"]) {
           return;
         }
         select(`#circle_${i}`)
@@ -64,7 +64,7 @@ class Line extends React.Component {
         select(`#dataRect_${i}`).attr("class", "show");
       })
       .on("mouseout", (d, i) => {
-        if (d["baseline"]) {
+        if (d["baseline"] || !d["tip"]) {
           return;
         }
         select("#circle_"+i)
@@ -78,7 +78,7 @@ class Line extends React.Component {
       //rect
       select(node)
       .selectAll('rect')
-      .data(data)
+      .data(data.filter(item => item.tip))
       .enter()
       .append("rect")
       .attr('id', (d, i) => `dataRect_${i}`)
@@ -94,7 +94,7 @@ class Line extends React.Component {
       //tooltip
       select(node)
       .selectAll('text')
-      .data(data)
+      .data(data.filter(item => item.tip))
       .enter()
       .append('text')
       .attr('id', (d, i) => `dataText_${i}`)
