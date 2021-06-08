@@ -5410,6 +5410,17 @@
                            "type" : "QueryLetRef"
                         }
                      }, {
+                        "name" : "Start",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
                            "type" : "ToString",
@@ -5559,6 +5570,13 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
+                        "name" : "Start",
+                        "value" : {
+                           "path" : "Start",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
                            "path" : "End",
@@ -5587,6 +5605,13 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
+                        "name" : "Start",
+                        "value" : {
+                           "path" : "Start",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
                            "path" : "End",

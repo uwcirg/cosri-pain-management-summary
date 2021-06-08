@@ -5,7 +5,7 @@ import { line, curveMonotoneX } from 'd3-shape';
 import XYAxis from './xy-axis';
 import Line from './line';
 
-const xFieldName = "End";
+const xFieldName = "date";
 const yFieldName = "MMEValue";
 export default class MMEGraph extends Component {
 
@@ -13,7 +13,7 @@ export default class MMEGraph extends Component {
     let data = [];
     value = value || 0;
     total = total || 8;
-    xFieldName = xFieldName || "End";
+    xFieldName = xFieldName || "date";
     yFieldName = yFieldName || "MMEValue";
 
     if (!maxDate) {

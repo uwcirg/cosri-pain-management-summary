@@ -778,6 +778,7 @@ define ReportMME:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     CalculatedEnd: CalculatedEnd,
+    Start: DateTimeText(O.authoredOn),
     End: ToString(CalculatedEnd),
     Status: CalculatedStatus,
     doseQuantity: MME_Object[0].doseQuantity,
@@ -791,12 +792,14 @@ define MMEDateList:
   where
     R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
   return {
+    Start: R.Start,
     End: R.End
   }
 
 define ReportMMEByDates:
   MMEDateList R
   return {
+    Start: R.Start,
     End: R.End,
     MMEValue: Sum(ReportMME M where M.End ~ R.End return M.MMEValue)
   }
