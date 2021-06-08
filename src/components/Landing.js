@@ -259,12 +259,10 @@ export default class Landing extends Component {
           let o = {};
           o[graphConfig.graphDateField]=item[graphConfig.startDateField];
           o[graphConfig.mmeField]=item[graphConfig.mmeField];
-          o["tip"] = true;
           formattedGraphData.push(o);
           let o2 = {};
           o2[graphConfig.graphDateField] = item[graphConfig.endDateField];
           o2[graphConfig.mmeField] = item[graphConfig.mmeField];
-          o2["tip"] = true;
           formattedGraphData.push(o2);
         })
         summary[overviewSectionKey+"_graph"] = formattedGraphData;
