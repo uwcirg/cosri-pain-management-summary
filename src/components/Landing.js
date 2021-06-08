@@ -245,7 +245,7 @@ export default class Landing extends Component {
       let sections = graphConfig.summaryDataSource;
       let graph_data = [];
       let formattedGraphData = [];
-      if (getEnv("USE_DEMO") || graphConfig.useDemo) {
+      if (getEnv(graphConfig.demoConfigKey) || graphConfig.useDemo) {
         graph_data = graphConfig.demoData;
         summary[overviewSectionKey+"_graph"] = graph_data;
       } else {
@@ -258,7 +258,8 @@ export default class Landing extends Component {
         graph_data.forEach(item => {
           let o = {};
           o[graphConfig.graphDateField]=item[graphConfig.startDateField];
-          o[graphConfig.mmeField]=item[graphConfig.mmeField]
+          o[graphConfig.mmeField]=item[graphConfig.mmeField];
+          o["tip"] = true;
           formattedGraphData.push(o);
           let o2 = {};
           o2[graphConfig.graphDateField] = item[graphConfig.endDateField];
