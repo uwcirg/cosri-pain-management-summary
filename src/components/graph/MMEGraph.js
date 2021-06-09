@@ -124,8 +124,6 @@ export default class MMEGraph extends Component {
       baselineItem["baseline"] = true;
       baselineItem["placeholder"] = true;
       data.unshift(baselineItem);
-
-      console.log("changed graph data" , data)
     }
 
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);

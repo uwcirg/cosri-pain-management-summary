@@ -267,6 +267,11 @@ export default class Landing extends Component {
           if (startDate.indexOf("T") > 0) {
             startDate = startDate.substring(0, startDate.indexOf("T"));
           }
+          let endDate = item[graphConfig.endDateField];
+          if (endDate.indexOf("T") > 0) {
+            endDate = endDate.substring(0, endDate.indexOf("T"));
+          }
+          //baseline point
           if (graph_data.length > 1 && index === 0 && item[graphConfig.mmeField] !== 0) {
             o = {};
             o[graphConfig.graphDateField]=startDate;
@@ -290,7 +295,7 @@ export default class Landing extends Component {
 
           //add data point for end date
           o = {};
-          o[graphConfig.graphDateField] = item[graphConfig.endDateField];
+          o[graphConfig.graphDateField] = endDate;
           o[graphConfig.mmeField] = item[graphConfig.mmeField];
           formattedGraphData.push(o);
 
@@ -299,7 +304,7 @@ export default class Landing extends Component {
               (index === graph_data.length-1) &&
               item[graphConfig.mmeField] !== 0) {
             o = {};
-            o[graphConfig.graphDateField] = item[graphConfig.endDateField];
+            o[graphConfig.graphDateField] = endDate;
             o[graphConfig.mmeField] = 0;
             o[PLACEHOLDER_FIELD_NAME] = true;
             formattedGraphData.push(o)
