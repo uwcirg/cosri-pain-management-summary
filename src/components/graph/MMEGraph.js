@@ -1,20 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { scaleLinear, scaleTime } from 'd3-scale';
-import { line, curveMonotoneX } from 'd3-shape';
+import { line } from 'd3-shape';
 import XYAxis from './xy-axis';
 import Line from './line';
 
-const xFieldName = "date";
-const yFieldName = "MMEValue";
+const defaultFields = {
+  x: "date",
+  y: "MMEValue"
+};
+const xFieldName = defaultFields.x;
+const yFieldName = defaultFields.y;
 export default class MMEGraph extends Component {
 
   getDefaultDataValueSet(value, minDate, maxDate, total, xFieldName, yFieldName) {
     let data = [];
     value = value || 0;
     total = total || 8;
-    xFieldName = xFieldName || "date";
-    yFieldName = yFieldName || "MMEValue";
+    xFieldName = xFieldName || defaultFields.x;
+    yFieldName = yFieldName || defaultFields.y;
 
     if (!maxDate) {
       maxDate = new Date();
@@ -144,8 +148,7 @@ export default class MMEGraph extends Component {
 
     const lineGenerator = line()
       .x(d => xScale(d[xFieldName]))
-      .y(d => yScale(d[yFieldName]))
-      .curve(curveMonotoneX);
+      .y(d => yScale(d[yFieldName]));
 
 
     const defaultProps = {

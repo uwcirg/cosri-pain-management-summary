@@ -120,7 +120,7 @@ class Line extends React.Component {
 
     const t = transition().duration(1000);
 
-    const line = select('#line');
+    const line = select(this.props.lineID);
 
     line
       .datum(data)
