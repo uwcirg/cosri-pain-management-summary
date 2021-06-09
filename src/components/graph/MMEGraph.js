@@ -79,8 +79,9 @@ export default class MMEGraph extends Component {
         ...item
       }
     }): null;
-    let data = computedData? (computedData).sort(this.compareDate): [];
+    //let data = computedData? (computedData).sort(this.compareDate): [];
     //let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
+    let data = computedData || [];
     let noEntry = !data || !data.length;
     data = data.filter(d => d[xFieldName]);
     data = data.map(d => {
