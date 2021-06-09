@@ -122,8 +122,8 @@ export default class MMEGraph extends Component {
       baselineItem[xFieldName] = baseLineDate;
       baselineItem[yFieldName] = 0;
       baselineItem["baseline"] = true;
-      data.unshift(baselineItem)
-      //console.log(data)
+      baselineItem["placeholder"] = true;
+      data.unshift(baselineItem);
     }
 
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
