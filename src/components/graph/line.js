@@ -16,6 +16,7 @@ class Line extends React.Component {
   componentDidMount() {
     const node = this.ref.current;
     const { data, lineGenerator, xName, yName, xScale, yScale, dataPoints } = this.props;
+    const PLACEHOLDER_IDENTIFIER = "placeholder";
 
     this.setState({
       xName: xName,
@@ -41,7 +42,7 @@ class Line extends React.Component {
       const animationDuration = 100;
       select(node)
       .selectAll('circle')
-      .data(data.filter(item => !item.notip))
+      .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
       .enter()
       .append('circle')
       .attr('class', 'circle')
@@ -53,7 +54,7 @@ class Line extends React.Component {
       .attr('cx', d => xScale(d[xName]))
       .attr('cy', d => yScale(d[yName]))
       .on("mouseover", (d, i) => {
-        if (d["baseline"] || d["notip"]) {
+        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
           return;
         }
         select(`#circle_${i}`)
@@ -64,7 +65,7 @@ class Line extends React.Component {
         select(`#dataRect_${i}`).attr("class", "show");
       })
       .on("mouseout", (d, i) => {
-        if (d["baseline"] || d["notip"]) {
+        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
           return;
         }
         select("#circle_"+i)
@@ -78,7 +79,7 @@ class Line extends React.Component {
       //rect
       select(node)
       .selectAll('rect')
-      .data(data.filter(item => !item.notip))
+      .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
       .enter()
       .append("rect")
       .attr('id', (d, i) => `dataRect_${i}`)
@@ -94,7 +95,7 @@ class Line extends React.Component {
       //tooltip
       select(node)
       .selectAll('text')
-      .data(data.filter(item => !item.notip))
+      .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
       .enter()
       .append('text')
       .attr('id', (d, i) => `dataText_${i}`)

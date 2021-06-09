@@ -255,16 +255,57 @@ export default class Landing extends Component {
             graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]];
           }
         });
-        graph_data.forEach(item => {
-          let o = {};
-          o[graphConfig.graphDateField]=item[graphConfig.startDateField];
+        let prevObj = null;
+        let o = {};
+        const PLACEHOLDER_FIELD_NAME = "placeholder";
+        /*
+         * processing graph data
+         */
+        graph_data.forEach(function(item, index) {
+          /* make sure dates are in consistent format */
+          let startDate = item[graphConfig.startDateField];
+          if (startDate.indexOf("T") > 0) {
+            startDate = startDate.substring(0, startDate.indexOf("T"));
+          }
+          if (graph_data.length > 1 && index === 0 && item[graphConfig.mmeField] !== 0) {
+            o = {};
+            o[graphConfig.graphDateField]=startDate;
+            o[graphConfig.mmeField] = 0;
+            o[PLACEHOLDER_FIELD_NAME] = true;
+            formattedGraphData.unshift(o);
+          }
+          //add placeholder data points for the period
+          if (prevObj) {
+            o = {};
+            o[graphConfig.graphDateField]=startDate;
+            o[graphConfig.mmeField] = prevObj[graphConfig.mmeField];
+            o[PLACEHOLDER_FIELD_NAME] = true;
+            formattedGraphData.push(o);
+          }
+          //add data point for staring date
+          o = {};
+          o[graphConfig.graphDateField]=startDate;
           o[graphConfig.mmeField]=item[graphConfig.mmeField];
           formattedGraphData.push(o);
-          let o2 = {};
-          o2[graphConfig.graphDateField] = item[graphConfig.endDateField];
-          o2[graphConfig.mmeField] = item[graphConfig.mmeField];
-          formattedGraphData.push(o2);
-        })
+
+          //add data point for end date
+          o = {};
+          o[graphConfig.graphDateField] = item[graphConfig.endDateField];
+          o[graphConfig.mmeField] = item[graphConfig.mmeField];
+          formattedGraphData.push(o);
+
+          //data end point
+          if (graph_data.length > 1 &&
+              (index === graph_data.length-1) &&
+              item[graphConfig.mmeField] !== 0) {
+            o = {};
+            o[graphConfig.graphDateField] = item[graphConfig.endDateField];
+            o[graphConfig.mmeField] = 0;
+            o[PLACEHOLDER_FIELD_NAME] = true;
+            formattedGraphData.push(o)
+          }
+          prevObj = JSON.parse(JSON.stringify(item));
+        });
         summary[overviewSectionKey+"_graph"] = formattedGraphData;
       }
 
