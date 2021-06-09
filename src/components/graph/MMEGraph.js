@@ -1,20 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { scaleLinear, scaleTime } from 'd3-scale';
-import { line, curveMonotoneX } from 'd3-shape';
+import { line } from 'd3-shape';
 import XYAxis from './xy-axis';
 import Line from './line';
 
-const xFieldName = "End";
-const yFieldName = "MMEValue";
+const defaultFields = {
+  x: "date",
+  y: "MMEValue"
+};
+const xFieldName = defaultFields.x;
+const yFieldName = defaultFields.y;
 export default class MMEGraph extends Component {
 
   getDefaultDataValueSet(value, minDate, maxDate, total, xFieldName, yFieldName) {
     let data = [];
     value = value || 0;
     total = total || 8;
-    xFieldName = xFieldName || "End";
-    yFieldName = yFieldName || "MMEValue";
+    xFieldName = xFieldName || defaultFields.x;
+    yFieldName = yFieldName || defaultFields.y;
+
     if (!maxDate) {
       maxDate = new Date();
     }
@@ -59,7 +64,8 @@ export default class MMEGraph extends Component {
      */
     let maxDate = new Date();
     let minDate = new Date();
-    minDate.setDate(maxDate.getDate() - 365); 
+    let baseLineDate = new Date();
+    minDate.setDate(maxDate.getDate() - 365);
     const parentWidth = 536;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
@@ -93,8 +99,7 @@ export default class MMEGraph extends Component {
     }
     //console.log("maxDate: ", maxDate, " minDate ", minDate)
     const diffTime = Math.abs(maxDate - minDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
    // if (arrayDates.length < (xIntervals - 2)) {
     if (diffDays < 60 && arrayDates.length < (xIntervals - 2)) {
       /*
@@ -108,10 +113,23 @@ export default class MMEGraph extends Component {
       minDate = new Date(minDate);
       //console.log("min date ", minDate, " max date ", maxDate)
     }
-    let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
-    let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
-    let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, minDate, maxDate, ...lineParamsSet);
-    
+    /*
+     * set up baseline data point starting at 0
+     */
+    if (arrayDates.length) {
+      baseLineDate.setTime(new Date(minDate.valueOf()).getTime() - (30 * 24 * 60 * 60 * 1000));
+      let baselineItem = {};
+      baselineItem[xFieldName] = baseLineDate;
+      baselineItem[yFieldName] = 0;
+      baselineItem["baseline"] = true;
+      data.unshift(baselineItem)
+      //console.log(data)
+    }
+
+    let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
+    let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
+    let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
+
     const margins = {
       top: 40,
       right: 52,
@@ -121,7 +139,7 @@ export default class MMEGraph extends Component {
 
     const width = parentWidth - margins.left - margins.right;
     const height = 360 - margins.top - margins.bottom;
-    const xScale = scaleTime().domain([minDate, maxDate]).rangeRound([0, width]).nice();
+    const xScale = scaleTime().domain([baseLineDate, maxDate]).rangeRound([0, width]);
     const xMaxValue = Math.max(140, this.getMaxMMEValue(data));
     const yScale = scaleLinear()
       .domain([0, xMaxValue])
@@ -130,8 +148,7 @@ export default class MMEGraph extends Component {
 
     const lineGenerator = line()
       .x(d => xScale(d[xFieldName]))
-      .y(d => yScale(d[yFieldName]))
-      .curve(curveMonotoneX);
+      .y(d => yScale(d[yFieldName]));
 
 
     const defaultProps = {
@@ -159,6 +176,7 @@ export default class MMEGraph extends Component {
       transform: `translate(0, ${height})`,
       tickFormat: "%b %y",
       tickType: "date",
+      tickInterval: diffDays <= 180 ? 1 : 3,
       ticks: xIntervals
     };
     const ySettings = {
@@ -172,9 +190,9 @@ export default class MMEGraph extends Component {
       "fontFamily": "sans-serif",
       "fontSize": "12px",
       "fontWeight": "600",
-      "x": xScale(minDate) + 8
+      "x": xScale(baseLineDate) + 8
     };
-    
+
     const WA_COLOR = "#a75454";
     const CDC_COLOR = "#e09b1d";
     const textMargin = 4;

@@ -238,19 +238,36 @@ export default class Landing extends Component {
       return a.priority - b.priority;
     });
 
+    let graphConfig = overviewSection.graphConfig;
     //process graph data
-    if (overviewSection.graphConfig && overviewSection.graphConfig.summaryDataSource) {
+    if (graphConfig && graphConfig.summaryDataSource) {
       //get the data from summary data
-      let sections = overviewSection.graphConfig.summaryDataSource;
+      let sections = graphConfig.summaryDataSource;
       let graph_data = [];
+      let formattedGraphData = [];
+      if (getEnv(graphConfig.demoConfigKey) || graphConfig.useDemo) {
+        graph_data = graphConfig.demoData;
+        summary[overviewSectionKey+"_graph"] = graph_data;
+      } else {
+        sections.forEach(item => {
+          if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
+            //console.log("section data? ", summary[item.section_key][item.subSection_key])
+            graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]];
+          }
+        });
+        graph_data.forEach(item => {
+          let o = {};
+          o[graphConfig.graphDateField]=item[graphConfig.startDateField];
+          o[graphConfig.mmeField]=item[graphConfig.mmeField];
+          formattedGraphData.push(o);
+          let o2 = {};
+          o2[graphConfig.graphDateField] = item[graphConfig.endDateField];
+          o2[graphConfig.mmeField] = item[graphConfig.mmeField];
+          formattedGraphData.push(o2);
+        })
+        summary[overviewSectionKey+"_graph"] = formattedGraphData;
+      }
 
-      sections.forEach(item => {
-        if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
-          //console.log("section data? ", summary[item.section_key][item.subSection_key])
-          graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]];
-        }
-      });
-      summary[overviewSectionKey+"_graph"] = graph_data;
       //console.log("graph data?? ", graph_data)
     }
 

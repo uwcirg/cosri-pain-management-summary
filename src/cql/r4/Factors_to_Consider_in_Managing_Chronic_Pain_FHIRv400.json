@@ -3924,6 +3924,13 @@
                         "type" : "AliasRef"
                      } ]
                   }
+               }, {
+                  "identifier" : "dispenseRequest",
+                  "expression" : {
+                     "path" : "dispenseRequest",
+                     "scope" : "O",
+                     "type" : "Property"
+                  }
                } ],
                "relationship" : [ ],
                "return" : {
@@ -3984,16 +3991,43 @@
                      }, {
                         "name" : "Quantity",
                         "value" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "name" : "GetMedicationQuantity",
-                              "libraryName" : "MMECalculator",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "name" : "O",
-                                 "type" : "AliasRef"
-                              } ]
+                           "type" : "If",
+                           "condition" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "IsNull",
+                                    "operand" : {
+                                       "name" : "dispenseRequest",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "quantity",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "dispenseRequest",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "else" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Null"
+                              }
                            }
                         }
                      }, {
@@ -5376,6 +5410,17 @@
                            "type" : "QueryLetRef"
                         }
                      }, {
+                        "name" : "Start",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
                            "type" : "ToString",
@@ -5525,6 +5570,13 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
+                        "name" : "Start",
+                        "value" : {
+                           "path" : "Start",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
                            "path" : "End",
@@ -5553,6 +5605,13 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
+                        "name" : "Start",
+                        "value" : {
+                           "path" : "Start",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
                            "path" : "End",

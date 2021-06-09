@@ -604,14 +604,15 @@ define PDMPMedicationRequests:
 define ReportPDMPMedicationRequests:
   (PDMPMedicationRequests) O
   let
-    CalculatedEnd: GetMedicationRequestEndDate(O)
+    CalculatedEnd: GetMedicationRequestEndDate(O),
+    dispenseRequest:  O.dispenseRequest
     return {
       Type:  'Request',
       Name:  ConceptText(O.medication as FHIR.CodeableConcept),
       Start: DateTimeText(O.authoredOn),
       CalculatedEnd: CalculatedEnd, //of datetime type
       End: ToString(CalculatedEnd), //of string type
-      Quantity: MMECalculator.GetMedicationQuantity(O).value,
+      Quantity: if dispenseRequest is not null then dispenseRequest.quantity.value.value else null,
       Prescriber: O.requester.display.value,
       Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
       Status: O.status.value
@@ -777,6 +778,7 @@ define ReportMME:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     CalculatedEnd: CalculatedEnd,
+    Start: DateTimeText(O.authoredOn),
     End: ToString(CalculatedEnd),
     Status: CalculatedStatus,
     doseQuantity: MME_Object[0].doseQuantity,
@@ -790,12 +792,14 @@ define MMEDateList:
   where
     R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
   return {
+    Start: R.Start,
     End: R.End
   }
 
 define ReportMMEByDates:
   MMEDateList R
   return {
+    Start: R.Start,
     End: R.End,
     MMEValue: Sum(ReportMME M where M.End ~ R.End return M.MMEValue)
   }

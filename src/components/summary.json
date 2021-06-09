@@ -24,6 +24,28 @@
       ]
     },
     "graphConfig": {
+      "demoConfigKey": "USE_DEMO",
+      "useDemo": false,
+      "graphDateField": "date",
+      "mmeField": "MMEValue",
+      "startDateField": "Start",
+      "endDateField": "End",
+      "demoData":
+      [
+        {"date": "2020-09-30","MMEValue": 0},
+        {"date": "2020-10-01","MMEValue": 22.5},
+        {"date": "2020-10-09", "MMEValue": 22.5},
+        {"date": "2020-10-10", "MMEValue": 0},
+        {"date": "2020-11-02", "MMEValue": 0},
+        {"date": "2020-11-03", "MMEValue": 22.5},
+        {"date": "2020-11-06", "MMEValue": 22.5},
+        {"date": "2020-11-07", "MMEValue": 45},
+        {"date": "2020-11-11", "MMEValue": 45},
+        {"date": "2020-11-12", "MMEValue": 22.5},
+        {"date": "2020-12-07", "MMEValue": 22.5},
+        {"date": "2020-12-08", "MMEValue": 0}
+
+      ],
       "summaryDataSource": [
         {
           "section_key": "RiskConsiderations",
@@ -759,7 +781,7 @@
               "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
               "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
-            
+
             "flags": [
               {
                 "flag": {
