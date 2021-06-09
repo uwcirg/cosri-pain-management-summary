@@ -272,7 +272,7 @@ export default class Landing extends Component {
             endDate = endDate.substring(0, endDate.indexOf("T"));
           }
           //baseline point
-          if (graph_data.length > 1 && index === 0 && item[graphConfig.mmeField] !== 0) {
+          if (index === 0 && item[graphConfig.mmeField] !== 0) {
             o = {};
             o[graphConfig.graphDateField]=startDate;
             o[graphConfig.mmeField] = 0;
