@@ -258,6 +258,14 @@ export default class Landing extends Component {
         let prevObj = null;
         let o = {};
         const PLACEHOLDER_FIELD_NAME = "placeholder";
+        const compareDate = (a, b) => {
+          let calcA = (new Date(a["Start"])).getTime();
+          let calcB = (new Date(b["Start"])).getTime();
+          if (calcA > calcB) return 1;
+          if (calcB > calcA) return -1;
+          return 0;
+        }
+        graph_data = graph_data.sort(compareDate);
         /*
          * processing graph data
          */
@@ -312,6 +320,7 @@ export default class Landing extends Component {
           prevObj = JSON.parse(JSON.stringify(item));
         });
         summary[overviewSectionKey+"_graph"] = formattedGraphData;
+        console.log("formatted ", formattedGraphData);
       }
 
       //console.log("graph data?? ", graph_data)
