@@ -289,11 +289,24 @@ export default class Landing extends Component {
           }
           //add placeholder data points for the period
           if (prevObj) {
-            o = {};
-            o[graphConfig.graphDateField]=startDate;
-            o[graphConfig.mmeField] = prevObj[graphConfig.mmeField];
-            o[PLACEHOLDER_FIELD_NAME] = true;
-            formattedGraphData.push(o);
+            if (prevObj[graphConfig.mmeField] !== item[graphConfig.mmeField]) {
+              o = {};
+              o[graphConfig.graphDateField] = prevObj[graphConfig.endDateField];
+              o[graphConfig.mmeField] = 0;
+              o[PLACEHOLDER_FIELD_NAME] = true;
+              formattedGraphData.push(o);
+              o = {};
+              o[graphConfig.graphDateField]=startDate;
+              o[graphConfig.mmeField] = 0;
+              o[PLACEHOLDER_FIELD_NAME] = true;
+              formattedGraphData.push(o);
+            } else {
+              o = {};
+              o[graphConfig.graphDateField]=startDate;
+              o[graphConfig.mmeField] = prevObj[graphConfig.mmeField];
+              o[PLACEHOLDER_FIELD_NAME] = true;
+              formattedGraphData.push(o);
+            }
           }
           //add data point for staring date
           o = {};
