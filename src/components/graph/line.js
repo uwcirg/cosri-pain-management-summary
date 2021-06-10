@@ -29,7 +29,7 @@ class Line extends React.Component {
       .datum(data)
       .attr('id', this.props.lineID)
       .attr('stroke', this.props.strokeColor || "#217684")
-      .attr('stroke-width', this.props.strokeWidth || 2)
+      .attr('stroke-width', this.props.strokeWidth)
       .attr('fill', 'none')
       .attr('d', lineGenerator);
     if (this.props.dotted) {
@@ -38,7 +38,7 @@ class Line extends React.Component {
 
     if (dataPoints) {
       const radiusWidth  = 3;
-      const expandedRadiusWidth = radiusWidth * 3;
+      const expandedRadiusWidth = radiusWidth * 2;
       const animationDuration = 100;
       select(node)
       .selectAll('circle')
