@@ -333,7 +333,7 @@ export default class Landing extends Component {
           prevObj = JSON.parse(JSON.stringify(item));
         });
         summary[overviewSectionKey+"_graph"] = formattedGraphData;
-        console.log("formatted ", formattedGraphData);
+        console.log("formatted graph data: ", formattedGraphData);
       }
 
       //console.log("graph data?? ", graph_data)
