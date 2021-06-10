@@ -289,7 +289,7 @@ export default class Landing extends Component {
           }
           //add placeholder data points for the period
           if (prevObj) {
-            if (prevObj[graphConfig.mmeField] !== item[graphConfig.mmeField]) {
+            if (prevObj[graphConfig.mmeField] !== item[graphConfig.mmeField] || (prevObj[graphConfig.startDateField] !== item[graphConfig.startDateField])) {
               o = {};
               o[graphConfig.graphDateField] = prevObj[graphConfig.endDateField];
               o[graphConfig.mmeField] = 0;
