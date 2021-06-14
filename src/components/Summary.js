@@ -134,6 +134,7 @@ export default class Summary extends Component {
     const { sectionFlags } = this.props;
 
     let flagged = false;
+    if (!sectionFlags[section][subSection]) return false;
     sectionFlags[section][subSection].forEach((flag) => {
       if (flag.entryId === entry._id) {
         flagged = flag.flagText;
@@ -193,7 +194,7 @@ export default class Summary extends Component {
           <div>no entries found</div>
             <div className="flag-guideline-content">
               <div>{flagContent}</div>
-              {guidelineContent && 
+              {guidelineContent &&
               <div className="guideline-content">
                 {guidelineContent}
               </div>}
@@ -202,7 +203,7 @@ export default class Summary extends Component {
       </div>
     );
   }
- 
+
   renderTable(table, entries, section, subSection, index) {
     // If a filter is provided, only render those things that have the filter field (or don't have it when it's negated)
     let filteredEntries = entries;
@@ -459,7 +460,7 @@ export default class Summary extends Component {
     const flaggedClass = flagged ? 'flagged' : '';
     const flagCount = this.getSectionFlagCount(section);
     const flaggedText = flagged? `${flagCount ? flagCount + ' flag entr' + (flagCount > 1?'ies': 'y') + ' found': ''}` : "";
-  
+
     let icon = '';
     let sourceTitle = summaryMap[section]['title'];
     let title = sourceTitle;
@@ -504,7 +505,7 @@ export default class Summary extends Component {
             {title}
             <span className="info">
               {entryCount && entryCount}
-              <FontAwesomeIcon 
+              <FontAwesomeIcon
                 className={`flag flag-header ${flaggedClass}`}
                 icon="exclamation-circle"
                 title={flaggedText}
@@ -524,8 +525,12 @@ export default class Summary extends Component {
   };
 
   render() {
-    const { summary, collector, result } = this.props;
+    const { summary, collector } = this.props;
     const meetsInclusionCriteria = summary.Patient.MeetsInclusionCriteria;
+    const {EducationMaterials,
+      PatientRiskOverview_graph,
+      PatientRiskOverview_alerts,
+      PatientRiskOverview_stats, ...devToolSummary} = summary;
     if (!summary) { return null; }
 
     const sectionsToRender = [];
@@ -536,14 +541,14 @@ export default class Summary extends Component {
       sectionsToRender.push(section);
     });
 
-    const navToggleToolTip = this.state.showNav ? "collapse side navigation menu" : "expand side navigation menu"; 
+    const navToggleToolTip = this.state.showNav ? "collapse side navigation menu" : "expand side navigation menu";
 
     return (
       <div className="summary">
         <div className={`${this.state.showNav?'open': ''} summary__nav-wrapper`}>
           <ReactTooltip className="summary-tooltip" id="navTooltip" />
           <nav className="summary__nav"></nav>
-          <div 
+          <div
             ref={ref => this.navRef = ref}
             data-for="navTooltip"
             data-tip={navToggleToolTip}
@@ -604,8 +609,9 @@ export default class Summary extends Component {
 
           <DevTools
             collector={collector}
-            result={result}
-            summary={summary}
+            summary={devToolSummary}
+            //results not coming from CQL
+            other={{EducationMaterials, PatientRiskOverview_graph, PatientRiskOverview_alerts, PatientRiskOverview_stats}}
           />
 
           <ReactModal

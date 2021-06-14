@@ -10,7 +10,8 @@ export default class DevTools extends Component {
       displayDevTools: false,
       displayFhirQueries: false,
       displayCQLResults: false,
-      displayPDMPResults: false
+      displayPDMPResults: false,
+      displayOtherResults: false
     };
   }
 
@@ -32,6 +33,11 @@ export default class DevTools extends Component {
   togglePDMPResults = (event) => {
     event.preventDefault();
     this.setState({ displayPDMPResults: !this.state.displayPDMPResults});
+  }
+
+  toggleOtherResults = (event) => {
+    event.preventDefault();
+    this.setState({ displayOtherResults: !this.state.displayOtherResults});
   }
 
   errorMessage(er, i) {
@@ -92,7 +98,7 @@ export default class DevTools extends Component {
         <h4>CQL Results <button onClick={this.toggleCQLResults}>[show/hide]</button></h4>
 
         <div style={{ display: this.state.displayCQLResults ? 'block' : 'none' }}>
-          <pre>{JSON.stringify(this.props.result, null, 2)}</pre>
+          <pre>{JSON.stringify(this.props.summary, null, 2)}</pre>
         </div>
       </div>
     );
@@ -104,9 +110,21 @@ export default class DevTools extends Component {
       <div className='pdmp-results'>
         <h4>PDMP Results <button onClick={this.togglePDMPResults}>[show/hide]</button></h4>
         <div style={{ display: this.state.displayPDMPResults ? 'block' : 'none' }}>
-          <pre>{pdmpDataset ? 
-                JSON.stringify(pdmpDataset, null, 2) : 
+          <pre>{pdmpDataset ?
+                JSON.stringify(pdmpDataset, null, 2) :
                 'No result'}</pre>
+        </div>
+      </div>
+    );
+  }
+
+  renderOtherResults() {
+    return (
+      <div className="other-results">
+        <h4>Other Results <button onClick={this.toggleOtherResults}>[show/hide]</button></h4>
+
+        <div style={{ display: this.state.displayOtherResults ? 'block' : 'none' }}>
+          <pre>{JSON.stringify(this.props.other, null, 2)}</pre>
         </div>
       </div>
     );
@@ -128,6 +146,7 @@ export default class DevTools extends Component {
           {this.renderFHIRQueries()}
           {this.renderCQLResults()}
           {this.renderPDMPResults()}
+          {this.renderOtherResults()}
         </div>
       </div>
     );
@@ -136,6 +155,6 @@ export default class DevTools extends Component {
 
 DevTools.propTypes = {
   collector: PropTypes.array.isRequired,
-  result: PropTypes.object.isRequired,
-  summary: PropTypes.object.isRequired
+  summary: PropTypes.object.isRequired,
+  other: PropTypes.object,
 };

@@ -708,17 +708,69 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 1
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "TEST, DOCTOR"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2019-11-15"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "00406577101",
+              "display": "METHADONE HCL 10 MG TABLET",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "864706",
+              "display": "METHADONE HCL 10 MG TABLET",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "METHADONE HCL 10 MG TABLET"
         },
-        "authoredOn": "2019-04-15T16:02:00.000Z"
+        "requester": {
+          "display": "TEST TEST"
+        },
+        "authoredOn": "2019-11-15"
       }
     },
     {
@@ -731,17 +783,69 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 1
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "TEST, DOCTOR"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2019-11-01"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "00406577101",
+              "display": "METHADONE HCL 10 MG TABLET",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "864706",
+              "display": "METHADONE HCL 10 MG TABLET",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "METHADONE HCL 10 MG TABLET"
         },
-        "authoredOn": "2019-01-15T16:02:00.000Z"
+        "requester": {
+          "display": "TEST TEST"
+        },
+        "authoredOn": "2019-11-01"
       }
     },
     {
@@ -754,17 +858,69 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 1
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "TEST, DOCTOR"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2019-10-15"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "00406577101",
+              "display": "METHADONE HCL 10 MG TABLET",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "864706",
+              "display": "METHADONE HCL 10 MG TABLET",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "METHADONE HCL 10 MG TABLET"
         },
-        "authoredOn": "2018-10-15T16:02:00.000Z"
+        "requester": {
+          "display": "TEST TEST"
+        },
+        "authoredOn": "2019-10-15"
       }
     },
     {

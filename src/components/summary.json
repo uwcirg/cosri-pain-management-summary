@@ -25,7 +25,6 @@
     },
     "graphConfig": {
       "demoConfigKey": "USE_DEMO",
-      "useDemo": false,
       "graphDateField": "date",
       "mmeField": "MMEValue",
       "startDateField": "Start",
@@ -115,6 +114,7 @@
             "headers": {
               "Drug Description": "Name",
               "Quantity": "Quantity",
+              "Duration": "Duration",
               "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
               "Dispensed": { "key": "End", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
               "Prescriber": "Prescriber",
