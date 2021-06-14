@@ -21,6 +21,9 @@ export function dateNumberFormat(input) {
   return parseFloat(input.replace(/-/g, ""));
 }
 
+/*
+ * return date part of the GMT date string, e.g. 10/12/1999 from 10/12/1999T12:12:22
+ */
 export function extractDateFromGMTDateString(dateString) {
   if (!dateString) return "";
   if (dateString.indexOf("T") > 0) {

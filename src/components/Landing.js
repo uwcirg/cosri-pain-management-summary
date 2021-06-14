@@ -256,18 +256,15 @@ export default class Landing extends Component {
         }
       });
       const [startDateFieldName, endDateFieldName, MMEValueFieldName, graphDateFieldName] = [graphConfig.startDateField, graphConfig.endDateField, graphConfig.mmeField, graphConfig.graphDateField];
-      // const endDateFieldName = graphConfig.endDateField;
-      // const MMEValueFieldName = graphConfig.mmeField;
-      // const graphDateFieldName = graphConfig.graphDateField;
       const DELIMITER_FIELD_NAME = "delimiter";
       const PLACEHOLDER_FIELD_NAME = "placeholder";
 
+      //sort data by start date
       graph_data = graph_data.filter(function(item) {
         return item[startDateFieldName] && item[endDateFieldName];
       }).sort(function(a, b) {
         return dateCompare(a[startDateFieldName], b[startDateFieldName]);
       });
-      console.log("sorted original graph data ", graph_data)
 
       let dataPoints = [];
       let prevObj = null, nextObj = null;
@@ -276,11 +273,10 @@ export default class Landing extends Component {
           let startDate = extractDateFromGMTDateString(item[startDateFieldName]);
           let endDate = extractDateFromGMTDateString(item[endDateFieldName]);
           let [oStartDate, oEndDate] = [new Date(startDate), new Date(endDate)];
-          //let oEndDate = new Date(endDate);
           let diffTime = oEndDate - oStartDate;
           let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
           nextObj =  (index+1) <= graph_data.length-1 ? graph_data[index+1]: null;
-          //console.log("start date ", startDate, " end Date ", endDate, " dff days " , diffDays)
+
           //add (0, 0) data point to denote start of a new med, only if the start date does not overlap with the end date of the previous med
           if (!prevObj || (prevObj && (dateNumberFormat(item[startDateFieldName]) >= dateNumberFormat(prevObj[endDateFieldName])))){
             dataPoint = {};
@@ -350,8 +346,7 @@ export default class Landing extends Component {
         if (matchedItems.length <= 1) return true;
         matchedItems.forEach(o => {
           cumMMEValue += o[MMEValueFieldName];
-        })
-        //console.log("matchedItems ", matchedItems, " cum ", cumMMEValue);
+        });
         dataPoints.forEach((item) => {
           if (item.date === pointDate && !item[DELIMITER_FIELD_NAME]) { //don't change MME value for (0,0) delimiting data point
             item[MMEValueFieldName] = cumMMEValue;
