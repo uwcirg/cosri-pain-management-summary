@@ -359,8 +359,6 @@ export default class Landing extends Component {
     summary[overviewSectionKey+"_stats"] = stats;
     summary[overviewSectionKey+"_alerts"] = alerts.filter((item,index,thisRef)=>thisRef.findIndex(t=>(t.text === item.text))===index);
 
-    console.log("summary", summary)
-
   }
 
   processEndPoint(endpoint) {
