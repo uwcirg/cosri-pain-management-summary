@@ -530,7 +530,7 @@ export default class Summary extends Component {
     const {EducationMaterials,
       PatientRiskOverview_graph,
       PatientRiskOverview_alerts,
-      PatientRiskOverview_stats, ...devToolSummary} = summary;
+      PatientRiskOverview_stats, ...CQLSummary} = summary;
     if (!summary) { return null; }
 
     const sectionsToRender = [];
@@ -609,7 +609,7 @@ export default class Summary extends Component {
 
           <DevTools
             collector={collector}
-            summary={devToolSummary}
+            summary={CQLSummary}
             //results not coming from CQL
             other={{EducationMaterials, PatientRiskOverview_graph, PatientRiskOverview_alerts, PatientRiskOverview_stats}}
           />

@@ -275,9 +275,9 @@ export default class Landing extends Component {
           let [oStartDate, oEndDate] = [new Date(startDate), new Date(endDate)];
           let diffTime = oEndDate - oStartDate;
           let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          nextObj =  (index+1) <= graph_data.length-1 ? graph_data[index+1]: null;
+          nextObj = (index+1) <= graph_data.length-1 ? graph_data[index+1]: null;
 
-          //add (0, 0) data point to denote start of a new med, only if the start date does not overlap with the end date of the previous med
+          //add (0, 0) data point to denote the start of a new med, only if the start date does not overlap with the end date of the previous med
           if (!prevObj || (prevObj && (dateNumberFormat(item[startDateFieldName]) >= dateNumberFormat(prevObj[endDateFieldName])))){
             dataPoint = {};
             dataPoint[graphDateFieldName] = item[startDateFieldName];
@@ -348,7 +348,7 @@ export default class Landing extends Component {
           cumMMEValue += o[MMEValueFieldName];
         });
         dataPoints.forEach((item) => {
-          if (item.date === pointDate && !item[DELIMITER_FIELD_NAME]) { //don't change MME value for (0,0) delimiting data point
+          if (item.date === pointDate && !item[DELIMITER_FIELD_NAME]) { //don't change MME value for (0,0) delimiting data points, which connect to the start and end MME values for each medication, as displayed by vertical connecting lines
             item[MMEValueFieldName] = cumMMEValue;
           }
         });
