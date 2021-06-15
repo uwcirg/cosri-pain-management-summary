@@ -387,7 +387,7 @@ export default class Landing extends Component {
                   currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
                   finalDataPoints.push(currentDataPoint); 
                   
-               }
+               } else finalDataPoints.push(currentDataPoint); 
               
             }
   
