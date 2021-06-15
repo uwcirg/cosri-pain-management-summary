@@ -375,16 +375,17 @@ export default class Landing extends Component {
               finalDataPoints.push(dataPoint);
             } else {
               
-              if (nextObj && nextObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]) {
-                  currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
-                  finalDataPoints.push(currentDataPoint); 
+              if (prevObj && prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]) {
+                  
                   //add data point with older value for the previous med
-                  nextObj[PLACEHOLDER_FIELD_NAME] = false;
+                  prevObj[PLACEHOLDER_FIELD_NAME] = false;
                   dataPoint = {};
-                  dataPoint[graphDateFieldName] = nextObj[graphDateFieldName];
-                  dataPoint[MMEValueFieldName] = currentDataPoint[MMEValueFieldName];
+                  dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+                  dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
                   dataPoint[PLACEHOLDER_FIELD_NAME] = true;
                   finalDataPoints.push(dataPoint);
+                  currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
+                  finalDataPoints.push(currentDataPoint); 
                   
                }
               
