@@ -300,7 +300,8 @@ export default class Landing extends Component {
             dataPoint[graphDateFieldName] = dataDate;
             dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
             dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-            dataPoint = {...dataPoint, ...currentMedicationItem};
+            dataPoint[startDateFieldName] = dataDate;
+            dataPoint = {...currentMedicationItem, ...dataPoint};
             dataPoints.push(dataPoint);
           }
         }
@@ -312,7 +313,7 @@ export default class Landing extends Component {
         dataPoint[END_DELIMITER_FIELD_NAME] = true;
         //add delimiter flag to denote the end of the medication, if not overlapping with next med
         // if (!nextObj || (nextObj && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName])))) dataPoint[END_DELIMITER_FIELD_NAME] = true;
-        dataPoint = {...dataPoint, ...currentMedicationItem};
+        dataPoint = {...currentMedicationItem, ...dataPoint};
         dataPoints.push(dataPoint);
         prevObj = currentMedicationItem;
 
