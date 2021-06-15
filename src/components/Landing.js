@@ -301,7 +301,7 @@ export default class Landing extends Component {
             dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
             dataPoint[PLACEHOLDER_FIELD_NAME] = true;
             dataPoint[startDateFieldName] = dataDate;
-            dataPoint = {...currentMedicationItem, ...dataPoint};
+            dataPoint = {...dataPoint, ...currentMedicationItem};
             dataPoints.push(dataPoint);
           }
         }
@@ -313,7 +313,7 @@ export default class Landing extends Component {
         dataPoint[END_DELIMITER_FIELD_NAME] = true;
         //add delimiter flag to denote the end of the medication, if not overlapping with next med
         // if (!nextObj || (nextObj && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName])))) dataPoint[END_DELIMITER_FIELD_NAME] = true;
-        dataPoint = {...currentMedicationItem, ...dataPoint};
+        dataPoint = {...dataPoint, ...currentMedicationItem};
         dataPoints.push(dataPoint);
         prevObj = currentMedicationItem;
 
@@ -366,7 +366,7 @@ export default class Landing extends Component {
         //overlapping data points
         if (prevObj && (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
           //add data point with older value for the previous med
-          prevObj[PLACEHOLDER_FIELD_NAME] = false;
+          prevObj[PLACEHOLDER_FIELD_NAME] = !prevObj["dummy"] ? false : true;
           dataPoint = {};
           dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
           dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
@@ -379,6 +379,7 @@ export default class Landing extends Component {
             dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
             dataPoint[MMEValueFieldName] = 0;
             dataPoint[START_DELIMITER_FIELD_NAME] = true;
+            dataPoint["dummy"] = true;
             dataPoint[PLACEHOLDER_FIELD_NAME] = true;
             finalDataPoints.push(dataPoint);
             //add current data point
@@ -390,6 +391,7 @@ export default class Landing extends Component {
             dataPoint = {};
             dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
             dataPoint[MMEValueFieldName] = 0;
+            dataPoint["dummy"] = true;
             dataPoint[END_DELIMITER_FIELD_NAME] = true;
             dataPoint[PLACEHOLDER_FIELD_NAME] = true;
             finalDataPoints.push(dataPoint);
@@ -407,7 +409,7 @@ export default class Landing extends Component {
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
         }
-        prevObj = currentDataPoint;
+        prevObj = finalDataPoints[finalDataPoints.length-1];
       });
       console.log("graph data ", finalDataPoints);
       summary[overviewSectionKey+"_graph"] = finalDataPoints;
