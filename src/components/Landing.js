@@ -282,9 +282,12 @@ export default class Landing extends Component {
         dataPoint = {};
         dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
         dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
-        //add delimiter flag to denote the start of the medication, if not overlapping with previous med
-        if (!prevObj || (prevObj && (dateNumberFormat(currentMedicationItem[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])))) dataPoint[START_DELIMITER_FIELD_NAME] = true;
+        dataPoint = {...dataPoint, ...currentMedicationItem};
         dataPoints.push(dataPoint);
+
+        // //add delimiter flag to denote the start of the medication, if not overlapping with previous med
+        // if (!prevObj || (prevObj && (dateNumberFormat(currentMedicationItem[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])))) dataPoint[START_DELIMITER_FIELD_NAME] = true;
+        // dataPoints.push(dataPoint);
 
         //add intermediate data points between start and end dates
         if (diffDays >= 2) {
@@ -296,6 +299,7 @@ export default class Landing extends Component {
             dataPoint[graphDateFieldName] = dataDate;
             dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
             dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+            dataPoint = {...dataPoint, ...currentMedicationItem};
             dataPoints.push(dataPoint);
           }
         }
@@ -305,7 +309,8 @@ export default class Landing extends Component {
         dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
         dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
         //add delimiter flag to denote the end of the medication, if not overlapping with next med
-        if (!nextObj || (nextObj && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName])))) dataPoint[END_DELIMITER_FIELD_NAME] = true;
+        // if (!nextObj || (nextObj && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName])))) dataPoint[END_DELIMITER_FIELD_NAME] = true;
+        dataPoint = {...dataPoint, ...currentMedicationItem};
         dataPoints.push(dataPoint);
         prevObj = currentMedicationItem;
 
@@ -340,46 +345,64 @@ export default class Landing extends Component {
         });
       });
 
+      console.log("first round ", dataPoints)
       prevObj = null;
       let finalDataPoints = [];
       dataPoints.forEach(function(currentDataPoint, index) {
         let dataPoint = {};
         nextObj = dataPoints[index+1] ? dataPoints[index+1]: null;
-
-        //add start delimiting (0, 0) data point
-        if (currentDataPoint[START_DELIMITER_FIELD_NAME]) {
+        if (!prevObj) {
+          //add starting graph point
           dataPoint = {};
           dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
           dataPoint[MMEValueFieldName] = 0;
           dataPoint[START_DELIMITER_FIELD_NAME] = true;
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
-          //add current data point
-          finalDataPoints.push(currentDataPoint);
         }
-        //add end delimiting (0, 0) data point
-        else if (currentDataPoint[END_DELIMITER_FIELD_NAME]) {
+        //overlapping data points
+        if (prevObj && (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
+          //add data point with older value for the previous med
+          prevObj[PLACEHOLDER_FIELD_NAME] = false;
+          dataPoint = {};
+          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+          dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
+          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+          finalDataPoints.push(dataPoint);
+          currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
           finalDataPoints.push(currentDataPoint);
+        } else if (prevObj && dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
+            dataPoint = {};
+            dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+            dataPoint[MMEValueFieldName] = 0;
+            dataPoint[START_DELIMITER_FIELD_NAME] = true;
+            dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+            finalDataPoints.push(dataPoint);
+            //add current data point
+            finalDataPoints.push(currentDataPoint);
+        }
+        else if (nextObj && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName]))) {
+            //add current data point
+            finalDataPoints.push(currentDataPoint);
+            dataPoint = {};
+            dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+            dataPoint[MMEValueFieldName] = 0;
+            dataPoint[END_DELIMITER_FIELD_NAME] = true;
+            dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+            finalDataPoints.push(dataPoint);
+        }
+        else {
+            finalDataPoints.push(currentDataPoint);
+        }
+
+        if (!nextObj) {
+          //add ending graph point
           dataPoint = {};
           dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
           dataPoint[MMEValueFieldName] = 0;
           dataPoint[END_DELIMITER_FIELD_NAME] = true;
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
-        } else {
-          //overlapping data points
-          if (prevObj && prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]) {
-              //add data point with older value for the previous med
-              prevObj[PLACEHOLDER_FIELD_NAME] = false;
-              dataPoint = {};
-              dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-              dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
-              dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-              finalDataPoints.push(dataPoint);
-              currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
-              finalDataPoints.push(currentDataPoint);
-          } else finalDataPoints.push(currentDataPoint);
-
         }
         prevObj = currentDataPoint;
       });
