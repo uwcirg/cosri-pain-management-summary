@@ -305,7 +305,7 @@ export default class Landing extends Component {
         dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
         dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
         //add delimiter flag to denote the end of the medication
-        if ((nextObj && !(dateNumberFormat(currentMedicationItem[endDateFieldName]) > dateNumberFormat(nextObj[startDateFieldName])))) dataPoint[END_DELIMITER_FIELD_NAME] = true;
+        if ((nextObj && !(dateNumberFormat(currentMedicationItem[endDateFieldName]) >= dateNumberFormat(nextObj[startDateFieldName])))) dataPoint[END_DELIMITER_FIELD_NAME] = true;
         dataPoints.push(dataPoint);
         prevObj = currentMedicationItem;
 
