@@ -282,6 +282,7 @@ export default class Landing extends Component {
         dataPoint = {};
         dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
         dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
+        dataPoint[START_DELIMITER_FIELD_NAME] = true;
         dataPoint = {...dataPoint, ...currentMedicationItem};
         dataPoints.push(dataPoint);
 
@@ -308,6 +309,7 @@ export default class Landing extends Component {
         dataPoint = {};
         dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
         dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
+        dataPoint[END_DELIMITER_FIELD_NAME] = true;
         //add delimiter flag to denote the end of the medication, if not overlapping with next med
         // if (!nextObj || (nextObj && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentMedicationItem[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName])))) dataPoint[END_DELIMITER_FIELD_NAME] = true;
         dataPoint = {...dataPoint, ...currentMedicationItem};
@@ -371,7 +373,7 @@ export default class Landing extends Component {
           finalDataPoints.push(dataPoint);
           currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
           finalDataPoints.push(currentDataPoint);
-        } else if (prevObj && dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
+        } else if (prevObj && currentDataPoint[START_DELIMITER_FIELD_NAME] && dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
             dataPoint = {};
             dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
             dataPoint[MMEValueFieldName] = 0;
@@ -381,7 +383,7 @@ export default class Landing extends Component {
             //add current data point
             finalDataPoints.push(currentDataPoint);
         }
-        else if (nextObj && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName]))) {
+        else if (nextObj && currentDataPoint[END_DELIMITER_FIELD_NAME] && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName]))) {
             //add current data point
             finalDataPoints.push(currentDataPoint);
             dataPoint = {};
