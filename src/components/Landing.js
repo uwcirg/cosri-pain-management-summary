@@ -283,7 +283,7 @@ export default class Landing extends Component {
         dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
         dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
         //add delimiter flag to denote the start of the medication
-        if ( (prevObj && (dateNumberFormat(currentMedicationItem[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])))) dataPoint[START_DELIMITER_FIELD_NAME] = true;
+        if (!prevObj || (prevObj && (dateNumberFormat(currentMedicationItem[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])))) dataPoint[START_DELIMITER_FIELD_NAME] = true;
         dataPoints.push(dataPoint);
 
         //add intermediate data points between start and end dates
@@ -305,7 +305,7 @@ export default class Landing extends Component {
         dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
         dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
         //add delimiter flag to denote the end of the medication
-        if ((nextObj && !(dateNumberFormat(currentMedicationItem[endDateFieldName]) >= dateNumberFormat(nextObj[startDateFieldName])))) dataPoint[END_DELIMITER_FIELD_NAME] = true;
+        if (!nextObj || (nextObj && !(dateNumberFormat(currentMedicationItem[endDateFieldName]) >= dateNumberFormat(nextObj[startDateFieldName])))) dataPoint[END_DELIMITER_FIELD_NAME] = true;
         dataPoints.push(dataPoint);
         prevObj = currentMedicationItem;
 
@@ -345,13 +345,13 @@ export default class Landing extends Component {
       dataPoints.forEach(function(currentDataPoint, index) {
         let dataPoint = {};
         nextObj = dataPoints[index+1] ? dataPoints[index+1]: null;
-        if (index === 0) {
+        /*if (index === 0) {
           dataPoint = {};
           dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
           dataPoint[MMEValueFieldName] = 0;
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
-        }
+        }*/
          
             //add start delimiting (0, 0) data point
             if (currentDataPoint[START_DELIMITER_FIELD_NAME]) {
@@ -394,13 +394,13 @@ export default class Landing extends Component {
                          
                          
         //add end of line point denoting end of med
-        if (!nextObj) {
+        /*if (!nextObj) {
           dataPoint = {};
           dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
           dataPoint[MMEValueFieldName] = 0;
          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
-        }
+        }*/
         prevObj = currentDataPoint;
       });
       console.log("graph data ", finalDataPoints);
