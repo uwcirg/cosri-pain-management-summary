@@ -382,7 +382,7 @@ export default class Landing extends Component {
                   dataPoint = {};
                   dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
                   dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
-                  dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+                 // dataPoint[PLACEHOLDER_FIELD_NAME] = true;
                   finalDataPoints.push(dataPoint);
                   currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
                   finalDataPoints.push(currentDataPoint); 
