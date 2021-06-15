@@ -345,13 +345,13 @@ export default class Landing extends Component {
       dataPoints.forEach(function(currentDataPoint, index) {
         let dataPoint = {};
         nextObj = dataPoints[index+1] ? dataPoints[index+1]: null;
-        if (index === 0) {
-          dataPoint = {};
-          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-          dataPoint[MMEValueFieldName] = 0;
-          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-          finalDataPoints.push(dataPoint);
-        }
+     //   if (index === 0) {
+     //     dataPoint = {};
+     //     dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+     //     dataPoint[MMEValueFieldName] = 0;
+     //     dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+     //     finalDataPoints.push(dataPoint);
+      //  }
          
             //add start delimiting (0, 0) data point
             if (currentDataPoint[START_DELIMITER_FIELD_NAME]) {
@@ -375,16 +375,17 @@ export default class Landing extends Component {
               finalDataPoints.push(dataPoint);
             } else {
               
-              if (prevObj && prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]) {
+              if (nextObj && nextObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]) {
+                  currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
+                  finalDataPoints.push(currentDataPoint); 
                   //add data point with older value for the previous med
-                  prevObj[PLACEHOLDER_FIELD_NAME] = false;
+                  nextObj[PLACEHOLDER_FIELD_NAME] = false;
                   dataPoint = {};
-                  dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-                  dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
+                  dataPoint[graphDateFieldName] = nextObj[graphDateFieldName];
+                  dataPoint[MMEValueFieldName] = currentDataPoint[MMEValueFieldName];
                   dataPoint[PLACEHOLDER_FIELD_NAME] = true;
                   finalDataPoints.push(dataPoint);
-                  currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
-                  finalDataPoints.push(currentDataPoint);
+                  
                }
               
             }
@@ -392,13 +393,13 @@ export default class Landing extends Component {
                          
                          
         //add end of line point denoting end of med
-        if (!nextObj) {
-          dataPoint = {};
-          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-          dataPoint[MMEValueFieldName] = 0;
-          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-          finalDataPoints.push(dataPoint);
-        }
+      //  if (!nextObj) {
+      //    dataPoint = {};
+      //    dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+      //    dataPoint[MMEValueFieldName] = 0;
+       //   dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+      //    finalDataPoints.push(dataPoint);
+      //  }
         prevObj = currentDataPoint;
       });
       console.log("graph data ", finalDataPoints);
