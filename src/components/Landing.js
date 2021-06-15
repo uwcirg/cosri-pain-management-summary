@@ -352,17 +352,7 @@ export default class Landing extends Component {
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
         }
-        if (prevObj && prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]) {
-          //add data point with older value for the previous med
-          prevObj[PLACEHOLDER_FIELD_NAME] = false;
-          dataPoint = {};
-          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-          dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
-          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-          finalDataPoints.push(dataPoint);
-          currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
-          finalDataPoints.push(currentDataPoint);
-        } else {
+         
             //add start delimiting (0, 0) data point
             if (currentDataPoint[START_DELIMITER_FIELD_NAME]) {
               dataPoint = {};
@@ -371,22 +361,36 @@ export default class Landing extends Component {
               dataPoint[START_DELIMITER_FIELD_NAME] = true;
               dataPoint[PLACEHOLDER_FIELD_NAME] = true;
               finalDataPoints.push(dataPoint);
+              //add current data point
+              finalDataPoints.push(currentDataPoint); 
             }
-            //add current data point
-            finalDataPoints.push(currentDataPoint);
-
             //add end delimiting (0, 0) data point
-            if (currentDataPoint[END_DELIMITER_FIELD_NAME]) {
-              //finalDataPoints.push(currentDataPoint);
+            else if (currentDataPoint[END_DELIMITER_FIELD_NAME]) {
+              finalDataPoints.push(currentDataPoint);
               dataPoint = {};
               dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
               dataPoint[MMEValueFieldName] = 0;
               dataPoint[END_DELIMITER_FIELD_NAME] = true;
               dataPoint[PLACEHOLDER_FIELD_NAME] = true;
               finalDataPoints.push(dataPoint);
+            } else {
+              
+              if (prevObj && prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]) {
+                  //add data point with older value for the previous med
+                  prevObj[PLACEHOLDER_FIELD_NAME] = false;
+                  dataPoint = {};
+                  dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+                  dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
+                  dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+                  finalDataPoints.push(dataPoint);
+                  currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
+                  finalDataPoints.push(currentDataPoint);
+               }
+              
             }
-
-        }
+  
+                         
+                         
         //add end of line point denoting end of med
         if (!nextObj) {
           dataPoint = {};
