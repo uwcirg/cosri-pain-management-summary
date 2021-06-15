@@ -359,7 +359,7 @@ export default class Landing extends Component {
               dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
               dataPoint[MMEValueFieldName] = 0;
               dataPoint[START_DELIMITER_FIELD_NAME] = true;
-              dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+              if (!prevObj) dataPoint[PLACEHOLDER_FIELD_NAME] = true;
               finalDataPoints.push(dataPoint);
               //add current data point
               finalDataPoints.push(currentDataPoint); 
@@ -371,7 +371,7 @@ export default class Landing extends Component {
               dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
               dataPoint[MMEValueFieldName] = 0;
               dataPoint[END_DELIMITER_FIELD_NAME] = true;
-              dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+              if (!nextObj) dataPoint[PLACEHOLDER_FIELD_NAME] = true;
               finalDataPoints.push(dataPoint);
             } else {
               
