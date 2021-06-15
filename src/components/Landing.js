@@ -376,7 +376,7 @@ export default class Landing extends Component {
 
             //add end delimiting (0, 0) data point
             if (currentDataPoint[END_DELIMITER_FIELD_NAME]) {
-              finalDataPoints.push(currentDataPoint);
+              //finalDataPoints.push(currentDataPoint);
               dataPoint = {};
               dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
               dataPoint[MMEValueFieldName] = 0;
