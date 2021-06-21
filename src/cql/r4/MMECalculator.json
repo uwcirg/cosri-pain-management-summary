@@ -1569,6 +1569,42 @@
                               "type" : "Literal"
                            } ]
                         }
+                     }, {
+                        "name" : "strength",
+                        "value" : {
+                           "type" : "Query",
+                           "source" : [ {
+                              "alias" : "$this",
+                              "expression" : {
+                                 "name" : "prescription",
+                                 "type" : "QueryLetRef"
+                              }
+                           } ],
+                           "where" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "strength",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "$this",
+                                       "type" : "AliasRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "return" : {
+                              "expression" : {
+                                 "path" : "strength",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "$this",
+                                    "type" : "AliasRef"
+                                 }
+                              }
+                           }
+                        }
                      } ]
                   }
                }
@@ -1710,6 +1746,49 @@
                               "value" : "\r\n",
                               "type" : "Literal"
                            }
+                        }
+                     }, {
+                        "name" : "conversionFactor",
+                        "value" : {
+                           "type" : "Query",
+                           "source" : [ {
+                              "alias" : "$this",
+                              "expression" : {
+                                 "name" : "mmePerIngredient",
+                                 "type" : "QueryLetRef"
+                              }
+                           } ],
+                           "where" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "conversionFactor",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "$this",
+                                       "type" : "AliasRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "return" : {
+                              "expression" : {
+                                 "path" : "conversionFactor",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "$this",
+                                    "type" : "AliasRef"
+                                 }
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "strength",
+                        "value" : {
+                           "path" : "strength",
+                           "scope" : "P",
+                           "type" : "Property"
                         }
                      }, {
                         "name" : "mme",

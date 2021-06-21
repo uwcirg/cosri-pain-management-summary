@@ -151,7 +151,8 @@ define function Prescriptions(Orders List<MedicationRequest>):
       dose: GetMedicationQuantity(O),
       doseRange: doseRange,
       doseQuantity: doseAndRate.dose,
-      dosesPerDay: Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0)
+      dosesPerDay: Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0),
+      strength: prescription.strength
     }
 
 /*
@@ -170,6 +171,8 @@ define function MME(prescriptions List<MedicationRequest>):
       doseQuantity: P.dose,
       dosesPerDay: P.dosesPerDay,
       dailyDose: Combine(mmePerIngredient X return X.dailyDoseDescription, '\r\n'),
+      conversionFactor: mmePerIngredient.conversionFactor,
+      strength: P.strength,
       mme: Sum(mmePerIngredient X return X.mme)
     }
 

@@ -708,16 +708,69 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 3
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-04-21"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 0.3333333333333333
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 3,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "197696",
-              "display": "72 HR Fentanyl 0.075 MG/HR Transdermal System"
+              "code": "61919060205",
+              "display": "Fentanyl Transdermal System, 0.025 mg/hr ",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "245134",
+              "display": "Fentanyl Transdermal System, 0.025 mg/hr ",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
-          ]
+          ],
+          "text": "Fentanyl Transdermal System, 0.025 mg/hr "
         },
-        "authoredOn": "2020-09-05"
+        "requester": {
+          "display": "New PRESCRIBER"
+        },
+        "authoredOn": "2021-04-21"
       }
     },
     {
