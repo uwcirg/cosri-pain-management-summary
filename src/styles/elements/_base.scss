@@ -1,4 +1,4 @@
-$min-header-height: 136px;
+$min-header-height: 132px;
 body {
   margin: 0;
   padding: 0;
@@ -36,4 +36,10 @@ h3:focus {
 a {
   color: $link-color;
   font-weight: 600;
+}
+.text-warning {
+  color: $color-warning;
+}
+.text-success {
+  color: $color-success;
 }
