@@ -82,6 +82,7 @@ define function GetMedicationQuantity(medication MedicationRequest):
                 then OMTKLogic.ToUCUM(prescription.strength.unit) else null,
       doseQuantity:
               case
+                //look for dosage instruction first
                 when dosage is not null and dosage.high is null then
                   System.Quantity {
                       value: dosage.value.value,

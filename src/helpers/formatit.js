@@ -12,6 +12,26 @@ export function dateFormat(result, input, format) {
   return moment.parseZone(input).format(format);
 }
 
+/*
+ * assume date in YYYY-MM-DD formate
+ * return date to number format, 19901112
+ */
+export function dateNumberFormat(input) {
+  if (!input) return "";
+  return parseFloat(input.replace(/-/g, ""));
+}
+
+/*
+ * return date part of the GMT date string, e.g. 10/12/1999 from 10/12/1999T12:12:22
+ */
+export function extractDateFromGMTDateString(dateString) {
+  if (!dateString) return "";
+  if (dateString.indexOf("T") > 0) {
+    return dateString.substring(0, dateString.indexOf("T"));
+  }
+  return dateString;
+}
+
 export function currentDateTimeFormat() {
   return moment().format("MMMM Do YYYY, h:mm:ss a");
 }
@@ -92,7 +112,7 @@ export function stringSubstitutionFormat(result, input, replacement) {
   return replacement;
 }
 /*
- * format input as a anchor link or embed video link 
+ * format input as a anchor link or embed video link
  */
 export function linkFormat(result, input) {
   let isVideoLink = input['type'] === 'video' && input['embedVideoSrc'];
@@ -104,7 +124,7 @@ export function linkFormat(result, input) {
           toggleable={true}
         />
     );
-  } 
+  }
   return (
     <div className="link-container">
       <a href={input['url']} title={input['title']} target='_blank' rel='noopener noreferrer' className={input['className']}>{input['title']}</a>
@@ -151,7 +171,7 @@ export function codeableConceptFormat(result, input, key, field, codingField, co
   if (!input) {
     return '';
   }
-  if (typeof input === 'object' && 
+  if (typeof input === 'object' &&
       typeof input[key] === 'string') {
     return input[key];
   }

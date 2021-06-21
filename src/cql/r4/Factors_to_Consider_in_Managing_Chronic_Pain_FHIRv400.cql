@@ -613,6 +613,7 @@ define ReportPDMPMedicationRequests:
       CalculatedEnd: CalculatedEnd, //of datetime type
       End: ToString(CalculatedEnd), //of string type
       Quantity: if dispenseRequest is not null then dispenseRequest.quantity.value.value else null,
+      Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
       Prescriber: O.requester.display.value,
       Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
       Status: O.status.value
@@ -801,7 +802,7 @@ define ReportMMEByDates:
   return {
     Start: R.Start,
     End: R.End,
-    MMEValue: Sum(ReportMME M where M.End ~ R.End return M.MMEValue)
+    MMEValue: First(ReportMME M where M.Start ~ R.Start return M.MMEValue)
   }
   sort by End
 

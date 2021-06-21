@@ -4031,6 +4031,52 @@
                            }
                         }
                      }, {
+                        "name" : "Duration",
+                        "value" : {
+                           "type" : "If",
+                           "condition" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "IsNull",
+                                    "operand" : {
+                                       "path" : "expectedSupplyDuration",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "dispenseRequest",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    }
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "expectedSupplyDuration",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "dispenseRequest",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "else" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Null"
+                              }
+                           }
+                        }
+                     }, {
                         "name" : "Prescriber",
                         "value" : {
                            "path" : "value",
@@ -5621,7 +5667,7 @@
                      }, {
                         "name" : "MMEValue",
                         "value" : {
-                           "type" : "Sum",
+                           "type" : "First",
                            "source" : {
                               "type" : "Query",
                               "source" : [ {
@@ -5635,11 +5681,11 @@
                               "where" : {
                                  "type" : "Equivalent",
                                  "operand" : [ {
-                                    "path" : "End",
+                                    "path" : "Start",
                                     "scope" : "M",
                                     "type" : "Property"
                                  }, {
-                                    "path" : "End",
+                                    "path" : "Start",
                                     "scope" : "R",
                                     "type" : "Property"
                                  } ]

@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
-import {datishFormat} from '../helpers/formatit';
+import {datishFormat, dateFormat, dateNumberFormat, extractDateFromGMTDateString} from '../helpers/formatit';
+import {dateCompare} from '../helpers/sortit';
 import summaryMap from './summary.json';
 
 import {getEnv, fetchEnvData} from '../utils/envConfig';
@@ -237,109 +238,186 @@ export default class Landing extends Component {
     alerts.sort(function (a, b) {
       return a.priority - b.priority;
     });
-
+     //process graph data
     let graphConfig = overviewSection.graphConfig;
-    //process graph data
-    if (graphConfig && graphConfig.summaryDataSource) {
-      //get the data from summary data
-      let sections = graphConfig.summaryDataSource;
-      let graph_data = [];
-      let formattedGraphData = [];
-      if (getEnv(graphConfig.demoConfigKey) || graphConfig.useDemo) {
-        graph_data = graphConfig.demoData;
-        summary[overviewSectionKey+"_graph"] = graph_data;
-      } else {
-        sections.forEach(item => {
-          if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
-            //console.log("section data? ", summary[item.section_key][item.subSection_key])
-            graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]];
-          }
-        });
-        let prevObj = null;
-        let o = {};
-        const PLACEHOLDER_FIELD_NAME = "placeholder";
-        const compareDate = (a, b) => {
-          let calcA = (new Date(a["Start"])).getTime();
-          let calcB = (new Date(b["Start"])).getTime();
-          if (calcA > calcB) return 1;
-          if (calcB > calcA) return -1;
-          return 0;
-        }
-        graph_data = graph_data.sort(compareDate);
-        /*
-         * processing graph data
-         */
-        graph_data.forEach(function(item, index) {
-          /* make sure dates are in consistent format */
-          let startDate = item[graphConfig.startDateField];
-          if (startDate.indexOf("T") > 0) {
-            startDate = startDate.substring(0, startDate.indexOf("T"));
-          }
-          let endDate = item[graphConfig.endDateField];
-          if (endDate.indexOf("T") > 0) {
-            endDate = endDate.substring(0, endDate.indexOf("T"));
-          }
-          //baseline point
-          if (index === 0 && item[graphConfig.mmeField] !== 0) {
-            o = {};
-            o[graphConfig.graphDateField]=startDate;
-            o[graphConfig.mmeField] = 0;
-            o[PLACEHOLDER_FIELD_NAME] = true;
-            formattedGraphData.unshift(o);
-          }
-          //add placeholder data points for the period
-          if (prevObj) {
-            if (prevObj[graphConfig.mmeField] !== item[graphConfig.mmeField] || (prevObj[graphConfig.startDateField] !== item[graphConfig.startDateField])) {
-              o = {};
-              o[graphConfig.graphDateField] = prevObj[graphConfig.endDateField];
-              o[graphConfig.mmeField] = 0;
-              o[PLACEHOLDER_FIELD_NAME] = true;
-              formattedGraphData.push(o);
-              o = {};
-              o[graphConfig.graphDateField]=startDate;
-              o[graphConfig.mmeField] = 0;
-              o[PLACEHOLDER_FIELD_NAME] = true;
-              formattedGraphData.push(o);
-            } else {
-              o = {};
-              o[graphConfig.graphDateField]=startDate;
-              o[graphConfig.mmeField] = prevObj[graphConfig.mmeField];
-              o[PLACEHOLDER_FIELD_NAME] = true;
-              formattedGraphData.push(o);
-            }
-          }
-          //add data point for staring date
-          o = {};
-          o[graphConfig.graphDateField]=startDate;
-          o[graphConfig.mmeField]=item[graphConfig.mmeField];
-          formattedGraphData.push(o);
-
-          //add data point for end date
-          o = {};
-          o[graphConfig.graphDateField] = endDate;
-          o[graphConfig.mmeField] = item[graphConfig.mmeField];
-          formattedGraphData.push(o);
-
-          //data end point
-          if (graph_data.length > 1 &&
-              (index === graph_data.length-1) &&
-              item[graphConfig.mmeField] !== 0) {
-            o = {};
-            o[graphConfig.graphDateField] = endDate;
-            o[graphConfig.mmeField] = 0;
-            o[PLACEHOLDER_FIELD_NAME] = true;
-            formattedGraphData.push(o)
-          }
-          prevObj = JSON.parse(JSON.stringify(item));
-        });
-        summary[overviewSectionKey+"_graph"] = formattedGraphData;
-        console.log("formatted graph data: ", formattedGraphData);
-      }
-
-      //console.log("graph data?? ", graph_data)
+    if (!(graphConfig && graphConfig.summaryDataSource)) {
+      return;
     }
+    //get the data from summary data
+    let sections = graphConfig.summaryDataSource;
+    let graph_data = [];
+    if (getEnv(graphConfig.demoConfigKey)) {
+      graph_data = graphConfig.demoData;
+      summary[overviewSectionKey+"_graph"] = graph_data;
+    } else {
+      sections.forEach(item => {
+        if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
+          graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]];
+        }
+      });
+      const [startDateFieldName, endDateFieldName, MMEValueFieldName, graphDateFieldName] = [graphConfig.startDateField, graphConfig.endDateField, graphConfig.mmeField, graphConfig.graphDateField];
+      const START_DELIMITER_FIELD_NAME = "start_delimiter";
+      const END_DELIMITER_FIELD_NAME = "end_delimiter";
+      const PLACEHOLDER_FIELD_NAME = "placeholder";
 
+      //sort data by start date
+      graph_data = graph_data.filter(function(item) {
+        return item[startDateFieldName] && item[endDateFieldName];
+      }).sort(function(a, b) {
+        return dateCompare(a[startDateFieldName], b[startDateFieldName]);
+      });
 
+      let dataPoints = [];
+      let prevObj = null, nextObj = null;
+      graph_data.forEach(function(currentMedicationItem, index) {
+        let dataPoint = {};
+        let startDate = extractDateFromGMTDateString(currentMedicationItem[startDateFieldName]);
+        let endDate = extractDateFromGMTDateString(currentMedicationItem[endDateFieldName]);
+        let [oStartDate, oEndDate] = [new Date(startDate), new Date(endDate)];
+        let diffTime = oEndDate - oStartDate;
+        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        nextObj = (index+1) <= graph_data.length-1 ? graph_data[index+1]: null;
+
+        //add start date data point
+        dataPoint = {};
+        dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
+        dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
+        dataPoint[START_DELIMITER_FIELD_NAME] = true;
+        dataPoint = {...dataPoint, ...currentMedicationItem};
+        dataPoints.push(dataPoint);
+
+        //add intermediate data points between start and end dates
+        if (diffDays >= 2) {
+          for (let index = 2; index <= diffDays; index++) {
+            let dataDate = new Date(oStartDate.valueOf());
+            dataDate.setTime(dataDate.getTime() + (index * 24 * 60 * 60 * 1000));
+            dataDate = dateFormat("", dataDate, "YYYY-MM-DD");
+            dataPoint = {};
+            dataPoint[graphDateFieldName] = dataDate;
+            dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
+            dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+            dataPoint[startDateFieldName] = dataDate;
+            dataPoint = {...dataPoint, ...currentMedicationItem};
+            dataPoints.push(dataPoint);
+          }
+        }
+
+        //add end Date data point
+        dataPoint = {};
+        dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
+        dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
+        dataPoint[END_DELIMITER_FIELD_NAME] = true;
+        dataPoint = {...dataPoint, ...currentMedicationItem};
+        dataPoints.push(dataPoint);
+        prevObj = currentMedicationItem;
+
+      });
+
+      //sort data by date
+      dataPoints = dataPoints.sort(function(a, b) {
+        return dateCompare(a[graphDateFieldName], b[graphDateFieldName]);
+      });
+
+      //get all available dates
+      let arrDates = (dataPoints.map(item => item.date));
+      arrDates = arrDates.filter((d, index) => {
+        return arrDates.indexOf(d) === index;
+      });
+
+      //loop through graph data to ADD MME values for the ones occurring on the same date
+      let cumMMEValue = 0;
+      arrDates.forEach(pointDate => {
+        cumMMEValue = 0;
+        let matchedItems = dataPoints.filter(d => {
+          return d.date === pointDate;
+        });
+        if (matchedItems.length <= 1) return true;
+        matchedItems.forEach(o => {
+          cumMMEValue += o[MMEValueFieldName];
+        });
+        dataPoints.forEach((dataPoint) => {
+          if (dataPoint.date === pointDate) {
+            dataPoint[MMEValueFieldName] = cumMMEValue;
+          }
+        });
+      });
+      prevObj = null;
+      let finalDataPoints = [];
+      let DUMMY_FIELD_NAME = "dummy";
+      dataPoints.forEach(function(currentDataPoint, index) {
+        let dataPoint = {};
+        nextObj = dataPoints[index+1] ? dataPoints[index+1]: null;
+        if (!prevObj) {
+          //add starting graph point
+          dataPoint = {};
+          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+          dataPoint[MMEValueFieldName] = 0;
+          dataPoint[START_DELIMITER_FIELD_NAME] = true;
+          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+          finalDataPoints.push(dataPoint);
+        }
+        //overlapping data points
+        if (prevObj && (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
+          //add data point with older value for the previous med
+          prevObj[PLACEHOLDER_FIELD_NAME] = !prevObj[DUMMY_FIELD_NAME] ? false : true;
+          dataPoint = {};
+          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+          dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
+          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+          finalDataPoints.push(dataPoint);
+          currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
+          finalDataPoints.push(currentDataPoint);
+        } else if (prevObj && currentDataPoint[START_DELIMITER_FIELD_NAME] && dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
+            //add 0 value dummy data point to denote start of med
+            dataPoint = {};
+            dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+            dataPoint[MMEValueFieldName] = 0;
+            dataPoint[START_DELIMITER_FIELD_NAME] = true;
+            dataPoint[DUMMY_FIELD_NAME] = true;
+            dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+            finalDataPoints.push(dataPoint);
+            //add current data point
+            finalDataPoints.push(currentDataPoint);
+        }
+        else if (nextObj && currentDataPoint[END_DELIMITER_FIELD_NAME] && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName]))) {
+            //add current data point
+            finalDataPoints.push(currentDataPoint);
+            //add 0 value dummy data point to denote end of med
+            dataPoint = {};
+            dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+            dataPoint[MMEValueFieldName] = 0;
+            dataPoint[DUMMY_FIELD_NAME] = true;
+            dataPoint[END_DELIMITER_FIELD_NAME] = true;
+            dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+            finalDataPoints.push(dataPoint);
+        }
+        else {
+            finalDataPoints.push(currentDataPoint);
+        }
+
+        if (!nextObj) {
+          //add ending graph point
+          dataPoint = {};
+          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+          dataPoint[MMEValueFieldName] = 0;
+          dataPoint[END_DELIMITER_FIELD_NAME] = true;
+          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+          finalDataPoints.push(dataPoint);
+        }
+        prevObj = finalDataPoints[finalDataPoints.length-1];
+      });
+      console.log("graph data ", finalDataPoints);
+      let formattedData = (JSON.parse(JSON.stringify(finalDataPoints))).map(point => {
+        let o = {};
+        o[graphDateFieldName] = point[graphDateFieldName];
+        o[MMEValueFieldName] = point[MMEValueFieldName];
+        if (point[PLACEHOLDER_FIELD_NAME]) {
+          o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
+        }
+        return o;
+      });
+      summary[overviewSectionKey+"_graph"] = formattedData;
+    }
     summary[overviewSectionKey+"_stats"] = stats;
     summary[overviewSectionKey+"_alerts"] = alerts.filter((item,index,thisRef)=>thisRef.findIndex(t=>(t.text === item.text))===index);
 

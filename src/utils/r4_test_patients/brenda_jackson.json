@@ -717,50 +717,7 @@
             }
           ]
         },
-        "authoredOn": "2020-09-05",
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 30.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseRange": {
-                  "low": {
-                    "value": 1,
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mg/(72.h)",
-                    "unit": "mg/(72.h)"
-                  },
-                  "high": {
-                    "value": 3,
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mg/(72.h)",
-                    "unit": "mg/(72.h)"
-                  }
-                }
-              }
-            ]
-          }
-        ],
-        "dispenseRequest": {
-          "validityPeriod": {
-            "start": "2020-09-05",
-            "end": "2020-12-25"
-          },
-          "numberOfRepeatsAllowed": 1,
-          "expectedSupplyDuration": {
-            "value": 30,
-            "unit": "days",
-            "system": "http://unitsofmeasure.org",
-            "code": "d"
-          }
-        }
+        "authoredOn": "2020-09-05"
       }
     },
     {
@@ -780,41 +737,6 @@
               "display": "72 HR Fentanyl 0.075 MG/HR Transdermal System"
             }
           ]
-        },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 3.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg/(72.h)",
-                  "unit": "mg/(72.h)"
-                }
-              }
-            ]
-          }
-        ],
-        "dispenseRequest": {
-          "validityPeriod": {
-            "start": "2018-07-15",
-            "end": "2018-08-25"
-          },
-          "numberOfRepeatsAllowed": 3,
-          "expectedSupplyDuration": {
-            "value": 30,
-            "unit": "days",
-            "system": "http://unitsofmeasure.org",
-            "code": "d"
-          }
         },
         "authoredOn": "2018-07-15T16:02:00.000Z"
       }
@@ -838,41 +760,6 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg",
-                  "unit": "mg"
-                }
-              }
-            ]
-          }
-        ],
-        "dispenseRequest": {
-          "validityPeriod": {
-            "start": "2018-07-15",
-            "end": "2018-07-15"
-          },
-          "numberOfRepeatsAllowed": 1,
-          "expectedSupplyDuration": {
-            "value": 1,
-            "unit": "days",
-            "system": "http://unitsofmeasure.org",
-            "code": "d"
-          }
-        },
         "authoredOn": "2018-07-15T16:02:00.000Z"
       }
     },
@@ -895,41 +782,6 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg",
-                  "unit": "mg"
-                }
-              }
-            ]
-          }
-        ],
-        "dispenseRequest": {
-          "validityPeriod": {
-            "start": "2018-07-15",
-            "end": "2018-07-15"
-          },
-          "numberOfRepeatsAllowed": 1,
-          "expectedSupplyDuration": {
-            "value": 1,
-            "unit": "days",
-            "system": "http://unitsofmeasure.org",
-            "code": "d"
-          }
-        },
         "authoredOn": "2018-07-15T16:02:00.000Z"
       }
     },
@@ -951,41 +803,6 @@
             }
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
-        },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg",
-                  "unit": "mg"
-                }
-              }
-            ]
-          }
-        ],
-        "dispenseRequest": {
-          "validityPeriod": {
-            "start": "2019-07-15",
-            "end": "2019-07-15"
-          },
-          "numberOfRepeatsAllowed": 1,
-          "expectedSupplyDuration": {
-            "value": 1,
-            "unit": "days",
-            "system": "http://unitsofmeasure.org",
-            "code": "d"
-          }
         },
         "authoredOn": "2019-07-15T16:02:00.000Z"
       }
@@ -1010,28 +827,6 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg",
-                  "unit": "mg"
-                }
-              }
-            ]
-          }
-        ],
         "authoredOn": "2020-05-15T16:02:00.000Z"
       }
     },
@@ -1055,28 +850,6 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg",
-                  "unit": "mg"
-                }
-              }
-            ]
-          }
-        ],
         "authoredOn": "2017-07-15T16:02:00.000Z"
       }
     },
@@ -1100,28 +873,6 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg",
-                  "unit": "mg"
-                }
-              }
-            ]
-          }
-        ],
         "authoredOn": "2017-04-15T16:02:00.000Z"
       }
     },
@@ -1145,28 +896,6 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg",
-                  "unit": "mg"
-                }
-              }
-            ]
-          }
-        ],
         "authoredOn": "2017-01-15T16:02:00.000Z"
       }
     },
@@ -1190,28 +919,6 @@
           ],
           "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
         },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg",
-                  "unit": "mg"
-                }
-              }
-            ]
-          }
-        ],
         "authoredOn": "2019-10-15T16:02:00.000Z"
       }
     },
@@ -1233,49 +940,6 @@
             }
           ],
           "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
-        },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseRange": {
-                  "low": {
-                    "value": 1,
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mg",
-                    "unit": "mg"
-                  },
-                  "high": {
-                    "value": 1,
-                    "system": "http://unitsofmeasure.org",
-                    "code": "mg",
-                    "unit": "mg"
-                  }
-                }
-              }
-            ]
-          }
-        ],
-        "dispenseRequest": {
-          "validityPeriod": {
-            "start": "2018-07-15",
-            "end": "2018-07-15"
-          },
-          "numberOfRepeatsAllowed": 1,
-          "expectedSupplyDuration": {
-            "value": 1,
-            "unit": "days",
-            "system": "http://unitsofmeasure.org",
-            "code": "d"
-          }
         },
         "authoredOn": "2018-07-15T16:01:00.000Z"
       }
@@ -1300,47 +964,12 @@
           ],
           "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
         },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 2.0,
-                  "system": "http://unitsofmeasure.org",
-                  "code": "mg",
-                  "unit": "mg"
-                }
-              }
-            ]
-          }
-        ],
-        "dispenseRequest": {
-          "validityPeriod": {
-            "start": "2019-01-15",
-            "end": "2019-01-15"
-          },
-          "numberOfRepeatsAllowed": 1,
-          "expectedSupplyDuration": {
-            "value": 1,
-            "unit": "days",
-            "system": "http://unitsofmeasure.org",
-            "code": "d"
-          }
-        },
         "authoredOn": "2019-01-15T16:01:00.000Z"
       }
     },
     {
       "resource": {
-        "authoredOn": "2019-10-25",
+        "authoredOn": "2020-10-01",
         "id": "20f04037-b4ed-46ac-9222-c11f1e54580f",
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
@@ -1350,14 +979,14 @@
             "doseAndRate": [
               {
                 "doseQuantity": {
-                  "value": 1.0
+                  "value": 1
                 }
               }
             ],
             "timing": {
               "repeat": {
-                "frequency": 1.0,
-                "period": 1.0,
+                "frequency": 3,
+                "period": 1,
                 "periodUnit": "d"
               }
             }
@@ -1368,20 +997,20 @@
             "code": "d",
             "system": "http://unitsofmeasure.org",
             "unit": "days",
-            "value": 10.0
+            "value": 10
           },
           "extension": [
             {
               "url": "http://cosri.org/fhir/pharmacy_name",
-              "valueString": "TEST, DOCTOR"
+              "valueString": "Corner Drugstore, Kirkland"
             },
             {
               "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2019-10-01"
+              "valueDate": "2020-10-01"
             }
           ],
           "quantity": {
-            "value": 30.0
+            "value": 30
           }
         },
         "identifier": [
@@ -1392,27 +1021,27 @@
         "medicationCodeableConcept": {
           "coding": [
             {
-              "code": "49999084830",
-              "display": "morphine sulfate 15 MG Oral Tablet",
+              "code": "13107005530",
+              "display": "oxycodone hydrochloride 5 MG Oral Tablet",
               "system": "http://hl7.org/fhir/sid/ndc"
             },
             {
-              "code": "892582",
-              "display": "morphine sulfate 15 MG Oral Tablet",
+              "code": "1049621",
+              "display": "oxycodone hydrochloride 5 MG Oral Tablet",
               "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "morphine sulfate 15 MG Oral Tablet"
+          "text": "oxycodone hydrochloride 5 MG Oral Tablet"
         },
         "requester": {
-          "display": "TEST PRESCRIBER"
+          "display": "Sue Prescriber"
         },
         "resourceType": "MedicationRequest"
       }
     },
     {
       "resource": {
-        "authoredOn": "2020-10-25",
+        "authoredOn": "2020-11-03",
         "id": "3e14d51b-58d8-4e7a-b9e3-26893e5604d2",
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
@@ -1422,14 +1051,14 @@
             "doseAndRate": [
               {
                 "doseQuantity": {
-                  "value": 3.0
+                  "value": 1
                 }
               }
             ],
             "timing": {
               "repeat": {
-                "frequency": 15.0,
-                "period": 15.0,
+                "frequency": 3,
+                "period": 1,
                 "periodUnit": "d"
               }
             }
@@ -1440,20 +1069,20 @@
             "code": "d",
             "system": "http://unitsofmeasure.org",
             "unit": "days",
-            "value": 15.0
+            "value": 10
           },
           "extension": [
             {
               "url": "http://cosri.org/fhir/pharmacy_name",
-              "valueString": "TEST, DOCTOR"
+              "valueString": "Seattle Hospital ED"
             },
             {
               "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2020-10-25"
+              "valueDate": "2020-11-03"
             }
           ],
           "quantity": {
-            "value": 90.0
+            "value": 30
           }
         },
         "identifier": [
@@ -1464,114 +1093,166 @@
         "medicationCodeableConcept": {
           "coding": [
             {
-              "code": "49999084830",
-              "display": "morphine sulfate 15 MG Oral Tablet",
+              "code": "13107005530",
+              "display": "oxycodone hydrochloride 5 MG Oral Tablet",
               "system": "http://hl7.org/fhir/sid/ndc"
             },
             {
-              "code": "892582",
-              "display": "morphine sulfate 15 MG Oral Tablet",
+              "code": "1049621",
+              "display": "oxycodone hydrochloride 5 MG Oral Tablet",
               "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "morphine sulfate 15 MG Oral Tablet"
+          "text": "oxycodone hydrochloride 5 MG Oral Tablet"
         },
         "requester": {
-          "display": "TEST PRESCRIBER"
+          "display": "Resident Prescriber"
         },
         "resourceType": "MedicationRequest"
       }
     },
     {
       "resource": {
-        "resourceType": "MedicationRequest",
+        "authoredOn": "2020-11-07",
         "id": "7f4125ed-083c-4071-b02f-eff58f209dce",
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
-        "intent": "order",
-        "doNotPerform": false,
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 45
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Seattle Ortho Clinic"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-11-07"
+            }
+          ],
+          "quantity": {
+            "value": 90
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049717",
-              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+              "code": "13107004301",
+              "display": "acetaminophen 325 MG / oxycodone hydrochloride 2.5 MG Oral Tablet",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "1049635",
+              "display": "acetaminophen 325 MG / oxycodone hydrochloride 2.5 MG Oral Tablet",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+          "text": "acetaminophen 325 MG / oxycodone hydrochloride 2.5 MG Oral Tablet"
         },
-        "authoredOn": "2018-04-15T16:01:00.000Z"
+        "requester": {
+          "display": "Bone Prescriber"
+        },
+        "resourceType": "MedicationRequest"
       }
     },
     {
       "resource": {
-        "resourceType": "MedicationRequest",
-        "id": "bf8db44f-735a-4624-8e5f-d0b583455c8c",
-        "subject": {
-          "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
-        },
-        "status": "active",
-        "intent": "order",
-        "doNotPerform": false,
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049717",
-              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
-            }
-          ],
-          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
-        },
-        "authoredOn": "2018-01-15T16:01:00.000Z"
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "MedicationRequest",
-        "id": "ffc8eb65-0b29-4029-85b4-ab4df2a43360",
-        "subject": {
-          "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
-        },
-        "status": "active",
-        "intent": "order",
-        "doNotPerform": false,
-        "medicationCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049717",
-              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
-            }
-          ],
-          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
-        },
-        "authoredOn": "2017-10-15T16:01:00.000Z"
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "MedicationRequest",
+        "authoredOn": "2020-11-20",
         "id": "fdb413e1-6c40-4ce4-b9e5-8654daf6cc4f",
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
         },
-        "status": "active",
-        "intent": "order",
-        "doNotPerform": false,
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 30
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Corner Drugstore, Kirkland"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-11-20"
+            }
+          ],
+          "quantity": {
+            "value": 60
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049717",
-              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+              "code": "00591024110",
+              "display": "LORAZEPAM 1 MG TABLET",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "197901",
+              "display": "LORAZEPAM 1 MG TABLET",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+          "text": "LORAZEPAM 1 MG TABLET"
         },
-        "authoredOn": "2017-07-15T16:01:00.000Z"
+        "requester": {
+          "display": "Joe Prescriber"
+        },
+        "resourceType": "MedicationRequest"
       }
     },
     {
@@ -1929,26 +1610,6 @@
           ],
           "text": "Buprenorphine 8 MG / Naloxone 2 MG Sublingual Tablet"
         },
-        "dosageInstruction": [
-          {
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 3.0,
-                "periodUnit": "d"
-              }
-            },
-            "asNeededBoolean": false,
-            "doseAndRate": [{
-              "doseQuantity": {
-                "value": 1.0,
-                "system": "http://unitsofmeasure.org",
-                "code": "mg",
-                "unit": "mg"
-              }
-            }]
-          }
-        ],
         "authoredOn": "2019-01-15T16:00:00.000Z"
       }
     },
