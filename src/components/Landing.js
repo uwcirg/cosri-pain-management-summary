@@ -685,7 +685,7 @@ export default class Landing extends Component {
           patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
           patientGender={summary.Patient.Gender}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
-          patientSearchURL={getEnv("FEMR_BASE_DOMAIN")}
+          patientSearchURL={getEnv("REACT_APP_DASHBOARD_URL")}
         />
 
         <Summary
