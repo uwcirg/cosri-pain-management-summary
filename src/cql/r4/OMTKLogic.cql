@@ -181,7 +181,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
 
 define function EnsureMicrogramQuantity(strength Quantity):
   // TODO: This should be possible with just quantity arithmetic
-  if strength.value < 0.1 and (PositionOf('mg', strength.unit) = 0) then
+  if strength.value <= 0.1 and (PositionOf('mg', strength.unit) = 0) then
     Quantity {
       value: strength.value * 1000,
       unit: 'ug' & Substring(strength.unit, 2)

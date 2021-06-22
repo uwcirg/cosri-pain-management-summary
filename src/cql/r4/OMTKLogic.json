@@ -2239,7 +2239,7 @@
                   "operand" : {
                      "type" : "And",
                      "operand" : [ {
-                        "type" : "Less",
+                        "type" : "LessOrEqual",
                         "operand" : [ {
                            "path" : "value",
                            "type" : "Property",
