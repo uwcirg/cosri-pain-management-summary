@@ -189,7 +189,7 @@ export default class MMEGraph extends Component {
 
     const defaultLegendSettings = {
       "fontFamily": "sans-serif",
-      "fontSize": "12px",
+      "fontSize": "11px",
       "fontWeight": "600",
       "x": xScale(baseLineDate) + 8
     };
@@ -198,7 +198,7 @@ export default class MMEGraph extends Component {
     const CDC_COLOR = "#e09b1d";
     const textMargin = 4;
     const WALegendSettings = {
-      "y": yScale(120 + textMargin),
+      "y": yScale(118 + textMargin),
       "fill": WA_COLOR,
       ...defaultLegendSettings
     };
@@ -234,8 +234,8 @@ export default class MMEGraph extends Component {
               <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
               <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
               <text {...WALegendSettings}>Washington State consultation threshold</text>
-              <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>CDC extra precautions threshold</text>
-              <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>CDC avoid/justify threshold</text>
+              <text {...CDCLegendSettings} y={yScale(48 + textMargin)}>CDC extra precautions threshold</text>
+              <text {...CDCLegendSettings} y={yScale(88 + textMargin)}>CDC avoid/justify threshold</text>
               <Line lineID="dataLine" data={data} {...dataLineProps} />
             </g>
           </svg>
