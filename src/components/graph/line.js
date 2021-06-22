@@ -37,7 +37,7 @@ class Line extends React.Component {
     }
 
     if (dataPoints) {
-      const radiusWidth  = 3;
+      const radiusWidth  = 2;
       const expandedRadiusWidth = radiusWidth * 2;
       const animationDuration = 100;
       select(node)

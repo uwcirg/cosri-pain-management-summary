@@ -94,12 +94,14 @@ export default class Landing extends Component {
         }).catch((err) => {
           console.log(err);
           this.setState({ loading: false});
+          this.clearProcessInterval();
         });
       }
     )
     .catch((err) => {
       console.error(err);
       this.setState({ loading: false});
+      this.clearProcessInterval();
     });
 
   }
