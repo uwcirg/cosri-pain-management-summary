@@ -785,7 +785,8 @@ define ReportMME:
     doseQuantity: MME_Object[0].doseQuantity,
     dosesPerDay: MME_Object[0].dosesPerDay,
     strength: MME_Object[0].strength,
-    dailyDose: MME_Object[0].dailyDose,
+    supplyQuantity: MME_Object[0].supplyQuantity,
+    supplyDuration: MME_Object[0].supplyDuration,
     factor: MME_Object[0].conversionFactor,
     MMEValue: MME_Object[0].mme.value
   }

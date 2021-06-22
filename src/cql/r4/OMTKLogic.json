@@ -1495,7 +1495,7 @@
                         },
                         "then" : {
                            "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                           "value" : "2.4",
+                           "value" : "7.2",
                            "type" : "Literal"
                         }
                      } ],
@@ -3121,17 +3121,13 @@
                            "value" : {
                               "type" : "Multiply",
                               "operand" : [ {
-                                 "type" : "Multiply",
+                                 "type" : "Divide",
                                  "operand" : [ {
-                                    "name" : "dosesPerDay",
+                                    "name" : "supplyQuantity",
                                     "type" : "OperandRef"
                                  }, {
-                                    "path" : "value",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "doseQuantity",
-                                       "type" : "OperandRef"
-                                    }
+                                    "name" : "supplyDuration",
+                                    "type" : "OperandRef"
                                  } ]
                               }, {
                                  "path" : "value",
@@ -3475,6 +3471,18 @@
                   "name" : "{urn:hl7-org:elm-types:r1}Decimal",
                   "type" : "NamedTypeSpecifier"
                }
+            }, {
+               "name" : "supplyQuantity",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                  "type" : "NamedTypeSpecifier"
+               }
+            }, {
+               "name" : "supplyDuration",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                  "type" : "NamedTypeSpecifier"
+               }
             } ]
          }, {
             "name" : "GetDailyDoseDescription",
@@ -3597,12 +3605,8 @@
                                                             "operand" : [ {
                                                                "type" : "ToString",
                                                                "operand" : {
-                                                                  "path" : "value",
-                                                                  "type" : "Property",
-                                                                  "source" : {
-                                                                     "name" : "doseQuantity",
-                                                                     "type" : "OperandRef"
-                                                                  }
+                                                                  "name" : "supplyQuantity",
+                                                                  "type" : "OperandRef"
                                                                }
                                                             }, {
                                                                "valueType" : "{urn:hl7-org:elm-types:r1}String",
@@ -3619,7 +3623,7 @@
                                                       "type" : "Coalesce",
                                                       "operand" : [ {
                                                          "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                                         "value" : " * ",
+                                                         "value" : " patches / ",
                                                          "type" : "Literal"
                                                       }, {
                                                          "valueType" : "{urn:hl7-org:elm-types:r1}String",
@@ -3637,7 +3641,7 @@
                                                 "operand" : [ {
                                                    "type" : "ToString",
                                                    "operand" : {
-                                                      "name" : "dosesPerDay",
+                                                      "name" : "supplyDuration",
                                                       "type" : "OperandRef"
                                                    }
                                                 }, {
@@ -3655,7 +3659,7 @@
                                           "type" : "Coalesce",
                                           "operand" : [ {
                                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                             "value" : "/d * ",
+                                             "value" : " d * ",
                                              "type" : "Literal"
                                           }, {
                                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
@@ -4029,6 +4033,18 @@
                   "name" : "{urn:hl7-org:elm-types:r1}Quantity",
                   "type" : "NamedTypeSpecifier"
                }
+            }, {
+               "name" : "supplyQuantity",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                  "type" : "NamedTypeSpecifier"
+               }
+            }, {
+               "name" : "supplyDuration",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                  "type" : "NamedTypeSpecifier"
+               }
             } ]
          }, {
             "name" : "Quantity",
@@ -4195,6 +4211,14 @@
                                  "path" : "dosesPerDay",
                                  "scope" : "M",
                                  "type" : "Property"
+                              }, {
+                                 "path" : "supplyQuantity",
+                                 "scope" : "M",
+                                 "type" : "Property"
+                              }, {
+                                 "path" : "supplyDuration",
+                                 "scope" : "M",
+                                 "type" : "Property"
                               } ]
                            }
                         }, {
@@ -4224,6 +4248,14 @@
                               }, {
                                  "name" : "dailyDose",
                                  "type" : "QueryLetRef"
+                              }, {
+                                 "path" : "supplyQuantity",
+                                 "scope" : "M",
+                                 "type" : "Property"
+                              }, {
+                                 "path" : "supplyDuration",
+                                 "scope" : "M",
+                                 "type" : "Property"
                               } ]
                            }
                         }, {
@@ -4389,6 +4421,18 @@
                         }
                      }, {
                         "name" : "dosesPerDay",
+                        "elementType" : {
+                           "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     }, {
+                        "name" : "supplyQuantity",
+                        "elementType" : {
+                           "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     }, {
+                        "name" : "supplyDuration",
                         "elementType" : {
                            "name" : "{urn:hl7-org:elm-types:r1}Decimal",
                            "type" : "NamedTypeSpecifier"

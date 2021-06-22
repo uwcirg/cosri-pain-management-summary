@@ -5533,9 +5533,26 @@
                            }
                         }
                      }, {
-                        "name" : "dailyDose",
+                        "name" : "supplyQuantity",
                         "value" : {
-                           "path" : "dailyDose",
+                           "path" : "supplyQuantity",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     }, {
+                        "name" : "supplyDuration",
+                        "value" : {
+                           "path" : "supplyDuration",
                            "type" : "Property",
                            "source" : {
                               "type" : "Indexer",

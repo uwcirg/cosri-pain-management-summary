@@ -782,16 +782,69 @@
         },
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 15
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-05-03"
+            }
+          ],
+          "quantity": {
+            "value": 5
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 0.3333333333333333
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 3,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "00378912316",
+              "display": "Fentanyl Transdermal System, 0.075 mg/hr ",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
               "code": "197696",
-              "display": "72 HR Fentanyl 0.075 MG/HR Transdermal System"
+              "display": "Fentanyl Transdermal System, 0.075 mg/hr ",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
-          ]
+          ],
+          "text": "Fentanyl Transdermal System, 0.075 mg/hr "
         },
-        "authoredOn": "2018-07-15T16:02:00.000Z"
+        "requester": {
+          "display": "New PRESCRIBER"
+        },
+        "authoredOn": "2021-05-03"
       }
     },
     {
@@ -803,17 +856,69 @@
         },
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 28
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Distant Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-05-04"
+            }
+          ],
+          "quantity": {
+            "value": 4
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 0.14285714285714285
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 7,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "69238120202",
+              "display": "Butrans- 168 HR buprenorphine 0.005 MG/HR Transdermal System",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "904880",
+              "display": "Butrans- 168 HR buprenorphine 0.005 MG/HR Transdermal System",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "Butrans- 168 HR buprenorphine 0.005 MG/HR Transdermal System"
         },
-        "authoredOn": "2018-07-15T16:02:00.000Z"
+        "requester": {
+          "display": "TEST PRESCRIBER"
+        },
+        "authoredOn": "2021-05-04"
       }
     },
     {
