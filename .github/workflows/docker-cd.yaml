@@ -12,7 +12,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set REACT_APP_VERSION_STRING environment variable from git output
+      - name: Set environment variable for version from git output
         run: echo "REACT_APP_VERSION_STRING=$(git describe --always --tags)" >> $GITHUB_ENV
 
       - name: Publish to Dockerhub registry
