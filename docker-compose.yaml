@@ -4,6 +4,11 @@ services:
   frontend:
     build:
       context: .
+      args:
+        # set build arg from environment variable with same name
+        # add default to squelch warnings
+        REACT_APP_VERSION_STRING: ${REACT_APP_VERSION_STRING:-local}
+
     ports:
       # allow override of published port
       - ${P_PORT:-8000}:80
