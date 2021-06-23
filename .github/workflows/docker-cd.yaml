@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: Checkout git commit
         uses: actions/checkout@master
+        with:
+          fetch-depth: 0
 
       - name: Set REACT_APP_VERSION_STRING environment variable from git output
         run: echo "REACT_APP_VERSION_STRING=$(git describe --always --tags)" >> $GITHUB_ENV
