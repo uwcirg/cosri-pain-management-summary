@@ -1458,7 +1458,7 @@
             "code": "d",
             "system": "http://unitsofmeasure.org",
             "unit": "days",
-            "value": 7
+            "value": 2
           },
           "extension": [
             {
@@ -1471,7 +1471,7 @@
             }
           ],
           "quantity": {
-            "value": 14
+            "value": 1
           }
         },
         "dosageInstruction": [
@@ -1485,7 +1485,7 @@
             ],
             "timing": {
               "repeat": {
-                "frequency": 2,
+                "frequency": 1,
                 "period": 1,
                 "periodUnit": "d"
               }

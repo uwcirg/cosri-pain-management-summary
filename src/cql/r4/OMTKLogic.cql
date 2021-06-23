@@ -134,7 +134,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
         when ToInteger(doseFormCode.code) in { 970789, 317007, 316992 } then 0.13 /* Buccal Tablet, Sublingual Tablet, Oral Lozenge */
         when ToInteger(doseFormCode.code) = 858080 then 0.18 /* Buccal Film */
         when ToInteger(doseFormCode.code) in { 126542, 346163, 1797831 } then 0.16 /* Nasal Spray, Mucosal Spray, Metered Dose Nasal Spray */
-        when ToInteger(doseFormCode.code) = 316987 then 7.2 /* Transdermal system */
+        when ToInteger(doseFormCode.code) = 316987 then 7.2 /* Transdermal system */ /* was previous 2.4 which I think it is a bug */
         else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
       end
     )
