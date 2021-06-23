@@ -3931,6 +3931,20 @@
                      "scope" : "O",
                      "type" : "Property"
                   }
+               }, {
+                  "identifier" : "MME_Object",
+                  "expression" : {
+                     "name" : "MME",
+                     "libraryName" : "MMECalculator",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "type" : "ToList",
+                        "operand" : {
+                           "name" : "O",
+                           "type" : "AliasRef"
+                        }
+                     } ]
+                  }
                } ],
                "relationship" : [ ],
                "return" : {
@@ -4073,6 +4087,27 @@
                               "type" : "As",
                               "operand" : {
                                  "type" : "Null"
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "MME",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "mme",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "name" : "MME_Object",
+                                    "type" : "QueryLetRef"
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
                               }
                            }
                         }

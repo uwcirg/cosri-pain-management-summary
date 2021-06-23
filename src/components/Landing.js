@@ -29,6 +29,7 @@ export default class Landing extends Component {
       result: null,
       loading: true,
       collector: [],
+      errorCollection: [],
       externals: {},
       patientId: "",
       loadingMessage: "Resources are being loaded..."
@@ -100,7 +101,7 @@ export default class Landing extends Component {
     )
     .catch((err) => {
       console.error(err);
-      this.setState({ loading: false});
+      this.setState({loading: false});
       this.clearProcessInterval();
     });
 
@@ -694,6 +695,7 @@ export default class Landing extends Component {
           summary={summary}
           sectionFlags={sectionFlags}
           collector={this.state.collector}
+          errorCollection={this.state.errorCollection}
           result={this.state.result}
         />
 

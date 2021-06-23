@@ -189,7 +189,7 @@ export default class MMEGraph extends Component {
 
     const defaultLegendSettings = {
       "fontFamily": "sans-serif",
-      "fontSize": "11px",
+      "fontSize": xMaxValue > 500 ? "10px": "12px",
       "fontWeight": "600",
       "x": xScale(baseLineDate) + 8
     };

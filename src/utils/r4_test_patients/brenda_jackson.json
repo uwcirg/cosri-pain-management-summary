@@ -930,17 +930,69 @@
         },
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 60
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-11-30"
+            }
+          ],
+          "quantity": {
+            "value": 20
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "17856052702",
+              "display": "Methadone 10mg/mL 5 mL solution",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "991149",
+              "display": "Methadone 10mg/mL 5 mL solution",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "Methadone 10mg/mL 5 mL solution"
         },
-        "authoredOn": "2018-07-15T16:02:00.000Z"
+        "requester": {
+          "display": "TEST PRESCRIBER"
+        },
+        "authoredOn": "2020-11-30"
       }
     },
     {
@@ -952,17 +1004,69 @@
         },
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 7
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-11-16"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "00406577123",
+              "display": "Methadone 10 mg tablet",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "864706",
+              "display": "Methadone 10 mg tablet",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "Methadone 10 mg tablet"
         },
-        "authoredOn": "2019-07-15T16:02:00.000Z"
+        "requester": {
+          "display": "TEST PRESCRIBER"
+        },
+        "authoredOn": "2020-12-01"
       }
     },
     {
@@ -1343,10 +1447,32 @@
     },
     {
       "resource": {
-        "authoredOn": "2020-11-20",
+        "authoredOn": "2021-06-22",
         "id": "fdb413e1-6c40-4ce4-b9e5-8654daf6cc4f",
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
+        },
+        "status": "active",
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 7
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-06-22"
+            }
+          ],
+          "quantity": {
+            "value": 14
+          }
         },
         "dosageInstruction": [
           {
@@ -1366,27 +1492,6 @@
             }
           }
         ],
-        "dispenseRequest": {
-          "expectedSupplyDuration": {
-            "code": "d",
-            "system": "http://unitsofmeasure.org",
-            "unit": "days",
-            "value": 30
-          },
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name",
-              "valueString": "Corner Drugstore, Kirkland"
-            },
-            {
-              "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2020-11-20"
-            }
-          ],
-          "quantity": {
-            "value": 60
-          }
-        },
         "identifier": [
           {
             "system": "https://github.com/uwcirg/script-fhir-facade/"
@@ -1395,20 +1500,20 @@
         "medicationCodeableConcept": {
           "coding": [
             {
-              "code": "00591024110",
-              "display": "LORAZEPAM 1 MG TABLET",
+              "code": "00054453825",
+              "display": "Methadone 40 mg diskette",
               "system": "http://hl7.org/fhir/sid/ndc"
             },
             {
-              "code": "197901",
-              "display": "LORAZEPAM 1 MG TABLET",
+              "code": "1990745",
+              "display": "Methadone 40 mg diskette",
               "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "LORAZEPAM 1 MG TABLET"
+          "text": "Methadone 40 mg diskette"
         },
         "requester": {
-          "display": "Joe Prescriber"
+          "display": "TEST PRESCRIBER"
         },
         "resourceType": "MedicationRequest"
       }
@@ -1538,17 +1643,69 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 10
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-06-01"
+            }
+          ],
+          "quantity": {
+            "value": 10
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "197806",
-              "display": "Ibuprofen 600 MG Oral Tablet"
+              "code": "51862063401",
+              "display": "fentanyl 0.1 MG Buccal Tablet",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "668363",
+              "display": "fentanyl 0.1 MG Buccal Tablet",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "Ibuprofen 600 MG Oral Tablet"
+          "text": "fentanyl 0.1 MG Buccal Tablet"
         },
-        "authoredOn": "2017-11-15T16:00:00.000Z"
+        "requester": {
+          "display": "New PRESCRIBER"
+        },
+        "authoredOn": "2021-06-01"
       }
     },
     {

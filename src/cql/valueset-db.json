@@ -20002,6 +20002,11 @@
         "code": "999729",
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
         "version": "2020-02"
+      },
+      {
+        "code": "1990745",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
       }
     ]
   },
@@ -33552,7 +33557,7 @@
         "code": "74264003",
         "system": "http://snomed.info/sct",
         "version": "2019-09"
-      }      
+      }
     ]
   },
   "2.16.840.1.113883.3.1240.2017.3.2.1015": {
