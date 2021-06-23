@@ -618,7 +618,7 @@ export default class Summary extends Component {
             //results not coming from CQL
             other={{EducationMaterials, PatientRiskOverview_graph, PatientRiskOverview_alerts, PatientRiskOverview_stats}}
           />
-
+          {/* display released version string */}
           <Version versionString={this.props.versionString} />
 
           <ReactModal
