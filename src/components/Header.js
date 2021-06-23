@@ -3,9 +3,29 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Header extends Component {
+
+  constructor() {
+    super(...arguments);
+    this.state = {
+      patientSearchURL: ""
+    };
+  }
+  componentDidMount() {
+    this.setState({
+      patientSearchURL: this.props["patientSearchURL"]
+    });
+  }
+  handleSearchClick(e) {
+    //clear current frontend session
+    sessionStorage.clear();
+    let url = e.target.getAttribute("data-url");
+    setTimeout(() => {
+      window.location = url;
+    }, 0);
+  }
   render() {
     const {
-      patientName, patientDOB, patientGender
+      patientName, patientDOB, patientGender, patientSearchURL
     } = this.props;
 
     return (
@@ -33,6 +53,9 @@ export default class Header extends Component {
                 <span className="patient-gender">{patientGender}</span>
               </div>
             </div>
+            <div className="header__search">
+                <button className={`button-primary ${!this.state.patientSearchURL?"disabled":""}`} onClick={this.handleSearchClick} data-url={patientSearchURL}disabled={this.state.patientSearchURL?false:true}>New Patient Search</button>
+            </div>
           </div>
 			    <div className="header__summary-dashboard">
             <div className="entries">
@@ -48,5 +71,6 @@ export default class Header extends Component {
 Header.propTypes = {
   patientName: PropTypes.string.isRequired,
   patientDOB: PropTypes.string.isRequired,
-  patientGender: PropTypes.string.isRequired
+  patientGender: PropTypes.string.isRequired,
+  patientSearchURL: PropTypes.string
 };

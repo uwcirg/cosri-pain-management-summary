@@ -79,7 +79,7 @@ export default class DevTools extends Component {
   renderFHIRQueries() {
     return (
       <div className="fhir-queries">
-        <h4>FHIR Queries <button onClick={this.toggleFhirQueries}>[show/hide]</button></h4>
+        <h4>FHIR Queries <span className="small">(from confidential backend)</span> <button onClick={this.toggleFhirQueries}>[show/hide]</button></h4>
         <div style={{ display: this.state.displayFhirQueries ? 'block' : 'none' }}>
           {this.props.collector.map((item, i) => {
             const url = i === 0 ? item.url : item.url.slice(item.url.lastIndexOf('/') + 1);
@@ -108,7 +108,7 @@ export default class DevTools extends Component {
     let pdmpDataset = this.props.summary.PDMPMedications ? this.props.summary.PDMPMedications : null;
     return (
       <div className='pdmp-results'>
-        <h4>PDMP Results <button onClick={this.togglePDMPResults}>[show/hide]</button></h4>
+        <h4>PDMP CQL Results <button onClick={this.togglePDMPResults}>[show/hide]</button></h4>
         <div style={{ display: this.state.displayPDMPResults ? 'block' : 'none' }}>
           <pre>{pdmpDataset ?
                 JSON.stringify(pdmpDataset, null, 2) :

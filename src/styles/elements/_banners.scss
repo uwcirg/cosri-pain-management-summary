@@ -70,3 +70,14 @@
     }
   }
 }
+
+.alert-banner {
+  background-color: $color-red;
+  color: #FFF;
+  position: relative;
+  .close-button {
+    position: absolute;
+    top: 0;
+    right: 24px;
+  }
+}

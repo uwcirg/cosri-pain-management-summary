@@ -114,10 +114,9 @@ define function Prescriptions(Orders List<MedicationRequest>):
       repeat: dosageInstruction.timing.repeat,
       frequency: Coalesce(repeat.frequencyMax.value, repeat.frequency.value),
       dispenseRequest: O.dispenseRequest,
-      supplyDuration: if repeat.period is not null then
-        repeat.period.value else
-        dispenseRequest.expectedSupplyDuration.value.value,
-      period: OMTKLogic.Quantity(supplyDuration, repeat.periodUnit.value),
+      periodDuration: if repeat.period is not null then
+        repeat.period.value else null,
+      period: OMTKLogic.Quantity(periodDuration, repeat.periodUnit.value),
       doseRange: ToFHIRRange(doseAndRate.dose),
       doseQuantity: if doseAndRate.dose is not null then ToFHIRQuantity(doseAndRate.dose) else null as Quantity,
       doseDescription:
@@ -151,7 +150,10 @@ define function Prescriptions(Orders List<MedicationRequest>):
       dose: GetMedicationQuantity(O),
       doseRange: doseRange,
       doseQuantity: doseAndRate.dose,
-      dosesPerDay: Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0)
+      dosesPerDay: Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0),
+      strength: prescription.strength,
+      supplyQuantity: dispenseRequest.quantity.value.value,
+      supplyDuration: dispenseRequest.expectedSupplyDuration.value.value
     }
 
 /*
@@ -161,7 +163,7 @@ medications in the given list (i.e. no additional filtering for status is perfor
 */
 define function MME(prescriptions List<MedicationRequest>):
   (Prescriptions(prescriptions)) P
-    let mmePerIngredient: OMTKLogic.CalculateMMEs({ { rxNormCode: P.rxNormCode, doseQuantity: P.dose, dosesPerDay: P.dosesPerDay } })
+    let mmePerIngredient: OMTKLogic.CalculateMMEs({ { rxNormCode: P.rxNormCode, doseQuantity: P.dose, dosesPerDay: P.dosesPerDay, supplyQuantity: P.supplyQuantity, supplyDuration: P.supplyDuration} })
     return {
       rxNormCode: P.rxNormCode,
       isDraft: P.isDraft,
@@ -170,6 +172,10 @@ define function MME(prescriptions List<MedicationRequest>):
       doseQuantity: P.dose,
       dosesPerDay: P.dosesPerDay,
       dailyDose: Combine(mmePerIngredient X return X.dailyDoseDescription, '\r\n'),
+      conversionFactor: mmePerIngredient.conversionFactor,
+      strength: P.strength,
+      supplyQuantity: P.supplyQuantity,
+      supplyDuration: P.supplyDuration,
       mme: Sum(mmePerIngredient X return X.mme)
     }
 

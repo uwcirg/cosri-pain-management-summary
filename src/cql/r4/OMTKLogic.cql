@@ -22,6 +22,16 @@ J Am Med Inform Assoc. 2011 Jul-Aug;18(4)441-8. doi: 10.1136/amiajnl-2011-000116
 Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 [Full text](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3128404/)
 */
+/*
+* Changelog
+* 06/22/21
+* Fix GetDailyDose for fentanyl & buprenorphine patches based on guideline here:
+* https://drive.google.com/drive/u/1/folders/1SQ7tufdYatX4qZeZtk6S5xWeNVC0zOQf
+* see footnote 3 for buprenorphine and footnote 8 for fentanyl
+* formulation used: quantity(patches) / days supplied * strength factor
+* Adjust conversion factor for fentanyl patch from 2.4 to 7.2
+*
+*/
 
 include OMTKData version '3.0.0' called OMTKData
 
@@ -134,7 +144,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
         when ToInteger(doseFormCode.code) in { 970789, 317007, 316992 } then 0.13 /* Buccal Tablet, Sublingual Tablet, Oral Lozenge */
         when ToInteger(doseFormCode.code) = 858080 then 0.18 /* Buccal Film */
         when ToInteger(doseFormCode.code) in { 126542, 346163, 1797831 } then 0.16 /* Nasal Spray, Mucosal Spray, Metered Dose Nasal Spray */
-        when ToInteger(doseFormCode.code) = 316987 then 2.4 /* Transdermal system */
+        when ToInteger(doseFormCode.code) = 316987 then 7.2 /* Transdermal system */ /* was previous 2.4 which I think it is a bug */
         else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
       end
     )
@@ -181,7 +191,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
 
 define function EnsureMicrogramQuantity(strength Quantity):
   // TODO: This should be possible with just quantity arithmetic
-  if strength.value < 0.1 and (PositionOf('mg', strength.unit) = 0) then
+  if strength.value <= 0.1 and (PositionOf('mg', strength.unit) = 0) then
     Quantity {
       value: strength.value * 1000,
       unit: 'ug' & Substring(strength.unit, 2)
@@ -308,7 +318,7 @@ define function StripPer(unit String):
 /*
   Calculates daily dose for a specific ingredient based on the ingredient strength, dose form, dose quantity, and daily frequency
 */
-define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCode Code, doseQuantity Quantity, dosesPerDay Decimal):
+define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCode Code, doseQuantity Quantity, dosesPerDay Decimal, supplyQuantity Decimal, supplyDuration Decimal):
   case
     when dosesPerDay is null or doseQuantity is null or strength is null then
       null as Quantity
@@ -316,14 +326,29 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
     when ToInteger(doseFormCode.code) = 316987 then
       /* buprenorphine or fentanyl patch */
       if ToInteger(ingredientCode.code) in { 1819, 4337 } then
-        Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit }
+       // Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit }
+       /*
+        * https://drive.google.com/drive/u/1/folders/1SQ7tufdYatX4qZeZtk6S5xWeNVC0zOQf
+          The MME conversion factor for buprenorphine patches is based on the assumption that one milligram of parenteral buprenorphine is equivalent to 75 milligrams of oral morphine and that one patch delivers the dispensed micrograms per hour over a 24 hour day. Example: 5 ug/hr buprenorphine patch X 24 hrs = 120 ug/day buprenorphine = 0.12 mg/day = 9 mg/day oral MME. In other words, the conversion factor not accounting for days of use would be 9/5 or 1.8. However, since the buprenorphine patch remains in place for 7 days, we have multiplied the conversion factor by 7 (1.8 X 7 = 12.6). In this example, MME/day for four 5 μg/hr buprenorphine patches dispensed for use over 28 days would work out as follows: Example: 5 ug/hr buprenorphine patch X (4 patches/28 days) X 12.6 = 9 MME/day. Please note that because this allowance has been made based on the typical dosage of one buprenorphine patch per 7 days, you should first change all Days Supply in your prescription data to follow this standard, i.e., Days Supply for buprenorphine patches= # of patches x 7.
+        */
+       /*
+        * The MME conversion factor for fentanyl patches is based on the assumption that one milligram of parenteral fentanyl is equivalent to 100 milligrams of oral morphine and that one patch delivers the dispensed micrograms per hour over a 24 hour day. Example: 25 ug/hr fentanyl patch X 24 hrs = 600 ug/day fentanyl = 60 mg/day oral morphine milligram equivalent. In other words, the conversion factor not accounting for days of use would be 60/25 or 2.4.
+        However, since the fentanyl patch remains in place for 3 days, we have multiplied the conversion factor by 3 (2.4 X 3 = 7.2). In this
+        example, MME/day for ten 25 μg/hr fentanyl patches dispensed for use over 30 days would work out as follows:
+        Example: 25 ug/hr fentanyl patch X (10 patches/30 days) X 7.2 = 60 MME/day. Please note that because this allowance has been
+        made based on the typical dosage of one fentanyl patch per 3 days, you should first change all Days Supply in your prescription
+        data to follow this standard, i.e., Days Supply for fentanyl patches= # of patches X 3.
+        */
+        //1819 is buprenorphine, 4337 is fentanyl
+        Quantity { value: (supplyQuantity / supplyDuration) * strength.value, unit: strength.unit }
+
       else
         Message(null, true, 'OMTKLogic.GetDailyDoseDescription.UnknownPatchIngredient', ErrorLevel, 'Unknown patch ingredient: ' & ingredientCode.code & ':' & ingredientCode.display)
 
     /* if dose unit in actual mass units (mg or ug -- when it's a single med) --> daily dose = numTimesPerDay * dose */
     when doseQuantity.unit in { 'mg', 'ug'} then
       Quantity { value: dosesPerDay * doseQuantity.value, unit: doseQuantity.unit }
-    
+
     /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
     when doseQuantity.unit = 'mL' and (PositionOf('/mL', strength.unit) = Length(strength.unit) - 3) then
       Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit } //display unit as it is
@@ -336,13 +361,13 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
 /*
   Builds a description for the daily dose for an ingredient
 */
-define function GetDailyDoseDescription(ingredientCode Code, strength Quantity, doseFormCode Code, doseQuantity Quantity, dosesPerDay Decimal, dailyDose Quantity):
+define function GetDailyDoseDescription(ingredientCode Code, strength Quantity, doseFormCode Code, doseQuantity Quantity, dosesPerDay Decimal, dailyDose Quantity, supplyQuantity Decimal, supplyDuration Decimal):
   case
     /* if patch */
     when ToInteger(doseFormCode.code) = 316987 then
       /* buprenorphine or fentanyl patch */
       if ToInteger(ingredientCode.code) in { 1819, 4337 } then
-        GetIngredientName(ingredientCode) & ' patch: ' & ToString(doseQuantity.value) & ' * ' & ToString(dosesPerDay) & '/d * '& ToString(strength) & ' = ' + ToString(dailyDose)
+        GetIngredientName(ingredientCode) & ' patch: ' & ToString(supplyQuantity) & ' patches / ' & ToString(supplyDuration) & ' d * '& ToString(strength) & ' = ' + ToString(dailyDose)
       else
         Message(null, true, 'OMTKLogic.GetDailyDoseDescription.UnknownPatchIngredient', ErrorLevel, 'Unknown patch ingredient: ' & ingredientCode.code & ':' & ingredientCode.display)
 
@@ -371,7 +396,7 @@ define function GetDailyDoseDescription(ingredientCode Code, strength Quantity, 
     mme Quantity
   }>
 */
-define function CalculateMMEs(medications List<Tuple { rxNormCode Code, doseQuantity Quantity, dosesPerDay Decimal }>):
+define function CalculateMMEs(medications List<Tuple { rxNormCode Code, doseQuantity Quantity, dosesPerDay Decimal, supplyQuantity Decimal, supplyDuration Decimal}>):
   Flatten(
     medications M
       let Ingredients: GetIngredients(M.rxNormCode)
@@ -379,8 +404,8 @@ define function CalculateMMEs(medications List<Tuple { rxNormCode Code, doseQuan
         Ingredients I
           let
             adjustedDoseQuantity: EnsureMicrogramQuantity(M.doseQuantity),
-            dailyDose: GetDailyDose(I.ingredientCode, I.strength, I.doseFormCode, adjustedDoseQuantity, M.dosesPerDay),
-            dailyDoseDescription: GetDailyDoseDescription(I.ingredientCode, I.strength, I.doseFormCode, adjustedDoseQuantity, M.dosesPerDay, dailyDose),
+            dailyDose: GetDailyDose(I.ingredientCode, I.strength, I.doseFormCode, adjustedDoseQuantity, M.dosesPerDay, M.supplyQuantity, M.supplyDuration),
+            dailyDoseDescription: GetDailyDoseDescription(I.ingredientCode, I.strength, I.doseFormCode, adjustedDoseQuantity, M.dosesPerDay, dailyDose, M.supplyQuantity, M.supplyDuration),
             factor: GetConversionFactor(I.ingredientCode, dailyDose, I.doseFormCode)
           return {
             rxNormCode: M.rxNormCode,

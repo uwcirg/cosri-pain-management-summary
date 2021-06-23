@@ -16,6 +16,7 @@ import {isInViewport} from './Utility';
 import Spinner from '../elements/Spinner';
 
 let uuid = 0;
+let processIntervalId = 0;
 
 function generateUuid() {
   return ++uuid; // eslint-disable-line no-plusplus
@@ -29,9 +30,10 @@ export default class Landing extends Component {
       loading: true,
       collector: [],
       externals: {},
-      patientId: ""
+      patientId: "",
+      loadingMessage: "Resources are being loaded..."
     };
-
+    this.errorCollection = [];
     this.tocInitialized = false;
   }
 
@@ -50,12 +52,38 @@ export default class Landing extends Component {
   getPatientId() {
     return this.state.patientId;
   }
-
+  pingProcessProgress() {
+    processIntervalId = setInterval(() => {
+     // console.log("collector status ", this.state.collector.length);
+     // console.log("summary map ", summaryMap)
+     let totalResources = Object.keys(summaryMap).length;
+     let numResourcesLoaded = this.state.collector.length;
+      this.setState({
+        loadingMessage: `<div>${totalResources} resources are being loaded.</div><div><span class='${totalResources !== numResourcesLoaded?"text-warning": "text-success"}'>${numResourcesLoaded} loaded ...</span></div>`
+      });
+    }, 30);
+  }
+  clearProcessInterval() {
+    clearInterval(processIntervalId);
+  }
+  processCollectorErrors() {
+    let collectorErrors = this.state.collector.filter(item => {
+      return item.error;
+    });
+    collectorErrors.forEach(item => {
+      this.setError(item.error);
+    });
+  }
+  setError(message) {
+    if (!message) return;
+    this.errorCollection.push(message);
+  }
   componentDidMount() {
     /*
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
      */
     fetchEnvData();
+    this.pingProcessProgress();
     let result = {};
     Promise.all([executeElm(this.state.collector)])
     .then(
@@ -66,6 +94,8 @@ export default class Landing extends Component {
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ result, sectionFlags, flaggedCount });
         this.setPatientId();
+        this.clearProcessInterval();
+        this.processCollectorErrors();
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData()]).then(
           externalData => {
@@ -77,18 +107,23 @@ export default class Landing extends Component {
         }).catch((err) => {
           console.log(err);
           this.setState({ loading: false});
+          this.clearProcessInterval();
+          this.setError(err);
         });
       }
     )
     .catch((err) => {
       console.error(err);
-      this.setState({ loading: false});
+      this.setState({loading: false});
+      this.clearProcessInterval();
+      this.setError(err);
     });
 
   }
 
   componentDidUpdate() {
-    const MIN_HEADER_HEIGHT = 136;
+    //const MIN_HEADER_HEIGHT = 136;
+    const MIN_HEADER_HEIGHT = 148;
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       tocbot.init({
         tocSelector: '.summary__nav',           // where to render the table of contents
@@ -410,7 +445,7 @@ export default class Landing extends Component {
       let formattedData = (JSON.parse(JSON.stringify(finalDataPoints))).map(point => {
         let o = {};
         o[graphDateFieldName] = point[graphDateFieldName];
-        o[MMEValueFieldName] = point[MMEValueFieldName];
+        o[MMEValueFieldName] = parseFloat(point[MMEValueFieldName]).toFixed(2);
         if (point[PLACEHOLDER_FIELD_NAME]) {
           o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
         }
@@ -643,7 +678,7 @@ export default class Landing extends Component {
 
   render() {
     if (this.state.loading) {
-      return <Spinner />;
+      return <Spinner loadingMessage={this.state.loadingMessage}/>;
     }
 
     if (this.state.result == null) {
@@ -667,12 +702,14 @@ export default class Landing extends Component {
           patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
           patientGender={summary.Patient.Gender}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
+          patientSearchURL={getEnv("REACT_APP_DASHBOARD_URL")}
         />
 
         <Summary
           summary={summary}
           sectionFlags={sectionFlags}
           collector={this.state.collector}
+          errorCollection={this.errorCollection}
           result={this.state.result}
         />
 

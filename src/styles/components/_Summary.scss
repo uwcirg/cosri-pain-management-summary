@@ -145,7 +145,7 @@
       }
       .close {
         // left: 272px;
-        left: 22px;
+        left: 16px;
         transform: translateX(0);
         transform-origin: center;
         &::before {
@@ -155,7 +155,7 @@
       }
     }
     .is-position-fixed ~ .close {
-      top: 0;
+      top: 132px;
     }
 
     //background-color: $color-uw-dark;
@@ -200,7 +200,7 @@
           background-color: $color-black;
           //background-color: $color-gold;
           color: $color-white;
-          padding: 15px 25px;
+          padding: 12px 20px;
           font-weight: 400;
           margin: 2px 0;
           height: 36px;

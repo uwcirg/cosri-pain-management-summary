@@ -50,7 +50,7 @@ export default class MMEGraph extends Component {
 
   getMaxMMEValue(data) {
     let maxValue =  0;
-    let CAP_MAX_VALUE = 500;
+    let CAP_MAX_VALUE = 1000;
     data.forEach(item => {
       if (item["MMEValue"] > CAP_MAX_VALUE) return true;
       maxValue = Math.max(maxValue, item["MMEValue"]);
@@ -189,7 +189,7 @@ export default class MMEGraph extends Component {
 
     const defaultLegendSettings = {
       "fontFamily": "sans-serif",
-      "fontSize": "12px",
+      "fontSize": xMaxValue > 500 ? "10px": "12px",
       "fontWeight": "600",
       "x": xScale(baseLineDate) + 8
     };

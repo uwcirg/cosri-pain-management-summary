@@ -233,3 +233,9 @@ function _datishAgeFormat(result, input, showAge) {
   // fall back to the input string
   return input;
 }
+
+export function numberFormat(result, input, precision) {
+  if (!input) return "";
+  if (!precision) precision = 1;
+  return parseFloat(input).toFixed(precision);
+}

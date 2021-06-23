@@ -708,16 +708,69 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 3
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-04-21"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 0.3333333333333333
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 3,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "197696",
-              "display": "72 HR Fentanyl 0.075 MG/HR Transdermal System"
+              "code": "61919060205",
+              "display": "Fentanyl Transdermal System, 0.025 mg/hr ",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "245134",
+              "display": "Fentanyl Transdermal System, 0.025 mg/hr ",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
-          ]
+          ],
+          "text": "Fentanyl Transdermal System, 0.025 mg/hr "
         },
-        "authoredOn": "2020-09-05"
+        "requester": {
+          "display": "New PRESCRIBER"
+        },
+        "authoredOn": "2021-04-21"
       }
     },
     {
@@ -729,16 +782,69 @@
         },
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 15
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-05-03"
+            }
+          ],
+          "quantity": {
+            "value": 5
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 0.3333333333333333
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 3,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "00378912316",
+              "display": "Fentanyl Transdermal System, 0.075 mg/hr ",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
               "code": "197696",
-              "display": "72 HR Fentanyl 0.075 MG/HR Transdermal System"
+              "display": "Fentanyl Transdermal System, 0.075 mg/hr ",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
-          ]
+          ],
+          "text": "Fentanyl Transdermal System, 0.075 mg/hr "
         },
-        "authoredOn": "2018-07-15T16:02:00.000Z"
+        "requester": {
+          "display": "New PRESCRIBER"
+        },
+        "authoredOn": "2021-05-03"
       }
     },
     {
@@ -750,17 +856,69 @@
         },
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 28
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Distant Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-05-04"
+            }
+          ],
+          "quantity": {
+            "value": 4
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 0.14285714285714285
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 7,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "69238120202",
+              "display": "Butrans- 168 HR buprenorphine 0.005 MG/HR Transdermal System",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "904880",
+              "display": "Butrans- 168 HR buprenorphine 0.005 MG/HR Transdermal System",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "Butrans- 168 HR buprenorphine 0.005 MG/HR Transdermal System"
         },
-        "authoredOn": "2018-07-15T16:02:00.000Z"
+        "requester": {
+          "display": "TEST PRESCRIBER"
+        },
+        "authoredOn": "2021-05-04"
       }
     },
     {
@@ -772,17 +930,69 @@
         },
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 60
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-11-30"
+            }
+          ],
+          "quantity": {
+            "value": 20
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "17856052702",
+              "display": "Methadone 10mg/mL 5 mL solution",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "991149",
+              "display": "Methadone 10mg/mL 5 mL solution",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "Methadone 10mg/mL 5 mL solution"
         },
-        "authoredOn": "2018-07-15T16:02:00.000Z"
+        "requester": {
+          "display": "TEST PRESCRIBER"
+        },
+        "authoredOn": "2020-11-30"
       }
     },
     {
@@ -794,17 +1004,69 @@
         },
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 7
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-11-16"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "00406577123",
+              "display": "Methadone 10 mg tablet",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "864706",
+              "display": "Methadone 10 mg tablet",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "text": "Methadone 10 mg tablet"
         },
-        "authoredOn": "2019-07-15T16:02:00.000Z"
+        "requester": {
+          "display": "TEST PRESCRIBER"
+        },
+        "authoredOn": "2020-12-01"
       }
     },
     {
@@ -1185,10 +1447,32 @@
     },
     {
       "resource": {
-        "authoredOn": "2020-11-20",
+        "authoredOn": "2021-06-22",
         "id": "fdb413e1-6c40-4ce4-b9e5-8654daf6cc4f",
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
+        },
+        "status": "active",
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 2
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-06-22"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
         },
         "dosageInstruction": [
           {
@@ -1201,34 +1485,13 @@
             ],
             "timing": {
               "repeat": {
-                "frequency": 2,
+                "frequency": 1,
                 "period": 1,
                 "periodUnit": "d"
               }
             }
           }
         ],
-        "dispenseRequest": {
-          "expectedSupplyDuration": {
-            "code": "d",
-            "system": "http://unitsofmeasure.org",
-            "unit": "days",
-            "value": 30
-          },
-          "extension": [
-            {
-              "url": "http://cosri.org/fhir/pharmacy_name",
-              "valueString": "Corner Drugstore, Kirkland"
-            },
-            {
-              "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2020-11-20"
-            }
-          ],
-          "quantity": {
-            "value": 60
-          }
-        },
         "identifier": [
           {
             "system": "https://github.com/uwcirg/script-fhir-facade/"
@@ -1237,20 +1500,20 @@
         "medicationCodeableConcept": {
           "coding": [
             {
-              "code": "00591024110",
-              "display": "LORAZEPAM 1 MG TABLET",
+              "code": "00054453825",
+              "display": "Methadone 40 mg diskette",
               "system": "http://hl7.org/fhir/sid/ndc"
             },
             {
-              "code": "197901",
-              "display": "LORAZEPAM 1 MG TABLET",
+              "code": "1990745",
+              "display": "Methadone 40 mg diskette",
               "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "LORAZEPAM 1 MG TABLET"
+          "text": "Methadone 40 mg diskette"
         },
         "requester": {
-          "display": "Joe Prescriber"
+          "display": "TEST PRESCRIBER"
         },
         "resourceType": "MedicationRequest"
       }
@@ -1380,17 +1643,69 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 10
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Local Pharmacy"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-06-01"
+            }
+          ],
+          "quantity": {
+            "value": 10
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "197806",
-              "display": "Ibuprofen 600 MG Oral Tablet"
+              "code": "51862063401",
+              "display": "fentanyl 0.1 MG Buccal Tablet",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "668363",
+              "display": "fentanyl 0.1 MG Buccal Tablet",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "Ibuprofen 600 MG Oral Tablet"
+          "text": "fentanyl 0.1 MG Buccal Tablet"
         },
-        "authoredOn": "2017-11-15T16:00:00.000Z"
+        "requester": {
+          "display": "New PRESCRIBER"
+        },
+        "authoredOn": "2021-06-01"
       }
     },
     {
@@ -1554,17 +1869,69 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 1
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "TEST, DOCTOR"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-03-25"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "876193",
-              "display": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+              "code": "51662124001",
+              "display": "Narcan Naloxone hydrochloride 40 mg/ml nasal spray",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "1725059",
+              "display": "Narcan Naloxone hydrochloride 40 mg/ml nasal spray",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+          "text": "Narcan Naloxone hydrochloride 40 mg/ml nasal spray"
         },
-        "authoredOn": "2017-11-15T16:00:00.000Z"
+        "requester": {
+          "display": "New PRESCRIBER"
+        },
+        "authoredOn": "2021-03-24"
       }
     },
     {

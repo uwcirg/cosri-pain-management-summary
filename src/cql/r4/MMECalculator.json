@@ -1066,7 +1066,7 @@
                      "type" : "Property"
                   }
                }, {
-                  "identifier" : "supplyDuration",
+                  "identifier" : "periodDuration",
                   "expression" : {
                      "type" : "If",
                      "condition" : {
@@ -1100,19 +1100,10 @@
                         }
                      },
                      "else" : {
-                        "path" : "value",
-                        "type" : "Property",
-                        "source" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "expectedSupplyDuration",
-                              "type" : "Property",
-                              "source" : {
-                                 "name" : "dispenseRequest",
-                                 "type" : "QueryLetRef"
-                              }
-                           }
+                        "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
                         }
                      }
                   }
@@ -1123,7 +1114,7 @@
                      "libraryName" : "OMTKLogic",
                      "type" : "FunctionRef",
                      "operand" : [ {
-                        "name" : "supplyDuration",
+                        "name" : "periodDuration",
                         "type" : "QueryLetRef"
                      }, {
                         "path" : "value",
@@ -1569,6 +1560,78 @@
                               "type" : "Literal"
                            } ]
                         }
+                     }, {
+                        "name" : "strength",
+                        "value" : {
+                           "type" : "Query",
+                           "source" : [ {
+                              "alias" : "$this",
+                              "expression" : {
+                                 "name" : "prescription",
+                                 "type" : "QueryLetRef"
+                              }
+                           } ],
+                           "where" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "strength",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "$this",
+                                       "type" : "AliasRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "return" : {
+                              "expression" : {
+                                 "path" : "strength",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "$this",
+                                    "type" : "AliasRef"
+                                 }
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "supplyQuantity",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "quantity",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "dispenseRequest",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "supplyDuration",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "expectedSupplyDuration",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "dispenseRequest",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }
+                        }
                      } ]
                   }
                }
@@ -1629,6 +1692,20 @@
                               "name" : "dosesPerDay",
                               "value" : {
                                  "path" : "dosesPerDay",
+                                 "scope" : "P",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "name" : "supplyQuantity",
+                              "value" : {
+                                 "path" : "supplyQuantity",
+                                 "scope" : "P",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "name" : "supplyDuration",
+                              "value" : {
+                                 "path" : "supplyDuration",
                                  "scope" : "P",
                                  "type" : "Property"
                               }
@@ -1710,6 +1787,63 @@
                               "value" : "\r\n",
                               "type" : "Literal"
                            }
+                        }
+                     }, {
+                        "name" : "conversionFactor",
+                        "value" : {
+                           "type" : "Query",
+                           "source" : [ {
+                              "alias" : "$this",
+                              "expression" : {
+                                 "name" : "mmePerIngredient",
+                                 "type" : "QueryLetRef"
+                              }
+                           } ],
+                           "where" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "conversionFactor",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "$this",
+                                       "type" : "AliasRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "return" : {
+                              "expression" : {
+                                 "path" : "conversionFactor",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "$this",
+                                    "type" : "AliasRef"
+                                 }
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "strength",
+                        "value" : {
+                           "path" : "strength",
+                           "scope" : "P",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "supplyQuantity",
+                        "value" : {
+                           "path" : "supplyQuantity",
+                           "scope" : "P",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "supplyDuration",
+                        "value" : {
+                           "path" : "supplyDuration",
+                           "scope" : "P",
+                           "type" : "Property"
                         }
                      }, {
                         "name" : "mme",
