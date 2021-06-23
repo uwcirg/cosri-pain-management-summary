@@ -1869,17 +1869,69 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 1
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "TEST, DOCTOR"
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-03-25"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "dosageInstruction": [
+          {
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1
+                }
+              }
+            ],
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "876193",
-              "display": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+              "code": "51662124001",
+              "display": "Narcan Naloxone hydrochloride 40 mg/ml nasal spray",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "1725059",
+              "display": "Narcan Naloxone hydrochloride 40 mg/ml nasal spray",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "POLYETHYLENE GLYCOL 3350 17000 MG Powder for Oral Solution"
+          "text": "Narcan Naloxone hydrochloride 40 mg/ml nasal spray"
         },
-        "authoredOn": "2017-11-15T16:00:00.000Z"
+        "requester": {
+          "display": "New PRESCRIBER"
+        },
+        "authoredOn": "2021-03-24"
       }
     },
     {

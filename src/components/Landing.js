@@ -29,12 +29,11 @@ export default class Landing extends Component {
       result: null,
       loading: true,
       collector: [],
-      errorCollection: [],
       externals: {},
       patientId: "",
       loadingMessage: "Resources are being loaded..."
     };
-
+    this.errorCollection = [];
     this.tocInitialized = false;
   }
 
@@ -67,6 +66,18 @@ export default class Landing extends Component {
   clearProcessInterval() {
     clearInterval(processIntervalId);
   }
+  processCollectorErrors() {
+    let collectorErrors = this.state.collector.filter(item => {
+      return item.error;
+    });
+    collectorErrors.forEach(item => {
+      this.setError(item.error);
+    });
+  }
+  setError(message) {
+    if (!message) return;
+    this.errorCollection.push(message);
+  }
   componentDidMount() {
     /*
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
@@ -84,6 +95,7 @@ export default class Landing extends Component {
         this.setState({ result, sectionFlags, flaggedCount });
         this.setPatientId();
         this.clearProcessInterval();
+        this.processCollectorErrors();
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData()]).then(
           externalData => {
@@ -96,6 +108,7 @@ export default class Landing extends Component {
           console.log(err);
           this.setState({ loading: false});
           this.clearProcessInterval();
+          this.setError(err);
         });
       }
     )
@@ -103,6 +116,7 @@ export default class Landing extends Component {
       console.error(err);
       this.setState({loading: false});
       this.clearProcessInterval();
+      this.setError(err);
     });
 
   }
@@ -695,7 +709,7 @@ export default class Landing extends Component {
           summary={summary}
           sectionFlags={sectionFlags}
           collector={this.state.collector}
-          errorCollection={this.state.errorCollection}
+          errorCollection={this.errorCollection}
           result={this.state.result}
         />
 

@@ -30,7 +30,7 @@ export default class AlertBanner extends Component {
         role="banner">
         <ChevronDownIcon className="close-button" icon="times" title="close" onClick={this.handleCloseToggle} width="25" height="25" />
         <div className="alert-banner__description">
-            this is an alert banner
+            {this.props.message}
         </div>
       </div>
     );
@@ -38,5 +38,5 @@ export default class AlertBanner extends Component {
 }
 
 AlertBanner.propTypes = {
-    messageCollection: PropTypes.array
+  message: PropTypes.string
 };
