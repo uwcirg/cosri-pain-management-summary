@@ -711,8 +711,8 @@ export default class Landing extends Component {
           collector={this.state.collector}
           errorCollection={this.errorCollection}
           result={this.state.result}
+          versionString={getEnv("REACT_APP_VERSION_STRING")}
         />
-
         <ReactTooltip className="summary-tooltip" id="summaryTooltip" />
       </div>
     );

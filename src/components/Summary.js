@@ -25,6 +25,7 @@ import DataInfo from './DataInfo';
 import DevTools from './DevTools';
 import InfoModal from './InfoModal';
 import MMEGraph from './graph/MMEGraph';
+import Version from '../elements/Version';
 
 export default class Summary extends Component {
   constructor () {
@@ -617,6 +618,8 @@ export default class Summary extends Component {
             //results not coming from CQL
             other={{EducationMaterials, PatientRiskOverview_graph, PatientRiskOverview_alerts, PatientRiskOverview_stats}}
           />
+          {/* display released version string */}
+          <Version versionString={this.props.versionString} />
 
           <ReactModal
             className="modal"
@@ -639,5 +642,6 @@ Summary.propTypes = {
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
   errorCollector: PropTypes.array,
-  result: PropTypes.object.isRequired
+  result: PropTypes.object.isRequired,
+  versionString: PropTypes.string
 };
