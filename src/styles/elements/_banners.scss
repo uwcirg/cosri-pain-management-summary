@@ -14,8 +14,7 @@
 
   &.inclusion-banner,
   &.exclusion-banner {
-    padding: 20px 28px 20px 24px;
-    margin-bottom: 4px;
+    padding: 20px 28px 8px 24px;
     text-align: left;
     background-color: $color-beige;
 
@@ -71,13 +70,41 @@
   }
 }
 
-.alert-banner {
-  background-color: $color-red;
+.error-banner {
+  background-color: $color-red-darker;
   color: #FFF;
   position: relative;
+  padding: 8px 24px 8px;
+  font-weight: 600;
+  .error-banner__title {
+    text-transform: uppercase;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin: 0;
+    letter-spacing: 0.02rem;
+    .icon {
+      margin-right: 2px;
+    }
+  }
+  .error-banner__description {
+    display: block;
+    padding-right: 48px;
+  }
   .close-button {
     position: absolute;
-    top: 0;
-    right: 24px;
+    top: 10px;
+    right: 40px;
+    transform: rotate(0);
+    transition: transform 300ms ease;
+    z-index: 100;
+    cursor: pointer;
+  }
+  &.close {
+    .error-banner__description {
+      display: none;
+    }
+    .close-button {
+      transform: rotate(-90deg);
+    }
   }
 }
