@@ -71,7 +71,7 @@ export default class Landing extends Component {
       return item.error;
     });
     collectorErrors.forEach(item => {
-      this.setError(item.error);
+      this.setError(`[${item.type}] ${item.error}`);
     });
   }
   setError(message) {

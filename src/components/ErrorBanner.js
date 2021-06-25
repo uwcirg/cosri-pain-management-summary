@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ChevronDownIcon from '../icons/ChevronDownIcon';
 
-export default class AlertBanner extends Component {
+export default class ErrorBanner extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      displayed: true
+      displayed: false
     };
     this.handleCloseToggle= this.handleCloseToggle.bind(this);
   }
@@ -17,6 +18,7 @@ export default class AlertBanner extends Component {
 
   handleCloseToggle(e) {
     e.preventDefault();
+    e.stopPropagation();
     this.setState(state => ({
       displayed: !state.displayed
     }));
@@ -26,17 +28,22 @@ export default class AlertBanner extends Component {
     const conditionalClass = this.state.displayed ? '': 'close';
     return (
       <div
-        className={`alert-banner ${conditionalClass}`}
+        className={`error-banner ${conditionalClass}`}
         role="banner">
         <ChevronDownIcon className="close-button" icon="times" title="close" onClick={this.handleCloseToggle} width="25" height="25" />
-        <div className="alert-banner__description">
-            {this.props.message}
+        <h4 className="error-banner__title" onClick={this.handleCloseToggle}><FontAwesomeIcon className="icon" icon="exclamation-circle" title="notice"/> Application Errors</h4>
+        <div className="error-banner__description">
+            <ul>
+            {this.props.errors.map((item, index) => {
+              return <li key={`"app_error_"+${index}`}>{item}</li>
+            })}
+            </ul>
         </div>
       </div>
     );
   }
 }
 
-AlertBanner.propTypes = {
-  message: PropTypes.string
+ErrorBanner.propTypes = {
+  errors: PropTypes.array.isRequired
 };

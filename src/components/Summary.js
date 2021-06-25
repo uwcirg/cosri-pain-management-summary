@@ -18,7 +18,7 @@ import RxIcon from '../icons/RxIcon';
 import TreatmentsIcon from '../icons/TreatmentsIcon';
 import UserIcon from '../icons/UserIcon';
 
-//import AlertBanner from './AlertBanner';
+import ErrorBanner from './ErrorBanner';
 import InclusionBanner from './InclusionBanner';
 import ExclusionBanner from './ExclusionBanner';
 import DataInfo from './DataInfo';
@@ -534,6 +534,7 @@ export default class Summary extends Component {
       PatientRiskOverview_alerts,
       PatientRiskOverview_stats, ...CQLSummary} = summary;
     if (!summary) { return null; }
+    const hasErrors = this.props.errorCollection && this.props.errorCollection.length > 0;
 
     const sectionsToRender = [];
     /*
@@ -569,7 +570,8 @@ export default class Summary extends Component {
           </div>
 
 
-          {/* <AlertBanner /> */}
+          {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
+
 
           {meetsInclusionCriteria && <ExclusionBanner />}
 
@@ -641,7 +643,10 @@ Summary.propTypes = {
   summary: PropTypes.object.isRequired,
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
-  errorCollector: PropTypes.array,
+  errorCollection: PropTypes.array,
   result: PropTypes.object.isRequired,
-  versionString: PropTypes.string
+  versionString: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ])
 };

@@ -173,8 +173,7 @@
       text-align: center;
       font-size: 1.5em;
       font-weight: 600;
-      padding: 15px;
-      margin-bottom: 4px;
+      padding: 12px;
 
       svg {
         margin-right: 20px;
@@ -318,7 +317,7 @@
         align-items: center;
         color: $color-black;
         flex-wrap: wrap;
-        padding: 16px;
+        padding: 0 16px 16px;
         .sub-section__infopanel {
           border: 2px solid;
           padding: 12px;
@@ -421,7 +420,7 @@
       .sub-section {
         background-color: $color-white;
         box-shadow: 1px 2px 2px $color-box-shadow;
-        margin: 20px;
+        margin: 16px 20px;
 
         .info-icon {
           //margin-left: 5px;
@@ -511,7 +510,7 @@
           display: flex;
           align-items: center;
           border-bottom: 1px solid $color-gray-lighter;
-          padding: 20px 40px;
+          padding: 16px 40px;
           font-weight: 700;
           ////color: $color-black;
           .flag-nav {
@@ -609,7 +608,7 @@
     }
 
     .cdc-disclaimer {
-      margin: 10px 40px 0 40px;
+      margin: 8px 24px 0 24px;
       &.data-source {
         padding: 16px 24px;
         box-shadow: 1px 2px 2px $color-box-shadow;
@@ -646,10 +645,9 @@
 
     .data-provenance {
       font-size: 0.95em;
-      padding-bottom: 8px;
       margin-right: 20px;
       margin-left: 20px;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
       cursor: pointer;
 
       .title {
@@ -718,7 +716,7 @@
     }
 
     .dev-tools {
-      margin: 40px;
+      margin: 32px 24px;
 
       &__disclaimer {
         margin-top: -20px;
