@@ -201,7 +201,7 @@
           color: $color-white;
           padding: 12px 20px;
           font-weight: 400;
-          margin: 2px 0;
+          margin: 0;
           height: 32px;
 
           &-title {
@@ -488,7 +488,7 @@
         }
 
         &.sub-section-notitle {
-          padding-top: 20px;
+          padding-top: 12px;
           .sub-section__header {
             display: none;
           }
@@ -499,7 +499,7 @@
           display: flex;
           align-items: center;
           border-bottom: 1px solid $color-gray-lighter;
-          padding: 16px 40px;
+          padding: 12px 40px;
           font-weight: 700;
           ////color: $color-black;
           .flag-nav {
@@ -508,7 +508,7 @@
         }
 
         .table {
-          padding-bottom: 16px;
+          padding-bottom: 8px;
 
           .sub-section__table {
             border: 0;
