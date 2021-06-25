@@ -681,6 +681,8 @@ export default class Landing extends Component {
       return <Spinner loadingMessage={this.state.loadingMessage}/>;
     }
 
+    const PATIENT_SEARCH_URL = getEnv("REACT_APP_DASHBOARD_URL");
+
     if (this.state.result == null) {
       return (
         <div className="banner error">
@@ -688,7 +690,7 @@ export default class Landing extends Component {
             <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See console for details.
           </div>
           <div className="banner__linkContainer">
-            <a href={getEnv("REACT_APP_DASHBOARD_URL")}>Back to Patient Search</a>
+            <a href={PATIENT_SEARCH_URL}>Back to Patient Search</a>
           </div>
         </div>
       );
@@ -707,7 +709,7 @@ export default class Landing extends Component {
           patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
           patientGender={summary.Patient.Gender}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
-          patientSearchURL={getEnv("REACT_APP_DASHBOARD_URL")}
+          patientSearchURL={PATIENT_SEARCH_URL}
         />
 
         <Summary

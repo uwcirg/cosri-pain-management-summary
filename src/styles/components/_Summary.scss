@@ -202,7 +202,7 @@
           padding: 12px 20px;
           font-weight: 400;
           margin: 2px 0;
-          height: 36px;
+          height: 32px;
 
           &-title {
             display: flex;
@@ -235,7 +235,7 @@
       .MME-svg-container {
         position: relative;
         height: 0;
-        width: 100%;
+        width: 560px;
         padding: 0;
         padding-bottom: 67%;
       }
@@ -382,6 +382,9 @@
         .sub-section__panel {
           display: flex;
           flex-wrap:nowrap;
+          .panel-overview {
+            margin-left: 24px;
+          }
           .panel.graph {
             flex-basis: 60%;
             align-self: stretch;
@@ -398,7 +401,7 @@
       @media (min-width: 1400px) {
         .sub-section__panel {
           .panel.graph {
-            flex-basis: 50%;
+            flex-basis: 52.5%;
           }
         }
       }
@@ -740,6 +743,15 @@
         padding: 10px 20px;
         width: 50vw;
         overflow: scroll;
+      }
+    }
+  }
+}
+@media (min-width: 768px) {
+  .summary__display {
+    .sections {
+      .MME-svg-container {
+        width: 100%;
       }
     }
   }

@@ -66,7 +66,7 @@ export default class MMEGraph extends Component {
     let minDate = new Date();
     let baseLineDate = new Date();
     minDate.setDate(maxDate.getDate() - 365);
-    const parentWidth = 536;
+    const parentWidth = 500;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
@@ -132,14 +132,14 @@ export default class MMEGraph extends Component {
     let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
 
     const margins = {
-      top: 40,
+      top: 20,
       right: 48,
       bottom: 48,
       left: 52,
     };
 
     const width = parentWidth - margins.left - margins.right;
-    const height = 320 - margins.top - margins.bottom;
+    const height = 300 - margins.top - margins.bottom;
     const xScale = scaleTime().domain([baseLineDate, maxDate]).rangeRound([0, width]);
     const xMaxValue = Math.max(140, this.getMaxMMEValue(data));
     const yScale = scaleLinear()
