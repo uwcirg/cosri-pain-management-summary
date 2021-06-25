@@ -382,12 +382,7 @@
         .sub-section__panel {
           display: flex;
           flex-wrap:nowrap;
-          // .panel.overview {
-          //   flex-grow: 1;
-          //   flex-basis: 40%;
-          // }
           .panel.graph {
-           // flex-grow: 1;
             flex-basis: 60%;
             align-self: stretch;
           }

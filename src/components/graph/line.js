@@ -15,7 +15,6 @@ class Line extends React.Component {
   }
   componentDidMount() {
     const node = this.ref.current;
-    console.log("props ", this.props)
     const { data, lineGenerator, xName, yName, xScale, yScale, dataPoints } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
 
@@ -86,8 +85,7 @@ class Line extends React.Component {
       .attr('id', (d, i) => `dataRect_${i}`)
       .attr("x", (d) => xScale(d[xName]) - 52)
       .attr('y', d => yScale(d[yName]) + 12)
-     // .attr("width", 116)
-     .attr("width", d => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
+      .attr("width", d => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
       .attr("height", 20)
       .attr('class', 'hide')
       .style("stroke", "black")
