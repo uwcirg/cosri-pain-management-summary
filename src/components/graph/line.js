@@ -15,6 +15,7 @@ class Line extends React.Component {
   }
   componentDidMount() {
     const node = this.ref.current;
+    console.log("props ", this.props)
     const { data, lineGenerator, xName, yName, xScale, yScale, dataPoints } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
 
@@ -29,7 +30,7 @@ class Line extends React.Component {
       .datum(data)
       .attr('id', this.props.lineID)
       .attr('stroke', this.props.strokeColor || "#217684")
-      .attr('stroke-width', this.props.strokeWidth)
+      .attr('stroke-width', this.props.strokeWidth || "2px")
       .attr('fill', 'none')
       .attr('d', lineGenerator);
     if (this.props.dotted) {
@@ -37,8 +38,8 @@ class Line extends React.Component {
     }
 
     if (dataPoints) {
-      const radiusWidth  = 2;
-      const expandedRadiusWidth = radiusWidth * 2;
+      const radiusWidth  = 1;
+      const expandedRadiusWidth = radiusWidth * 1.5;
       const animationDuration = 100;
       select(node)
       .selectAll('circle')
@@ -85,7 +86,8 @@ class Line extends React.Component {
       .attr('id', (d, i) => `dataRect_${i}`)
       .attr("x", (d) => xScale(d[xName]) - 52)
       .attr('y', d => yScale(d[yName]) + 12)
-      .attr("width", 116)
+     // .attr("width", 116)
+     .attr("width", d => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
       .attr("height", 20)
       .attr('class', 'hide')
       .style("stroke", "black")
@@ -106,7 +108,7 @@ class Line extends React.Component {
       .attr("text-anchor", "start")
       .attr('font-weight', 600)
       .text(function(d) {
-        return `(${formatDate(d[xName])}, ${d[yName]})`
+        return `${formatDate(d[xName])}, ${d[yName]}`
       });
     }
     this.updateChart();

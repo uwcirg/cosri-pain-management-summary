@@ -50,7 +50,7 @@ export default class MMEGraph extends Component {
 
   getMaxMMEValue(data) {
     let maxValue =  0;
-    let CAP_MAX_VALUE = 1000;
+    let CAP_MAX_VALUE = 1500;
     data.forEach(item => {
       if (item["MMEValue"] > CAP_MAX_VALUE) return true;
       maxValue = Math.max(maxValue, item["MMEValue"]);
@@ -102,7 +102,7 @@ export default class MMEGraph extends Component {
     const diffTime = Math.abs(maxDate - minDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
    // if (arrayDates.length < (xIntervals - 2)) {
-    if (diffDays < 60 && arrayDates.length < (xIntervals - 2)) {
+    if (diffDays <= 60 && arrayDates.length < (xIntervals - 2)) {
       /*
        * make sure graph has appropiate end points on the graph if the total count of data points is less than the initial set number of intervals
        */
@@ -133,13 +133,13 @@ export default class MMEGraph extends Component {
 
     const margins = {
       top: 40,
-      right: 52,
-      bottom: 52,
+      right: 48,
+      bottom: 48,
       left: 52,
     };
 
     const width = parentWidth - margins.left - margins.right;
-    const height = 360 - margins.top - margins.bottom;
+    const height = 320 - margins.top - margins.bottom;
     const xScale = scaleTime().domain([baseLineDate, maxDate]).rangeRound([0, width]);
     const xMaxValue = Math.max(140, this.getMaxMMEValue(data));
     const yScale = scaleLinear()
@@ -162,22 +162,22 @@ export default class MMEGraph extends Component {
         yName: yFieldName
     };
 
-    const additionalProps = {};
-    //if (data.length === 1) {
-      additionalProps["dataPoints"] = {
-        "strokeColor": "#217684",
-        "strokeFill": "#217684",
-        "strokeWidth": 2.5
-      }
-    //}
+    const additionalProps = {
+      "strokeColor": "#217684",
+      "strokeFill": "#217684",
+      "strokeWidth": "2px"
+    };
+    additionalProps["dataPoints"] = {
+        ...additionalProps
+    };
 
     const xSettings = {
       scale: xScale,
       orient: 'bottom',
       transform: `translate(0, ${height})`,
-      tickFormat: "%b %y",
+      tickFormat: "%b %Y",
       tickType: "date",
-      tickInterval: diffDays <= 180 ? 1 : 3,
+      tickInterval: diffDays <= 360 ? 1 : 2,
       ticks: xIntervals
     };
     const ySettings = {
@@ -189,7 +189,7 @@ export default class MMEGraph extends Component {
 
     const defaultLegendSettings = {
       "fontFamily": "sans-serif",
-      "fontSize": xMaxValue > 500 ? "10px": "12px",
+      "fontSize": xMaxValue >= 600 ? "9px": "12px",
       "fontWeight": "600",
       "x": xScale(baseLineDate) + 8
     };

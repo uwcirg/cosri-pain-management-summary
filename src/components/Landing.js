@@ -684,7 +684,12 @@ export default class Landing extends Component {
     if (this.state.result == null) {
       return (
         <div className="banner error">
-          <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See console for details.
+          <div>
+            <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See console for details.
+          </div>
+          <div className="banner__linkContainer">
+            <a href={getEnv("REACT_APP_DASHBOARD_URL")}>Back to Patient Search</a>
+          </div>
         </div>
       );
     }

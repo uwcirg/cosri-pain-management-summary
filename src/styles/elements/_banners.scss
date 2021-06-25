@@ -2,6 +2,10 @@
   text-align: center;
   padding: 20px;
 
+  &__linkContainer {
+    margin-top: 8px;
+  }
+
   &.error {
     background-color: lighten($color-red, 15%);
     color: darken($color-red, 15%);
