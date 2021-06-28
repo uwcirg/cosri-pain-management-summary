@@ -37,8 +37,8 @@ class Line extends React.Component {
     }
 
     if (dataPoints) {
-      const radiusWidth  = 1;
-      const expandedRadiusWidth = radiusWidth * 1.5;
+      const radiusWidth  = 0.55;
+      const expandedRadiusWidth = radiusWidth * 4;
       const animationDuration = 100;
       select(node)
       .selectAll('circle')
@@ -47,8 +47,8 @@ class Line extends React.Component {
       .append('circle')
       .attr('class', 'circle')
       .attr('stroke', dataPoints.strokeColor)
-      .attr('stroke-width', dataPoints.strokeWidth)
-      .attr('fill', dataPoints.strokeFill)
+      .attr('stroke-width', dataPoints.dataStrokeWidth)
+      .attr('fill',dataPoints.dataStrokeFill)
       .attr('r', radiusWidth)
       .attr('id', (d, i) => `circle_${i}`)
       .attr('cx', d => xScale(d[xName]))
@@ -68,7 +68,7 @@ class Line extends React.Component {
         if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
           return;
         }
-        select("#circle_"+i)
+       select( `#circle_${i}`)
         .transition()
         .duration(animationDuration)
         .attr("r", radiusWidth);
@@ -78,10 +78,11 @@ class Line extends React.Component {
 
       //rect
       select(node)
-      .selectAll('rect')
+      .selectAll('.rect-tooltip')
       .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
       .enter()
       .append("rect")
+      .attr("class", "rect-tooltip")
       .attr('id', (d, i) => `dataRect_${i}`)
       .attr("x", (d) => xScale(d[xName]) - 52)
       .attr('y', d => yScale(d[yName]) + 12)

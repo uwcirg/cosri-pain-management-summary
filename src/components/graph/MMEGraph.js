@@ -165,10 +165,14 @@ export default class MMEGraph extends Component {
     const additionalProps = {
       "strokeColor": "#217684",
       "strokeFill": "#217684",
-      "strokeWidth": "2px"
+      "strokeWidth": "2.25"
     };
     additionalProps["dataPoints"] = {
-        ...additionalProps
+        ...additionalProps,
+        ...{
+          "dataStrokeWidth": "2.5",
+          "dataStrokeFill": "#217684"
+        }
     };
 
     const xSettings = {
