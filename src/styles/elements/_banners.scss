@@ -2,6 +2,10 @@
   text-align: center;
   padding: 20px;
 
+  &__linkContainer {
+    margin-top: 8px;
+  }
+
   &.error {
     background-color: lighten($color-red, 15%);
     color: darken($color-red, 15%);
@@ -14,9 +18,10 @@
 
   &.inclusion-banner,
   &.exclusion-banner {
-    padding: 20px 28px 8px 24px;
+    padding: 16px 40px 4px 24px;
     text-align: left;
     background-color: $color-beige;
+    position: relative;
 
     &__tag {
       margin-bottom: 20px;
@@ -35,7 +40,8 @@
     }
 
     .close-button {
-      float: right;
+      position: absolute;
+      right: 24px;
       color: $color-gold-light;
       font-size: 1.2em;
       cursor: pointer;

@@ -1231,7 +1231,7 @@
     },
     {
       "resource": {
-        "authoredOn": "2020-10-01",
+        "authoredOn": "2021-02-01",
         "id": "20f04037-b4ed-46ac-9222-c11f1e54580f",
         "subject": {
           "reference": "Patient/5c41cecf-cf81-434f-9da7-e24e5a99dbc2"
@@ -1268,7 +1268,7 @@
             },
             {
               "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2020-10-01"
+              "valueDate": "2021-02-01"
             }
           ],
           "quantity": {
@@ -1458,7 +1458,7 @@
             "code": "d",
             "system": "http://unitsofmeasure.org",
             "unit": "days",
-            "value": 2
+            "value": 28
           },
           "extension": [
             {
@@ -1471,7 +1471,7 @@
             }
           ],
           "quantity": {
-            "value": 1
+            "value": 2
           }
         },
         "dosageInstruction": [

@@ -70,7 +70,6 @@
     line-height: 1.45;
   }
   .pagination-bottom {
-    margin-top: 20px;
     input,
     select {
       border-radius: 0;
@@ -90,7 +89,7 @@
     .-pagination {
       box-shadow: none;
       border-top: 1px solid $color-gray-lighter;
-      padding-top: 16px;
+      padding-top: 8px;
 
       button {
         width: 65%;
