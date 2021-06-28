@@ -179,7 +179,7 @@ export default class MMEGraph extends Component {
       scale: xScale,
       orient: 'bottom',
       transform: `translate(0, ${height})`,
-      tickFormat: "%b %Y",
+      tickFormat: "%Y %b",
       tickType: "date",
       tickInterval: diffDays <= 360 ? 1 : 2,
       ticks: xIntervals
