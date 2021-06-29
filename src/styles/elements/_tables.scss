@@ -61,6 +61,11 @@
       font-weight: 600;
     }
 
+    .col-header-title {
+      margin: 0;
+      border-bottom: 1px solid $color-gray-lighter;
+    }
+
   }
 
   .rt-tbody .rt-td {

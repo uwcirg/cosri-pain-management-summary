@@ -837,6 +837,8 @@
                 "formatter": "linkFormat",
                 "formatterArguments": ["title","url", "type", "size"],
                 "minWidth": 200,
+                "className": "title",
+                "header": true,
                 "sortable": false
               }
             }
@@ -856,6 +858,8 @@
                 "formatter": "linkFormat",
                 "formatterArguments": ["title","url", "type", "size"],
                 "minWidth": 200,
+                "className": "title",
+                "header": true,
                 "sortable": false
               }
             }

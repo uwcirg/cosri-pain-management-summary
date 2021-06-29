@@ -325,13 +325,13 @@
           margin-top: 16px;
           max-width: 360px;
           .panel-title {
-            font-weight: 600;
+            font-weight: 700;
             margin-top: 4px;
             margin-bottom: 16px;
             font-size: 20px;
           }
           .title {
-            font-weight: 600;
+            font-weight: 700;
           }
           .content {
             padding:8px;
@@ -353,7 +353,7 @@
             margin-top: 16px;
             a {
               text-decoration: none;
-              font-weight: 500;
+              font-weight: 600;
               display: flex;
               align-items: center;
               margin-bottom: 8px;
@@ -536,12 +536,9 @@
             }
 
             .call-to-action-link {
-              margin-top: 8px;
               display: block;
               font-weight: 600;
-              font-size: 1.1em;
-              border-top: 1px solid $color-gray-lighter;
-              padding-top: 10px;
+              font-size: 1.05em;
             }
 
             .rt-th:first-child,

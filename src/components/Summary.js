@@ -242,10 +242,13 @@ export default class Summary extends Component {
 
     headers.forEach((header) => {
       const headerKey = table.headers[header];
-
+      const headerClass = headerKey.className ? headerKey.className: "";
       const column = {
         id: header,
-        Header: () => <span className={`col-header col-${header}`}>{header}</span>,
+        Header: () => {
+          if (headerKey.header) return <h3 className="col-header-title">{header}</h3>
+          return <span className={`col-header col-${header} ${headerClass}`}>{header}</span>
+        },
         accessor: (entry) => {
           let value = entry[headerKey];
           if (headerKey.formatter) {
