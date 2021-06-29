@@ -1253,6 +1253,460 @@
                }
             } ]
          }, {
+            "name" : "GetMedicationRequestDispensedDate",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "name" : "medRequest",
+                     "type" : "OperandRef"
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "LastFillExtension",
+                  "expression" : {
+                     "type" : "Indexer",
+                     "operand" : [ {
+                        "path" : "extension",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "dispenseRequest",
+                           "scope" : "O",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "1",
+                        "type" : "Literal"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "Start",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "LastFillExtension",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "name" : "LastFillExtension",
+                           "type" : "QueryLetRef"
+                        }
+                     },
+                     "else" : {
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ChoiceTypeSpecifier",
+                           "choice" : [ {
+                              "name" : "{http://hl7.org/fhir}base64Binary",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}boolean",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}canonical",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}code",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}date",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}decimal",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}id",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}instant",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}integer",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}markdown",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}oid",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}positiveInt",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}string",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}time",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}unsignedInt",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}uri",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}url",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}uuid",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Address",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Age",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Annotation",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Attachment",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}CodeableConcept",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Coding",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}ContactPoint",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Count",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Distance",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Duration",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}HumanName",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Identifier",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Money",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Period",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Quantity",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Range",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Ratio",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Reference",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}SampledData",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Signature",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Timing",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}ContactDetail",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Contributor",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}DataRequirement",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Expression",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}ParameterDefinition",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}RelatedArtifact",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}TriggerDefinition",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}UsageContext",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Dosage",
+                              "type" : "NamedTypeSpecifier"
+                           } ]
+                        }
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "name" : "Start",
+                     "type" : "QueryLetRef"
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "medRequest",
+               "operandTypeSpecifier" : {
+                  "name" : "{http://hl7.org/fhir}MedicationRequest",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
+            "name" : "GetMedicationRequestStartDate",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "name" : "medRequest",
+                     "type" : "OperandRef"
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "LastFillDate",
+                  "expression" : {
+                     "name" : "GetMedicationRequestDispensedDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "Start",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "LastFillDate",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
+                        "name" : "LastFillDate",
+                        "type" : "QueryLetRef"
+                     },
+                     "else" : {
+                        "type" : "As",
+                        "operand" : {
+                           "path" : "authoredOn",
+                           "scope" : "O",
+                           "type" : "Property"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ChoiceTypeSpecifier",
+                           "choice" : [ {
+                              "name" : "{http://hl7.org/fhir}base64Binary",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}boolean",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}canonical",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}code",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}date",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}decimal",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}id",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}instant",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}integer",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}markdown",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}oid",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}positiveInt",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}string",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}time",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}unsignedInt",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}uri",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}url",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}uuid",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Address",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Age",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Annotation",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Attachment",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}CodeableConcept",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Coding",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}ContactPoint",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Count",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Distance",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Duration",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}HumanName",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Identifier",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Money",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Period",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Quantity",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Range",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Ratio",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Reference",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}SampledData",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Signature",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Timing",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}ContactDetail",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Contributor",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}DataRequirement",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Expression",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}ParameterDefinition",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}RelatedArtifact",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}TriggerDefinition",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}UsageContext",
+                              "type" : "NamedTypeSpecifier"
+                           }, {
+                              "name" : "{http://hl7.org/fhir}Dosage",
+                              "type" : "NamedTypeSpecifier"
+                           } ]
+                        }
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "name" : "Start",
+                     "type" : "QueryLetRef"
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "medRequest",
+               "operandTypeSpecifier" : {
+                  "name" : "{http://hl7.org/fhir}MedicationRequest",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
             "name" : "Is18orOlder",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -3379,6 +3833,24 @@
                            } ]
                         }
                      }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "GetMedicationRequestDispensedDate",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "O",
+                                    "type" : "AliasRef"
+                                 } ]
+                              }
+                           } ]
+                        }
+                     }, {
                         "name" : "CalculatedEnd",
                         "value" : {
                            "name" : "CalculatedEnd",
@@ -3637,6 +4109,45 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "CalculatedEnd",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}Date",
@@ -3680,39 +4191,6 @@
                                           "name" : "{http://hl7.org/fhir}Extension",
                                           "type" : "NamedTypeSpecifier"
                                        }
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "TupleTypeSpecifier",
-                                 "element" : [ {
-                                    "name" : "Type",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Name",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Start",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "End",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Status",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
                                     }
                                  } ]
                               } ]
@@ -3749,6 +4227,45 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "CalculatedEnd",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}Date",
@@ -3792,39 +4309,6 @@
                                           "name" : "{http://hl7.org/fhir}Extension",
                                           "type" : "NamedTypeSpecifier"
                                        }
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "TupleTypeSpecifier",
-                                 "element" : [ {
-                                    "name" : "Type",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Name",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Start",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "End",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Status",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
                                     }
                                  } ]
                               } ]
@@ -3985,6 +4469,24 @@
                               "path" : "authoredOn",
                               "scope" : "O",
                               "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "GetMedicationRequestDispensedDate",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "O",
+                                    "type" : "AliasRef"
+                                 } ]
+                              }
                            } ]
                         }
                      }, {
@@ -4298,6 +4800,24 @@
                            } ]
                         }
                      }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "GetMedicationRequestDispensedDate",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "O",
+                                    "type" : "AliasRef"
+                                 } ]
+                              }
+                           } ]
+                        }
+                     }, {
                         "name" : "CalculatedEnd",
                         "value" : {
                            "name" : "CalculatedEnd",
@@ -4545,31 +5065,7 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
-                                    "name" : "CalculatedEnd",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
                                     "name" : "End",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Quantity",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Prescriber",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Pharmacy",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -4602,7 +5098,37 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "CalculatedEnd",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Prescriber",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Pharmacy",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -4648,31 +5174,7 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
-                                    "name" : "CalculatedEnd",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
                                     "name" : "End",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Quantity",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Prescriber",
-                                    "type" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Pharmacy",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -4705,7 +5207,37 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "CalculatedEnd",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Prescriber",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Pharmacy",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -5066,6 +5598,24 @@
                            } ]
                         }
                      }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "GetMedicationRequestDispensedDate",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "O",
+                                    "type" : "AliasRef"
+                                 } ]
+                              }
+                           } ]
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
                            "strict" : false,
@@ -5217,11 +5767,175 @@
                   "expression" : {
                      "type" : "Union",
                      "operand" : [ {
-                        "name" : "ReportStoolSoftenersAndLaxativesRequests",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportStoolSoftenersAndLaxativesRequests",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      }, {
-                        "name" : "ReportStoolSoftenersAndLaxativesStatements",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportStoolSoftenersAndLaxativesStatements",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      } ]
                   }
                } ],
@@ -5491,7 +6205,7 @@
                            "type" : "QueryLetRef"
                         }
                      }, {
-                        "name" : "Start",
+                        "name" : "Written",
                         "value" : {
                            "name" : "DateTimeText",
                            "type" : "FunctionRef",
@@ -5499,6 +6213,24 @@
                               "path" : "authoredOn",
                               "scope" : "O",
                               "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Start",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "GetMedicationRequestStartDate",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "O",
+                                    "type" : "AliasRef"
+                                 } ]
+                              }
                            } ]
                         }
                      }, {
@@ -6088,6 +6820,24 @@
                            } ]
                         }
                      }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "GetMedicationRequestDispensedDate",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "O",
+                                    "type" : "AliasRef"
+                                 } ]
+                              }
+                           } ]
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
                            "strict" : false,
@@ -6239,11 +6989,175 @@
                   "expression" : {
                      "type" : "Union",
                      "operand" : [ {
-                        "name" : "ReportBenzodiazepineMedicationRequests",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportBenzodiazepineMedicationRequests",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      }, {
-                        "name" : "ReportBenzodiazepineMedicationStatements",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportBenzodiazepineMedicationStatements",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      } ]
                   }
                } ],
@@ -6382,6 +7296,24 @@
                               "path" : "authoredOn",
                               "scope" : "O",
                               "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "GetMedicationRequestDispensedDate",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "O",
+                                    "type" : "AliasRef"
+                                 } ]
+                              }
                            } ]
                         }
                      }, {
@@ -6536,11 +7468,175 @@
                   "expression" : {
                      "type" : "Union",
                      "operand" : [ {
-                        "name" : "ReportCarisoprodolMedicationRequests",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportCarisoprodolMedicationRequests",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      }, {
-                        "name" : "ReportCarisoprodolMedicationStatements",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportCarisoprodolMedicationStatements",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      } ]
                   }
                } ],
@@ -6625,6 +7721,24 @@
                               "asTypeSpecifier" : {
                                  "name" : "{http://hl7.org/fhir}CodeableConcept",
                                  "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}dateTime",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "GetMedicationRequestDispensedDate",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "O",
+                                    "type" : "AliasRef"
+                                 } ]
                               }
                            } ]
                         }
@@ -6791,11 +7905,175 @@
                   "expression" : {
                      "type" : "Union",
                      "operand" : [ {
-                        "name" : "ReportNaloxoneMedicationRequests",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportNaloxoneMedicationRequests",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      }, {
-                        "name" : "ReportNaloxoneMedicationStatements",
-                        "type" : "ExpressionRef"
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportNaloxoneMedicationStatements",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Type",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "DispensedDate",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Start",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "End",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Status",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
                      } ]
                   }
                } ],

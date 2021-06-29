@@ -89,12 +89,12 @@
     .-pagination {
       box-shadow: none;
       border-top: 1px solid $color-gray-lighter;
-      padding-top: 8px;
+      padding: 0;
+      padding-top: 4px;
 
       button {
-        width: 65%;
+        width: 60%;
         margin: 4px auto;
-        padding: 4px;
         height: 32px;
       }
 

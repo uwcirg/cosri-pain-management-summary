@@ -35,6 +35,8 @@
 //    Updated to include MME Calculation
 // Update 20200904
 //    Code cleaning
+// Update 20210628
+//    use Last Fill date as the Start Date for MME value calculation, it was using authored date
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
@@ -304,6 +306,23 @@ define function GetMedicationRequestEndDate(medRequest MedicationRequest):
       else 'days'
     return date from (O.authoredOn + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
 
+// Return dispensed date or last fill date for a medication
+define function GetMedicationRequestDispensedDate(medRequest MedicationRequest):
+  (medRequest) O
+  let
+    LastFillExtension: O.dispenseRequest.extension[1],
+    Start: if LastFillExtension is not null then LastFillExtension.value else null
+    return Start
+
+
+// Returns the start date for a medication
+define function GetMedicationRequestStartDate(medRequest MedicationRequest):
+  (medRequest) O
+  let
+    LastFillDate: GetMedicationRequestDispensedDate(O),
+    Start: if LastFillDate is not null then LastFillDate else O.authoredOn
+    return Start
+
 
 // ## Target population ##
 
@@ -568,6 +587,7 @@ define ReportOpioidMedicationRequests:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
+    DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
     //provided by the extension dateValue, may not always be there
     CalculatedEnd: CalculatedEnd, //of type datetime
     End: ToString(CalculatedEnd), //of type string
@@ -611,6 +631,7 @@ define ReportPDMPMedicationRequests:
       Type:  'Request',
       Name:  ConceptText(O.medication as FHIR.CodeableConcept),
       Start: DateTimeText(O.authoredOn),
+      DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
       CalculatedEnd: CalculatedEnd, //of datetime type
       End: ToString(CalculatedEnd), //of string type
       Quantity: if dispenseRequest is not null then dispenseRequest.quantity.value.value else null,
@@ -643,6 +664,7 @@ define ReportNonOpioidMedicationRequests:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
+    DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
     CalculatedEnd: CalculatedEnd,
     End: ToString(CalculatedEnd),
     Quantity: MMECalculator.GetMedicationQuantity(O).value,
@@ -724,6 +746,7 @@ define ReportStoolSoftenersAndLaxativesRequests:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
+    DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
     End:   null as String, // MedicationRequest end date not supported in R4,
     Status: O.status.value
   }
@@ -757,6 +780,7 @@ define ActiveOpioidMedicationRequestsByEndDate:
 define CurrentMME:
   MMECalculator.TotalMME(ActiveOpioidMedicationRequestsByEndDate)
 
+
 define ReportCurrentMME:
 {
   if CurrentMME is null then
@@ -781,7 +805,8 @@ define ReportMME:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     CalculatedEnd: CalculatedEnd,
-    Start: DateTimeText(O.authoredOn),
+    Written: DateTimeText(O.authoredOn),
+    Start: DateTimeText(GetMedicationRequestStartDate(O)),
     End: ToString(CalculatedEnd),
     Status: CalculatedStatus,
     doseQuantity: MME_Object[0].doseQuantity,
@@ -855,6 +880,7 @@ define ReportBenzodiazepineMedicationRequests:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
+    DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
     End:   null as String, // MedicationRequest end date not supported in R4,
     Status: O.status.value
   }
@@ -898,6 +924,7 @@ define ReportCarisoprodolMedicationRequests:
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
+    DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
     End:   null as String, // MedicationRequest end date not supported in R4,
     Status: O.status.value
   }
@@ -933,6 +960,7 @@ define ReportNaloxoneMedicationRequests:
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+    DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
     Start: DateTimeText(O.authoredOn),
     End:   null as String, // MedicationRequest end date not supported in R4,
     Status: O.status.value

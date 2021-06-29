@@ -122,8 +122,7 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    //const MIN_HEADER_HEIGHT = 136;
-    const MIN_HEADER_HEIGHT = 148;
+    const MIN_HEADER_HEIGHT = 120;
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       tocbot.init({
         tocSelector: '.summary__nav',           // where to render the table of contents
@@ -139,6 +138,7 @@ export default class Landing extends Component {
 
       this.tocInitialized = true;
     }
+    //page title
     document.title = "COSRI";
     this.handleHeaderPos();
 
@@ -394,13 +394,13 @@ export default class Landing extends Component {
         //overlapping data points
         if (prevObj && (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
           //add data point with older value for the previous med
-          prevObj[PLACEHOLDER_FIELD_NAME] = !prevObj[DUMMY_FIELD_NAME] ? false : true;
+          prevObj[PLACEHOLDER_FIELD_NAME] = prevObj[DUMMY_FIELD_NAME] || prevObj[PLACEHOLDER_FIELD_NAME];
           dataPoint = {};
           dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
           dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
-          currentDataPoint[PLACEHOLDER_FIELD_NAME] = false;
+          //currentDataPoint[PLACEHOLDER_FIELD_NAME] = currentDataPoint[PLACEHOLDER_FIELD_NAME];
           finalDataPoints.push(currentDataPoint);
         } else if (prevObj && currentDataPoint[START_DELIMITER_FIELD_NAME] && dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
             //add 0 value dummy data point to denote start of med
