@@ -303,15 +303,17 @@ define function GetMedicationRequestEndDate(medRequest MedicationRequest):
     CalculatedDurationUnit:
       if O.dispenseRequest.expectedSupplyDuration is not null
       then  O.dispenseRequest.expectedSupplyDuration.unit.value
-      else 'days'
-    return date from (O.authoredOn + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
+      else 'days',
+    Start: GetMedicationRequestStartDate(O),
+    CalculatedStart: if Start is not null then Start else O.authoredOn
+    return date from ToDate(CalculatedStart + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
 
 // Return dispensed date or last fill date for a medication
 define function GetMedicationRequestDispensedDate(medRequest MedicationRequest):
   (medRequest) O
   let
     LastFillExtension: O.dispenseRequest.extension[1],
-    Start: if LastFillExtension is not null then LastFillExtension.value else null
+    Start: if LastFillExtension is not null then (LastFillExtension.value as FHIR.dateTime) else null
     return Start
 
 
