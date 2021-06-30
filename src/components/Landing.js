@@ -7,6 +7,7 @@ import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
 import {datishFormat, dateFormat, dateNumberFormat, extractDateFromGMTDateString} from '../helpers/formatit';
 import {dateCompare} from '../helpers/sortit';
+import {getDiffDays} from '../helpers/utility';
 import summaryMap from './summary.json';
 
 import {getEnv, fetchEnvData} from '../utils/envConfig';
@@ -308,9 +309,10 @@ export default class Landing extends Component {
         let dataPoint = {};
         let startDate = extractDateFromGMTDateString(currentMedicationItem[startDateFieldName]);
         let endDate = extractDateFromGMTDateString(currentMedicationItem[endDateFieldName]);
-        let [oStartDate, oEndDate] = [new Date(startDate), new Date(endDate)];
-        let diffTime = oEndDate - oStartDate;
-        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        let oStartDate = new Date(startDate);
+        //let diffTime = oEndDate - oStartDate;
+        //let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        let diffDays = getDiffDays(startDate, endDate);
         nextObj = (index+1) <= graph_data.length-1 ? graph_data[index+1]: null;
 
         //add start date data point
@@ -403,28 +405,32 @@ export default class Landing extends Component {
           //currentDataPoint[PLACEHOLDER_FIELD_NAME] = currentDataPoint[PLACEHOLDER_FIELD_NAME];
           finalDataPoints.push(currentDataPoint);
         } else if (prevObj && currentDataPoint[START_DELIMITER_FIELD_NAME] && dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
-            //add 0 value dummy data point to denote start of med
-            dataPoint = {};
-            dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-            dataPoint[MMEValueFieldName] = 0;
-            dataPoint[START_DELIMITER_FIELD_NAME] = true;
-            dataPoint[DUMMY_FIELD_NAME] = true;
-            dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-            finalDataPoints.push(dataPoint);
-            //add current data point
-            finalDataPoints.push(currentDataPoint);
+          if (getDiffDays(prevObj[endDateFieldName], currentDataPoint[startDateFieldName]) > 1) {
+              dataPoint = {};
+              dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+              //add 0 value dummy data point to denote start of med where applicable
+              dataPoint[MMEValueFieldName] = 0;
+              dataPoint[START_DELIMITER_FIELD_NAME] = true;
+              dataPoint[DUMMY_FIELD_NAME] = true;
+              dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+              finalDataPoints.push(dataPoint);
+          }
+          //add current data point
+          finalDataPoints.push(currentDataPoint);
         }
         else if (nextObj && currentDataPoint[END_DELIMITER_FIELD_NAME] && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName]))) {
             //add current data point
             finalDataPoints.push(currentDataPoint);
-            //add 0 value dummy data point to denote end of med
-            dataPoint = {};
-            dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-            dataPoint[MMEValueFieldName] = 0;
-            dataPoint[DUMMY_FIELD_NAME] = true;
-            dataPoint[END_DELIMITER_FIELD_NAME] = true;
-            dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-            finalDataPoints.push(dataPoint);
+            if (getDiffDays(currentDataPoint[endDateFieldName], nextObj[startDateFieldName]) > 1) {
+              dataPoint = {};
+              dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+              //add 0 value dummy data point to denote end of med where applicable
+              dataPoint[MMEValueFieldName] = 0;
+              dataPoint[DUMMY_FIELD_NAME] = true;
+              dataPoint[END_DELIMITER_FIELD_NAME] = true;
+              dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+              finalDataPoints.push(dataPoint);
+            }
         }
         else {
             finalDataPoints.push(currentDataPoint);
