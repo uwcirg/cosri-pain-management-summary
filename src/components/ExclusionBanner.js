@@ -32,7 +32,7 @@ export default class ExclusionBanner extends Component {
         <ChevronDownIcon className="close-button" icon="times" title="close"  width="25" height="25" />
 
         <div className="exclusion-banner__description">
-          <strong className="title"><FontAwesomeIcon icon="exclamation-circle" title="notice" /> LIMITATIONS</strong> <span className="content"><b><u>Not intended</u></b> for patients undergoing <b>palliative</b>, <b>inpatient</b>, or <b>cancer treatment</b>.</span>
+          <strong className="title"><FontAwesomeIcon icon="exclamation-circle" title="notice" /> LIMITATIONS</strong> <span className="content">Guidance <b><u>not intended</u></b> for <b>palliative</b>, <b>inpatient</b>, or <b>active cancer care</b>.</span>
         </div>
       </div>
     );
