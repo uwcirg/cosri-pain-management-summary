@@ -59,8 +59,9 @@ export default class Landing extends Component {
      // console.log("summary map ", summaryMap)
      let totalResources = Object.keys(summaryMap).length;
      let numResourcesLoaded = this.state.collector.length;
+     let stillLoading = numResourcesLoaded <= totalResources;
       this.setState({
-        loadingMessage: `<div>${totalResources} resources are being loaded.</div><div><span class='${totalResources !== numResourcesLoaded?"text-warning": "text-success"}'>${numResourcesLoaded} loaded ...</span></div>`
+        loadingMessage: `<div>${totalResources} resources are being loaded.</div><div><span class='${stillLoading?"text-warning": "text-success"}'>${stillLoading ? numResourcesLoaded : totalResources} loaded ...</span></div>`
       });
     }, 30);
   }
