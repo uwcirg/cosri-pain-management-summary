@@ -292,7 +292,29 @@ define function Abatement(c FHIR.Condition):
     (c.abatement as FHIR.string).value
   })
 
+
+// Return dispensed quantity
+// @param MedicationRequest FHIR object
+define function GetMedicationRequestDispensedQuantity(medRequest MedicationRequest):
+  (medRequest) O
+  let
+    dispenseRequest: O.dispenseRequest,
+    dispensedQuantity: if dispenseRequest is not null then dispenseRequest.quantity.value.value else null
+    return dispensedQuantity
+
+
+// Return pharmacy name
+// @param MedicationRequest FHIR object
+define function GetMedicationRequestPharmacy(medRequest MedicationRequest):
+  (medRequest) O
+  let
+    //pharmacy is from extension
+    pharmacyExtension: O.dispenseRequest.extension[0],
+    pharmacy: if pharmacyExtension is not null then (pharmacyExtension.value as FHIR.string).value else null
+    return pharmacy
+
 // Returns the predicted last date for the prescription, based on the supply duration and quantity
+// @param MedicationRequest FHIR object
 define function GetMedicationRequestEndDate(medRequest MedicationRequest):
   (medRequest) O
    let
@@ -309,15 +331,18 @@ define function GetMedicationRequestEndDate(medRequest MedicationRequest):
     return date from ToDate(CalculatedStart + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
 
 // Return dispensed date or last fill date for a medication
+// @param MedicationRequest FHIR object
 define function GetMedicationRequestDispensedDate(medRequest MedicationRequest):
   (medRequest) O
   let
+    //last fill date is from extension
     LastFillExtension: O.dispenseRequest.extension[1],
     Start: if LastFillExtension is not null then (LastFillExtension.value as FHIR.dateTime) else null
     return Start
 
 
 // Returns the start date for a medication
+// @param MedicationRequest FHIR object
 define function GetMedicationRequestStartDate(medRequest MedicationRequest):
   (medRequest) O
   let
@@ -593,9 +618,9 @@ define ReportOpioidMedicationRequests:
     //provided by the extension dateValue, may not always be there
     CalculatedEnd: CalculatedEnd, //of type datetime
     End: ToString(CalculatedEnd), //of type string
-    Quantity: MMECalculator.GetMedicationQuantity(O).value,
+    Quantity: GetMedicationRequestDispensedQuantity(O),
     Prescriber: O.requester.display.value,
-    Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
+    Pharmacy: GetMedicationRequestPharmacy(O),
     Status: O.status.value,
     dispenseExtension: O.dispenseRequest.extension
   }
@@ -636,11 +661,11 @@ define ReportPDMPMedicationRequests:
       DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
       CalculatedEnd: CalculatedEnd, //of datetime type
       End: ToString(CalculatedEnd), //of string type
-      Quantity: if dispenseRequest is not null then dispenseRequest.quantity.value.value else null,
+      Quantity: GetMedicationRequestDispensedQuantity(O),
       Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
       MME: MME_Object[0].mme.value,
       Prescriber: O.requester.display.value,
-      Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
+      Pharmacy: GetMedicationRequestPharmacy(O),
       Status: O.status.value
     }
     sort by Start desc, End desc
@@ -669,9 +694,9 @@ define ReportNonOpioidMedicationRequests:
     DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
     CalculatedEnd: CalculatedEnd,
     End: ToString(CalculatedEnd),
-    Quantity: MMECalculator.GetMedicationQuantity(O).value,
+    Quantity: GetMedicationRequestDispensedQuantity(O),
     Prescriber: O.requester.display.value,
-    Pharmacy: (O.dispenseRequest.extension[0].value as FHIR.string).value,
+    Pharmacy: GetMedicationRequestPharmacy(O),
     Status: O.status.value
   }
   sort by Start desc, End desc
