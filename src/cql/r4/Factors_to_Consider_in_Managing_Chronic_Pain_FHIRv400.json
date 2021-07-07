@@ -4506,7 +4506,7 @@
                "sort" : {
                   "by" : [ {
                      "direction" : "desc",
-                     "path" : "Start",
+                     "path" : "DispensedDate",
                      "type" : "ByColumn"
                   }, {
                      "direction" : "desc",

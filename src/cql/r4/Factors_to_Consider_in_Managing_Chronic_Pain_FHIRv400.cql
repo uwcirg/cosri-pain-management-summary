@@ -668,7 +668,7 @@ define ReportPDMPMedicationRequests:
       Pharmacy: GetMedicationRequestPharmacy(O),
       Status: O.status.value
     }
-    sort by Start desc, End desc
+    sort by DispensedDate desc, End desc
 
 
 // Non-opioid medication orders and statements with dates (lookback 2 years)

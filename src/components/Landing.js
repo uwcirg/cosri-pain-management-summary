@@ -345,6 +345,7 @@ export default class Landing extends Component {
         dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
         dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
         dataPoint[END_DELIMITER_FIELD_NAME] = true;
+        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
         dataPoint = {...dataPoint, ...currentMedicationItem};
         dataPoints.push(dataPoint);
         prevObj = currentMedicationItem;
@@ -381,7 +382,6 @@ export default class Landing extends Component {
       });
       prevObj = null;
       let finalDataPoints = [];
-      let DUMMY_FIELD_NAME = "dummy";
       dataPoints.forEach(function(currentDataPoint, index) {
         let dataPoint = {};
         nextObj = dataPoints[index+1] ? dataPoints[index+1]: null;
@@ -397,7 +397,6 @@ export default class Landing extends Component {
         //overlapping data points
         if (prevObj && (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
           //add data point with older value for the previous med
-          prevObj[PLACEHOLDER_FIELD_NAME] = prevObj[DUMMY_FIELD_NAME] || prevObj[PLACEHOLDER_FIELD_NAME];
           dataPoint = {};
           dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
           dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
@@ -412,7 +411,6 @@ export default class Landing extends Component {
               //add 0 value dummy data point to denote start of med where applicable
               dataPoint[MMEValueFieldName] = 0;
               dataPoint[START_DELIMITER_FIELD_NAME] = true;
-              dataPoint[DUMMY_FIELD_NAME] = true;
               dataPoint[PLACEHOLDER_FIELD_NAME] = true;
               finalDataPoints.push(dataPoint);
           }
@@ -427,7 +425,6 @@ export default class Landing extends Component {
               dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
               //add 0 value dummy data point to denote end of med where applicable
               dataPoint[MMEValueFieldName] = 0;
-              dataPoint[DUMMY_FIELD_NAME] = true;
               dataPoint[END_DELIMITER_FIELD_NAME] = true;
               dataPoint[PLACEHOLDER_FIELD_NAME] = true;
               finalDataPoints.push(dataPoint);
