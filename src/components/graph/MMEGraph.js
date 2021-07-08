@@ -200,7 +200,7 @@ export default class MMEGraph extends Component {
     };
 
     const WA_COLOR = "#a75454";
-    const CDC_COLOR = "#e09b1d";
+    const CDC_COLOR = "#c57829";
     const textMargin = 4;
     const WALegendSettings = {
       "y": yScale(120 + textMargin),
