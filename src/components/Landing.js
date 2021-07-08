@@ -61,7 +61,7 @@ export default class Landing extends Component {
      let numResourcesLoaded = this.state.collector.length;
      let stillLoading = numResourcesLoaded <= totalResources;
       this.setState({
-        loadingMessage: `<div>${totalResources} resources are being loaded.</div><div><span class='${stillLoading?"text-warning": "text-success"}'>${stillLoading ? numResourcesLoaded : totalResources} loaded ...</span></div>`
+        loadingMessage: `<div>${totalResources} resources are being loaded.</div><div><span class='${stillLoading?"text-warning": "text-success"}'>${stillLoading ? (numResourcesLoaded > 0 ? numResourcesLoaded-1: 0) : totalResources} loaded ...</span></div>`
       });
     }, 30);
   }
