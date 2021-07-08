@@ -195,6 +195,7 @@ export default class MMEGraph extends Component {
       "fontFamily": "sans-serif",
       "fontSize": yMaxValue >= 600 ? "8px": "12px",
       "fontWeight": "600",
+      "letterSpacing": "0.02rem",
       "x": xScale(baseLineDate) + 8
     };
 
