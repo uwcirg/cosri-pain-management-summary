@@ -96,7 +96,9 @@ export default class Landing extends Component {
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ result, sectionFlags, flaggedCount });
         this.setPatientId();
-        this.clearProcessInterval();
+        setTimeout(function() {
+          this.clearProcessInterval();
+        }.bind(this), 0);
         this.processCollectorErrors();
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData()]).then(
