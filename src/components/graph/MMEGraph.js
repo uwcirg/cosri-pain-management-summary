@@ -235,13 +235,13 @@ export default class MMEGraph extends Component {
           >
             <g transform={`translate(${margins.left}, ${margins.top})`}>
               <XYAxis {...{xSettings, ySettings}} />
+              <Line lineID="dataLine" data={data} {...dataLineProps} />
               <Line lineID="WALine" strokeColor={WA_COLOR} dotted="true" dotSpacing="3, 3" data={WAData} {...defaultProps} />
               <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
               <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
               <text {...WALegendSettings}>Washington State consultation threshold</text>
               <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>CDC extra precautions threshold</text>
               <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>CDC avoid/justify threshold</text>
-              <Line lineID="dataLine" data={data} {...dataLineProps} />
             </g>
           </svg>
         </div>
