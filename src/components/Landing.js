@@ -313,8 +313,6 @@ export default class Landing extends Component {
         let startDate = extractDateFromGMTDateString(currentMedicationItem[startDateFieldName]);
         let endDate = extractDateFromGMTDateString(currentMedicationItem[endDateFieldName]);
         let oStartDate = new Date(startDate);
-        //let diffTime = oEndDate - oStartDate;
-        //let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         let diffDays = getDiffDays(startDate, endDate);
         nextObj = (index+1) <= graph_data.length-1 ? graph_data[index+1]: null;
 
@@ -404,7 +402,6 @@ export default class Landing extends Component {
           dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
-          //currentDataPoint[PLACEHOLDER_FIELD_NAME] = currentDataPoint[PLACEHOLDER_FIELD_NAME];
           finalDataPoints.push(currentDataPoint);
         } else if (prevObj && currentDataPoint[START_DELIMITER_FIELD_NAME] && dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
           if (getDiffDays(prevObj[endDateFieldName], currentDataPoint[startDateFieldName]) > 1) {
