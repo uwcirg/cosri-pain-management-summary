@@ -816,6 +816,7 @@
   },
   "EducationMaterials": {
     "title":"Education Materials",
+    "skipDataInfo": true,
     "dataSource": [{
       "endpoint": "{process.env.PUBLIC_URL}/assets/data/patientEducationReferences.json",
       "dataKey": "PatientEducationMaterials",

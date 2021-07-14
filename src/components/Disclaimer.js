@@ -23,7 +23,7 @@ export default class Disclaimer extends Component {
   render() {
     const conditionalClass = this.state.displayed ? '': 'close';
     return (
-        <div>
+        <div className="disclaimers-container">
             <div className="cdc-disclaimer">
                 Please see the
                 <a
