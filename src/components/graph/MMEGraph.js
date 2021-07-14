@@ -218,7 +218,7 @@ export default class MMEGraph extends Component {
     if (noEntry) {
       return  (<div className="MMEgraph no-entry">
                 <div className="title">Morphine Equivalent Dose (MED)</div>
-                <div className="no-entry">No graph data available</div>
+                <div className="no-entry">Patient doesn't have opioid Rx in the PMP</div>
               </div>);
     }
     return (

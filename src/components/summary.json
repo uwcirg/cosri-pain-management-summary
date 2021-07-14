@@ -128,6 +128,7 @@
   },
   "HistoricalTreatments": {
     "title": "EHR Opioid and Related Medications",
+    "skipDataInfo": true,
     "sections": [
        {
          "name": "Opioid Medications",
@@ -259,6 +260,7 @@
   },
   "PertinentMedicalHistory": {
     "title": "Pertinent Medical History",
+    "skipDataInfo": true,
     "sections": [
       {
         "name": "Conditions Associated with Chronic Pain",
@@ -476,6 +478,7 @@
   },
   "NonPharmacologicTreatments": {
     "title":"Non-Pharmacologic Treatments",
+    "skipDataInfo": true,
     "sections": [
       {
         "name": "Non-Pharmacologic Treatments",
@@ -522,6 +525,7 @@
   },
   "RiskConsiderations": {
     "title": "Risk Considerations",
+    "skipDataInfo": true,
     "sections":[
       {
         "name": "Most Recent MED",
