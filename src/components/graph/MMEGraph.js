@@ -216,7 +216,7 @@ export default class MMEGraph extends Component {
     if (noEntry) {
       return  (<div className="MMEgraph no-entry">
                 <div className="title">Morphine Equivalent Dose (MED)</div>
-                <div className="no-entry">Patient doesn't have opioid Rx in the PMP</div>
+                <div className="no-entry">No opioid Rx found for this patient in the PMP</div>
               </div>);
     }
     return (
@@ -225,9 +225,6 @@ export default class MMEGraph extends Component {
         <div className="MME-svg-container">
           <svg
             className="MMEChartSvg"
-            // width={width + margins.left + margins.right}
-            // height={height + margins.top + margins.bottom}
-            //preserveAspectRatio="xMinYMin meet"
             width="100%"
             height="100%"
             viewBox = {`0 0 ${graphWidth} ${graphHeight}`}
