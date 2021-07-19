@@ -77,6 +77,35 @@ export default class Landing extends Component {
   setError(message) {
     if (!message) return;
     this.errorCollection.push(message);
+    this.writeErrorToLog(message);
+  }
+  writeErrorToLog(message) {
+    if (!message) return;
+    const auditURL = `${getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")}/auditlog`;
+    const summary = this.state.result ? this.state.result.Summary : null;
+    let messageString = "";
+    console.log("typeof message ? ", Array.isArray(message))
+    if ((typeof message) === "object") {
+      messageString = message.toString();
+    } else messageString = message;
+    fetch(auditURL, {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"patient": (summary&&summary.Patient?summary.Patient.Name:""),"message": (messageString)})
+    })
+    .then((response) => {
+      console.log("processing data ", response);
+      return response.json();
+    })
+    .then(function (data) {
+      console.log('audit request succeeded with response ', data);
+    })
+    .catch(function (error) {
+      console.log('Request failed', error);
+    });
   }
   componentDidMount() {
     /*
