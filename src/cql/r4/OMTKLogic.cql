@@ -31,7 +31,7 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 * formulation used: quantity(patches) / days supplied * strength factor
 * Adjust conversion factor for fentanyl patch from 2.4 to 7.2
 * 07/19/21
-* commented out conversion factors for Levorphanol, Meperidine, Pentazocine, dihydrocodeine and Levomethadyl  as per AMDG guideline
+* commented out conversion factors for Levorphanol, Meperidine, Pentazocine, dihydrocodeine and Levomethadyl as per AMDG guideline
 *
 */
 
