@@ -50,9 +50,7 @@ export default class MMEGraph extends Component {
 
   getMaxMMEValue(data) {
     let maxValue =  0;
-    //let CAP_MAX_VALUE = 1500;
     data.forEach(item => {
-     // if (item["MMEValue"] > CAP_MAX_VALUE) return true;
       maxValue = Math.max(maxValue, item["MMEValue"]);
     });
     return maxValue;
