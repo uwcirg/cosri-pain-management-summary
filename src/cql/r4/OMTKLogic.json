@@ -1612,31 +1612,6 @@
                }, {
                   "when" : {
                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                     "value" : "6378",
-                     "type" : "Literal"
-                  },
-                  "then" : {
-                     "type" : "ToDecimal",
-                     "operand" : {
-                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                        "value" : "11",
-                        "type" : "Literal"
-                     }
-                  }
-               }, {
-                  "when" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                     "value" : "6754",
-                     "type" : "Literal"
-                  },
-                  "then" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                     "value" : "0.1",
-                     "type" : "Literal"
-                  }
-               }, {
-                  "when" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                      "value" : "6813",
                      "type" : "Literal"
                   },
@@ -1915,17 +1890,6 @@
                }, {
                   "when" : {
                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                     "value" : "8001",
-                     "type" : "Literal"
-                  },
-                  "then" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                     "value" : "0.37",
-                     "type" : "Literal"
-                  }
-               }, {
-                  "when" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                      "value" : "8163",
                      "type" : "Literal"
                   },
@@ -2077,17 +2041,6 @@
                }, {
                   "when" : {
                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                     "value" : "23088",
-                     "type" : "Literal"
-                  },
-                  "then" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                     "value" : "0.25",
-                     "type" : "Literal"
-                  }
-               }, {
-                  "when" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                      "value" : "27084",
                      "type" : "Literal"
                   },
@@ -2110,20 +2063,6 @@
                      "operand" : {
                         "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                         "value" : "0",
-                        "type" : "Literal"
-                     }
-                  }
-               }, {
-                  "when" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                     "value" : "237005",
-                     "type" : "Literal"
-                  },
-                  "then" : {
-                     "type" : "ToDecimal",
-                     "operand" : {
-                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                        "value" : "8",
                         "type" : "Literal"
                      }
                   }
