@@ -80,6 +80,21 @@ export default class Landing extends Component {
     if (!message) return;
     this.errorCollection.push(message);
   }
+  setSectionVis() {
+    for (const key in summaryMap) {
+      //hide main section if any
+      if (getEnv(`REACT_APP_DISABLE_SECTION_${key.toUpperCase()}`) === "hidden") {
+          summaryMap[key]["hideSection"] = true;
+      }
+      if (!summaryMap[key]["sections"]) return true;
+      //hide sub section if any
+      summaryMap[key]["sections"].forEach(section => {
+        if (getEnv(`REACT_APP_DISABLE_SUBSECTION_${section.dataKey.toUpperCase()}`) === "hidden") {
+          section["hideSection"] = true;
+        }
+      });
+    }
+  }
   componentDidMount() {
     /*
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
@@ -104,6 +119,7 @@ export default class Landing extends Component {
         Promise.all([this.getExternalData()]).then(
           externalData => {
             result['Summary'] = {...result['Summary'], ...externalData[0]};
+            this.setSectionVis();
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
@@ -137,7 +153,7 @@ export default class Landing extends Component {
         includeHtml: true                       // include the HTML markup from the heading node, not just the text,
         ,headingsOffset: MIN_HEADER_HEIGHT,
         scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-        throttleTimeout: 50,
+        throttleTimeout: 100,
       });
 
       this.tocInitialized = true;
