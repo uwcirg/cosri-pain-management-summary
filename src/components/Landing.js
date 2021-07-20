@@ -108,6 +108,7 @@ export default class Landing extends Component {
         //set result from data from EPIC
         let EPICData = response[0];
         result['Summary'] = EPICData ? {...EPICData['Summary']} : {};
+        this.setSectionVis();
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ result, sectionFlags, flaggedCount });
         this.setPatientId();
@@ -119,7 +120,6 @@ export default class Landing extends Component {
         Promise.all([this.getExternalData()]).then(
           externalData => {
             result['Summary'] = {...result['Summary'], ...externalData[0]};
-            this.setSectionVis();
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
@@ -631,7 +631,11 @@ export default class Landing extends Component {
 
     sectionKeys.forEach((sectionKey, i) => { // for each section
       sectionFlags[sectionKey] = {};
+      //don't process flags for section that will be hidden
+      if (summaryMap[sectionKey]["hideSection"]) return true;
       summaryMap[sectionKey]["sections"].forEach((subSection) => { // for each sub section
+        //don't process flags for sub section that will be hidden
+        if (subSection["hideSection"]) return true;
         const keySource = summary[subSection.dataKeySource];
         if (!keySource) {
           return true;
