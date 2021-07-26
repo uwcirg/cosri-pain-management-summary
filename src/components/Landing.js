@@ -76,6 +76,21 @@ export default class Landing extends Component {
       this.setError(`[${item.type}] ${item.error}`);
     });
   }
+  processSummaryErrors(summary) {
+    if (!summary) return false;
+    //PDMP medications
+    let pdmpMeds = summary["PDMPMedications"];
+    if (pdmpMeds && pdmpMeds["PDMPMedications"]) {
+      let o = pdmpMeds["PDMPMedications"];
+      o.forEach(item => {
+        //look for medication that contains NDC code but not RxNorm Code
+        if (item["NDC_Code"] && !item["RXNorm_Code"]) {
+          this.setError(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`)
+        }
+
+      })
+    }
+  }
   setError(message) {
     if (!message) return;
     this.errorCollection.push(message);
@@ -86,7 +101,6 @@ export default class Landing extends Component {
     const auditURL = `${getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")}/auditlog`;
     const summary = this.state.result ? this.state.result.Summary : null;
     let messageString = "";
-    console.log("typeof message ? ", Array.isArray(message))
     if ((typeof message) === "object") {
       messageString = message.toString();
     } else messageString = message;
@@ -99,7 +113,6 @@ export default class Landing extends Component {
       body: JSON.stringify({"patient": (summary&&summary.Patient?summary.Patient.Name:""),"message": (messageString)})
     })
     .then((response) => {
-      console.log("processing data ", response);
       return response.json();
     })
     .then(function (data) {
@@ -134,6 +147,7 @@ export default class Landing extends Component {
           externalData => {
             result['Summary'] = {...result['Summary'], ...externalData[0]};
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+            this.processSummaryErrors(result.Summary);
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
             this.setState({ loading: false});

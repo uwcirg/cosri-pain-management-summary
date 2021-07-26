@@ -653,10 +653,11 @@ define ReportPDMPMedicationRequests:
   let
     CalculatedEnd: GetMedicationRequestEndDate(O),
     dispenseRequest:  O.dispenseRequest,
-    MME_Object: MMECalculator.MME(O)
+    MME_Object: MMECalculator.MME(O),
+    c: (O.medication as FHIR.CodeableConcept)
     return {
       Type:  'Request',
-      Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+      Name:  ConceptText(c),
       Start: DateTimeText(O.authoredOn),
       DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
       CalculatedEnd: CalculatedEnd, //of datetime type
@@ -666,6 +667,8 @@ define ReportPDMPMedicationRequests:
       MME: MME_Object[0].mme.value,
       Prescriber: O.requester.display.value,
       Pharmacy: GetMedicationRequestPharmacy(O),
+      NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
+      RXNorm_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value),
       Status: O.status.value
     }
     sort by DispensedDate desc, End desc
