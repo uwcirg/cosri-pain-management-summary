@@ -82,17 +82,21 @@ export default class Landing extends Component {
   }
   setSectionVis() {
     for (const key in summaryMap) {
+      let sectionsToBeHidden = [];
+      if (summaryMap[key]["sections"]) {
+        //hide sub section if any
+        summaryMap[key]["sections"].forEach(section => {
+          if (getEnv(`REACT_APP_SUBSECTION_${section.dataKey.toUpperCase()}`) === "hidden") {
+            section["hideSection"] = true;
+            sectionsToBeHidden.push(section);
+          }
+        });
+      }
+      if (sectionsToBeHidden.length > 0) return true;
       //hide main section if any
       if (getEnv(`REACT_APP_SECTION_${key.toUpperCase()}`) === "hidden") {
-          summaryMap[key]["hideSection"] = true;
+        summaryMap[key]["hideSection"] = true;
       }
-      if (!summaryMap[key]["sections"]) return true;
-      //hide sub section if any
-      summaryMap[key]["sections"].forEach(section => {
-        if (getEnv(`REACT_APP_SUBSECTION_${section.dataKey.toUpperCase()}`) === "hidden") {
-          section["hideSection"] = true;
-        }
-      });
     }
   }
   componentDidMount() {
