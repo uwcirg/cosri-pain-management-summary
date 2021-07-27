@@ -256,7 +256,7 @@ export default class Summary extends Component {
             let formatterArguments = headerKey.formatterArguments || [];
             value = formatit[headerKey.formatter](result, entry[headerKey.key], ...formatterArguments);
           }
-          return value ? value: entry[headerKey.key];
+          return value ? value: (headerKey.default ? headerKey.default : entry[headerKey.key]);
         },
         sortable: headerKey.sortable !== false
       };
