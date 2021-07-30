@@ -82,12 +82,15 @@ export default class Landing extends Component {
     let pdmpMeds = summary["PDMPMedications"];
     if (pdmpMeds && pdmpMeds["PDMPMedications"]) {
       let o = pdmpMeds["PDMPMedications"];
+      let errors = [];
       o.forEach(item => {
         //look for medication that contains NDC code but not RxNorm Code
         if (item["NDC_Code"] && !item["RXNorm_Code"]) {
-          this.setError(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`)
+          errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`)
         }
-
+      });
+      errors.forEach(message => {
+        this.setError(message);
       })
     }
   }
@@ -98,7 +101,7 @@ export default class Landing extends Component {
   }
   writeErrorToLog(message) {
     if (!message) return;
-    const auditURL = `${getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")}/auditlog`;
+    const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
     const summary = this.state.result ? this.state.result.Summary : null;
     let messageString = "";
     if ((typeof message) === "object") {
