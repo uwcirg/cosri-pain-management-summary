@@ -346,7 +346,8 @@ export default class Summary extends Component {
   renderGraph(panel) {
     if (panel.graphType === "MED") {
       let data = this.props.summary[panel.dataSectionRefKey];
-      return <MMEGraph data={data}></MMEGraph>;
+      const mmeErrors = this.props.mmeErrors;
+      return <MMEGraph data={data} error={mmeErrors}></MMEGraph>;
     }
     //can return other type of graph depending on the section
     return <div className="graph-placeholder"></div>;
@@ -624,6 +625,7 @@ Summary.propTypes = {
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
   errorCollection: PropTypes.array,
+  mmeErrors: PropTypes.bool,
   result: PropTypes.object.isRequired,
   versionString: PropTypes.oneOfType([
     PropTypes.string,

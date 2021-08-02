@@ -35,6 +35,7 @@ export default class Landing extends Component {
       loadingMessage: "Resources are being loaded..."
     };
     this.errorCollection = [];
+    this.mmeErrors = false;
     this.tocInitialized = false;
   }
 
@@ -91,7 +92,9 @@ export default class Landing extends Component {
       });
       errors.forEach(message => {
         this.setError(message);
-      })
+      });
+      //set MME error flag
+      if (errors.length) this.mmeErrors = true;
     }
   }
   setError(message) {
@@ -766,6 +769,7 @@ export default class Landing extends Component {
           sectionFlags={sectionFlags}
           collector={this.state.collector}
           errorCollection={this.errorCollection}
+          mmeErrors={this.mmeErrors}
           result={this.state.result}
           versionString={getEnv("REACT_APP_VERSION_STRING")}
         />
