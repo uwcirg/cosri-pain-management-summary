@@ -533,7 +533,6 @@ export default class Summary extends Component {
 
   isUnderAge() {
     if (!this.props.patient) return false;
-    console.log("patient age? ", this.props.patient.Age)
     return parseInt(this.props.patient.Age) < 18;
   }
 
