@@ -717,6 +717,7 @@ export default class Landing extends Component {
 
         <Summary
           summary={summary}
+          patient={summary.Patient}
           sectionFlags={sectionFlags}
           collector={this.state.collector}
           errorCollection={this.errorCollection}
