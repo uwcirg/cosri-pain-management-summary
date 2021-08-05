@@ -360,15 +360,15 @@ define function GetMedicationRequestStartDate(medRequest MedicationRequest):
 define Is18orOlder:
   AgeInYears() >= 18
 
-define Is100orYounger:
-  AgeInYears() <= 100
+define Is130orYounger:
+  AgeInYears() <= 130
 
 // Determines if the patient meets the inclusion criteria for the CDS. Inclusion criteria is:
 // - Age >=18 years
 define MeetsInclusionCriteria:
   //Is18orOlder
   //fix this to allow people of all ages
-  Is100orYounger
+  Is130orYounger
 
 
 
