@@ -1650,11 +1650,34 @@
                } ]
             }
          }, {
+            "name" : "Is130orYounger",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "LessOrEqual",
+               "operand" : [ {
+                  "precision" : "Year",
+                  "type" : "CalculateAge",
+                  "operand" : {
+                     "path" : "birthDate.value",
+                     "type" : "Property",
+                     "source" : {
+                        "name" : "Patient",
+                        "type" : "ExpressionRef"
+                     }
+                  }
+               }, {
+                  "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                  "value" : "130",
+                  "type" : "Literal"
+               } ]
+            }
+         }, {
             "name" : "MeetsInclusionCriteria",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
-               "name" : "Is18orOlder",
+               "name" : "Is130orYounger",
                "type" : "ExpressionRef"
             }
          }, {

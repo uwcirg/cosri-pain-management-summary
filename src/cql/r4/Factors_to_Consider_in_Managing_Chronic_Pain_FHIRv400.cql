@@ -37,6 +37,8 @@
 //    Code cleaning
 // Update 20210628
 //    use Last Fill date as the Start Date for MME value calculation, it was using authored date
+// Update 20210805
+//    remove age restriction as the inclusion criterion
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
@@ -358,10 +360,16 @@ define function GetMedicationRequestStartDate(medRequest MedicationRequest):
 define Is18orOlder:
   AgeInYears() >= 18
 
+define Is130orYounger:
+  AgeInYears() <= 130
+
 // Determines if the patient meets the inclusion criteria for the CDS. Inclusion criteria is:
 // - Age >=18 years
 define MeetsInclusionCriteria:
-  Is18orOlder
+  //Is18orOlder
+  //fix this to allow people of all ages
+  Is130orYounger
+
 
 
 // EXCLUSIONS

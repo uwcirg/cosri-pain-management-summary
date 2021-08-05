@@ -25,6 +25,7 @@ import DataInfo from './DataInfo';
 import Disclaimer from './Disclaimer';
 import DevTools from './DevTools';
 import InfoModal from './InfoModal';
+import Warning from './Warning';
 import MMEGraph from './graph/MMEGraph';
 import Version from '../elements/Version';
 
@@ -530,6 +531,11 @@ export default class Summary extends Component {
     );
   };
 
+  isUnderAge() {
+    if (!this.props.patient) return false;
+    return parseInt(this.props.patient.Age) < 18;
+  }
+
   render() {
     const { summary, collector } = this.props;
     const meetsInclusionCriteria = summary.Patient.MeetsInclusionCriteria;
@@ -580,6 +586,7 @@ export default class Summary extends Component {
           {meetsInclusionCriteria && <ExclusionBanner />}
 
           {!meetsInclusionCriteria && <InclusionBanner dismissible={meetsInclusionCriteria} />}
+          {meetsInclusionCriteria && this.isUnderAge() && <Warning text="This patient is under 18 years of age. Guidance for clinical decision support in COSRI is for patients 18 years and older. Please refer to pediatric clinical guidance when prescribing opioids for people under 18 years of age."></Warning> }
 
           {meetsInclusionCriteria &&
             <div className="sections">
@@ -621,6 +628,7 @@ export default class Summary extends Component {
 
 Summary.propTypes = {
   summary: PropTypes.object.isRequired,
+  patient: PropTypes.object,
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
   errorCollection: PropTypes.array,
