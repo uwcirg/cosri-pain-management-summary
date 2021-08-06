@@ -364,7 +364,6 @@ define Is130orYounger:
   AgeInYears() <= 130
 
 // Determines if the patient meets the inclusion criteria for the CDS. Inclusion criteria is:
-// Age <= 100
 define MeetsInclusionCriteria:
   //Is18orOlder
   //fix this to allow people of all ages

@@ -5,6 +5,12 @@ This library contains logic to surface the MME calculation functionality provide
 by the OMTKLogic library by extracting appropriate information from FHIR R4
 MedicationRequest resource.
 */
+/*
+ CHANGE LOG
+ 08/06/2021
+    provide 1.0 as the default dose quantity if doseQuantity is missing from Medication Request
+    provide (supplyQuantity / supplyDuration) calculation as default doses per day if frequency & period is missing from Medication Request
+*/
 
 using FHIR version '4.0.0'
 
