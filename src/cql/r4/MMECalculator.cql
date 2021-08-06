@@ -66,14 +66,6 @@ define function GetMedicationQuantity(medication MedicationRequest):
       ingredient: OMTKLogic.GetIngredients(rxNormCode),
       prescription: if ingredient is not null then First(ingredient) else null,
       dosageInstruction: O.dosageInstruction[0],
-      dispenseRequest: O.dispenseRequest,
-      supplyDuration: if dispenseRequest.expectedSupplyDuration is not null then System.Quantity {
-        value: dispenseRequest.expectedSupplyDuration.value,
-        unit: dispenseRequest.expectedSupplyDuration.unit
-      } else null as System.Quantity,
-      dispenseRequestQuantity: dispenseRequest.quantity.value.value,
-      //get dose quantity daily
-      dispenseRequestDoseQuantity: if supplyDuration is not null then dispenseRequestQuantity / supplyDuration.value else null as System.Quantity,
       doseAndRate:  if dosageInstruction is not null then dosageInstruction.doseAndRate[0] else null, //either a single doseRange or doseQuantity see specs here:  https://www.hl7.org/fhir/dosage-definitions.html#Dosage.doseAndRate.dose_x_
       dosage: if doseAndRate is not null then doseAndRate.dose else null,
       doseRange: if dosage is not null then ToFHIRRange(dosage) else null as Range,
@@ -88,8 +80,13 @@ define function GetMedicationQuantity(medication MedicationRequest):
                       value: dosage.value.value,
                       unit: doseUnit
                   }
-                when dispenseRequestDoseQuantity is not null then dispenseRequestDoseQuantity
-                else null as System.Quantity
+                //see FHIR dose definition:  https://www.hl7.org/fhir/dosage-definitions.html#Dosage.doseAndRate.dose_x_
+                //expect minium value of 0 to maximum value of 1
+                //example: if one wants to communicate that a tablet was 375 mg, the dose would be one tablet
+                else System.Quantity {
+                  value: 1.0,
+                  unit: doseUnit
+                }
               end
       return  case
                 when doseRange is not null and doseRange.high is not null then ToQuantity(doseRange.high)
@@ -114,11 +111,18 @@ define function Prescriptions(Orders List<MedicationRequest>):
       repeat: dosageInstruction.timing.repeat,
       frequency: Coalesce(repeat.frequencyMax.value, repeat.frequency.value),
       dispenseRequest: O.dispenseRequest,
+      supplyDuration: if dispenseRequest.expectedSupplyDuration is not null then System.Quantity {
+        value: dispenseRequest.expectedSupplyDuration.value,
+        unit: dispenseRequest.expectedSupplyDuration.unit
+      } else null as System.Quantity,
+      dispenseRequestQuantity: dispenseRequest.quantity.value.value,
       periodDuration: if repeat.period is not null then
         repeat.period.value else null,
       period: OMTKLogic.Quantity(periodDuration, repeat.periodUnit.value),
       doseRange: ToFHIRRange(doseAndRate.dose),
       doseQuantity: if doseAndRate.dose is not null then ToFHIRQuantity(doseAndRate.dose) else null as Quantity,
+      supplyQuantity: dispenseRequest.quantity.value.value,
+      supplyDuration: dispenseRequest.expectedSupplyDuration.value.value,
       doseDescription:
         Coalesce(
           // There should be a conversion from FHIR.SimpleQuantity to System.Quantity
@@ -150,10 +154,18 @@ define function Prescriptions(Orders List<MedicationRequest>):
       dose: GetMedicationQuantity(O),
       doseRange: doseRange,
       doseQuantity: doseAndRate.dose,
-      dosesPerDay: Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0),
+      dosesPerDay:
+        if frequency is not null and period is not null then
+          Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0)
+        else
+          //see CDC explanation of how doses per day is determine: https://www.cdc.gov/drugoverdose/training/dosing/accessible/index.html
+          if supplyDuration is not null and supplyQuantity is not null then
+            (supplyQuantity / supplyDuration)
+          else
+            null,
       strength: prescription.strength,
-      supplyQuantity: dispenseRequest.quantity.value.value,
-      supplyDuration: dispenseRequest.expectedSupplyDuration.value.value
+      supplyQuantity: supplyQuantity,
+      supplyDuration: supplyDuration
     }
 
 /*

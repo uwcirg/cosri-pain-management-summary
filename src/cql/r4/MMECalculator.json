@@ -413,155 +413,6 @@
                      } ]
                   }
                }, {
-                  "identifier" : "dispenseRequest",
-                  "expression" : {
-                     "path" : "dispenseRequest",
-                     "scope" : "O",
-                     "type" : "Property"
-                  }
-               }, {
-                  "identifier" : "supplyDuration",
-                  "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
-                        "type" : "As",
-                        "operand" : {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "IsNull",
-                              "operand" : {
-                                 "path" : "expectedSupplyDuration",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "name" : "dispenseRequest",
-                                    "type" : "QueryLetRef"
-                                 }
-                              }
-                           }
-                        }
-                     },
-                     "then" : {
-                        "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
-                        "type" : "Instance",
-                        "element" : [ {
-                           "name" : "value",
-                           "value" : {
-                              "name" : "ToDecimal",
-                              "libraryName" : "FHIRHelpers",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "path" : "expectedSupplyDuration",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "dispenseRequest",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }
-                              } ]
-                           }
-                        }, {
-                           "name" : "unit",
-                           "value" : {
-                              "name" : "ToString",
-                              "libraryName" : "FHIRHelpers",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "path" : "unit",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "path" : "expectedSupplyDuration",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "dispenseRequest",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }
-                              } ]
-                           }
-                        } ]
-                     },
-                     "else" : {
-                        "strict" : false,
-                        "type" : "As",
-                        "operand" : {
-                           "type" : "Null"
-                        },
-                        "asTypeSpecifier" : {
-                           "name" : "{urn:hl7-org:elm-types:r1}Quantity",
-                           "type" : "NamedTypeSpecifier"
-                        }
-                     }
-                  }
-               }, {
-                  "identifier" : "dispenseRequestQuantity",
-                  "expression" : {
-                     "path" : "value",
-                     "type" : "Property",
-                     "source" : {
-                        "path" : "value",
-                        "type" : "Property",
-                        "source" : {
-                           "path" : "quantity",
-                           "type" : "Property",
-                           "source" : {
-                              "name" : "dispenseRequest",
-                              "type" : "QueryLetRef"
-                           }
-                        }
-                     }
-                  }
-               }, {
-                  "identifier" : "dispenseRequestDoseQuantity",
-                  "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
-                        "type" : "As",
-                        "operand" : {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "IsNull",
-                              "operand" : {
-                                 "name" : "supplyDuration",
-                                 "type" : "QueryLetRef"
-                              }
-                           }
-                        }
-                     },
-                     "then" : {
-                        "type" : "ToQuantity",
-                        "operand" : {
-                           "type" : "Divide",
-                           "operand" : [ {
-                              "name" : "dispenseRequestQuantity",
-                              "type" : "QueryLetRef"
-                           }, {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "name" : "supplyDuration",
-                                 "type" : "QueryLetRef"
-                              }
-                           } ]
-                        }
-                     },
-                     "else" : {
-                        "strict" : false,
-                        "type" : "As",
-                        "operand" : {
-                           "type" : "Null"
-                        },
-                        "asTypeSpecifier" : {
-                           "name" : "{urn:hl7-org:elm-types:r1}Quantity",
-                           "type" : "NamedTypeSpecifier"
-                        }
-                     }
-                  }
-               }, {
                   "identifier" : "doseAndRate",
                   "expression" : {
                      "type" : "If",
@@ -819,32 +670,24 @@
                               }
                            } ]
                         }
-                     }, {
-                        "when" : {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "IsNull",
-                              "operand" : {
-                                 "name" : "dispenseRequestDoseQuantity",
-                                 "type" : "QueryLetRef"
-                              }
-                           }
-                        },
-                        "then" : {
-                           "name" : "dispenseRequestDoseQuantity",
-                           "type" : "QueryLetRef"
-                        }
                      } ],
                      "else" : {
-                        "strict" : false,
-                        "type" : "As",
-                        "operand" : {
-                           "type" : "Null"
-                        },
-                        "asTypeSpecifier" : {
-                           "name" : "{urn:hl7-org:elm-types:r1}Quantity",
-                           "type" : "NamedTypeSpecifier"
-                        }
+                        "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
+                        "type" : "Instance",
+                        "element" : [ {
+                           "name" : "value",
+                           "value" : {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "value" : "1.0",
+                              "type" : "Literal"
+                           }
+                        }, {
+                           "name" : "unit",
+                           "value" : {
+                              "name" : "doseUnit",
+                              "type" : "QueryLetRef"
+                           }
+                        } ]
                      }
                   }
                } ],
@@ -1066,6 +909,101 @@
                      "type" : "Property"
                   }
                }, {
+                  "identifier" : "supplyDuration",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "expectedSupplyDuration",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "dispenseRequest",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }
+                        }
+                     },
+                     "then" : {
+                        "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
+                        "type" : "Instance",
+                        "element" : [ {
+                           "name" : "value",
+                           "value" : {
+                              "name" : "ToDecimal",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "expectedSupplyDuration",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "dispenseRequest",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              } ]
+                           }
+                        }, {
+                           "name" : "unit",
+                           "value" : {
+                              "name" : "ToString",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "unit",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "expectedSupplyDuration",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "dispenseRequest",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              } ]
+                           }
+                        } ]
+                     },
+                     "else" : {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{urn:hl7-org:elm-types:r1}Quantity",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "dispenseRequestQuantity",
+                  "expression" : {
+                     "path" : "value",
+                     "type" : "Property",
+                     "source" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "quantity",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "dispenseRequest",
+                              "type" : "QueryLetRef"
+                           }
+                        }
+                     }
+                  }
+               }, {
                   "identifier" : "periodDuration",
                   "expression" : {
                      "type" : "If",
@@ -1194,6 +1132,42 @@
                         "asTypeSpecifier" : {
                            "name" : "{http://hl7.org/fhir}Quantity",
                            "type" : "NamedTypeSpecifier"
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "supplyQuantity",
+                  "expression" : {
+                     "path" : "value",
+                     "type" : "Property",
+                     "source" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "quantity",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "dispenseRequest",
+                              "type" : "QueryLetRef"
+                           }
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "supplyDuration",
+                  "expression" : {
+                     "path" : "value",
+                     "type" : "Property",
+                     "source" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "expectedSupplyDuration",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "dispenseRequest",
+                              "type" : "QueryLetRef"
+                           }
                         }
                      }
                   }
@@ -1542,23 +1516,98 @@
                      }, {
                         "name" : "dosesPerDay",
                         "value" : {
-                           "type" : "Coalesce",
-                           "operand" : [ {
-                              "name" : "ToDaily",
-                              "libraryName" : "OMTKLogic",
-                              "type" : "FunctionRef",
+                           "type" : "If",
+                           "condition" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "And",
+                                 "operand" : [ {
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "IsNull",
+                                       "operand" : {
+                                          "name" : "frequency",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    }
+                                 }, {
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "IsNull",
+                                       "operand" : {
+                                          "name" : "period",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    }
+                                 } ]
+                              }
+                           },
+                           "then" : {
+                              "type" : "Coalesce",
                               "operand" : [ {
-                                 "name" : "frequency",
-                                 "type" : "QueryLetRef"
+                                 "name" : "ToDaily",
+                                 "libraryName" : "OMTKLogic",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "frequency",
+                                    "type" : "QueryLetRef"
+                                 }, {
+                                    "name" : "period",
+                                    "type" : "QueryLetRef"
+                                 } ]
                               }, {
-                                 "name" : "period",
-                                 "type" : "QueryLetRef"
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                 "value" : "1.0",
+                                 "type" : "Literal"
                               } ]
-                           }, {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                              "value" : "1.0",
-                              "type" : "Literal"
-                           } ]
+                           },
+                           "else" : {
+                              "type" : "If",
+                              "condition" : {
+                                 "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                 "type" : "As",
+                                 "operand" : {
+                                    "type" : "And",
+                                    "operand" : [ {
+                                       "type" : "Not",
+                                       "operand" : {
+                                          "type" : "IsNull",
+                                          "operand" : {
+                                             "name" : "supplyDuration",
+                                             "type" : "QueryLetRef"
+                                          }
+                                       }
+                                    }, {
+                                       "type" : "Not",
+                                       "operand" : {
+                                          "type" : "IsNull",
+                                          "operand" : {
+                                             "name" : "supplyQuantity",
+                                             "type" : "QueryLetRef"
+                                          }
+                                       }
+                                    } ]
+                                 }
+                              },
+                              "then" : {
+                                 "type" : "Divide",
+                                 "operand" : [ {
+                                    "name" : "supplyQuantity",
+                                    "type" : "QueryLetRef"
+                                 }, {
+                                    "name" : "supplyDuration",
+                                    "type" : "QueryLetRef"
+                                 } ]
+                              },
+                              "else" : {
+                                 "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                 "type" : "As",
+                                 "operand" : {
+                                    "type" : "Null"
+                                 }
+                              }
+                           }
                         }
                      }, {
                         "name" : "strength",
@@ -1599,38 +1648,14 @@
                      }, {
                         "name" : "supplyQuantity",
                         "value" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "quantity",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "name" : "dispenseRequest",
-                                    "type" : "QueryLetRef"
-                                 }
-                              }
-                           }
+                           "name" : "supplyQuantity",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "supplyDuration",
                         "value" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "expectedSupplyDuration",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "name" : "dispenseRequest",
-                                    "type" : "QueryLetRef"
-                                 }
-                              }
-                           }
+                           "name" : "supplyDuration",
+                           "type" : "QueryLetRef"
                         }
                      } ]
                   }

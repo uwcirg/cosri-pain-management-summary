@@ -3121,14 +3121,8 @@
                            "value" : {
                               "type" : "Multiply",
                               "operand" : [ {
-                                 "type" : "Divide",
-                                 "operand" : [ {
-                                    "name" : "supplyQuantity",
-                                    "type" : "OperandRef"
-                                 }, {
-                                    "name" : "supplyDuration",
-                                    "type" : "OperandRef"
-                                 } ]
+                                 "name" : "dosesPerDay",
+                                 "type" : "OperandRef"
                               }, {
                                  "path" : "value",
                                  "type" : "Property",
@@ -3467,18 +3461,6 @@
                }
             }, {
                "name" : "dosesPerDay",
-               "operandTypeSpecifier" : {
-                  "name" : "{urn:hl7-org:elm-types:r1}Decimal",
-                  "type" : "NamedTypeSpecifier"
-               }
-            }, {
-               "name" : "supplyQuantity",
-               "operandTypeSpecifier" : {
-                  "name" : "{urn:hl7-org:elm-types:r1}Decimal",
-                  "type" : "NamedTypeSpecifier"
-               }
-            }, {
-               "name" : "supplyDuration",
                "operandTypeSpecifier" : {
                   "name" : "{urn:hl7-org:elm-types:r1}Decimal",
                   "type" : "NamedTypeSpecifier"
@@ -4209,14 +4191,6 @@
                                  "type" : "QueryLetRef"
                               }, {
                                  "path" : "dosesPerDay",
-                                 "scope" : "M",
-                                 "type" : "Property"
-                              }, {
-                                 "path" : "supplyQuantity",
-                                 "scope" : "M",
-                                 "type" : "Property"
-                              }, {
-                                 "path" : "supplyDuration",
                                  "scope" : "M",
                                  "type" : "Property"
                               } ]
