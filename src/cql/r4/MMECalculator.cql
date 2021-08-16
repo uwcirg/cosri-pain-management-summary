@@ -165,7 +165,7 @@ define function Prescriptions(Orders List<MedicationRequest>):
           Coalesce(OMTKLogic.ToDaily(frequency, period), 1.0)
         else
           //see CDC explanation of how doses per day is determine: https://www.cdc.gov/drugoverdose/training/dosing/accessible/index.html
-          if supplyDuration is not null and supplyQuantity is not null then
+          if supplyDuration != 0 and supplyDuration is not null and supplyQuantity is not null then
             (supplyQuantity / supplyDuration)
           else
             null,

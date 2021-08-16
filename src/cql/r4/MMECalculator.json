@@ -1570,14 +1570,33 @@
                                  "operand" : {
                                     "type" : "And",
                                     "operand" : [ {
-                                       "type" : "Not",
-                                       "operand" : {
-                                          "type" : "IsNull",
+                                       "type" : "And",
+                                       "operand" : [ {
+                                          "type" : "Not",
                                           "operand" : {
-                                             "name" : "supplyDuration",
-                                             "type" : "QueryLetRef"
+                                             "type" : "Equal",
+                                             "operand" : [ {
+                                                "name" : "supplyDuration",
+                                                "type" : "QueryLetRef"
+                                             }, {
+                                                "type" : "ToDecimal",
+                                                "operand" : {
+                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                   "value" : "0",
+                                                   "type" : "Literal"
+                                                }
+                                             } ]
                                           }
-                                       }
+                                       }, {
+                                          "type" : "Not",
+                                          "operand" : {
+                                             "type" : "IsNull",
+                                             "operand" : {
+                                                "name" : "supplyDuration",
+                                                "type" : "QueryLetRef"
+                                             }
+                                          }
+                                       } ]
                                     }, {
                                        "type" : "Not",
                                        "operand" : {
