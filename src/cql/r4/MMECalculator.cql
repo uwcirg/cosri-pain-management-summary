@@ -87,7 +87,7 @@ define function GetMedicationQuantity(medication MedicationRequest):
                       unit: doseUnit
                   }
                 //see FHIR dose definition:  https://www.hl7.org/fhir/dosage-definitions.html#Dosage.doseAndRate.dose_x_
-                //expect minium value of 0 to maximum value of 1
+                //expect minimum value of 0 to maximum value of 1
                 //example: if one wants to communicate that a tablet was 375 mg, the dose would be one tablet
                 else System.Quantity {
                   value: 1.0,
