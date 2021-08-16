@@ -35,6 +35,7 @@ export default class Landing extends Component {
       loadingMessage: "Resources are being loaded..."
     };
     this.errorCollection = [];
+    this.mmeErrors = false;
     this.tocInitialized = false;
   }
 
@@ -76,9 +77,56 @@ export default class Landing extends Component {
       this.setError(`[${item.type}] ${item.error}`);
     });
   }
+  processSummaryErrors(summary) {
+    if (!summary) return false;
+    //PDMP medications
+    let pdmpMeds = summary["PDMPMedications"];
+    if (pdmpMeds && pdmpMeds["PDMPMedications"]) {
+      let o = pdmpMeds["PDMPMedications"];
+      let errors = [];
+      o.forEach(item => {
+        //look for medication that contains NDC code but not RxNorm Code
+        if (item["NDC_Code"] && !item["RXNorm_Code"]) {
+          errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`)
+        }
+      });
+      errors.forEach(message => {
+        this.setError(message);
+      });
+      //set MME error flag
+      if (errors.length) this.mmeErrors = true;
+    }
+  }
   setError(message) {
     if (!message) return;
     this.errorCollection.push(message);
+    this.writeErrorToLog(message);
+  }
+  writeErrorToLog(message) {
+    if (!message) return;
+    const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
+    const summary = this.state.result ? this.state.result.Summary : null;
+    let messageString = "";
+    if ((typeof message) === "object") {
+      messageString = message.toString();
+    } else messageString = message;
+    fetch(auditURL, {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"patient": (summary&&summary.Patient?summary.Patient.Name:""),"message": (messageString)})
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then(function (data) {
+      console.log('audit request succeeded with response ', data);
+    })
+    .catch(function (error) {
+      console.log('Request failed', error);
+    });
   }
   componentDidMount() {
     /*
@@ -105,6 +153,7 @@ export default class Landing extends Component {
           externalData => {
             result['Summary'] = {...result['Summary'], ...externalData[0]};
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+            this.processSummaryErrors(result.Summary);
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
             this.setState({ loading: false});
@@ -721,6 +770,7 @@ export default class Landing extends Component {
           sectionFlags={sectionFlags}
           collector={this.state.collector}
           errorCollection={this.errorCollection}
+          mmeErrors={this.mmeErrors}
           result={this.state.result}
           versionString={getEnv("REACT_APP_VERSION_STRING")}
         />

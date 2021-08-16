@@ -257,7 +257,7 @@ export default class Summary extends Component {
             let formatterArguments = headerKey.formatterArguments || [];
             value = formatit[headerKey.formatter](result, entry[headerKey.key], ...formatterArguments);
           }
-          return value ? value: entry[headerKey.key];
+          return value ? value: (headerKey.default ? headerKey.default : entry[headerKey.key]);
         },
         sortable: headerKey.sortable !== false
       };
@@ -347,7 +347,8 @@ export default class Summary extends Component {
   renderGraph(panel) {
     if (panel.graphType === "MED") {
       let data = this.props.summary[panel.dataSectionRefKey];
-      return <MMEGraph data={data}></MMEGraph>;
+      const mmeErrors = this.props.mmeErrors;
+      return <MMEGraph data={data} error={mmeErrors}></MMEGraph>;
     }
     //can return other type of graph depending on the section
     return <div className="graph-placeholder"></div>;
@@ -632,6 +633,7 @@ Summary.propTypes = {
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
   errorCollection: PropTypes.array,
+  mmeErrors: PropTypes.bool,
   result: PropTypes.object.isRequired,
   versionString: PropTypes.oneOfType([
     PropTypes.string,

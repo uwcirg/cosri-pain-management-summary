@@ -7,7 +7,7 @@ export default class ErrorBanner extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      displayed: false
+      displayed: true
     };
     this.handleCloseToggle= this.handleCloseToggle.bind(this);
   }
