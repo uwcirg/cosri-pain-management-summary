@@ -11,6 +11,12 @@
     color: $color-white;
   }
 
+  &__site-logo {
+    img[disabled] {
+      display: none;
+    }
+  }
+
   &__logo {
     display: flex;
     align-items: center;
@@ -126,7 +132,7 @@
         align-items: center;
         margin: 0 12px;
         img {
-          width: 180px;
+          width: 140px;
         }
 
         &-count {

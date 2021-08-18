@@ -12,3 +12,20 @@ export function getDiffDays(dateString1, dateString2) {
     // To calculate the no. of days between two dates
     return Math.ceil(diffInTime / (1000 * 3600 * 24));
 }
+
+export function imageOK(event) {
+    let img = event.target;
+    if (!img) {
+        return false;
+    }
+    if (!img.getAttribute("src")) {
+        return false;
+    }
+    if (!img.complete) {
+        return false;
+    }
+    if (typeof img.naturalWidth !== "undefined" && img.naturalWidth === 0) {
+        return false;
+    }
+    return true;
+}

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {imageOK} from '../helpers/utility';
 
 export default class Header extends Component {
 
@@ -23,9 +24,15 @@ export default class Header extends Component {
       window.location = url;
     }, 0);
   }
+  handleImageLoadError(e) {
+    let imageLoaded = imageOK(e);
+    console.log("Image? ", imageLoaded)
+    if (!imageLoaded) e.target.setAttribute("disabled", true);
+  }
+
   render() {
     const {
-      patientName, patientDOB, patientGender, patientSearchURL
+      patientName, patientDOB, patientGender, patientSearchURL, siteID
     } = this.props;
 
     return (
@@ -58,6 +65,12 @@ export default class Header extends Component {
             </div>
           </div>
 			    <div className="header__summary-dashboard">
+            {
+              siteID &&
+              <div className="header__site-logo">
+                <img src={process.env.PUBLIC_URL + "/assets/images/" + siteID + "_logo.png"} alt="site logo" onError={this.handleImageLoadError}/>
+              </div>
+            }
             <div className="entries">
               <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" />
             </div>
@@ -72,5 +85,6 @@ Header.propTypes = {
   patientName: PropTypes.string.isRequired,
   patientDOB: PropTypes.string.isRequired,
   patientGender: PropTypes.string.isRequired,
-  patientSearchURL: PropTypes.string
+  patientSearchURL: PropTypes.string,
+  siteID: PropTypes.string
 };
