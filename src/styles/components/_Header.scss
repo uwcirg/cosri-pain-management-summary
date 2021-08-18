@@ -128,7 +128,10 @@
         align-items: center;
         margin: 0 12px;
         img {
-          width: 140px;
+          width: 180px;
+        }
+        img[disabled] {
+          display: none;
         }
 
         &-count {

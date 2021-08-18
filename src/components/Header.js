@@ -24,6 +24,20 @@ export default class Header extends Component {
       window.location = url;
     }, 0);
   }
+  handleImageLoaded(e) {
+    if (!e.target) {
+      return false;
+    }
+    let imageLoaded = imageOK(e.target);
+    if (!imageLoaded) {
+      e.target.setAttribute("disabled", true);
+      return;
+    }
+    let defaultLogoImage = document.querySelector(".default-logo");
+    if (defaultLogoImage) {
+      defaultLogoImage.setAttribute("disabled", true);
+    }
+  }
   handleImageLoadError(e) {
     if (!e.target) {
       return false;
@@ -31,6 +45,7 @@ export default class Header extends Component {
     let imageLoaded = imageOK(e.target);
     if (!imageLoaded) {
       e.target.setAttribute("disabled", true);
+      return;
     }
   }
 
@@ -72,11 +87,11 @@ export default class Header extends Component {
             {
               siteID &&
               <div className="header__site-logo">
-                <img src={process.env.PUBLIC_URL + "/assets/images/" + siteID + "_logo.png"} alt="site logo" onError={this.handleImageLoadError}/>
+                <img src={process.env.PUBLIC_URL + "/assets/images/" + siteID + "_logo.png"} alt="site logo" onLoad={this.handleImageLoaded} onError={this.handleImageLoadError}/>
               </div>
             }
             <div className="entries">
-              <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" />
+              <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" className="default-logo"/>
             </div>
           </div>
         </div>
