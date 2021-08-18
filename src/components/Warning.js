@@ -26,12 +26,12 @@ export default class ExclusionBanner extends Component {
     const conditionalClass = this.state.displayed ? '': 'close';
     return (
       <div
-        className={`exclusion-banner banner addon-text ${conditionalClass}`}
+        className={`exclusion-banner banner addon-text warning ${conditionalClass}`}
         role="banner"
         onClick={this.handleCloseToggle}>
         <ChevronDownIcon className="close-button" icon="times" title="close"  width="25" height="25" />
 
-        <div className="exclusion-banner__description">
+        <div className="exclusion-banner__description warning">
           <strong className="title"><FontAwesomeIcon icon="exclamation-circle" title="notice" /> WARNING</strong> <span className="content">{this.props.text}</span>
         </div>
       </div>
