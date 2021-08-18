@@ -22,6 +22,9 @@
     text-align: left;
     background-color: $color-beige;
     position: relative;
+    &.warning {
+      background-color: $color-red-darker;
+    }
 
     &__tag {
       margin-bottom: 20px;
@@ -29,6 +32,11 @@
 
     strong {
       color: $color-orange;
+    }
+    &.warning {
+      strong {
+        color: #FFF;
+      }
     }
     .title {
       margin-right: 4px
@@ -41,10 +49,6 @@
       padding: 10px;
       font-weight: 600;
     }
-    &.addon-text {
-      margin-top: -16px;
-    }
-
     .close-button {
       position: absolute;
       right: 24px;
@@ -78,6 +82,10 @@
   .inclusion-banner {
     &__description {
       color: $color-black;
+      &.warning {
+        color: #FFF;
+        font-weight: 600;
+      }
     }
   }
 }

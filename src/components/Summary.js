@@ -257,7 +257,7 @@ export default class Summary extends Component {
             let formatterArguments = headerKey.formatterArguments || [];
             value = formatit[headerKey.formatter](result, entry[headerKey.key], ...formatterArguments);
           }
-          return value ? value: entry[headerKey.key];
+          return value ? value: (headerKey.default ? headerKey.default : entry[headerKey.key]);
         },
         sortable: headerKey.sortable !== false
       };
@@ -347,7 +347,8 @@ export default class Summary extends Component {
   renderGraph(panel) {
     if (panel.graphType === "MED") {
       let data = this.props.summary[panel.dataSectionRefKey];
-      return <MMEGraph data={data}></MMEGraph>;
+      const mmeErrors = this.props.mmeErrors;
+      return <MMEGraph data={data} error={mmeErrors}></MMEGraph>;
     }
     //can return other type of graph depending on the section
     return <div className="graph-placeholder"></div>;
@@ -404,7 +405,10 @@ export default class Summary extends Component {
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
     const queryDateTime = summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat();
-    const subSections = sectionMap.map((subSection, index) => {
+    const subSectionsToRender = sectionMap.filter(section => {
+      return !section.hideSection;
+    });
+    const subSections = subSectionsToRender.map((subSection, index) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
@@ -551,9 +555,9 @@ export default class Summary extends Component {
      * sections to be rendered
      */
     Object.keys(summaryMap).forEach(section => {
+      if (summaryMap[section]["hideSection"]) return true;
       sectionsToRender.push(section);
     });
-
     const navToggleToolTip = this.state.showNav ? "collapse side navigation menu" : "expand side navigation menu";
 
     return (
@@ -632,6 +636,7 @@ Summary.propTypes = {
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
   errorCollection: PropTypes.array,
+  mmeErrors: PropTypes.bool,
   result: PropTypes.object.isRequired,
   versionString: PropTypes.oneOfType([
     PropTypes.string,

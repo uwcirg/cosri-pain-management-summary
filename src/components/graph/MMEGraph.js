@@ -70,6 +70,7 @@ export default class MMEGraph extends Component {
     const CDC_MAX_VALUE = 90;
     const xIntervals = 8;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
+    const hasError = this.props.error;
     //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
     let computedData = this.props.data? (this.props.data).map(item => {
@@ -213,6 +214,12 @@ export default class MMEGraph extends Component {
     const dataLineProps = {...defaultProps, ...additionalProps};
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
+    if (hasError) {
+      return  (<div className="MMEgraph no-entry">
+                <div className="title">Morphine Equivalent Dose (MED)</div>
+                <div className="no-entry error"><b>Error</b><br/>Graph not shown. One or more of this patient's opioid medications was not found in RxNav, therefore the MED could not be calculated and the summary graph will be incorrect.</div>
+              </div>);
+    }
     if (noEntry) {
       return  (<div className="MMEgraph no-entry">
                 <div className="title">Morphine Equivalent Dose (MED)</div>
@@ -247,5 +254,6 @@ export default class MMEGraph extends Component {
 }
 
 MMEGraph.propTypes = {
-  data: PropTypes.array
+  data: PropTypes.array,
+  error: PropTypes.bool
 };
