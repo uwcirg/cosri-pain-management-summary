@@ -13,8 +13,7 @@ export function getDiffDays(dateString1, dateString2) {
     return Math.ceil(diffInTime / (1000 * 3600 * 24));
 }
 
-export function imageOK(event) {
-    let img = event.target;
+export function imageOK(img) {
     if (!img) {
         return false;
     }

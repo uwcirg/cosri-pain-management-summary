@@ -25,9 +25,13 @@ export default class Header extends Component {
     }, 0);
   }
   handleImageLoadError(e) {
-    let imageLoaded = imageOK(e);
-    console.log("Image? ", imageLoaded)
-    if (!imageLoaded) e.target.setAttribute("disabled", true);
+    if (!e.target) {
+      return false;
+    }
+    let imageLoaded = imageOK(e.target);
+    if (!imageLoaded) {
+      e.target.setAttribute("disabled", true);
+    }
   }
 
   render() {
