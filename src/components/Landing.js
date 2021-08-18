@@ -128,6 +128,25 @@ export default class Landing extends Component {
       console.log('Request failed', error);
     });
   }
+  setSectionVis() {
+    for (const key in summaryMap) {
+      let sectionsToBeHidden = [];
+      if (summaryMap[key]["sections"]) {
+        //hide sub section if any
+        summaryMap[key]["sections"].forEach(section => {
+          if (getEnv(`REACT_APP_SUBSECTION_${section.dataKey.toUpperCase()}`) === "hidden") {
+            section["hideSection"] = true;
+            sectionsToBeHidden.push(section);
+          }
+        });
+        if ((sectionsToBeHidden.length !== summaryMap[key]["sections"].length) && sectionsToBeHidden.length > 0) return true;
+      }
+      //hide main section if any
+      if (getEnv(`REACT_APP_SECTION_${key.toUpperCase()}`) === "hidden") {
+        summaryMap[key]["hideSection"] = true;
+      }
+    }
+  }
   componentDidMount() {
     /*
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
@@ -141,6 +160,7 @@ export default class Landing extends Component {
         //set result from data from EPIC
         let EPICData = response[0];
         result['Summary'] = EPICData ? {...EPICData['Summary']} : {};
+        this.setSectionVis();
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ result, sectionFlags, flaggedCount });
         this.setPatientId();
@@ -186,7 +206,7 @@ export default class Landing extends Component {
         includeHtml: true                       // include the HTML markup from the heading node, not just the text,
         ,headingsOffset: MIN_HEADER_HEIGHT,
         scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-        throttleTimeout: 50,
+        throttleTimeout: 100,
       });
 
       this.tocInitialized = true;
@@ -664,7 +684,11 @@ export default class Landing extends Component {
 
     sectionKeys.forEach((sectionKey, i) => { // for each section
       sectionFlags[sectionKey] = {};
+      //don't process flags for section that will be hidden
+      if (summaryMap[sectionKey]["hideSection"]) return true;
       summaryMap[sectionKey]["sections"].forEach((subSection) => { // for each sub section
+        //don't process flags for sub section that will be hidden
+        if (subSection["hideSection"]) return true;
         const keySource = summary[subSection.dataKeySource];
         if (!keySource) {
           return true;

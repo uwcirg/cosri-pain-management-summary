@@ -405,7 +405,10 @@ export default class Summary extends Component {
   renderSection(section) {
     const sectionMap = summaryMap[section]["sections"];
     const queryDateTime = summaryMap[section].lastUpdated ? summaryMap[section].lastUpdated : formatit.currentDateTimeFormat();
-    const subSections = sectionMap.map((subSection, index) => {
+    const subSectionsToRender = sectionMap.filter(section => {
+      return !section.hideSection;
+    });
+    const subSections = subSectionsToRender.map((subSection, index) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
       const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
@@ -552,9 +555,9 @@ export default class Summary extends Component {
      * sections to be rendered
      */
     Object.keys(summaryMap).forEach(section => {
+      if (summaryMap[section]["hideSection"]) return true;
       sectionsToRender.push(section);
     });
-
     const navToggleToolTip = this.state.showNav ? "collapse side navigation menu" : "expand side navigation menu";
 
     return (
