@@ -318,7 +318,7 @@ define function StripPer(unit String):
 /*
   Calculates daily dose for a specific ingredient based on the ingredient strength, dose form, dose quantity, and daily frequency
 */
-define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCode Code, doseQuantity Quantity, dosesPerDay Decimal, supplyQuantity Decimal, supplyDuration Decimal):
+define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCode Code, doseQuantity Quantity, dosesPerDay Decimal):
   case
     when dosesPerDay is null or doseQuantity is null or strength is null then
       null as Quantity
@@ -340,7 +340,7 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
         data to follow this standard, i.e., Days Supply for fentanyl patches= # of patches X 3.
         */
         //1819 is buprenorphine, 4337 is fentanyl
-        Quantity { value: (supplyQuantity / supplyDuration) * strength.value, unit: strength.unit }
+        Quantity { value: dosesPerDay * strength.value, unit: strength.unit }
 
       else
         Message(null, true, 'OMTKLogic.GetDailyDoseDescription.UnknownPatchIngredient', ErrorLevel, 'Unknown patch ingredient: ' & ingredientCode.code & ':' & ingredientCode.display)
@@ -404,7 +404,7 @@ define function CalculateMMEs(medications List<Tuple { rxNormCode Code, doseQuan
         Ingredients I
           let
             adjustedDoseQuantity: EnsureMicrogramQuantity(M.doseQuantity),
-            dailyDose: GetDailyDose(I.ingredientCode, I.strength, I.doseFormCode, adjustedDoseQuantity, M.dosesPerDay, M.supplyQuantity, M.supplyDuration),
+            dailyDose: GetDailyDose(I.ingredientCode, I.strength, I.doseFormCode, adjustedDoseQuantity, M.dosesPerDay),
             dailyDoseDescription: GetDailyDoseDescription(I.ingredientCode, I.strength, I.doseFormCode, adjustedDoseQuantity, M.dosesPerDay, dailyDose, M.supplyQuantity, M.supplyDuration),
             factor: GetConversionFactor(I.ingredientCode, dailyDose, I.doseFormCode)
           return {

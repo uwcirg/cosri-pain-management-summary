@@ -364,7 +364,6 @@ define Is130orYounger:
   AgeInYears() <= 130
 
 // Determines if the patient meets the inclusion criteria for the CDS. Inclusion criteria is:
-// - Age >=18 years
 define MeetsInclusionCriteria:
   //Is18orOlder
   //fix this to allow people of all ages
@@ -672,6 +671,10 @@ define ReportPDMPMedicationRequests:
       End: ToString(CalculatedEnd), //of string type
       Quantity: GetMedicationRequestDispensedQuantity(O),
       Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
+      doseQuantity: MME_Object[0].doseQuantity,
+      dosesPerDay: MME_Object[0].dosesPerDay,
+      strength: MME_Object[0].strength,
+      factor: MME_Object[0].conversionFactor,
       MME: MME_Object[0].mme.value,
       Prescriber: O.requester.display.value,
       Pharmacy: GetMedicationRequestPharmacy(O),
