@@ -217,7 +217,7 @@ export default class MMEGraph extends Component {
     if (hasError) {
       return  (<div className="MMEgraph no-entry">
                 <div className="title">Morphine Equivalent Dose (MED)</div>
-                <div className="no-entry error"><b>Error</b><br/>Graph not shown. One or more of this patient's opioid medications was not found in RxNav, therefore the MED could not be calculated and the summary graph will be incorrect.</div>
+                <div className="no-entry error">Graph not shown. One or more of this patient's opioid medications was not found in RxNav, therefore the MED could not be calculated and the summary graph will be incorrect.<br/>Please use the information in the State PMP Prescriptions table below to calculate the patient's MED.</div>
               </div>);
     }
     if (noEntry) {
