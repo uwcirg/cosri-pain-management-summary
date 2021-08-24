@@ -132,7 +132,7 @@ export default class Landing extends Component {
     });
   }
   saveSummaryData() {
-    if (String(getEnv("ENV")).toLowerCase() !== "development") return;
+    if (String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development") return;
     const summary = this.state.result ? this.state.result.Summary : null;
     if (!summary) return;
     const patientName =  (summary&&summary.Patient?summary.Patient.Name:"");
