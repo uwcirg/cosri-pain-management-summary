@@ -8,12 +8,12 @@ import flagit from '../helpers/flagit';
 import {datishFormat, dateFormat, dateNumberFormat, extractDateFromGMTDateString} from '../helpers/formatit';
 import {dateCompare} from '../helpers/sortit';
 import {getDiffDays} from '../helpers/utility';
+import {isInViewport} from '../helpers/utility';
 import summaryMap from './summary.json';
 
 import {getEnv, fetchEnvData} from '../utils/envConfig';
 import Header from './Header';
 import Summary from './Summary';
-import {isInViewport} from './Utility';
 import Spinner from '../elements/Spinner';
 
 let uuid = 0;
@@ -206,7 +206,7 @@ export default class Landing extends Component {
         includeHtml: true                       // include the HTML markup from the heading node, not just the text,
         ,headingsOffset: MIN_HEADER_HEIGHT,
         scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-        throttleTimeout: 100,
+        throttleTimeout: 150,
       });
 
       this.tocInitialized = true;
@@ -786,6 +786,7 @@ export default class Landing extends Component {
           patientGender={summary.Patient.Gender}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
           patientSearchURL={PATIENT_SEARCH_URL}
+          siteID={getEnv("SITE_ID")}
         />
 
         <Summary

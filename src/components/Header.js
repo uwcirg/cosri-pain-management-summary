@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {imageOK} from '../helpers/utility';
 
 export default class Header extends Component {
 
@@ -23,9 +24,34 @@ export default class Header extends Component {
       window.location = url;
     }, 0);
   }
+  handleImageLoaded(e) {
+    if (!e.target) {
+      return false;
+    }
+    let imageLoaded = imageOK(e.target);
+    if (!imageLoaded) {
+      e.target.setAttribute("disabled", true);
+      return;
+    }
+    let defaultLogoImage = document.querySelector(".default-logo");
+    if (defaultLogoImage) {
+      defaultLogoImage.setAttribute("disabled", true);
+    }
+  }
+  handleImageLoadError(e) {
+    if (!e.target) {
+      return false;
+    }
+    let imageLoaded = imageOK(e.target);
+    if (!imageLoaded) {
+      e.target.setAttribute("disabled", true);
+      return;
+    }
+  }
+
   render() {
     const {
-      patientName, patientDOB, patientGender, patientSearchURL
+      patientName, patientDOB, patientGender, patientSearchURL, siteID
     } = this.props;
 
     return (
@@ -58,8 +84,14 @@ export default class Header extends Component {
             </div>
           </div>
 			    <div className="header__summary-dashboard">
+            {
+              siteID &&
+              <div className="header__site-logo">
+                <img src={process.env.PUBLIC_URL + "/assets/"+siteID+"/images/logo.png"} alt="site logo" onLoad={this.handleImageLoaded} onError={this.handleImageLoadError}/>
+              </div>
+            }
             <div className="entries">
-              <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" />
+              <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" className="default-logo"/>
             </div>
           </div>
         </div>
@@ -72,5 +104,6 @@ Header.propTypes = {
   patientName: PropTypes.string.isRequired,
   patientDOB: PropTypes.string.isRequired,
   patientGender: PropTypes.string.isRequired,
-  patientSearchURL: PropTypes.string
+  patientSearchURL: PropTypes.string,
+  siteID: PropTypes.string
 };

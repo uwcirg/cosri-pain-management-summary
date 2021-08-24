@@ -11,6 +11,12 @@
     color: $color-white;
   }
 
+  &__site-logo {
+    img[disabled] {
+      display: none;
+    }
+  }
+
   &__logo {
     display: flex;
     align-items: center;
@@ -42,7 +48,6 @@
     }
 
     &-text {
-     // font-size: 1.5em;
       display: inline-block;
       vertical-align: top;
       font-weight: 600;
@@ -64,6 +69,7 @@
   &__search {
     margin-left: 16px;
     margin-right: 16px;
+    margin-top: 16px;
     align-self: flex-start;
   }
 
@@ -80,18 +86,15 @@
       .patient-icon {
         font-size: 2em;
         color: $color-blue;
-        //color: $color-uw-icon;
         margin-right: 16px;
         position: relative;
         top: -.75em;
       }
 
       .patient-name {
-        //font-weight: normal;
         font-weight: 600;
         line-height: 1em;
         margin: 0;
-        //color: $color-black;
       }
 
       .patient-demographics {
@@ -112,7 +115,6 @@
         }
       }
       .patient-info {
-        //border-right: 1px solid $color-divider;
         padding-right: 8px;
       }
     }
@@ -128,13 +130,14 @@
         img {
           width: 180px;
         }
+        img[disabled] {
+          display: none;
+        }
 
         &-count {
           font-size: 3em;
           font-weight: 700;
           margin-right: 20px;
-          //color: $color-black;
-
           &.flagged { color: $color-red-dark; }
         }
 
