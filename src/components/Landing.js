@@ -148,6 +148,7 @@ export default class Landing extends Component {
     //can save other data if needed
   }
   saveData(params) {
+    if (String(getEnv("ENV")).toLowerCase() !== "development") return;
     const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
     params = params || {};
     if (!params.data) return;
