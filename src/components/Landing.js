@@ -119,6 +119,9 @@ export default class Landing extends Component {
       body: JSON.stringify({"patient": (summary&&summary.Patient?summary.Patient.Name:""),"message": (messageString)})
     })
     .then((response) => {
+      if (!response.ok) {
+        throw Error(response.statusText);
+      }
       return response.json();
     })
     .then(function (data) {
@@ -127,6 +130,49 @@ export default class Landing extends Component {
     .catch(function (error) {
       console.log('Request failed', error);
     });
+  }
+  saveSummaryData() {
+    if (String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development") return;
+    const summary = this.state.result ? this.state.result.Summary : null;
+    if (!summary) return;
+    const patientName =  (summary&&summary.Patient?summary.Patient.Name:"");
+    //pdmp data
+    const pdmpData = summary["PDMPMedications"]["PDMPMedications"];
+    const pdmpContext = "CQL PMP MME Result";
+    const fileName = patientName.replace(/\s/g, "_") + "_MME_Result";
+    this.saveData({
+      context: pdmpContext,
+      data: pdmpData,
+      filename: fileName,
+      timestamp: new Date()
+    });
+    //can save other data if needed
+  }
+  saveData(params) {
+    const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
+    params = params || {};
+    if (!params.data) return;
+    fetch(saveDataURL, {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params)
+    })
+    .then((response) => {
+      if (!response.ok) {
+        throw Error(response.statusText);
+      }
+      return response.json();
+    })
+    .then(function (data) {
+      console.log('save data request succeeded with response ', data);
+    })
+    .catch(function (error) {
+      console.log('Request failed to save data: ', error);
+    });
+
   }
   setSectionVis() {
     for (const key in summaryMap) {
@@ -172,6 +218,7 @@ export default class Landing extends Component {
         Promise.all([this.getExternalData()]).then(
           externalData => {
             result['Summary'] = {...result['Summary'], ...externalData[0]};
+            this.saveSummaryData();
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
             this.processSummaryErrors(result.Summary);
             this.processOverviewData(result['Summary'], sectionFlags);
