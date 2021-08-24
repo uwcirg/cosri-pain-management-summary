@@ -218,7 +218,6 @@ export default class Landing extends Component {
           externalData => {
             result['Summary'] = {...result['Summary'], ...externalData[0]};
             this.saveSummaryData();
-            console.log("summary ? ", result['Summary'])
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
             this.processSummaryErrors(result.Summary);
             this.processOverviewData(result['Summary'], sectionFlags);
