@@ -132,6 +132,7 @@ export default class Landing extends Component {
     });
   }
   saveSummaryData() {
+    if (String(getEnv("ENV")).toLowerCase() !== "development") return;
     const summary = this.state.result ? this.state.result.Summary : null;
     if (!summary) return;
     const patientName =  (summary&&summary.Patient?summary.Patient.Name:"");
@@ -148,7 +149,6 @@ export default class Landing extends Component {
     //can save other data if needed
   }
   saveData(params) {
-    if (String(getEnv("ENV")).toLowerCase() !== "development") return;
     const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
     params = params || {};
     if (!params.data) return;
