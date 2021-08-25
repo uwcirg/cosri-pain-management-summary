@@ -39,6 +39,8 @@
 //    use Last Fill date as the Start Date for MME value calculation, it was using authored date
 // Update 20210805
 //    remove age restriction as the inclusion criterion
+// Update 20210825
+//    Add Class for PDMP Medication, add function getMedicationRequestDrugClass to retrieve drug class
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
