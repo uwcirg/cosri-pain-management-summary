@@ -152,6 +152,15 @@ export function listFormat(result, input) {
       </ul>
   );
 }
+
+export function listToStringFormat(result, input) {
+  if (!Array.isArray(input)) {
+    return input;
+  }
+  return input.join(", ");
+}
+
+
 /*
  * string formatter for FHIR codeableConcept element
  *  i.e.: {

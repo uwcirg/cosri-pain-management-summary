@@ -352,6 +352,18 @@ define function GetMedicationRequestStartDate(medRequest MedicationRequest):
     Start: if LastFillDate is not null then LastFillDate else O.authoredOn
     return Start
 
+// Returns the drug class values from extension in medication codeConcept
+// @param MedicationRequest FHIR object
+define function getMedicationRequestDrugClass(medRequest MedicationRequest):
+  (medRequest) O
+  let
+    codeConcept: O.medication as FHIR.CodeableConcept,
+    values:
+      if codeConcept.extension is not null then
+        (codeConcept.extension E return E.value.value)
+      else null
+    return values
+
 
 // ## Target population ##
 
@@ -680,7 +692,8 @@ define ReportPDMPMedicationRequests:
       Pharmacy: GetMedicationRequestPharmacy(O),
       NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
       RXNorm_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value),
-      Status: O.status.value
+      Status: O.status.value,
+      Class: getMedicationRequestDrugClass(O)
     }
     sort by DispensedDate desc, End desc
 
