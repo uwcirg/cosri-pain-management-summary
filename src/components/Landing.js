@@ -804,7 +804,7 @@ export default class Landing extends Component {
       return <Spinner loadingMessage={this.state.loadingMessage}/>;
     }
 
-    const PATIENT_SEARCH_URL = getEnv("REACT_APP_DASHBOARD_URL");
+    const PATIENT_SEARCH_URL = getEnv("REACT_APP_DASHBOARD_URL")+"/clear_session";
 
     if (this.state.result == null) {
       return (
