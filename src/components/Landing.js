@@ -217,10 +217,12 @@ export default class Landing extends Component {
         }.bind(this), 0);
         this.processCollectorErrors();
         this.writeToLog("application loaded", "info", {
-          tags: [
-            "application",
-            "onload"
-          ]
+          extra: {
+            tags: [
+              "application",
+              "onload"
+            ]
+          }
         });
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData()]).then(
