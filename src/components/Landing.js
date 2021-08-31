@@ -100,10 +100,12 @@ export default class Landing extends Component {
   setError(message) {
     if (!message) return;
     this.errorCollection.push(message);
-    this.writeErrorToLog(message);
+    this.writeToLog(message, "error");
   }
-  writeErrorToLog(message) {
+  writeToLog(message, level, params) {
     if (!message) return;
+    if (!level) level = "info";
+    if (!params) params = {};
     const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
     const summary = this.state.result ? this.state.result.Summary : null;
     let messageString = "";
@@ -116,7 +118,7 @@ export default class Landing extends Component {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({"patient": (summary&&summary.Patient?summary.Patient.Name:""),"message": (messageString)})
+      body: JSON.stringify({...{"patient": (summary&&summary.Patient?summary.Patient.Name:""),"message": (messageString), "level": level}, ...params})
     })
     .then((response) => {
       if (!response.ok) {
@@ -214,6 +216,12 @@ export default class Landing extends Component {
           this.clearProcessInterval();
         }.bind(this), 0);
         this.processCollectorErrors();
+        this.writeToLog("application loaded", "info", {
+          tags: [
+            "application",
+            "onload"
+          ]
+        });
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData()]).then(
           externalData => {
