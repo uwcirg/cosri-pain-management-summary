@@ -813,7 +813,7 @@ export default class Landing extends Component {
             <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See console for details.
           </div>
           <div className="banner__linkContainer">
-            <a href={PATIENT_SEARCH_URL+"/logout"}>Back to Patient Search</a>
+            <a href={PATIENT_SEARCH_URL}>Back to Patient Search</a>
           </div>
         </div>
       );
