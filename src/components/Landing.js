@@ -12,6 +12,7 @@ import {isInViewport} from '../helpers/utility';
 import summaryMap from './summary.json';
 
 import {getEnv, fetchEnvData} from '../utils/envConfig';
+import SystemBanner from "./SystemBanner";
 import Header from './Header';
 import Summary from './Summary';
 import Spinner from '../elements/Spinner';
@@ -729,6 +730,11 @@ export default class Landing extends Component {
       .catch(err => { console.log(err) });
   }
 
+  isNonProduction() {
+    let systemType = getEnv("REACT_APP_SYSTEM_TYPE");
+    return systemType && String(systemType).toLowerCase() !== "production";
+  }
+
   processSummary(summary) {
     /*
      * TODO: certain sections we have chosen not to display so need to exclude those when tallying up flag counts
@@ -835,7 +841,7 @@ export default class Landing extends Component {
       <div className="landing">
         <div id="anchorTop"></div>
         <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>
-
+        {this.isNonProduction() && <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>}
         <Header
           patientName={summary.Patient.Name}
           patientDOB={datishFormat(this.state.result,patientResource.birthDate)}

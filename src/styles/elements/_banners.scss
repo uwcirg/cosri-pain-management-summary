@@ -128,3 +128,11 @@
     }
   }
 }
+.system-banner {
+  background-color: $color-orange-translucent;
+  color: $color-black-darker;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
