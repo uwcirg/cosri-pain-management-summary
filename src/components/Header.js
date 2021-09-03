@@ -33,12 +33,6 @@ export default class Header extends Component {
       e.target.setAttribute("disabled", true);
       return;
     }
-    if (e.target.getAttribute("siteID")) {
-      let defaultLogoImage = document.querySelector(".default-logo");
-      if (defaultLogoImage) {
-        defaultLogoImage.setAttribute("disabled", true);
-      }
-    }
   }
   handleImageLoadError(e) {
     if (!e.target) {
@@ -97,9 +91,9 @@ export default class Header extends Component {
                 <div className="header__site-logo">
                   <img src={process.env.PUBLIC_URL + "/assets/images/system_logo.png"} alt="system logo" onLoad={this.handleImageLoaded} width="160" siteID="demo" onError={this.handleImageLoadError}/>
                 </div>
-                <div className="entries">
+                {/* <div className="entries"> WASHINGTON STATE LOGO //may bring back later
                   <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" className="default-logo"/>
-                </div>
+                </div> */}
               </div>
 
             }
