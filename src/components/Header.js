@@ -33,9 +33,11 @@ export default class Header extends Component {
       e.target.setAttribute("disabled", true);
       return;
     }
-    let defaultLogoImage = document.querySelector(".default-logo");
-    if (defaultLogoImage) {
-      defaultLogoImage.setAttribute("disabled", true);
+    if (e.target.getAttribute("siteID")) {
+      let defaultLogoImage = document.querySelector(".default-logo");
+      if (defaultLogoImage) {
+        defaultLogoImage.setAttribute("disabled", true);
+      }
     }
   }
   handleImageLoadError(e) {
@@ -48,7 +50,6 @@ export default class Header extends Component {
       return;
     }
   }
-
   render() {
     const {
       patientName, patientDOB, patientGender, patientSearchURL, siteID
@@ -87,12 +88,21 @@ export default class Header extends Component {
             {
               siteID &&
               <div className="header__site-logo">
-                <img src={process.env.PUBLIC_URL + "/assets/"+siteID+"/images/logo.png"} alt="site logo" onLoad={this.handleImageLoaded} onError={this.handleImageLoadError}/>
+                <img src={process.env.PUBLIC_URL + "/assets/"+siteID+"/images/logo.png"} siteID={siteID} alt="site logo" onLoad={this.handleImageLoaded} onError={this.handleImageLoadError}/>
               </div>
             }
-            <div className="entries">
-              <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" className="default-logo"/>
-            </div>
+            {
+              !siteID &&
+              <div className="header__logos">
+                <div className="header__site-logo">
+                  <img src={process.env.PUBLIC_URL + "/assets/images/system_logo.png"} alt="system logo" onLoad={this.handleImageLoaded} width="160" siteID="demo" onError={this.handleImageLoadError}/>
+                </div>
+                <div className="entries">
+                  <img src={process.env.PUBLIC_URL + "/assets/images/doh_logo.png"} alt="doh logo" className="default-logo"/>
+                </div>
+              </div>
+
+            }
           </div>
         </div>
       </header>
