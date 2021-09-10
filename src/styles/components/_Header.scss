@@ -55,14 +55,14 @@
       position: relative;
       top: 6px;
       left: 2px;
-      font-size: 0.85em;
+      font-size: 0.75em;
     }
     &-text--light {
       line-height: 1.5em;
       position: relative;
       font-weight: 400;
       display: inline-block;
-      font-size: 0.85em;
+      font-size: 0.75em;
       top: -6px;
     }
   }
@@ -71,6 +71,10 @@
     margin-right: 16px;
     margin-top: 16px;
     align-self: flex-start;
+  }
+  &__logos {
+    display: flex;
+    align-items: center;
   }
 
   &__summary {
