@@ -86,7 +86,7 @@ export default class Landing extends Component {
       let o = pdmpMeds["PDMPMedications"];
       let errors = [];
       o.forEach(item => {
-        //look for medication that contains NDC code but not RxNorm Code, or contains all necessary information but no MME
+        //look for medication that contains NDC code but not RxNorm Code, or contains all necessary information (NDC Code, RxNorm Code and Drug Class) but no MME
         if (item["Class"] && item["NDC_Code"] && (!item["RXNorm_Code"] || !item["MME"])) {
           errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`)
         }
