@@ -848,7 +848,7 @@ export default class Landing extends Component {
           patientGender={summary.Patient.Gender}
           meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
           patientSearchURL={PATIENT_SEARCH_URL}
-          siteID={getEnv("SITE_ID")}
+          siteID={getEnv("REACT_APP_SITE_ID")}
         />
 
         <Summary
