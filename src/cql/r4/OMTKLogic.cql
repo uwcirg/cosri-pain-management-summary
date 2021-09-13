@@ -31,6 +31,7 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 * formulation used: quantity(patches) / days supplied * strength factor
 * Adjust conversion factor for fentanyl patch from 2.4 to 7.2
 *
+* 09/13/21  Add conversion factors for oliceridine & benzhydrocodone; Update conversion factor to 0.3 for Meperidine IV form
 */
 
 include OMTKData version '3.0.0' called OMTKData
@@ -118,6 +119,8 @@ Oxymorphone	3
 Pentazocine	0.37
 Tapentadol	0.4
 Tramadol	0.1
+Benzhydrocodone 1.22
+Oliceridine 5
 */
 define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, doseFormCode Code):
   case ToInteger(ingredientCode.code)
@@ -153,7 +156,12 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 5640 then 0 /*	Ibuprofen */
     when 6102 then 0 /*	Kaolin */
     when 6378 then 11 /*	Levorphanol (NOTE: Given as Levorphanol tartrate in the CDC conversion table) */
-    when 6754 then 0.1 /*	Meperidine */
+    when 6754 then ( /*	Meperidine */
+      case
+        when ToInteger(doseFormCode.code) = 721656 then 0.3 /* IV form */
+        else 0.1 /* Oral */
+      end
+    )
     when 6813 then ( /*	Methadone */
       case
         when dailyDose.value between 1 and 20 then 4
@@ -186,6 +194,8 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 237005 then 8 /*	Levomethadyl (NOTE: given as Levomethadyl acetate in the CDC conversion table) */
     when 636827 then 0 /*	guaiacolsulfonate */
     when 787390 then 0.4 /*	tapentadol */
+    when 2001352 then 1.22 /* benzhydrocodone */
+    when 2392230 then 5 /* oliceridine */
     else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownIngredientCode', ErrorLevel, 'Unknown ingredient code: ' & ingredientCode.code)
   end
 

@@ -1630,9 +1630,37 @@
                      "type" : "Literal"
                   },
                   "then" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                     "value" : "0.1",
-                     "type" : "Literal"
+                     "type" : "Case",
+                     "caseItem" : [ {
+                        "when" : {
+                           "type" : "Equal",
+                           "operand" : [ {
+                              "type" : "ToInteger",
+                              "operand" : {
+                                 "path" : "code",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "doseFormCode",
+                                    "type" : "OperandRef"
+                                 }
+                              }
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "721656",
+                              "type" : "Literal"
+                           } ]
+                        },
+                        "then" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "value" : "0.3",
+                           "type" : "Literal"
+                        }
+                     } ],
+                     "else" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                        "value" : "0.1",
+                        "type" : "Literal"
+                     }
                   }
                }, {
                   "when" : {
@@ -2151,6 +2179,31 @@
                      "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
                      "value" : "0.4",
                      "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "2001352",
+                     "type" : "Literal"
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                     "value" : "1.22",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "2392230",
+                     "type" : "Literal"
+                  },
+                  "then" : {
+                     "type" : "ToDecimal",
+                     "operand" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "5",
+                        "type" : "Literal"
+                     }
                   }
                } ],
                "else" : {
