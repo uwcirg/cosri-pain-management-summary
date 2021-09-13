@@ -16849,6 +16849,101 @@
   "2.16.840.1.113762.1.4.1032.34": {
     "20200211": [
       {
+        "code": "2118734",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "2001364",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "2118730",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1740008",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1740010",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1237070",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1237066",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1237062",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1237059",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1237055",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1115579",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1729322",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1115575",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "2539200",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "2539192",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "2539188",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "2539192",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1665700",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "2539196",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
         "code": "1547607",
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
         "version": "2020-02"
