@@ -1430,6 +1430,30 @@
                               }
                            }, {
                               "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "746839",
+                              "type" : "Literal"
+                           } ]
+                        },
+                        "then" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "value" : "0.18",
+                           "type" : "Literal"
+                        }
+                     }, {
+                        "when" : {
+                           "type" : "Equal",
+                           "operand" : [ {
+                              "type" : "ToInteger",
+                              "operand" : {
+                                 "path" : "code",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "doseFormCode",
+                                    "type" : "OperandRef"
+                                 }
+                              }
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                               "value" : "1649574",
                               "type" : "Literal"
                            } ]

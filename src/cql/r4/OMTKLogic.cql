@@ -149,6 +149,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 4337 then ( /*	Fentanyl */
       case
         when ToInteger(doseFormCode.code) in { 970789, 317007, 316992 } then 0.13 /* Buccal Tablet, Sublingual Tablet, Oral Lozenge */
+        when ToInteger(doseFormCode.code) = 746839 then 0.18
         when ToInteger(doseFormCode.code) = 1649574 then 1 /* injection */
         when ToInteger(doseFormCode.code) = 1294702 then 0.13 /* lozenge Product */
         when ToInteger(doseFormCode.code) = 858080 then 0.18 /* Buccal Film */
