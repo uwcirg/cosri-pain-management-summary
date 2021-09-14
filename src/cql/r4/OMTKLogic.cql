@@ -33,6 +33,7 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 *
 * 09/13/21  Add conversion factors for oliceridine & benzhydrocodone; Update conversion factor to 0.3 for Meperidine IV form
 * 09/13/21 Update conversion factors for fentanyl injection, mucosal spray and lozenge product (1, 0.18, 0.13 respectively)
+* 09/13/21 Add conversion factor for benzhydrocodone
 */
 
 include OMTKData version '3.0.0' called OMTKData
