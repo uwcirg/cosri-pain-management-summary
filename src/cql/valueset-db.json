@@ -16874,6 +16874,11 @@
         "version": "2020-02"
       },
       {
+        "code": "2118730",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
         "code": "2118728",
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
         "version": "2020-02"
