@@ -18049,6 +18049,72 @@
                      "name" : "drugCode",
                      "value" : {
                         "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "2118732",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "drugName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Acetaminophen 325 MG / Benzhydrocodone 8.16 MG Oral Tablet",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "317541",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Oral Tablet",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "2001352",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Benzhydrocodone",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strength",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "8.16 MG",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthValue",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                        "value" : "8.16",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthUnit",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "MG",
+                        "type" : "Literal"
+                     }
+                  } ]
+               }, {
+                  "type" : "Tuple",
+                  "element" : [ {
+                     "name" : "drugCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                         "value" : "2118734",
                         "type" : "Literal"
                      }
@@ -23469,6 +23535,72 @@
                      "value" : {
                         "valueType" : "{urn:hl7-org:elm-types:r1}String",
                         "value" : "Acetaminophen 300 MG / Oxycodone Hydrochloride 5 MG Oral Tablet",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "317541",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Oral Tablet",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "7804",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Oxycodone",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strength",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "5 MG",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthValue",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                        "value" : "5.0",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthUnit",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "MG",
+                        "type" : "Literal"
+                     }
+                  } ]
+               }, {
+                  "type" : "Tuple",
+                  "element" : [ {
+                     "name" : "drugCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "2279512",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "drugName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Acetaminophen 300 MG / Oxycodone Hydrochloride 5 MG Oral Tablet [Prolate]",
                         "type" : "Literal"
                      }
                   }, {
