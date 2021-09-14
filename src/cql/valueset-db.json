@@ -16849,6 +16849,21 @@
   "2.16.840.1.113762.1.4.1032.34": {
     "20200211": [
       {
+        "code": "2392245",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "2392243",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "2392239",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
         "code": "2118734",
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
         "version": "2020-02"

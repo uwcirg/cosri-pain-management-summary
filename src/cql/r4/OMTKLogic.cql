@@ -31,6 +31,8 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 * formulation used: quantity(patches) / days supplied * strength factor
 * Adjust conversion factor for fentanyl patch from 2.4 to 7.2
 *
+* 09/13/21  Add conversion factors for oliceridine & benzhydrocodone; Update conversion factor to 0.3 for Meperidine IV form
+* 09/13/21 Update conversion factors for fentanyl injection, mucosal spray and lozenge product (1, 0.18, 0.13 respectively)
 */
 
 include OMTKData version '3.0.0' called OMTKData
@@ -101,6 +103,8 @@ Fentanyl, buccal/SL tabet or lozenge/troche (MCG)	0.13
 Fentanyl, film or oral spray (MCG)	0.18
 Fentanyl, nasal spray (MCG)	0.16
 Fentanyl, transdermal patch (MCG/HR)	2.4
+Fentanyl, Injection 1
+Fentanyl, Lozenge Product 0.13
 Hydrocodone	1
 Hydromorphone	4
 Levomethadyl acetate	8
@@ -118,6 +122,8 @@ Oxymorphone	3
 Pentazocine	0.37
 Tapentadol	0.4
 Tramadol	0.1
+Benzhydrocodone 1.22
+Oliceridine 5
 */
 define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, doseFormCode Code):
   case ToInteger(ingredientCode.code)
@@ -142,8 +148,11 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 4337 then ( /*	Fentanyl */
       case
         when ToInteger(doseFormCode.code) in { 970789, 317007, 316992 } then 0.13 /* Buccal Tablet, Sublingual Tablet, Oral Lozenge */
+        when ToInteger(doseFormCode.code) = 1649574 then 1 /* injection */
+        when ToInteger(doseFormCode.code) = 1294702 then 0.13 /* lozenge Product */
         when ToInteger(doseFormCode.code) = 858080 then 0.18 /* Buccal Film */
-        when ToInteger(doseFormCode.code) in { 126542, 346163, 1797831 } then 0.16 /* Nasal Spray, Mucosal Spray, Metered Dose Nasal Spray */
+        when ToInteger(doseFormCode.code) in { 126542, 346163, 1797831 } then 0.16 /* Nasal Spray,  Metered Dose Nasal Spray */
+        when ToInteger(doseFormCode.code) = 346163 then 0.18 /* Mucosal Spray */
         when ToInteger(doseFormCode.code) = 316987 then 7.2 /* Transdermal system */ /* was previous 2.4 which I think it is a bug */
         else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
       end
@@ -153,7 +162,12 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 5640 then 0 /*	Ibuprofen */
     when 6102 then 0 /*	Kaolin */
     when 6378 then 11 /*	Levorphanol (NOTE: Given as Levorphanol tartrate in the CDC conversion table) */
-    when 6754 then 0.1 /*	Meperidine */
+    when 6754 then ( /*	Meperidine */
+      case
+        when ToInteger(doseFormCode.code) = 721656 then 0.3 /* IV form */
+        else 0.1 /* Oral */
+      end
+    )
     when 6813 then ( /*	Methadone */
       case
         when dailyDose.value between 1 and 20 then 4
@@ -186,6 +200,8 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 237005 then 8 /*	Levomethadyl (NOTE: given as Levomethadyl acetate in the CDC conversion table) */
     when 636827 then 0 /*	guaiacolsulfonate */
     when 787390 then 0.4 /*	tapentadol */
+    when 2001352 then 1.22 /* benzhydrocodone */
+    when 2392230 then 5 /* oliceridine */
     else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownIngredientCode', ErrorLevel, 'Unknown ingredient code: ' & ingredientCode.code)
   end
 
