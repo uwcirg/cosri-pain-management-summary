@@ -208,6 +208,15 @@ export default class Landing extends Component {
       }
     }
   }
+  initEvents() {
+    //education material links
+    document.querySelectorAll(".education").forEach(item => {
+      item.addEventListener("click", (e) => {
+        this.writeToLog(`Education material: ${e.target.title}`);
+      })
+    });
+    //support other events if need to
+  }
   componentDidMount() {
     /*
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
@@ -240,11 +249,7 @@ export default class Landing extends Component {
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
             this.setState({ loading: false});
-            document.querySelectorAll(".education").forEach(item => {
-                item.addEventListener("click", (e) => {
-                  this.writeToLog(`Education material: ${e.target.title}`);
-                })
-            });
+            this.initEvents();
         }).catch((err) => {
           console.log(err);
           this.setState({ loading: false});
