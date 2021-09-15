@@ -93,11 +93,11 @@ export default class Landing extends Component {
         if (isOpioid && item["NDC_Code"] && (!item["RXNorm_Code"] || !item["MME"])) {
           errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`);
           //log failed MME calculation
-          this.writeToLog(`MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code}`, "error");
+          this.writeToLog(`MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code}`, "error", {tags: ["mme-calc"]});
         }
         if (item.MME) {
           //log MME calculated if present
-          this.writeToLog(`MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`);
+          this.writeToLog(`MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`, "info", {tags: ["mme-calc"]});
         }
       });
       errors.forEach(message => {
@@ -212,7 +212,7 @@ export default class Landing extends Component {
     //education material links
     document.querySelectorAll(".education").forEach(item => {
       item.addEventListener("click", (e) => {
-        this.writeToLog(`Education material: ${e.target.title}`);
+        this.writeToLog(`Education material: ${e.target.title}`, "info", {"tags": ["education"]});
       })
     });
     //support other events if need to
@@ -400,7 +400,7 @@ export default class Landing extends Component {
                       priority: subitem.priority || 100
                     });
                     //log alert
-                    this.writeToLog("alert flag: "+subitem.flagText, "warn");
+                    this.writeToLog("alert flag: "+subitem.flagText, "warn", {tags: ["alert"]});
                   }
                 });
               } else {
