@@ -91,7 +91,13 @@ export default class Landing extends Component {
         //IF not an opioid med don't raise error
         //look for medication that contains NDC code but not RxNorm Code, or contains all necessary information (NDC Code, RxNorm Code and Drug Class) but no MME
         if (isOpioid && item["NDC_Code"] && (!item["RXNorm_Code"] || !item["MME"])) {
-          errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`)
+          errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`);
+          //log failed MME calculation
+          this.writeToLog(`MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code}`, "error");
+        }
+        if (item.MME) {
+          //log MME calculated if present
+          this.writeToLog(`MME Calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`);
         }
       });
       errors.forEach(message => {
@@ -110,6 +116,8 @@ export default class Landing extends Component {
     if (!message) return;
     if (!level) level = "info";
     if (!params) params = {};
+    if (!params.tags) params.tags = [];
+    params.tags.push("cosri-frontend");
     const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
     const summary = this.state.result ? this.state.result.Summary : null;
     const patientName = (summary&&summary.Patient?summary.Patient.Name:"");
@@ -221,12 +229,7 @@ export default class Landing extends Component {
           this.clearProcessInterval();
         }.bind(this), 0);
         this.processCollectorErrors();
-        this.writeToLog("application loaded", "info", {
-          tags: [
-            "application",
-            "onload"
-          ]
-        });
+        this.writeToLog("application loaded", "info");
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData()]).then(
           externalData => {
@@ -237,6 +240,11 @@ export default class Landing extends Component {
             this.processOverviewData(result['Summary'], sectionFlags);
             this.setState({ result, sectionFlags, flaggedCount });
             this.setState({ loading: false});
+            document.querySelectorAll(".education").forEach(item => {
+                item.addEventListener("click", (e) => {
+                  this.writeToLog(`Education material: ${e.target.title}`);
+                })
+            });
         }).catch((err) => {
           console.log(err);
           this.setState({ loading: false});
@@ -386,6 +394,8 @@ export default class Landing extends Component {
                       text: subitem.flagText + (subitem.flagDateText ? ` (${datishFormat('',subitem.flagDateText)})`: ""),
                       priority: subitem.priority || 100
                     });
+                    //log alert
+                    this.writeToLog("alert flag: "+subitem.flagText, "warn");
                   }
                 });
               } else {

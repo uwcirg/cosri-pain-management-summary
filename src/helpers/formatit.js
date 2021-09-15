@@ -121,6 +121,7 @@ export function linkFormat(result, input) {
         <VideoLink
           title={input['title']}
           src={input['embedVideoSrc']}
+          className={input['className']}
           toggleable={true}
         />
     );
