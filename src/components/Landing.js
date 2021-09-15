@@ -97,7 +97,7 @@ export default class Landing extends Component {
         }
         if (item.MME) {
           //log MME calculated if present
-          this.writeToLog(`MME Calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`);
+          this.writeToLog(`MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`);
         }
       });
       errors.forEach(message => {
