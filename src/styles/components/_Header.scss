@@ -27,7 +27,7 @@
 
     &-img {
      &.primary {
-       width: 190px;
+       width: 180px;
        max-width: 100%;
      }
      &.secondary {
@@ -79,7 +79,8 @@
     display: flex;
     justify-content: space-between;
     flex: 1;
-    margin: 0 24px;
+    margin: 0;
+    margin-right: 24px;
 
     &-patient {
       display: flex;
