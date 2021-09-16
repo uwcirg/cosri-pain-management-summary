@@ -217,6 +217,7 @@ export default class Landing extends Component {
     });
     //support other events if need to
   }
+
   componentDidMount() {
     /*
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
@@ -250,6 +251,7 @@ export default class Landing extends Component {
             this.setState({ result, sectionFlags, flaggedCount });
             this.setState({ loading: false});
             this.initEvents();
+
         }).catch((err) => {
           console.log(err);
           this.setState({ loading: false});
@@ -838,6 +840,9 @@ export default class Landing extends Component {
     }
 
     const PATIENT_SEARCH_URL = getEnv("REACT_APP_DASHBOARD_URL")+"/clear_session";
+    const LOGOUT_LOCATION = getEnv("REACT_APP_DASHBOARD_URL")+"/logout?time_out=true";
+    //this comes from config/token ?
+    const MAX_SESSION_TIME = 1800; //in seconds
 
     if (this.state.result == null) {
       return (
@@ -856,7 +861,7 @@ export default class Landing extends Component {
     const { sectionFlags } = this.state;
 
     return (
-      <div className="landing">
+      <div className="landing" maxsessiontime={MAX_SESSION_TIME} logoutlocation={LOGOUT_LOCATION}>
         <div id="anchorTop"></div>
         <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>
         {this.isNonProduction() && <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>}
