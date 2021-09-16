@@ -113,7 +113,7 @@
     }
     .close {
       position: fixed;
-      top: 132px;
+      top: 112px;
       color: #FFF;
       left: 18px;
       font-weight: 500;
@@ -136,8 +136,8 @@
       }
     }
     &.open {
-      width: 280px;
-      min-width: 280px;
+      width: 260px;
+      min-width: 260px;
       .summary__nav {
         opacity: 1;
         z-index: 1;
@@ -155,7 +155,7 @@
       }
     }
     .is-position-fixed ~ .close {
-      top: 120px;
+      top: 100px;
     }
 
     //background-color: $color-uw-dark;
