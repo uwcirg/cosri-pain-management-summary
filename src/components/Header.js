@@ -57,15 +57,6 @@ export default class Header extends Component {
       <header className="header">
         <div className="header__logo">
           <img className="header__logo-img primary" src={process.env.PUBLIC_URL + "/assets/images/logo_horizontal.png"} alt="cds connect logo" />
-          <div className="header__tagline-text">
-            <div className="entry">
-              <span className="header__logo-text--light">built with </span>
-            </div>
-            <div className="entry">
-              <a href="https://cds.ahrq.gov" target="_blank" rel="noopener noreferrer"><img className="header__logo-img secondary" src={process.env.PUBLIC_URL + "/assets/images/cds_connect_logo.png"} alt="cds connect logo" /></a> <span className="header__logo-text">CDS Connect</span>
-              <a href="https://www.ahrq.gov/" target="_blank" rel="noopener noreferrer"><img className="header__logo-img terciary" src={process.env.PUBLIC_URL + "/assets/images/AHRQ_logo.png"} alt="ahrq connect logo" /></a>
-            </div>
-          </div>
         </div>
         <div className="header__summary">
           <div className="header__summary-patient">

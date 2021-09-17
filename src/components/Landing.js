@@ -268,7 +268,7 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    const MIN_HEADER_HEIGHT = 120;
+    const MIN_HEADER_HEIGHT = 100;
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       tocbot.init({
         tocSelector: '.summary__nav',           // where to render the table of contents
@@ -279,7 +279,7 @@ export default class Landing extends Component {
         includeHtml: true                       // include the HTML markup from the heading node, not just the text,
         ,headingsOffset: MIN_HEADER_HEIGHT,
         scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-        throttleTimeout: 150,
+        throttleTimeout: 175,
       });
 
       this.tocInitialized = true;
