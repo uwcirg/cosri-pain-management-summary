@@ -750,7 +750,7 @@ export default class Landing extends Component {
 
   isNonProduction() {
     let systemType = getEnv("REACT_APP_SYSTEM_TYPE");
-    return !getEnv("REACT_APP_SITE_ID") && systemType && String(systemType).toLowerCase() !== "production";
+    return systemType && String(systemType).toLowerCase() !== "production";
   }
 
   processSummary(summary) {
