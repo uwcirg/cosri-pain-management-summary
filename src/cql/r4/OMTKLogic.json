@@ -1777,36 +1777,36 @@
                               "operand" : [ {
                                  "type" : "GreaterOrEqual",
                                  "operand" : [ {
-                                    "path" : "value",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "dailyDose",
-                                       "type" : "OperandRef"
+                                    "type" : "Truncate",
+                                    "operand" : {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "dailyDose",
+                                          "type" : "OperandRef"
+                                       }
                                     }
                                  }, {
-                                    "type" : "ToDecimal",
-                                    "operand" : {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "1",
-                                       "type" : "Literal"
-                                    }
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "1",
+                                    "type" : "Literal"
                                  } ]
                               }, {
                                  "type" : "LessOrEqual",
                                  "operand" : [ {
-                                    "path" : "value",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "dailyDose",
-                                       "type" : "OperandRef"
+                                    "type" : "Truncate",
+                                    "operand" : {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "dailyDose",
+                                          "type" : "OperandRef"
+                                       }
                                     }
                                  }, {
-                                    "type" : "ToDecimal",
-                                    "operand" : {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "20",
-                                       "type" : "Literal"
-                                    }
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "20",
+                                    "type" : "Literal"
                                  } ]
                               } ]
                            },
@@ -1821,36 +1821,36 @@
                               "operand" : [ {
                                  "type" : "GreaterOrEqual",
                                  "operand" : [ {
-                                    "path" : "value",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "dailyDose",
-                                       "type" : "OperandRef"
+                                    "type" : "Truncate",
+                                    "operand" : {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "dailyDose",
+                                          "type" : "OperandRef"
+                                       }
                                     }
                                  }, {
-                                    "type" : "ToDecimal",
-                                    "operand" : {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "21",
-                                       "type" : "Literal"
-                                    }
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "21",
+                                    "type" : "Literal"
                                  } ]
                               }, {
                                  "type" : "LessOrEqual",
                                  "operand" : [ {
-                                    "path" : "value",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "dailyDose",
-                                       "type" : "OperandRef"
+                                    "type" : "Truncate",
+                                    "operand" : {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "dailyDose",
+                                          "type" : "OperandRef"
+                                       }
                                     }
                                  }, {
-                                    "type" : "ToDecimal",
-                                    "operand" : {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "40",
-                                       "type" : "Literal"
-                                    }
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "40",
+                                    "type" : "Literal"
                                  } ]
                               } ]
                            },
@@ -1865,36 +1865,36 @@
                               "operand" : [ {
                                  "type" : "GreaterOrEqual",
                                  "operand" : [ {
-                                    "path" : "value",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "dailyDose",
-                                       "type" : "OperandRef"
+                                    "type" : "Truncate",
+                                    "operand" : {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "dailyDose",
+                                          "type" : "OperandRef"
+                                       }
                                     }
                                  }, {
-                                    "type" : "ToDecimal",
-                                    "operand" : {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "41",
-                                       "type" : "Literal"
-                                    }
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "41",
+                                    "type" : "Literal"
                                  } ]
                               }, {
                                  "type" : "LessOrEqual",
                                  "operand" : [ {
-                                    "path" : "value",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "dailyDose",
-                                       "type" : "OperandRef"
+                                    "type" : "Truncate",
+                                    "operand" : {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "dailyDose",
+                                          "type" : "OperandRef"
+                                       }
                                     }
                                  }, {
-                                    "type" : "ToDecimal",
-                                    "operand" : {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "60",
-                                       "type" : "Literal"
-                                    }
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "60",
+                                    "type" : "Literal"
                                  } ]
                               } ]
                            },
@@ -1907,19 +1907,19 @@
                            "when" : {
                               "type" : "GreaterOrEqual",
                               "operand" : [ {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "name" : "dailyDose",
-                                    "type" : "OperandRef"
+                                 "type" : "Truncate",
+                                 "operand" : {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "dailyDose",
+                                       "type" : "OperandRef"
+                                    }
                                  }
                               }, {
-                                 "type" : "ToDecimal",
-                                 "operand" : {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "61",
-                                    "type" : "Literal"
-                                 }
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "61",
+                                 "type" : "Literal"
                               } ]
                            },
                            "then" : {
