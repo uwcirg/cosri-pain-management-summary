@@ -175,6 +175,9 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
       case
         /*
          * note Truncate will get integer part of the argument
+         * see conversion info here:
+         * https://drive.google.com/file/d/1AkPKoYWMOUPG4V8MbX57CH8tX60pOaOJ/view?usp=sharing
+         * https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf
          */
         when Truncate(dailyDose.value) between 1 and 20 then 4
         when Truncate(dailyDose.value) between 21 and 40 then 8
