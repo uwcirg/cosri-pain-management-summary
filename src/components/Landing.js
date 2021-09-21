@@ -93,7 +93,7 @@ export default class Landing extends Component {
         if (isOpioid && item["NDC_Code"] && (!item["RXNorm_Code"] || !item["MME"])) {
           errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`);
           //log failed MME calculation
-          this.writeToLog(`MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code}`, "error", {tags: ["mme-calc"]});
+          this.writeToLog(`MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity}Duration: ${item.Duration} Factor: ${item.factor}`, "error", {tags: ["mme-calc"]});
         }
         if (item.MME) {
           //log MME calculated if present
@@ -750,7 +750,7 @@ export default class Landing extends Component {
 
   isNonProduction() {
     let systemType = getEnv("REACT_APP_SYSTEM_TYPE");
-    return systemType && String(systemType).toLowerCase() !== "production";
+    return !getEnv("REACT_APP_SITE_ID") && systemType && String(systemType).toLowerCase() !== "production";
   }
 
   processSummary(summary) {
