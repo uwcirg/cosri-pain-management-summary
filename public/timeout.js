@@ -125,8 +125,10 @@ function _createUUID() {
 
 /*
  * initialize user events that will reset the timeout timer
- * will not logout user when being active
+ * will not logout user when is active
  */
+//TODO figure out what to do here, if user is active but access token expires.
+// WHAT THE HECK TO DO HERE??
 function resetTimeoutEvents() {
   document.querySelector(".App").addEventListener("click", function() {
     startTimeoutTimer();
