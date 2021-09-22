@@ -174,7 +174,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 6813 then ( /*	Methadone */
       case
         /*
-         * note Ceiling will the first integer greater than or equal to its argument
+         * note Ceiling will return the first integer greater than or equal to its argument
          * see conversion info here:
          * https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf
          */
