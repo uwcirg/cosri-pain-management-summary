@@ -34,6 +34,7 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 * 09/13/21  Add conversion factors for oliceridine & benzhydrocodone; Update conversion factor to 0.3 for Meperidine IV form
 * 09/13/21 Update conversion factors for fentanyl injection, mucosal spray and lozenge product (1, 0.18, 0.13 respectively)
 * 09/13/21 Add conversion factor for benzhydrocodone
+* 09/21/21 BugFix fix integer/decimal daily dose comparison when detetermine conversion factor for Methodone
 */
 
 include OMTKData version '3.0.0' called OMTKData
@@ -172,10 +173,15 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     )
     when 6813 then ( /*	Methadone */
       case
-        when dailyDose.value between 1 and 20 then 4
-        when dailyDose.value between 21 and 40 then 8
-        when dailyDose.value between 41 and 60 then 10
-        when dailyDose.value >= 61 then 12
+        /*
+         * note Ceiling will return the first integer greater than or equal to its argument
+         * see conversion info here:
+         * https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf
+         */
+        when Ceiling(dailyDose.value) between 1 and 20 then 4
+        when Ceiling(dailyDose.value) between 21 and 40 then 8
+        when Ceiling(dailyDose.value) between 41 and 60 then 10
+        when Ceiling(dailyDose.value) >= 61 then 12
         else Message(null, dailyDose.value < 1, 'OMTKLogic.GetConversionFactor.DailyDoseLessThanOne', ErrorLevel, 'Daily dose less than 1')
       end
     )
