@@ -1777,7 +1777,7 @@
                               "operand" : [ {
                                  "type" : "GreaterOrEqual",
                                  "operand" : [ {
-                                    "type" : "Truncate",
+                                    "type" : "Ceiling",
                                     "operand" : {
                                        "path" : "value",
                                        "type" : "Property",
@@ -1794,7 +1794,7 @@
                               }, {
                                  "type" : "LessOrEqual",
                                  "operand" : [ {
-                                    "type" : "Truncate",
+                                    "type" : "Ceiling",
                                     "operand" : {
                                        "path" : "value",
                                        "type" : "Property",
@@ -1821,7 +1821,7 @@
                               "operand" : [ {
                                  "type" : "GreaterOrEqual",
                                  "operand" : [ {
-                                    "type" : "Truncate",
+                                    "type" : "Ceiling",
                                     "operand" : {
                                        "path" : "value",
                                        "type" : "Property",
@@ -1838,7 +1838,7 @@
                               }, {
                                  "type" : "LessOrEqual",
                                  "operand" : [ {
-                                    "type" : "Truncate",
+                                    "type" : "Ceiling",
                                     "operand" : {
                                        "path" : "value",
                                        "type" : "Property",
@@ -1865,7 +1865,7 @@
                               "operand" : [ {
                                  "type" : "GreaterOrEqual",
                                  "operand" : [ {
-                                    "type" : "Truncate",
+                                    "type" : "Ceiling",
                                     "operand" : {
                                        "path" : "value",
                                        "type" : "Property",
@@ -1882,7 +1882,7 @@
                               }, {
                                  "type" : "LessOrEqual",
                                  "operand" : [ {
-                                    "type" : "Truncate",
+                                    "type" : "Ceiling",
                                     "operand" : {
                                        "path" : "value",
                                        "type" : "Property",
@@ -1907,7 +1907,7 @@
                            "when" : {
                               "type" : "GreaterOrEqual",
                               "operand" : [ {
-                                 "type" : "Truncate",
+                                 "type" : "Ceiling",
                                  "operand" : {
                                     "path" : "value",
                                     "type" : "Property",

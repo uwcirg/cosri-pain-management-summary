@@ -174,14 +174,14 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 6813 then ( /*	Methadone */
       case
         /*
-         * note Truncate will get integer part of the argument
+         * note Ceiling will the first integer greater than or equal to its argument
          * see conversion info here:
          * https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf
          */
-        when Truncate(dailyDose.value) between 1 and 20 then 4
-        when Truncate(dailyDose.value) between 21 and 40 then 8
-        when Truncate(dailyDose.value) between 41 and 60 then 10
-        when Truncate(dailyDose.value) >= 61 then 12
+        when Ceiling(dailyDose.value) between 1 and 20 then 4
+        when Ceiling(dailyDose.value) between 21 and 40 then 8
+        when Ceiling(dailyDose.value) between 41 and 60 then 10
+        when Ceiling(dailyDose.value) >= 61 then 12
         else Message(null, dailyDose.value < 1, 'OMTKLogic.GetConversionFactor.DailyDoseLessThanOne', ErrorLevel, 'Daily dose less than 1')
       end
     )
