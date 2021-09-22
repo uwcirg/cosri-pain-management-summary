@@ -93,7 +93,7 @@ export default class Landing extends Component {
         if (isOpioid && item["NDC_Code"] && (!item["RXNorm_Code"] || !item["MME"])) {
           errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`);
           //log failed MME calculation
-          this.writeToLog(`MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code}`, "error", {tags: ["mme-calc"]});
+          this.writeToLog(`MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} Factor: ${item.factor}`, "error", {tags: ["mme-calc"]});
         }
         if (item.MME) {
           //log MME calculated if present
@@ -270,7 +270,7 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    const MIN_HEADER_HEIGHT = 120;
+    const MIN_HEADER_HEIGHT = 100;
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       tocbot.init({
         tocSelector: '.summary__nav',           // where to render the table of contents
@@ -281,7 +281,7 @@ export default class Landing extends Component {
         includeHtml: true                       // include the HTML markup from the heading node, not just the text,
         ,headingsOffset: MIN_HEADER_HEIGHT,
         scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-        throttleTimeout: 150,
+        throttleTimeout: 175,
       });
 
       this.tocInitialized = true;
