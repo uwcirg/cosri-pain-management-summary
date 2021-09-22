@@ -83,8 +83,8 @@ function getLastActiveTime(){
 */
 function checkTimeout() {
   let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
-  console.log("time elapsed ", timeElapsed);
-  if (timeElapsed > maxSessionTime) {
+  console.log("time elapsed since first visiting ", timeElapsed);
+  if (timeElapsed > maxSessionTime) { //session has expired
     //logout user?
     window.location = logoutLocation;
   }
@@ -104,15 +104,18 @@ function startTimeoutTimer() {
   var domElement = document.querySelector(".landing");
   var customLogoutLocationAttr = domElement ? domElement.getAttribute("logoutlocation") : null;
   if (customLogoutLocationAttr) logoutLocation = customLogoutLocationAttr;
-  //set unique timeout tracking session id
+  //set unique timeout tracking interval id
   timeoutGUID = _createUUID();
   console.log("timeout counting starts ");
-  //get expiration date/time to determine how long session is?
+  //get expiration date/time to determine how long a session is?
   getSessionTokenInfo();
-  //what happens if token expires but user active??
+  //get the lifetime of a session
   setSessionMaxTime();
+  //initiate user event(s) that will reset timeout interval
   resetTimeoutEvents();
+  //record timestamp that the site is first accessed
   setTimeOnLoad();
+  //check whether session has expired every 15 seconds
   timeoutIntervalId = setInterval(checkTimeout, 15000);
 }
 
@@ -135,7 +138,7 @@ function resetTimeoutEvents() {
   });
   document.addEventListener("scroll", function() {
     window.requestAnimationFrame(function() {
-      console.log("time out reset");
+      console.log("time out interval reset");
       clearTimeout(scrollTickerId);
       setTimeout(function() {
         startTimeoutTimer();
