@@ -2,7 +2,7 @@ var timeoutIntervalId = 0;
 var waitForDOMIntervalId = 0;
 var timeoutGUID = 0;
 var scrollTickerId = 0;
-var maxSessionTime = 1800; //in seconds, default to 30 minutes, modifiable based on access token exp
+var sessionLifetime = 1800; //in seconds, default to 30 minutes, modifiable based on access token exp when applicable
 var logoutLocation = "/"; //default logout location, modifiable by config
 var tokenInfo = {};
 
@@ -16,7 +16,6 @@ function parseJwt (token) {
   var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(''));
-
   return JSON.parse(jsonPayload);
 };
 
@@ -35,8 +34,8 @@ function getSessionTokenInfo() {
     if (obj && obj["tokenResponse"] && obj["tokenResponse"]["access_token"]) {
       tokenInfo = parseJwt(obj["tokenResponse"]["access_token"]);
     }
-    console.log("token info? ", tokenInfo);
   });
+  console.log("token info? ", tokenInfo);
 }
 
 /*
@@ -44,47 +43,52 @@ function getSessionTokenInfo() {
  */
 function setSessionMaxTime() {
   if (!tokenInfo && !tokenInfo.exp) return;
-  var expiredDateTime = new Date(tokenInfo.exp * 1000);
+  //JWT token exp is number of seconds (not milliseconds) since Epoch
+  var expiredDateTime = new Date(tokenInfo.exp * 1000); //javascript requires miliseconds since Epoch so need to multiple exp times 1000
   var totalTime = (expiredDateTime.getTime() - Date.now());
   if (totalTime <= 0) return;
-  maxSessionTime = totalTime / 1000; //in seconds
+  sessionLifetime = (totalTime / 1000); //in seconds
 }
 
+function initTimeoutIdentifier() {
+   //set unique timeout countdown tracking interval id
+   timeoutGUID = _createUUID();
+}
 
 /*
- * unique timeout session identifier
+ * unique timeout interval identifier
  */
 function getTimeoutIdentifier() {
   return "timeOnLoad_"+timeoutGUID;
 }
 
 /*
- * reset timeout count
+ * reset timeout countdown
  */
 function resetTimeout() {
   clearInterval(timeoutIntervalId);
   window.localStorage.removeItem(getTimeoutIdentifier());
 }
 /*
- * set initial time when app loads
+ * set initial app access time when app loads
  */
 function setTimeOnLoad() {
   window.localStorage.setItem(getTimeoutIdentifier(), Date.now());
 }
 /*
- * return the initial app loaded time
+ * return the initial app access time
  */
 function getLastActiveTime(){
   let storedActiveTime = window.localStorage.getItem(getTimeoutIdentifier());
   return storedActiveTime ? storedActiveTime : Date.now();
 }
 /*
-* check how much time has elapsed, if exceeds maximum session time, redirect to logout
+* check how much time has elapsed, if exceeds session lifetime, redirect to specified logout location
 */
 function checkTimeout() {
   let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
   console.log("time elapsed since first visiting ", timeElapsed);
-  if (timeElapsed > maxSessionTime) { //session has expired
+  if (timeElapsed > sessionLifetime) { //session has expired
     //logout user?
     window.location = logoutLocation;
   }
@@ -98,21 +102,18 @@ function isDOMReady() {
 }
 
 /*
- * initialized timeout timer
+ * initialized timeout interval countdown timer
  */
 function startTimeoutTimer() {
   var domElement = document.querySelector(".landing");
   var customLogoutLocationAttr = domElement ? domElement.getAttribute("logoutlocation") : null;
   if (customLogoutLocationAttr) logoutLocation = customLogoutLocationAttr;
-  //set unique timeout tracking interval id
-  timeoutGUID = _createUUID();
+  clearTimeout(timeoutIntervalId);
   console.log("timeout counting starts ");
   //get expiration date/time to determine how long a session is?
   getSessionTokenInfo();
   //get the lifetime of a session
   setSessionMaxTime();
-  //initiate user event(s) that will reset timeout interval
-  resetTimeoutEvents();
   //record timestamp that the site is first accessed
   setTimeOnLoad();
   //check whether session has expired every 15 seconds
@@ -130,8 +131,8 @@ function _createUUID() {
  * initialize user events that will reset the timeout timer
  * will not logout user when is active
  */
-//TODO figure out what to do here, if user is active but access token expires.
-// WHAT THE HECK TO DO HERE??
+//TODO figure out what to do here, if user is active but access token expires?
+// currently just extends session lifetime without logging out user
 function resetTimeoutEvents() {
   document.querySelector(".App").addEventListener("click", function() {
     startTimeoutTimer();
@@ -140,7 +141,7 @@ function resetTimeoutEvents() {
     window.requestAnimationFrame(function() {
       console.log("time out interval reset");
       clearTimeout(scrollTickerId);
-      setTimeout(function() {
+      scrollTickerId = setTimeout(function() {
         startTimeoutTimer();
       }, 250);
     });
@@ -149,7 +150,12 @@ function resetTimeoutEvents() {
 window.addEventListener('DOMContentLoaded', function(){
   waitForDOMIntervalId = setInterval(function() {
     if (isDOMReady()) {
+      //assign id to the specific countdown timer id for this session
+      initTimeoutIdentifier();
+      //start count down
       startTimeoutTimer();
+      //initiate user event(s) that will reset timeout countdown
+      resetTimeoutEvents();
     }
   }, 50);
 });
