@@ -231,8 +231,6 @@ export default class Landing extends Component {
         let EPICData = response[0];
         result['Summary'] = EPICData ? {...EPICData['Summary']} : {};
         this.setSectionVis();
-        console.log("summary map ", summaryMap)
-        console.log("summary ", result.Summary)
         const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
         this.setState({ result, sectionFlags, flaggedCount });
         this.setPatientId();

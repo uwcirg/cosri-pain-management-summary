@@ -113,13 +113,17 @@ function ifGreaterThanOrEqualTo(value, entry, subSection, summary) {
   }
   return parseInt(targetEntry[value.header], 10) >= value.value;
 }
-
+/*
+ * return true if an entry's value for a field matches the specified target value
+ */
 function ifEqualTo(value, entry, subSection, summary) {
   if (!entry) return false;
   if (Array.isArray(entry[value.header])) return entry[value.header].indexOf(value.targetValue) !== -1;
   return entry[value.header] === value.targetValue;
 }
-
+/*
+ * return true if a value within a specified field for an entry is found within the dataset
+ */
 function ifContains(value, entry, subSection, summary) {
   if (!(value.table && value.source))  {
     return ifEqualTo(value, entry, subSection, summary);
