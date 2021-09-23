@@ -1,4 +1,4 @@
-const functions = { ifAnd, ifOr, ifNone, ifOneOrMore, ifGreaterThanOrEqualTo };
+const functions = { ifAnd, ifOr, ifNone, ifOneOrMore, ifGreaterThanOrEqualTo, ifContains, ifEqualTo};
 
 // returns false if the given entry should not be flagged
 // returns the flag text for an entry that should be flagged
@@ -89,7 +89,7 @@ function ifNone(value, entry, subSection, summary) {
 
 function ifOneOrMore(value, entry, subSection, summary) {
   if (value != null && value.table != null && value.source != null) {
-    const entries = summary[value.source][value.table];
+    const entries = summary[value.source] ? summary[value.source][value.table] : null;
     if (entries == null) {
       return false;
     } else if (Array.isArray(entries)) {
@@ -105,11 +105,30 @@ function ifOneOrMore(value, entry, subSection, summary) {
 function ifGreaterThanOrEqualTo(value, entry, subSection, summary) {
   let targetEntry = entry;
   if (value.table != null && value.source != null) {
-    targetEntry = summary[value.source][value.table];
+    targetEntry = summary[value.source] ? summary[value.source][value.table] : null;
   }
+  if (targetEntry == null) return false;
   if (Array.isArray(targetEntry) && targetEntry.length) {
     targetEntry = targetEntry[0]
-  } 
-  if (targetEntry == null) return false;
+  }
   return parseInt(targetEntry[value.header], 10) >= value.value;
+}
+
+function ifEqualTo(value, entry, subSection, summary) {
+  if (!entry) return false;
+  if (Array.isArray(entry[value.header])) return entry[value.header].indexOf(value.targetValue) !== -1;
+  return entry[value.header] === value.targetValue;
+}
+
+function ifContains(value, entry, subSection, summary) {
+  if (!(value.table && value.source))  {
+    return ifEqualTo(value, entry, subSection, summary);
+  }
+  let entries = summary[value.source] ? summary[value.source][value.table] : null;
+  if (!entries) return false;
+  if (!value.targetValue) return false;
+  return entries.filter(item => {
+    if (Array.isArray(item[value.header])) return item[value.header].indexOf(value.targetValue) !== -1;
+    return item[value.header] === value.targetValue;
+  }).length > 0;
 }

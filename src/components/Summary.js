@@ -112,7 +112,7 @@ export default class Summary extends Component {
     let count = 0;
     for (let i = 0; i < subSections.length; ++i) {
       if (this.isSubsectionFlagged(section, subSections[i])) {
-        count++;
+        count+= sectionFlags[section][subSections[i]].length;
       }
     }
 

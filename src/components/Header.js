@@ -77,7 +77,7 @@ export default class Header extends Component {
             {
               siteID &&
               <div className="header__site-logo">
-                <img src={process.env.PUBLIC_URL + "/assets/"+siteID+"/images/logo.png"} siteID={siteID} alt="site logo" onLoad={this.handleImageLoaded} onError={this.handleImageLoadError}/>
+                <img src={process.env.PUBLIC_URL + "/assets/"+siteID+"/images/logo.png"} siteid={siteID} alt="site logo" onLoad={this.handleImageLoaded} onError={this.handleImageLoadError}/>
               </div>
             }
             <div className="entries">
