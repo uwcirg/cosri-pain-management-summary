@@ -109,6 +109,16 @@
             ]
           }
         ],
+        "guideline": [
+          {
+            "type": "WA",
+            "title": "WA Guideline",
+            "text": "Washington State Rules require documentation of decision making when coprescribing sedatives with opioids."
+          }
+        ],
+        "alertMapping": {
+          "priority": 1
+        },
         "tables": [
           {
             "headers": {
@@ -121,7 +131,69 @@
               "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
               "Prescriber": "Prescriber",
               "Pharmacy": "Pharmacy"
-            }
+            },
+            "flags": [
+              {
+                "flag": {
+                    "ifAnd": [
+                      {
+                        "ifEqualTo": {
+                          "header": "Class",
+                          "targetValue": "sedative"
+                        }
+                      },
+                      {
+                        "ifContains": {
+                          "table": "PDMPMedications",
+                          "source": "PDMPMedications",
+                          "header": "Class",
+                          "targetValue": "opioid"
+                        }
+                      }
+                    ]
+                },
+                "flagText": "Possible co-prescribing of sedative with opioids."
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    {
+                      "ifEqualTo": {
+                        "header": "Class",
+                        "targetValue": "barbiturate"
+                      }
+                    },
+                    {
+                      "ifContains": {
+                        "table": "PDMPMedications",
+                        "source": "PDMPMedications",
+                        "header": "Class",
+                        "targetValue": "opioid"
+                      }
+                    }
+                  ]
+              },
+                "flagText": "Possible co-prescribing of barbiturate with opioids."
+              },
+              {
+                "flag": {
+                    "ifEqualTo": {
+                    "header": "Class",
+                    "targetValue": "sedative"
+                  }
+                },
+                "flagText": "Caution for opioid prescribing, patient has been prescribed sedative."
+              },
+              {
+                "flag": {
+                    "ifEqualTo": {
+                    "header": "Class",
+                    "targetValue": "barbiturate"
+                  }
+                },
+                "flagText": "Caution for opioid prescribing, patient has been prescribed barbiturate."
+              }
+            ]
           }
         ]
       }
@@ -653,7 +725,7 @@
           }
         ],
         "alertMapping": {
-          "priority": 3,
+          "priority": 1,
           "dateField": "Start"
         },
         "tables": [
@@ -672,10 +744,22 @@
                   "ifAnd": [
                     "ifOneOrMore",
                     {
-                      "ifOneOrMore": {
-                        "table": "OpioidMedications",
-                        "source": "HistoricalTreatments"
-                      }
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
+                          }
+                        },
+                        {
+                          "ifContains": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications",
+                            "header": "Class",
+                            "targetValue":"opioid"
+                          }
+                        }
+                      ]
                     }
                   ]
                 },
@@ -732,10 +816,22 @@
                   "ifAnd": [
                     "ifOneOrMore",
                     {
-                      "ifOneOrMore": {
-                        "table": "OpioidMedications",
-                        "source": "HistoricalTreatments"
-                      }
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
+                          }
+                        },
+                        {
+                          "ifContains": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications",
+                            "header": "Class",
+                            "targetValue":"opioid"
+                          }
+                        }
+                      ]
                     }
                   ]
                 },

@@ -765,10 +765,17 @@ export default class Landing extends Component {
     sectionKeys.forEach((sectionKey, i) => { // for each section
       sectionFlags[sectionKey] = {};
       //don't process flags for section that will be hidden
-      if (summaryMap[sectionKey]["hideSection"]) return true;
+      if (summaryMap[sectionKey]["hideSection"]) {
+        summary[sectionKey] = [];
+        return true;
+      }
       summaryMap[sectionKey]["sections"].forEach((subSection) => { // for each sub section
+        if (!subSection) return true;
         //don't process flags for sub section that will be hidden
-        if (subSection["hideSection"]) return true;
+        if (subSection["hideSection"]) {
+          summary[subSection.dataKeySource][subSection.dataKey] = [];
+          return true;
+        }
         const keySource = summary[subSection.dataKeySource];
         if (!keySource) {
           return true;
