@@ -152,7 +152,7 @@
                       }
                     ]
                 },
-                "flagText": "Possible co-prescribing of sedative with opioids."
+                "flagText": "Possible co-prescribing of sedatives with opioids."
               },
               {
                 "flag": {
@@ -173,7 +173,7 @@
                     }
                   ]
               },
-                "flagText": "Possible co-prescribing of barbiturate with opioids."
+                "flagText": "Possible co-prescribing of barbiturates with opioids."
               },
               {
                 "flag": {
@@ -182,7 +182,7 @@
                     "targetValue": "sedative"
                   }
                 },
-                "flagText": "Caution for opioid prescribing, patient has been prescribed sedative."
+                "flagText": "Caution for opioid prescribing, patient has been prescribed sedatives."
               },
               {
                 "flag": {
@@ -191,7 +191,7 @@
                     "targetValue": "barbiturate"
                   }
                 },
-                "flagText": "Caution for opioid prescribing, patient has been prescribed barbiturate."
+                "flagText": "Caution for opioid prescribing, patient has been prescribed barbiturates."
               }
             ]
           }
@@ -763,11 +763,11 @@
                     }
                   ]
                 },
-                "flagText": "Benzodiazepine medication and at least one opioid medication."
+                "flagText": "Possible co-prescribing of Benzodiazepine with opioids."
               },
               {
                 "flag": "ifOneOrMore",
-                "flagText": "Evidence of Benzodiazepine medication."
+                "flagText": "Caution for opioid prescribing, patient has been prescribed Benzodiazepine medication."
               }
             ]
           }
@@ -798,7 +798,7 @@
           }
         ],
         "alertMapping": {
-          "priority": 4,
+          "priority": 1,
           "dateField": "Start"
         },
         "tables": [
@@ -835,11 +835,11 @@
                     }
                   ]
                 },
-                "flagText": "Carisoprodol medication and at least one opioid medication."
+                "flagText": "Possible co-prescribing of Carisoprodol medication with opioids."
               },
               {
                 "flag": "ifOneOrMore",
-                "flagText": "Evidence of Carisoprodol medication."
+                "flagText": "Caution for opioid prescribing, patient has been prescribed Carisoprodol medication."
               }
             ]
           }
