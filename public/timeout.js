@@ -52,7 +52,7 @@ function setSessionMaxTime() {
 
 function initTimeoutIdentifier() {
    //set unique timeout countdown tracking interval id
-   timeoutGUID = _createUUID();
+   timeoutGUID = (tokenInfo && tokenInfo.jti ? tokenInfo.jti : _createUUID());
 }
 
 /*
