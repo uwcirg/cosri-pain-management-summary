@@ -132,7 +132,7 @@ function _createUUID() {
  * will not logout user when is active
  */
 //TODO figure out what to do here, if user is active but access token expires?
-// currently just extends session lifetime without logging out user
+// currently just reset countdown without logging out user
 function resetTimeoutEvents() {
   document.querySelector(".App").addEventListener("click", function() {
     startTimeoutTimer();
