@@ -5,6 +5,7 @@ var Timeout = (function() {
   var waitForDOMIntervalId = 0;
   var timeoutGUID = 0;
   var scrollTickerId = 0;
+  var defaultTimetime = 1800;
   var sessionLifetime = 1800; //in seconds, default to 30 minutes, modifiable based on access token exp when applicable
   var logoutLocation = "/"; //default logout location, modifiable by config
   var tokenInfo = {};
@@ -73,6 +74,7 @@ var Timeout = (function() {
   */
   function setSessionMaxTime() {
     if (!tokenInfo && !tokenInfo.exp) {
+      sessionLifetime = defaultTimetime;
       printDebugStatement("No token info available");
       return;
     }
