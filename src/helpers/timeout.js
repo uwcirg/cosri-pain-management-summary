@@ -94,10 +94,8 @@ var Timeout = (function() {
    */
   function initTimeoutIdentifier() {
     var jti = tokenInfo && tokenInfo.jti ? tokenInfo.jti : null;
-    var clientId = tokenInfo && tokenInfo.clientId ? tokenInfo.clientId : null;
-    var tokenId = jti ? jti : clientId;
     //set unique timeout countdown tracking interval id
-    timeoutGUID = (tokenId ? tokenId : _createUUID());
+    timeoutGUID = (jti ? jti : _createUUID());
     printDebugStatement("identifier ? " + timeoutGUID);
   }
 
