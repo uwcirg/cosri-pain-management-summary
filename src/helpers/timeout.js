@@ -72,12 +72,19 @@ var Timeout = (function() {
   * set maximum session time based on token exp value, if available
   */
   function setSessionMaxTime() {
-    if (!tokenInfo && !tokenInfo.exp) return;
+    if (!tokenInfo && !tokenInfo.exp) {
+      printDebugStatement("No token info available");
+      return;
+    }
     //JWT token exp is number of seconds (not milliseconds) since Epoch
     var expiredDateTime = new Date(tokenInfo.exp * 1000); //javascript requires miliseconds since Epoch so need to multiple exp times 1000
     var totalTime = (expiredDateTime.getTime() - Date.now());
-    if (totalTime <= 0) return;
+    if (totalTime <= 0) {
+      printDebugStatement("Token expired");
+      return;
+    }
     sessionLifetime = (totalTime / 1000); //in seconds
+    printDebugStatement("Session lifetime " + sessionLifetime);
   }
 
   /*
@@ -117,7 +124,7 @@ var Timeout = (function() {
   function checkTimeout() {
     let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
     printDebugStatement("time elapsed since first visiting " + timeElapsed);
-    if (timeElapsed > sessionLifetime) { //session has expired
+    if (timeElapsed >= sessionLifetime) { //session has expired
       //logout user?
       window.location = logoutLocation;
     }
@@ -125,7 +132,6 @@ var Timeout = (function() {
 
   function isDOMReady() {
     var targetNode = document.querySelector(".landing");
-    console.log("target? ", targetNode)
     if (!targetNode) return false;
     clearInterval(waitForDOMIntervalId);
     return true;
