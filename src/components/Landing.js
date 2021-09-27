@@ -9,7 +9,7 @@ import {datishFormat, dateFormat, dateNumberFormat, extractDateFromGMTDateString
 import {dateCompare} from '../helpers/sortit';
 import {getDiffDays} from '../helpers/utility';
 import {isInViewport} from '../helpers/utility';
-//import Timeout from '../helpers/timeout';
+import Timeout from '../helpers/timeout';
 import summaryMap from './summary.json';
 
 import {getEnv, fetchEnvData} from '../utils/envConfig';
@@ -225,12 +225,12 @@ export default class Landing extends Component {
      */
     fetchEnvData();
     this.pingProcessProgress();
-    //start time out countdown
-    //Timeout();
     let result = {};
     Promise.all([executeElm(this.state.collector)])
     .then(
       response => {
+        //start time out countdown
+        Timeout();
         //set result from data from EPIC
         let EPICData = response[0];
         result['Summary'] = EPICData ? {...EPICData['Summary']} : {};

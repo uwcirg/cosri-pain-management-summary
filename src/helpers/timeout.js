@@ -34,7 +34,8 @@ var Timeout = (function() {
       return;
     }
     var loc = getEnv("REACT_APP_DASHBOARD_URL") + "/logout?timeout=true";
-    printDebugStatement("Logout location " + loc);
+    logoutLocation = loc;
+    printDebugStatement("Logout location " + logoutLocation);
     return  loc; //this should log to the server
   }
 
@@ -94,8 +95,10 @@ var Timeout = (function() {
    */
   function initTimeoutIdentifier() {
     var jti = tokenInfo && tokenInfo.jti ? tokenInfo.jti : null;
+    var client_id = tokenInfo && tokenInfo.client_id ? tokenInfo.client_id : null;
+    var tokenId = jti ? jti : client_id;
     //set unique timeout countdown tracking interval id
-    timeoutGUID = (jti ? jti : _createUUID());
+    timeoutGUID = (tokenId ? tokenId : _createUUID());
     printDebugStatement("identifier ? " + timeoutGUID);
   }
 
@@ -123,7 +126,9 @@ var Timeout = (function() {
   */
   function checkTimeout() {
     let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
-    printDebugStatement("time elapsed since first visiting " + timeElapsed);
+    if ((sessionLifetime - timeElapsed) <= 60) {
+      printDebugStatement("Session about to expire. Time elapsed since first visiting " + timeElapsed);
+    }
     if (timeElapsed >= sessionLifetime) { //session has expired
       //logout user?
       window.location = logoutLocation;
@@ -171,7 +176,7 @@ var Timeout = (function() {
     });
     document.addEventListener("scroll", function() {
       window.requestAnimationFrame(function() {
-        printDebugStatement("time out interval reset");
+        printDebugStatement("time out count resets when scrolling");
         clearTimeout(scrollTickerId);
         scrollTickerId = setTimeout(function() {
           startTimeoutTimer();
