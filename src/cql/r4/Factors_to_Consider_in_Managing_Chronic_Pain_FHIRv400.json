@@ -7779,6 +7779,384 @@
                }
             }
          }, {
+            "name" : "ReportSedativeMedicationRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "M",
+                        "expression" : {
+                           "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                           "type" : "Retrieve"
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "where" : {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "Equal",
+                           "operand" : [ {
+                              "type" : "IndexOf",
+                              "source" : {
+                                 "name" : "getMedicationRequestDrugClass",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "M",
+                                    "type" : "AliasRef"
+                                 } ]
+                              },
+                              "element" : {
+                                 "type" : "As",
+                                 "operand" : {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                    "value" : "sedative",
+                                    "type" : "Literal"
+                                 },
+                                 "asTypeSpecifier" : {
+                                    "type" : "ChoiceTypeSpecifier",
+                                    "choice" : [ {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Time",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}Quantity",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}Range",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}Reference",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}string",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    } ]
+                                 }
+                              }
+                           }, {
+                              "type" : "Negate",
+                              "operand" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "1",
+                                 "type" : "Literal"
+                              }
+                           } ]
+                        }
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Type",
+                        "value" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Request",
+                           "type" : "Literal"
+                        }
+                     }, {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "strict" : false,
+                              "type" : "As",
+                              "operand" : {
+                                 "path" : "medication",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              },
+                              "asTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "Start",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "GetMedicationRequestDispensedDate",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "name" : "O",
+                                 "type" : "AliasRef"
+                              } ]
+                           } ]
+                        }
+                     }, {
+                        "name" : "End",
+                        "value" : {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           },
+                           "asTypeSpecifier" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }
+                     }, {
+                        "name" : "Status",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "status",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "DispensedDate",
+                     "type" : "ByColumn"
+                  }, {
+                     "direction" : "desc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "ReportBarbiturateMedicationRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "M",
+                        "expression" : {
+                           "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                           "type" : "Retrieve"
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "where" : {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "Equal",
+                           "operand" : [ {
+                              "type" : "IndexOf",
+                              "source" : {
+                                 "name" : "getMedicationRequestDrugClass",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "name" : "M",
+                                    "type" : "AliasRef"
+                                 } ]
+                              },
+                              "element" : {
+                                 "type" : "As",
+                                 "operand" : {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                    "value" : "barbiturate",
+                                    "type" : "Literal"
+                                 },
+                                 "asTypeSpecifier" : {
+                                    "type" : "ChoiceTypeSpecifier",
+                                    "choice" : [ {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Time",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}Quantity",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}Range",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}Reference",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{http://hl7.org/fhir}string",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }, {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    } ]
+                                 }
+                              }
+                           }, {
+                              "type" : "Negate",
+                              "operand" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "1",
+                                 "type" : "Literal"
+                              }
+                           } ]
+                        }
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Type",
+                        "value" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Request",
+                           "type" : "Literal"
+                        }
+                     }, {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "strict" : false,
+                              "type" : "As",
+                              "operand" : {
+                                 "path" : "medication",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              },
+                              "asTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "Start",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "GetMedicationRequestDispensedDate",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "name" : "O",
+                                 "type" : "AliasRef"
+                              } ]
+                           } ]
+                        }
+                     }, {
+                        "name" : "End",
+                        "value" : {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           },
+                           "asTypeSpecifier" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }
+                     }, {
+                        "name" : "Status",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "status",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "DispensedDate",
+                     "type" : "ByColumn"
+                  }, {
+                     "direction" : "desc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
             "name" : "NaloxoneMedicationRequests",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -8471,6 +8849,18 @@
                         "name" : "BenzodiazepineMedications",
                         "value" : {
                            "name" : "ReportBenzodiazepineMedications",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "SedativeMedications",
+                        "value" : {
+                           "name" : "ReportSedativeMedicationRequests",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "BarbiturateMedications",
+                        "value" : {
+                           "name" : "ReportBarbiturateMedicationRequests",
                            "type" : "ExpressionRef"
                         }
                      }, {

@@ -112,8 +112,8 @@
         "guideline": [
           {
             "type": "WA",
-            "title": "WA Guideline",
-            "text": "Washington State Rules require documentation of decision making when coprescribing sedatives with opioids."
+            "title": "WA AMDG Guideline",
+            "text": "Avoid opioids if there is any FDA or clinical contraindications."
           }
         ],
         "alertMapping": {
@@ -178,6 +178,27 @@
               },
               {
                 "flag": {
+                  "ifAnd": [
+                    {
+                      "ifEqualTo": {
+                        "header": "Class",
+                        "targetValue": "benzodiazepine"
+                      }
+                    },
+                    {
+                      "ifContains": {
+                        "table": "PDMPMedications",
+                        "source": "PDMPMedications",
+                        "header": "Class",
+                        "targetValue": "opioid"
+                      }
+                    }
+                  ]
+              },
+                "flagText": "Possible co-prescribing of Benzodiazepine with opioids."
+              },
+              {
+                "flag": {
                     "ifEqualTo": {
                     "header": "Class",
                     "targetValue": "sedative"
@@ -193,6 +214,15 @@
                   }
                 },
                 "flagText": "Caution for opioid prescribing, patient has been prescribed barbiturates."
+              },
+              {
+                "flag": {
+                    "ifEqualTo": {
+                    "header": "Class",
+                    "targetValue": "benzodiazepine"
+                  }
+                },
+                "flagText": "Caution for opioid prescribing, patient has been prescribed Benzodiazepine medication."
               }
             ]
           }
@@ -769,6 +799,153 @@
               {
                 "flag": "ifOneOrMore",
                 "flagText": "Caution for opioid prescribing, patient has been prescribed Benzodiazepine medication."
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        "name": "Sedative Medications",
+        "dataKey": "SedativeMedications",
+        "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "WA",
+            "title": "WA Guideline",
+            "text": "Washington State Rules require documentation of decision making when coprescribing sedatives with opioids."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Sedative Medications queries the following elements:",
+            "elements": [
+              {
+                "name": "Sedative medication requests",
+                "status": "any",
+                "lookback": "100 years"
+              }
+            ]
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "DispensedDate"
+        },
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": "Name",
+              "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+            },
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifOneOrMore",
+                    {
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
+                          }
+                        },
+                        {
+                          "ifContains": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications",
+                            "header": "Class",
+                            "targetValue":"opioid"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "flagText": "Possible co-prescribing of sedatives with opioids."
+              },
+              {
+                "flag": "ifOneOrMore",
+                "flagText": "Caution for opioid prescribing, patient has been prescribed sedatives."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Barbiturate Medications",
+        "dataKey": "BarbiturateMedications",
+        "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "WA",
+            "title": "WA Guideline",
+            "text": "Washington State Rules require documentation of decision making when coprescribing barbiturates with opioids."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Barbiturate Medications queries the following elements:",
+            "elements": [
+              {
+                "name": "Barbiturate medication requests",
+                "status": "any",
+                "lookback": "100 years"
+              }
+            ]
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "DispensedDate"
+        },
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": "Name",
+              "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+            },
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifOneOrMore",
+                    {
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
+                          }
+                        },
+                        {
+                          "ifContains": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications",
+                            "header": "Class",
+                            "targetValue":"opioid"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "flagText": "Possible co-prescribing of sedatives with opioids."
+              },
+              {
+                "flag": "ifOneOrMore",
+                "flagText": "Caution for opioid prescribing, patient has been prescribed barbiturates."
               }
             ]
           }
