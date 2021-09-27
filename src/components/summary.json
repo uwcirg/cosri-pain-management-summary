@@ -117,7 +117,8 @@
           }
         ],
         "alertMapping": {
-          "priority": 1
+          "priority": 1,
+          "dateField": "DispensedDate"
         },
         "tables": [
           {
@@ -726,7 +727,7 @@
         ],
         "alertMapping": {
           "priority": 1,
-          "dateField": "Start"
+          "dateField": "DispensedDate"
         },
         "tables": [
           {
@@ -799,7 +800,7 @@
         ],
         "alertMapping": {
           "priority": 1,
-          "dateField": "Start"
+          "dateField": "DispensedDate"
         },
         "tables": [
           {
