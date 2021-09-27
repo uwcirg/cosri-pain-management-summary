@@ -9,6 +9,7 @@ import {datishFormat, dateFormat, dateNumberFormat, extractDateFromGMTDateString
 import {dateCompare} from '../helpers/sortit';
 import {getDiffDays} from '../helpers/utility';
 import {isInViewport} from '../helpers/utility';
+import Timeout from '../helpers/timeout';
 import summaryMap from './summary.json';
 
 import {getEnv, fetchEnvData} from '../utils/envConfig';
@@ -228,6 +229,8 @@ export default class Landing extends Component {
     Promise.all([executeElm(this.state.collector)])
     .then(
       response => {
+        //start time out countdown
+        Timeout();
         //set result from data from EPIC
         let EPICData = response[0];
         result['Summary'] = EPICData ? {...EPICData['Summary']} : {};
@@ -865,7 +868,7 @@ export default class Landing extends Component {
     const { sectionFlags } = this.state;
 
     return (
-      <div className="landing" logoutlocation={PATIENT_SEARCH_URL}>
+      <div className="landing">
         <div id="anchorTop"></div>
         <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>
         {this.isNonProduction() && <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>}
