@@ -395,7 +395,7 @@ export default class Landing extends Component {
               if (Array.isArray(subsection[1])) {
                 subsection[1].forEach(subitem => {
                   //this prevents addition of duplicate alert text
-                  let alertTextExist = alerts.filter(item => item.name === subitem.subSection.name && item.flagText === subitem.flagText);
+                  let alertTextExist = alerts.filter(item => String(item.flagText).toLowerCase() === String(subitem.flagText).toLowerCase());
                   if (!alertTextExist.length && subitem.flagText) {
                     alerts.push({
                       id: subitem.subSection.dataKey,

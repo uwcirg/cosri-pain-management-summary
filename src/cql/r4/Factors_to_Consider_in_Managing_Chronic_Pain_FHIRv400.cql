@@ -41,6 +41,8 @@
 //    remove age restriction as the inclusion criterion
 // Update 20210825
 //    Add Class for PDMP Medication, add function getMedicationRequestDrugClass to retrieve drug class
+// Update 20210927
+//    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
@@ -1001,6 +1003,31 @@ define ReportCarisoprodolMedications:
   (ReportCarisoprodolMedicationRequests union ReportCarisoprodolMedicationStatements) M
   sort by Start desc, End desc
 
+define ReportSedativeMedicationRequests:
+  ([MedicationRequest] M
+  where IndexOf(getMedicationRequestDrugClass(M),'sedative') != -1) O
+  return {
+    Type:  'Request',
+    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+    Start: DateTimeText(O.authoredOn),
+    DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
+    End:   null as String, // MedicationRequest end date not supported in R4,
+    Status: O.status.value
+  }
+  sort by DispensedDate desc, End desc
+
+define ReportBarbiturateMedicationRequests:
+  ([MedicationRequest] M
+  where IndexOf(getMedicationRequestDrugClass(M), 'barbiturate') != -1) O
+  return {
+    Type:  'Request',
+    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+    Start: DateTimeText(O.authoredOn),
+    DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
+    End:   null as String, // MedicationRequest end date not supported in R4,
+    Status: O.status.value
+  }
+  sort by DispensedDate desc, End desc
 
 // Naloxone Medications (unrestricted lookback) - orders and statements with dates
 define NaloxoneMedicationRequests:
@@ -1039,8 +1066,6 @@ define ReportNaloxoneMedications:
   sort by Start desc, End desc
 
 
-
-
 // SUMMARY
 
 // The Summary object represents the full Pain Management Summary to be displayed to the clinician.  All values are
@@ -1073,6 +1098,8 @@ define Summary: {
     //ReportPrescriptions: ReportPrescriptions,
     UrineDrugScreens: ReportUrineDrugScreens,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
+    SedativeMedications: ReportSedativeMedicationRequests,
+    BarbiturateMedications: ReportBarbiturateMedicationRequests,
     CarisoprodolMedications: ReportCarisoprodolMedications,
     NaloxoneMedications: ReportNaloxoneMedications
   },
