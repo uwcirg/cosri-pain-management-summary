@@ -919,6 +919,16 @@ define ReportUrineDrugScreens:
   sort by Date desc
 
 
+// Urine Lab Service Requests (not observations)
+define ReportUrineLabRequests:
+  ([ServiceRequest] S
+    where S.code is not null and S.code.coding[0].code.value = '733727'
+  ) O
+  return {
+    Date: DateTimeText(O.authoredOn)
+  }
+
+
 // Benzodiazepine Medications (lookback of 2 years)-  orders and statements with dates
 define BenzodiazepineMedicationRequests:
   C3F.MedicationRequestLookBack(
@@ -1082,7 +1092,8 @@ define Summary: {
   },
   PertinentMedicalHistory: {
     ConditionsAssociatedWithChronicPain: ReportConditionsAssociatedWithChronicPain,
-    RiskFactorsForOpioidRelatedHarms: ReportRiskFactorsForOpioidRelatedHarms
+    RiskFactorsForOpioidRelatedHarms: ReportRiskFactorsForOpioidRelatedHarms,
+    ReportUrineLabRequests: ReportUrineLabRequests
   },
   HistoricalTreatments: {
     OpioidMedications: ReportOpioidMedications,
@@ -1096,7 +1107,7 @@ define Summary: {
     ReportMMEByDates: ReportMMEByDates,
     //for debugging, uncomment to test
     //ReportPrescriptions: ReportPrescriptions,
-    UrineDrugScreens: ReportUrineDrugScreens,
+    //UrineDrugScreens: ReportUrineDrugScreens,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     SedativeMedications: ReportSedativeMedicationRequests,
     BarbiturateMedications: ReportBarbiturateMedicationRequests,

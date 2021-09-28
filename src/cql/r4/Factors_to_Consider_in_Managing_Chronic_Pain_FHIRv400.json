@@ -6853,6 +6853,89 @@
                }
             }
          }, {
+            "name" : "ReportUrineLabRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "S",
+                        "expression" : {
+                           "dataType" : "{http://hl7.org/fhir}ServiceRequest",
+                           "type" : "Retrieve"
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "where" : {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "code",
+                                 "scope" : "S",
+                                 "type" : "Property"
+                              }
+                           }
+                        }, {
+                           "type" : "Equivalent",
+                           "operand" : [ {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "system",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "type" : "Indexer",
+                                    "operand" : [ {
+                                       "path" : "coding",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "path" : "code",
+                                          "scope" : "S",
+                                          "type" : "Property"
+                                       }
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "value" : "0",
+                                       "type" : "Literal"
+                                    } ]
+                                 }
+                              }
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                              "value" : "http://hl7.org/fhir/sid/icd-9",
+                              "type" : "Literal"
+                           } ]
+                        } ]
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Date",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           } ]
+                        }
+                     } ]
+                  }
+               }
+            }
+         }, {
             "name" : "BenzodiazepineMedicationRequests",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -8785,6 +8868,12 @@
                            "name" : "ReportRiskFactorsForOpioidRelatedHarms",
                            "type" : "ExpressionRef"
                         }
+                     }, {
+                        "name" : "ReportUrineLabRequests",
+                        "value" : {
+                           "name" : "ReportUrineLabRequests",
+                           "type" : "ExpressionRef"
+                        }
                      } ]
                   }
                }, {
@@ -8837,12 +8926,6 @@
                         "name" : "ReportMMEByDates",
                         "value" : {
                            "name" : "ReportMMEByDates",
-                           "type" : "ExpressionRef"
-                        }
-                     }, {
-                        "name" : "UrineDrugScreens",
-                        "value" : {
-                           "name" : "ReportUrineDrugScreens",
                            "type" : "ExpressionRef"
                         }
                      }, {
