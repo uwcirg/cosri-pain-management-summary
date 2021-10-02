@@ -934,12 +934,18 @@ define BenzodiazepineMedicationStatements:
 
 define ReportBenzodiazepineMedicationRequests:
   (BenzodiazepineMedicationRequests) O
+  let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
-    End:   null as String, // MedicationRequest end date not supported in R4,
+    Quantity: GetMedicationRequestDispensedQuantity(O),
+    Prescriber: O.requester.display.value,
+    Pharmacy: GetMedicationRequestPharmacy(O),
+     //provided by the extension dateValue, may not always be there
+    CalculatedEnd: CalculatedEnd, //of type datetime
+    End: ToString(CalculatedEnd), //of type string
     Status: O.status.value
   }
   sort by Start desc, End desc
@@ -978,12 +984,18 @@ define CarisoprodolMedicationStatements:
 
 define ReportCarisoprodolMedicationRequests:
   (CarisoprodolMedicationRequests) O
+  let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
-    End:   null as String, // MedicationRequest end date not supported in R4,
+    Quantity: GetMedicationRequestDispensedQuantity(O),
+    Prescriber: O.requester.display.value,
+    Pharmacy: GetMedicationRequestPharmacy(O),
+     //provided by the extension dateValue, may not always be there
+    CalculatedEnd: CalculatedEnd, //of type datetime
+    End: ToString(CalculatedEnd), //of type string
     Status: O.status.value
   }
   sort by Start desc, End desc
@@ -1006,12 +1018,18 @@ define ReportCarisoprodolMedications:
 define ReportSedativeMedicationRequests:
   ([MedicationRequest] M
   where IndexOf(getMedicationRequestDrugClass(M),'sedative') != -1) O
+  let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
-    End:   null as String, // MedicationRequest end date not supported in R4,
+    Quantity: GetMedicationRequestDispensedQuantity(O),
+    Prescriber: O.requester.display.value,
+    Pharmacy: GetMedicationRequestPharmacy(O),
+     //provided by the extension dateValue, may not always be there
+    CalculatedEnd: CalculatedEnd, //of type datetime
+    End: ToString(CalculatedEnd), //of type string
     Status: O.status.value
   }
   sort by DispensedDate desc, End desc
@@ -1019,12 +1037,17 @@ define ReportSedativeMedicationRequests:
 define ReportBarbiturateMedicationRequests:
   ([MedicationRequest] M
   where IndexOf(getMedicationRequestDrugClass(M), 'barbiturate') != -1) O
+  let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
-    End:   null as String, // MedicationRequest end date not supported in R4,
+    Prescriber: O.requester.display.value,
+    Pharmacy: GetMedicationRequestPharmacy(O),
+     //provided by the extension dateValue, may not always be there
+    CalculatedEnd: CalculatedEnd, //of type datetime
+    End: ToString(CalculatedEnd), //of type string
     Status: O.status.value
   }
   sort by DispensedDate desc, End desc
