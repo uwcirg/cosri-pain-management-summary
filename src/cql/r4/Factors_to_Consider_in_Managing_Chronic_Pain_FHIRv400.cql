@@ -1043,6 +1043,7 @@ define ReportBarbiturateMedicationRequests:
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     Start: DateTimeText(O.authoredOn),
     DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
+    Quantity: GetMedicationRequestDispensedQuantity(O),
     Prescriber: O.requester.display.value,
     Pharmacy: GetMedicationRequestPharmacy(O),
      //provided by the extension dateValue, may not always be there

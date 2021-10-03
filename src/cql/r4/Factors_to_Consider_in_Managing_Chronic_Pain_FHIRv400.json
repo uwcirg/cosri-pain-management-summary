@@ -8369,6 +8369,16 @@
                            } ]
                         }
                      }, {
+                        "name" : "Quantity",
+                        "value" : {
+                           "name" : "GetMedicationRequestDispensedQuantity",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
                         "name" : "Prescriber",
                         "value" : {
                            "path" : "value",
