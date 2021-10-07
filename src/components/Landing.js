@@ -454,7 +454,7 @@ export default class Landing extends Component {
       }).sort(function(a, b) {
         return dateCompare(a[startDateFieldName], b[startDateFieldName]);
       });
-
+      const getRealNumber = o => o && !isNaN(o) ? o : 0;
       let dataPoints = [];
       let prevObj = null, nextObj = null;
       graph_data.forEach(function(currentMedicationItem, index) {
@@ -464,7 +464,7 @@ export default class Landing extends Component {
         let oStartDate = new Date(startDate);
         let diffDays = getDiffDays(startDate, endDate);
         nextObj = (index+1) <= graph_data.length-1 ? graph_data[index+1]: null;
-        let currentMMEValue = !isNaN(currentMedicationItem[MMEValueFieldName]) ? currentMedicationItem[MMEValueFieldName] : 0;
+        let currentMMEValue = getRealNumber(currentMedicationItem[MMEValueFieldName]);
         //add start date data point
         dataPoint = {};
         dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
@@ -521,7 +521,7 @@ export default class Landing extends Component {
         });
         if (matchedItems.length <= 1) return true;
         matchedItems.forEach(o => {
-          cumMMEValue += !isNaN(o[MMEValueFieldName]) ? o[MMEValueFieldName] : 0;
+          cumMMEValue += getRealNumber(o[MMEValueFieldName]);
         });
         dataPoints.forEach((dataPoint) => {
           if (dataPoint.date === pointDate) {
@@ -549,7 +549,7 @@ export default class Landing extends Component {
           //add data point with older value for the previous med
           dataPoint = {};
           dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-          dataPoint[MMEValueFieldName] = !isNaN(prevObj[MMEValueFieldName]) ? prevObj[MMEValueFieldName] : 0 ;
+          dataPoint[MMEValueFieldName] = getRealNumber(prevObj[MMEValueFieldName]);
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
           finalDataPoints.push(currentDataPoint);
@@ -598,7 +598,7 @@ export default class Landing extends Component {
       let formattedData = (JSON.parse(JSON.stringify(finalDataPoints))).map(point => {
         let o = {};
         o[graphDateFieldName] = point[graphDateFieldName];
-        o[MMEValueFieldName] = !isNaN(point[MMEValueFieldName]) ? parseFloat(point[MMEValueFieldName]).toFixed(2) : 0;
+        o[MMEValueFieldName] = parseFloat(getRealNumber(point[MMEValueFieldName])).toFixed(2);
         if (point[PLACEHOLDER_FIELD_NAME]) {
           o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
         }
