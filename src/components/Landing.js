@@ -464,11 +464,11 @@ export default class Landing extends Component {
         let oStartDate = new Date(startDate);
         let diffDays = getDiffDays(startDate, endDate);
         nextObj = (index+1) <= graph_data.length-1 ? graph_data[index+1]: null;
-
+        let currentMMEValue = !isNaN(currentMedicationItem[MMEValueFieldName]) ? currentMedicationItem[MMEValueFieldName] : 0;
         //add start date data point
         dataPoint = {};
         dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
-        dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
+        dataPoint[MMEValueFieldName] = currentMMEValue;
         dataPoint[START_DELIMITER_FIELD_NAME] = true;
         dataPoint = {...dataPoint, ...currentMedicationItem};
         dataPoints.push(dataPoint);
@@ -481,7 +481,7 @@ export default class Landing extends Component {
             dataDate = dateFormat("", dataDate, "YYYY-MM-DD");
             dataPoint = {};
             dataPoint[graphDateFieldName] = dataDate;
-            dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
+            dataPoint[MMEValueFieldName] = currentMMEValue;
             dataPoint[PLACEHOLDER_FIELD_NAME] = true;
             dataPoint[startDateFieldName] = dataDate;
             dataPoint = {...dataPoint, ...currentMedicationItem};
@@ -492,7 +492,7 @@ export default class Landing extends Component {
         //add end Date data point
         dataPoint = {};
         dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
-        dataPoint[MMEValueFieldName] = currentMedicationItem[MMEValueFieldName];
+        dataPoint[MMEValueFieldName] = currentMMEValue;
         dataPoint[END_DELIMITER_FIELD_NAME] = true;
         dataPoint[PLACEHOLDER_FIELD_NAME] = true;
         dataPoint = {...dataPoint, ...currentMedicationItem};
@@ -521,7 +521,7 @@ export default class Landing extends Component {
         });
         if (matchedItems.length <= 1) return true;
         matchedItems.forEach(o => {
-          cumMMEValue += o[MMEValueFieldName];
+          cumMMEValue += !isNaN(o[MMEValueFieldName]) ? o[MMEValueFieldName] : 0;
         });
         dataPoints.forEach((dataPoint) => {
           if (dataPoint.date === pointDate) {
@@ -534,6 +534,7 @@ export default class Landing extends Component {
       dataPoints.forEach(function(currentDataPoint, index) {
         let dataPoint = {};
         nextObj = dataPoints[index+1] ? dataPoints[index+1]: null;
+
         if (!prevObj) {
           //add starting graph point
           dataPoint = {};
@@ -548,7 +549,7 @@ export default class Landing extends Component {
           //add data point with older value for the previous med
           dataPoint = {};
           dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-          dataPoint[MMEValueFieldName] = prevObj[MMEValueFieldName];
+          dataPoint[MMEValueFieldName] = !isNaN(prevObj[MMEValueFieldName]) ? prevObj[MMEValueFieldName] : 0 ;
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           finalDataPoints.push(dataPoint);
           finalDataPoints.push(currentDataPoint);
@@ -597,7 +598,7 @@ export default class Landing extends Component {
       let formattedData = (JSON.parse(JSON.stringify(finalDataPoints))).map(point => {
         let o = {};
         o[graphDateFieldName] = point[graphDateFieldName];
-        o[MMEValueFieldName] = parseFloat(point[MMEValueFieldName]).toFixed(2);
+        o[MMEValueFieldName] = !isNaN(point[MMEValueFieldName]) ? parseFloat(point[MMEValueFieldName]).toFixed(2) : 0;
         if (point[PLACEHOLDER_FIELD_NAME]) {
           o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
         }
