@@ -6504,6 +6504,23 @@
                               }
                            }
                         }
+                     }, {
+                        "name" : "rxNormCode",
+                        "value" : {
+                           "path" : "rxNormCode",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
                      } ]
                   }
                },
@@ -6597,6 +6614,13 @@
                            "scope" : "R",
                            "type" : "Property"
                         }
+                     }, {
+                        "name" : "rxNormCode",
+                        "value" : {
+                           "path" : "rxNormCode",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
                      } ]
                   }
                }
@@ -6647,15 +6671,42 @@
                               } ],
                               "relationship" : [ ],
                               "where" : {
-                                 "type" : "Equivalent",
+                                 "type" : "And",
                                  "operand" : [ {
-                                    "path" : "Start",
-                                    "scope" : "M",
-                                    "type" : "Property"
+                                    "type" : "And",
+                                    "operand" : [ {
+                                       "type" : "Equivalent",
+                                       "operand" : [ {
+                                          "path" : "Start",
+                                          "scope" : "M",
+                                          "type" : "Property"
+                                       }, {
+                                          "path" : "Start",
+                                          "scope" : "R",
+                                          "type" : "Property"
+                                       } ]
+                                    }, {
+                                       "type" : "Equivalent",
+                                       "operand" : [ {
+                                          "path" : "rxNormCode",
+                                          "scope" : "M",
+                                          "type" : "Property"
+                                       }, {
+                                          "path" : "rxNormCode",
+                                          "scope" : "R",
+                                          "type" : "Property"
+                                       } ]
+                                    } ]
                                  }, {
-                                    "path" : "Start",
-                                    "scope" : "R",
-                                    "type" : "Property"
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "IsNull",
+                                       "operand" : {
+                                          "path" : "MMEValue",
+                                          "scope" : "M",
+                                          "type" : "Property"
+                                       }
+                                    }
                                  } ]
                               },
                               "return" : {

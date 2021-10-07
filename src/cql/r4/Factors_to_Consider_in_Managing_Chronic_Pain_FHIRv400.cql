@@ -873,7 +873,8 @@ define ReportMME:
     supplyQuantity: MME_Object[0].supplyQuantity,
     supplyDuration: MME_Object[0].supplyDuration,
     factor: MME_Object[0].conversionFactor,
-    MMEValue: MME_Object[0].mme.value
+    MMEValue: MME_Object[0].mme.value,
+    rxNormCode: MME_Object[0].rxNormCode
   }
   sort by End desc
 
@@ -883,7 +884,8 @@ define MMEDateList:
     R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
   return {
     Start: R.Start,
-    End: R.End
+    End: R.End,
+    rxNormCode: R.rxNormCode
   }
 
 define ReportMMEByDates:
@@ -891,7 +893,8 @@ define ReportMMEByDates:
   return {
     Start: R.Start,
     End: R.End,
-    MMEValue: First(ReportMME M where M.Start ~ R.Start return M.MMEValue)
+    //make sure not to include null MME value
+    MMEValue: First(ReportMME M where M.Start ~ R.Start and M.rxNormCode ~ R.rxNormCode and M.MMEValue is not null return M.MMEValue)
   }
   sort by End
 
