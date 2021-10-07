@@ -454,6 +454,9 @@ export default class Landing extends Component {
       }).sort(function(a, b) {
         return dateCompare(a[startDateFieldName], b[startDateFieldName]);
       });
+      /*
+       * 'NaN' is the value for null when coerced into number, need to make sure that is not included
+       */
       const getRealNumber = o => o && !isNaN(o) ? o : 0;
       let dataPoints = [];
       let prevObj = null, nextObj = null;
