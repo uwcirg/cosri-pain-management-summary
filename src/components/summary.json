@@ -367,22 +367,6 @@
     "skipDataInfo": true,
     "sections": [
       {
-        "name": "Urine Lab Screen",
-        "dataKey": "ReportUrineLabRequests",
-        "dataKeySource": "PertinentMedicalHistory",
-        "tables": [
-          {
-            "headers": {
-              "Date": {
-                "key": "Date",
-                "formatter": "datishFormat",
-                "minWidth": 150
-              }
-            }
-          }
-        ]
-      },
-      {
         "name": "Conditions Associated with Chronic Pain",
         "dataKey": "ConditionsAssociatedWithChronicPain",
         "dataKeySource": "PertinentMedicalHistory",
@@ -1100,6 +1084,28 @@
                 "flagText": "Evidence of Naloxone medication."
               }
             ]
+          }
+        ]
+      }
+    ]
+  },
+  "UrineDrugScreens": {
+    "title": "Urine Lab Screen",
+    "skipDataInfo": true,
+    "sections": [
+      {
+        "name": "Urine Lab Screen",
+        "dataKey": "ReportUrineLabRequests",
+        "dataKeySource": "UrineDrugScreens",
+        "tables": [
+          {
+            "headers": {
+              "Date": {
+                "key": "Date",
+                "formatter": "datishFormat",
+                "minWidth": 150
+              }
+            }
           }
         ]
       }

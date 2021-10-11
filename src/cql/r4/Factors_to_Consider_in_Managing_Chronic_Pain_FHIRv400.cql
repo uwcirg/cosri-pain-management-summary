@@ -877,21 +877,14 @@ define ReportMME:
   }
   sort by End desc
 
-define MMEDateList:
+define ReportMMEByDates:
   (ReportMME) R
   where
     R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
   return {
     Start: R.Start,
-    End: R.End
-  }
-
-define ReportMMEByDates:
-  MMEDateList R
-  return {
-    Start: R.Start,
     End: R.End,
-    MMEValue: First(ReportMME M where M.Start ~ R.Start return M.MMEValue)
+    MMEValue: R.MMEValue
   }
   sort by End
 
@@ -919,10 +912,11 @@ define ReportUrineDrugScreens:
   sort by Date desc
 
 
-// Urine Lab Service Requests (not observations)
+// Urine Lab Service Requests (not Observations)
 define ReportUrineLabRequests:
   ([ServiceRequest] S
-    where S.code is not null and S.code.coding[0].code.value = '733727'
+    //matching on specific codes for the urine lab ordered
+    where S.code is not null and (S.code.coding[0].code.value = '733727' or S.code.coding[0].code.value = '763824')
   ) O
   return {
     Date: DateTimeText(O.authoredOn)
@@ -1092,15 +1086,18 @@ define Summary: {
   },
   PertinentMedicalHistory: {
     ConditionsAssociatedWithChronicPain: ReportConditionsAssociatedWithChronicPain,
-    RiskFactorsForOpioidRelatedHarms: ReportRiskFactorsForOpioidRelatedHarms,
+    RiskFactorsForOpioidRelatedHarms: ReportRiskFactorsForOpioidRelatedHarms
+  },
+  UrineDrugScreens: {
     ReportUrineLabRequests: ReportUrineLabRequests
   },
-  HistoricalTreatments: {
-    OpioidMedications: ReportOpioidMedications,
-    NonOpioidMedications: ReportNonOpioidMedications,
-    NonPharmacologicTreatments: ReportNonPharmacologicTreatments,
-    StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
-  },
+  //section currently hidden
+  //HistoricalTreatments: {
+  //  OpioidMedications: ReportOpioidMedications,
+  //  NonOpioidMedications: ReportNonOpioidMedications,
+  //  NonPharmacologicTreatments: ReportNonPharmacologicTreatments,
+  //  StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
+  //},
   RiskConsiderations: {
     CurrentMME: ReportCurrentMME,
     ReportMME: ReportMME,
@@ -1111,8 +1108,9 @@ define Summary: {
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     SedativeMedications: ReportSedativeMedicationRequests,
     BarbiturateMedications: ReportBarbiturateMedicationRequests,
-    CarisoprodolMedications: ReportCarisoprodolMedications,
-    NaloxoneMedications: ReportNaloxoneMedications
+    CarisoprodolMedications: ReportCarisoprodolMedications
+    //sub-section currently hidden
+   // NaloxoneMedications: ReportNaloxoneMedications
   },
   PDMPMedications: {
     PDMPMedications: ReportPDMPMedicationRequests

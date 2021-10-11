@@ -17,6 +17,7 @@ import RiskIcon from '../icons/RiskIcon';
 import RxIcon from '../icons/RxIcon';
 import TreatmentsIcon from '../icons/TreatmentsIcon';
 import UserIcon from '../icons/UserIcon';
+import FlaskIcon from '../icons/FlaskIcon';
 
 import ErrorBanner from './ErrorBanner';
 import InclusionBanner from './InclusionBanner';
@@ -506,6 +507,8 @@ export default class Summary extends Component {
       icon =  <TreatmentsIcon {...iconProps} />;
     } else if (section === 'EducationMaterials') {
       icon = <UserIcon {...iconProps} />;
+    } else if (section === 'UrineDrugScreens') {
+      icon = <FlaskIcon {...iconProps} />;
     }
 
     return (

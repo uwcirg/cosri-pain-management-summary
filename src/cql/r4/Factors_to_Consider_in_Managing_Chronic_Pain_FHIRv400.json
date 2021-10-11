@@ -6516,7 +6516,7 @@
                }
             }
          }, {
-            "name" : "MMEDateList",
+            "name" : "ReportMMEByDates",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -6597,75 +6597,12 @@
                            "scope" : "R",
                            "type" : "Property"
                         }
-                     } ]
-                  }
-               }
-            }
-         }, {
-            "name" : "ReportMMEByDates",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "R",
-                  "expression" : {
-                     "name" : "MMEDateList",
-                     "type" : "ExpressionRef"
-                  }
-               } ],
-               "relationship" : [ ],
-               "return" : {
-                  "expression" : {
-                     "type" : "Tuple",
-                     "element" : [ {
-                        "name" : "Start",
-                        "value" : {
-                           "path" : "Start",
-                           "scope" : "R",
-                           "type" : "Property"
-                        }
-                     }, {
-                        "name" : "End",
-                        "value" : {
-                           "path" : "End",
-                           "scope" : "R",
-                           "type" : "Property"
-                        }
                      }, {
                         "name" : "MMEValue",
                         "value" : {
-                           "type" : "First",
-                           "source" : {
-                              "type" : "Query",
-                              "source" : [ {
-                                 "alias" : "M",
-                                 "expression" : {
-                                    "name" : "ReportMME",
-                                    "type" : "ExpressionRef"
-                                 }
-                              } ],
-                              "relationship" : [ ],
-                              "where" : {
-                                 "type" : "Equivalent",
-                                 "operand" : [ {
-                                    "path" : "Start",
-                                    "scope" : "M",
-                                    "type" : "Property"
-                                 }, {
-                                    "path" : "Start",
-                                    "scope" : "R",
-                                    "type" : "Property"
-                                 } ]
-                              },
-                              "return" : {
-                                 "expression" : {
-                                    "path" : "MMEValue",
-                                    "scope" : "M",
-                                    "type" : "Property"
-                                 }
-                              }
-                           }
+                           "path" : "MMEValue",
+                           "scope" : "R",
+                           "type" : "Property"
                         }
                      } ]
                   }
@@ -6883,34 +6820,67 @@
                               }
                            }
                         }, {
-                           "type" : "Equivalent",
+                           "type" : "Or",
                            "operand" : [ {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "system",
+                              "type" : "Equal",
+                              "operand" : [ {
+                                 "path" : "value",
                                  "type" : "Property",
                                  "source" : {
-                                    "type" : "Indexer",
-                                    "operand" : [ {
-                                       "path" : "coding",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "path" : "code",
-                                          "scope" : "S",
-                                          "type" : "Property"
-                                       }
-                                    }, {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "0",
-                                       "type" : "Literal"
-                                    } ]
+                                    "path" : "code",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "type" : "Indexer",
+                                       "operand" : [ {
+                                          "path" : "coding",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "path" : "code",
+                                             "scope" : "S",
+                                             "type" : "Property"
+                                          }
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
+                                       } ]
+                                    }
                                  }
-                              }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "733727",
+                                 "type" : "Literal"
+                              } ]
                            }, {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                              "value" : "http://hl7.org/fhir/sid/icd-9",
-                              "type" : "Literal"
+                              "type" : "Equal",
+                              "operand" : [ {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "code",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "type" : "Indexer",
+                                       "operand" : [ {
+                                          "path" : "coding",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "path" : "code",
+                                             "scope" : "S",
+                                             "type" : "Property"
+                                          }
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
+                                       } ]
+                                    }
+                                 }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "763824",
+                                 "type" : "Literal"
+                              } ]
                            } ]
                         } ]
                      }
@@ -8868,40 +8838,16 @@
                            "name" : "ReportRiskFactorsForOpioidRelatedHarms",
                            "type" : "ExpressionRef"
                         }
-                     }, {
-                        "name" : "ReportUrineLabRequests",
-                        "value" : {
-                           "name" : "ReportUrineLabRequests",
-                           "type" : "ExpressionRef"
-                        }
                      } ]
                   }
                }, {
-                  "name" : "HistoricalTreatments",
+                  "name" : "UrineDrugScreens",
                   "value" : {
                      "type" : "Tuple",
                      "element" : [ {
-                        "name" : "OpioidMedications",
+                        "name" : "ReportUrineLabRequests",
                         "value" : {
-                           "name" : "ReportOpioidMedications",
-                           "type" : "ExpressionRef"
-                        }
-                     }, {
-                        "name" : "NonOpioidMedications",
-                        "value" : {
-                           "name" : "ReportNonOpioidMedications",
-                           "type" : "ExpressionRef"
-                        }
-                     }, {
-                        "name" : "NonPharmacologicTreatments",
-                        "value" : {
-                           "name" : "ReportNonPharmacologicTreatments",
-                           "type" : "ExpressionRef"
-                        }
-                     }, {
-                        "name" : "StoolSoftenersAndLaxatives",
-                        "value" : {
-                           "name" : "ReportStoolSoftenersAndLaxatives",
+                           "name" : "ReportUrineLabRequests",
                            "type" : "ExpressionRef"
                         }
                      } ]
@@ -8950,12 +8896,6 @@
                         "name" : "CarisoprodolMedications",
                         "value" : {
                            "name" : "ReportCarisoprodolMedications",
-                           "type" : "ExpressionRef"
-                        }
-                     }, {
-                        "name" : "NaloxoneMedications",
-                        "value" : {
-                           "name" : "ReportNaloxoneMedications",
                            "type" : "ExpressionRef"
                         }
                      } ]
