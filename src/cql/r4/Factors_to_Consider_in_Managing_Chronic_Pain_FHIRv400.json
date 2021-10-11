@@ -6533,7 +6533,7 @@
                }
             }
          }, {
-            "name" : "MMEDateList",
+            "name" : "ReportMMEByDates",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -6621,112 +6621,15 @@
                            "scope" : "R",
                            "type" : "Property"
                         }
-                     } ]
-                  }
-               }
-            }
-         }, {
-            "name" : "ReportMMEByDates",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "R",
-                  "expression" : {
-                     "name" : "MMEDateList",
-                     "type" : "ExpressionRef"
-                  }
-               } ],
-               "relationship" : [ ],
-               "return" : {
-                  "expression" : {
-                     "type" : "Tuple",
-                     "element" : [ {
-                        "name" : "Start",
-                        "value" : {
-                           "path" : "Start",
-                           "scope" : "R",
-                           "type" : "Property"
-                        }
-                     }, {
-                        "name" : "End",
-                        "value" : {
-                           "path" : "End",
-                           "scope" : "R",
-                           "type" : "Property"
-                        }
                      }, {
                         "name" : "MMEValue",
                         "value" : {
-                           "type" : "First",
-                           "source" : {
-                              "type" : "Query",
-                              "source" : [ {
-                                 "alias" : "M",
-                                 "expression" : {
-                                    "name" : "ReportMME",
-                                    "type" : "ExpressionRef"
-                                 }
-                              } ],
-                              "relationship" : [ ],
-                              "where" : {
-                                 "type" : "And",
-                                 "operand" : [ {
-                                    "type" : "And",
-                                    "operand" : [ {
-                                       "type" : "Equivalent",
-                                       "operand" : [ {
-                                          "path" : "Start",
-                                          "scope" : "M",
-                                          "type" : "Property"
-                                       }, {
-                                          "path" : "Start",
-                                          "scope" : "R",
-                                          "type" : "Property"
-                                       } ]
-                                    }, {
-                                       "type" : "Equivalent",
-                                       "operand" : [ {
-                                          "path" : "rxNormCode",
-                                          "scope" : "M",
-                                          "type" : "Property"
-                                       }, {
-                                          "path" : "rxNormCode",
-                                          "scope" : "R",
-                                          "type" : "Property"
-                                       } ]
-                                    } ]
-                                 }, {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "path" : "MMEValue",
-                                          "scope" : "M",
-                                          "type" : "Property"
-                                       }
-                                    }
-                                 } ]
-                              },
-                              "return" : {
-                                 "expression" : {
-                                    "path" : "MMEValue",
-                                    "scope" : "M",
-                                    "type" : "Property"
-                                 }
-                              }
-                           }
+                           "path" : "MMEValue",
+                           "scope" : "R",
+                           "type" : "Property"
                         }
                      } ]
                   }
-               },
-               "sort" : {
-                  "by" : [ {
-                     "direction" : "asc",
-                     "path" : "End",
-                     "type" : "ByColumn"
-                  } ]
                }
             }
          }, {

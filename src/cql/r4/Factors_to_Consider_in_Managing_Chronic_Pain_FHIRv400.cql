@@ -43,6 +43,8 @@
 //    Add Class for PDMP Medication, add function getMedicationRequestDrugClass to retrieve drug class
 // Update 20210927
 //    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
+// Update 20211008
+//    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included, added Rxnorm code for better debugging
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
@@ -878,25 +880,17 @@ define ReportMME:
   }
   sort by End desc
 
-define MMEDateList:
+define ReportMMEByDates:
   (ReportMME) R
   where
+    //make sure not to include null MME value
     R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
   return {
     Start: R.Start,
     End: R.End,
-    rxNormCode: R.rxNormCode
+    rxNormCode: R.rxNormCode,
+    MMEValue: R.MMEValue
   }
-
-define ReportMMEByDates:
-  MMEDateList R
-  return {
-    Start: R.Start,
-    End: R.End,
-    //make sure not to include null MME value
-    MMEValue: First(ReportMME M where M.Start ~ R.Start and M.rxNormCode ~ R.rxNormCode and M.MMEValue is not null return M.MMEValue)
-  }
-  sort by End
 
 define ReportPrescriptions:
   (OpioidMedicationRequests) M
