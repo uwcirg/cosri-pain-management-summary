@@ -6964,6 +6964,17 @@
                      "type" : "ExpressionRef"
                   }
                } ],
+               "let" : [ {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               } ],
                "relationship" : [ ],
                "return" : {
                   "expression" : {
@@ -7020,16 +7031,53 @@
                            } ]
                         }
                      }, {
+                        "name" : "Quantity",
+                        "value" : {
+                           "name" : "GetMedicationRequestDispensedQuantity",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Prescriber",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "display",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "requester",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Pharmacy",
+                        "value" : {
+                           "name" : "GetMedicationRequestPharmacy",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
-                           "strict" : false,
-                           "type" : "As",
+                           "type" : "ToString",
                            "operand" : {
-                              "type" : "Null"
-                           },
-                           "asTypeSpecifier" : {
-                              "name" : "{urn:hl7-org:elm-types:r1}String",
-                              "type" : "NamedTypeSpecifier"
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
                            }
                         }
                      }, {
@@ -7240,6 +7288,30 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Prescriber",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Pharmacy",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "CalculatedEnd",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "End",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -7322,6 +7394,30 @@
                                     "name" : "DispensedDate",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Prescriber",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Pharmacy",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "CalculatedEnd",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
@@ -7439,6 +7535,17 @@
                      "type" : "ExpressionRef"
                   }
                } ],
+               "let" : [ {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               } ],
                "relationship" : [ ],
                "return" : {
                   "expression" : {
@@ -7495,16 +7602,53 @@
                            } ]
                         }
                      }, {
+                        "name" : "Quantity",
+                        "value" : {
+                           "name" : "GetMedicationRequestDispensedQuantity",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Prescriber",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "display",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "requester",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Pharmacy",
+                        "value" : {
+                           "name" : "GetMedicationRequestPharmacy",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
-                           "strict" : false,
-                           "type" : "As",
+                           "type" : "ToString",
                            "operand" : {
-                              "type" : "Null"
-                           },
-                           "asTypeSpecifier" : {
-                              "name" : "{urn:hl7-org:elm-types:r1}String",
-                              "type" : "NamedTypeSpecifier"
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
                            }
                         }
                      }, {
@@ -7715,6 +7859,30 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Prescriber",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Pharmacy",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "CalculatedEnd",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "End",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -7797,6 +7965,30 @@
                                     "name" : "DispensedDate",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Quantity",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Prescriber",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Pharmacy",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "CalculatedEnd",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}Date",
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
@@ -7926,6 +8118,17 @@
                      }
                   }
                } ],
+               "let" : [ {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               } ],
                "relationship" : [ ],
                "return" : {
                   "expression" : {
@@ -7982,16 +8185,53 @@
                            } ]
                         }
                      }, {
+                        "name" : "Quantity",
+                        "value" : {
+                           "name" : "GetMedicationRequestDispensedQuantity",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Prescriber",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "display",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "requester",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Pharmacy",
+                        "value" : {
+                           "name" : "GetMedicationRequestPharmacy",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
-                           "strict" : false,
-                           "type" : "As",
+                           "type" : "ToString",
                            "operand" : {
-                              "type" : "Null"
-                           },
-                           "asTypeSpecifier" : {
-                              "name" : "{urn:hl7-org:elm-types:r1}String",
-                              "type" : "NamedTypeSpecifier"
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
                            }
                         }
                      }, {
@@ -8115,6 +8355,17 @@
                      }
                   }
                } ],
+               "let" : [ {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               } ],
                "relationship" : [ ],
                "return" : {
                   "expression" : {
@@ -8171,16 +8422,53 @@
                            } ]
                         }
                      }, {
+                        "name" : "Quantity",
+                        "value" : {
+                           "name" : "GetMedicationRequestDispensedQuantity",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Prescriber",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "display",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "requester",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Pharmacy",
+                        "value" : {
+                           "name" : "GetMedicationRequestPharmacy",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "End",
                         "value" : {
-                           "strict" : false,
-                           "type" : "As",
+                           "type" : "ToString",
                            "operand" : {
-                              "type" : "Null"
-                           },
-                           "asTypeSpecifier" : {
-                              "name" : "{urn:hl7-org:elm-types:r1}String",
-                              "type" : "NamedTypeSpecifier"
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
                            }
                         }
                      }, {

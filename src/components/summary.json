@@ -740,6 +740,11 @@
             "type": "CDC",
             "title": "CDC Guideline #11",
             "text": "Avoid concurrent opioid and benzodiazepine prescribing."
+          },
+          {
+            "type": "WA",
+            "title": "WA AMDG Guideline",
+            "text": "Washington State rules require that co-prescribing of opioids and benzodiazepine medications requires documentation, discussion of risks, and consideration of tapering medications."
           }
         ],
         "info": [
@@ -757,7 +762,7 @@
         ],
         "alertMapping": {
           "priority": 1,
-          "dateField": "Start"
+          "dateField": "DispensedDate"
         },
         "tables": [
           {
@@ -812,8 +817,8 @@
         "guideline": [
           {
             "type": "WA",
-            "title": "WA Guideline",
-            "text": "Washington State Rules require documentation of decision making when coprescribing sedatives with opioids."
+            "title": "WA AMDG Guideline",
+            "text": "Washington State rules require that co-prescribing of opioids and sedatives requires documentation, discussion of risks, and consideration of tapering medications."
           }
         ],
         "info": [
@@ -885,8 +890,8 @@
         "guideline": [
           {
             "type": "WA",
-            "title": "WA Guideline",
-            "text": "Washington State Rules require documentation of decision making when coprescribing barbiturates with opioids."
+            "title": "WA AMDG Guideline",
+            "text": "Washington State rules require that co-prescribing of opioids and barbiturates requires documentation, discussion of risks, and consideration of tapering medications."
           }
         ],
         "info": [
@@ -958,8 +963,8 @@
         "guideline": [
           {
             "type": "WA",
-            "title": "WA Guideline",
-            "text": "Washington State Rules require documentation of decision making when coprescribing carisoprodol with opioids."
+            "title": "WA AMDG Guideline",
+            "text": "Washington State rules require that co-prescribing of opioids and carisoprodol medications requires documentation, discussion of risks, and consideration of tapering medications."
           }
         ],
         "info": [
@@ -977,7 +982,7 @@
         ],
         "alertMapping": {
           "priority": 1,
-          "dateField": "Start"
+          "dateField": "DispensedDate"
         },
         "tables": [
           {
