@@ -44,7 +44,7 @@
 // Update 20210927
 //    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
 // Update 20211008
-//    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included, added Rxnorm code for better debugging
+//    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was returning the same thing as ReportMMEByDates
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
@@ -891,6 +891,7 @@ define ReportMMEByDates:
     rxNormCode: R.rxNormCode,
     MMEValue: R.MMEValue
   }
+  sort by End
 
 define ReportPrescriptions:
   (OpioidMedicationRequests) M

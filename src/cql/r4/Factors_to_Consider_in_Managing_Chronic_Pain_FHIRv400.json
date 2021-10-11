@@ -6630,6 +6630,13 @@
                         }
                      } ]
                   }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "asc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
                }
             }
          }, {
