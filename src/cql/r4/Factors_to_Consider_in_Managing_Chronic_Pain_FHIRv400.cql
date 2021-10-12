@@ -43,6 +43,8 @@
 //    Add Class for PDMP Medication, add function getMedicationRequestDrugClass to retrieve drug class
 // Update 20210927
 //    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
+// Update 20211008
+//    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was returning the same thing as ReportMMEByDates
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
@@ -873,17 +875,20 @@ define ReportMME:
     supplyQuantity: MME_Object[0].supplyQuantity,
     supplyDuration: MME_Object[0].supplyDuration,
     factor: MME_Object[0].conversionFactor,
-    MMEValue: MME_Object[0].mme.value
+    MMEValue: MME_Object[0].mme.value,
+    rxNormCode: MME_Object[0].rxNormCode
   }
   sort by End desc
 
 define ReportMMEByDates:
   (ReportMME) R
   where
+    //make sure not to include null MME value
     R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
   return {
     Start: R.Start,
     End: R.End,
+    rxNormCode: R.rxNormCode,
     MMEValue: R.MMEValue
   }
   sort by End
