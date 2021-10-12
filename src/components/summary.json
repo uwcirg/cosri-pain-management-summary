@@ -681,57 +681,6 @@
         ]
       },
       {
-        "name": "Urine Drug Screens",
-        "dataKey": "UrineDrugScreens",
-        "dataKeySource": "RiskConsiderations",
-        "guideline": [
-          {
-            "type": "CDC",
-            "title": "CDC Guideline #10",
-            "text": "Use urine drug testing."
-          }
-        ],
-        "info": [
-          {
-            "type": "elements",
-            "description": "Urine Drug Screens queries the following elements:",
-            "elements": [
-              {
-                "name": "Urine drug screen",
-                "status": "final or amended",
-                "lookback": "1 year"
-              }
-            ]
-          }
-        ],
-        "tables": [
-          {
-            "headers": {
-              "Name": "Name",
-              "Result": { "key": "Result", "formatter": "quantityFormat" },
-              "Interpretation": "Interpretation",
-              "Date": { "key": "Date", "formatter": "datishFormat" }
-            },
-            "flags": [
-              {
-                "flag": {
-                  "ifAnd": [
-                    "ifNone",
-                    {
-                      "ifOneOrMore": {
-                        "table": "OpioidMedications",
-                        "source": "HistoricalTreatments"
-                      }
-                    }
-                  ]
-                },
-                "flagText": "Absence of urine drug screen and at least one opioid medication."
-              }
-            ]
-          }
-        ]
-      },
-      {
         "name": "Benzodiazepine Medications",
         "dataKey": "BenzodiazepineMedications",
         "dataKeySource": "RiskConsiderations",
@@ -1095,22 +1044,58 @@
     ]
   },
   "UrineDrugScreens": {
-    "title": "Urine Lab Screen",
+    "title": "Urine Drug Toxicology Screen",
     "skipDataInfo": true,
+    "guideline": [
+      {
+        "type": "CDC",
+        "title": "CDC Guideline #10",
+        "text": "Use urine drug testing."
+      }
+    ],
     "sections": [
       {
-        "name": "Urine Lab Screen",
-        "dataKey": "ReportUrineLabRequests",
+        "dataKey": "ReportAllUrineScreens",
         "dataKeySource": "UrineDrugScreens",
+        "omitTitle": true,
         "tables": [
           {
             "headers": {
+              "Name": "Name",
               "Date": {
                 "key": "Date",
                 "formatter": "datishFormat",
                 "minWidth": 150
               }
-            }
+            },
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifNone",
+                    {
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
+                          }
+                        },
+                        {
+                          "ifContains": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications",
+                            "header": "Class",
+                            "targetValue":"opioid"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "flagText": "There is no urine drug screen date yet record on this patient. Please check the first controlled substance prescription to determine if they are due for their 12 month drug screen."
+              }
+            ]
           }
         ]
       }

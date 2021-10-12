@@ -45,6 +45,8 @@
 //    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
 // Update 20211008
 //    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was returning the same thing as ReportMMEByDates
+// Update 20211012
+//    Add Service Request query for drug urine screen, in the case of Skagit site, a custom system and code will be used to filter search
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
@@ -183,6 +185,10 @@ parameter InclusionMedicationsLookbackPeriod default 180 days //DO WE NEED THIS?
 
 //system url from PDMP identifier
 define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
+//system url for labcorp
+define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
+//lab panel test order code from lab corp
+define Urine_Screen_Panel_Test_Order_Code: '733727'
 
 
 
@@ -898,11 +904,12 @@ define ReportPrescriptions:
   return MMECalculator.Prescriptions(M)
 
 
-// Urine drug screen - dates and results (all screens w/ lookback of 1 year)
+// Urine drug screen from observations - dates and results (all screens w/ lookback of 1 year)
 define UrineDrugScreens:
   C3F.Verified(C3F.ObservationLookBack([Observation: "Urine drug screen for pain management"], 1 year))
 
-define ReportUrineDrugScreens:
+// Urine drug screen from observations
+define ReportUrineDrugScreensByObservation:
   (UrineDrugScreens) S
   return {
     Name:           ConceptText(S.code),
@@ -917,15 +924,35 @@ define ReportUrineDrugScreens:
   sort by Date desc
 
 
-// Urine Lab Service Requests (not Observations)
-define ReportUrineLabRequests:
-  ([ServiceRequest] S
-    //matching on specific codes for the urine lab ordered
-    where S.code is not null and (S.code.coding[0].code.value = '733727' or S.code.coding[0].code.value = '763824')
-  ) O
+// Urine drug screen from service request,  matching on LOINC code and system = http://loinc.org
+define ReportUrineLabServiceRequests:
+  ([ServiceRequest: "Urine drug screen for pain management"]) O
+  let c: O.code as FHIR.CodeableConcept
   return {
+    Name: ConceptText(c),
     Date: DateTimeText(O.authoredOn)
   }
+  sort by Date desc
+
+// Urine drug screen from service request,  matching on custom system and concept code, e.g. those from Skagit site
+define ReportUrineLabServiceRequestsByCustomCode:
+  [ServiceRequest] O
+  let c: O.code as FHIR.CodeableConcept
+  where (
+    c is not null and
+    c.coding is not null and
+    c.coding[0].code.value ~ Urine_Screen_Panel_Test_Order_Code and
+    c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE)
+  return {
+    Name: ConceptText(c),
+    Date: DateTimeText(O.authoredOn)
+  }
+  sort by Date desc
+
+// Report urine drug screen from observations and service requests
+define ReportAllUrineScreens:
+  (ReportUrineDrugScreensByObservation union ReportUrineLabServiceRequests union ReportUrineLabServiceRequestsByCustomCode) M
+  sort by Date desc
 
 
 // Benzodiazepine Medications (lookback of 2 years)-  orders and statements with dates
@@ -1042,7 +1069,6 @@ define ReportSedativeMedicationRequests:
     Status: O.status.value
   }
   sort by DispensedDate desc, End desc
-
 define ReportBarbiturateMedicationRequests:
   ([MedicationRequest] M
   where IndexOf(getMedicationRequestDrugClass(M), 'barbiturate') != -1) O
@@ -1113,33 +1139,31 @@ define Summary: {
     Age: AgeInYears(),
     MeetsInclusionCriteria: MeetsInclusionCriteria
   },
+
   PertinentMedicalHistory: {
     ConditionsAssociatedWithChronicPain: ReportConditionsAssociatedWithChronicPain,
     RiskFactorsForOpioidRelatedHarms: ReportRiskFactorsForOpioidRelatedHarms
   },
   UrineDrugScreens: {
-    ReportUrineLabRequests: ReportUrineLabRequests
+    ReportAllUrineScreens: ReportAllUrineScreens
   },
-  //section currently hidden
-  //HistoricalTreatments: {
-  //  OpioidMedications: ReportOpioidMedications,
-  //  NonOpioidMedications: ReportNonOpioidMedications,
-  //  NonPharmacologicTreatments: ReportNonPharmacologicTreatments,
-  //  StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
-  //},
+  HistoricalTreatments: {
+    OpioidMedications: ReportOpioidMedications,
+    NonOpioidMedications: ReportNonOpioidMedications,
+    NonPharmacologicTreatments: ReportNonPharmacologicTreatments,
+    StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
+  },
   RiskConsiderations: {
     CurrentMME: ReportCurrentMME,
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
     //for debugging, uncomment to test
     //ReportPrescriptions: ReportPrescriptions,
-    //UrineDrugScreens: ReportUrineDrugScreens,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     SedativeMedications: ReportSedativeMedicationRequests,
     BarbiturateMedications: ReportBarbiturateMedicationRequests,
-    CarisoprodolMedications: ReportCarisoprodolMedications
-    //sub-section currently hidden
-   // NaloxoneMedications: ReportNaloxoneMedications
+    CarisoprodolMedications: ReportCarisoprodolMedications,
+    NaloxoneMedications: ReportNaloxoneMedications
   },
   PDMPMedications: {
     PDMPMedications: ReportPDMPMedicationRequests

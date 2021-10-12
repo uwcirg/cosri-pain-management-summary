@@ -28,7 +28,7 @@ export default function flagit(entry, subSection, summary) {
       if (entry != null) {
         accumulator.push(displayText);
       }
-    } else if (flagRule === 'ifNone' && entry == null) {
+    } else if (flagRule === 'ifNone' && (entry == null || (Array.isArray(entry) && entry.length===0))) {
       accumulator.push(displayText);
     } else if (typeof flagRule === 'string') {
       if (functions[flagRule](entry, entry, subSection, summary)) {
@@ -84,7 +84,8 @@ function ifOr(flagRulesArray, entry, subSection, summary) {
 }
 
 function ifNone(value, entry, subSection, summary) {
-  return value == null;
+  console.log("value? ", value, " entry ? ", entry)
+  return value == null || (Array.isArray(value) && value.length === 0);
 }
 
 function ifOneOrMore(value, entry, subSection, summary) {

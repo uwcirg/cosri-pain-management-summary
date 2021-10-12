@@ -515,10 +515,10 @@ export default class Summary extends Component {
       <h2 id={section} className="section__header">
         <div className="section__header-title">
           {icon}
-          <span>
-            {title}
+          <span className="title-text-container">
+            <span className="title-text">{title}</span>
             <span className="info">
-              {entryCount && entryCount}
+              <span className="info-count-text">{entryCount && entryCount}</span>
               <FontAwesomeIcon
                 className={`flag flag-header ${flaggedClass}`}
                 icon="exclamation-circle"

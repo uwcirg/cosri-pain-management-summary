@@ -222,6 +222,24 @@
                "type" : "Literal"
             }
          }, {
+            "name" : "LAB_CORP_SYSTEM_VALUE",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "https://www.labcorp.com/tests",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "Urine_Screen_Panel_Test_Order_Code",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "733727",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "Patient",
             "context" : "Patient",
             "expression" : {
@@ -6615,14 +6633,6 @@
                            "type" : "Property"
                         }
                      }, {
-<<<<<<< HEAD
-                        "name" : "MMEValue",
-                        "value" : {
-                           "path" : "MMEValue",
-                           "scope" : "R",
-                           "type" : "Property"
-                        }
-=======
                         "name" : "rxNormCode",
                         "value" : {
                            "path" : "rxNormCode",
@@ -6636,7 +6646,6 @@
                            "scope" : "R",
                            "type" : "Property"
                         }
->>>>>>> 9478696c57aa2dea311706f89306de7c92405145
                      } ]
                   }
                },
@@ -6706,7 +6715,7 @@
                } ]
             }
          }, {
-            "name" : "ReportUrineDrugScreens",
+            "name" : "ReportUrineDrugScreensByObservation",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -6823,7 +6832,7 @@
                }
             }
          }, {
-            "name" : "ReportUrineLabRequests",
+            "name" : "ReportUrineLabServiceRequests",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -6831,91 +6840,29 @@
                "source" : [ {
                   "alias" : "O",
                   "expression" : {
-                     "type" : "Query",
-                     "source" : [ {
-                        "alias" : "S",
-                        "expression" : {
-                           "dataType" : "{http://hl7.org/fhir}ServiceRequest",
-                           "type" : "Retrieve"
-                        }
-                     } ],
-                     "relationship" : [ ],
-                     "where" : {
-                        "type" : "And",
-                        "operand" : [ {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "IsNull",
-                              "operand" : {
-                                 "path" : "code",
-                                 "scope" : "S",
-                                 "type" : "Property"
-                              }
-                           }
-                        }, {
-                           "type" : "Or",
-                           "operand" : [ {
-                              "type" : "Equal",
-                              "operand" : [ {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "path" : "code",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "type" : "Indexer",
-                                       "operand" : [ {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "path" : "code",
-                                             "scope" : "S",
-                                             "type" : "Property"
-                                          }
-                                       }, {
-                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                          "value" : "0",
-                                          "type" : "Literal"
-                                       } ]
-                                    }
-                                 }
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "733727",
-                                 "type" : "Literal"
-                              } ]
-                           }, {
-                              "type" : "Equal",
-                              "operand" : [ {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "path" : "code",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "type" : "Indexer",
-                                       "operand" : [ {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "path" : "code",
-                                             "scope" : "S",
-                                             "type" : "Property"
-                                          }
-                                       }, {
-                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                          "value" : "0",
-                                          "type" : "Literal"
-                                       } ]
-                                    }
-                                 }
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "763824",
-                                 "type" : "Literal"
-                              } ]
-                           } ]
-                        } ]
+                     "dataType" : "{http://hl7.org/fhir}ServiceRequest",
+                     "codeProperty" : "code",
+                     "codeComparator" : "in",
+                     "type" : "Retrieve",
+                     "codes" : {
+                        "name" : "Urine drug screen for pain management",
+                        "type" : "ValueSetRef"
+                     }
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "c",
+                  "expression" : {
+                     "strict" : false,
+                     "type" : "As",
+                     "operand" : {
+                        "path" : "code",
+                        "scope" : "O",
+                        "type" : "Property"
+                     },
+                     "asTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}CodeableConcept",
+                        "type" : "NamedTypeSpecifier"
                      }
                   }
                } ],
@@ -6924,6 +6871,16 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "c",
+                              "type" : "QueryLetRef"
+                           } ]
+                        }
+                     }, {
                         "name" : "Date",
                         "value" : {
                            "name" : "DateTimeText",
@@ -6936,6 +6893,409 @@
                         }
                      } ]
                   }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "Date",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "ReportUrineLabServiceRequestsByCustomCode",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "dataType" : "{http://hl7.org/fhir}ServiceRequest",
+                     "type" : "Retrieve"
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "c",
+                  "expression" : {
+                     "strict" : false,
+                     "type" : "As",
+                     "operand" : {
+                        "path" : "code",
+                        "scope" : "O",
+                        "type" : "Property"
+                     },
+                     "asTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}CodeableConcept",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "where" : {
+                  "type" : "And",
+                  "operand" : [ {
+                     "type" : "And",
+                     "operand" : [ {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "c",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "coding",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "c",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }
+                        } ]
+                     }, {
+                        "type" : "Equivalent",
+                        "operand" : [ {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "code",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "path" : "coding",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "c",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
+                              }
+                           }
+                        }, {
+                           "name" : "Urine_Screen_Panel_Test_Order_Code",
+                           "type" : "ExpressionRef"
+                        } ]
+                     } ]
+                  }, {
+                     "type" : "Equivalent",
+                     "operand" : [ {
+                        "name" : "ToString",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "path" : "system",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "path" : "coding",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "c",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        } ]
+                     }, {
+                        "name" : "LAB_CORP_SYSTEM_VALUE",
+                        "type" : "ExpressionRef"
+                     } ]
+                  } ]
+               },
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "c",
+                              "type" : "QueryLetRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Date",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           } ]
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "Date",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "ReportAllUrineScreens",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "M",
+                  "expression" : {
+                     "type" : "Union",
+                     "operand" : [ {
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Union",
+                           "operand" : [ {
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "ReportUrineDrugScreensByObservation",
+                                 "type" : "ExpressionRef"
+                              },
+                              "asTypeSpecifier" : {
+                                 "type" : "ListTypeSpecifier",
+                                 "elementType" : {
+                                    "type" : "ChoiceTypeSpecifier",
+                                    "choice" : [ {
+                                       "type" : "TupleTypeSpecifier",
+                                       "element" : [ {
+                                          "name" : "Name",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }, {
+                                          "name" : "Result",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }, {
+                                          "name" : "Interpretation",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }, {
+                                          "name" : "Date",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    }, {
+                                       "type" : "TupleTypeSpecifier",
+                                       "element" : [ {
+                                          "name" : "Name",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }, {
+                                          "name" : "Date",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    } ]
+                                 }
+                              }
+                           }, {
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "ReportUrineLabServiceRequests",
+                                 "type" : "ExpressionRef"
+                              },
+                              "asTypeSpecifier" : {
+                                 "type" : "ListTypeSpecifier",
+                                 "elementType" : {
+                                    "type" : "ChoiceTypeSpecifier",
+                                    "choice" : [ {
+                                       "type" : "TupleTypeSpecifier",
+                                       "element" : [ {
+                                          "name" : "Name",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }, {
+                                          "name" : "Result",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }, {
+                                          "name" : "Interpretation",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }, {
+                                          "name" : "Date",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    }, {
+                                       "type" : "TupleTypeSpecifier",
+                                       "element" : [ {
+                                          "name" : "Name",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       }, {
+                                          "name" : "Date",
+                                          "type" : {
+                                             "name" : "{urn:hl7-org:elm-types:r1}String",
+                                             "type" : "NamedTypeSpecifier"
+                                          }
+                                       } ]
+                                    } ]
+                                 }
+                              }
+                           } ]
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Result",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Interpretation",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Date",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Date",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
+                     }, {
+                        "type" : "As",
+                        "operand" : {
+                           "name" : "ReportUrineLabServiceRequestsByCustomCode",
+                           "type" : "ExpressionRef"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "type" : "ChoiceTypeSpecifier",
+                              "choice" : [ {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Result",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Interpretation",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Date",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Date",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              } ]
+                           }
+                        }
+                     } ]
+                  }
+               } ],
+               "relationship" : [ ],
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "Date",
+                     "type" : "ByColumn"
+                  } ]
                }
             }
          }, {
@@ -9166,9 +9526,39 @@
                   "value" : {
                      "type" : "Tuple",
                      "element" : [ {
-                        "name" : "ReportUrineLabRequests",
+                        "name" : "ReportAllUrineScreens",
                         "value" : {
-                           "name" : "ReportUrineLabRequests",
+                           "name" : "ReportAllUrineScreens",
+                           "type" : "ExpressionRef"
+                        }
+                     } ]
+                  }
+               }, {
+                  "name" : "HistoricalTreatments",
+                  "value" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "OpioidMedications",
+                        "value" : {
+                           "name" : "ReportOpioidMedications",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "NonOpioidMedications",
+                        "value" : {
+                           "name" : "ReportNonOpioidMedications",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "NonPharmacologicTreatments",
+                        "value" : {
+                           "name" : "ReportNonPharmacologicTreatments",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "StoolSoftenersAndLaxatives",
+                        "value" : {
+                           "name" : "ReportStoolSoftenersAndLaxatives",
                            "type" : "ExpressionRef"
                         }
                      } ]
@@ -9217,6 +9607,12 @@
                         "name" : "CarisoprodolMedications",
                         "value" : {
                            "name" : "ReportCarisoprodolMedications",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "NaloxoneMedications",
+                        "value" : {
+                           "name" : "ReportNaloxoneMedications",
                            "type" : "ExpressionRef"
                         }
                      } ]
