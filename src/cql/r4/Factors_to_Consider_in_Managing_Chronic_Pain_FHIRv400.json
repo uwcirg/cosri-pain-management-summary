@@ -231,13 +231,20 @@
                "type" : "Literal"
             }
          }, {
-            "name" : "Urine_Screen_Panel_Test_Order_Code",
+            "name" : "Urine_Screen_Panel_Test_Order_Codes",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "733727",
-               "type" : "Literal"
+               "type" : "List",
+               "element" : [ {
+                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                  "value" : "733727",
+                  "type" : "Literal"
+               }, {
+                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                  "value" : "763824",
+                  "type" : "Literal"
+               } ]
             }
          }, {
             "name" : "Patient",
@@ -6962,8 +6969,11 @@
                            }
                         } ]
                      }, {
-                        "type" : "Equivalent",
+                        "type" : "Contains",
                         "operand" : [ {
+                           "name" : "Urine_Screen_Panel_Test_Order_Codes",
+                           "type" : "ExpressionRef"
+                        }, {
                            "path" : "value",
                            "type" : "Property",
                            "source" : {
@@ -6985,9 +6995,6 @@
                                  } ]
                               }
                            }
-                        }, {
-                           "name" : "Urine_Screen_Panel_Test_Order_Code",
-                           "type" : "ExpressionRef"
                         } ]
                      } ]
                   }, {

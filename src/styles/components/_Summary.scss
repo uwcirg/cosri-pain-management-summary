@@ -564,10 +564,7 @@
 
             .rt-th:nth-child(2),
             .rt-td:nth-child(2) {
-              //min-width: calc(60px + 19vw);
-              //max-width: calc(60px + 19vw);
               min-width: calc(60px + 10vw);
-              max-width: calc(60px + 10vw);
             }
             &.single-column {
               .rt-th:nth-child(2),

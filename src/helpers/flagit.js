@@ -84,7 +84,6 @@ function ifOr(flagRulesArray, entry, subSection, summary) {
 }
 
 function ifNone(value, entry, subSection, summary) {
-  console.log("value? ", value, " entry ? ", entry)
   return value == null || (Array.isArray(value) && value.length === 0);
 }
 

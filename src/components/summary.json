@@ -1061,7 +1061,10 @@
         "tables": [
           {
             "headers": {
-              "Name": "Name",
+              "Name": {
+                "key": "Name",
+                "minWidth": 150
+              },
               "Date": {
                 "key": "Date",
                 "formatter": "datishFormat",
@@ -1093,7 +1096,7 @@
                     }
                   ]
                 },
-                "flagText": "There is no urine drug screen date yet record on this patient. Please check the first controlled substance prescription to determine if they are due for their 12 month drug screen."
+                "flagText": "No urine drug screen date found for this patient. Please check the first controlled substance prescription to determine if they are due for their 12 month drug screen."
               }
             ]
           }

@@ -188,7 +188,7 @@ define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
 //system url for labcorp
 define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
 //lab panel test order code from lab corp
-define Urine_Screen_Panel_Test_Order_Code: '733727'
+define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824'}
 
 
 
@@ -934,15 +934,16 @@ define ReportUrineLabServiceRequests:
   }
   sort by Date desc
 
-// Urine drug screen from service request,  matching on custom system and concept code, e.g. those from Skagit site
+// Urine drug screen from service request,  matching on custom system and concept code, e.g. sites using labcorp for testing
 define ReportUrineLabServiceRequestsByCustomCode:
   [ServiceRequest] O
   let c: O.code as FHIR.CodeableConcept
   where (
     c is not null and
     c.coding is not null and
-    c.coding[0].code.value ~ Urine_Screen_Panel_Test_Order_Code and
-    c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE)
+    (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
+    c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE
+  )
   return {
     Name: ConceptText(c),
     Date: DateTimeText(O.authoredOn)
