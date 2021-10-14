@@ -1055,9 +1055,14 @@
     ],
     "sections": [
       {
+        "name": "Urine Drug Toxicology Screen",
         "dataKey": "ReportAllUrineScreens",
         "dataKeySource": "UrineDrugScreens",
         "omitTitle": true,
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "Next_Screen_Date"
+        },
         "tables": [
           {
             "headers": {
@@ -1097,6 +1102,62 @@
                   ]
                 },
                 "flagText": "No urine drug screen date found for this patient. Please check the first controlled substance prescription to determine if they are due for their 12 month drug screen."
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "if3MonthsDue" : {
+                        "targetField": "Next_Screen_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "A urine screening is due for this patient on or before [DATE].",
+                "flagClass": "warning",
+                "flagDateField": "Next_Screen_Date"
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "if4MonthsDue": {
+                        "targetField": "Next_Screen_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "A urine screening is due for this patient on or before [DATE].",
+                "flagClass": "warning-light",
+                "flagDateField": "Next_Screen_Date"
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "ifOverdue" : {
+                        "targetField": "Next_Screen_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "It has been more than 12 months since this patient's last urine drug screen.",
+                "flagDateField": "Date"
               }
             ]
           }

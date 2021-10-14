@@ -35,6 +35,12 @@
             &.flagged {
               color: $color-red;
             }
+            &.warning {
+              color: $color-warning;
+            }
+            &.warning-light {
+              color: $color-warning-light;
+            }
           }
         }
       }
@@ -106,6 +112,12 @@
          //   margin-left: 5px;
             color: $color-red;
             vertical-align: middle;
+            &.warning {
+              color: $color-warning;
+            }
+            &.warning-light {
+              color: $color-warning-light;
+            }
           }
 
           .chevron {
@@ -240,6 +252,12 @@
             margin-left: 5px;
             color: $color-red;
             vertical-align: middle;
+            &.warning {
+              color: $color-warning;
+            }
+            &.warning-light {
+              color: $color-warning-light;
+            }
           }
 
           .chevron {
@@ -380,6 +398,12 @@
             }
             .flag {
               color: $color-red-darker;
+              &.warning {
+                color: $color-warning;
+              }
+              &.warning-light {
+                color: $color-warning-light;
+              }
               margin-right: 8px;
               font-size: 28px;
               min-width: 28px;
@@ -583,6 +607,12 @@
 
               &.flagged {
                 color: $color-red;
+                &.warning {
+                  color: $color-warning;
+                }
+                &.warning-light {
+                  color: $color-warning-light;
+                }
               }
             }
           }

@@ -26,8 +26,8 @@ export function dateNumberFormat(input) {
  */
 export function extractDateFromGMTDateString(dateString) {
   if (!dateString) return "";
-  if (dateString.indexOf("T") > 0) {
-    return dateString.substring(0, dateString.indexOf("T"));
+  if (String(dateString).indexOf("T") > 0) {
+    return String(dateString).substring(0, String(dateString).indexOf("T"));
   }
   return dateString;
 }

@@ -946,7 +946,8 @@ define ReportUrineLabServiceRequestsByCustomCode:
   )
   return {
     Name: ConceptText(c),
-    Date: DateTimeText(O.authoredOn)
+    Date: DateTimeText(O.authoredOn),
+    Next_Screen_Date: O.authoredOn + 12 months
   }
   sort by Date desc
 

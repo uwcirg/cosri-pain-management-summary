@@ -1,4 +1,5 @@
-const functions = { ifAnd, ifOr, ifNone, ifOneOrMore, ifGreaterThanOrEqualTo, ifContains, ifEqualTo};
+import {isDateInPast, getDiffMonths} from "./utility";
+const functions = { ifAnd, ifOr, ifNone, ifOneOrMore, ifGreaterThanOrEqualTo, ifContains, ifEqualTo, if3MonthsDue, if4MonthsDue, ifOverdue, ifMostRecent};
 
 // returns false if the given entry should not be flagged
 // returns the flag text for an entry that should be flagged
@@ -8,6 +9,8 @@ export default function flagit(entry, subSection, summary) {
 
   const flagResults = flags.reduce((accumulator, flag) => {
     const flagRule = flag.flag;
+    const flagClass = (flag.flagClass?(flag.flagClass): "");
+    const flagDate = (flag.flagDateField?(flag.flagDateField): "");
     let elementText = "";
     if (entry && flag.key && entry[flag.key]) {
       elementText = entry[flag.key];
@@ -37,7 +40,13 @@ export default function flagit(entry, subSection, summary) {
     } else if (typeof flagRule === 'object') {
       const rule = Object.keys(flagRule)[0];
       if (functions[rule](flagRule[rule], entry, subSection, summary)) {
-        accumulator.push(displayText);
+        if (displayText) {
+          accumulator.push({
+            "text" : displayText,
+            "class": flagClass,
+            "date" : flagDate
+          });
+        }
       }
     }
 
@@ -135,4 +144,49 @@ function ifContains(value, entry, subSection, summary) {
     if (Array.isArray(item[value.header])) return item[value.header].indexOf(value.targetValue) !== -1;
     return item[value.header] === value.targetValue;
   }).length > 0;
+}
+
+function ifMostRecent(value, entry, subSection, summary) {
+  const section = summary[subSection.dataKeySource]? summary[subSection.dataKeySource][subSection.dataKey] : null;
+  if (!section || !section.length) return false;
+  if (!entry) return false;
+  const targetDate = entry[value.targetField];
+  if (!targetDate) return false;
+  let cloneSet = JSON.parse(JSON.stringify(section));
+  //sort data in descending order
+  cloneSet.sort(function(a, b) { return new Date(b[value.targetField]) - new Date(a[value.targetField]) });
+  return cloneSet.filter((item, index) => {
+    return item[value.targetField] === targetDate && index === 0;
+  }).length > 0;
+}
+
+function if3MonthsDue(value, entry, subSection, summary) {
+  const section = summary[subSection.dataKeySource]? summary[subSection.dataKeySource][subSection.dataKey] : null;
+  if (!section || !section.length) return false;
+  if (!entry) return false;
+  const targetDate = entry[value.targetField];
+  if (!targetDate) return false;
+  const diff = getDiffMonths(new Date(), new Date(targetDate));
+  console.log("if3MonthsDue months diff ", diff);
+  return diff >= 0 && diff <= 3;
+}
+
+function if4MonthsDue(value, entry, subSection, summary) {
+  const section = summary[subSection.dataKeySource]? summary[subSection.dataKeySource][subSection.dataKey] : null;
+  if (!section || !section.length) return false;
+  if (!entry) return false;
+  const targetDate = entry[value.targetField];
+  if (!targetDate) return false;
+  const diff = getDiffMonths(new Date(), new Date(targetDate));
+  console.log("if4MonthsDue months diff ", diff);
+  return diff > 3 && diff <= 4;
+}
+
+function ifOverdue(value, entry, subSection, summary) {
+  const section = summary[subSection.dataKeySource]? summary[subSection.dataKeySource][subSection.dataKey] : null;
+  if (!section || !section.length) return false;
+  if (!entry) return false;
+  const targetDate = entry[value.targetField];
+  if (!targetDate) return false;
+  return isDateInPast(new Date(targetDate), new Date());
 }

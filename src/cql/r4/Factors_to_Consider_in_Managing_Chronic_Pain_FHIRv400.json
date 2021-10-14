@@ -7052,6 +7052,25 @@
                               "type" : "Property"
                            } ]
                         }
+                     }, {
+                        "name" : "Next_Screen_Date",
+                        "value" : {
+                           "type" : "Add",
+                           "operand" : [ {
+                              "name" : "ToDateTime",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "authoredOn",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              } ]
+                           }, {
+                              "value" : 12,
+                              "unit" : "months",
+                              "type" : "Quantity"
+                           } ]
+                        }
                      } ]
                   }
                },
@@ -7234,6 +7253,27 @@
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
                                     }
+                                 }, {
+                                    "name" : "Next_Screen_Date",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Date",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
                                  } ]
                               } ]
                            }
@@ -7272,6 +7312,27 @@
                                     "name" : "Date",
                                     "type" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Name",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Date",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Next_Screen_Date",
+                                    "type" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  } ]
