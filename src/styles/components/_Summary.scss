@@ -35,6 +35,12 @@
             &.flagged {
               color: $color-red;
             }
+            &.warning {
+              color: $color-warning;
+            }
+            &.warning-light {
+              color: $color-warning-light;
+            }
           }
         }
       }
@@ -55,6 +61,15 @@
           line-height: 1.45;
           transition: all 300ms ease;
 
+          .title-text-container {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .title-text {
+            max-width: 220px;
+          }
+
           .info {
             display: block;
             font-size: 14px;
@@ -71,7 +86,7 @@
             align-items: center;
           }
 
-          svg {
+          svg, img {
             min-width: 20px;
             width: 20px;
             fill: $color-white;
@@ -86,11 +101,23 @@
             display: none;
           }
 
+          .info-count-text {
+            margin-right: 4px;
+          }
+          .info-count-text:empty {
+            margin-right: 0;
+          }
           .flag-header {
             font-size: 0.9em;
-            margin-left: 5px;
+         //   margin-left: 5px;
             color: $color-red;
             vertical-align: middle;
+            &.warning {
+              color: $color-warning;
+            }
+            &.warning-light {
+              color: $color-warning-light;
+            }
           }
 
           .chevron {
@@ -175,7 +202,7 @@
       font-weight: 600;
       padding: 10px;
 
-      svg {
+      svg, img {
         margin-right: 20px;
       }
     }
@@ -209,7 +236,7 @@
             align-items: center;
           }
 
-          svg {
+          svg, img {
             min-width: 25px;
             width: 25px;
             margin-right: 15px;
@@ -225,6 +252,12 @@
             margin-left: 5px;
             color: $color-red;
             vertical-align: middle;
+            &.warning {
+              color: $color-warning;
+            }
+            &.warning-light {
+              color: $color-warning-light;
+            }
           }
 
           .chevron {
@@ -365,6 +398,12 @@
             }
             .flag {
               color: $color-red-darker;
+              &.warning {
+                color: $color-warning;
+              }
+              &.warning-light {
+                color: $color-warning-light;
+              }
               margin-right: 8px;
               font-size: 28px;
               min-width: 28px;
@@ -512,14 +551,14 @@
           border-bottom: 1px solid $color-gray-lighter;
           padding: 12px 40px;
           font-weight: 700;
-          ////color: $color-black;
+          margin-bottom: 8px;
           .flag-nav {
             display: none;
           }
         }
 
         .table {
-          padding-bottom: 4px;
+          padding-bottom: 8px;
 
           .sub-section__table {
             border: 0;
@@ -549,10 +588,7 @@
 
             .rt-th:nth-child(2),
             .rt-td:nth-child(2) {
-              //min-width: calc(60px + 19vw);
-              //max-width: calc(60px + 19vw);
               min-width: calc(60px + 10vw);
-              max-width: calc(60px + 10vw);
             }
             &.single-column {
               .rt-th:nth-child(2),
@@ -571,6 +607,12 @@
 
               &.flagged {
                 color: $color-red;
+                &.warning {
+                  color: $color-warning;
+                }
+                &.warning-light {
+                  color: $color-warning-light;
+                }
               }
             }
           }

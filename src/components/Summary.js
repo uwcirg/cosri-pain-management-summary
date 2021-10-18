@@ -17,6 +17,7 @@ import RiskIcon from '../icons/RiskIcon';
 import RxIcon from '../icons/RxIcon';
 import TreatmentsIcon from '../icons/TreatmentsIcon';
 import UserIcon from '../icons/UserIcon';
+import FlaskIcon from '../icons/FlaskIcon';
 
 import ErrorBanner from './ErrorBanner';
 import InclusionBanner from './InclusionBanner';
@@ -101,6 +102,23 @@ export default class Summary extends Component {
     return false;
   }
 
+  getSectionFlagClass(section) {
+    const { sectionFlags } = this.props;
+    const subSections = sectionFlags[section] ? Object.keys(sectionFlags[section]): null;
+
+    if (!subSections) {
+      return "";
+    }
+
+    for (let i = 0; i < subSections.length; ++i) {
+      if (this.isSubsectionFlagged(section, subSections[i])) {
+        return sectionFlags[section][subSections[i]][0].flagClass;
+      }
+    }
+
+    return "";
+  }
+
   getSectionFlagCount(section) {
     const { sectionFlags } = this.props;
     const subSections = sectionFlags[section] ? Object.keys(sectionFlags[section]): null;
@@ -141,7 +159,7 @@ export default class Summary extends Component {
     if (!sectionFlags[section][subSection]) return false;
     sectionFlags[section][subSection].forEach((flag) => {
       if (flag.entryId === entry._id) {
-        flagged = flag.flagText;
+        flagged = flag.flagText + (flag.flagClass ? ("|"+flag.flagClass): "");
       }
     });
 
@@ -228,13 +246,17 @@ export default class Summary extends Component {
         id: 'flagged',
         Header: <span aria-label="flag"></span>,
         accessor: (entry) => this.isEntryFlagged(section, subSection.dataKey, entry),
-        Cell: (props) =>
-          <FontAwesomeIcon
-            className={`flag flag-entry ${props.value ? 'flagged' : ''}`}
-            icon="exclamation-circle"
-            title={props.value ? props.value : 'flag'}
-            tabIndex={0}
-          />,
+        Cell: (props) => {
+            let arrDisplay = props.value ? props.value.split("|") : null;
+            let displayText = arrDisplay && arrDisplay[0] ? arrDisplay[0] : "";
+            let displayClass = arrDisplay && arrDisplay[1] ? arrDisplay[1] : "";
+            return (<FontAwesomeIcon
+              className={`flag flag-entry ${displayText ? ('flagged ' + displayClass) : ''}`}
+              icon="exclamation-circle"
+              title={displayText ? displayText : 'flag'}
+              tabIndex={0}
+            />)
+        },
         sortable: false,
         width: 35,
         minWidth: 35
@@ -367,7 +389,7 @@ export default class Summary extends Component {
       return <div key={`alert_${index}`} className="alert-item" ref={this.elementRef} data-ref={`${item.id}_title`}>
         <a href={`#${item.id}_title`}>
           <FontAwesomeIcon
-          className="flag"
+          className={`flag ${item.className}`}
           icon="exclamation-circle"
           data-tip={`Go to ${item.name} section`}
           data-for="overviewTooltip"
@@ -468,7 +490,8 @@ export default class Summary extends Component {
 
   renderSectionHeader(section) {
     const flagged = this.isSectionFlagged(section);
-    const flaggedClass = flagged ? 'flagged' : '';
+    const flagClass = this.getSectionFlagClass(section);
+    const flaggedClass = flagged ? `flagged ${flagClass?flagClass:""}` : '';
     const flagCount = this.getSectionFlagCount(section);
     const flaggedText = flagged? `${flagCount ? flagCount + ' flag entr' + (flagCount > 1?'ies': 'y') + ' found': ''}` : "";
 
@@ -506,16 +529,18 @@ export default class Summary extends Component {
       icon =  <TreatmentsIcon {...iconProps} />;
     } else if (section === 'EducationMaterials') {
       icon = <UserIcon {...iconProps} />;
+    } else if (section === 'UrineDrugScreens') {
+      icon = <FlaskIcon {...iconProps} />;
     }
 
     return (
       <h2 id={section} className="section__header">
         <div className="section__header-title">
           {icon}
-          <span>
-            {title}
+          <span className="title-text-container">
+            <span className="title-text">{title}</span>
             <span className="info">
-              {entryCount && entryCount}
+              <span className="info-count-text">{entryCount && entryCount}</span>
               <FontAwesomeIcon
                 className={`flag flag-header ${flaggedClass}`}
                 icon="exclamation-circle"

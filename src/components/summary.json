@@ -681,57 +681,6 @@
         ]
       },
       {
-        "name": "Urine Drug Screens",
-        "dataKey": "UrineDrugScreens",
-        "dataKeySource": "RiskConsiderations",
-        "guideline": [
-          {
-            "type": "CDC",
-            "title": "CDC Guideline #10",
-            "text": "Use urine drug testing."
-          }
-        ],
-        "info": [
-          {
-            "type": "elements",
-            "description": "Urine Drug Screens queries the following elements:",
-            "elements": [
-              {
-                "name": "Urine drug screen",
-                "status": "final or amended",
-                "lookback": "1 year"
-              }
-            ]
-          }
-        ],
-        "tables": [
-          {
-            "headers": {
-              "Name": "Name",
-              "Result": { "key": "Result", "formatter": "quantityFormat" },
-              "Interpretation": "Interpretation",
-              "Date": { "key": "Date", "formatter": "datishFormat" }
-            },
-            "flags": [
-              {
-                "flag": {
-                  "ifAnd": [
-                    "ifNone",
-                    {
-                      "ifOneOrMore": {
-                        "table": "OpioidMedications",
-                        "source": "HistoricalTreatments"
-                      }
-                    }
-                  ]
-                },
-                "flagText": "Absence of urine drug screen and at least one opioid medication."
-              }
-            ]
-          }
-        ]
-      },
-      {
         "name": "Benzodiazepine Medications",
         "dataKey": "BenzodiazepineMedications",
         "dataKeySource": "RiskConsiderations",
@@ -1087,6 +1036,128 @@
               {
                 "flag": "ifOneOrMore",
                 "flagText": "Evidence of Naloxone medication."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "UrineDrugScreens": {
+    "title": "Urine Drug Toxicology Screen",
+    "skipDataInfo": true,
+    "guideline": [
+      {
+        "type": "CDC",
+        "title": "CDC Guideline #10",
+        "text": "Use urine drug testing."
+      }
+    ],
+    "sections": [
+      {
+        "name": "Urine Drug Toxicology Screen",
+        "dataKey": "ReportAllUrineScreens",
+        "dataKeySource": "UrineDrugScreens",
+        "omitTitle": true,
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "Next_Screen_Date"
+        },
+        "tables": [
+          {
+            "headers": {
+              "Name": {
+                "key": "Name",
+                "minWidth": 150
+              },
+              "Date": {
+                "key": "Date",
+                "formatter": "datishFormat",
+                "minWidth": 150
+              }
+            },
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifNone",
+                    {
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
+                          }
+                        },
+                        {
+                          "ifContains": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications",
+                            "header": "Class",
+                            "targetValue":"opioid"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "flagText": "No urine drug screen date found for this patient. Please check the first controlled substance prescription to determine if they are due for their 12 month drug screen."
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "if3MonthsDue" : {
+                        "targetField": "Next_Screen_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "A urine screening is due for this patient on or before [DATE].",
+                "flagClass": "warning",
+                "flagDateField": "Next_Screen_Date"
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "if4MonthsDue": {
+                        "targetField": "Next_Screen_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "A urine screening is due for this patient on or before [DATE].",
+                "flagClass": "warning-light",
+                "flagDateField": "Next_Screen_Date"
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "ifOverdue" : {
+                        "targetField": "Next_Screen_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "It has been more than 12 months since this patient's last urine drug screen.",
+                "flagDateField": "Date"
               }
             ]
           }

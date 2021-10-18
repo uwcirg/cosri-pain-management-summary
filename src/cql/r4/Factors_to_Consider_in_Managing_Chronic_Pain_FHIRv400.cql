@@ -45,6 +45,8 @@
 //    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
 // Update 20211008
 //    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was returning the same thing as ReportMMEByDates
+// Update 20211012
+//    Add Service Request query for drug urine screen, in the case of Skagit site, a custom system and code will be used to filter search
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
@@ -183,6 +185,10 @@ parameter InclusionMedicationsLookbackPeriod default 180 days //DO WE NEED THIS?
 
 //system url from PDMP identifier
 define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
+//system url for labcorp
+define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
+//lab panel test order code from lab corp
+define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824'}
 
 
 
@@ -898,11 +904,12 @@ define ReportPrescriptions:
   return MMECalculator.Prescriptions(M)
 
 
-// Urine drug screen - dates and results (all screens w/ lookback of 1 year)
+// Urine drug screen from observations - dates and results (all screens w/ lookback of 1 year)
 define UrineDrugScreens:
   C3F.Verified(C3F.ObservationLookBack([Observation: "Urine drug screen for pain management"], 1 year))
 
-define ReportUrineDrugScreens:
+// Urine drug screen from observations
+define ReportUrineDrugScreensByObservation:
   (UrineDrugScreens) S
   return {
     Name:           ConceptText(S.code),
@@ -914,6 +921,39 @@ define ReportUrineDrugScreens:
     Interpretation: ConceptText(First(S.interpretation)),
     Date:           ObservationDate(S)
   }
+  sort by Date desc
+
+
+// Urine drug screen from service request,  matching on LOINC code and system = http://loinc.org
+define ReportUrineLabServiceRequests:
+  ([ServiceRequest: "Urine drug screen for pain management"]) O
+  let c: O.code as FHIR.CodeableConcept
+  return {
+    Name: ConceptText(c),
+    Date: DateTimeText(O.authoredOn)
+  }
+  sort by Date desc
+
+// Urine drug screen from service request,  matching on custom system and concept code, e.g. sites using labcorp for testing
+define ReportUrineLabServiceRequestsByCustomCode:
+  [ServiceRequest] O
+  let c: O.code as FHIR.CodeableConcept
+  where (
+    c is not null and
+    c.coding is not null and
+    (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
+    c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE
+  )
+  return {
+    Name: ConceptText(c),
+    Date: DateTimeText(O.authoredOn),
+    Next_Screen_Date: O.authoredOn + 12 months
+  }
+  sort by Date desc
+
+// Report urine drug screen from observations and service requests
+define ReportAllUrineScreens:
+  (ReportUrineDrugScreensByObservation union ReportUrineLabServiceRequests union ReportUrineLabServiceRequestsByCustomCode) M
   sort by Date desc
 
 
@@ -1031,7 +1071,6 @@ define ReportSedativeMedicationRequests:
     Status: O.status.value
   }
   sort by DispensedDate desc, End desc
-
 define ReportBarbiturateMedicationRequests:
   ([MedicationRequest] M
   where IndexOf(getMedicationRequestDrugClass(M), 'barbiturate') != -1) O
@@ -1102,9 +1141,13 @@ define Summary: {
     Age: AgeInYears(),
     MeetsInclusionCriteria: MeetsInclusionCriteria
   },
+
   PertinentMedicalHistory: {
     ConditionsAssociatedWithChronicPain: ReportConditionsAssociatedWithChronicPain,
     RiskFactorsForOpioidRelatedHarms: ReportRiskFactorsForOpioidRelatedHarms
+  },
+  UrineDrugScreens: {
+    ReportAllUrineScreens: ReportAllUrineScreens
   },
   HistoricalTreatments: {
     OpioidMedications: ReportOpioidMedications,
@@ -1118,7 +1161,6 @@ define Summary: {
     ReportMMEByDates: ReportMMEByDates,
     //for debugging, uncomment to test
     //ReportPrescriptions: ReportPrescriptions,
-    UrineDrugScreens: ReportUrineDrugScreens,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     SedativeMedications: ReportSedativeMedicationRequests,
     BarbiturateMedications: ReportBarbiturateMedicationRequests,

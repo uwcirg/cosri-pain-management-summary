@@ -397,11 +397,13 @@ export default class Landing extends Component {
                   //this prevents addition of duplicate alert text
                   let alertTextExist = alerts.filter(item => String(item.flagText).toLowerCase() === String(subitem.flagText).toLowerCase());
                   if (!alertTextExist.length && subitem.flagText) {
+                    let flagDateText = subitem.flagDateText ? subitem.flagDateText : "";
                     alerts.push({
                       id: subitem.subSection.dataKey,
                       name: subitem.subSection.name,
                       flagText: subitem.flagText,
-                      text: subitem.flagText + (subitem.flagDateText ? ` (${datishFormat('',subitem.flagDateText)})`: ""),
+                      className: subitem.flagClass,
+                      text: subitem.flagText.indexOf("[DATE]") >= 0 ? (subitem.flagText.replace("[DATE]", datishFormat("", flagDateText))) : (subitem.flagText + (subitem.flagDateText ? ` (${datishFormat('',flagDateText)})`: "")),
                       priority: subitem.priority || 100
                     });
                     //log alert
@@ -414,6 +416,7 @@ export default class Landing extends Component {
                     id: subsection[1].subSection.dataKey,
                     name: subsection[1].subSection.name,
                     text: subsection[1].flagText,
+                    className: subsection[1].flagClass,
                     priority: subsection[1].priority || 100
                   });
                 }
@@ -801,14 +804,17 @@ export default class Landing extends Component {
             const entryFlag = flagit(entry, subSection, summary);
             if (entryFlag) {
               flaggedCount += 1;
-              let flagDateField = alertMapping.dateField ? alertMapping.dateField : null;
+              let flagText = typeof entryFlag === "object" ? entryFlag["text"]: entryFlag;
+              let flagClass = typeof entryFlag === "object" ? entryFlag["class"] : "";
+              let flagDateField =  typeof entryFlag === "object" ? entryFlag["date"] : (alertMapping.dateField ? alertMapping.dateField : null);
 
               flaggedEntries.push({
                 'entryId': entry._id,
                 'entry': entry, 'subSection': subSection,
-                'flagText': entryFlag,
+                'flagText': flagText,
+                'flagClass': flagClass,
                 'flagCount': flaggedCount,
-                'flagDateText': entry && entry[flagDateField] ? entry[flagDateField]: "",
+                'flagDateText': entry && entry[flagDateField] ? extractDateFromGMTDateString(entry[flagDateField]): "",
                 'priority': alertMapping.priority? alertMapping.priority : 0});
             }
 
@@ -821,7 +827,7 @@ export default class Landing extends Component {
           if (sectionFlagged) {
             flaggedCount += 1;
             sectionFlags[sectionKey][subSection.dataKey] = [{
-              'flagText': sectionFlagged,
+              'flagText': typeof sectionFlagged === "object" ? sectionFlagged["text"]: sectionFlagged,
               'flagCount': flaggedCount,
               'subSection': subSection,
               'priority': alertMapping.priority? alertMapping.priority : 0
