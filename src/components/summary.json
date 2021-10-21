@@ -1105,6 +1105,7 @@
               {
                 "flag": {
                   "ifAnd": [
+                    "ifAdult",
                     {
                       "ifMostRecent": {
                         "targetField": "Date"
@@ -1124,6 +1125,7 @@
               {
                 "flag": {
                   "ifAnd": [
+                    "ifAdult",
                     {
                       "ifMostRecent": {
                         "targetField": "Date"
@@ -1143,6 +1145,7 @@
               {
                 "flag": {
                   "ifAnd": [
+                    "ifAdult",
                     {
                       "ifMostRecent": {
                         "targetField": "Date"
