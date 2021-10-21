@@ -1,5 +1,9 @@
 import {isDateInPast, getDiffMonths} from "./utility";
+<<<<<<< HEAD
 const functions = { ifAnd, ifOr, ifNone, ifOneOrMore, ifGreaterThanOrEqualTo, ifContains, ifEqualTo, if3MonthsDue, if4MonthsDue, ifOverdue, ifMostRecent, ifAdult};
+=======
+const functions = { ifAnd, ifOr, ifNone, ifOneOrMore, ifGreaterThanOrEqualTo, ifContains, ifEqualTo, if3MonthsDue, if4MonthsDue, ifOverdue, ifMostRecent};
+>>>>>>> 535f51b8b073159c2c8a62ac22dc30ad24c8bd42
 
 // returns false if the given entry should not be flagged
 // returns the flag text for an entry that should be flagged
@@ -190,9 +194,12 @@ function ifOverdue(value, entry, subSection, summary) {
   if (!targetDate) return false;
   return isDateInPast(new Date(targetDate), new Date());
 }
+<<<<<<< HEAD
 
 function ifAdult(value, entry, subSection, summary) {
   if (!summary || !summary["Patient"]) return false;
   //age calculated in CQL
   return parseInt(summary["Patient"]["Age"]) >= 18;
 }
+=======
+>>>>>>> 535f51b8b073159c2c8a62ac22dc30ad24c8bd42
