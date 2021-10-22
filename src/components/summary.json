@@ -1081,6 +1081,7 @@
                 "flag": {
                   "ifAnd": [
                     "ifNone",
+                    "ifAdult",
                     {
                       "ifOr": [
                         {
@@ -1090,11 +1091,9 @@
                           }
                         },
                         {
-                          "ifContains": {
+                          "ifOneOrMore": {
                             "table": "PDMPMedications",
-                            "source": "PDMPMedications",
-                            "header": "Class",
-                            "targetValue":"opioid"
+                            "source": "PDMPMedications"
                           }
                         }
                       ]
@@ -1106,6 +1105,7 @@
               {
                 "flag": {
                   "ifAnd": [
+                    "ifAdult",
                     {
                       "ifMostRecent": {
                         "targetField": "Date"
@@ -1125,6 +1125,7 @@
               {
                 "flag": {
                   "ifAnd": [
+                    "ifAdult",
                     {
                       "ifMostRecent": {
                         "targetField": "Date"
@@ -1144,6 +1145,7 @@
               {
                 "flag": {
                   "ifAnd": [
+                    "ifAdult",
                     {
                       "ifMostRecent": {
                         "targetField": "Date"
