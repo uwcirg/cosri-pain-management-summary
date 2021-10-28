@@ -224,13 +224,13 @@ export default class Landing extends Component {
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
      */
     fetchEnvData();
+    //start time out countdown on DOM mounted
+    Timeout();
     this.pingProcessProgress();
     let result = {};
     Promise.all([executeElm(this.state.collector)])
     .then(
       response => {
-        //start time out countdown
-        Timeout();
         //set result from data from EPIC
         let EPICData = response[0];
         result['Summary'] = EPICData ? {...EPICData['Summary']} : {};
@@ -863,7 +863,7 @@ export default class Landing extends Component {
 
     if (this.state.result == null) {
       return (
-        <div className="banner error">
+        <div className="banner error root-error">
           <div>
             <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See console for details.
           </div>
