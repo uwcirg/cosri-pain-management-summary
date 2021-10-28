@@ -136,7 +136,8 @@ var Timeout = (function() {
   }
 
   function isDOMReady() {
-    var targetNode = document.querySelector(".landing");
+    //DOM root element, it could be an error element indicating null state
+    var targetNode = document.querySelector(".landing") || document.querySelector(".root-error");
     if (!targetNode) return false;
     clearInterval(waitForDOMIntervalId);
     return true;
@@ -184,6 +185,14 @@ var Timeout = (function() {
       });
     });
   }
+  function handleNoToken() {
+    getSessionTokenInfo();
+    if (!tokenInfo || !Object.keys(tokenInfo).length) {
+      //back to dashboard
+      window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/home";
+      clearInterval(waitForDOMIntervalId);
+    }
+  }
   function init() {
     waitForDOMIntervalId = setInterval(function() {
       if (isDOMReady()) {
@@ -192,6 +201,8 @@ var Timeout = (function() {
         setLogoutLocation();
         //get expiration date/time to determine how long a session is?
         getSessionTokenInfo();
+        //on page load, check if token is not present?
+        handleNoToken();
         //assign id to the specific countdown timer id for this session
         initTimeoutIdentifier();
         //start count down
