@@ -106,9 +106,7 @@ function doSearch(client, release, type, collector) {
     const results = client.patient.request({
         url: uri,
         headers: {
-          'Cache-Control': 'no-cache, no-store, max-age=0',
-          'Expires': 'Tue, 01 Jan 1980 1:00:00 GMT',
-          'Pragma': 'no-cache'
+          'Cache-Control': 'no-cache, no-store, max-age=0'
         }
       }, {
       pageLimit: 0, // unlimited pages
