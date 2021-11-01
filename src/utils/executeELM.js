@@ -103,7 +103,12 @@ function doSearch(client, release, type, collector) {
   const resources = [];
   const uri = `${type}?${params}`;
   return new Promise((resolve) => {
-    const results = client.patient.request(uri, {
+    const results = client.patient.request({
+        url: uri,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, max-age=0'
+        }
+      }, {
       pageLimit: 0, // unlimited pages
       onPage: processPage(uri, collector, resources)
     }).then(() => {
