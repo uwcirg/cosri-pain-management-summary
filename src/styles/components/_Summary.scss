@@ -10,7 +10,7 @@
   &__nav {
     color: $color-white;
     padding: 38px 0 20px;
-    width: 300px;
+    width: 280px;
     z-index: 1;
     transition: opacity 450ms ease 100ms;
 
@@ -134,22 +134,22 @@
     min-width: 52px;
     background-color: $color-gray-dark;
     transition: all 350ms ease-in-out;
+    position: relative;
     .summary__nav {
       opacity: 0;
       z-index: -1;
     }
     .close {
-      position: fixed;
-      top: 112px;
+      position: absolute;
+      top: 12px;
+      right: 10px;
       color: #FFF;
-      left: 18px;
-      font-weight: 500;
-      opacity: 0.4;
+      opacity: 0.2;
       z-index: 5;
       font-weight: 600;
       font-size: 1em;
       cursor: pointer;
-      transition: left 350ms ease, transform 750ms cubic-bezier(0.165, 0.84, 0.44, 1);
+      transition: left 350ms ease, transform 550ms cubic-bezier(0.165, 0.84, 0.44, 1);
       &:hover {
         opacity: 1;
       }
@@ -157,9 +157,15 @@
         content: '\203A\203A';
         display: block;
         font-size: 28px;
-        left: 0;
+        right: 0;
         top: 0;
         position: absolute;
+        border: 2px solid;
+        border-radius: 100%;
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+        text-align: center;
       }
     }
     &.open {
@@ -168,11 +174,10 @@
       .summary__nav {
         opacity: 1;
         z-index: 1;
-        padding: 56px 0 20px 0px;
+        padding: 104px 0 20px 0px;
       }
       .close {
-        // left: 272px;
-        left: 16px;
+        right: 16px;
         transform: translateX(0);
         transform-origin: center;
         &::before {
@@ -182,7 +187,22 @@
       }
     }
     .is-position-fixed ~ .close {
-      top: 100px;
+      top: 110px;
+      left: 0;
+      position: fixed;
+      z-index: 500;
+      &:before {
+        left: 8px;
+        top: 0px;
+      }
+    }
+    &.open {
+      .is-position-fixed ~ .close {
+        &:before {
+          position: fixed;
+          left: 216px;
+        }
+      }
     }
 
     //background-color: $color-uw-dark;
@@ -270,7 +290,12 @@
         height: 0;
         width: 560px;
         padding: 0;
-        padding-bottom: 67%;
+        padding-bottom: 35%;
+      }
+      @media(min-width: 768px) {
+        .MME-svg-container {
+          padding-bottom: 67%;
+        }
       }
       .MMEChartSvg {
         position: absolute;
@@ -282,7 +307,11 @@
       .MMEgraph {
         margin-top: 16px;
         margin-bottom: 24px;
-        max-width: 100%;
+        @media (min-width: 992px) {
+          & {
+            max-width: 100%;
+          }
+        }
         //padding-bottom: 16px;
         &.no-entry {
           display: flex;
@@ -301,7 +330,7 @@
         }
         .title {
           margin-left: 42px;
-          font-weight: 600;
+          font-weight: 700;
           font-size: 20px;
 
         }
@@ -343,6 +372,21 @@
           }
         }
       }
+      .panels {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap;
+        .sub-panels {
+          flex-basis: 100%;
+        }
+      }
+      .panel.alerts,
+      .panel.rxsummary {
+        margin-left: 16px;
+        align-self: stretch;
+        display: flex;
+      }
 
       .sub-section__panel {
         display: block;
@@ -351,35 +395,35 @@
         color: $color-black;
         flex-wrap: wrap;
         padding: 0 16px 8px;
+        flex: 1 auto;
         .sub-section__infopanel {
           border: 2px solid;
-          padding: 12px;
-          //margin-bottom: 16px;
-          //margin-top: 16px;
-          max-width: 360px;
+          padding: 12px 12px 16px;
+          margin-bottom: 8px;
+          width: 320px;
           .panel-title {
             font-weight: 700;
             margin-top: 4px;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             font-size: 20px;
           }
           .title {
             font-weight: 700;
           }
           .content {
-            padding:8px;
             font-size: 0.95em;
           }
           .stats-container {
-            background: $color-gray-lightest;            ;
-            padding: 16px;
+            .content {
+              text-transform: capitalize;
+            }
             .divider {
               display: inline-block;
               margin-left:8px;
               margin-right:8px;
             }
             .content {
-              padding-left: 20px;
+              padding-left: 8px;
             }
           }
           .alerts-container {
@@ -418,6 +462,14 @@
       }
 
       @media (min-width: 768px) {
+        .panels {
+          .sub-panels {
+            flex-basis: 50%;
+          }
+        }
+      }
+
+      @media (min-width: 992px) {
         .sub-section__panel {
           display: flex;
           flex-wrap:nowrap;
@@ -425,30 +477,14 @@
             margin-left: 24px;
           }
           .panel.graph {
-            flex-basis: 60%;
+            flex: 1;
             align-self: stretch;
           }
         }
       }
-      @media (min-width: 1200px) {
-        .sub-section__panel {
-          .panel.graph {
-            flex-basis: 60%;
-          }
-        }
-      }
-      @media (min-width: 1400px) {
-        .sub-section__panel {
-          .panel.graph {
-            flex-basis: 52.5%;
-          }
-        }
-      }
-
       .sub-section {
         background-color: $color-white;
         box-shadow: 1px 2px 2px $color-box-shadow;
-        //margin: 16px 20px;
         margin: 0;
 
         &:not(.sub-section-notitle) {
@@ -459,13 +495,11 @@
         }
 
         .info-icon {
-          //margin-left: 5px;
           margin-left: 20px;
           text-decoration: underline;
           opacity: 0.9;
           font-size: 0.87em;
           color: $color-blue;
-          //color: $color-uw-icon;
           cursor: pointer;
         }
         .video-container {
@@ -536,6 +570,9 @@
 
         &.sub-section-notitle {
           padding-bottom: 8px;
+          &:first-of-type {
+            padding-bottom: 0;
+          }
           &:first-of-type {
             padding-top: 12px;
           }

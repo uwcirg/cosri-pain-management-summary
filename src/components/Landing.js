@@ -20,6 +20,7 @@ import Spinner from '../elements/Spinner';
 
 let uuid = 0;
 let processIntervalId = 0;
+let scrollHeaderIntervalId = 0;
 
 function generateUuid() {
   return ++uuid; // eslint-disable-line no-plusplus
@@ -58,8 +59,6 @@ export default class Landing extends Component {
   }
   pingProcessProgress() {
     processIntervalId = setInterval(() => {
-     // console.log("collector status ", this.state.collector.length);
-     // console.log("summary map ", summaryMap)
      let totalResources = Object.keys(summaryMap).length;
      let numResourcesLoaded = this.state.collector.length;
      let stillLoading = numResourcesLoaded <= totalResources;
@@ -300,11 +299,15 @@ export default class Landing extends Component {
   handleHeaderPos() {
     window.requestAnimationFrame(() => {
       document.addEventListener("scroll", function(e) {
-        if (!isInViewport(document.querySelector("#anchorTop"))) {
-          document.querySelector("body").classList.add("fixed");
-          return;
-        }
-        document.querySelector("body").classList.remove("fixed");
+        clearTimeout(scrollHeaderIntervalId);
+        scrollHeaderIntervalId = setTimeout(function() {
+          if (!isInViewport(document.querySelector("#anchorTop"))) {
+            document.querySelector("body").classList.add("fixed");
+            return;
+          }
+          document.querySelector("body").classList.remove("fixed");
+        }, 200);
+
       });
     });
   }
@@ -382,6 +385,20 @@ export default class Landing extends Component {
           stats.push(statItem);
         });
       }
+      //add drug class info
+      let arrDrugClasses = statsSource.filter(item=>{
+        return item["Class"] && item["Class"].length > 0
+      });
+      let arrDrugClassKeys = [];
+      arrDrugClasses.forEach(item => {
+        if (item.Class) arrDrugClassKeys = [...arrDrugClassKeys, ...item["Class"]];
+      });
+      arrDrugClassKeys = arrDrugClassKeys.filter((item, index) => arrDrugClassKeys.indexOf(item) === index);
+      arrDrugClassKeys.forEach(item => {
+        let statItem = {};
+        statItem[`Total ${item} Rx`] = statsSource.filter(rx => rx["Class"] && rx["Class"].indexOf(item) !== -1).length;
+        stats.push(statItem);
+      });
     }
     let alerts = [];
     if (sectionFlags) {

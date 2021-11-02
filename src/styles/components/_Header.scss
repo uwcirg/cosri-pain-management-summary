@@ -22,7 +22,7 @@
     justify-content: center;
     flex-direction: column;
     height: 100%;
-    width: 264px;
+    min-width: 240px;
     color: $color-white;
 
     &-img {
@@ -69,6 +69,9 @@
     margin-right: 16px;
     margin-top: 16px;
     align-self: flex-start;
+    button {
+      min-width: 160px
+    }
   }
   &__logos {
     display: flex;
@@ -80,16 +83,18 @@
     justify-content: space-between;
     flex: 1;
     margin: 0;
-    margin-right: 24px;
+    margin-right: 16px;
 
     &-patient {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      margin-left: 16px;
 
       .patient-icon {
-        font-size: 2em;
+        font-size: 1.6em;
         color: $color-blue;
-        margin-right: 16px;
+        margin-top: 4px;
+        margin-right: 8px;
         position: relative;
       }
 
@@ -107,7 +112,7 @@
         color: $color-gray;
         font-weight: 600;
         text-transform: uppercase;
-        font-size: 1.025em;
+        font-size: 0.95em;
         line-height: 1.45;
         margin-top: 6px;
         .patient-age { margin-right: 16px; }
@@ -118,6 +123,7 @@
       }
       .patient-info {
         padding-right: 8px;
+        min-width: 160px;
       }
     }
 
@@ -128,7 +134,7 @@
       .entries {
         display: flex;
         align-items: center;
-        margin: 0 12px;
+        margin: 0;
         img {
           width: 180px;
         }

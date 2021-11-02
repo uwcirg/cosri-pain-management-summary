@@ -376,15 +376,27 @@ export default class Summary extends Component {
     return <div className="graph-placeholder"></div>;
   }
 
-  renderOverviewPanel(panel) {
+
+  renderRxSummaryPanel(panel) {
     let statsData = this.props.summary[panel.statsData.dataSectionRefKey] || [];
-    let alertsData = this.props.summary[panel.alertsData.dataSectionRefKey] || [];
     let statsContent = statsData.length ? (statsData).map((item, index) => {
       let objResult = Object.entries(item);
       return(
         <div key={`stats_${index}`}>{`${objResult[0][0]} :`}<span className="divider">{objResult[0][1]}</span></div>
       )
     }) : "No statistics available";
+    return (<div className="sub-section__infopanel">
+        <div className="panel-title">{panel.title}</div>
+        <div className="stats-container">
+          <div className="title">{panel.statsData.title}</div>
+          <div className="content">{statsContent}</div>
+        </div>
+        <ReactTooltip className="summary-tooltip" id="overviewTooltip" />
+      </div>)
+  }
+
+  renderAlertsPanel(panel) {
+    let alertsData = this.props.summary[panel.alertsData.dataSectionRefKey] || [];
     let alertsContent = alertsData.length ? (alertsData).map((item, index) => {
       return <div key={`alert_${index}`} className="alert-item" ref={this.elementRef} data-ref={`${item.id}_title`}>
         <a href={`#${item.id}_title`}>
@@ -402,10 +414,6 @@ export default class Summary extends Component {
     }) : "No alert entries found";
     return (<div className="sub-section__infopanel">
         <div className="panel-title">{panel.title}</div>
-        <div className="stats-container">
-          <div className="title">{panel.statsData.title}</div>
-          <div className="content">{statsContent}</div>
-        </div>
         <div className="alerts-container">
           <div className="title">{panel.alertsData.title}</div>
           <div className="content">{alertsContent}</div>
@@ -414,11 +422,12 @@ export default class Summary extends Component {
       </div>)
   }
 
-  renderPanel(section, panels) {
-    let content = panels.map((panel, index) => {
+  renderPanel(section, panels, type) {
+    let content = panels.filter(panel => panel.type === type).map((panel, index) => {
       return (<div key={`panel_${index}`} className={`panel ${panel.type}`}>
           {panel.type === "graph" && this.renderGraph(panel)}
-          {panel.type === "overview" && this.renderOverviewPanel(panel)}
+          {panel.type === "rxsummary" && this.renderRxSummaryPanel(panel)}
+          {panel.type === "alerts" && this.renderAlertsPanel(panel)}
         </div>);
     });
     return (<div className={`${section}-sub-section__panel sub-section__panel`}>{content}</div>);
@@ -466,8 +475,14 @@ export default class Summary extends Component {
                   </div>
               }</span>
           </h3>
+          {panels && <div className="panels">
+            {this.renderPanel(section, panels, "graph")}
+            {<div className="sub-panels">
+              {this.renderPanel(section, panels, "rxsummary")}
+              {this.renderPanel(section, panels, "alerts")}
+            </div>}
+          </div>}
 
-          {panels && this.renderPanel(section, panels)}
 
           {!hasEntries && !panels && this.renderNoEntries(section, subSection)}
           {hasEntries && subSection.tables.map((table, index) =>

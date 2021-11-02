@@ -64,17 +64,19 @@
             "dataSectionRefKey": "PatientRiskOverview_graph"
           },
           {
-            "type": "overview",
+            "type": "alerts",
             "title": "Patient Risk Assessment",
-            "statsData": {
-              "title": "At A Glance",
-              "type": "stats",
-              "dataSectionRefKey": "PatientRiskOverview_stats"
-            },
             "alertsData": {
-              "title": "Alerts",
               "type": "alerts",
               "dataSectionRefKey": "PatientRiskOverview_alerts"
+            }
+          },
+          {
+            "type": "rxsummary",
+            "title": "Rx Summary",
+            "statsData": {
+              "type": "stats",
+              "dataSectionRefKey": "PatientRiskOverview_stats"
             }
           }
         ]
