@@ -34,7 +34,7 @@ $color-warning: #e09b1d;
 $color-success: green;
 $link-color: darken($color-blue, 10%);
 $summary-nav-bg-color: #64707e;
-
-$summary-nav-width: 240px;
+$min-header-height: 120px;
+$summary-nav-width: 248px;
 // ------------------------- PATHS ----------------------------------------- //
 $fa-font-path: '/assets/fontawesome';

@@ -316,13 +316,15 @@
         &.no-entry {
           display: flex;
           flex-direction: column;
-          align-items: center;
+          align-items: flex-start;
           justify-content: flex-start;
           .title {
             margin-left: 0;
+            width: 100%;
+            text-align: center;
           }
           .no-entry {
-            margin: 32px;
+            margin: 16px 0;
             padding: 52px;
             background: $color-gray-lightest;
             position: relative;
@@ -379,6 +381,11 @@
         flex-wrap: wrap;
         .sub-panels {
           flex-basis: 100%;
+        }
+      }
+      @media (min-width: 992px) {
+        .panels {
+          flex-wrap: nowrap;
         }
       }
       .panel.alerts,
