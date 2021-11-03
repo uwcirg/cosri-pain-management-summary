@@ -201,7 +201,7 @@ export default class Landing extends Component {
             sectionsToBeHidden.push(section);
           }
         });
-        if ((sectionsToBeHidden.length !== summaryMap[key]["sections"].length) && sectionsToBeHidden.length > 0) return true;
+        if ((sectionsToBeHidden.length !== summaryMap[key]["sections"].length) && sectionsToBeHidden.length > 0) continue;
       }
       //hide main section if any
       if (getEnv(`REACT_APP_SECTION_${key.toUpperCase()}`) === "hidden") {
