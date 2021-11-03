@@ -305,13 +305,7 @@
         top: 0;
       }
       .MMEgraph {
-        margin-top: 16px;
-        margin-bottom: 24px;
-        @media (min-width: 992px) {
-          & {
-            max-width: 100%;
-          }
-        }
+        margin: 0;
         //padding-bottom: 16px;
         &.no-entry {
           display: flex;
@@ -328,6 +322,14 @@
             padding: 52px;
             background: $color-gray-lightest;
             position: relative;
+          }
+        }
+        @media (min-width: 992px) {
+          & {
+            max-width: 100%;
+          }
+          &.no-entry {
+            align-items: center;
           }
         }
         .title {
