@@ -378,18 +378,35 @@ export default class Summary extends Component {
 
 
   renderRxSummaryPanel(panel) {
-    let statsData = this.props.summary[panel.statsData.dataSectionRefKey] || [];
-    let statsContent = statsData.length ? (statsData).map((item, index) => {
-      let objResult = Object.entries(item);
-      return(
-        <div key={`stats_${index}`}>{`${objResult[0][0]} :`}<span className="divider">{objResult[0][1]}</span></div>
-      )
-    }) : "No statistics available";
+    let panelSet = this.props.summary[panel.statsData.dataSectionRefKey];
+    let rxPanel = panelSet[panel.statsData.objectKey];
+    let rxData = panelSet && rxPanel ? rxPanel : [];
+    let heading = rxData.fields ? (rxData.fields).map((item, index) => {
+      return <th key={`stats_head_${index}`}>{item.display_name}</th>;
+    }) : "";
+    let bodyContent = rxData.data ? (rxData.data).map((item, index) => {
+      return (<tr key={`stats_row_${index}`}>{
+        (rxData.fields).map((fd, findex) => {
+        return <td key={`stat_cell_${findex}`} className={`${fd.key}_cell`}>{!item[fd.key] && fd.empty_cell_display? fd.empty_cell_display : item[fd.key]}</td>
+        })
+      }</tr>)
+    }) : "";
     return (<div className="sub-section__infopanel">
         <div className="panel-title">{panel.title}</div>
         <div className="stats-container">
-          <div className="title">{panel.statsData.title}</div>
-          <div className="content">{statsContent}</div>
+          <div className="content">
+              {
+                rxData.fields &&
+                rxData.fields.length > 0?
+                <table className="table">
+                    <thead>
+                      {heading}
+                    </thead>
+                    <tbody>{bodyContent}</tbody>
+                </table>
+                : <div>No prescription summary to display</div>
+              }
+          </div>
         </div>
         <ReactTooltip className="summary-tooltip" id="overviewTooltip" />
       </div>)

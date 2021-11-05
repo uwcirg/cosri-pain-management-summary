@@ -8,18 +8,68 @@
       "dataKeySource":"PDMPMedications",
       "data": [
         {
-          "title": "Total PMP Rx",
-          "type": "count"
-        },
-        {
-          "title": "Total Prescribers",
-          "keyMatch": "Prescriber",
-          "type": "count"
-        },
-        {
-          "title": "Total Pharmacies",
-          "keyMatch": "Pharmacy",
-          "type": "count"
+          "title": "rxsummary",
+          "keyMatch": "Class",
+          "summaryFields": [
+            {
+              "key": "Class",
+              "display_name": "Class",
+              "skipWhenSum": true
+            },
+            {
+              "key": "total",
+              "display_name": "# Rx",
+              "empty_cell_display": "0",
+              "skipWhenSum": true
+            },
+            {
+              "key": "Prescriber",
+              "display_name": "# Prescribers",
+              "empty_cell_display": " "
+            },
+            {
+              "key": "Pharmacy",
+              "display_name": "# Pharmacies",
+              "empty_cell_display": " "
+            }
+          ],
+          "matchSet": [
+            {
+              "key": "opioid",
+              "display_name": "Opioids"
+            },
+            {
+              "key": "stimulant",
+              "display_name": "Stimulants"
+            },
+            {
+              "key": "sedative",
+              "display_name": "Sedatives/Hypnotics"
+            },
+            {
+              "key": "benzodiazepine",
+              "display_name": "Sedatives/Hypnotics"
+            },
+            {
+              "key": "barbiturate",
+              "display_name": "Sedatives/Hypnotics"
+            },
+            {
+              "key": "muscle relaxant",
+              "display_name": "Muscle Relaxants"
+            },
+            {
+              "key": "antiepileptic",
+              "display_name": "Anti-Convulstants"
+            },
+            {
+              "key": "steroid",
+              "display_name": "Steroids"
+            },
+            {
+              "key": "cannabinoid",
+              "display_name": "Cannabinoid"
+            }]
         }
       ]
     },
@@ -73,10 +123,11 @@
           },
           {
             "type": "rxsummary",
-            "title": "Rx Summary",
+            "title": "Prescription Summary",
             "statsData": {
               "type": "stats",
-              "dataSectionRefKey": "PatientRiskOverview_stats"
+              "dataSectionRefKey": "PatientRiskOverview_stats",
+              "objectKey": "rxsummary"
             }
           }
         ]

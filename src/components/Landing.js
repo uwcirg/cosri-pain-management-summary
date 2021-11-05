@@ -368,37 +368,73 @@ export default class Landing extends Component {
     if (!overviewSection) {
       return false;
     }
-    let stats = [];
+    let stats = {};
     let config = overviewSection.statsConfig;
     if (config) {
       let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: null;
       let statsSource = dataSource ? dataSource : [];
+      let dedupedArr = (arr) => arr.filter((cl, index) => arr.indexOf(cl) === index);
       if (config.data) {
         config.data.forEach(item => {
-          let o = statsSource;
-          if (item.keyMatch) {
+          let o = statsSource, dataSet = [], statItem = {};
+          let keyMatch = item.keyMatch, summaryFields = item.summaryFields, matchSet = item.matchSet;
+          if (keyMatch && matchSet) {
+            (matchSet).forEach(subitem => {
+              let matchItem = {};
+              matchItem[keyMatch] = subitem.display_name;
+              matchItem.data = o.filter(d => {
+                if (Array.isArray(d[keyMatch])) {
+                  return d[keyMatch].indexOf(subitem.key) !== -1;
+                }
+                return d[keyMatch] === subitem.key;
+              });
+              summaryFields.forEach(f => {
+                if (f.skipWhenSum) return true;
+                matchItem[f.key] = (matchItem.data).filter(d => d[f.key]);
+                matchItem[f.key+"_data"] = Array.from(new Set(matchItem[f.key].map(c => c[f.key])));
+              });
+              dataSet.push(matchItem);
+            });
+            let arrMatchKeys = (dataSet.map(cl1 => cl1[keyMatch]));
+            arrMatchKeys = dedupedArr(arrMatchKeys);
+            let finalSet = [];
+            arrMatchKeys.forEach(dk => {
+              let finalItem = {};
+              finalItem[keyMatch] = dk;
+              let matchData = dataSet.filter(d => d[keyMatch] === dk);
+              matchData.forEach(m => {
+                for (let key in m) {
+                  let existingItem = finalItem[key] ? finalItem[key]: [];
+                  finalItem[key] = Array.isArray(m[key]) ? [...existingItem, ...m[key]] : m[key];
+                }
+              });
+              finalSet.push(finalItem);
+            });
+            finalSet.forEach(f => {
+              summaryFields.forEach(fd => {
+                if (fd.key === "total") {
+                  f[fd.key] = f["data"].length;
+                  return true;
+                }
+                if (fd.skipWhenSum) return true;
+                f[fd.key+"_data"] = dedupedArr(f[fd.key+"_data"]);
+                f[fd.key] = f[fd.key+"_data"].length;
+              });
+            });
+            statItem = {
+              fields : summaryFields,
+              data : finalSet
+            };
+            stats[item.title] = statItem;
+          } //end if keyMatch & matchSet
+          else if (item.keyMatch) {
             o = statsSource.filter(element => element[item.keyMatch]);
             o = Array.from(new Set(o.map(subitem => subitem[item.keyMatch])));
+            statItem[item.title] = o.length;
+            stats.push(statItem);
           }
-          let statItem = {};
-          statItem[item.title] = o.length;
-          stats.push(statItem);
         });
       }
-      //add drug class info
-      let arrDrugClasses = statsSource.filter(item=>{
-        return item["Class"] && item["Class"].length > 0
-      });
-      let arrDrugClassKeys = [];
-      arrDrugClasses.forEach(item => {
-        if (item.Class) arrDrugClassKeys = [...arrDrugClassKeys, ...item["Class"]];
-      });
-      arrDrugClassKeys = arrDrugClassKeys.filter((item, index) => arrDrugClassKeys.indexOf(item) === index);
-      arrDrugClassKeys.forEach(item => {
-        let statItem = {};
-        statItem[`Total ${item} Rx`] = statsSource.filter(rx => rx["Class"] && rx["Class"].indexOf(item) !== -1).length;
-        stats.push(statItem);
-      });
     }
     let alerts = [];
     if (sectionFlags) {

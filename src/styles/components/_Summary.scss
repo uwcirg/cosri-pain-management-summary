@@ -218,9 +218,9 @@
       //background-color: $color-uw-gray;
       color: $color-white;
       text-align: center;
-      font-size: 1.5em;
+      font-size: 1.4em;
       font-weight: 600;
-      padding: 10px;
+      padding: 8px;
 
       svg, img {
         margin-right: 20px;
@@ -407,9 +407,9 @@
         flex: 1 auto;
         .sub-section__infopanel {
           border: 2px solid;
-          padding: 12px 12px 16px;
+          padding: 12px;
           margin-bottom: 8px;
-          width: 320px;
+          width: 400px;
           .panel-title {
             font-weight: 700;
             margin-top: 4px;
@@ -418,9 +418,10 @@
           }
           .title {
             font-weight: 700;
+
           }
           .content {
-            font-size: 0.95em;
+            font-size: 0.9em;
           }
           .stats-container {
             .content {
@@ -431,8 +432,19 @@
               margin-left:8px;
               margin-right:8px;
             }
-            .content {
-              padding-left: 8px;
+            .table {
+              th {
+                text-align: left;
+                vertical-align: middle;
+                padding-right: 4px;
+                border-bottom: 2px solid $color-blue;
+              }
+              .Class_cell {
+                padding-right: 16px
+              }
+              td:not(:first-of-type) {
+                text-align: center
+              }
             }
           }
           .alerts-container {
@@ -473,6 +485,7 @@
       @media (min-width: 768px) {
         .panels {
           .sub-panels {
+            margin-left: -56px;
             flex-basis: 50%;
           }
         }
@@ -488,6 +501,13 @@
           .panel.graph {
             flex: 1;
             align-self: stretch;
+          }
+        }
+      }
+      @media (min-width: 1600px) {
+        .panels {
+          .sub-panels {
+            flex-basis: 60%;
           }
         }
       }
