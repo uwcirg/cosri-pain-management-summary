@@ -1,7 +1,7 @@
 .header {
   display: flex;
   align-items: center;
-  height: 100px;
+  height: $min-header-height;
 
   &__return-link .return-icon {
     font-size: 1.5em;
@@ -124,7 +124,7 @@
       }
       .patient-info {
         padding-right: 8px;
-        min-width: 160px;
+        min-width: 180px;
       }
     }
 
