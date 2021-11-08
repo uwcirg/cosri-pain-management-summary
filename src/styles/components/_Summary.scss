@@ -156,16 +156,16 @@
       &::before {
         content: '\203A\203A';
         display: block;
-        font-size: 28px;
         right: 0;
         top: 0;
         position: absolute;
         border: 2px solid;
         border-radius: 100%;
-        width: 32px;
-        height: 32px;
-        font-size: 20px;
+        width: 36px;
+        height: 36px;
+        font-size: 22px;
         text-align: center;
+        cursor: pointer;
       }
     }
     &.open {
@@ -177,7 +177,7 @@
         padding: 96px 0 20px 0px;
       }
       .close {
-        right: 16px;
+        right: 12px;
         transform: translateX(0);
         transform-origin: center;
         &::before {
@@ -192,8 +192,8 @@
       position: fixed;
       z-index: 500;
       &:before {
-        left: 8px;
-        top: 0px;
+        left: 6px;
+        top: 8px;
       }
     }
     &.open {

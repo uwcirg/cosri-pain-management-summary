@@ -14,13 +14,12 @@
             {
               "key": "Class",
               "display_name": "Class",
-              "skipWhenSum": true
+              "identifier": true
             },
             {
               "key": "total",
               "display_name": "# Rx",
-              "empty_cell_display": "0",
-              "skipWhenSum": true
+              "empty_cell_display": "0"
             },
             {
               "key": "Prescriber",
@@ -35,41 +34,30 @@
           ],
           "matchSet": [
             {
-              "key": "opioid",
+              "keys": ["opioid"],
               "display_name": "Opioids"
             },
             {
-              "key": "stimulant",
+              "keys": ["stimulant"],
               "display_name": "Stimulants"
             },
             {
-              "key": "sedative",
+              "keys": ["sedative", "benzodiazepine", "barbiturate"],
               "display_name": "Sedatives/Hypnotics"
             },
             {
-              "key": "benzodiazepine",
-              "display_name": "Sedatives/Hypnotics"
-            },
-            {
-              "key": "barbiturate",
-              "display_name": "Sedatives/Hypnotics"
-            },
-            {
-              "key": "muscle relaxant",
+              "keys": ["muscle relaxant"],
               "display_name": "Muscle Relaxants"
             },
             {
-              "key": "antiepileptic",
+              "keys": ["antiepileptic"],
               "display_name": "Anti-Convulstants"
             },
             {
-              "key": "steroid",
+              "keys": ["steroid"],
               "display_name": "Steroids"
-            },
-            {
-              "key": "cannabinoid",
-              "display_name": "Cannabinoid"
-            }]
+            }
+          ]
         }
       ]
     },

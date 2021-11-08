@@ -200,7 +200,7 @@ export default class Landing extends Component {
             sectionsToBeHidden.push(section);
           }
         });
-        if ((sectionsToBeHidden.length !== summaryMap[key]["sections"].length) && sectionsToBeHidden.length > 0) return true;
+        if ((sectionsToBeHidden.length !== summaryMap[key]["sections"].length) && sectionsToBeHidden.length > 0) continue;
       }
       //hide main section if any
       if (getEnv(`REACT_APP_SECTION_${key.toUpperCase()}`) === "hidden") {
@@ -373,7 +373,6 @@ export default class Landing extends Component {
     if (config) {
       let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: null;
       let statsSource = dataSource ? dataSource : [];
-      let dedupedArr = (arr) => arr.filter((cl, index) => arr.indexOf(cl) === index);
       if (config.data) {
         config.data.forEach(item => {
           let o = statsSource, dataSet = [], statItem = {};
@@ -382,48 +381,31 @@ export default class Landing extends Component {
             (matchSet).forEach(subitem => {
               let matchItem = {};
               matchItem[keyMatch] = subitem.display_name;
-              matchItem.data = o.filter(d => {
-                if (Array.isArray(d[keyMatch])) {
-                  return d[keyMatch].indexOf(subitem.key) !== -1;
-                }
-                return d[keyMatch] === subitem.key;
+              matchItem.data = [];
+              /* get matching data for each key */
+              subitem.keys.forEach(key => {
+                let matchedData = o.filter(d => {
+                  if (Array.isArray(d[keyMatch])) {
+                    return d[keyMatch].indexOf(key) !== -1;
+                  }
+                  return d[keyMatch] === key;
+                });
+                matchItem.data = [...matchItem.data, ...matchedData];
               });
               summaryFields.forEach(f => {
-                if (f.skipWhenSum) return true;
-                matchItem[f.key] = (matchItem.data).filter(d => d[f.key]);
-                matchItem[f.key+"_data"] = Array.from(new Set(matchItem[f.key].map(c => c[f.key])));
+                if (f.key === "total") {
+                  matchItem[f.key] = matchItem.data.length;
+                  return true;
+                }
+                if (f.identifier) return true;
+                let sd = (matchItem.data).filter(d => d[f.key]);
+                matchItem[f.key] = (Array.from(new Set(sd.map(c => c[f.key])))).length;
               });
               dataSet.push(matchItem);
             });
-            let arrMatchKeys = (dataSet.map(cl1 => cl1[keyMatch]));
-            arrMatchKeys = dedupedArr(arrMatchKeys);
-            let finalSet = [];
-            arrMatchKeys.forEach(dk => {
-              let finalItem = {};
-              finalItem[keyMatch] = dk;
-              let matchData = dataSet.filter(d => d[keyMatch] === dk);
-              matchData.forEach(m => {
-                for (let key in m) {
-                  let existingItem = finalItem[key] ? finalItem[key]: [];
-                  finalItem[key] = Array.isArray(m[key]) ? [...existingItem, ...m[key]] : m[key];
-                }
-              });
-              finalSet.push(finalItem);
-            });
-            finalSet.forEach(f => {
-              summaryFields.forEach(fd => {
-                if (fd.key === "total") {
-                  f[fd.key] = f["data"].length;
-                  return true;
-                }
-                if (fd.skipWhenSum) return true;
-                f[fd.key+"_data"] = dedupedArr(f[fd.key+"_data"]);
-                f[fd.key] = f[fd.key+"_data"].length;
-              });
-            });
             statItem = {
               fields : summaryFields,
-              data : finalSet
+              data: dataSet
             };
             stats[item.title] = statItem;
           } //end if keyMatch & matchSet
