@@ -371,11 +371,10 @@ export default class Landing extends Component {
     let stats = {};
     let config = overviewSection.statsConfig;
     if (config) {
-      let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: null;
-      let statsSource = dataSource ? dataSource : [];
+      let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: [];
       if (config.data) {
         config.data.forEach(item => {
-          let o = statsSource, dataSet = [], statItem = {};
+          let dataSet = [], statItem = {};
           let keyMatch = item.keyMatch, summaryFields = item.summaryFields, matchSet = item.matchSet;
           if (keyMatch && matchSet) {
             (matchSet).forEach(subitem => {
@@ -384,7 +383,7 @@ export default class Landing extends Component {
               matchItem.data = [];
               /* get matching data for each key */
               subitem.keys.forEach(key => {
-                let matchedData = o.filter(d => {
+                let matchedData = dataSource.filter(d => {
                   if (Array.isArray(d[keyMatch])) {
                     return d[keyMatch].indexOf(key) !== -1;
                   }
@@ -392,14 +391,15 @@ export default class Landing extends Component {
                 });
                 matchItem.data = [...matchItem.data, ...matchedData];
               });
-              summaryFields.forEach(f => {
-                if (f.key === "total") {
-                  matchItem[f.key] = matchItem.data.length;
+              summaryFields.forEach(summaryField => {
+                if (summaryField.key === "total") {
+                  matchItem[summaryField.key] = matchItem.data.length;
                   return true;
                 }
-                if (f.identifier) return true;
-                let sd = (matchItem.data).filter(d => d[f.key]);
-                matchItem[f.key] = (Array.from(new Set(sd.map(c => c[f.key])))).length;
+                if (summaryField.identifier) return true;
+                let matchedDataByKey = (matchItem.data).filter(dItem => dItem[summaryField.key]);
+                //de-duplicate
+                matchItem[summaryField.key] = (Array.from(new Set(matchedDataByKey.map(dItem => dItem[summaryField.key])))).length;
               });
               dataSet.push(matchItem);
             });
@@ -409,10 +409,10 @@ export default class Landing extends Component {
             };
             stats[item.title] = statItem;
           } //end if keyMatch & matchSet
-          else if (item.keyMatch) {
-            o = statsSource.filter(element => element[item.keyMatch]);
-            o = Array.from(new Set(o.map(subitem => subitem[item.keyMatch])));
-            statItem[item.title] = o.length;
+          else if (keyMatch) {
+            let filteredStatsSource = dataSource.filter(element => element[item.keyMatch]);
+            filteredStatsSource = Array.from(new Set(filteredStatsSource.map(subitem => subitem[item.keyMatch])));
+            statItem[item.title] = filteredStatsSource.length;
             stats.push(statItem);
           }
         });
