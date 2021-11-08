@@ -443,7 +443,8 @@
                 padding-right: 16px
               }
               td:not(:first-of-type) {
-                text-align: center
+                text-align: center;
+                vertical-align: bottom;
               }
             }
           }

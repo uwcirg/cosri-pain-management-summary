@@ -42,8 +42,12 @@
               "display_name": "Stimulants"
             },
             {
-              "keys": ["sedative", "benzodiazepine", "barbiturate"],
-              "display_name": "Sedatives/Hypnotics"
+              "keys": ["benzodiazepine"],
+              "display_name": "Benzodiazepines"
+            },
+            {
+              "keys": ["sedative", "barbiturate"],
+              "display_name": "Non-benzo Sedatives/Hypnotics"
             },
             {
               "keys": ["muscle relaxant"],
