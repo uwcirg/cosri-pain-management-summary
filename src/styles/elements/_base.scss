@@ -21,7 +21,9 @@ body.fixed {
   }
   .summary__nav {
     width: $summary-nav-width;
-    padding: calc(#{$min-header-height} + 24px) 0 20px 0px !important;
+    &.is-position-fixed {
+      padding: calc(#{$min-header-height} + 48px) 0 20px 0px !important;
+    }
   }
   .summary {
     margin-top: $min-header-height;
