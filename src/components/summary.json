@@ -38,10 +38,6 @@
               "display_name": "Opioids"
             },
             {
-              "keys": ["stimulant"],
-              "display_name": "Stimulants"
-            },
-            {
               "keys": ["benzodiazepine"],
               "display_name": "Benzodiazepines"
             },
@@ -52,6 +48,10 @@
             {
               "keys": ["muscle relaxant"],
               "display_name": "Muscle Relaxants"
+            },
+            {
+              "keys": ["stimulant"],
+              "display_name": "Stimulants"
             },
             {
               "keys": ["antiepileptic"],
