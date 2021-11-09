@@ -501,7 +501,7 @@
         .panels {
           .sub-panels {
             margin-left: -56px;
-            flex-basis: 52%;
+            flex-basis: 50%;
           }
         }
       }
@@ -663,13 +663,13 @@
 
             .rt-th:first-child,
             .rt-td:first-child {
-              max-width: 35px;
+              max-width: 32px;
               padding: 0;
             }
 
             .rt-th:nth-child(2),
             .rt-td:nth-child(2) {
-              min-width: calc(60px + 10vw);
+              min-width: calc(52px + 10vw);
             }
             &.single-column {
               .rt-th:nth-child(2),
