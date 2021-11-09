@@ -400,7 +400,9 @@ export default class Summary extends Component {
                 rxData.fields.length > 0?
                 <table className="table">
                     <thead>
-                      {heading}
+                      <tr>
+                        {heading}
+                      </tr>
                     </thead>
                     <tbody>{bodyContent}</tbody>
                 </table>
