@@ -32,6 +32,7 @@ export default class Landing extends Component {
       result: null,
       loading: true,
       collector: [],
+      resourceTypes : {},
       externals: {},
       patientId: "",
       loadingMessage: "Resources are being loaded..."
@@ -58,13 +59,30 @@ export default class Landing extends Component {
   }
   pingProcessProgress() {
     processIntervalId = setInterval(() => {
-     // console.log("collector status ", this.state.collector.length);
-     // console.log("summary map ", summaryMap)
-     let totalResources = Object.keys(summaryMap).length;
-     let numResourcesLoaded = this.state.collector.length;
-     let stillLoading = numResourcesLoaded <= totalResources;
+      let resourcesTypes = this.state.resourceTypes;
+      let totalResources = 0;
+      let numResourcesLoaded = 0;
+      let loadedResources = "";
+      const camel2title = (camelCase) => camelCase
+      .replace(/([A-Z])/g, (match) => ` ${match}`)
+      .replace(/^./, (match) => match.toUpperCase())
+      .trim();
+      for (let key in resourcesTypes) {
+        let title = camel2title(key);
+        if (resourcesTypes[key]) {
+          //data loaded text
+          loadedResources += `<div class='text-success resource-item'>&#10003; ${title} data loaded</div>`;
+          numResourcesLoaded++;
+        } else {
+          //data loading in progress
+          loadedResources += `<div class='text-warning text-bold resource-item'>Loading ${title} data...</div>`;
+        }
+        totalResources++;
+      }
+      let stillLoading = (numResourcesLoaded < totalResources);
+      let textClass = stillLoading?"text-warning": "text-success";
       this.setState({
-        loadingMessage: `<div>${totalResources} resources are being loaded.</div><div><span class='${stillLoading?"text-warning": "text-success"}'>${stillLoading ? (numResourcesLoaded > 0 ? numResourcesLoaded-1: 0) : totalResources} loaded ...</span></div>`
+        loadingMessage: `<div><div class='title-text'>${totalResources === 0 ? "Gathering resources..." : totalResources + ' resources are to be loaded.'}</div><div class='${totalResources === 0 ? "hide" : "title-text"}'><span class='${textClass}'>${stillLoading ? numResourcesLoaded : totalResources} loaded ...</span></div><div class='resources-container'>${loadedResources}</div></div>`
       });
     }, 30);
   }
@@ -228,7 +246,7 @@ export default class Landing extends Component {
     Timeout();
     this.pingProcessProgress();
     let result = {};
-    Promise.all([executeElm(this.state.collector)])
+    Promise.all([executeElm(this.state.collector, this.state.resourceTypes)])
     .then(
       response => {
         //set result from data from EPIC
@@ -240,7 +258,7 @@ export default class Landing extends Component {
         this.setPatientId();
         setTimeout(function() {
           this.clearProcessInterval();
-        }.bind(this), 0);
+        }.bind(this), 100);
         this.processCollectorErrors();
         this.writeToLog("application loaded", "info");
         //add data from other sources, e.g. PDMP

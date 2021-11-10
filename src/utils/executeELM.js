@@ -14,8 +14,9 @@ import r4OMTKLogicELM from '../cql/r4/OMTKLogic.json';
 import valueSetDB from '../cql/valueset-db.json';
 import {getEnv, fetchEnvData} from './envConfig';
 
-function executeELM(collector) {
+function executeELM(collector, resourceTypes) {
   let client, release, library;
+  resourceTypes = resourceTypes || {};
   return new Promise((resolve) => {
     // First get our authorized client and send the FHIR release to the next step
     const results = FHIR.oauth2.ready().then((clientArg) => {
@@ -33,13 +34,22 @@ function executeELM(collector) {
     .then((pt) => {
       collector.push({ data: pt, url: `Patient/${pt.id}`});
       const requests = extractResourcesFromELM(library).map((name) => {
+        resourceTypes[name] = false;
         if (name === 'Patient') {
+          resourceTypes[name] = true;
           return [pt];
         }
-        return doSearch(client, release, name, collector);
+        let p = doSearch(client, release, name, collector);
+        return p.then(resource => {
+          resourceTypes[name] = true;
+          return resource;
+        })
+        //return doSearch(client, release, name, collector);
       });
       console.log("resources ",  requests);
-      console.log("collector ", collector)
+      console.log("collector ", collector);
+      console.log("resourceTypes ", resourceTypes)
+
       // Don't return until all the requests have been resolved
       return Promise.all(requests).then((requestResults) => {
         const resources = [];
