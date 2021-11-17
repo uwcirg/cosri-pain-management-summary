@@ -47,7 +47,8 @@
 //    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was returning the same thing as ReportMMEByDates
 // Update 20211012
 //    Add Service Request query for drug urine screen, in the case of Skagit site, a custom system and code will be used to filter search
-
+// Update 20211116
+//    Add Service Request query for drug urine screen, in the case of Kent site, a custom system and code will be used to filter search, i.e. https://testdirectory.questdiagnostics.com/test, 39428
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
@@ -187,8 +188,10 @@ parameter InclusionMedicationsLookbackPeriod default 180 days //DO WE NEED THIS?
 define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
 //system url for labcorp
 define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
-//lab panel test order code from lab corp
-define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824'}
+//system url for quest diagnostics
+define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.com/test'
+//lab panel test order code from lab corp and quest diagnostics
+define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428'}
 
 
 
@@ -942,7 +945,7 @@ define ReportUrineLabServiceRequestsByCustomCode:
     c is not null and
     c.coding is not null and
     (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
-    c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE
+    (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE)
   )
   return {
     Name: ConceptText(c),
