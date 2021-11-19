@@ -6,7 +6,7 @@
   */
   position: fixed;
   left: 47.5%;
-  top: 45%;
+  top: 20%;
   margin-left: -18px;
   margin-top: -18px;
 
@@ -37,8 +37,18 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 50%;
+  top: 25%;
   color: $color-blue-darker;
+  .title-text {
+    font-size: 1.1em;
+    font-weight: 600;
+  }
+  .resources-container {
+    margin-top: 16px;
+  }
+  .resource-item {
+    margin-bottom: 8px;
+  }
 }
 
 @-webkit-keyframes sk-bouncedelay {
