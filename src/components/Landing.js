@@ -20,6 +20,7 @@ import Spinner from '../elements/Spinner';
 
 let uuid = 0;
 let processIntervalId = 0;
+let scrollHeaderIntervalId = 0;
 
 function generateUuid() {
   return ++uuid; // eslint-disable-line no-plusplus
@@ -291,7 +292,7 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    const MIN_HEADER_HEIGHT = 100;
+    const MIN_HEADER_HEIGHT = 92;
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       tocbot.init({
         tocSelector: '.summary__nav',           // where to render the table of contents
@@ -318,11 +319,15 @@ export default class Landing extends Component {
   handleHeaderPos() {
     window.requestAnimationFrame(() => {
       document.addEventListener("scroll", function(e) {
-        if (!isInViewport(document.querySelector("#anchorTop"))) {
-          document.querySelector("body").classList.add("fixed");
-          return;
-        }
-        document.querySelector("body").classList.remove("fixed");
+        clearTimeout(scrollHeaderIntervalId);
+        scrollHeaderIntervalId = setTimeout(function() {
+          if (!isInViewport(document.querySelector("#anchorTop"))) {
+            document.querySelector("body").classList.add("fixed");
+            return;
+          }
+          document.querySelector("body").classList.remove("fixed");
+        }, 200);
+
       });
     });
   }
@@ -383,21 +388,53 @@ export default class Landing extends Component {
     if (!overviewSection) {
       return false;
     }
-    let stats = [];
+    let stats = {};
     let config = overviewSection.statsConfig;
     if (config) {
-      let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: null;
-      let statsSource = dataSource ? dataSource : [];
+      let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: [];
       if (config.data) {
         config.data.forEach(item => {
-          let o = statsSource;
-          if (item.keyMatch) {
-            o = statsSource.filter(element => element[item.keyMatch]);
-            o = Array.from(new Set(o.map(subitem => subitem[item.keyMatch])));
+          let dataSet = [], statItem = {};
+          let keyMatch = item.keyMatch, summaryFields = item.summaryFields, matchSet = item.matchSet;
+          if (keyMatch && matchSet) {
+            (matchSet).forEach(subitem => {
+              let matchItem = {};
+              matchItem[keyMatch] = subitem.display_name;
+              matchItem.data = [];
+              /* get matching data for each key */
+              subitem.keys.forEach(key => {
+                let matchedData = dataSource.filter(d => {
+                  if (Array.isArray(d[keyMatch])) {
+                    return d[keyMatch].indexOf(key) !== -1;
+                  }
+                  return d[keyMatch] === key;
+                });
+                matchItem.data = [...matchItem.data, ...matchedData];
+              });
+              summaryFields.forEach(summaryField => {
+                if (summaryField.key === "total") {
+                  matchItem[summaryField.key] = matchItem.data.length;
+                  return true;
+                }
+                if (summaryField.identifier) return true;
+                let matchedDataByKey = (matchItem.data).filter(dItem => dItem[summaryField.key]);
+                //de-duplicate
+                matchItem[summaryField.key] = (Array.from(new Set(matchedDataByKey.map(dItem => dItem[summaryField.key])))).length;
+              });
+              dataSet.push(matchItem);
+            });
+            statItem = {
+              fields : summaryFields,
+              data: dataSet
+            };
+            stats[item.title] = statItem;
+          } //end if keyMatch & matchSet
+          else if (keyMatch) {
+            let filteredStatsSource = dataSource.filter(element => element[item.keyMatch]);
+            filteredStatsSource = Array.from(new Set(filteredStatsSource.map(subitem => subitem[item.keyMatch])));
+            statItem[item.title] = filteredStatsSource.length;
+            stats.push(statItem);
           }
-          let statItem = {};
-          statItem[item.title] = o.length;
-          stats.push(statItem);
         });
       }
     }

@@ -8,18 +8,60 @@
       "dataKeySource":"PDMPMedications",
       "data": [
         {
-          "title": "Total PMP Rx",
-          "type": "count"
-        },
-        {
-          "title": "Total Prescribers",
-          "keyMatch": "Prescriber",
-          "type": "count"
-        },
-        {
-          "title": "Total Pharmacies",
-          "keyMatch": "Pharmacy",
-          "type": "count"
+          "title": "rxsummary",
+          "keyMatch": "Class",
+          "summaryFields": [
+            {
+              "key": "Class",
+              "display_name": "Class",
+              "identifier": true
+            },
+            {
+              "key": "total",
+              "display_name": "# Rx",
+              "empty_cell_display": "0"
+            },
+            {
+              "key": "Prescriber",
+              "display_name": "# Prescribers",
+              "empty_cell_display": " "
+            },
+            {
+              "key": "Pharmacy",
+              "display_name": "# Pharmacies",
+              "empty_cell_display": " "
+            }
+          ],
+          "matchSet": [
+            {
+              "keys": ["opioid"],
+              "display_name": "Opioids"
+            },
+            {
+              "keys": ["benzodiazepine"],
+              "display_name": "Benzodiazepines"
+            },
+            {
+              "keys": ["sedative", "barbiturate"],
+              "display_name": "Non-benzo Sedatives/Hypnotics"
+            },
+            {
+              "keys": ["muscle relaxant"],
+              "display_name": "Muscle Relaxants"
+            },
+            {
+              "keys": ["stimulant"],
+              "display_name": "Stimulants"
+            },
+            {
+              "keys": ["antiepileptic"],
+              "display_name": "Anti-Convulsants"
+            },
+            {
+              "keys": ["steroid"],
+              "display_name": "Steroids"
+            }
+          ]
         }
       ]
     },
@@ -64,17 +106,20 @@
             "dataSectionRefKey": "PatientRiskOverview_graph"
           },
           {
-            "type": "overview",
+            "type": "alerts",
             "title": "Patient Risk Assessment",
-            "statsData": {
-              "title": "At A Glance",
-              "type": "stats",
-              "dataSectionRefKey": "PatientRiskOverview_stats"
-            },
             "alertsData": {
-              "title": "Alerts",
               "type": "alerts",
               "dataSectionRefKey": "PatientRiskOverview_alerts"
+            }
+          },
+          {
+            "type": "rxsummary",
+            "title": "Prescription Summary",
+            "statsData": {
+              "type": "stats",
+              "dataSectionRefKey": "PatientRiskOverview_stats",
+              "objectKey": "rxsummary"
             }
           }
         ]
