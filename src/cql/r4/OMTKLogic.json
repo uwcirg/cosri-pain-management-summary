@@ -1210,7 +1210,7 @@
                            },
                            "then" : {
                               "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                              "value" : "1",
+                              "value" : "400",
                               "type" : "Literal"
                            }
                         } ],
@@ -1493,7 +1493,7 @@
                            },
                            "then" : {
                               "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                              "value" : "1",
+                              "value" : "2",
                               "type" : "Literal"
                            }
                         } ],
@@ -2490,7 +2490,7 @@
                            },
                            "then" : {
                               "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                              "value" : "1",
+                              "value" : "100",
                               "type" : "Literal"
                            }
                         } ],

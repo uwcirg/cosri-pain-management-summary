@@ -35,7 +35,7 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 * 09/13/21 Update conversion factors for fentanyl injection, mucosal spray and lozenge product (1, 0.18, 0.13 respectively)
 * 09/13/21 Add conversion factor for benzhydrocodone
 * 09/21/21 BugFix fix integer/decimal daily dose comparison when detetermine conversion factor for Methodone
-* 12/01/21 Add conversion factor for Sufentanil and Alfentanil
+* 12/01/21 Add conversion factor for Sufentanil, Alfentanil, and Remifentanil
 */
 
 include OMTKData version '3.0.0' called OMTKData
@@ -102,8 +102,9 @@ Buprenorphine, film (MCG)	0.03
 Butorphanol	7
 Codeine	0.15
 Dihydrocodeine	0.25
-Alfentanil, Injection 1
-Sufentanil, Injection 1
+Alfentanil, Injection 400
+Sufentanil, Injection 2
+Remifentanil 100
 Fentanyl, buccal/SL tabet or lozenge/troche (MCG)	0.13
 Fentanyl, film or oral spray (MCG)	0.18
 Fentanyl, nasal spray (MCG)	0.16
@@ -135,7 +136,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 161 then 0  /*	Acetaminophen */
     when 480 then ( /* Alfentanil */
       case
-        when ToInteger(doseFormCode.code) = 1649574 then 1 /* injection */
+        when ToInteger(doseFormCode.code) = 1649574 then 400 /* injection */
         else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
       end
     )
@@ -158,7 +159,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 3498 then 0 /*	Diphenhydramine */
     when 56795 then ( /* Sufentanil */
       case
-        when ToInteger(doseFormCode.code) = 1649574 then 1 /* injection */
+        when ToInteger(doseFormCode.code) = 1649574 then 2 /* injection */
         else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
       end
     )
@@ -225,7 +226,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 787390 then 0.4 /*	tapentadol */
     when 73032 then (/*	remifentanil */
       case
-        when ToInteger(doseFormCode.code) = 1649574 then 1 /* injection */
+        when ToInteger(doseFormCode.code) = 1649574 then 100 /* injection */
         else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
       end
     )
