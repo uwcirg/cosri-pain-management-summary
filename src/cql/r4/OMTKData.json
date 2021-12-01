@@ -40027,6 +40027,72 @@
                      "name" : "drugCode",
                      "value" : {
                         "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "1723209",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "drugName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "20 ML Alfentanil 0.5 MG/ML Injection",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "1649574",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Injection",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "480",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Alfentanil",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strength",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "0.5 MG/ML",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthValue",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                        "value" : "0.5",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthUnit",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "MG/ML",
+                        "type" : "Literal"
+                     }
+                  } ]
+               }, {
+                  "type" : "Tuple",
+                  "element" : [ {
+                     "name" : "drugCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                         "value" : "1724276",
                         "type" : "Literal"
                      }
@@ -41338,6 +41404,72 @@
                      "value" : {
                         "valueType" : "{urn:hl7-org:elm-types:r1}String",
                         "value" : "MG/ACTUAT",
+                        "type" : "Literal"
+                     }
+                  } ]
+               }, {
+                  "type" : "Tuple",
+                  "element" : [ {
+                     "name" : "drugCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "1729581",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "drugName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Remifentanil 1 MG Injection [Ultiva]",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "1649574",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Injection",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "73032",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Remifentanil",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strength",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "1 MG",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthValue",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                        "value" : "1.0",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthUnit",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "MG",
                         "type" : "Literal"
                      }
                   } ]
@@ -44301,6 +44433,72 @@
                      "value" : {
                         "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
                         "value" : "30.0",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthUnit",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "MG/ML",
+                        "type" : "Literal"
+                     }
+                  } ]
+               }, {
+                  "type" : "Tuple",
+                  "element" : [ {
+                     "name" : "drugCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "1809102",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "drugName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "2 ML Sufentanil 0.05 MG/ML Injection",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "1649574",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "doseFormName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Injection",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientCode",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "56795",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "ingredientName",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "Sufentanil",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strength",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : " 0.05 MG/ML",
+                        "type" : "Literal"
+                     }
+                  }, {
+                     "name" : "strengthValue",
+                     "value" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                        "value" : "0.05",
                         "type" : "Literal"
                      }
                   }, {
