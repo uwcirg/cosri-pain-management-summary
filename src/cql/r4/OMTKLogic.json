@@ -1182,6 +1182,96 @@
                }, {
                   "when" : {
                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "480",
+                     "type" : "Literal"
+                  },
+                  "then" : {
+                     "type" : "ToDecimal",
+                     "operand" : {
+                        "type" : "Case",
+                        "caseItem" : [ {
+                           "when" : {
+                              "type" : "Equal",
+                              "operand" : [ {
+                                 "type" : "ToInteger",
+                                 "operand" : {
+                                    "path" : "code",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "doseFormCode",
+                                       "type" : "OperandRef"
+                                    }
+                                 }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "1649574",
+                                 "type" : "Literal"
+                              } ]
+                           },
+                           "then" : {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "400",
+                              "type" : "Literal"
+                           }
+                        } ],
+                        "else" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Message",
+                              "source" : {
+                                 "type" : "Null"
+                              },
+                              "condition" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                 "value" : "true",
+                                 "type" : "Literal"
+                              },
+                              "code" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "OMTKLogic.GetConversionFactor.UnknownDoseFor for Alfentanil",
+                                 "type" : "Literal"
+                              },
+                              "severity" : {
+                                 "name" : "ErrorLevel",
+                                 "type" : "ParameterRef"
+                              },
+                              "message" : {
+                                 "type" : "Concatenate",
+                                 "operand" : [ {
+                                    "type" : "Coalesce",
+                                    "operand" : [ {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "Unknown dose form code ",
+                                       "type" : "Literal"
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "",
+                                       "type" : "Literal"
+                                    } ]
+                                 }, {
+                                    "type" : "Coalesce",
+                                    "operand" : [ {
+                                       "path" : "code",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "doseFormCode",
+                                          "type" : "OperandRef"
+                                       }
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "",
+                                       "type" : "Literal"
+                                    } ]
+                                 } ]
+                              }
+                           }
+                        }
+                     }
+                  }
+               }, {
+                  "when" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                      "value" : "1191",
                      "type" : "Literal"
                   },
@@ -1370,6 +1460,96 @@
                         "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                         "value" : "0",
                         "type" : "Literal"
+                     }
+                  }
+               }, {
+                  "when" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "56795",
+                     "type" : "Literal"
+                  },
+                  "then" : {
+                     "type" : "ToDecimal",
+                     "operand" : {
+                        "type" : "Case",
+                        "caseItem" : [ {
+                           "when" : {
+                              "type" : "Equal",
+                              "operand" : [ {
+                                 "type" : "ToInteger",
+                                 "operand" : {
+                                    "path" : "code",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "doseFormCode",
+                                       "type" : "OperandRef"
+                                    }
+                                 }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "1649574",
+                                 "type" : "Literal"
+                              } ]
+                           },
+                           "then" : {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "2",
+                              "type" : "Literal"
+                           }
+                        } ],
+                        "else" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Message",
+                              "source" : {
+                                 "type" : "Null"
+                              },
+                              "condition" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                 "value" : "true",
+                                 "type" : "Literal"
+                              },
+                              "code" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "OMTKLogic.GetConversionFactor.UnknownDoseForm for Sufentanil",
+                                 "type" : "Literal"
+                              },
+                              "severity" : {
+                                 "name" : "ErrorLevel",
+                                 "type" : "ParameterRef"
+                              },
+                              "message" : {
+                                 "type" : "Concatenate",
+                                 "operand" : [ {
+                                    "type" : "Coalesce",
+                                    "operand" : [ {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "Unknown dose form code ",
+                                       "type" : "Literal"
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "",
+                                       "type" : "Literal"
+                                    } ]
+                                 }, {
+                                    "type" : "Coalesce",
+                                    "operand" : [ {
+                                       "path" : "code",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "doseFormCode",
+                                          "type" : "OperandRef"
+                                       }
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "",
+                                       "type" : "Literal"
+                                    } ]
+                                 } ]
+                              }
+                           }
+                        }
                      }
                   }
                }, {
@@ -2278,6 +2458,96 @@
                      "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
                      "value" : "0.4",
                      "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "73032",
+                     "type" : "Literal"
+                  },
+                  "then" : {
+                     "type" : "ToDecimal",
+                     "operand" : {
+                        "type" : "Case",
+                        "caseItem" : [ {
+                           "when" : {
+                              "type" : "Equal",
+                              "operand" : [ {
+                                 "type" : "ToInteger",
+                                 "operand" : {
+                                    "path" : "code",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "doseFormCode",
+                                       "type" : "OperandRef"
+                                    }
+                                 }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "1649574",
+                                 "type" : "Literal"
+                              } ]
+                           },
+                           "then" : {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "100",
+                              "type" : "Literal"
+                           }
+                        } ],
+                        "else" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Message",
+                              "source" : {
+                                 "type" : "Null"
+                              },
+                              "condition" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                 "value" : "true",
+                                 "type" : "Literal"
+                              },
+                              "code" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "OMTKLogic.GetConversionFactor.UnknownDoseForm for remifentanil",
+                                 "type" : "Literal"
+                              },
+                              "severity" : {
+                                 "name" : "ErrorLevel",
+                                 "type" : "ParameterRef"
+                              },
+                              "message" : {
+                                 "type" : "Concatenate",
+                                 "operand" : [ {
+                                    "type" : "Coalesce",
+                                    "operand" : [ {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "Unknown dose form code ",
+                                       "type" : "Literal"
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "",
+                                       "type" : "Literal"
+                                    } ]
+                                 }, {
+                                    "type" : "Coalesce",
+                                    "operand" : [ {
+                                       "path" : "code",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "doseFormCode",
+                                          "type" : "OperandRef"
+                                       }
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "",
+                                       "type" : "Literal"
+                                    } ]
+                                 } ]
+                              }
+                           }
+                        }
+                     }
                   }
                }, {
                   "when" : {

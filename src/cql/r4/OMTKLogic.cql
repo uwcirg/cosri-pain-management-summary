@@ -35,6 +35,7 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 * 09/13/21 Update conversion factors for fentanyl injection, mucosal spray and lozenge product (1, 0.18, 0.13 respectively)
 * 09/13/21 Add conversion factor for benzhydrocodone
 * 09/21/21 BugFix fix integer/decimal daily dose comparison when detetermine conversion factor for Methodone
+* 12/01/21 Add conversion factor for Sufentanil, Alfentanil, and Remifentanil
 */
 
 include OMTKData version '3.0.0' called OMTKData
@@ -101,6 +102,9 @@ Buprenorphine, film (MCG)	0.03
 Butorphanol	7
 Codeine	0.15
 Dihydrocodeine	0.25
+Alfentanil, Injection 400
+Sufentanil, Injection 2
+Remifentanil 100
 Fentanyl, buccal/SL tabet or lozenge/troche (MCG)	0.13
 Fentanyl, film or oral spray (MCG)	0.18
 Fentanyl, nasal spray (MCG)	0.16
@@ -130,6 +134,12 @@ Oliceridine 5
 define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, doseFormCode Code):
   case ToInteger(ingredientCode.code)
     when 161 then 0  /*	Acetaminophen */
+    when 480 then ( /* Alfentanil */
+      case
+        when ToInteger(doseFormCode.code) = 1649574 then 400 /* injection */
+        else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseFor for Alfentanil', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
+      end
+    )
     when 1191 then 0 /*	Aspirin */
     when 1223 then 0 /*	Atropine */
     when 1767 then 0 /*	Brompheniramine */
@@ -147,6 +157,12 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 2670 then 0.15 /*	Codeine */
     when 3423 then 4 /*	Hydromorphone */
     when 3498 then 0 /*	Diphenhydramine */
+    when 56795 then ( /* Sufentanil */
+      case
+        when ToInteger(doseFormCode.code) = 1649574 then 2 /* injection */
+        else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm for Sufentanil', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
+      end
+    )
     when 4337 then ( /*	Fentanyl */
       case
         when ToInteger(doseFormCode.code) in { 970789, 317007, 316992 } then 0.13 /* Buccal Tablet, Sublingual Tablet, Oral Lozenge */
@@ -208,6 +224,12 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 237005 then 8 /*	Levomethadyl (NOTE: given as Levomethadyl acetate in the CDC conversion table) */
     when 636827 then 0 /*	guaiacolsulfonate */
     when 787390 then 0.4 /*	tapentadol */
+    when 73032 then (/*	remifentanil */
+      case
+        when ToInteger(doseFormCode.code) = 1649574 then 100 /* injection */
+        else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm for remifentanil', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
+      end
+    )
     when 2001352 then 1.22 /* benzhydrocodone */
     when 2392230 then 5 /* oliceridine */
     else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownIngredientCode', ErrorLevel, 'Unknown ingredient code: ' & ingredientCode.code)
