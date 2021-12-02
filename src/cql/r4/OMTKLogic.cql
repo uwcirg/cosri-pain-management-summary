@@ -137,7 +137,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 480 then ( /* Alfentanil */
       case
         when ToInteger(doseFormCode.code) = 1649574 then 400 /* injection */
-        else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
+        else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseFor for Alfentanil', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
       end
     )
     when 1191 then 0 /*	Aspirin */
@@ -160,7 +160,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 56795 then ( /* Sufentanil */
       case
         when ToInteger(doseFormCode.code) = 1649574 then 2 /* injection */
-        else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
+        else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm for Sufentanil', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
       end
     )
     when 4337 then ( /*	Fentanyl */
@@ -227,7 +227,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 73032 then (/*	remifentanil */
       case
         when ToInteger(doseFormCode.code) = 1649574 then 100 /* injection */
-        else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
+        else Message(null, true, 'OMTKLogic.GetConversionFactor.UnknownDoseForm for remifentanil', ErrorLevel, 'Unknown dose form code ' & doseFormCode.code)
       end
     )
     when 2001352 then 1.22 /* benzhydrocodone */

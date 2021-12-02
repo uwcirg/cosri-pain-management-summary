@@ -1229,7 +1229,7 @@
                               },
                               "code" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "OMTKLogic.GetConversionFactor.UnknownDoseForm",
+                                 "value" : "OMTKLogic.GetConversionFactor.UnknownDoseFor for Alfentanil",
                                  "type" : "Literal"
                               },
                               "severity" : {
@@ -1512,7 +1512,7 @@
                               },
                               "code" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "OMTKLogic.GetConversionFactor.UnknownDoseForm",
+                                 "value" : "OMTKLogic.GetConversionFactor.UnknownDoseForm for Sufentanil",
                                  "type" : "Literal"
                               },
                               "severity" : {
@@ -2509,7 +2509,7 @@
                               },
                               "code" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "OMTKLogic.GetConversionFactor.UnknownDoseForm",
+                                 "value" : "OMTKLogic.GetConversionFactor.UnknownDoseForm for remifentanil",
                                  "type" : "Literal"
                               },
                               "severity" : {
