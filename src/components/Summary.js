@@ -180,7 +180,8 @@ export default class Summary extends Component {
                 icon="exclamation-circle"
                 tabIndex={0}
             /> <span className="text">{item.text}</span> */}
-            <span className="text"><b className="title">{item.title}</b>: {item.text}</span>
+            {item.title && <span className="text"><b className="title">{item.title}</b>: {item.text}</span>}
+            {!item.title && <span className="text">{item.text}</span>}
           </div>
           })
         }
@@ -551,7 +552,7 @@ export default class Summary extends Component {
 
     if (section === 'PatientRiskOverview') {
       icon = <ChartIcon {...iconProps} />;
-    } else if (section === 'PertinentMedicalHistory') {
+    } else if (section === 'PertinentMedicalHistory' || section === 'CSAgreement') {
       icon = <MedicalHistoryIcon {...iconProps} />;
     } else if (section === 'HistoricalTreatments') {
       icon = <MedicineIcon {...iconProps} />;

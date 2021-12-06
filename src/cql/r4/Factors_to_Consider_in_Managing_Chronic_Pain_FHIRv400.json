@@ -260,6 +260,15 @@
                } ]
             }
          }, {
+            "name" : "CS_AGREEMENT_CODE",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "94136-9",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "Patient",
             "context" : "Patient",
             "expression" : {
@@ -9437,6 +9446,138 @@
                }
             }
          }, {
+            "name" : "ReportCSAgreement",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "DO",
+                  "expression" : {
+                     "dataType" : "{http://hl7.org/fhir}DocumentReference",
+                     "type" : "Retrieve"
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "O",
+                  "expression" : {
+                     "name" : "DO",
+                     "type" : "AliasRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "where" : {
+                  "type" : "And",
+                  "operand" : [ {
+                     "type" : "And",
+                     "operand" : [ {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "path" : "type",
+                              "scope" : "DO",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "path" : "coding",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "type",
+                                 "scope" : "DO",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     } ]
+                  }, {
+                     "type" : "Equivalent",
+                     "operand" : [ {
+                        "name" : "ToString",
+                        "libraryName" : "FHIRHelpers",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "path" : "code",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "path" : "coding",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "type",
+                                    "scope" : "DO",
+                                    "type" : "Property"
+                                 }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        } ]
+                     }, {
+                        "name" : "CS_AGREEMENT_CODE",
+                        "type" : "ExpressionRef"
+                     } ]
+                  } ]
+               },
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Date",
+                        "value" : {
+                           "name" : "InstantText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "date",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "O",
+                                 "type" : "QueryLetRef"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "Next_Due_Date",
+                        "value" : {
+                           "type" : "Add",
+                           "operand" : [ {
+                              "name" : "ToDateTime",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "date",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "O",
+                                    "type" : "QueryLetRef"
+                                 }
+                              } ]
+                           }, {
+                              "value" : 12,
+                              "unit" : "months",
+                              "type" : "Quantity"
+                           } ]
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "Date",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
             "name" : "Summary",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -9642,6 +9783,18 @@
                         "name" : "ReportAllUrineScreens",
                         "value" : {
                            "name" : "ReportAllUrineScreens",
+                           "type" : "ExpressionRef"
+                        }
+                     } ]
+                  }
+               }, {
+                  "name" : "CSAgreement",
+                  "value" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "ReportCSAgreement",
+                        "value" : {
+                           "name" : "ReportCSAgreement",
                            "type" : "ExpressionRef"
                         }
                      } ]
