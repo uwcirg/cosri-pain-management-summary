@@ -624,9 +624,6 @@ define ReportRiskFactorsForOpioidRelatedHarms:
   sort by (if Onset is not null then Onset as String else Visit.Start) desc, Visit.End desc, (Abatement as String) desc
 
 
-
-
-
 // HISTORICAL TREATMENTS
 
 // Opioid medication orders and statements with dates
@@ -1135,7 +1132,10 @@ define ReportNaloxoneMedications:
 //Controlled substance agreement
 define ReportCSAgreement:
   [DocumentReference] DO
-  let O:  DO where DO.type is not null and DO.type.coding is not null and DO.type.coding[0].code ~ CS_AGREEMENT_CODE
+  let O: DO where
+    DO.type is not null and
+    DO.type.coding is not null and
+    DO.type.coding[0].code ~ CS_AGREEMENT_CODE
   return {
     Date: InstantText(O.date),
     Next_Due_Date: O.date + 12 months
