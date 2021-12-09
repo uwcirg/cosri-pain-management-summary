@@ -105,16 +105,12 @@ export default class Landing extends Component {
     if (pdmpMeds && pdmpMeds["PDMPMedications"]) {
       let o = pdmpMeds["PDMPMedications"];
       let errors = [];
-      let errorItems = [];
       o.forEach(item => {
-        //do not report medication that has been reported
-        if (errorItems.filter(errorItem => errorItem["name"] === item["name"]).length > 0) return true;
         let isOpioid = item["Class"] && (item["Class"]).filter(medClass => {
           return String(medClass).toLowerCase() === "opioid"}).length > 0;
         //IF not an opioid med don't raise error
         //look for medication that contains NDC code but not RxNorm Code, or contains all necessary information (NDC Code, RxNorm Code and Drug Class) but no MME
         if (isOpioid && item["NDC_Code"] && (!item["RXNorm_Code"] || !item["MME"])) {
-          errorItems.push(item);
           errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`);
           //log failed MME calculation
           this.writeToLog(`MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} Factor: ${item.factor}`, "error", {tags: ["mme-calc"]});
