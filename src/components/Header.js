@@ -60,10 +60,11 @@ export default class Header extends Component {
         </div>
         <div className="header__summary">
           <div className="header__summary-patient">
-            <FontAwesomeIcon className="patient-icon" icon="user-circle" title="patient" />
             <div className="patient-info">
-              <h1 className="patient-name">{patientName}</h1>
-
+              <div>
+                <FontAwesomeIcon className="patient-icon" icon="user-circle" title="patient" />
+                <h1 className="patient-name">{patientName}</h1>
+              </div>
               <div className="patient-demographics">
                 <span className="patient-dob" aria-label="Date of birth">DOB: {patientDOB}</span>
                 <span className="patient-gender">{patientGender}</span>
