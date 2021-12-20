@@ -296,7 +296,7 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    const MIN_HEADER_HEIGHT = 92;
+    const MIN_HEADER_HEIGHT = 100;
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       tocbot.init({
         tocSelector: '.summary__nav',           // where to render the table of contents
