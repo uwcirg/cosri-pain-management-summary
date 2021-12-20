@@ -1243,12 +1243,18 @@
             },
             "flags": [
               {
-                "flag": "ifNone",
+                "flag": {
+                  "ifAnd": [
+                    "ifNone",
+                    "ifAdult"
+                  ]
+                },
                 "flagText": "No controlled substance agreement found for this patient."
               },
               {
                 "flag": {
                   "ifAnd": [
+                    "ifAdult",
                     {
                       "ifMostRecent": {
                         "targetField": "Date"
@@ -1268,6 +1274,7 @@
               {
                 "flag": {
                   "ifAnd": [
+                    "ifAdult",
                     {
                       "ifMostRecent": {
                         "targetField": "Date"
@@ -1287,6 +1294,7 @@
               {
                 "flag": {
                   "ifAnd": [
+                    "ifAdult",
                     {
                       "ifMostRecent": {
                         "targetField": "Date"
