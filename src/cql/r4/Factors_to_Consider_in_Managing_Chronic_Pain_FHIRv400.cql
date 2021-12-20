@@ -49,6 +49,8 @@
 //    Add Service Request query for drug urine screen, in the case of Skagit site, a custom system and code will be used to filter search
 // Update 20211116
 //    Add Service Request query for drug urine screen, in the case of Kent site, a custom system and code will be used to filter search, i.e. https://testdirectory.questdiagnostics.com/test, 39428
+// Update 20211206
+//   Add Document Reference query for controlled substance agreement, a LOINC code of 94136-9 is used
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
@@ -192,7 +194,8 @@ define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
 define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.com/test'
 //lab panel test order code from lab corp and quest diagnostics
 define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428'}
-
+//CS agreement concept code
+define CS_AGREEMENT_CODE: '94136-9'
 
 
 // # CDS logic #
@@ -619,9 +622,6 @@ define ReportRiskFactorsForOpioidRelatedHarms:
       union ReportOlderThan65
       union ReportMostRecentPositivePregnancyObservation) C
   sort by (if Onset is not null then Onset as String else Visit.Start) desc, Visit.End desc, (Abatement as String) desc
-
-
-
 
 
 // HISTORICAL TREATMENTS
@@ -1129,6 +1129,19 @@ define ReportNaloxoneMedications:
   (ReportNaloxoneMedicationRequests union ReportNaloxoneMedicationStatements) M
   sort by Start desc, End desc
 
+//Controlled substance agreement
+define ReportCSAgreement:
+  [DocumentReference] DO
+  let O: DO where
+    DO.type is not null and
+    DO.type.coding is not null and
+    DO.type.coding[0].code ~ CS_AGREEMENT_CODE
+  return {
+    Date: InstantText(O.date),
+    Next_Due_Date: O.date + 12 months
+  }
+  sort by Date desc
+
 
 // SUMMARY
 
@@ -1151,6 +1164,9 @@ define Summary: {
   },
   UrineDrugScreens: {
     ReportAllUrineScreens: ReportAllUrineScreens
+  },
+  CSAgreement: {
+    ReportCSAgreement: ReportCSAgreement
   },
   HistoricalTreatments: {
     OpioidMedications: ReportOpioidMedications,

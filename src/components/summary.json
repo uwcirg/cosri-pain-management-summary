@@ -1212,6 +1212,113 @@
       }
     ]
   },
+
+  "CSAgreement": {
+    "title": "Controlled Substance Agreement",
+    "skipDataInfo": true,
+    "sections": [
+      {
+        "name": "Controlled Substance Agreement",
+        "dataKey": "ReportCSAgreement",
+        "dataKeySource": "CSAgreement",
+        "omitTitle": true,
+        "guideline": [
+          {
+            "type": "WA",
+            "text": "A Controlled Substance agreement with the patient is required annually."
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "Date"
+        },
+        "tables": [
+          {
+            "headers": {
+              "Date": {
+                "key": "Date",
+                "formatter": "datishFormat",
+                "minWidth": 150
+              }
+            },
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifNone",
+                    "ifAdult"
+                  ]
+                },
+                "flagText": "No controlled substance agreement found for this patient."
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "if3MonthsDue" : {
+                        "targetField": "Next_Due_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "A controlled substance agreement is due for this patient on or before [DATE].",
+                "flagClass": "warning",
+                "flagDateField": "Next_Due_Date"
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "if4MonthsDue": {
+                        "targetField": "Next_Due_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "A controlled substance agreement is due for this patient on or before [DATE].",
+                "flagClass": "warning-light",
+                "flagDateField": "Next_Due_Date"
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "ifOverdue" : {
+                        "targetField": "Next_Due_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "It has been more than 12 months since the last controlled substance agreement with this patient.",
+                "flagDateField": "Date"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+
+
   "EducationMaterials": {
     "title":"Education Materials",
     "skipDataInfo": true,
