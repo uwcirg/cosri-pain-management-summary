@@ -36,7 +36,6 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 * 09/13/21 Add conversion factor for benzhydrocodone
 * 09/21/21 BugFix fix integer/decimal daily dose comparison when detetermine conversion factor for Methodone
 * 12/01/21 Add conversion factor for Sufentanil, Alfentanil, and Remifentanil
-* 12/21/21 Add conversion factor for Diphenoxylate
 */
 
 include OMTKData version '3.0.0' called OMTKData
@@ -102,7 +101,6 @@ Buprenorphine, tablet or film	30
 Buprenorphine, film (MCG)	0.03
 Butorphanol	7
 Codeine	0.15
-Diphenoxylate 0.15
 Dihydrocodeine	0.25
 Alfentanil, Injection 400
 Sufentanil, Injection 2
@@ -156,7 +154,6 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 2101 then 0 /*	Carisoprodol */
     when 2354 then 0 /*	chlorcyclizine */
     when 2400 then 0 /*	Chlorpheniramine */
-    when 3500 then 0.15 /*	Diphenoxylate */
     when 2670 then 0.15 /*	Codeine */
     when 3423 then 4 /*	Hydromorphone */
     when 3498 then 0 /*	Diphenhydramine */

@@ -1426,17 +1426,6 @@
                }, {
                   "when" : {
                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                     "value" : "3500",
-                     "type" : "Literal"
-                  },
-                  "then" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                     "value" : "0.15",
-                     "type" : "Literal"
-                  }
-               }, {
-                  "when" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                      "value" : "2670",
                      "type" : "Literal"
                   },
