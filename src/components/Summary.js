@@ -380,7 +380,7 @@ export default class Summary extends Component {
 
   renderRxSummaryPanel(panel) {
     let panelSet = this.props.summary[panel.statsData.dataSectionRefKey];
-    let rxPanel = panelSet[panel.statsData.objectKey];
+    let rxPanel = panelSet ? panelSet[panel.statsData.objectKey] : null;
     let rxData = panelSet && rxPanel ? rxPanel : [];
     let heading = rxData.fields ? (rxData.fields).map((item, index) => {
       return <th key={`stats_head_${index}`}>{item.display_name}</th>;

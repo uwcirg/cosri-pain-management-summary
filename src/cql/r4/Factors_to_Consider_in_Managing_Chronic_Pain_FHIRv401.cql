@@ -41,33 +41,31 @@
 //    remove age restriction as the inclusion criterion
 // Update 20210825
 //    Add Class for PDMP Medication, add function getMedicationRequestDrugClass to retrieve drug class
-// Update 20210927
-//    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
-// Update 20211008
-//    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was returning the same thing as ReportMMEByDates
-// Update 20211012
-//    Add Service Request query for drug urine screen, in the case of Skagit site, a custom system and code will be used to filter search
-// Update 20211116
-//    Add Service Request query for drug urine screen, in the case of Kent site, a custom system and code will be used to filter search, i.e. https://testdirectory.questdiagnostics.com/test, 39428
-// Update 20211206
-//   Add Document Reference query for controlled substance agreement, a LOINC code of 94136-9 is used
-library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
+
+// The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
+// CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
+// 4.0.1, the following additional changes were made based on new capabilities in later versions of the CQL spec and tooling:
+// - URL-based value set identifiers are used rather than plain OIDs
+// - code/concept pairs are no longer needed; code definitions are sufficient, so concept definitions have been removed
+//
+
+library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv401 version '1.0.0'
 
 
 
 // # Data model #
 
 // FHIR Version
-using FHIR version '4.0.0'
+using FHIR version '4.0.1'
 
 
 
 // # Referenced libraries #
 
-// The CDS Connect Commons for FHIRv400 library provides functions representing commonly used CDS logic and patterns.
-include CDS_Connect_Commons_for_FHIRv400 version '1.0.1' called C3F
+// The CDS Connect Commons for FHIRv401 library provides functions representing commonly used CDS logic and patterns.
+include CDS_Connect_Commons_for_FHIRv401 version '1.0.0' called C3F
 // The FHIRHelpers library provides common functions for simplifying interaction w/ the FHIR R4 data model.
-include FHIRHelpers version '4.0.0' called FHIRHelpers
+include FHIRHelpers version '4.0.1' called FHIRHelpers
 // The MMECalculator library is used to compute the patient's MME/MED
 include MMECalculator version '3.0.0' called MMECalculator
 
@@ -80,111 +78,155 @@ codesystem "LOINC": 'http://loinc.org'
 codesystem "SNOMED-CT": 'http://snomed.info/sct'
 
 
+// Several concepts needed by the Pain Management Summary CDS do not yet have standardized codes associated with them.
+// The CDS logic authors have registered new Logical Object Identifier Names and Codes (LOINC) codes, but they are
+// not yet available.  Once available, the CDS will be updated.  Until then, CDS implementors will need to map to
+// local codes (signified by the LOCAL code system below) or replace them with their own codes.
+codesystem "LOCAL": 'http://cds.ahrq.gov/cdsconnect/pms'
+
 // ## Value sets ##
+
 // List value sets used by the artifact. The links to the Value Set Authority Center (VSAC) point to the latest
 // expansion of each value set available.
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.37/expansion)
-valueset "Conditions associated with chronic pain": '2.16.840.1.113762.1.4.1032.37'
+valueset "Conditions associated with chronic pain": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.37'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.34/expansion)
-valueset "Opioid Pain Medications": '2.16.840.1.113762.1.4.1032.34'
+valueset "Opioid Pain Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.34'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.54/expansion)
-valueset "Adjuvant Analgesic Medications": '2.16.840.1.113762.1.4.1032.54'
+valueset "Adjuvant Analgesic Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.54'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.105.12.1007/expansion)
-valueset "Major Depression": '2.16.840.1.113883.3.464.1003.105.12.1007'
+valueset "Major Depression": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.105.12.1007'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.600.143/expansion)
-valueset "Depression Diagnosis ICD9": '2.16.840.1.113883.3.600.143'
+valueset "Depression Diagnosis ICD9": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.600.143'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.52/expansion)
-valueset "Anxiety": '2.16.840.1.113762.1.4.1032.52'
+valueset "Anxiety": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.52'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.1240.2017.3.2.1015/expansion)
-valueset "Anxiety Disorders ICD9": '2.16.840.1.113883.3.1240.2017.3.2.1015'
+valueset "Anxiety Disorders ICD9": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.1240.2017.3.2.1015'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.106.12.1004/expansion)
-valueset "Substance use disorder": '2.16.840.1.113883.3.464.1003.106.12.1004'
+valueset "Substance use disorder": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.106.12.1004'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.106.11.1010/expansion)
-valueset "Substance Abuse": '2.16.840.1.113883.3.464.1003.106.11.1010'
-
-// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1146.1008/expansion)
-valueset "Opioid overdose and poisoning (ICD10CM)": '2.16.840.1.113762.1.4.1146.1008'
-
-// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1146.1063/expansion)
-valueset "Opioid overdose and poisoning (SNOMED)": '2.16.840.1.113762.1.4.1146.1063'
+valueset "Substance Abuse": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.106.11.1010'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.102/expansion)
-valueset "Suicide Attempt": '2.16.840.1.113762.1.4.1032.102'
+valueset "Suicide Attempt": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.102'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.53/expansion)
-valueset "Sleep-disordered breathing": '2.16.840.1.113762.1.4.1032.53'
+valueset "Sleep-disordered breathing": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.53'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.109.12.1028/expansion)
-valueset "Kidney Failure": '2.16.840.1.113883.3.464.1003.109.12.1028'
+valueset "Kidney Failure": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.109.12.1028'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.199.12.1035/expansion)
-valueset "Chronic Liver Disease": '2.16.840.1.113883.3.464.1003.199.12.1035'
+valueset "Chronic Liver Disease": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.199.12.1035'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1047.42/expansion)
-valueset "Liver Disease": '2.16.840.1.113762.1.4.1047.42'
+valueset "Liver Disease": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1047.42'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.526.3.378/expansion)
-valueset "Pregnancy": '2.16.840.1.113883.3.526.3.378'
+valueset "Pregnancy": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.3.378'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.80/expansion)
-valueset "Pregnancy (New ICD10 codes published in 2018 and 2019)": '2.16.840.1.113762.1.4.1032.80'
+valueset "Pregnancy (New ICD10 codes published in 2018 and 2019)": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.80'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.26/expansion)
-valueset "Non opiod pain medications": '2.16.840.1.113762.1.4.1032.26'
+valueset "Non opiod pain medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.26'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.36/expansion)
-valueset "Non pharmacologic treatments for chronic pain": '2.16.840.1.113762.1.4.1032.36'
+valueset "Non pharmacologic treatments for chronic pain": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.36'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.55/expansion)
-valueset "Risk assessments relevant to pain management": '2.16.840.1.113762.1.4.1032.55'
+valueset "Risk assessments relevant to pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.55'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.43/expansion)
-valueset "Benzodiazepine medications": '2.16.840.1.113762.1.4.1032.43'
-
-// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.196.11.1152/expansion)
-valueset "Carisoprodol": '2.16.840.1.113883.3.464.1003.196.11.1152'
-
-// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.196.11.1314/expansion)
-valueset "Aspirin / Carisoprodol": '2.16.840.1.113883.3.464.1003.196.11.1314'
+valueset "Benzodiazepine medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.43'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.42/expansion)
-valueset "Naloxone medications": '2.16.840.1.113762.1.4.1032.42'
+valueset "Naloxone medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.42'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.28/expansion)
-valueset "Urine drug screen for pain management": '2.16.840.1.113762.1.4.1032.28'
+valueset "Urine drug screen for pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.28'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.44/expansion)
-valueset "Stool softeners and laxatives": '2.16.840.1.113762.1.4.1032.44'
-
+valueset "Stool softeners and laxatives": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.44'
 
 // ## Individual codes ##
-// List of individual codes from code systems used directly in the CQL logic. Individual codes are used when there is
+
+// list individual codes from code systems used directly in the CQL logic. Individual codes are used when there is
 // a single code from a particular vocabulary standard used to represent a clinical concept. It is considered
 // best-practice not to create value sets containing a single code.
-code "Pregnancy status code": '82810-3' from "LOINC" display 'Pregnancy status'
-code "Pregnant code": '77386006' from "SNOMED-CT" display 'Patient currently pregnant (finding)'
 
+code "Pregnancy status": '82810-3' from "LOINC" display 'Pregnancy status'
+code "Pregnant": '77386006' from "SNOMED-CT" display 'Patient currently pregnant (finding)'
+code "Patient Health Questionnaire 2 item (PHQ-2) total score [Reported]":
+  '55758-7' from "LOINC" display 'Patient Health Questionnaire 2 item (PHQ-2) total score [Reported]'
+code "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]":
+  '44261-6' from "LOINC" display 'Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]'
+code "Generalized anxiety disorder 7 item (GAD-7) total score [Reported.PHQ]":
+  '70274-6' from "LOINC" display 'Generalized anxiety disorder 7 item (GAD-7) total score [Reported.PHQ]'
+code "Total score [AUDIT]": '75624-7' from "LOINC" display 'Total score [AUDIT]'
+code "Total score [AUDIT-C]": '75626-2' from "LOINC" display 'Total score [AUDIT-C]'
+code "Total score [DAST-10]": '82667-7' from "LOINC" display 'Total score [DAST-10]'
+code "Total score ORT": '91392-1' from "LOINC" display 'Total score ORT'
+code "Pain severity Wong-Baker FACES Scale": '38221-8' from "LOINC" display 'Pain severity Wong-Baker FACES Scale'
 
-// CQL currently requires concept declarations to contain references to code declarations.
-concept "Pregnancy status": { "Pregnancy status code" } display 'Pregnancy status'
-concept "Pregnant": { "Pregnant code" } display 'Patient currently pregnant (finding)'
+// The Pain intensity, Enjoyment of life, General activity scale [PEG] now has standardized LOINC codes available.
+// These LOINC codes were not available when the initial version of the Pain Management Summary was developed.
+// New systems implementing the Pain Management Summary should use the standardized codes, but the legacy local codes
+// are also retained in order to allow existing systems to continue to function. Existing systems, however, are
+// strongly encouraged to adopt the standardized LOINC codes.
 
+code "Mean score [PEG]": '91147-9' from "LOINC" display 'Mean score [PEG]'
+code "Pain severity in the past week - 0-10 numeric rating [Reported]":
+  '75893-8' from "LOINC" display 'Pain severity in the past week - 0-10 numeric rating [Reported]'
+code "What number best describes how pain has interfered with your enjoyment of life during the past week":
+  '91145-3' from "LOINC" display 'What number best describes how pain has interfered with your enjoyment of life during the past week'
+code "What number best describes how pain has interfered with your general activity during the past week":
+  '91146-1' from "LOINC" display 'What number best describes how pain has interfered with your general activity during the past week'
 
+// Legacy local codes for the Pain intensity, Enjoyment of life, General activity scale [PEG].
+// New systems should use the LOINC codes above instead.
+
+code "Pain Enjoyment General Activity (PEG) Assessment LEGACY":
+  'PEGASSESSMENT' from "LOCAL" display 'Pain Enjoyment General Activity (PEG) Assessment'
+code "Pain LEGACY": 'PEGPAIN' from "LOCAL" display 'Pain'
+code "Enjoyment of life LEGACY": 'PEGENJOYMENT' from "LOCAL" display 'Enjoyment of life'
+code "General activity LEGACY": 'PEGGENERALACTIVITY' from "LOCAL" display 'General activity'
+
+// The STarT Back Screening Tool now has a standardized LOINC code available. This LOINC code was not available
+// when the initial version of the Pain Management Summary was developed. New systems implementing the Pain Management
+// Summary should use the standardized code, but the legacy local code is also retained in order to allow existing
+// systems to continue to function. Existing systems, however, are strongly encouraged to adopt the standardized LOINC
+// code.
+
+code "Total score [STarT Back]": '91351-7' from "LOINC" display 'Total score [STarT Back]'
+
+// Legacy local code for the STarT Back Screening Tool. New systems should use the LOINC codes above instead.
+
+code "STarT Back Screening Tool LEGACY": 'STARTBACK' from "LOCAL" display 'STarT Back Screening Tool'
+
+// The following codes do not yet have standardized codes associated with them so are expressed as LOCAL codes.
+// As standardized codes become available, this CDS will be updated to use standard codes rather than LOCAL codes.
+
+code "Single question r/t ETOH use": 'SQETOHUSE' from "LOCAL" display 'Single question r/t ETOH use'
+code "Single question r/t drug use": 'SQDRUGUSE' from "LOCAL" display 'Single question r/t drug use'
+code "Morphine Milligram Equivalent (MME)": 'MME' from "LOCAL" display 'Morphine Milligram Equivalent (MME)'
+
+code "Carisoprodol": '25076002' from "SNOMED-CT"  display 'Carisoprodol'
 
 // # Parameters #
 
 // The InclusionMedicationsLookbackPeriod allows CDS implementors to specify how far the inclusion logic should look
 // back for qualifying active medications. By default, the inclusion logic will look back 180 days.
-parameter InclusionMedicationsLookbackPeriod default 180 days //DO WE NEED THIS?
+parameter InclusionMedicationsLookbackPeriod default 180 days
 
 //system url from PDMP identifier
 define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
@@ -211,8 +253,50 @@ context Patient
 // `display` on each `coding` until it finds a non-null value.  Some PEG codes are normalized due to length.
 // @param c - a FHIR CodeableConcept to get text from
 // @returns {System.String} the display text or null if none is found
+
 define function ConceptText(c FHIR.CodeableConcept):
+  if c ~ "Mean score [PEG]" or c ~ "Pain Enjoyment General Activity (PEG) Assessment LEGACY"
+    then 'Mean score [PEG]'
+  else if c ~ "Pain severity in the past week - 0-10 numeric rating [Reported]" or c ~ "Pain LEGACY"
+    then 'Pain'
+  else if c ~ "What number best describes how pain has interfered with your enjoyment of life during the past week"
+       or c ~ "Enjoyment of life LEGACY"
+    then 'Enjoyment of life'
+  else if c ~ "What number best describes how pain has interfered with your general activity during the past week"
+       or c ~ "General activity LEGACY"
+    then 'General activity'
+  else
     Coalesce(c.text.value, Coalesce((c.coding) c2 return c2.display.value))
+
+// We do not reliably get ranges back from EHR data, but ranges are important to understanding assessment scores in
+// the summary.  This function adds ranges to the name for known assessments.
+// @param c - a FHIR CodeableConcept to get the updated text for
+// @returns {System.String} the display text with range information appended
+define function ConceptTextWithRange(c FHIR.CodeableConcept):
+  if c ~ "Patient Health Questionnaire 2 item (PHQ-2) total score [Reported]"
+    then ConceptText(c) + ' [Range: 0-6]'
+  else if c ~ "Patient Health Questionnaire 9 item (PHQ-9) total score [Reported]"
+    then ConceptText(c) + ' [Range: 0-27]'
+  else if c ~ "Generalized anxiety disorder 7 item (GAD-7) total score [Reported.PHQ]"
+    then ConceptText(c) + ' [Range: 0-21]'
+  else if c ~ "Total score [AUDIT]"
+    then ConceptText(c) + ' [Range: 0-40]'
+  else if c ~ "Total score [AUDIT-C]"
+    then ConceptText(c) + ' [Range: 0-12]'
+  else if c ~ "Total score [DAST-10]"
+    then ConceptText(c) + ' [Range: 0-10]'
+  else if c ~ "Total score ORT"
+    then ConceptText(c) + ' [Range: 0-26]'
+  else if c ~ "Pain severity Wong-Baker FACES Scale"
+    then ConceptText(c) + ' [Range: 0-10]'
+  else if c ~ "Mean score [PEG]"
+       or c ~ "Pain Enjoyment General Activity (PEG) Assessment LEGACY"
+    then ConceptText(c) + ' [Range: 0-10]'
+  else if c ~ "Total score [STarT Back]"
+       or c ~ "STarT Back Screening Tool LEGACY"
+    then ConceptText(c) + ' [Range: 0-9]'
+  else
+    ConceptText(c)
 
 // Returns a text representation of a date using the CQL `ToString` function.
 // @param d - a FHIR date to get text for
@@ -430,10 +514,10 @@ define ReportConditionsAssociatedWithChronicPain:
   return {
     Name:   ConceptText(C.code),
     Status: C.clinicalStatus.coding[0].code.value,
-    Onset:  Onset(C),
+    Onset:  if C is not null then Onset(C) else null,
     DateRecorded: DateTimeText(C.recordedDate)
   }
-  sort by (Onset as String) desc
+  sort by (if Onset is not null then Onset as String else DateRecorded) desc
 
 
 // Conditions that are risk factors for opioid-related harms and their dates of onset
@@ -449,10 +533,6 @@ define AnxietyConditions:
 define SubstanceUseDisorderConditions:
   C3F.Confirmed([Condition: "Substance use disorder"])
   union C3F.Confirmed([Condition: "Substance Abuse"])
-
-define OpioidOverdoseAndPoisoningConditions:
-  C3F.Confirmed([Condition: "Opioid overdose and poisoning (ICD10CM)"])
-  union C3F.Confirmed([Condition: "Opioid overdose and poisoning (SNOMED)"])
 
 define SuicideAttemptConditions:
   C3F.Confirmed([Condition: "Suicide Attempt"])
@@ -490,13 +570,11 @@ define ConditionRiskFactorsForOpioidRelatedHarms:
   DepressionConditions
   union AnxietyConditions
   union SubstanceUseDisorderConditions
-  union OpioidOverdoseAndPoisoningConditions
   union SuicideAttemptConditions
   union SleepDisorderedBreathingConditions
   union RenalDysfunctionConditions
   union HepaticDysfunctionConditions
   union PregnancyConditions
-
 
 // Encounter diagnoses that are risk factors for opioid-related harms and their dates of onset. Some risk factors may
 // not exist on the problem list, and therefore may not be represented as Conditions (depending on EHR implementation).
@@ -512,8 +590,6 @@ define EncounterRiskFactorsForOpioidRelatedHarms:
       or FHIRHelpers.ToConcept(R) in "Anxiety Disorders ICD9"
       or FHIRHelpers.ToConcept(R) in "Substance use disorder"
       or FHIRHelpers.ToConcept(R) in "Substance Abuse"
-      or FHIRHelpers.ToConcept(R) in "Opioid overdose and poisoning (ICD10CM)"
-      or FHIRHelpers.ToConcept(R) in "Opioid overdose and poisoning (SNOMED)"
       or FHIRHelpers.ToConcept(R) in "Suicide Attempt"
       or FHIRHelpers.ToConcept(R) in "Sleep-disordered breathing"
       or FHIRHelpers.ToConcept(R) in "Kidney Failure"
@@ -522,14 +598,11 @@ define EncounterRiskFactorsForOpioidRelatedHarms:
       // Pregnancy not considered in Encounter diagnoses because this is an unrestricted lookback.
   )
 
-
 // NOTE: As a convention, if an expression's name starts with "Report", its purpose is to format data for the purpose
 // of building the final summary object.
-
 // Format the risk factors in a uniform way despite the different sources of the data (conditions, encounter diagnoses,
 // etc.). Note that conditions do not have a "Visit" date and encounter diagnoses do not have a status, onset date,
 // recorded date, or abatement date.
-
 define ReportConditionRiskFactorsForOpioidRelatedHarms:
   (ConditionRiskFactorsForOpioidRelatedHarms) C
   return {
@@ -550,8 +623,6 @@ define function GetEncounterDiagnosesRiskFactorsForOpioidRelatedHarms(enc Encoun
       or FHIRHelpers.ToConcept(R) in "Anxiety Disorders ICD9"
       or FHIRHelpers.ToConcept(R) in "Substance use disorder"
       or FHIRHelpers.ToConcept(R) in "Substance Abuse"
-      or FHIRHelpers.ToConcept(R) in "Opioid overdose and poisoning (ICD10CM)"
-      or FHIRHelpers.ToConcept(R) in "Opioid overdose and poisoning (SNOMED)"
       or FHIRHelpers.ToConcept(R) in "Suicide Attempt"
       or FHIRHelpers.ToConcept(R) in "Sleep-disordered breathing"
       or FHIRHelpers.ToConcept(R) in "Kidney Failure"
@@ -575,7 +646,6 @@ define ReportEncounterRiskFactorsForOpioidRelatedHarms:
 // Shape the pregnancy Observation as a Condition, since this is the backup approach for detecting a pregnancy in case
 // there are no active Conditions found.
 define ReportMostRecentPositivePregnancyObservation:
-{
   if MostRecentPregnancyObservationIsPositive then
     {
       Name: ConceptText(MostRecentPregnancyObservation.code),
@@ -591,11 +661,9 @@ define ReportMostRecentPositivePregnancyObservation:
     }
   else
     null
-}
 
 // Shape the case of being 65 or older as a Condition for the purposes of building the summary.
 define ReportOlderThan65:
-{
   if Is65orOlder then
     {
       Name: '65 years or older',
@@ -607,7 +675,6 @@ define ReportOlderThan65:
     }
   else
     null
-}
 
 define ReportRiskFactorsForOpioidRelatedHarms:
   // If a pregnancy Condition is present, use that.
@@ -622,7 +689,6 @@ define ReportRiskFactorsForOpioidRelatedHarms:
       union ReportOlderThan65
       union ReportMostRecentPositivePregnancyObservation) C
   sort by (if Onset is not null then Onset as String else Visit.Start) desc, Visit.End desc, (Abatement as String) desc
-
 
 // HISTORICAL TREATMENTS
 
@@ -1012,14 +1078,12 @@ define CarisoprodolMedicationRequests:
   //remove consideration for status field
   C3F.MedicationRequestLookBack(
     [MedicationRequest: "Carisoprodol"]
-    union [MedicationRequest: "Aspirin / Carisoprodol"]
   , 100 years)
 
 define CarisoprodolMedicationStatements:
   //remove consideration for status field
   C3F.MedicationStatementLookBack(
     [MedicationStatement: "Carisoprodol"]
-    union [MedicationStatement: "Aspirin / Carisoprodol"]
   , 100 years)
 
 
@@ -1132,13 +1196,13 @@ define ReportNaloxoneMedications:
 //Controlled substance agreement
 define ReportCSAgreement:
   [DocumentReference] DO
-  let O: DO where
+  where
     DO.type is not null and
     DO.type.coding is not null and
-    DO.type.coding[0].code ~ CS_AGREEMENT_CODE
+    DO.type.coding[0].code.value ~ CS_AGREEMENT_CODE
   return {
-    Date: InstantText(O.date),
-    Next_Due_Date: O.date + 12 months
+    Date: InstantText(DO.date),
+    Next_Due_Date: DO.date + 12 months
   }
   sort by Date desc
 
