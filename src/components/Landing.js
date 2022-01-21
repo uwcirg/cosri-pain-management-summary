@@ -176,7 +176,8 @@ export default class Landing extends Component {
     if (!summary) return;
     const patientName =  (summary&&summary.Patient?summary.Patient.Name:"");
     //pdmp data
-    const pdmpData = summary["PDMPMedications"]["PDMPMedications"];
+    const pdmpData = summary["PDMPMedications"] ? summary["PDMPMedications"]["PDMPMedications"]: null;
+    if (!pdmpData) return;
     const pdmpContext = "CQL PMP MME Result";
     const fileName = patientName.replace(/\s/g, "_") + "_MME_Result";
     this.saveData({

@@ -9,6 +9,17 @@
     font-size: 0.95rem;
     box-shadow: 1px 1px 2px $color-box-shadow;
 }
+.button-default {
+    background: #FFF;
+    color: #444;
+    border: 1px solid #bbb6b6;
+    border-radius: 4px;
+    letter-spacing: 0.02rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 1px 1px 2px $color-box-shadow;
+    padding: 12px 16px;
+}
 button.disabled {
     opacity: 0.5
 }
