@@ -137,6 +137,7 @@ var Timeout = (function() {
   function checkTimeout() {
     let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
     if (isAboutToExpire()) {
+      //if session is about to expire, pop up modal to inform user as such and then redirect back to patient search
       openModal();
       //back to patient search
       setTimeout(function() {
@@ -189,8 +190,6 @@ var Timeout = (function() {
   * initialize user events that will reset the timeout timer
   * will not logout user when is active
   */
-  //before reset countdown, check if the token will expire soon
-  // currently just reset countdown without logging out user
   function resetTimeoutEvents() {
     document.querySelector(".App").addEventListener("click", function() {
       checkTimeout();
