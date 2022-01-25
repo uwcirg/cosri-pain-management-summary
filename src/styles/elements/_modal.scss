@@ -87,6 +87,7 @@ body.ReactModal__Body--open {
   }
   &__buttonsContainer {
     z-index: 999;
+    margin-top: 8px;
     margin-bottom: 32px;
     display: flex;
     justify-content: center;

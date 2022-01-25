@@ -141,7 +141,7 @@ var Timeout = (function() {
       openModal();
       //back to patient search
       setTimeout(function() {
-        window.location = getEnv("REACT_APP_DASHBOARD_URL");
+        window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/clear_session";
       }, 5000);
       printDebugStatement("Session about to expire. Time elapsed since first visiting " + timeElapsed);
       return;
@@ -235,8 +235,8 @@ var Timeout = (function() {
           <div class="info-modal">
               <div class="info-modal__header">Session Timeout Notice</div>
               <div class="info-modal__content text-bold">
-                <h2 class="error">Your session is about to time out.</h2>
-                <p>One moment while we redirect you back...</p>
+                <h2 class="error" style="margin-bottom:12px">Your session is about to time out.</h2>
+                <p style="display:inline">One moment while we redirect you back...</p><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
               </div>
               <div class="info-modal__buttonsContainer"><button class="button-default" onClick="window.redirectToLogout()">Log out</button></div>
           </div>
