@@ -235,8 +235,10 @@ var Timeout = (function() {
           <div class="info-modal">
               <div class="info-modal__header">Session Timeout Notice</div>
               <div class="info-modal__content text-bold">
-                <h2 class="error" style="margin-bottom:12px">Your session is about to time out.</h2>
-                <p style="display:inline">One moment while we redirect you back...</p><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                <h3 class="error title">Your session is about to time out.</h3>
+                <div class="description">
+                  <span>One moment while we redirect you back...</span><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                </div>
               </div>
               <div class="info-modal__buttonsContainer"><button class="button-default" onClick="window.redirectToLogout()">Log out</button></div>
           </div>

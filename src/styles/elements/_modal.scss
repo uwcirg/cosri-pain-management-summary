@@ -83,11 +83,18 @@ body.ReactModal__Body--open {
     }
   }
   &__content {
-    padding: 16px;
+    .title {
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .description {
+      margin-bottom: 4px;
+      text-align: center;
+    }
   }
   &__buttonsContainer {
     z-index: 999;
-    margin-top: 8px;
+    margin-top: 16px;
     margin-bottom: 32px;
     display: flex;
     justify-content: center;
