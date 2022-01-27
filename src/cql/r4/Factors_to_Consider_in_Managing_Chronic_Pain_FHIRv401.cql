@@ -33,14 +33,36 @@
 //    Also removed an old superfluous function
 // Update 20200819
 //    Updated to include MME Calculation
+//        // Using lib MMECalculator version 3.0.0
+//        //see ReportMME & ReportMMEByDates
 // Update 20200904
 //    Code cleaning
 // Update 20210628
 //    use Last Fill date as the Start Date for MME value calculation, it was using authored date
+//    new functions added:
+//      GetMedicationRequestDispensedQuantity, GetMedicationRequestPharmacy, GetMedicationRequestEndDate,
+//      GetMedicationRequestDispensedDate
 // Update 20210805
 //    remove age restriction as the inclusion criterion
 // Update 20210825
-//    Add Class for PDMP Medication, add function getMedicationRequestDrugClass to retrieve drug class
+//    Add Class for PDMP Medication
+//      see new function getMedicationRequestDrugClass to retrieve drug class
+// Update 20210927
+//    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
+//      see ReportSedativeMedicationRequests & ReportBarbiturateMedicationRequests
+// Update 20211008
+//    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being
+//    included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was
+//    returning the same thing as ReportMMEByDates
+// Update 20211012
+//    Add Service Request query for drug urine screen, in the case of Skagit site, a custom system and
+//    code will be used to filter search, see new function, ReportUrineLabServiceRequestsByCustomCode
+// Update 20211116
+//    Add Service Request query for drug urine screen, in the case of Kent site, a custom system and code
+//    will be used to filter search, i.e. https://testdirectory.questdiagnostics.com/test, 39428
+// Update 20211206
+//   Add Document Reference query for controlled substance agreement, a LOINC code of 94136-9 is used
+//      see new function ReportCSAgreement
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -113,6 +135,11 @@ valueset "Anxiety Disorders ICD9": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.8
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.106.12.1004/expansion)
 valueset "Substance use disorder": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.106.12.1004'
 
+// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1146.1008/expansion)
+valueset "Opioid overdose and poisoning (ICD10CM)": '2.16.840.1.113762.1.4.1146.1008'
+// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1146.1063/expansion)
+valueset "Opioid overdose and poisoning (SNOMED)": '2.16.840.1.113762.1.4.1146.1063'
+
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.106.11.1010/expansion)
 valueset "Substance Abuse": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.106.11.1010'
 
@@ -148,6 +175,11 @@ valueset "Risk assessments relevant to pain management": 'https://cts.nlm.nih.go
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.43/expansion)
 valueset "Benzodiazepine medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.43'
+
+// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.196.11.1152/expansion)
+valueset "Carisoprodol": '2.16.840.1.113883.3.464.1003.196.11.1152'
+// [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.196.11.1314/expansion)
+valueset "Aspirin / Carisoprodol": '2.16.840.1.113883.3.464.1003.196.11.1314'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.42/expansion)
 valueset "Naloxone medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.42'
@@ -220,7 +252,7 @@ code "Single question r/t ETOH use": 'SQETOHUSE' from "LOCAL" display 'Single qu
 code "Single question r/t drug use": 'SQDRUGUSE' from "LOCAL" display 'Single question r/t drug use'
 code "Morphine Milligram Equivalent (MME)": 'MME' from "LOCAL" display 'Morphine Milligram Equivalent (MME)'
 
-code "Carisoprodol": '25076002' from "SNOMED-CT"  display 'Carisoprodol'
+//code "Carisoprodol": '25076002' from "SNOMED-CT"  display 'Carisoprodol'
 
 // # Parameters #
 
@@ -520,6 +552,10 @@ define SubstanceUseDisorderConditions:
   C3F.Confirmed([Condition: "Substance use disorder"])
   union C3F.Confirmed([Condition: "Substance Abuse"])
 
+define OpioidOverdoseAndPoisoningConditions:
+  C3F.Confirmed([Condition: "Opioid overdose and poisoning (ICD10CM)"])
+  union C3F.Confirmed([Condition: "Opioid overdose and poisoning (SNOMED)"])
+
 define SuicideAttemptConditions:
   C3F.Confirmed([Condition: "Suicide Attempt"])
 
@@ -556,6 +592,7 @@ define ConditionRiskFactorsForOpioidRelatedHarms:
   DepressionConditions
   union AnxietyConditions
   union SubstanceUseDisorderConditions
+  union OpioidOverdoseAndPoisoningConditions
   union SuicideAttemptConditions
   union SleepDisorderedBreathingConditions
   union RenalDysfunctionConditions
@@ -576,6 +613,8 @@ define EncounterRiskFactorsForOpioidRelatedHarms:
       or FHIRHelpers.ToConcept(R) in "Anxiety Disorders ICD9"
       or FHIRHelpers.ToConcept(R) in "Substance use disorder"
       or FHIRHelpers.ToConcept(R) in "Substance Abuse"
+      or FHIRHelpers.ToConcept(R) in "Opioid overdose and poisoning (ICD10CM)"
+      or FHIRHelpers.ToConcept(R) in "Opioid overdose and poisoning (SNOMED)"
       or FHIRHelpers.ToConcept(R) in "Suicide Attempt"
       or FHIRHelpers.ToConcept(R) in "Sleep-disordered breathing"
       or FHIRHelpers.ToConcept(R) in "Kidney Failure"
@@ -609,6 +648,8 @@ define function GetEncounterDiagnosesRiskFactorsForOpioidRelatedHarms(enc Encoun
       or FHIRHelpers.ToConcept(R) in "Anxiety Disorders ICD9"
       or FHIRHelpers.ToConcept(R) in "Substance use disorder"
       or FHIRHelpers.ToConcept(R) in "Substance Abuse"
+      or FHIRHelpers.ToConcept(R) in "Opioid overdose and poisoning (ICD10CM)"
+      or FHIRHelpers.ToConcept(R) in "Opioid overdose and poisoning (SNOMED)"
       or FHIRHelpers.ToConcept(R) in "Suicide Attempt"
       or FHIRHelpers.ToConcept(R) in "Sleep-disordered breathing"
       or FHIRHelpers.ToConcept(R) in "Kidney Failure"
@@ -1209,7 +1250,7 @@ define Summary: {
   },
 
   PertinentMedicalHistory: {
-  //  ConditionsAssociatedWithChronicPain: ReportConditionsAssociatedWithChronicPain,
+    ConditionsAssociatedWithChronicPain: ReportConditionsAssociatedWithChronicPain,
     RiskFactorsForOpioidRelatedHarms: ReportRiskFactorsForOpioidRelatedHarms
   },
   UrineDrugScreens: {
@@ -1219,8 +1260,8 @@ define Summary: {
     ReportCSAgreement: ReportCSAgreement
   },
   HistoricalTreatments: {
- //   OpioidMedications: ReportOpioidMedications,
- //   NonOpioidMedications: ReportNonOpioidMedications,
+    OpioidMedications: ReportOpioidMedications,
+    NonOpioidMedications: ReportNonOpioidMedications,
     NonPharmacologicTreatments: ReportNonPharmacologicTreatments,
     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
   },
