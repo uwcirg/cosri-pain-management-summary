@@ -22,7 +22,7 @@ it('renders the summary display', () => {
 });
 
 it('renders all subsection headers', () => {
-  expect(component.find('.sub-section__header')).toHaveLength(14);
+  expect(component.find('.sub-section__header')).toHaveLength(18);
 });
 
 // TODO: Fix this test (it broke when React-Table was introduced)

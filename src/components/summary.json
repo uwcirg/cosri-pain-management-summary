@@ -169,7 +169,7 @@
           {
             "headers": {
               "Drug Description": "Name",
-              "Class": {"key": "Class", "formatter": "listToStringFormat", "sortable": true},
+              "Class": {"key": "Class", "minWidth": 120, "formatter": "listToStringFormat", "sortable": true},
               "Quantity": "Quantity",
               "Duration": "Duration",
               "MME": {"key": "MME", "formatter": "numberFormat", "default": "Not returned", "sortable": true},

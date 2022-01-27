@@ -8,7 +8,7 @@ The Pain Management Summary SMART on FHIR application was developed to support t
 
 The Pain Management Summary SMART on FHIR application was piloted during Summer 2018.  Local modifications and development were needed to fully support this application in the pilot environment.  For example, custom development was needed to expose pain assessments via the FHIR API. See the pilot reports for more information.
 
-This application was originally piloted with support for FHIR DSTU2.  The app has been updated since the pilot to also support FHIR R4, although pilot R4 support has not been piloted in a clinical setting.
+This application was originally piloted with support for FHIR DSTU2.  The app has been updated since the pilot to also support FHIR R4, although pilot R4 support has not been piloted in a clinical setting.  In addition, value sets and standardized codes have been updated since the pilot.  See the comments in the bundled CQL for details.
 
 This prototype application is part of the [CDS Connect](https://cds.ahrq.gov/cdsconnect) project, sponsored by the [Agency for Healthcare Research and Quality](https://www.ahrq.gov/) (AHRQ), and developed under contract with AHRQ by [MITRE's CAMH](https://www.mitre.org/centers/cms-alliances-to-modernize-healthcare/who-we-are) FFRDC.
 
@@ -30,11 +30,6 @@ This CDS logic queries for several concepts that do not yet have standardized co
 
 | Code | System | Display |
 | --- | --- | --- |
-| PEGASSESSMENT | http://cds.ahrq.gov/cdsconnect/pms | Pain Enjoyment General Activity (PEG) Assessment |
-| PEGPAIN | http://cds.ahrq.gov/cdsconnect/pms | Pain |
-| PEGENJOYMENT | http://cds.ahrq.gov/cdsconnect/pms | Enjoyment of life |
-| PEGGENERALACTIVITY | http://cds.ahrq.gov/cdsconnect/pms | General activity |
-| STARTBACK | http://cds.ahrq.gov/cdsconnect/pms | STarT Back Screening Tool |
 | SQETOHUSE | http://cds.ahrq.gov/cdsconnect/pms | Single question r/t ETOH use |
 | SQDRUGUSE | http://cds.ahrq.gov/cdsconnect/pms | Single question r/t drug use |
 | MME | http://cds.ahrq.gov/cdsconnect/pms | Morphine Milligram Equivalent (MME) |
@@ -43,7 +38,7 @@ Systems integrating the Pain Management Summary will need to expose the correspo
 
 ### To build and run in development:
 
-1. Install [Node.js](https://nodejs.org/en/download/) (LTS edition, currently 8.x)
+1. Install [Node.js](https://nodejs.org/en/download/) (LTS edition, currently 12.x)
 2. Install [Yarn](https://yarnpkg.com/en/docs/install) (1.3.x or above)
 3. Install dependencies by executing `yarn` from the project's root directory
 4. If you have a SMART-on-FHIR client ID, edit `public/launch-context.json` to specify it
@@ -55,7 +50,7 @@ Systems integrating the Pain Management Summary will need to expose the correspo
 
 The Pain Management Summary can be deployed as static web resources on any HTTP server.  There are several customizations, however, that need to be made based on the site where it is deployed.
 
-1. Install [Node.js](https://nodejs.org/en/download/) (LTS edition, currently 8.x)
+1. Install [Node.js](https://nodejs.org/en/download/) (LTS edition, currently 12.x)
 2. Install [Yarn](https://yarnpkg.com/en/docs/install) (1.3.x or above)
 3. Install dependencies by executing `yarn` from the project's root directory
 4. Modify the `homepage` value in `package.json` to reflect the path (after the hostname) at which it will be deployed
@@ -71,11 +66,38 @@ The Pain Management Summary can be deployed as static web resources on any HTTP 
 
 Optionally to step 9, you can run the static build contents in a simple Node http-server via the command: `yarn start-static`.
 
+### To update the valueset-db.json file
+
+The value set content used by the CQL is cached in a file named `valueset-db.json`.  If the CQL has been modified to add or remove value sets, or if the value sets themselves have been updated, you may wish to update the valueset-db.json with the latest codes.  To do this, you will need a [UMLS Terminology Services account](https://uts.nlm.nih.gov//license.html).
+
+To update the `valueset-db.json` file:
+
+1. Run `node src/utils/updateValueSetDB.js UMLS_API_KEY` _(replacing UMLS\_API\_KEY with your actual UMLS API key)_
+
+To get you UMLS API Key:
+
+1. Sign into your UMLS account at [https://uts.nlm.nih.gov/uts.html](https://uts.nlm.nih.gov/uts.html)
+2. Click 'My Profile' in the orange banner at the top of the screen
+3. Your API key should be listed below your username in the table
+4. If no API key is listed:
+   1. Click ‘Edit Profile’
+   2. Select the ‘Generate new API Key’ checkbox
+   3. Click ‘Save Profile’
+   4. Your new API key should now be listed.
+
 ### To run the unit tests
 
 To execute the unit tests:
 
 1. Run `yarn test`
+
+### To update the test patients' date-based fields
+
+Testing this SMART App is more meaningful when we can supply test patients that exercise various aspects of the application.  Test patients are represented as FHIR bundles at `src/utils/dstu2_test_patients` and `r4_test_patients`.  Since the CDS uses lookbacks (for example, only show MME in the last 6 months), the patient data occasionally needs to be updated to fit within the lookback windows. To automatically update the data to fit within the lookback windows as of today's date:
+
+1. Run `yarn update-test-patients`
+
+This will update all of the entries in the patient bundles to be appropriate relative to today's date. In addition, it sets each bundle's `meta.lastUpdated` to the current date. This is essential for ensuring that future updates work correctly since it uses the `meta.lastUpdated` date to determine how far back each other date should be relative to today.
 
 ## To test the app using the public SMART sandbox
 

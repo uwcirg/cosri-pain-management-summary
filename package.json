@@ -82,7 +82,7 @@
     "eject": "rescripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "fix-vs-db": "node ./src/utils/fixVsDb",
+    "update-test-patients": "node ./src/utils/updateTestPatients",
     "upload-test-patients": "node ./src/utils/uploadTestPatients",
     "lint": "eslint ."
   }

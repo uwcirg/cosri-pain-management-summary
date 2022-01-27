@@ -3392,57 +3392,110 @@
             "accessLevel" : "Public",
             "type" : "FunctionDef",
             "expression" : {
-               "type" : "If",
-               "condition" : {
-                  "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
-                  "type" : "As",
-                  "operand" : {
-                     "type" : "GreaterOrEqual",
-                     "operand" : [ {
-                        "type" : "LastPositionOf",
-                        "pattern" : {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                           "value" : "/",
-                           "type" : "Literal"
-                        },
-                        "string" : {
-                           "name" : "unit",
-                           "type" : "OperandRef"
-                        }
-                     }, {
-                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                        "value" : "0",
-                        "type" : "Literal"
-                     } ]
-                  }
-               },
-               "then" : {
-                  "type" : "Substring",
-                  "stringToSub" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "X",
+                  "expression" : {
                      "name" : "unit",
                      "type" : "OperandRef"
-                  },
-                  "startIndex" : {
-                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                     "value" : "0",
-                     "type" : "Literal"
-                  },
-                  "length" : {
-                     "type" : "LastPositionOf",
-                     "pattern" : {
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "split",
+                  "expression" : {
+                     "type" : "Split",
+                     "stringToSplit" : {
+                        "name" : "unit",
+                        "type" : "OperandRef"
+                     },
+                     "separator" : {
                         "valueType" : "{urn:hl7-org:elm-types:r1}String",
                         "value" : "/",
                         "type" : "Literal"
+                     }
+                  }
+               }, {
+                  "identifier" : "splitCount",
+                  "expression" : {
+                     "type" : "Count",
+                     "source" : {
+                        "name" : "split",
+                        "type" : "QueryLetRef"
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Greater",
+                           "operand" : [ {
+                              "name" : "splitCount",
+                              "type" : "QueryLetRef"
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "1",
+                              "type" : "Literal"
+                           } ]
+                        }
                      },
-                     "string" : {
+                     "then" : {
+                        "type" : "Substring",
+                        "stringToSub" : {
+                           "name" : "unit",
+                           "type" : "OperandRef"
+                        },
+                        "startIndex" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "value" : "0",
+                           "type" : "Literal"
+                        },
+                        "length" : {
+                           "type" : "Subtract",
+                           "operand" : [ {
+                              "type" : "Subtract",
+                              "operand" : [ {
+                                 "type" : "Length",
+                                 "operand" : {
+                                    "name" : "unit",
+                                    "type" : "OperandRef"
+                                 }
+                              }, {
+                                 "type" : "Length",
+                                 "operand" : {
+                                    "type" : "Indexer",
+                                    "operand" : [ {
+                                       "name" : "split",
+                                       "type" : "QueryLetRef"
+                                    }, {
+                                       "type" : "Subtract",
+                                       "operand" : [ {
+                                          "name" : "splitCount",
+                                          "type" : "QueryLetRef"
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "1",
+                                          "type" : "Literal"
+                                       } ]
+                                    } ]
+                                 }
+                              } ]
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "1",
+                              "type" : "Literal"
+                           } ]
+                        }
+                     },
+                     "else" : {
                         "name" : "unit",
                         "type" : "OperandRef"
                      }
                   }
-               },
-               "else" : {
-                  "name" : "unit",
-                  "type" : "OperandRef"
                }
             },
             "operand" : [ {
@@ -3816,12 +3869,16 @@
                      }, {
                         "name" : "unit",
                         "value" : {
-                           "path" : "unit",
-                           "type" : "Property",
-                           "source" : {
-                              "name" : "strength",
-                              "type" : "OperandRef"
-                           }
+                           "name" : "StripPer",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "unit",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "strength",
+                                 "type" : "OperandRef"
+                              }
+                           } ]
                         }
                      } ]
                   }
@@ -4758,11 +4815,18 @@
                                              "value" : " * factor: ",
                                              "type" : "Literal"
                                           }, {
-                                             "type" : "ToString",
-                                             "operand" : {
-                                                "name" : "factor",
-                                                "type" : "QueryLetRef"
-                                             }
+                                             "type" : "Coalesce",
+                                             "operand" : [ {
+                                                "type" : "ToString",
+                                                "operand" : {
+                                                   "name" : "factor",
+                                                   "type" : "QueryLetRef"
+                                                }
+                                             }, {
+                                                "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                                "value" : "No conversion factor available",
+                                                "type" : "Literal"
+                                             } ]
                                           } ]
                                        }, {
                                           "valueType" : "{urn:hl7-org:elm-types:r1}String",

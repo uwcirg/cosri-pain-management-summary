@@ -26,14 +26,18 @@ export function fetchEnvData() {
     xhr.onreadystatechange = function() {
         //in the event of a communication error (such as the server going down),
         //or error happens when parsing data
-        //an exception will be thrown in the onreadystatechange method when accessing the response properties, e.g. status. 
+        //an exception will be thrown in the onreadystatechange method when accessing the response properties, e.g. status.
         try {
             setConfig();
         } catch(e) {
             console.log("Caught exception " + e);
         }
     };
-    xhr.send();
+    try {
+        xhr.send();
+    } catch(e) {
+        console.log("xhr send error ", e);
+    }
     xhr.ontimeout = function (e) {
         // XMLHttpRequest timed out.
         console.log("request to fetch env.json file timed out ", e);
@@ -44,7 +48,7 @@ export function getEnv (key) {
     //window application global variables
     if (window["appConfig"] && window["appConfig"][key]) return window["appConfig"][key];
     const envDefined = (typeof process !== "undefined") && process.env;
-    //enviroment variables as defined by Node 
+    //enviroment variables as defined by Node
     if (envDefined && process.env[key]) return process.env[key];
     return "";
 }

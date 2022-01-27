@@ -358,11 +358,24 @@ define function GetDoseFormName(doseFormCode Code):
 
 /*
   Removes the last per argument from a unit
+  NOTE: Rewrote to not use LastPositionOf, since that function is not implemented in the JS engine
+  https://github.com/cqframework/cql-execution/issues/147
 */
 define function StripPer(unit String):
-    if LastPositionOf('/', unit) >= 0
-      then Substring(unit, 0, LastPositionOf('/', unit))
+  unit X
+    let split: Split(unit, '/'),
+      splitCount: Count(split)
+    return
+      if splitCount > 1 then
+        Substring(unit, 0, Length(unit) - Length(split[splitCount - 1]) - 1)
+      else
+        unit
+/*
+define function StripPer(unit String):
+  if LastPositionOf('/', unit) >= 0
+    then Substring(unit, 0, LastPositionOf('/', unit))
     else unit
+*/
 
 /*
   Calculates daily dose for a specific ingredient based on the ingredient strength, dose form, dose quantity, and daily frequency
@@ -400,7 +413,7 @@ define function GetDailyDose(ingredientCode Code, strength Quantity, doseFormCod
 
     /* if doseQuantity is in actual volume units (mL) --> daily dose = numTimesPerDay * dose * strength */
     when doseQuantity.unit = 'mL' and (PositionOf('/mL', strength.unit) = Length(strength.unit) - 3) then
-      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: strength.unit } //display unit as it is
+      Quantity { value: dosesPerDay * doseQuantity.value * strength.value, unit: StripPer(strength.unit) } //display unit as it is
 
 		/* if doseQuantity is not in actual units (e.g., 1 tab, 1 spray -- when it's a combo med with a unit of tablet, or it's mg/actuat) -->  daily dose = numTimesPerDay * dose value * strength value */
     else
@@ -464,7 +477,7 @@ define function CalculateMMEs(medications List<Tuple { rxNormCode Code, doseQuan
             ingredientCode: I.ingredientCode,
             strength: I.strength,
             dailyDose: dailyDose,
-            dailyDoseDescription: dailyDoseDescription & (' * factor: ' + ToString(factor)),
+            dailyDoseDescription: dailyDoseDescription & (' * factor: ' + Coalesce(ToString(factor), 'No conversion factor available')),
             conversionFactor: factor,
             mme: Quantity(
               dailyDose.value * factor,
