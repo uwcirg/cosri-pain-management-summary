@@ -1042,6 +1042,21 @@ define ReportNaloxoneMedicationOrders:
   }
   sort by Start desc, End desc
 
+define ReportNaloxoneMedicationStatements:
+  (NaloxoneMedicationStatements) S
+  return {
+    Type:  'Statement',
+    Name:  ConceptText(S.medicationCodeableConcept),
+    Start: MedicationStatementDate(S),
+    End:   DateTimeText(S.effectivePeriod."end"),
+    Status: S.status.value
+  }
+  sort by Start desc, End desc
+
+define ReportNaloxoneMedications:
+  (ReportNaloxoneMedicationOrders union ReportNaloxoneMedicationStatements) M
+  sort by Start desc, End desc
+
 // Carisoprodol Medications -  orders and statements with dates
 define CarisoprodolMedicationOrders:
   C3F.ActiveCompletedOrStoppedMedicationOrder(C3F.MedicationOrderLookBack(
@@ -1079,21 +1094,6 @@ define ReportCarisoprodolMedicationStatements:
 
 define ReportCarisoprodolMedications:
   (ReportCarisoprodolMedicationOrders union ReportCarisoprodolMedicationStatements) M
-  sort by Start desc, End desc
-
-define ReportNaloxoneMedicationStatements:
-  (NaloxoneMedicationStatements) S
-  return {
-    Type:  'Statement',
-    Name:  ConceptText(S.medicationCodeableConcept),
-    Start: MedicationStatementDate(S),
-    End:   DateTimeText(S.effectivePeriod."end"),
-    Status: S.status.value
-  }
-  sort by Start desc, End desc
-
-define ReportNaloxoneMedications:
-  (ReportNaloxoneMedicationOrders union ReportNaloxoneMedicationStatements) M
   sort by Start desc, End desc
 
 // Risk screenings relevant to pain management - overall scores and dates (MOST RECENT w/ lookback 1 year)
