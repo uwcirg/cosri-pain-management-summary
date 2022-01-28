@@ -78,8 +78,6 @@ export default class MMEGraph extends Component {
         ...item
       }
     }): null;
-    //let data = computedData? (computedData).sort(this.compareDate): [];
-    //let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
     let data = computedData || [];
     let noEntry = !data || !data.length;
     data = data.filter(d => d[xFieldName]);
@@ -100,7 +98,6 @@ export default class MMEGraph extends Component {
     //console.log("maxDate: ", maxDate, " minDate ", minDate)
     const diffTime = Math.abs(maxDate - minDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-   // if (arrayDates.length < (xIntervals - 2)) {
     if (diffDays <= 60 && arrayDates.length < (xIntervals - 2)) {
       /*
        * make sure graph has appropiate end points on the graph if the total count of data points is less than the initial set number of intervals

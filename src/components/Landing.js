@@ -98,6 +98,7 @@ export default class Landing extends Component {
       this.setError(`[${item.type}] ${item.error}`);
     });
   }
+  //compile error(s) related to MME calculations
   processSummaryErrors(summary) {
     if (!summary) return false;
     //PDMP medications
@@ -136,6 +137,7 @@ export default class Landing extends Component {
     this.errorCollection.push(message);
     this.writeToLog(message, "error");
   }
+  //write to audit log
   writeToLog(message, level, params) {
     if (!message) return;
     if (!level) level = "info";
@@ -170,6 +172,7 @@ export default class Landing extends Component {
       console.log('Request failed', error);
     });
   }
+  //save MME calculations to file for debugging purpose, development environment ONLY
   saveSummaryData() {
     if (String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development") return;
     const summary = this.state.result ? this.state.result.Summary : null;
@@ -213,6 +216,7 @@ export default class Landing extends Component {
     });
 
   }
+  //hide and show sectioN(s) depending on config
   setSectionVis() {
     for (const key in summaryMap) {
       let sectionsToBeHidden = [];
@@ -397,6 +401,7 @@ export default class Landing extends Component {
     if (config) {
       let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: [];
       if (config.data) {
+        //compile tally of source identified by a key
         config.data.forEach(item => {
           let dataSet = [], statItem = {};
           let keyMatch = item.keyMatch, summaryFields = item.summaryFields, matchSet = item.matchSet;
@@ -443,6 +448,7 @@ export default class Landing extends Component {
       }
     }
     let alerts = [];
+    //compile relevant alerts
     if (sectionFlags) {
       for (let section in sectionFlags) {
         for (let subsection of Object.entries(sectionFlags[section])) {
@@ -718,9 +724,6 @@ export default class Landing extends Component {
       }, MAX_WAIT_TIME);
     });
 
-    // let response = await fetch(url)
-    // .catch(e => console.log(`Error fetching ${datasetKey} data: ${e.message}`));
-
     /*
      * if for some reason fetching the request data doesn't resolve or reject withing the maximum waittime,
      * then the timeout promise will kick in
@@ -825,10 +828,6 @@ export default class Landing extends Component {
   }
 
   processSummary(summary) {
-    /*
-     * TODO: certain sections we have chosen not to display so need to exclude those when tallying up flag counts
-     * suppressed section: "PertinentMedicalHistory", "PainAssessments", "RiskConsiderations"
-     */
     const sectionFlags = {};
     const sectionKeys = Object.keys(summaryMap);
     let flaggedCount = 0;
