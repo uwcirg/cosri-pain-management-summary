@@ -549,8 +549,6 @@ define ConditionRiskFactorsForOpioidRelatedHarms:
   union AnxietyConditions
   union SubstanceUseDisorderConditions
   union OpioidOverdoseAndPoisoningConditions
-
-
   union SuicideAttemptConditions
   union SleepDisorderedBreathingConditions
   union RenalDysfunctionConditions
@@ -1023,40 +1021,6 @@ define ReportBenzodiazepineMedications:
   (ReportBenzodiazepineMedicationOrders union ReportBenzodiazepineMedicationStatements) M
   sort by Start desc, End desc
 
-// Naloxone Medications (unrestricted lookback) - orders and statements with dates
-
-define NaloxoneMedicationOrders:
-  C3F.ActiveCompletedOrStoppedMedicationOrder([MedicationOrder: "Naloxone medications"])
-
-define NaloxoneMedicationStatements:
-  C3F.ActiveOrCompletedMedicationStatement([MedicationStatement: "Naloxone medications"])
-
-define ReportNaloxoneMedicationOrders:
-  (NaloxoneMedicationOrders) O
-  return {
-    Type:  'Order',
-    Name:  ConceptText(O.medicationCodeableConcept),
-    Start: DateTimeText(O.dateWritten),
-    End:   DateTimeText(O.dateEnded),
-    Status: O.status.value
-  }
-  sort by Start desc, End desc
-
-define ReportNaloxoneMedicationStatements:
-  (NaloxoneMedicationStatements) S
-  return {
-    Type:  'Statement',
-    Name:  ConceptText(S.medicationCodeableConcept),
-    Start: MedicationStatementDate(S),
-    End:   DateTimeText(S.effectivePeriod."end"),
-    Status: S.status.value
-  }
-  sort by Start desc, End desc
-
-define ReportNaloxoneMedications:
-  (ReportNaloxoneMedicationOrders union ReportNaloxoneMedicationStatements) M
-  sort by Start desc, End desc
-
 // Carisoprodol Medications -  orders and statements with dates
 define CarisoprodolMedicationOrders:
   C3F.ActiveCompletedOrStoppedMedicationOrder(C3F.MedicationOrderLookBack(
@@ -1094,6 +1058,40 @@ define ReportCarisoprodolMedicationStatements:
 
 define ReportCarisoprodolMedications:
   (ReportCarisoprodolMedicationOrders union ReportCarisoprodolMedicationStatements) M
+  sort by Start desc, End desc
+
+// Naloxone Medications (unrestricted lookback) - orders and statements with dates
+
+define NaloxoneMedicationOrders:
+  C3F.ActiveCompletedOrStoppedMedicationOrder([MedicationOrder: "Naloxone medications"])
+
+define NaloxoneMedicationStatements:
+  C3F.ActiveOrCompletedMedicationStatement([MedicationStatement: "Naloxone medications"])
+
+define ReportNaloxoneMedicationOrders:
+  (NaloxoneMedicationOrders) O
+  return {
+    Type:  'Order',
+    Name:  ConceptText(O.medicationCodeableConcept),
+    Start: DateTimeText(O.dateWritten),
+    End:   DateTimeText(O.dateEnded),
+    Status: O.status.value
+  }
+  sort by Start desc, End desc
+
+define ReportNaloxoneMedicationStatements:
+  (NaloxoneMedicationStatements) S
+  return {
+    Type:  'Statement',
+    Name:  ConceptText(S.medicationCodeableConcept),
+    Start: MedicationStatementDate(S),
+    End:   DateTimeText(S.effectivePeriod."end"),
+    Status: S.status.value
+  }
+  sort by Start desc, End desc
+
+define ReportNaloxoneMedications:
+  (ReportNaloxoneMedicationOrders union ReportNaloxoneMedicationStatements) M
   sort by Start desc, End desc
 
 // Risk screenings relevant to pain management - overall scores and dates (MOST RECENT w/ lookback 1 year)

@@ -69,18 +69,13 @@
 // 4.0.1, the following additional changes were made based on new capabilities in later versions of the CQL spec and tooling:
 // - URL-based value set identifiers are used rather than plain OIDs
 // - code/concept pairs are no longer needed; code definitions are sufficient, so concept definitions have been removed
-//
 
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv401 version '1.0.0'
-
-
 
 // # Data model #
 
 // FHIR Version
 using FHIR version '4.0.1'
-
-
 
 // # Referenced libraries #
 
@@ -260,7 +255,7 @@ code "Morphine Milligram Equivalent (MME)": 'MME' from "LOCAL" display 'Morphine
 // back for qualifying active medications. By default, the inclusion logic will look back 180 days.
 parameter InclusionMedicationsLookbackPeriod default 180 days
 
-//system url from PDMP identifier
+//system url identifier used to identify resources, e.g. MedicationRequest, from PDMP
 define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
 
 //site specific
@@ -787,7 +782,7 @@ define ReportPDMPMedicationRequests:
       Name:  ConceptText(c),
       Start: DateTimeText(O.authoredOn),
       DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
-      CalculatedEnd: CalculatedEnd, //of datetime type
+      CalculatedEnd: CalculatedEnd, //of date type
       End: ToString(CalculatedEnd), //of string type
       Quantity: GetMedicationRequestDispensedQuantity(O),
       Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
@@ -955,6 +950,7 @@ define ReportCurrentMME:
       Date: ToString(Today())
     }
 }
+//Report MME
 
 define ReportMME:
   [MedicationRequest: "Opioid Pain Medications"] O
@@ -984,6 +980,7 @@ define ReportMME:
   }
   sort by End desc
 
+//return Tuple containing MME value for each MedicationRequest that happends in the last two years
 define ReportMMEByDates:
   (ReportMME) R
   where
@@ -1055,7 +1052,7 @@ define ReportAllUrineScreens:
   sort by Date desc
 
 
-// Benzodiazepine Medications (lookback of 2 years)-  orders and statements with dates
+// Benzodiazepine Medications -  orders and statements with dates
 define BenzodiazepineMedicationRequests:
   C3F.MedicationRequestLookBack(
     [MedicationRequest: "Benzodiazepine medications"], //remove consideration for status field
@@ -1068,8 +1065,29 @@ define BenzodiazepineMedicationStatements:
     100 years
   )
 
+//Benzodiazepine MedicationRequests identified via valueset
 define ReportBenzodiazepineMedicationRequests:
   (BenzodiazepineMedicationRequests) O
+  let CalculatedEnd: GetMedicationRequestEndDate(O)
+  return {
+    Type:  'Request',
+    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+    Start: DateTimeText(O.authoredOn),
+    DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+    Quantity: GetMedicationRequestDispensedQuantity(O),
+    Prescriber: O.requester.display.value,
+    Pharmacy: GetMedicationRequestPharmacy(O),
+     //provided by the extension dateValue, may not always be there
+    CalculatedEnd: CalculatedEnd, //of type datetime
+    End: ToString(CalculatedEnd), //of type string
+    Status: O.status.value
+  }
+  sort by Start desc, End desc
+
+//Benzodiazepine MedicationRequests identified via drug class
+define ReportBenzodiazepineMedicationRequestsByDrugClass:
+  ([MedicationRequest] M
+  where IndexOf(getMedicationRequestDrugClass(M),'benzodiazepine') != -1) O
   let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
@@ -1098,7 +1116,9 @@ define ReportBenzodiazepineMedicationStatements:
   sort by Start desc, End desc
 
 define ReportBenzodiazepineMedications:
-  (ReportBenzodiazepineMedicationRequests union ReportBenzodiazepineMedicationStatements) M
+  (ReportBenzodiazepineMedicationRequests union
+   ReportBenzodiazepineMedicationRequestsByDrugClass union
+  ReportBenzodiazepineMedicationStatements) M
   sort by Start desc, End desc
 
 
@@ -1106,7 +1126,7 @@ define ReportBenzodiazepineMedications:
 define CarisoprodolMedicationRequests:
   //remove consideration for status field
   C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Carisoprodol"]
+    [MedicationRequest: "Carisoprodol"] union [MedicationRequest: "Aspirin / Carisoprodol"]
   , 100 years)
 
 define CarisoprodolMedicationStatements:
@@ -1114,7 +1134,6 @@ define CarisoprodolMedicationStatements:
   C3F.MedicationStatementLookBack(
     [MedicationStatement: "Carisoprodol"]
   , 100 years)
-
 
 define ReportCarisoprodolMedicationRequests:
   (CarisoprodolMedicationRequests) O
@@ -1149,6 +1168,7 @@ define ReportCarisoprodolMedications:
   (ReportCarisoprodolMedicationRequests union ReportCarisoprodolMedicationStatements) M
   sort by Start desc, End desc
 
+//seditive medication requests identified via drug class
 define ReportSedativeMedicationRequests:
   ([MedicationRequest] M
   where IndexOf(getMedicationRequestDrugClass(M),'sedative') != -1) O
@@ -1166,7 +1186,9 @@ define ReportSedativeMedicationRequests:
     End: ToString(CalculatedEnd), //of type string
     Status: O.status.value
   }
-  sort by DispensedDate desc, End desc
+  sort by Start desc, End desc
+
+//barbiturate medication requests identified via drug class
 define ReportBarbiturateMedicationRequests:
   ([MedicationRequest] M
   where IndexOf(getMedicationRequestDrugClass(M), 'barbiturate') != -1) O
@@ -1184,7 +1206,7 @@ define ReportBarbiturateMedicationRequests:
     End: ToString(CalculatedEnd), //of type string
     Status: O.status.value
   }
-  sort by DispensedDate desc, End desc
+  sort by Start desc, End desc
 
 // Naloxone Medications (unrestricted lookback) - orders and statements with dates
 define NaloxoneMedicationRequests:

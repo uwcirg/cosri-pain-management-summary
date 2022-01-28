@@ -1110,17 +1110,57 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 28
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "19th Century Pharmacy, INC."
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-05-04"
+            }
+          ],
+          "quantity": {
+            "value": 4
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "69238120202",
+              "display": "Butrans- 168 HR buprenorphine 0.005 MG/HR Transdermal System",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "904880",
+              "display": "Butrans- 168 HR buprenorphine 0.005 MG/HR Transdermal System",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "opioid"
+            }
+          ],
+          "text": "Butrans- 168 HR buprenorphine 0.005 MG/HR Transdermal System"
         },
-        "authoredOn": "2017-04-15T16:02:00.000Z"
+        "requester": {
+          "display": "Emily Dickinson"
+        },
+        "authoredOn": "2021-05-04"
       }
     },
     {
@@ -1133,17 +1173,65 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 60
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Old Pharmacy, INC."
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-11-30"
+            }
+          ],
+          "quantity": {
+            "value": 60
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "43376032230",
+              "display": "fenfluramine 2.2 MG/ML Oral Solution",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "2381144",
+              "display": "fenfluramine 2.2 MG/ML Oral Solution",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "antiepileptic"
+            },
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "serotonin recpector agonist"
+            },
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "stimulant"
+            }
+          ],
+          "text": "fenfluramine 2.2 MG/ML Oral Solution"
         },
-        "authoredOn": "2017-01-15T16:02:00.000Z"
+        "requester": {
+          "display": "John Kenyon"
+        },
+        "authoredOn": "2020-11-30"
       }
     },
     {
@@ -1156,17 +1244,57 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 30
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Central Manhattan Pharmacy, INC."
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-02-10"
+            }
+          ],
+          "quantity": {
+            "value": 90
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "66267129500",
+              "display": "lorazepam 1 MG Oral Tablet [Ativan]",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "104719",
+              "display": "lorazepam 1 MG Oral Tablet [Ativan]",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "benzodiazepine"
+            }
+          ],
+          "text": "lorazepam 1 MG Oral Tablet [Ativan]"
         },
-        "authoredOn": "2016-10-15T16:02:00.000Z"
+        "requester": {
+          "display": "Stan Lee"
+        },
+        "authoredOn": "2021-02-10"
       }
     },
     {
