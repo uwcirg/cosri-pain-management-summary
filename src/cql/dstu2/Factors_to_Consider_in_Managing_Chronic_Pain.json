@@ -2518,41 +2518,47 @@
                      "operand" : [ {
                         "type" : "Union",
                         "operand" : [ {
-                           "name" : "DepressionConditions",
-                           "type" : "ExpressionRef"
+                           "type" : "Union",
+                           "operand" : [ {
+                              "name" : "DepressionConditions",
+                              "type" : "ExpressionRef"
+                           }, {
+                              "name" : "AnxietyConditions",
+                              "type" : "ExpressionRef"
+                           } ]
                         }, {
-                           "name" : "AnxietyConditions",
-                           "type" : "ExpressionRef"
+                           "type" : "Union",
+                           "operand" : [ {
+                              "name" : "SubstanceUseDisorderConditions",
+                              "type" : "ExpressionRef"
+                           }, {
+                              "name" : "OpioidOverdoseAndPoisoningConditions",
+                              "type" : "ExpressionRef"
+                           } ]
                         } ]
                      }, {
                         "type" : "Union",
                         "operand" : [ {
-                           "name" : "SubstanceUseDisorderConditions",
+                           "name" : "SuicideAttemptConditions",
                            "type" : "ExpressionRef"
                         }, {
-                           "name" : "SuicideAttemptConditions",
+                           "name" : "SleepDisorderedBreathingConditions",
                            "type" : "ExpressionRef"
                         } ]
                      } ]
                   }, {
                      "type" : "Union",
                      "operand" : [ {
-                        "name" : "SleepDisorderedBreathingConditions",
+                        "name" : "RenalDysfunctionConditions",
                         "type" : "ExpressionRef"
                      }, {
-                        "name" : "RenalDysfunctionConditions",
+                        "name" : "HepaticDysfunctionConditions",
                         "type" : "ExpressionRef"
                      } ]
                   } ]
                }, {
-                  "type" : "Union",
-                  "operand" : [ {
-                     "name" : "HepaticDysfunctionConditions",
-                     "type" : "ExpressionRef"
-                  }, {
-                     "name" : "PregnancyConditions",
-                     "type" : "ExpressionRef"
-                  } ]
+                  "name" : "PregnancyConditions",
+                  "type" : "ExpressionRef"
                } ]
             }
          }, {

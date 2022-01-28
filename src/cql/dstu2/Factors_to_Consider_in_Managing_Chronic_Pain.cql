@@ -456,12 +456,12 @@ define HasRecentAdjuvantAnalgesicMedication:
 //   - OR Adjuvant analgesic medication
 define MeetsInclusionCriteria:
   Is18orOlder
-  // REMOVING AHRQ APP INCLUSION CRITERIA FOR COSRI
-  //  and (
-  //    HasConditionAssociatedWithChronicPain
-  //    or HasRecentOpioidPainMedication
-  //    or HasRecentAdjuvantAnalgesicMedication
-  //  )
+// REMOVING AHRQ APP INCLUSION CRITERIA FOR COSRI
+//  and (
+//    HasConditionAssociatedWithChronicPain
+//    or HasRecentOpioidPainMedication
+//    or HasRecentAdjuvantAnalgesicMedication
+//  )
 
 // EXCLUSIONS
 
@@ -548,6 +548,9 @@ define ConditionRiskFactorsForOpioidRelatedHarms:
   DepressionConditions
   union AnxietyConditions
   union SubstanceUseDisorderConditions
+  union OpioidOverdoseAndPoisoningConditions
+
+
   union SuicideAttemptConditions
   union SleepDisorderedBreathingConditions
   union RenalDysfunctionConditions
