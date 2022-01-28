@@ -2138,46 +2138,6 @@
                }
             } ]
          }, {
-            "name" : "GetMedicationRequestStartDate",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "type" : "FunctionDef",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "O",
-                  "expression" : {
-                     "name" : "medRequest",
-                     "type" : "OperandRef"
-                  }
-               } ],
-               "let" : [ {
-                  "identifier" : "LastFillDate",
-                  "expression" : {
-                     "name" : "GetMedicationRequestDispensedDate",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "name" : "O",
-                        "type" : "AliasRef"
-                     } ]
-                  }
-               } ],
-               "relationship" : [ ],
-               "return" : {
-                  "expression" : {
-                     "name" : "LastFillDate",
-                     "type" : "QueryLetRef"
-                  }
-               }
-            },
-            "operand" : [ {
-               "name" : "medRequest",
-               "operandTypeSpecifier" : {
-                  "name" : "{http://hl7.org/fhir}MedicationRequest",
-                  "type" : "NamedTypeSpecifier"
-               }
-            } ]
-         }, {
             "name" : "GetMedicationRequestEndDate",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -2279,9 +2239,9 @@
                      }
                   }
                }, {
-                  "identifier" : "Start",
+                  "identifier" : "DispensedDate",
                   "expression" : {
-                     "name" : "GetMedicationRequestStartDate",
+                     "name" : "GetMedicationRequestDispensedDate",
                      "type" : "FunctionRef",
                      "operand" : [ {
                         "name" : "O",
@@ -2292,38 +2252,86 @@
                "relationship" : [ ],
                "return" : {
                   "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "type" : "IsNull",
-                        "operand" : {
-                           "name" : "Start",
-                           "type" : "QueryLetRef"
-                        }
-                     },
-                     "then" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}Date",
-                        "type" : "As",
-                        "operand" : {
-                           "type" : "Null"
-                        }
-                     },
-                     "else" : {
-                        "type" : "DateFrom",
-                        "operand" : {
-                           "type" : "ToDateTime",
+                     "type" : "Case",
+                     "caseItem" : [ {
+                        "when" : {
+                           "type" : "Not",
                            "operand" : {
-                              "type" : "ToDate",
+                              "type" : "IsNull",
                               "operand" : {
-                                 "type" : "ToDateTime",
+                                 "name" : "DispensedDate",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        },
+                        "then" : {
+                           "type" : "DateFrom",
+                           "operand" : {
+                              "type" : "ToDateTime",
+                              "operand" : {
+                                 "type" : "ToDate",
+                                 "operand" : {
+                                    "type" : "ToDateTime",
+                                    "operand" : {
+                                       "type" : "Add",
+                                       "operand" : [ {
+                                          "name" : "ToDate",
+                                          "libraryName" : "FHIRHelpers",
+                                          "type" : "FunctionRef",
+                                          "operand" : [ {
+                                             "name" : "DispensedDate",
+                                             "type" : "QueryLetRef"
+                                          } ]
+                                       }, {
+                                          "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
+                                          "type" : "Instance",
+                                          "element" : [ {
+                                             "name" : "value",
+                                             "value" : {
+                                                "name" : "CalculatedDuration",
+                                                "type" : "QueryLetRef"
+                                             }
+                                          }, {
+                                             "name" : "unit",
+                                             "value" : {
+                                                "name" : "CalculatedDurationUnit",
+                                                "type" : "QueryLetRef"
+                                             }
+                                          } ]
+                                       } ]
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }, {
+                        "when" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "authoredOn",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           }
+                        },
+                        "then" : {
+                           "type" : "DateFrom",
+                           "operand" : {
+                              "type" : "ToDateTime",
+                              "operand" : {
+                                 "type" : "ToDate",
                                  "operand" : {
                                     "type" : "Add",
                                     "operand" : [ {
-                                       "name" : "ToDate",
+                                       "name" : "ToDateTime",
                                        "libraryName" : "FHIRHelpers",
                                        "type" : "FunctionRef",
                                        "operand" : [ {
-                                          "name" : "Start",
-                                          "type" : "QueryLetRef"
+                                          "path" : "authoredOn",
+                                          "scope" : "O",
+                                          "type" : "Property"
                                        } ]
                                     }, {
                                        "classType" : "{urn:hl7-org:elm-types:r1}Quantity",
@@ -2345,6 +2353,13 @@
                                  }
                               }
                            }
+                        }
+                     } ],
+                     "else" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Date",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
                         }
                      }
                   }
@@ -7057,6 +7072,31 @@
                      } ]
                   }
                }, {
+                  "identifier" : "AuthoredDate",
+                  "expression" : {
+                     "name" : "DateTimeText",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "path" : "authoredOn",
+                        "scope" : "O",
+                        "type" : "Property"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "DispensedDate",
+                  "expression" : {
+                     "name" : "DateText",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "GetMedicationRequestDispensedDate",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "name" : "O",
+                           "type" : "AliasRef"
+                        } ]
+                     } ]
+                  }
+               }, {
                   "identifier" : "CalculatedEnd",
                   "expression" : {
                      "name" : "GetMedicationRequestEndDate",
@@ -7143,16 +7183,25 @@
                      }, {
                         "name" : "Start",
                         "value" : {
-                           "name" : "DateText",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "name" : "GetMedicationRequestStartDate",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "name" : "O",
-                                 "type" : "AliasRef"
-                              } ]
-                           } ]
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "DispensedDate",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "name" : "DispensedDate",
+                              "type" : "QueryLetRef"
+                           },
+                           "else" : {
+                              "name" : "AuthoredDate",
+                              "type" : "QueryLetRef"
+                           }
                         }
                      }, {
                         "name" : "End",

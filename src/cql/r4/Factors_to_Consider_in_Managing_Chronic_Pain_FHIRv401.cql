@@ -443,7 +443,7 @@ define function GetMedicationRequestDispensedQuantity(medRequest FHIR.Medication
 
 // Return pharmacy name
 // @param MedicationRequest FHIR object
-// @returns the text representation of pharmacy extension of type FHIR.string
+// @returns the text representation of pharmacy of type FHIR.string via extension
 define function GetMedicationRequestPharmacy(medRequest FHIR.MedicationRequest):
   (medRequest) O
   let
@@ -465,8 +465,16 @@ define function GetMedicationRequestEndDate(medRequest FHIR.MedicationRequest):
       if O.dispenseRequest.expectedSupplyDuration is not null
       then  O.dispenseRequest.expectedSupplyDuration.unit.value
       else 'days',
-    Start: GetMedicationRequestStartDate(O)
-    return if Start is null then null else date from ToDate(Start + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
+    DispensedDate: GetMedicationRequestDispensedDate(O)
+    return
+      case
+        when DispensedDate is not null then
+          date from ToDate(DispensedDate + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
+        when O.authoredOn is not null then
+          date from ToDate(O.authoredOn + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
+        else null
+      end
+
 
 // @param MedicationRequest FHIR object
 // @return dispensed date or last fill date of type FHIR.date via extension, for the medicationRequest
@@ -477,14 +485,6 @@ define function GetMedicationRequestDispensedDate(medRequest FHIR.MedicationRequ
     LastFillExtension: O.dispenseRequest.extension[1],
     Start: if LastFillExtension is not null then (LastFillExtension.value as FHIR.date) else null
     return Start
-
-// @param MedicationRequest FHIR object
-// @return the start date of type FHIR.date of a medicationRequest via extension
-define function GetMedicationRequestStartDate(medRequest FHIR.MedicationRequest):
-  (medRequest) O
-  let
-    LastFillDate: GetMedicationRequestDispensedDate(O)
-    return LastFillDate
 
 // @param MedicationRequest FHIR object
 // @return the drug class values of type System.List via querying for matching codeConcept
@@ -960,6 +960,8 @@ define ReportMME:
   [MedicationRequest: "Opioid Pain Medications"] O
   let
     MME_Object: MMECalculator.MME(O),
+    AuthoredDate: DateTimeText(O.authoredOn),
+    DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
     CalculatedEnd: GetMedicationRequestEndDate(O),
     CalculatedStatus:
       if CalculatedEnd same or after Today() then 'active' else null
@@ -968,7 +970,7 @@ define ReportMME:
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
     CalculatedEnd: CalculatedEnd,
     Written: DateTimeText(O.authoredOn),
-    Start: DateText(GetMedicationRequestStartDate(O)),
+    Start: if DispensedDate is not null then DispensedDate else AuthoredDate,
     End: ToString(CalculatedEnd),
     Status: CalculatedStatus,
     doseQuantity: MME_Object[0].doseQuantity,
