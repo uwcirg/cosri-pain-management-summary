@@ -6981,6 +6981,11 @@
         "version": "2021-08"
       },
       {
+        "code": "1990745",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2021-08"
+      },
+      {
         "code": "199078",
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
         "version": "2021-08"
