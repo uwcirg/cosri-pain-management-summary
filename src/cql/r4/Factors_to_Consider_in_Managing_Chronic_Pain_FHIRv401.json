@@ -395,6 +395,15 @@
                "type" : "Literal"
             }
          }, {
+            "name" : "DRUG_CLASS_SYSTEM_URL",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "http://cosri.org/fhir/drug_class",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "Urine_Screen_Panel_Test_Order_Codes",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -1912,14 +1921,30 @@
                   "expression" : {
                      "type" : "If",
                      "condition" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
                            "operand" : {
-                              "name" : "dispenseRequest",
-                              "type" : "QueryLetRef"
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "dispenseRequest",
+                                 "type" : "QueryLetRef"
+                              }
                            }
-                        }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "quantity",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "dispenseRequest",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }
+                        } ]
                      },
                      "then" : {
                         "path" : "value",
@@ -2433,6 +2458,22 @@
                            }
                         } ],
                         "relationship" : [ ],
+                        "where" : {
+                           "type" : "Equivalent",
+                           "operand" : [ {
+                              "name" : "ToString",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "url",
+                                 "scope" : "E",
+                                 "type" : "Property"
+                              } ]
+                           }, {
+                              "name" : "DRUG_CLASS_SYSTEM_URL",
+                              "type" : "ExpressionRef"
+                           } ]
+                        },
                         "return" : {
                            "expression" : {
                               "path" : "value",

@@ -1307,17 +1307,57 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 30
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Central Manhattan Pharmacy, INC."
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-04-15"
+            }
+          ],
+          "quantity": {
+            "value": 30
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049717",
-              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+              "code": "69543041330",
+              "display": "phendimetrazine 105 MG  Oral Capsule [Fendique]",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "2284301",
+              "display": "phendimetrazine 105 MG  Oral Capsule [Fendique]",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "stimulant"
+            }
+          ],
+          "text": "phendimetrazine 105 MG  Oral Capsule [Fendique]"
         },
-        "authoredOn": "2019-04-15T16:01:00.000Z"
+        "requester": {
+          "display": "Stan Lee"
+        },
+        "authoredOn": "2021-04-15T16:01:00.000Z"
       }
     },
     {
@@ -1330,17 +1370,57 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 1
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Central Manhattan Pharmacy, INC."
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-01-10"
+            }
+          ],
+          "quantity": {
+            "value": 1
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049717",
-              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+              "code": "17478084120",
+              "display": "20 ML alfentanil 0.5 MG/ML Injection",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "1723209",
+              "display": "20 ML alfentanil 0.5 MG/ML Injection",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "opioid"
+            }
+          ],
+          "text": "20 ML alfentanil 0.5 MG/ML Injection"
         },
-        "authoredOn": "2019-01-15T16:01:00.000Z"
+        "requester": {
+          "display": "Stan Lee"
+        },
+        "authoredOn": "2021-01-10T16:01:00.000Z"
       }
     },
     {
@@ -1353,17 +1433,57 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 30
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Central Manhattan Pharmacy, INC."
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-04-15"
+            }
+          ],
+          "quantity": {
+            "value": 10
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049717",
-              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+              "code": "47781042747",
+              "display": "FENTANYL 75 MCG/HR PATCH",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "197696",
+              "display": "FENTANYL 75 MCG/HR PATCH",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "opioid"
+            }
+          ],
+          "text": "FENTANYL 75 MCG/HR PATCH"
         },
-        "authoredOn": "2018-10-15T16:01:00.000Z"
+        "requester": {
+          "display": "Stan Lee"
+        },
+        "authoredOn": "2021-04-16T16:01:00.000Z"
       }
     },
     {
@@ -1386,7 +1506,7 @@
           ],
           "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
         },
-        "authoredOn": "2018-07-15T16:01:00.000Z"
+        "authoredOn": "2021-07-15T16:01:00.000Z"
       }
     },
     {
@@ -1445,17 +1565,57 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 30
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Central Manhattan Pharmacy, INC."
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2021-07-17"
+            }
+          ],
+          "quantity": {
+            "value": 10
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049717",
-              "display": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+              "code": "72152054720",
+              "display": "20 ML brexanolone 5 MG/ML Injection",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "2121786",
+              "display": "20 ML brexanolone 5 MG/ML Injection",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "Oxycodone Hydrochloride 10 MG Oral Capsule"
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "steroid"
+            }
+          ],
+          "text": "20 ML brexanolone 5 MG/ML Injection"
         },
-        "authoredOn": "2017-10-15T16:01:00.000Z"
+        "requester": {
+          "display": "Stan Lee"
+        },
+        "authoredOn": "2021-07-15T16:01:00.000Z"
       }
     },
     {

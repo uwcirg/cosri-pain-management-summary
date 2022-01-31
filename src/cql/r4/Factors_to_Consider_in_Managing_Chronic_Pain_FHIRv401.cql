@@ -38,7 +38,8 @@
 // Update 20200904
 //    Code cleaning
 // Update 20210628
-//    use Last Fill date as the Start Date for MME value calculation, it was using authored date
+//    use last filled date (dispensed date) as the Start Date for MME value calculation, it was using
+//    authored date
 //    new functions added:
 //      GetMedicationRequestDispensedQuantity, GetMedicationRequestPharmacy, GetMedicationRequestEndDate,
 //      GetMedicationRequestDispensedDate
@@ -55,7 +56,8 @@
 //    included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was
 //    returning the same thing as ReportMMEByDates
 // Update 20211012
-//    Add Service Request query for drug urine screen, in the case of Skagit site, a custom system and
+//    Add Service Request query for drug urine screen, in the case of Skagit & Kent sites,
+//    a custom system and
 //    code will be used to filter search, see new function, ReportUrineLabServiceRequestsByCustomCode
 // Update 20211116
 //    Add Service Request query for drug urine screen, in the case of Kent site, a custom system and code
@@ -263,6 +265,8 @@ define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
 define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
 //system url for quest diagnostics
 define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.com/test'
+//system url for drug class, specific to COSRI app
+define DRUG_CLASS_SYSTEM_URL: 'http://cosri.org/fhir/drug_class'
 //lab panel test order code from lab corp and quest diagnostics
 define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428'}
 //CS agreement concept code
@@ -432,7 +436,10 @@ define function GetMedicationRequestDispensedQuantity(medRequest FHIR.Medication
   (medRequest) O
   let
     dispenseRequest: O.dispenseRequest,
-    dispensedQuantity: if dispenseRequest is not null then dispenseRequest.quantity.value.value else null
+    dispensedQuantity: if
+      dispenseRequest is not null and
+      dispenseRequest.quantity is not null then
+      dispenseRequest.quantity.value.value else null
     return dispensedQuantity
 
 
@@ -444,11 +451,13 @@ define function GetMedicationRequestPharmacy(medRequest FHIR.MedicationRequest):
   let
     //pharmacy is from extension
     pharmacyExtension: O.dispenseRequest.extension[0],
-    pharmacy: if pharmacyExtension is not null then (pharmacyExtension.value as FHIR.string).value else null
+    pharmacy: if pharmacyExtension is not null then
+      (pharmacyExtension.value as FHIR.string).value else null
     return pharmacy
 
 // @param MedicationRequest FHIR object
-// @return the predicted last date for the prescription, of type System.date, based on the supply duration and quantity
+// @return the calculated last date for the prescription, of type System.date,
+//  based on dispensed supply duration starting from the start date (dispensed date or authored date)
 define function GetMedicationRequestEndDate(medRequest FHIR.MedicationRequest):
   (medRequest) O
    let
@@ -472,7 +481,7 @@ define function GetMedicationRequestEndDate(medRequest FHIR.MedicationRequest):
 
 
 // @param MedicationRequest FHIR object
-// @return dispensed date or last fill date of type FHIR.date via extension, for the medicationRequest
+// @return dispensed date or last fill date, of type FHIR.date, supplied via extension, for the medicationRequest
 define function GetMedicationRequestDispensedDate(medRequest FHIR.MedicationRequest):
   (medRequest) O
   let
@@ -482,14 +491,15 @@ define function GetMedicationRequestDispensedDate(medRequest FHIR.MedicationRequ
     return Start
 
 // @param MedicationRequest FHIR object
-// @return the drug class values of type System.List via querying for matching codeConcept
+// @return the drug class values of type System.List via querying for matching extension
+// in a FHIR.CodeableConcept
 define function getMedicationRequestDrugClass(medRequest FHIR.MedicationRequest):
   (medRequest) O
   let
     codeConcept: O.medication as FHIR.CodeableConcept,
     values:
       if codeConcept.extension is not null then
-        (codeConcept.extension E return E.value.value)
+        (codeConcept.extension E where E.url ~ DRUG_CLASS_SYSTEM_URL return E.value.value)
       else null
     return values
 
