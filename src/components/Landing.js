@@ -139,6 +139,7 @@ export default class Landing extends Component {
   }
   //write to audit log
   writeToLog(message, level, params) {
+    if (!getEnv("REACT_APP_CONF_API_URL")) return;
     if (!message) return;
     if (!level) level = "info";
     if (!params) params = {};
@@ -191,6 +192,7 @@ export default class Landing extends Component {
     //can save other data if needed
   }
   saveData(params) {
+    if (!getEnv("REACT_APP_CONF_API_URL")) return;
     const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
     params = params || {};
     if (!params.data) return;
