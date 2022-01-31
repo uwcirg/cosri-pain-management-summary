@@ -124,7 +124,7 @@ var Timeout = (function() {
 
   function isAboutToExpire() {
     let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
-    return (sessionLifetime - timeElapsed) <= 60;
+    return (sessionLifetime - timeElapsed) < 60;
   }
 
   function isExpired() {
