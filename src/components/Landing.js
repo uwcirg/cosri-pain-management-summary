@@ -275,11 +275,13 @@ export default class Landing extends Component {
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData()]).then(
           externalData => {
-            result['Summary'] = {...result['Summary'], ...externalData[0]};
+            result['Summary'] = {...result["Summary"], ...externalData[0]};
             this.saveSummaryData();
             const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
             this.processSummaryErrors(result.Summary);
-            this.processOverviewData(result['Summary'], sectionFlags);
+            this.processOverviewStatsData(result["Summary"]);
+            this.processAlerts(result["Summary"], sectionFlags);
+            this.processGraphData(result["Summary"]);
             this.setState({ result, sectionFlags, flaggedCount });
             this.setState({ loading: false});
             this.initEvents();
@@ -392,101 +394,51 @@ export default class Landing extends Component {
     return dataSet;
   }
 
-  processOverviewData(summary, sectionFlags) {
+  processAlerts(summary, sectionFlags) {
     const overviewSectionKey = "PatientRiskOverview";
     let overviewSection = summaryMap[overviewSectionKey];
     if (!overviewSection) {
       return false;
     }
-    let stats = {};
-    let config = overviewSection.statsConfig;
-    if (config) {
-      let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: [];
-      if (config.data) {
-        //compile tally of source identified by a key
-        config.data.forEach(item => {
-          let dataSet = [], statItem = {};
-          let keyMatch = item.keyMatch, summaryFields = item.summaryFields, matchSet = item.matchSet;
-          if (keyMatch && matchSet) {
-            (matchSet).forEach(subitem => {
-              let matchItem = {};
-              matchItem[keyMatch] = subitem.display_name;
-              matchItem.data = [];
-              /* get matching data for each key */
-              subitem.keys.forEach(key => {
-                let matchedData = dataSource.filter(d => {
-                  if (Array.isArray(d[keyMatch])) {
-                    return d[keyMatch].indexOf(key) !== -1;
-                  }
-                  return d[keyMatch] === key;
-                });
-                matchItem.data = [...matchItem.data, ...matchedData];
-              });
-              summaryFields.forEach(summaryField => {
-                if (summaryField.key === "total") {
-                  matchItem[summaryField.key] = matchItem.data.length;
-                  return true;
-                }
-                if (summaryField.identifier) return true;
-                let matchedDataByKey = (matchItem.data).filter(dItem => dItem[summaryField.key]);
-                //de-duplicate
-                matchItem[summaryField.key] = (Array.from(new Set(matchedDataByKey.map(dItem => dItem[summaryField.key])))).length;
-              });
-              dataSet.push(matchItem);
-            });
-            statItem = {
-              fields : summaryFields,
-              data: dataSet
-            };
-            stats[item.title] = statItem;
-          } //end if keyMatch & matchSet
-          else if (keyMatch) {
-            let filteredStatsSource = dataSource.filter(element => element[item.keyMatch]);
-            filteredStatsSource = Array.from(new Set(filteredStatsSource.map(subitem => subitem[item.keyMatch])));
-            statItem[item.title] = filteredStatsSource.length;
-            stats.push(statItem);
-          }
-        });
-      }
-    }
     let alerts = [];
+    if (!sectionFlags) {
+      return alerts;
+    }
     //compile relevant alerts
-    if (sectionFlags) {
-      for (let section in sectionFlags) {
-        for (let subsection of Object.entries(sectionFlags[section])) {
-          if (subsection[1]) {
-            if (typeof subsection[1] === "string") {
-              alerts.push(subsection[1]);
-            }
-            if (typeof subsection[1] === "object") {
-              if (Array.isArray(subsection[1])) {
-                subsection[1].forEach(subitem => {
-                  //this prevents addition of duplicate alert text
-                  let alertTextExist = alerts.filter(item => String(item.flagText).toLowerCase() === String(subitem.flagText).toLowerCase());
-                  if (!alertTextExist.length && subitem.flagText) {
-                    let flagDateText = subitem.flagDateText ? subitem.flagDateText : "";
-                    alerts.push({
-                      id: subitem.subSection.dataKey,
-                      name: subitem.subSection.name,
-                      flagText: subitem.flagText,
-                      className: subitem.flagClass,
-                      text: subitem.flagText.indexOf("[DATE]") >= 0 ? (subitem.flagText.replace("[DATE]", datishFormat("", flagDateText))) : (subitem.flagText + (subitem.flagDateText ? ` (${datishFormat('',flagDateText)})`: "")),
-                      priority: subitem.priority || 100
-                    });
-                    //log alert
-                    this.writeToLog("alert flag: "+subitem.flagText, "warn", {tags: ["alert"]});
-                  }
-                });
-              } else {
-                if (subsection[1].flagText) {
+    for (let section in sectionFlags) {
+      for (let subsection of Object.entries(sectionFlags[section])) {
+        if (subsection[1]) {
+          if (typeof subsection[1] === "string") {
+            alerts.push(subsection[1]);
+          }
+          if (typeof subsection[1] === "object") {
+            if (Array.isArray(subsection[1])) {
+              subsection[1].forEach(subitem => {
+                //this prevents addition of duplicate alert text
+                let alertTextExist = alerts.filter(item => String(item.flagText).toLowerCase() === String(subitem.flagText).toLowerCase());
+                if (!alertTextExist.length && subitem.flagText) {
+                  let flagDateText = subitem.flagDateText ? subitem.flagDateText : "";
                   alerts.push({
-                    id: subsection[1].subSection.dataKey,
-                    name: subsection[1].subSection.name,
-                    text: subsection[1].flagText,
-                    className: subsection[1].flagClass,
-                    priority: subsection[1].priority || 100
+                    id: subitem.subSection.dataKey,
+                    name: subitem.subSection.name,
+                    flagText: subitem.flagText,
+                    className: subitem.flagClass,
+                    text: subitem.flagText.indexOf("[DATE]") >= 0 ? (subitem.flagText.replace("[DATE]", datishFormat("", flagDateText))) : (subitem.flagText + (subitem.flagDateText ? ` (${datishFormat('',flagDateText)})`: "")),
+                    priority: subitem.priority || 100
                   });
+                  //log alert
+                  this.writeToLog("alert flag: "+subitem.flagText, "warn", {tags: ["alert"]});
                 }
+              });
+            } else {
+              if (subsection[1].flagText) {
+                alerts.push({
+                  id: subsection[1].subSection.dataKey,
+                  name: subsection[1].subSection.name,
+                  text: subsection[1].flagText,
+                  className: subsection[1].flagClass,
+                  priority: subsection[1].priority || 100
+                });
               }
             }
           }
@@ -496,7 +448,15 @@ export default class Landing extends Component {
     alerts.sort(function (a, b) {
       return a.priority - b.priority;
     });
-     //process graph data
+    summary[overviewSectionKey+"_alerts"] = alerts.filter((item,index,thisRef)=>thisRef.findIndex(t=>(t.text === item.text))===index);
+  }
+  processGraphData(summary) {
+    const overviewSectionKey = "PatientRiskOverview";
+    let overviewSection = summaryMap[overviewSectionKey];
+    if (!overviewSection) {
+      return false;
+    }
+    //process graph data
     let graphConfig = overviewSection.graphConfig;
     if (!(graphConfig && graphConfig.summaryDataSource)) {
       return;
@@ -525,8 +485,8 @@ export default class Landing extends Component {
         return dateCompare(a[startDateFieldName], b[startDateFieldName]);
       });
       /*
-       * 'NaN' is the value for null when coerced into number, need to make sure that is not included
-       */
+      * 'NaN' is the value for null when coerced into number, need to make sure that is not included
+      */
       const getRealNumber = o => o && !isNaN(o) ? o : 0;
       let dataPoints = [];
       let prevObj = null, nextObj = null;
@@ -679,9 +639,67 @@ export default class Landing extends Component {
       });
       summary[overviewSectionKey+"_graph"] = formattedData;
     }
-    summary[overviewSectionKey+"_stats"] = stats;
-    summary[overviewSectionKey+"_alerts"] = alerts.filter((item,index,thisRef)=>thisRef.findIndex(t=>(t.text === item.text))===index);
+  }
 
+  processOverviewStatsData(summary) {
+    const overviewSectionKey = "PatientRiskOverview";
+    let overviewSection = summaryMap[overviewSectionKey];
+    if (!overviewSection) {
+      return false;
+    }
+    let stats = {};
+    let config = overviewSection.statsConfig;
+    if (!config||!config.data) {
+      summary[overviewSectionKey+"_stats"] = {};
+      return;
+    }
+    let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: [];
+
+    //compile tally of source identified by a key
+    config.data.forEach(item => {
+      let dataSet = [], statItem = {};
+      let keyMatch = item.keyMatch, summaryFields = item.summaryFields, matchSet = item.matchSet;
+      if (keyMatch && matchSet) {
+        (matchSet).forEach(subitem => {
+          let matchItem = {};
+          matchItem[keyMatch] = subitem.display_name;
+          matchItem.data = [];
+          /* get matching data for each key */
+          subitem.keys.forEach(key => {
+            let matchedData = dataSource.filter(d => {
+              if (Array.isArray(d[keyMatch])) {
+                return d[keyMatch].indexOf(key) !== -1;
+              }
+              return d[keyMatch] === key;
+            });
+            matchItem.data = [...matchItem.data, ...matchedData];
+          });
+          summaryFields.forEach(summaryField => {
+            if (summaryField.key === "total") {
+              matchItem[summaryField.key] = matchItem.data.length;
+              return true;
+            }
+            if (summaryField.identifier) return true;
+            let matchedDataByKey = (matchItem.data).filter(dItem => dItem[summaryField.key]);
+            //de-duplicate
+            matchItem[summaryField.key] = (Array.from(new Set(matchedDataByKey.map(dItem => dItem[summaryField.key])))).length;
+          });
+          dataSet.push(matchItem);
+        });
+        statItem = {
+          fields : summaryFields,
+          data: dataSet
+        };
+        stats[item.title] = statItem;
+      } //end if keyMatch & matchSet
+      else if (keyMatch) {
+        let filteredStatsSource = dataSource.filter(element => element[item.keyMatch]);
+        filteredStatsSource = Array.from(new Set(filteredStatsSource.map(subitem => subitem[item.keyMatch])));
+        statItem[item.title] = filteredStatsSource.length;
+        stats.push(statItem);
+      }
+    });
+    summary[overviewSectionKey+"_stats"] = stats;
   }
 
   processEndPoint(endpoint) {
