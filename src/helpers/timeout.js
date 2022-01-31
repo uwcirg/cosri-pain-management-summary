@@ -138,6 +138,7 @@ var Timeout = (function() {
     if (isExpired()) { //session has expired
       //logout user?
       window.redirectToLogout();
+      return;
     }
     let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
     if (isAboutToExpire()) {
@@ -206,11 +207,16 @@ var Timeout = (function() {
       });
     });
   }
+  function hasNoToken() {
+    return (!tokenInfo || !Object.keys(tokenInfo).length);
+  }
   function handleNoToken() {
     getSessionTokenInfo();
-    if (!tokenInfo || !Object.keys(tokenInfo).length) {
+    if (hasNoToken()) {
       //back to dashboard
-      window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/home";
+      if (getEnv("REACT_APP_DASHBOARD_URL")) {
+        window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/home";
+      }
       clearInterval(waitForDOMIntervalId);
     }
   }
@@ -255,7 +261,10 @@ var Timeout = (function() {
         //get expiration date/time to determine how long a session is?
         getSessionTokenInfo();
         //on page load, check if token is not present?
-        handleNoToken();
+        if (hasNoToken()) {
+          handleNoToken();
+          return;
+        }
         //assign id to the specific countdown timer id for this session
         initTimeoutIdentifier();
         //set timeout modal
