@@ -167,7 +167,7 @@ function if3MonthsDue(value, entry, subSection, summary) {
   const targetDate = entry[value.targetField];
   if (!targetDate) return false;
   const diff = getDiffMonths(new Date(), new Date(targetDate));
-  console.log("if3MonthsDue months diff ", diff);
+  //console.log("if3MonthsDue months diff ", diff);
   return diff >= 0 && diff <= 3;
 }
 
@@ -178,7 +178,7 @@ function if4MonthsDue(value, entry, subSection, summary) {
   const targetDate = entry[value.targetField];
   if (!targetDate) return false;
   const diff = getDiffMonths(new Date(), new Date(targetDate));
-  console.log("if4MonthsDue months diff ", diff);
+  //console.log("if4MonthsDue months diff ", diff);
   return diff > 3 && diff <= 4;
 }
 
