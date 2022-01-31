@@ -961,7 +961,7 @@ export default class Landing extends Component {
     return (
       <div className="landing">
         <div id="anchorTop"></div>
-        <div id="skiptocontent"><a href="#maincontent">skip to main content</a></div>
+        <div id="skiptocontent">&nbsp;</div>
         {this.isNonProduction() && <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>}
         <Header
           patientName={summary.Patient.Name}
