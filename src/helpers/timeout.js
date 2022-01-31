@@ -135,6 +135,10 @@ var Timeout = (function() {
   * check how much time has elapsed, if exceeds session lifetime, redirect to specified logout location
   */
   function checkTimeout() {
+    if (isExpired()) { //session has expired
+      //logout user?
+      window.redirectToLogout();
+    }
     let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
     if (isAboutToExpire()) {
       //if session is about to expire, pop up modal to inform user as such and then redirect back to patient search
@@ -145,10 +149,6 @@ var Timeout = (function() {
       }, 5000);
       printDebugStatement("Session about to expire. Time elapsed since first visiting " + timeElapsed);
       return;
-    }
-    if (isExpired()) { //session has expired
-      //logout user?
-      window.redirectToLogout();
     }
   }
 
