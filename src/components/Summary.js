@@ -78,7 +78,7 @@ export default class Summary extends Component {
         let dataKeySource = sections[subSection]["dataKeySource"];
         let dataKey = sections[subSection]["dataKey"];
         if (summary[dataKeySource] && Object.keys(summary[dataKeySource]).indexOf(dataKey) !== -1) {
-          count += summary[dataKeySource][dataKey] ? summary[dataKeySource][dataKey].length : 0;
+          count += summary[dataKeySource][dataKey] ? summary[dataKeySource][dataKey].filter(item=>item !== null).length : 0;
         }
       }
     }
