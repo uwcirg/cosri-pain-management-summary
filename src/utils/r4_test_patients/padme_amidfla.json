@@ -713,40 +713,22 @@
             "code": "d",
             "system": "http://unitsofmeasure.org",
             "unit": "days",
-            "value": 1
+            "value": 30
           },
           "extension": [
             {
               "url": "http://cosri.org/fhir/pharmacy_name",
-              "valueString": "TEST, DOCTOR"
+              "valueString": "Boston Pharmacy, INC."
             },
             {
               "url": "http://cosri.org/fhir/last_fill",
-              "valueDate": "2019-11-03"
+              "valueDate": "2021-01-05"
             }
           ],
           "quantity": {
-            "value": 1
+            "value": 30
           }
         },
-        "dosageInstruction": [
-          {
-            "doseAndRate": [
-              {
-                "doseQuantity": {
-                  "value": 1
-                }
-              }
-            ],
-            "timing": {
-              "repeat": {
-                "frequency": 1,
-                "period": 1,
-                "periodUnit": "d"
-              }
-            }
-          }
-        ],
         "identifier": [
           {
             "system": "https://github.com/uwcirg/script-fhir-facade/"
@@ -755,22 +737,28 @@
         "medicationCodeableConcept": {
           "coding": [
             {
-              "code": "00406577101",
-              "display": "METHADONE HCL 10 MG TABLET",
+              "code": "00187123150",
+              "display": "nabilone 1 MG Oral Capsule [Cesamet]",
               "system": "http://hl7.org/fhir/sid/ndc"
             },
             {
-              "code": "864706",
-              "display": "METHADONE HCL 10 MG TABLET",
+              "code": "104885",
+              "display": "nabilone 1 MG Oral Capsule [Cesamet]",
               "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "METHADONE HCL 10 MG TABLET"
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "cannabinoid"
+            }
+          ],
+          "text": "nabilone 1 MG Oral Capsule [Cesamet]"
         },
         "requester": {
-          "display": "TEST TEST"
+          "display": "Thomas Forbes"
         },
-        "authoredOn": "2019-11-03"
+        "authoredOn": "2021-01-05"
       }
     },
     {
@@ -956,17 +944,57 @@
         "status": "active",
         "intent": "order",
         "doNotPerform": false,
+        "dispenseRequest": {
+          "expectedSupplyDuration": {
+            "code": "d",
+            "system": "http://unitsofmeasure.org",
+            "unit": "days",
+            "value": 15
+          },
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/pharmacy_name",
+              "valueString": "Sylph Pharmacy, INC."
+            },
+            {
+              "url": "http://cosri.org/fhir/last_fill",
+              "valueDate": "2020-08-23"
+            }
+          ],
+          "quantity": {
+            "value": 45
+          }
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/uwcirg/script-fhir-facade/"
+          }
+        ],
         "medicationCodeableConcept": {
           "coding": [
             {
-              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-              "code": "1049593",
-              "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+              "code": "00406012560",
+              "display": "Lortab acetaminophen 325 MG / hydrocodone bitartrate 10 MG Oral Tablet",
+              "system": "http://hl7.org/fhir/sid/ndc"
+            },
+            {
+              "code": "856999",
+              "display": "Lortab acetaminophen 325 MG / hydrocodone bitartrate 10 MG Oral Tablet",
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
             }
           ],
-          "text": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          "extension": [
+            {
+              "url": "http://cosri.org/fhir/drug_class",
+              "valueString": "opioid"
+            }
+          ],
+          "text": "Lortab acetaminophen 325 MG / hydrocodone bitartrate 10 MG Oral Tablet"
         },
-        "authoredOn": "2018-04-15T16:02:00.000Z"
+        "requester": {
+          "display": "Samuel Russell"
+        },
+        "authoredOn": "2020-08-23T16:02:00.000Z"
       }
     },
     {

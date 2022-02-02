@@ -990,7 +990,7 @@ define ReportMME:
   }
   sort by End desc
 
-//return Tuple containing MME value for each MedicationRequest that happends in the last two years
+//return a list of tuples containing MME value for each MedicationRequest that happends in the last two years
 define ReportMMEByDates:
   (ReportMME) R
   where
