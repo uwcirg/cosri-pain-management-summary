@@ -121,18 +121,40 @@ var Timeout = (function() {
     let storedActiveTime = window.localStorage.getItem(getTimeoutIdentifier());
     return storedActiveTime ? storedActiveTime : Date.now();
   }
+
+  function isAboutToExpire() {
+    let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
+    return (sessionLifetime - timeElapsed) < 60;
+  }
+
+  function isExpired() {
+    let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
+    return timeElapsed >= sessionLifetime;
+  }
   /*
   * check how much time has elapsed, if exceeds session lifetime, redirect to specified logout location
   */
   function checkTimeout() {
-    let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
-    if ((sessionLifetime - timeElapsed) <= 60) {
-      printDebugStatement("Session about to expire. Time elapsed since first visiting " + timeElapsed);
-    }
-    if (timeElapsed >= sessionLifetime) { //session has expired
+    if (isExpired()) { //session has expired
       //logout user?
-      window.location = logoutLocation;
+      window.redirectToLogout();
+      return;
     }
+    let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
+    if (isAboutToExpire()) {
+      //if session is about to expire, pop up modal to inform user as such and then redirect back to patient search
+      openModal();
+      //back to patient search
+      setTimeout(function() {
+        window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/clear_session";
+      }, 5000);
+      printDebugStatement("Session about to expire. Time elapsed since first visiting " + timeElapsed);
+      return;
+    }
+  }
+
+  window.redirectToLogout = function redirectToLogout() {
+    window.location = logoutLocation;
   }
 
   function isDOMReady() {
@@ -169,10 +191,9 @@ var Timeout = (function() {
   * initialize user events that will reset the timeout timer
   * will not logout user when is active
   */
-  //TODO figure out what to do here, if user is active but access token expires?
-  // currently just reset countdown without logging out user
   function resetTimeoutEvents() {
     document.querySelector(".App").addEventListener("click", function() {
+      checkTimeout();
       startTimeoutTimer();
     });
     document.addEventListener("scroll", function() {
@@ -180,18 +201,56 @@ var Timeout = (function() {
         printDebugStatement("time out count resets when scrolling");
         clearTimeout(scrollTickerId);
         scrollTickerId = setTimeout(function() {
+          checkTimeout();
           startTimeoutTimer();
         }, 250);
       });
     });
   }
+  function hasNoToken() {
+    return (!tokenInfo || !Object.keys(tokenInfo).length);
+  }
   function handleNoToken() {
     getSessionTokenInfo();
-    if (!tokenInfo || !Object.keys(tokenInfo).length) {
+    if (hasNoToken()) {
       //back to dashboard
-      window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/home";
+      if (getEnv("REACT_APP_DASHBOARD_URL")) {
+        window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/home";
+      }
       clearInterval(waitForDOMIntervalId);
     }
+  }
+  function getModalElement() {
+    return document.querySelector("#timeoutModal");
+  }
+  function openModal() {
+    var modalElement = getModalElement();
+    if (!modalElement) return;
+    modalElement.classList.add("modal-open");
+    modalElement.classList.remove("modal-close");
+    document.querySelector("body").classList.add("fixed");
+    document.querySelector("body").classList.add("ReactModal__Body--open");
+  }
+  function initTimeoutModal() {
+    if (getModalElement()) return;
+    var modalElement = document.createElement("div");
+    modalElement.setAttribute("id", "timeoutModal");
+    modalElement.classList.add("modal-close");
+    modalElement.innerHTML = `<div class="ReactModal__Overlay ReactModal__Overlay--after-open overlay">
+      <div class="ReactModal__Content ReactModal__Content--after-open modal small" tabindex="-1" role="dialog" aria-label="Timeout notice">
+          <div class="info-modal">
+              <div class="info-modal__header">Session Timeout Notice</div>
+              <div class="info-modal__content text-bold">
+                <h3 class="error title">Your session is about to time out.</h3>
+                <div class="description">
+                  <span>One moment while we redirect you back...</span><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                </div>
+              </div>
+              <div class="info-modal__buttonsContainer"><button class="button-default" onClick="window.redirectToLogout()">Log out</button></div>
+          </div>
+      </div>
+    </div>`;
+    document.body.appendChild(modalElement);
   }
   function init() {
     waitForDOMIntervalId = setInterval(function() {
@@ -202,13 +261,18 @@ var Timeout = (function() {
         //get expiration date/time to determine how long a session is?
         getSessionTokenInfo();
         //on page load, check if token is not present?
-        handleNoToken();
+        if (hasNoToken()) {
+          handleNoToken();
+          return;
+        }
         //assign id to the specific countdown timer id for this session
         initTimeoutIdentifier();
+        //set timeout modal
+        initTimeoutModal();
         //start count down
         startTimeoutTimer();
         //initiate user event(s) that will reset timeout countdown
-        resetTimeoutEvents();
+        //resetTimeoutEvents();
       }
     }, 50);
   }

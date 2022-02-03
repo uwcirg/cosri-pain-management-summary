@@ -176,7 +176,8 @@ export default class Landing extends Component {
     if (!summary) return;
     const patientName =  (summary&&summary.Patient?summary.Patient.Name:"");
     //pdmp data
-    const pdmpData = summary["PDMPMedications"]["PDMPMedications"];
+    const pdmpData = summary["PDMPMedications"] ? summary["PDMPMedications"]["PDMPMedications"]: null;
+    if (!pdmpData) return;
     const pdmpContext = "CQL PMP MME Result";
     const fileName = patientName.replace(/\s/g, "_") + "_MME_Result";
     this.saveData({
@@ -917,8 +918,8 @@ export default class Landing extends Component {
     if (this.state.loading) {
       return <Spinner loadingMessage={this.state.loadingMessage}/>;
     }
-
-    const PATIENT_SEARCH_URL = getEnv("REACT_APP_DASHBOARD_URL")+"/clear_session";
+    const PATIENT_SEARCH_ROOT_URL = getEnv("REACT_APP_DASHBOARD_URL");
+    const PATIENT_SEARCH_URL = PATIENT_SEARCH_ROOT_URL+"/clear_session";
 
     if (this.state.result == null) {
       return (
@@ -927,7 +928,7 @@ export default class Landing extends Component {
             <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See console for details.
           </div>
           <div className="banner__linkContainer">
-            <a href={PATIENT_SEARCH_URL}>Back to Patient Search</a>
+            <a href={PATIENT_SEARCH_ROOT_URL}>Back to Patient Search</a>
           </div>
         </div>
       );
