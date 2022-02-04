@@ -69,11 +69,11 @@ export function isInViewport (elem) {
 
 /*
  * @param array of numbers
- * @return the average of numbers in the array
+ * @return the sum of numbers in the array
  */
-export function averageArray (array) {
+export function sumArray (array) {
     if (!array || !Array.isArray(array) || !array.length) return 0;
-    return array.reduce((a, b) => (isNaN(a)?0:a) + (isNaN(b)?0:b)) / array.length;
+    return array.reduce((a, b) => (isNaN(a)?0:a) + (isNaN(b)?0:b));
 }
 
 /*
@@ -81,7 +81,14 @@ export function averageArray (array) {
  * @param return number of days difference of date input from today
  */
 export function daysFromToday (dateInput) {
-    let diff = (moment()).diff(moment(dateInput), "days");
+    const today = (new Date());
+    let originalDate = (new Date(dateInput));
+    let dObj = new Date(originalDate.valueOf());
+    let tzOffset = dObj.getTimezoneOffset() * 60000;
+    dObj.setTime(dObj.getTime() + tzOffset);
+    let oneDay = (1000 * 60 * 60 * 24);
+    let diff = (today.setHours(0,0,0,0) - dObj.setHours(0,0,0,0)) / oneDay;
+    //console.log("date " , dateInput, " dif ", diff)
     if (isNaN(diff)) return 0;
     return diff;
 }

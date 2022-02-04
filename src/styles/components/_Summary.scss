@@ -304,12 +304,17 @@
         height: 0;
         width: 560px;
         padding: 0;
-        padding-bottom: 36%;
+        padding-bottom: 45%;
         margin-bottom: 24px;
       }
-      @media(min-width: 768px) {
+      @media(min-width: 992px) {
         .MME-svg-container {
-          padding-bottom: 67%;
+          padding-bottom: 75%;
+        }
+      }
+      @media(min-width: 1600px) {
+        .MME-svg-container {
+          padding-bottom: 65%;
         }
       }
       .MMEChartSvg {
@@ -320,7 +325,7 @@
         top: 0;
       }
       .MMEgraph {
-        margin: 0 0 8px;
+        margin: 16px 0 8px;
         //padding-bottom: 16px;
         &.no-entry {
           display: flex;
@@ -947,6 +952,16 @@
     .sections {
       .MME-svg-container {
         width: 100%;
+      }
+    }
+  }
+}
+
+@media (min-width: 1600px) {
+  .summary__display {
+    .sections {
+      .MME-svg-container {
+        width: 85%;
       }
     }
   }

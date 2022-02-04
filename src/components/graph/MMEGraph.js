@@ -9,7 +9,7 @@ import {
 } from '../../helpers/formatit';
 import {dateTimeCompare} from '../../helpers/sortit';
 import {
-  averageArray,
+  sumArray,
   daysFromToday
 } from '../../helpers/utility';
 
@@ -69,25 +69,27 @@ export default class MMEGraph extends Component {
     //look in data points up to today
     const copyData = (data)
     .map(item => { return {...item}})
-    .sort((a,b) => dateTimeCompare(a.date, b.date))
-    .filter(item=>daysFromToday(item[xFieldName]) >= 0);
+    .filter(item=>!item.placeholder && !((daysFromToday(item[xFieldName]) < 0)))
+    .sort((a,b) => dateTimeCompare(a.date, b.date));
     if (!copyData.length) {
         return [];
     }
     //data points for the last 60 days
     const arrSixtyDays = copyData.filter(item => {
-      return daysFromToday(item[xFieldName]) <= 60;
+      let diff = daysFromToday(item[xFieldName]);
+      return diff <= 60 && diff >= 0;
     }).map(item=>parseFloat(item[yFieldName]));
     //data points for the last 90 days
     const arrNintyDays = copyData.filter(item => {
-      return daysFromToday(item[xFieldName]) <= 90
+      let diff = daysFromToday(item[xFieldName]);
+      return diff <= 90 && diff >= 0;
     }).map(item=>parseFloat(item[yFieldName]));
     //check matching data point for today
     const arrToday = copyData.filter(item => daysFromToday(item[xFieldName]) === 0);
     //average MED for last 60 days
-    const averageSixtyDays = Math.round(averageArray(arrSixtyDays));
+    const averageSixtyDays = Math.round(sumArray(arrSixtyDays) / 60);
     //average MED for last 90 days
-    const averageNintyDays = Math.round(averageArray(arrNintyDays));
+    const averageNintyDays = Math.round(sumArray(arrNintyDays) / 90);
     console.log("60 days ", arrSixtyDays);
     console.log("90 days ", arrNintyDays);
     return [
@@ -118,7 +120,7 @@ export default class MMEGraph extends Component {
     let minDate = new Date();
     let baseLineDate = new Date();
     minDate.setDate(maxDate.getDate() - 365);
-    const parentWidth = 500;
+    const parentWidth = 520;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
@@ -184,14 +186,14 @@ export default class MMEGraph extends Component {
     let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
 
     const margins = {
-      top: 20,
+      top: 8,
       right: 48,
       bottom: 48,
-      left: 52,
+      left: 56,
     };
 
     const width = parentWidth - margins.left - margins.right;
-    const height = 300 - margins.top - margins.bottom;
+    const height = 348 - margins.top - margins.bottom;
     const xScale = scaleTime().domain([baseLineDate, maxDate]).rangeRound([0, width]);
     const yMaxValue = Math.max(140, this.getMaxMMEValue(data));
     const yScale = scaleLinear()
