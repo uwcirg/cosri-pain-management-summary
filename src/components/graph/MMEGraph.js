@@ -70,7 +70,7 @@ export default class MMEGraph extends Component {
     const copyData = (data)
     .map(item => { return {...item}})
     .sort((a,b) => dateTimeCompare(a.date, b.date))
-    .filter(item=>!item["placeholder"] && daysFromToday(item[xFieldName]) >= 0);
+    .filter(item=>daysFromToday(item[xFieldName]) >= 0);
     if (!copyData.length) {
         return [];
     }
@@ -96,12 +96,12 @@ export default class MMEGraph extends Component {
         value: `${arrToday.length && arrToday[0][yFieldName]? arrToday[0][yFieldName]: 0} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
       },
       {
-        display: "Most recent MED",
-        value: `${parseInt(copyData[0][yFieldName])} (${copyData[0][xFieldName]})`
-      },
-      {
         display: "Average MED in the last 60 days",
         value: averageSixtyDays
+      },
+      {
+        display: "Most recent MED",
+        value: `${parseInt(copyData[0][yFieldName])} (${copyData[0][xFieldName]})`
       },
       {
         display: "Average MED in the last 90 days",
