@@ -253,8 +253,3 @@ export function numberFormat(result, input, precision) {
   if (!precision) precision = 1;
   return parseFloat(input).toFixed(precision);
 }
-
-export function subtractDaysFromDateFormat(date, days) {
-  if (!date) return "";
-  return moment(moment.parseZone(date)).subtract(days, "days").format("YYYY-MM-DD");
-}
