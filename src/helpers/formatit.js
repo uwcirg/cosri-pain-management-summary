@@ -12,10 +12,6 @@ export function dateFormat(result, input, format) {
   return moment.parseZone(input).format(format);
 }
 
-export function setToCurrentTimeZone(date) {
-  return moment(date);
-}
-
 /*
  * assume date in YYYY-MM-DD formate
  * return date to number format, 19901112
