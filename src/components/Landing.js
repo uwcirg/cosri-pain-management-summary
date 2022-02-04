@@ -643,7 +643,7 @@ export default class Landing extends Component {
     let formattedData = (JSON.parse(JSON.stringify(finalDataPoints))).map(point => {
       let o = {};
       o[graphDateFieldName] = point[graphDateFieldName];
-      o[MMEValueFieldName] = parseFloat(getRealNumber(point[MMEValueFieldName])).toFixed(2);
+      o[MMEValueFieldName] = Math.round(getRealNumber(point[MMEValueFieldName]));
       if (point[PLACEHOLDER_FIELD_NAME]) {
         o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
       }

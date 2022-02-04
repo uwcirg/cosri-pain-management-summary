@@ -508,13 +508,14 @@
           border: 2px solid $color-gray-lighter;
           display: inline-block;
           position: relative;
-          top: 8px;
           .stats-item {
             margin-bottom: 4px;
           }
           .title {
-            font-weight: 600;
             margin-right: 8px;
+          }
+          .description {
+            font-weight: 600
           }
         }
       }

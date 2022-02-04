@@ -64,6 +64,52 @@ export default class MMEGraph extends Component {
     return maxValue;
   }
 
+  getStats(data) {
+    if (!data || !data.length) return [];
+    //look in data points up to today
+    const copyData = (data)
+    .map(item => { return {...item}})
+    .sort((a,b) => dateTimeCompare(a.date, b.date))
+    .filter(item=>!item["placeholder"] && daysFromToday(item[xFieldName]) >= 0);
+    if (!copyData.length) {
+        return [];
+    }
+    //data points for the last 60 days
+    const arrSixtyDays = copyData.filter(item => {
+      return daysFromToday(item[xFieldName]) <= 60;
+    }).map(item=>parseFloat(item[yFieldName]));
+    //data points for the last 90 days
+    const arrNintyDays = copyData.filter(item => {
+      return daysFromToday(item[xFieldName]) <= 90
+    }).map(item=>parseFloat(item[yFieldName]));
+    //check matching data point for today
+    const arrToday = copyData.filter(item => daysFromToday(item[xFieldName]) === 0);
+    //average MED for last 60 days
+    const averageSixtyDays = Math.round(averageArray(arrSixtyDays));
+    //average MED for last 90 days
+    const averageNintyDays = Math.round(averageArray(arrNintyDays));
+    console.log("60 days ", arrSixtyDays);
+    console.log("90 days ", arrNintyDays);
+    return [
+      {
+        display: "MED today",
+        value: `${arrToday.length && arrToday[0][yFieldName]? arrToday[0][yFieldName]: 0} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
+      },
+      {
+        display: "Most recent MED",
+        value: `${parseInt(copyData[0][yFieldName])} (${copyData[0][xFieldName]})`
+      },
+      {
+        display: "Average MED in the last 60 days",
+        value: averageSixtyDays
+      },
+      {
+        display: "Average MED in the last 90 days",
+        value: averageNintyDays
+      }
+    ];
+  }
+
   render() {
     /*
      *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, {"dateWritten":"2019-04-15","MMEValue":40}]
@@ -131,52 +177,8 @@ export default class MMEGraph extends Component {
       baselineItem["placeholder"] = true;
       data.unshift(baselineItem);
     }
-    let graphStats = [];
-    if (this.props.data && this.props.data.length) {
-      //look in data points up to today
-      const copyData = (this.props.data)
-        .map(item => { return {...item}})
-        .sort((a,b) => dateTimeCompare(a.date, b.date))
-        .filter(item=>!item["placeholder"] && daysFromToday(item[xFieldName]) >= 0);
-      if (copyData.length) {
-        //data points for the last 60 days
-        const arrSixtyDays = copyData.filter(item => {
-          return daysFromToday(item[xFieldName]) <= 60;
-        }).map(item=>parseFloat(item[yFieldName]));
-        //data points for the last 90 days
-        const arrNintyDays = copyData.filter(item => {
-          return daysFromToday(item[xFieldName]) <= 90
-        }).map(item=>parseFloat(item[yFieldName]));
-        //check matching data point for today
-        const arrToday = copyData.filter(item => daysFromToday(item[xFieldName]) === 0);
-        const averageSixtyDays = Math.round(averageArray(arrSixtyDays));
-        const averageNintyDays = Math.round(averageArray(arrNintyDays));
-        const mostRecentMED = `${parseInt(copyData[0][yFieldName])} (${copyData[0][xFieldName]})`;
-        console.log("60 days ", arrSixtyDays);
-        console.log("90 days ", arrNintyDays);
-        console.log("mostRecent ", mostRecentMED)
-        graphStats = [
-          {
-            display: "MED today",
-            value: `${arrToday.length? arrToday[0][yFieldName]: 0} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
-          },
-          {
-            display: "Most recent MED",
-            value: mostRecentMED
-          },
-          {
-            display: "Average MED in the last 60 days",
-            value: averageSixtyDays
-          },
-          {
-            display: "Average MED in the last 90 days",
-            value: averageNintyDays
-          }
-        ];
-      }
-      console.log("graph stats ", graphStats)
-    }
-
+    //get stats for data
+    let graphStats = this.getStats(this.props.data);
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
     let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
     let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
@@ -301,7 +303,10 @@ export default class MMEGraph extends Component {
         </div>
       </div>
       {graphStats.length > 0 && <div className="stats-container">{
-        graphStats.map((item,index) => <div className="stats-item" key={item.value+index}><span className="title">{item.display}</span><span>{item.value}</span></div>)
+        graphStats.map((item,index) =>
+          <div className="stats-item" key={item.value+index}>
+            <span className="title">{item.display}</span><span className="description">{item.value}</span>
+          </div>)
       }</div>}
       </React.Fragment>
     );
