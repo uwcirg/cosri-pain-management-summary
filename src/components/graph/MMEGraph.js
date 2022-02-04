@@ -4,6 +4,14 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { line } from 'd3-shape';
 import XYAxis from './xy-axis';
 import Line from './line';
+import {
+  dateFormat
+} from '../../helpers/formatit';
+import {dateTimeCompare} from '../../helpers/sortit';
+import {
+  averageArray,
+  daysFromToday
+} from '../../helpers/utility';
 
 const defaultFields = {
   x: "date",
@@ -78,8 +86,6 @@ export default class MMEGraph extends Component {
         ...item
       }
     }): null;
-    //let data = computedData? (computedData).sort(this.compareDate): [];
-    //let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
     let data = computedData || [];
     let noEntry = !data || !data.length;
     data = data.filter(d => d[xFieldName]);
@@ -124,6 +130,51 @@ export default class MMEGraph extends Component {
       baselineItem["baseline"] = true;
       baselineItem["placeholder"] = true;
       data.unshift(baselineItem);
+    }
+    let graphStats = [];
+    if (this.props.data && this.props.data.length) {
+      //look in data points up to today
+      const copyData = (this.props.data)
+        .map(item => { return {...item}})
+        .sort((a,b) => dateTimeCompare(a.date, b.date))
+        .filter(item=>!item["placeholder"] && daysFromToday(item[xFieldName]) >= 0);
+      if (copyData.length) {
+        //data points for the last 60 days
+        const arrSixtyDays = copyData.filter(item => {
+          return daysFromToday(item[xFieldName]) <= 60;
+        }).map(item=>parseFloat(item[yFieldName]));
+        //data points for the last 90 days
+        const arrNintyDays = copyData.filter(item => {
+          return daysFromToday(item[xFieldName]) <= 90
+        }).map(item=>parseFloat(item[yFieldName]));
+        //check matching data point for today
+        const arrToday = copyData.filter(item => daysFromToday(item[xFieldName]) === 0);
+        const averageSixtyDays = Math.round(averageArray(arrSixtyDays));
+        const averageNintyDays = Math.round(averageArray(arrNintyDays));
+        const mostRecentMED = `${parseInt(copyData[0][yFieldName])} (${copyData[0][xFieldName]})`;
+        console.log("60 days ", arrSixtyDays);
+        console.log("90 days ", arrNintyDays);
+        console.log("mostRecent ", mostRecentMED)
+        graphStats = [
+          {
+            display: "MED today",
+            value: `${arrToday.length? arrToday[0][yFieldName]: 0} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
+          },
+          {
+            display: "Most recent MED",
+            value: mostRecentMED
+          },
+          {
+            display: "Average MED in the last 60 days",
+            value: averageSixtyDays
+          },
+          {
+            display: "Average MED in the last 90 days",
+            value: averageNintyDays
+          }
+        ];
+      }
+      console.log("graph stats ", graphStats)
     }
 
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
@@ -173,7 +224,6 @@ export default class MMEGraph extends Component {
           "dataStrokeFill": dataStrokeColor
         }
     };
-
     const xSettings = {
       scale: xScale,
       orient: 'bottom',
@@ -209,7 +259,7 @@ export default class MMEGraph extends Component {
     const CDCLegendSettings = {
       "fill": CDC_COLOR,
       ...defaultLegendSettings
-    }
+    };
 
     const dataLineProps = {...defaultProps, ...additionalProps};
     const graphWidth = width + margins.left + margins.right;
@@ -227,6 +277,7 @@ export default class MMEGraph extends Component {
               </div>);
     }
     return (
+      <React.Fragment>
       <div className="MMEgraph">
         <div className="title">Morphine Equivalent Dose (MED)</div>
         <div className="MME-svg-container">
@@ -249,6 +300,10 @@ export default class MMEGraph extends Component {
           </svg>
         </div>
       </div>
+      {graphStats.length > 0 && <div className="stats-container">{
+        graphStats.map((item,index) => <div className="stats-item" key={item.value+index}><span className="title">{item.display}</span><span>{item.value}</span></div>)
+      }</div>}
+      </React.Fragment>
     );
   }
 }

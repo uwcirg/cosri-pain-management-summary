@@ -66,3 +66,22 @@ export function isInViewport (elem) {
         bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
 };
+
+/*
+ * @param array of numbers
+ * @return the average of numbers in the array
+ */
+export function averageArray (array) {
+    if (!array || !Array.isArray(array) || !array.length) return 0;
+    return array.reduce((a, b) => (isNaN(a)?0:a) + (isNaN(b)?0:b)) / array.length;
+}
+
+/*
+ * @param a date string
+ * @param return number of days difference of date input from today
+ */
+export function daysFromToday (dateInput) {
+    let diff = (moment()).diff(moment(dateInput), "days");
+    if (isNaN(diff)) return 0;
+    return diff;
+}

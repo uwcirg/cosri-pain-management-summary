@@ -12,6 +12,10 @@ export function dateFormat(result, input, format) {
   return moment.parseZone(input).format(format);
 }
 
+export function setToCurrentTimeZone(date) {
+  return moment(date);
+}
+
 /*
  * assume date in YYYY-MM-DD formate
  * return date to number format, 19901112
@@ -248,4 +252,9 @@ export function numberFormat(result, input, precision) {
   if (!input) return "";
   if (!precision) precision = 1;
   return parseFloat(input).toFixed(precision);
+}
+
+export function subtractDaysFromDateFormat(date, days) {
+  if (!date) return "";
+  return moment(moment.parseZone(date)).subtract(days, "days").format("YYYY-MM-DD");
 }
