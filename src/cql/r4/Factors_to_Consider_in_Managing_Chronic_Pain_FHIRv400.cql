@@ -840,29 +840,6 @@ define ReportStoolSoftenersAndLaxatives:
 
 // RISK CONSIDERATIONS
 
-// Helps calculate active medications based on end date rather than 'active' status
-define ActiveOpioidMedicationRequestsByEndDate:
-  [MedicationRequest: "Opioid Pain Medications"] O
-    let CalculatedEnd: GetMedicationRequestEndDate(O)
-    where CalculatedEnd same or after Today()
-
-define CurrentMME:
-  MMECalculator.TotalMME(ActiveOpioidMedicationRequestsByEndDate)
-
-
-define ReportCurrentMME:
-{
-  if CurrentMME is null then
-    null
-  else
-    (CurrentMME) M
-    return {
-      Name: 'Current Milligram Morephine Equivalent',
-      Result: M.value,
-      Date: ToString(Today())
-    }
-}
-
 define ReportMME:
   [MedicationRequest: "Opioid Pain Medications"] O
   let
@@ -1175,7 +1152,6 @@ define Summary: {
     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
   },
   RiskConsiderations: {
-    CurrentMME: ReportCurrentMME,
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
     //for debugging, uncomment to test

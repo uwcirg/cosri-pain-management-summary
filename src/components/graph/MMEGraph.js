@@ -69,7 +69,7 @@ export default class MMEGraph extends Component {
     //look in data points up to today
     const copyData = (data)
     .map(item => { return {...item}})
-    .filter(item=>!item.placeholder && !((daysFromToday(item[xFieldName]) < 0)))
+    .filter(item=>!item.placeholder && !((daysFromToday(item[xFieldName]) < 0))) //not future dates
     .sort((a,b) => dateTimeCompare(a.date, b.date));
     if (!copyData.length) {
         return [];

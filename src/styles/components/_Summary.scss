@@ -957,6 +957,16 @@
   }
 }
 
+@media (min-width: 1400px) {
+  .summary__display {
+    .sections {
+      .MME-svg-container {
+        width: 90%;
+      }
+    }
+  }
+}
+
 @media (min-width: 1600px) {
   .summary__display {
     .sections {
