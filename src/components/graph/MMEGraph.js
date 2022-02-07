@@ -234,7 +234,7 @@ export default class MMEGraph extends Component {
       transform: `translate(0, ${height})`,
       tickFormat: "%b %Y",
       tickType: "date",
-      tickInterval: diffDays <= 360 ? 1 : 2,
+      tickInterval: diffDays > 720 ? 2 : 1,
       ticks: xIntervals
     };
     const ySettings = {

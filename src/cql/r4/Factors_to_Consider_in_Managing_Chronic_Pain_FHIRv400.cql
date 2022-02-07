@@ -51,6 +51,8 @@
 //    Add Service Request query for drug urine screen, in the case of Kent site, a custom system and code will be used to filter search, i.e. https://testdirectory.questdiagnostics.com/test, 39428
 // Update 20211206
 //   Add Document Reference query for controlled substance agreement, a LOINC code of 94136-9 is used
+// Update 20210204
+//   Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
