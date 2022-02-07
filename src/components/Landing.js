@@ -539,7 +539,7 @@ export default class Landing extends Component {
       dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
       dataPoint[MMEValueFieldName] = currentMMEValue;
       dataPoint[END_DELIMITER_FIELD_NAME] = true;
-      //dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+      dataPoint[PLACEHOLDER_FIELD_NAME] = true;
       dataPoint = {...dataPoint, ...currentMedicationItem};
       dataPoints.push(dataPoint);
       prevObj = currentMedicationItem;

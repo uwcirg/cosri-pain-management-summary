@@ -120,7 +120,7 @@ export default class MMEGraph extends Component {
     let minDate = new Date();
     let baseLineDate = new Date();
     minDate.setDate(maxDate.getDate() - 365);
-    const parentWidth = 520;
+    const parentWidth = 480;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;

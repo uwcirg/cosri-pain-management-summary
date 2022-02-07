@@ -309,12 +309,12 @@
       }
       @media(min-width: 992px) {
         .MME-svg-container {
-          padding-bottom: 75%;
+          padding-bottom: 80%;
         }
       }
-      @media(min-width: 1600px) {
+      @media(min-width: 1400px) {
         .MME-svg-container {
-          padding-bottom: 65%;
+          padding-bottom: 70%;
         }
       }
       .MMEChartSvg {
@@ -958,16 +958,6 @@
 }
 
 @media (min-width: 1400px) {
-  .summary__display {
-    .sections {
-      .MME-svg-container {
-        width: 90%;
-      }
-    }
-  }
-}
-
-@media (min-width: 1600px) {
   .summary__display {
     .sections {
       .MME-svg-container {

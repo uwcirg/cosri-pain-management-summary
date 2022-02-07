@@ -83,7 +83,7 @@ export function sumArray (array) {
 export function daysFromToday (dateInput) {
     const today = (new Date());
     let originalDate = (new Date(dateInput));
-    let dObj = new Date(originalDate.valueOf());
+    let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
     let tzOffset = dObj.getTimezoneOffset() * 60000;
     dObj.setTime(dObj.getTime() + tzOffset);
     let oneDay = (1000 * 60 * 60 * 24);
