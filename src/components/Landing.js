@@ -625,7 +625,8 @@ export default class Landing extends Component {
           }
       }
       else {
-          finalDataPoints.push(currentDataPoint);
+        if (!nextObj) currentDataPoint["final"] = true;
+        finalDataPoints.push(currentDataPoint);
       }
 
       if (!nextObj) {
@@ -646,6 +647,9 @@ export default class Landing extends Component {
       o[MMEValueFieldName] = Math.round(getRealNumber(point[MMEValueFieldName]));
       if (point[PLACEHOLDER_FIELD_NAME]) {
         o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
+      }
+      if (point["final"]) {
+        o["final"] = true;
       }
       return o;
     });

@@ -69,7 +69,7 @@ export default class MMEGraph extends Component {
     //look in data points up to today
     const copyData = (data)
     .map(item => { return {...item}})
-    .filter(item=>!item.placeholder && !((daysFromToday(item[xFieldName]) < 0))) //not future dates
+    .filter(item=>!((daysFromToday(item[xFieldName]) < 0))) //not future dates
     .sort((a,b) => dateTimeCompare(a.date, b.date));
     if (!copyData.length) {
         return [];
@@ -85,17 +85,19 @@ export default class MMEGraph extends Component {
       return diff <= 90 && diff >= 0;
     }).map(item=>parseFloat(item[yFieldName]));
     //check matching data point for today
-    const arrToday = copyData.filter(item => daysFromToday(item[xFieldName]) === 0);
+    const arrToday = copyData.filter(item => daysFromToday(item[xFieldName]) === 0).map(item=>parseFloat(item[yFieldName]));
     //average MED for last 60 days
     const averageSixtyDays = Math.round(sumArray(arrSixtyDays) / 60);
     //average MED for last 90 days
     const averageNintyDays = Math.round(sumArray(arrNintyDays) / 90);
+    const finalPoint = copyData.filter(item=>item.final); // point denoted as final from dataset
+    const mostRecentMME = finalPoint.length? finalPoint[0]: copyData[0];
     console.log("60 days ", arrSixtyDays);
     console.log("90 days ", arrNintyDays);
     return [
       {
         display: "MED today",
-        value: `${arrToday.length && arrToday[0][yFieldName]? arrToday[0][yFieldName]: 0} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
+        value: `${arrToday.length > 0? sumArray(arrToday): 0} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
       },
       {
         display: "Average MED in the last 60 days",
@@ -103,7 +105,7 @@ export default class MMEGraph extends Component {
       },
       {
         display: "Most recent MED",
-        value: `${parseInt(copyData[0][yFieldName])} (${copyData[0][xFieldName]})`
+        value: `${parseInt(mostRecentMME[yFieldName])} (${mostRecentMME[xFieldName]})`
       },
       {
         display: "Average MED in the last 90 days",
