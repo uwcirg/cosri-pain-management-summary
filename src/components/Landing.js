@@ -489,6 +489,7 @@ export default class Landing extends Component {
     const START_DELIMITER_FIELD_NAME = "start_delimiter";
     const END_DELIMITER_FIELD_NAME = "end_delimiter";
     const PLACEHOLDER_FIELD_NAME = "placeholder";
+    const FINAL_CALCULATED_FIELD_FLAG = "final";
 
     //sort data by start date
     graph_data = graph_data.filter(function(item) {
@@ -625,7 +626,7 @@ export default class Landing extends Component {
           }
       }
       else {
-        if (!nextObj) currentDataPoint["final"] = true;
+        if (!nextObj) currentDataPoint[FINAL_CALCULATED_FIELD_FLAG] = true;
         finalDataPoints.push(currentDataPoint);
       }
 
@@ -648,8 +649,8 @@ export default class Landing extends Component {
       if (point[PLACEHOLDER_FIELD_NAME]) {
         o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
       }
-      if (point["final"]) {
-        o["final"] = true;
+      if (point[FINAL_CALCULATED_FIELD_FLAG]) {
+        o[FINAL_CALCULATED_FIELD_FLAG] = true;
       }
       return o;
     });
