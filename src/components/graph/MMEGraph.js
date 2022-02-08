@@ -92,8 +92,8 @@ export default class MMEGraph extends Component {
     const averageNintyDays = Math.round(sumArray(arrNintyDays) / 90);
     const finalPoint = copyData.filter(item=>item.final); // point denoted as final from dataset
     const mostRecentMME = finalPoint.length? finalPoint[0]: copyData[0];
-    console.log("60 days ", arrSixtyDays);
-    console.log("90 days ", arrNintyDays);
+    //console.log("60 days ", arrSixtyDays);
+    //console.log("90 days ", arrNintyDays);
     return [
       {
         display: "MED today",
@@ -165,9 +165,9 @@ export default class MMEGraph extends Component {
        * if the total count of data points is less than the initial set number of intervals
        */
       let calcMinDate = new Date(minDate.valueOf());
-      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * (xIntervals-arrMonthsYears.length)));
+      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * (xIntervals-arrMonthsYears.length + 1)));
       minDate = new Date(minDate);
-      console.log("min date ", minDate, " max date ", maxDate)
+      //console.log("min date ", minDate, " max date ", maxDate)
     }
     let calcMaxDate = new Date(maxDate.valueOf());
     maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
@@ -236,7 +236,6 @@ export default class MMEGraph extends Component {
         }
     };
     const tickInterval =  Math.ceil((diffDays / 30) / xIntervals);
-    console.log("tick interval ", tickInterval)
     const xSettings = {
       scale: xScale,
       orient: 'bottom',
