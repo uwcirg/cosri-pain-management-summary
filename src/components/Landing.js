@@ -591,28 +591,36 @@ export default class Landing extends Component {
         finalDataPoints.push(dataPoint);
       }
       //overlapping data points
-      if (prevObj && (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
-        //add data point with older value for the previous med
+      if (prevObj &&
+          (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
+        //add data point with MME value for the previous med as the connecting data point
         dataPoint = {};
         dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
         dataPoint[MMEValueFieldName] = getRealNumber(prevObj[MMEValueFieldName]);
         dataPoint[PLACEHOLDER_FIELD_NAME] = true;
         finalDataPoints.push(dataPoint);
         finalDataPoints.push(currentDataPoint);
-      } else if (prevObj && currentDataPoint[START_DELIMITER_FIELD_NAME] && dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
+      } else if (
+        prevObj &&
+        currentDataPoint[START_DELIMITER_FIELD_NAME] &&
+        dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
+        //a new data point as med starts after the previous med ends
         if (getDiffDays(prevObj[endDateFieldName], currentDataPoint[startDateFieldName]) > 1) {
             dataPoint = {};
             dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
             //add 0 value dummy data point to denote start of med where applicable
             dataPoint[MMEValueFieldName] = 0;
-            dataPoint[START_DELIMITER_FIELD_NAME] = true;
+            //dataPoint[START_DELIMITER_FIELD_NAME] = true;
             dataPoint[PLACEHOLDER_FIELD_NAME] = true;
             finalDataPoints.push(dataPoint);
         }
         //add current data point
         finalDataPoints.push(currentDataPoint);
       }
-      else if (nextObj && currentDataPoint[END_DELIMITER_FIELD_NAME] && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName]))) {
+      else if (
+        nextObj &&
+        currentDataPoint[END_DELIMITER_FIELD_NAME] &&
+        (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName]))) {
           //add current data point
           finalDataPoints.push(currentDataPoint);
           if (getDiffDays(currentDataPoint[endDateFieldName], nextObj[startDateFieldName]) > 1) {

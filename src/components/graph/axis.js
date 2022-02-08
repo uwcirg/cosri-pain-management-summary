@@ -25,7 +25,7 @@ class Axis extends React.Component {
       axis = axisBottom(scale);
       if (tickType === "date") {
         axis.tickFormat(timeFormat(tickFormat ||"%d %b %y"));
-        //spaced out ticks by displaying every four month
+        //spaced out ticks by month in tick interval
         axis.ticks(timeMonth.every(tickInterval));
       } else axis.ticks(ticks);
     }

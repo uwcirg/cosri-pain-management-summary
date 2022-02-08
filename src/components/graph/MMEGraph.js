@@ -97,7 +97,7 @@ export default class MMEGraph extends Component {
     return [
       {
         display: "MED today",
-        value: `${arrToday.length > 0? sumArray(arrToday): 0} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
+        value: `${sumArray(arrToday)} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
       },
       {
         display: "Average MED in the last 60 days",
@@ -116,18 +116,17 @@ export default class MMEGraph extends Component {
 
   render() {
     /*
-     *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, {"dateWritten":"2019-04-15","MMEValue":40}]
+     *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, {"dateWritten":"2019-04-15","MMEValue":40, "placeholder":true}]
      */
     let maxDate = new Date();
-    let minDate = new Date();
+    let minDate = (new Date()).setDate(maxDate.getDate() - 365);
     let baseLineDate = new Date();
-    minDate.setDate(maxDate.getDate() - 365);
-    const parentWidth = 480;
-    const parentHeight = 348;
+    const parentWidth = 488;
+    const parentHeight = 344;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
-    const xIntervals = 8;
+    const xIntervals = 12;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
     const hasError = this.props.error;
     //make a copy of the data so as not to accidentally mutate it
@@ -154,22 +153,27 @@ export default class MMEGraph extends Component {
       maxDate = new Date(Math.max.apply(null, arrayDates))
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
-    //console.log("maxDate: ", maxDate, " minDate ", minDate)
-    const diffTime = Math.abs(maxDate - minDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-   // if (arrayDates.length < (xIntervals - 2)) {
-    if (diffDays <= 60 && arrayDates.length < (xIntervals - 2)) {
+    const arrMonthsYears = [];
+    //date axis is in month intervals so check to see how many there are
+    arrayDates.forEach(item => {
+      let my = (item.getMonth()+1) + " " + item.getFullYear();
+      if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
+    });
+    if (arrMonthsYears.length < (xIntervals - 2)) {
       /*
-       * make sure graph has appropiate end points on the graph if the total count of data points is less than the initial set number of intervals
+       * make sure graph has appropiate end points on the graph
+       * if the total count of data points is less than the initial set number of intervals
        */
       let calcMinDate = new Date(minDate.valueOf());
-      let calcMaxDate = new Date(maxDate.valueOf());
-      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * ((xIntervals-arrayDates.length)/2-1)));
-      maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + (30 * ((xIntervals-arrayDates.length)/2-1)));
-      maxDate = new Date(maxDate);
+      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * (xIntervals-arrMonthsYears.length)));
       minDate = new Date(minDate);
-      //console.log("min date ", minDate, " max date ", maxDate)
+      console.log("min date ", minDate, " max date ", maxDate)
     }
+    let calcMaxDate = new Date(maxDate.valueOf());
+    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
+    maxDate = new Date(maxDate);
+    const diffTime = Math.abs(maxDate - minDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     /*
      * set up baseline data point starting at 0
      */
@@ -231,13 +235,15 @@ export default class MMEGraph extends Component {
           "dataStrokeFill": dataStrokeColor
         }
     };
+    const tickInterval =  Math.ceil((diffDays / 30) / xIntervals);
+    console.log("tick interval ", tickInterval)
     const xSettings = {
       scale: xScale,
       orient: 'bottom',
       transform: `translate(0, ${height})`,
       tickFormat: "%b %Y",
       tickType: "date",
-      tickInterval: diffDays > 540 ? 2 : 1,
+      tickInterval: tickInterval || 1,
       ticks: xIntervals
     };
     const ySettings = {
