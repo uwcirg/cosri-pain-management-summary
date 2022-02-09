@@ -16,7 +16,7 @@ export default class ExclusionBanner extends Component {
   }
 
   handleCloseToggle(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     this.setState(state => ({
       displayed: !state.displayed
     }));

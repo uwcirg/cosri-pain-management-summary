@@ -36,7 +36,7 @@ export function fetchEnvData() {
     try {
         xhr.send();
     } catch(e) {
-        console.log("xhr send error ", e);
+        console.log("Request failed to send.  Error: ",e);
     }
     xhr.ontimeout = function (e) {
         // XMLHttpRequest timed out.

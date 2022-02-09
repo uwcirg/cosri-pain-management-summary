@@ -11,7 +11,7 @@ it('renders without crashing', () => {
 });
 
 it('closes the banner when the button is clicked', () => {
-  expect(component.find('.exclusion-banner')).toHaveStyle('display', 'block');
-  component.find('.close-button').simulate('click');
-  expect(component.find('.exclusion-banner')).toHaveStyle('display', 'none');
+  expect(component.find('.exclusion-banner').hasClass('close')).toBe(false);
+  component.simulate('click');
+  expect(component.find('.exclusion-banner').hasClass('close')).toBe(true);
 });

@@ -137,7 +137,7 @@ it('flags "Stool Softeners and Laxatives" entries correctly', () => {
   expect(flagit(mockEntry, subSection, mockSummaryC)).toEqual(false);
 });
 
-it('flags "Most Recent MME" entries correctly', () => {
+it.skip('flags "Most Recent MME" entries correctly', () => {
   const subSection = summaryMap['RiskConsiderations']['sections'][0];
   const mockEntryA = {
     "Name": "Morphine Milligram Equivalent (MME)",
@@ -155,8 +155,7 @@ it('flags "Most Recent MME" entries correctly', () => {
   expect(flagit(null, subSection, mockSummaryA)).toEqual(false);
 });
 
-
-// TODO skip for now require rewrite for a new test as Urine Drug Screen section also incorporates site-specific changes
+//not current use
 it.skip('flags "Urine Drug Screens" entries correctly', () => {
   const subSection = summaryMap['RiskConsiderations']['sections'][1];
   const mockEntry = {
@@ -193,9 +192,7 @@ it('flags "Benzodiazepine Medications" entries correctly', () => {
   // one or more benzo (true) AND no opioids (false) => mockFlagB
   expect(flagit(mockEntry, subSection, mockSummaryC)).toEqual(mockFlagB);
 });
-/*
- * skipping this for now, as we are not showing this section
- */
+//not currently used
 it.skip('flags "Naloxone Medications" entries correctly', () => {
   const subSection = summaryMap['RiskConsiderations']['sections'][4];
   const mockEntry = {

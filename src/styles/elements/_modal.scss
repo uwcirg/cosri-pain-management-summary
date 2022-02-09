@@ -10,6 +10,11 @@
   background-color: $color-white;
   border-radius: 5px;
 
+  &.small {
+    width: 460px;
+    max-width: 100%;
+  }
+
   &:focus { outline: none; }
 }
 
@@ -77,4 +82,30 @@ body.ReactModal__Body--open {
       }
     }
   }
+  &__content {
+    .title {
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .description {
+      margin-bottom: 4px;
+      text-align: center;
+    }
+  }
+  &__buttonsContainer {
+    z-index: 999;
+    margin-top: 16px;
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: center;
+    button {
+      cursor: pointer;
+    }
+  }
+}
+.modal-open {
+  display: block
+}
+.modal-close {
+  display: none
 }
