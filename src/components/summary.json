@@ -167,6 +167,10 @@
         },
         "tables": [
           {
+            "defaultSorted": [{
+              "id": "Dispensed",
+              "desc": true
+            }],
             "headers": {
               "Drug Description": "Name",
               "Class": {"key": "Class", "formatter": "listToStringFormat", "sortable": true, "minWidth": 120},
