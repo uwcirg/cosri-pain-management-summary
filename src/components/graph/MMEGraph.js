@@ -170,7 +170,7 @@ export default class MMEGraph extends Component {
       //console.log("min date ", minDate, " max date ", maxDate)
     }
     let calcMaxDate = new Date(maxDate.valueOf());
-    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
+    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 1);
     maxDate = new Date(maxDate);
     const diffTime = Math.abs(maxDate - minDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
