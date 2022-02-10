@@ -6097,15 +6097,21 @@
                "source" : [ {
                   "alias" : "O",
                   "expression" : {
-                     "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-                     "codeProperty" : "medication",
-                     "codeComparator" : "in",
-                     "type" : "Retrieve",
-                     "codes" : {
-                        "name" : "Opioid Pain Medications",
-                        "preserve" : true,
-                        "type" : "ValueSetRef"
-                     }
+                     "type" : "Union",
+                     "operand" : [ {
+                        "name" : "PDMPMedicationRequests",
+                        "type" : "ExpressionRef"
+                     }, {
+                        "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                        "codeProperty" : "medication",
+                        "codeComparator" : "in",
+                        "type" : "Retrieve",
+                        "codes" : {
+                           "name" : "Opioid Pain Medications",
+                           "preserve" : true,
+                           "type" : "ValueSetRef"
+                        }
+                     } ]
                   }
                } ],
                "let" : [ {
@@ -6474,6 +6480,26 @@
                            "path" : "rxNormCode",
                            "scope" : "R",
                            "type" : "Property"
+                        }
+                     }, {
+                        "name" : "Diff",
+                        "value" : {
+                           "type" : "Subtract",
+                           "operand" : [ {
+                              "precision" : "Year",
+                              "type" : "DateTimeComponentFrom",
+                              "operand" : {
+                                 "type" : "Today"
+                              }
+                           }, {
+                              "precision" : "Year",
+                              "type" : "DateTimeComponentFrom",
+                              "operand" : {
+                                 "path" : "CalculatedEnd",
+                                 "scope" : "R",
+                                 "type" : "Property"
+                              }
+                           } ]
                         }
                      }, {
                         "name" : "MMEValue",

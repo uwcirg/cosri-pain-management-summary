@@ -53,6 +53,7 @@
 //   Add Document Reference query for controlled substance agreement, a LOINC code of 94136-9 is used
 // Update 20210204
 //   Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
+//   When Report MME, compile MME for medications classified as Opioid Medication and also from PDMP
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
@@ -843,7 +844,7 @@ define ReportStoolSoftenersAndLaxatives:
 // RISK CONSIDERATIONS
 
 define ReportMME:
-  [MedicationRequest: "Opioid Pain Medications"] O
+  (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
   let
     MME_Object: MMECalculator.MME(O),
     CalculatedEnd: GetMedicationRequestEndDate(O),
@@ -872,11 +873,12 @@ define ReportMMEByDates:
   (ReportMME) R
   where
     //make sure not to include null MME value
-    R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
+    R.End is not null and R.MMEValue is not null and ((year from Today() - year from R.CalculatedEnd) <= 2)
   return {
     Start: R.Start,
     End: R.End,
     rxNormCode: R.rxNormCode,
+    Diff: (year from Today() - year from R.CalculatedEnd),
     MMEValue: R.MMEValue
   }
   sort by End

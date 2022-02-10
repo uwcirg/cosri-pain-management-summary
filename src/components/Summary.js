@@ -570,8 +570,8 @@ export default class Summary extends Component {
 
     return (
       <h2 id={section} className="section__header">
-        <div className="section__header-title" title={title}>
-          {icon}
+        <div className="section__header-title">
+          <span  title={title}>{icon}</span>
           <span className="title-text-container">
             <span className="title-text">{title}</span>
             <span className="info">
