@@ -6482,26 +6482,6 @@
                            "type" : "Property"
                         }
                      }, {
-                        "name" : "Diff",
-                        "value" : {
-                           "type" : "Subtract",
-                           "operand" : [ {
-                              "precision" : "Year",
-                              "type" : "DateTimeComponentFrom",
-                              "operand" : {
-                                 "type" : "Today"
-                              }
-                           }, {
-                              "precision" : "Year",
-                              "type" : "DateTimeComponentFrom",
-                              "operand" : {
-                                 "path" : "CalculatedEnd",
-                                 "scope" : "R",
-                                 "type" : "Property"
-                              }
-                           } ]
-                        }
-                     }, {
                         "name" : "MMEValue",
                         "value" : {
                            "path" : "MMEValue",
