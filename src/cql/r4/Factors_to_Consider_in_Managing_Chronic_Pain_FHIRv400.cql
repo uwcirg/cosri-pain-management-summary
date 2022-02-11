@@ -328,7 +328,7 @@ define function Abatement(c FHIR.Condition):
   })
 
 
-// @return dispensed quantity of tye SimpleQuantity
+// @return dispensed quantity of type SimpleQuantity
 // @param MedicationRequest FHIR object
 define function GetMedicationRequestDispensedQuantity(medRequest MedicationRequest):
   (medRequest) O
