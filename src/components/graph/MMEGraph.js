@@ -70,17 +70,30 @@ export default class MMEGraph extends Component {
     const copyData = (data)
     .map(item => { return {...item}})
     .filter(item=>!((daysFromToday(item[xFieldName]) < 0))) //not future dates
-    .sort((a,b) => dateTimeCompare(a.date, b.date));
+    .sort((a,b) => dateTimeCompare(a[xFieldName], b[xFieldName]));
     if (!copyData.length) {
         return [];
     }
+    //get all available dates
+    let arrDates = (copyData.map(item => item[xFieldName]));
+    arrDates = arrDates.filter((d, index) => {
+      return arrDates.indexOf(d) === index;
+    });
+    arrDates = arrDates.map(item => {
+      let returnObject = {};
+      let pointDate = item;
+      returnObject[xFieldName] = pointDate;
+      returnObject[yFieldName] = Math.max(...copyData.filter(o=>o[xFieldName] === pointDate).map(o=>o[yFieldName]));
+      return returnObject;
+    });
+    console.log("return obj ? ",arrDates)
     //data points for the last 60 days
-    const arrSixtyDays = copyData.filter(item => {
+    const arrSixtyDays = arrDates.filter(item => {
       let diff = daysFromToday(item[xFieldName]);
       return diff <= 60 && diff >= 0;
     }).map(item=>parseFloat(item[yFieldName]));
     //data points for the last 90 days
-    const arrNintyDays = copyData.filter(item => {
+    const arrNintyDays = arrDates.filter(item => {
       let diff = daysFromToday(item[xFieldName]);
       return diff <= 90 && diff >= 0;
     }).map(item=>parseFloat(item[yFieldName]));
@@ -92,12 +105,12 @@ export default class MMEGraph extends Component {
     const averageNintyDays = Math.round(sumArray(arrNintyDays) / 90);
     const finalPoint = copyData.filter(item=>item.final); // point denoted as final from dataset
     const mostRecentMME = finalPoint.length? finalPoint[0]: copyData[0];
-    //console.log("60 days ", arrSixtyDays);
-    //console.log("90 days ", arrNintyDays);
+    console.log("60 days ", arrSixtyDays);
+    console.log("90 days ", arrNintyDays);
     return [
       {
         display: "MED today",
-        value: `${sumArray(arrToday)} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
+        value: `${Math.max(...arrToday)} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
       },
       {
         display: "Average MED in the last 60 days",
