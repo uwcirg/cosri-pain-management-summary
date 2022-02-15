@@ -98,13 +98,13 @@ export default class MMEGraph extends Component {
       return diff <= 90 && diff >= 0;
     }).map(item=>parseFloat(item[yFieldName]));
     //check matching data point for today
-    const arrToday = copyData.filter(item => daysFromToday(item[xFieldName]) === 0).map(item=>parseFloat(item[yFieldName]));
+    const arrToday = arrDates.filter(item => daysFromToday(item[xFieldName]) === 0).map(item=>parseFloat(item[yFieldName]));
     //average MED for last 60 days
     const averageSixtyDays = Math.round(sumArray(arrSixtyDays) / 60);
     //average MED for last 90 days
     const averageNintyDays = Math.round(sumArray(arrNintyDays) / 90);
     const finalPoint = copyData.filter(item=>item.final); // point denoted as final from dataset
-    const mostRecentMME = finalPoint.length? finalPoint[0]: copyData[0];
+    const mostRecentMME = finalPoint.length? finalPoint[0]: arrDates[0];
     //console.log("60 days ", arrSixtyDays);
     //console.log("90 days ", arrNintyDays);
     return [
