@@ -84,7 +84,7 @@ export default class MMEGraph extends Component {
       returnObject[xFieldName] = pointDate;
       returnObject[yFieldName] = Math.max(...copyData.filter(o=>o[xFieldName] === pointDate).map(o=>o[yFieldName]));
       return returnObject;
-    }).sort((a,b) => dateTimeCompare(a[xFieldName], b[xFieldName]));;
+    }).sort((a,b) => dateTimeCompare(a[xFieldName], b[xFieldName])); //sort in descending order
     //data points for the last 60 days
     const arrSixtyDays = arrDates.filter(item => {
       let diff = daysFromToday(item[xFieldName]);
