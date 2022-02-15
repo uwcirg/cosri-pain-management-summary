@@ -169,7 +169,7 @@
           {
             "defaultSorted": {
               "id": "Dispensed",
-              "asc": false
+              "desc": true
             },
             "headers": {
               "Drug Description": "Name",
