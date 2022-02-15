@@ -177,8 +177,8 @@
               "Quantity": "Quantity",
               "Duration": "Duration",
               "MME": {"key": "MME", "formatter": "numberFormat", "default": "Not returned", "sortable": true},
-              "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
-              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
+              "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateCompare" },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat", "sorter": "dateCompare" },
               "Prescriber": "Prescriber",
               "Pharmacy": "Pharmacy"
             },
