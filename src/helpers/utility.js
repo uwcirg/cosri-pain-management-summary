@@ -77,12 +77,12 @@ export function sumArray (array) {
 }
 
 /*
- * @param a date string
+ * @param a date string or object
  * @param return number of days difference of date input from today
  */
 export function daysFromToday (dateInput) {
     const today = (new Date());
-    let originalDate = (new Date(dateInput));
+    let originalDate = (dateInput instanceof Date ? dateInput : new Date(dateInput));
     let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
     let tzOffset = dObj.getTimezoneOffset() * 60000;
     dObj.setTime(dObj.getTime() + tzOffset);

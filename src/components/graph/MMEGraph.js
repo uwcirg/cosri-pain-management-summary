@@ -70,7 +70,6 @@ export default class MMEGraph extends Component {
     const copyData = (data)
     .map(item => { return {...item}})
     .filter(item=>!((daysFromToday(item[xFieldName]) < 0))) //not future dates
-    .sort((a,b) => dateTimeCompare(a[xFieldName], b[xFieldName]));
     if (!copyData.length) {
         return [];
     }
@@ -85,8 +84,7 @@ export default class MMEGraph extends Component {
       returnObject[xFieldName] = pointDate;
       returnObject[yFieldName] = Math.max(...copyData.filter(o=>o[xFieldName] === pointDate).map(o=>o[yFieldName]));
       return returnObject;
-    });
-    //console.log("return obj ? ",arrDates)
+    }).sort((a,b) => dateTimeCompare(a[xFieldName], b[xFieldName]));;
     //data points for the last 60 days
     const arrSixtyDays = arrDates.filter(item => {
       let diff = daysFromToday(item[xFieldName]);
@@ -99,13 +97,12 @@ export default class MMEGraph extends Component {
     }).map(item=>parseFloat(item[yFieldName]));
     //check matching data point for today
     const arrToday = arrDates.filter(item => daysFromToday(item[xFieldName]) === 0).map(item=>parseFloat(item[yFieldName]));
-    const todayMME = Math.max(...arrToday);
+    const todayMME = arrToday.length ? Math.max(...arrToday) : 0;
     //average MED for last 60 days
     const averageSixtyDays = Math.round(sumArray(arrSixtyDays) / 60);
     //average MED for last 90 days
     const averageNintyDays = Math.round(sumArray(arrNintyDays) / 90);
-    const finalPoint = copyData.filter(item=>item.final); // point denoted as final from dataset
-    const mostRecentMME = finalPoint.length? finalPoint[0]: arrDates[0];
+    const mostRecentMME = arrDates[0];
     //console.log("60 days ", arrSixtyDays);
     //console.log("90 days ", arrNintyDays);
     return [
@@ -119,7 +116,7 @@ export default class MMEGraph extends Component {
       },
       {
         display: "Most recent MED",
-        value: `${parseInt(mostRecentMME[yFieldName])} (${mostRecentMME[xFieldName]})`
+        value: `${parseInt(mostRecentMME[yFieldName])} (${dateFormat("", mostRecentMME[xFieldName], "YYYY-MM-DD")})`
       },
       {
         display: "Average MED in the last 90 days",
@@ -160,6 +157,8 @@ export default class MMEGraph extends Component {
       d[xFieldName] = dObj;
       return d;
     });
+    //get stats for data
+    let graphStats = this.getStats(this.props.data);
     let arrayDates = data.map(d => {
       return d[xFieldName];
     });
@@ -188,10 +187,10 @@ export default class MMEGraph extends Component {
     maxDate = new Date(maxDate);
     const diffTime = Math.abs(maxDate - minDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    /*
-     * set up baseline data point starting at 0
-     */
     if (arrayDates.length) {
+      /*
+      * set up baseline data point starting at 0
+      */
       baseLineDate.setTime(new Date(minDate.valueOf()).getTime() - (30 * 24 * 60 * 60 * 1000));
       let baselineItem = {};
       baselineItem[xFieldName] = baseLineDate;
@@ -199,9 +198,20 @@ export default class MMEGraph extends Component {
       baselineItem["baseline"] = true;
       baselineItem["placeholder"] = true;
       data.unshift(baselineItem);
+       /*
+        * set end point to today if not present
+        */
+      let todayObj = new Date();
+      let today = dateFormat("", todayObj, "YYYY-MM-DD");
+      const containedTodayData = data.filter(item => dateFormat("", item[xFieldName], "YYYY-MM-DD") === today).length > 0;
+      if (!containedTodayData) {
+        let todayDataPoint = {};
+        todayDataPoint[xFieldName] = todayObj;
+        todayDataPoint[yFieldName] = 0;
+        todayDataPoint["placeholder"] = true;
+        data = [...data, todayDataPoint];
+      }
     }
-    //get stats for data
-    let graphStats = this.getStats(this.props.data);
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
     let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
     let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);

@@ -662,18 +662,7 @@ export default class Landing extends Component {
       }
       return o;
     }).filter((item,index,ref)=>ref.findIndex(target=>(JSON.stringify(target) === JSON.stringify(item)))===index);
-    if (formattedData.length) {
-      let todayObj = new Date();
-      let today = dateFormat("", todayObj, "YYYY-MM-DD");
-      const containedTodayData = formattedData.filter(item => item.date === today).length > 0;
-      if (!containedTodayData) {
-        let todayDataPoint = {};
-        todayDataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        todayDataPoint[graphDateFieldName] = today;
-        todayDataPoint[MMEValueFieldName] = 0;
-        formattedData = [...formattedData, todayDataPoint];
-      }
-    }
+
     summary[this.getOverviewSectionKey()+"_graph"] = formattedData;
   }
 
