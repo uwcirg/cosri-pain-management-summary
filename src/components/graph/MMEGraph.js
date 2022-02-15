@@ -86,7 +86,7 @@ export default class MMEGraph extends Component {
       returnObject[yFieldName] = Math.max(...copyData.filter(o=>o[xFieldName] === pointDate).map(o=>o[yFieldName]));
       return returnObject;
     });
-    console.log("return obj ? ",arrDates)
+    //console.log("return obj ? ",arrDates)
     //data points for the last 60 days
     const arrSixtyDays = arrDates.filter(item => {
       let diff = daysFromToday(item[xFieldName]);
@@ -105,8 +105,8 @@ export default class MMEGraph extends Component {
     const averageNintyDays = Math.round(sumArray(arrNintyDays) / 90);
     const finalPoint = copyData.filter(item=>item.final); // point denoted as final from dataset
     const mostRecentMME = finalPoint.length? finalPoint[0]: copyData[0];
-    console.log("60 days ", arrSixtyDays);
-    console.log("90 days ", arrNintyDays);
+    //console.log("60 days ", arrSixtyDays);
+    //console.log("90 days ", arrNintyDays);
     return [
       {
         display: "MED today",
