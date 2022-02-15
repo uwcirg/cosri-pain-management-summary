@@ -7,7 +7,7 @@ import Line from './line';
 import {
   dateFormat
 } from '../../helpers/formatit';
-import {dateTimeCompare} from '../../helpers/sortit';
+import {dateCompare} from '../../helpers/sortit';
 import {
   sumArray,
   daysFromToday
@@ -84,7 +84,7 @@ export default class MMEGraph extends Component {
       returnObject[xFieldName] = pointDate;
       returnObject[yFieldName] = Math.max(...copyData.filter(o=>o[xFieldName] === pointDate).map(o=>o[yFieldName]));
       return returnObject;
-    }).sort((a,b) => dateTimeCompare(a[xFieldName], b[xFieldName])); //sort in descending order
+    }).sort((a,b) => dateCompare(a[xFieldName], b[xFieldName])); //sort in ascending order
     //data points for the last 60 days
     const arrSixtyDays = arrDates.filter(item => {
       let diff = daysFromToday(item[xFieldName]);
@@ -102,7 +102,7 @@ export default class MMEGraph extends Component {
     const averageSixtyDays = Math.round(sumArray(arrSixtyDays) / 60);
     //average MED for last 90 days
     const averageNintyDays = Math.round(sumArray(arrNintyDays) / 90);
-    const mostRecentMME = arrDates[0];
+    const mostRecentMME = arrDates[arrDates.length-1];
     //console.log("60 days ", arrSixtyDays);
     //console.log("90 days ", arrNintyDays);
     return [
