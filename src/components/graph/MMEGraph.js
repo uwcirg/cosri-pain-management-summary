@@ -99,6 +99,7 @@ export default class MMEGraph extends Component {
     }).map(item=>parseFloat(item[yFieldName]));
     //check matching data point for today
     const arrToday = arrDates.filter(item => daysFromToday(item[xFieldName]) === 0).map(item=>parseFloat(item[yFieldName]));
+    const todayMME = Math.max(...arrToday);
     //average MED for last 60 days
     const averageSixtyDays = Math.round(sumArray(arrSixtyDays) / 60);
     //average MED for last 90 days
@@ -110,7 +111,7 @@ export default class MMEGraph extends Component {
     return [
       {
         display: "MED today",
-        value: `${Math.max(...arrToday)} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
+        value: `${todayMME} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
       },
       {
         display: "Average MED in the last 60 days",
