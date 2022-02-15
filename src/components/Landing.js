@@ -661,7 +661,7 @@ export default class Landing extends Component {
         o[FINAL_CALCULATED_FIELD_FLAG] = true;
       }
       return o;
-    });
+    }).filter((item,index,ref)=>ref.findIndex(target=>(JSON.stringify(target) === JSON.stringify(item)))===index);
     if (formattedData.length) {
       let todayObj = new Date();
       let today = dateFormat("", todayObj, "YYYY-MM-DD");
