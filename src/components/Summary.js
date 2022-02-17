@@ -292,25 +292,16 @@ export default class Summary extends Component {
             column.sortMethod = sortit[headerKey.sorter];
           }
         } else if (columnFormatter) {
-          switch(columnFormatter) {
-            case 'dateTimeFormat':
-              column.sortMethod = sortit.dateTimeCompare;
-              break;
-            case 'dateFormat': case 'dateAgeFormat':
-              column.sortMethod = sortit.dateCompare;
-              break;
-            case 'datishFormat': case 'datishAgeFormat':
-              column.sortMethod = sortit.datishCompare;
-              break;
-            case 'ageFormat':
-              column.sortMethod = sortit.ageCompare;
-              break;
-            case 'quantityFormat':
-              column.sortMethod = sortit.quantityCompare;
-              break;
-            default:
-              // do nothing, rely on built-in sort
-          }
+          const sortObj = {
+            'dateTimeFormat': sortit.dateTimeCompare,
+            'dateFormat': sortit.dateCompare,
+            'dateAgeFormat': sortit.dateCompare,
+            'datishFormat': sortit.datishCompare,
+            'datishAgeFormat':sortit.datishCompare,
+            'ageFormat': sortit.ageCompare,
+            'quantityFormat':sortit.quantityCompare
+          };
+          if (sortObj[columnFormatter]) column.sortMethod = sortObj[columnFormatter];
         }
       }
 

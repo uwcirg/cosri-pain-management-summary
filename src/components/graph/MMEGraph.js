@@ -85,26 +85,23 @@ export default class MMEGraph extends Component {
       returnObject[yFieldName] = Math.max(...copyData.filter(o=>o[xFieldName] === pointDate).map(o=>o[yFieldName]));
       return returnObject;
     }).sort((a,b) => dateCompare(a[xFieldName], b[xFieldName])); //sort in ascending order
-    //data points for the last 60 days
-    const arrSixtyDays = arrDates.filter(item => {
-      let diff = daysFromToday(item[xFieldName]);
-      return diff <= 60 && diff >= 0;
-    }).map(item=>parseFloat(item[yFieldName]));
-    //data points for the last 90 days
-    const arrNintyDays = arrDates.filter(item => {
-      let diff = daysFromToday(item[xFieldName]);
-      return diff <= 90 && diff >= 0;
-    }).map(item=>parseFloat(item[yFieldName]));
+    //helper function for getting average MME
+    const averageMME = (days) => {
+      let matchedData = arrDates.filter(item => {
+        let diff = daysFromToday(item[xFieldName]);
+        return diff <= days && diff >= 0;
+      }).map(item=>parseFloat(item[yFieldName]));
+      //console.log("matched data ", matchedData, " days ", days);
+      return Math.round(sumArray(matchedData) / days);
+    }
     //check matching data point for today
     const arrToday = arrDates.filter(item => daysFromToday(item[xFieldName]) === 0).map(item=>parseFloat(item[yFieldName]));
     const todayMME = arrToday.length ? Math.max(...arrToday) : 0;
     //average MED for last 60 days
-    const averageSixtyDays = Math.round(sumArray(arrSixtyDays) / 60);
+    const averageSixtyDays = averageMME(60);
     //average MED for last 90 days
-    const averageNintyDays = Math.round(sumArray(arrNintyDays) / 90);
+    const averageNintyDays = averageMME(90);
     const mostRecentMME = arrDates[arrDates.length-1];
-    //console.log("60 days ", arrSixtyDays);
-    //console.log("90 days ", arrNintyDays);
     return [
       {
         display: "MED today",

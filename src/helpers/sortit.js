@@ -65,6 +65,7 @@ export function dateTimeCompare(a, b) {
   if (bIsDate) {
     b = new Date(b).getTime();
   }
+  if (a === b) return 0;
   return a > b ? 1 : -1;
 }
 

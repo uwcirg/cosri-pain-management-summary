@@ -440,16 +440,14 @@ export default class Landing extends Component {
                   this.writeToLog("alert flag: "+subitem.flagText, "warn", {tags: ["alert"]});
                 }
               });
-            } else {
-              if (subsection[1].flagText) {
-                alerts.push({
-                  id: subsection[1].subSection.dataKey,
-                  name: subsection[1].subSection.name,
-                  text: subsection[1].flagText,
-                  className: subsection[1].flagClass,
-                  priority: subsection[1].priority || 100
-                });
-              }
+            } else if (subsection[1].flagText) {
+              alerts.push({
+                id: subsection[1].subSection.dataKey,
+                name: subsection[1].subSection.name,
+                text: subsection[1].flagText,
+                className: subsection[1].flagClass,
+                priority: subsection[1].priority || 100
+              });
             }
           }
         }
