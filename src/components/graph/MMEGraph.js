@@ -175,7 +175,7 @@ export default class MMEGraph extends Component {
        * if the total count of data points is less than the initial set number of intervals
        */
       let calcMinDate = new Date(minDate.valueOf());
-      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * (xIntervals-arrMonthsYears.length + 1)));
+      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * (xIntervals-arrMonthsYears.length)));
       minDate = new Date(minDate);
       //console.log("min date ", minDate, " max date ", maxDate)
     }
@@ -257,6 +257,7 @@ export default class MMEGraph extends Component {
         }
     };
     const tickInterval =  Math.ceil((diffDays / 30) / xIntervals);
+
     const xSettings = {
       scale: xScale,
       orient: 'bottom',
