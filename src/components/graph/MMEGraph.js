@@ -4,6 +4,14 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { line } from 'd3-shape';
 import XYAxis from './xy-axis';
 import Line from './line';
+import {
+  dateFormat
+} from '../../helpers/formatit';
+import {dateCompare} from '../../helpers/sortit';
+import {
+  sumArray,
+  daysFromToday
+} from '../../helpers/utility';
 
 const defaultFields = {
   x: "date",
@@ -56,19 +64,77 @@ export default class MMEGraph extends Component {
     return maxValue;
   }
 
+  getStats(data) {
+    if (!data || !data.length) return [];
+    //look in data points up to today
+    const copyData = (data)
+    .map(item => { return {...item}})
+    .filter(item=>!((daysFromToday(item[xFieldName]) < 0))) //not future dates
+    if (!copyData.length) {
+        return [];
+    }
+    //get all available dates
+    let arrDates = (copyData.map(item => item[xFieldName]));
+    arrDates = arrDates.filter((d, index) => {
+      return arrDates.indexOf(d) === index;
+    });
+    arrDates = arrDates.map(item => {
+      let returnObject = {};
+      let pointDate = item;
+      returnObject[xFieldName] = pointDate;
+      returnObject[yFieldName] = Math.max(...copyData.filter(o=>o[xFieldName] === pointDate).map(o=>o[yFieldName]));
+      return returnObject;
+    }).sort((a,b) => dateCompare(a[xFieldName], b[xFieldName])); //sort in ascending order
+    //helper function for getting average MME
+    const averageMME = (days) => {
+      let matchedData = arrDates.filter(item => {
+        let diff = daysFromToday(item[xFieldName]);
+        return diff <= days && diff >= 0;
+      }).map(item=>parseFloat(item[yFieldName]));
+      //console.log("matched data ", matchedData, " days ", days);
+      return Math.round(sumArray(matchedData) / days);
+    }
+    //check matching data point for today
+    const arrToday = arrDates.filter(item => daysFromToday(item[xFieldName]) === 0).map(item=>parseFloat(item[yFieldName]));
+    const todayMME = arrToday.length ? Math.max(...arrToday) : 0;
+    //average MED for last 60 days
+    const averageSixtyDays = averageMME(60);
+    //average MED for last 90 days
+    const averageNintyDays = averageMME(90);
+    const mostRecentMME = arrDates[arrDates.length-1];
+    return [
+      {
+        display: "MED today",
+        value: `${todayMME} (${dateFormat("", new Date(), "YYYY-MM-DD")})`,
+      },
+      {
+        display: "Average MED in the last 60 days",
+        value: averageSixtyDays
+      },
+      {
+        display: "Most recent MED",
+        value: `${parseInt(mostRecentMME[yFieldName])} (${dateFormat("", mostRecentMME[xFieldName], "YYYY-MM-DD")})`
+      },
+      {
+        display: "Average MED in the last 90 days",
+        value: averageNintyDays
+      }
+    ];
+  }
+
   render() {
     /*
-     *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, {"dateWritten":"2019-04-15","MMEValue":40}]
+     *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, {"dateWritten":"2019-04-15","MMEValue":40, "placeholder":true}]
      */
     let maxDate = new Date();
-    let minDate = new Date();
+    let minDate = (new Date()).setDate(maxDate.getDate() - 365);
     let baseLineDate = new Date();
-    minDate.setDate(maxDate.getDate() - 365);
-    const parentWidth = 500;
+    const parentWidth = 488;
+    const parentHeight = 344;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const CDC_MAX_VALUE = 90;
-    const xIntervals = 8;
+    const xIntervals = 12;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
     const hasError = this.props.error;
     //make a copy of the data so as not to accidentally mutate it
@@ -78,8 +144,6 @@ export default class MMEGraph extends Component {
         ...item
       }
     }): null;
-    //let data = computedData? (computedData).sort(this.compareDate): [];
-    //let data  = computedData || this.getDefaultDataValueSet(0, minDate, maxDate, ...lineParamsSet);
     let data = computedData || [];
     let noEntry = !data || !data.length;
     data = data.filter(d => d[xFieldName]);
@@ -90,6 +154,8 @@ export default class MMEGraph extends Component {
       d[xFieldName] = dObj;
       return d;
     });
+    //get stats for data
+    let graphStats = this.getStats(this.props.data);
     let arrayDates = data.map(d => {
       return d[xFieldName];
     });
@@ -97,26 +163,31 @@ export default class MMEGraph extends Component {
       maxDate = new Date(Math.max.apply(null, arrayDates))
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
-    //console.log("maxDate: ", maxDate, " minDate ", minDate)
-    const diffTime = Math.abs(maxDate - minDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-   // if (arrayDates.length < (xIntervals - 2)) {
-    if (diffDays <= 60 && arrayDates.length < (xIntervals - 2)) {
+    const arrMonthsYears = [];
+    //date axis is in month intervals so check to see how many there are
+    arrayDates.forEach(item => {
+      let my = (item.getMonth()+1) + " " + item.getFullYear();
+      if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
+    });
+    if (arrMonthsYears.length < (xIntervals - 2)) {
       /*
-       * make sure graph has appropiate end points on the graph if the total count of data points is less than the initial set number of intervals
+       * make sure graph has appropiate end points on the graph
+       * if the total count of data points is less than the initial set number of intervals
        */
       let calcMinDate = new Date(minDate.valueOf());
-      let calcMaxDate = new Date(maxDate.valueOf());
-      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * ((xIntervals-arrayDates.length)/2-1)));
-      maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + (30 * ((xIntervals-arrayDates.length)/2-1)));
-      maxDate = new Date(maxDate);
+      minDate = calcMinDate.setDate(calcMinDate.getDate() - (30 * (xIntervals-arrMonthsYears.length + 1)));
       minDate = new Date(minDate);
       //console.log("min date ", minDate, " max date ", maxDate)
     }
-    /*
-     * set up baseline data point starting at 0
-     */
+    let calcMaxDate = new Date(maxDate.valueOf());
+    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 1);
+    maxDate = new Date(maxDate);
+    const diffTime = Math.abs(maxDate - minDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     if (arrayDates.length) {
+      /*
+      * set up baseline data point starting at 0
+      */
       baseLineDate.setTime(new Date(minDate.valueOf()).getTime() - (30 * 24 * 60 * 60 * 1000));
       let baselineItem = {};
       baselineItem[xFieldName] = baseLineDate;
@@ -124,21 +195,33 @@ export default class MMEGraph extends Component {
       baselineItem["baseline"] = true;
       baselineItem["placeholder"] = true;
       data.unshift(baselineItem);
+       /*
+        * set end point to today if not present
+        */
+      let todayObj = new Date();
+      let today = dateFormat("", todayObj, "YYYY-MM-DD");
+      const containedTodayData = data.filter(item => dateFormat("", item[xFieldName], "YYYY-MM-DD") === today).length > 0;
+      if (!containedTodayData) {
+        let todayDataPoint = {};
+        todayDataPoint[xFieldName] = todayObj;
+        todayDataPoint[yFieldName] = 0;
+        todayDataPoint["placeholder"] = true;
+        data = [...data, todayDataPoint];
+      }
     }
-
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
     let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
     let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
 
     const margins = {
-      top: 20,
+      top: 8,
       right: 48,
       bottom: 48,
-      left: 52,
+      left: 56,
     };
 
     const width = parentWidth - margins.left - margins.right;
-    const height = 300 - margins.top - margins.bottom;
+    const height = parentHeight - margins.top - margins.bottom;
     const xScale = scaleTime().domain([baseLineDate, maxDate]).rangeRound([0, width]);
     const yMaxValue = Math.max(140, this.getMaxMMEValue(data));
     const yScale = scaleLinear()
@@ -173,6 +256,7 @@ export default class MMEGraph extends Component {
           "dataStrokeFill": dataStrokeColor
         }
     };
+    const tickInterval =  Math.ceil((diffDays / 30) / xIntervals);
 
     const xSettings = {
       scale: xScale,
@@ -180,7 +264,7 @@ export default class MMEGraph extends Component {
       transform: `translate(0, ${height})`,
       tickFormat: "%b %Y",
       tickType: "date",
-      tickInterval: diffDays <= 360 ? 1 : 2,
+      tickInterval: tickInterval || 1,
       ticks: xIntervals
     };
     const ySettings = {
@@ -209,7 +293,7 @@ export default class MMEGraph extends Component {
     const CDCLegendSettings = {
       "fill": CDC_COLOR,
       ...defaultLegendSettings
-    }
+    };
 
     const dataLineProps = {...defaultProps, ...additionalProps};
     const graphWidth = width + margins.left + margins.right;
@@ -227,6 +311,7 @@ export default class MMEGraph extends Component {
               </div>);
     }
     return (
+      <React.Fragment>
       <div className="MMEgraph">
         <div className="title">Morphine Equivalent Dose (MED)</div>
         <div className="MME-svg-container">
@@ -249,6 +334,13 @@ export default class MMEGraph extends Component {
           </svg>
         </div>
       </div>
+      {graphStats.length > 0 && <div className="stats-container">{
+        graphStats.map((item,index) =>
+          <div className="stats-item" key={item.value+index}>
+            <span className="title">{item.display}</span><span className="description">{item.value}</span>
+          </div>)
+      }</div>}
+      </React.Fragment>
     );
   }
 }

@@ -18,11 +18,10 @@
       .toc-list-item {
         margin-bottom: 4px;
         .toc-link {
-          font-size: 0.9em;
-          //padding: 5px 8px 5px 42px;
-          padding: 5px 8px 5px 40px;
+          font-size: 0.85em;
+          padding: 4px 8px 4px 24px;
           line-height: 1.45;
-          width: 75%;
+          width: 80%;
           max-width: 100%;
           .info-icon {
             display: none;
@@ -57,7 +56,7 @@
           text-decoration: none;
           padding: 12px;
           font-weight: 600;
-          font-size: 0.95em;
+          font-size: 0.9em;
           line-height: 1.45;
           transition: all 300ms ease;
 
@@ -125,8 +124,8 @@
 
   &__nav-wrapper {
     min-height: calc(100vh - 100px);
-    width: 52px;
-    min-width: 52px;
+    width: 48px;
+    min-width: 48px;
     background-color: $color-gray-dark;
     transition: all 350ms ease-in-out;
     position: relative;
@@ -135,7 +134,7 @@
      // z-index: -1;
      opacity: 1;
      z-index: 1;
-     padding: 96px 0 20px 0px;
+     padding: $min-header-height 0 20px 0px;
      .title-text-container {
        visibility: hidden;
        transition: visibility 350ms ease;
@@ -149,7 +148,7 @@
       top: 12px;
       right: 6px;
       color: #FFF;
-      opacity: 0.2;
+      opacity: 0.4;
       z-index: 5;
       font-weight: 600;
       font-size: 1em;
@@ -167,8 +166,8 @@
         border: 2px solid;
         border-radius: 50%;
         padding: 0;
-        width: 36px;
-        line-height: 36px;
+        width: 32px;
+        line-height: 32px;
         font-size: 20px;
         text-align: center;
         vertical-align: middle;
@@ -176,8 +175,8 @@
       }
     }
     &.open {
-      width: 248px;
-      min-width: 248px;
+      width: $summary-nav-width;
+      min-width: $summary-nav-width;
       .summary__nav {
         opacity: 1;
         z-index: 1;
@@ -214,7 +213,7 @@
       .is-position-fixed ~ .close {
         &:before {
           position: fixed;
-          left: 196px;
+          left: 192px;
         }
       }
     }
@@ -304,11 +303,17 @@
         height: 0;
         width: 560px;
         padding: 0;
-        padding-bottom: 35%;
+        padding-bottom: 45%;
+        margin-bottom: 24px;
       }
-      @media(min-width: 768px) {
+      @media(min-width: 992px) {
         .MME-svg-container {
-          padding-bottom: 67%;
+          padding-bottom: 80%;
+        }
+      }
+      @media(min-width: 1400px) {
+        .MME-svg-container {
+          padding-bottom: 70%;
         }
       }
       .MMEChartSvg {
@@ -319,7 +324,7 @@
         top: 0;
       }
       .MMEgraph {
-        margin: 0 0 8px;
+        margin: 16px 0 8px;
         //padding-bottom: 16px;
         &.no-entry {
           display: flex;
@@ -498,6 +503,30 @@
         }
       }
 
+      .graph {
+        .stats-container {
+          margin-left: 24px;
+          margin-right: 24px;
+          margin-bottom: 16px;
+          font-size: 14px;
+          padding: 8px 16px;
+          border: 2px solid $color-gray-lighter;
+          min-height: 46px;
+          position: relative;
+          .stats-item {
+            margin-bottom: 4px;
+            width: 50%;
+            float: left;
+          }
+          .title {
+            margin-right: 8px;
+          }
+          .description {
+            font-weight: 600
+          }
+        }
+      }
+
       @media (min-width: 768px) {
         .panels {
           .sub-panels {
@@ -523,6 +552,7 @@
           .panel.graph {
             flex: 1;
             align-self: stretch;
+            min-width: 480px;
           }
         }
       }
@@ -547,7 +577,6 @@
 
         .info-icon {
           margin-left: 20px;
-          text-decoration: underline;
           opacity: 0.9;
           font-size: 0.87em;
           color: $color-blue;
@@ -916,11 +945,21 @@
     }
   }
 }
-@media (min-width: 768px) {
+@media (min-width: 992px) {
   .summary__display {
     .sections {
       .MME-svg-container {
         width: 100%;
+      }
+    }
+  }
+}
+
+@media (min-width: 1400px) {
+  .summary__display {
+    .sections {
+      .MME-svg-container {
+        width: 85%;
       }
     }
   }

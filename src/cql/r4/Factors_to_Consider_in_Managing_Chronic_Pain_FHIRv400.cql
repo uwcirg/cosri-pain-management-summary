@@ -33,26 +33,38 @@
 //    Also removed an old superfluous function
 // Update 20200819
 //    Updated to include MME Calculation
+//    see ReportMME & ReportMMEByDates
 // Update 20200904
 //    Code cleaning
 // Update 20210628
 //    use Last Fill date as the Start Date for MME value calculation, it was using authored date
+//    new functions added:
+//      GetMedicationRequestDispensedQuantity, GetMedicationRequestPharmacy, GetMedicationRequestEndDate,
+//      GetMedicationRequestDispensedDate
 // Update 20210805
 //    remove age restriction as the inclusion criterion
 // Update 20210825
 //    Add Class for PDMP Medication, add function getMedicationRequestDrugClass to retrieve drug class
+//    see new function getMedicationRequestDrugClass to retrieve drug class
 // Update 20210927
 //    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
 // Update 20211008
-//    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was returning the same thing as ReportMMEByDates
+//    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being included,
+//    added Rxnorm code for better debugging.  Remove MMEDateList function , which was returning the same thing as ReportMMEByDates
 // Update 20211012
 //    Add Service Request query for drug urine screen, in the case of Skagit site, a custom system and code will be used to filter search
 // Update 20211116
-//    Add Service Request query for drug urine screen, in the case of Kent site, a custom system and code will be used to filter search, i.e. https://testdirectory.questdiagnostics.com/test, 39428
+//    Add Service Request query for drug urine screen
+//    in the case of Kent site, for example, a custom system and code will be used to filter search,
+//    i.e. https://testdirectory.questdiagnostics.com/test, 39428
 // Update 20211206
 //   Add Document Reference query for controlled substance agreement, a LOINC code of 94136-9 is used
+//   see new function ReportCSAgreement
 // Update 20220218
 //   Add UDS system url and code for UWMC, TODO those are current faked ones, CHANGE to real ones when identified
+// Update 20210204
+//   Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
+//   When Report MME, compile MME for medications classified as Opioid Medication and also from PDMP
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
@@ -188,8 +200,10 @@ concept "Pregnant": { "Pregnant code" } display 'Patient currently pregnant (fin
 // back for qualifying active medications. By default, the inclusion logic will look back 180 days.
 parameter InclusionMedicationsLookbackPeriod default 180 days //DO WE NEED THIS?
 
-//system url from PDMP identifier
+//system url identifier used to identify resources, e.g. MedicationRequest, from PDMP
 define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
+
+//site specific
 //system url for labcorp
 define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
 //system url for quest diagnostics
@@ -317,7 +331,7 @@ define function Abatement(c FHIR.Condition):
   })
 
 
-// Return dispensed quantity
+// @return dispensed quantity of type SimpleQuantity
 // @param MedicationRequest FHIR object
 define function GetMedicationRequestDispensedQuantity(medRequest MedicationRequest):
   (medRequest) O
@@ -327,7 +341,7 @@ define function GetMedicationRequestDispensedQuantity(medRequest MedicationReque
     return dispensedQuantity
 
 
-// Return pharmacy name
+// @return the text representation of pharmacy of type FHIR.string via extension
 // @param MedicationRequest FHIR object
 define function GetMedicationRequestPharmacy(medRequest MedicationRequest):
   (medRequest) O
@@ -337,7 +351,8 @@ define function GetMedicationRequestPharmacy(medRequest MedicationRequest):
     pharmacy: if pharmacyExtension is not null then (pharmacyExtension.value as FHIR.string).value else null
     return pharmacy
 
-// Returns the predicted last date for the prescription, based on the supply duration and quantity
+// @return the calculated last date for the prescription, of type System.date,
+//  based on dispensed supply duration starting from the start date (dispensed date or authored date)
 // @param MedicationRequest FHIR object
 define function GetMedicationRequestEndDate(medRequest MedicationRequest):
   (medRequest) O
@@ -354,7 +369,7 @@ define function GetMedicationRequestEndDate(medRequest MedicationRequest):
     CalculatedStart: if Start is not null then Start else O.authoredOn
     return date from ToDate(CalculatedStart + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
 
-// Return dispensed date or last fill date for a medication
+// @return dispensed date or last fill date, of type FHIR.date, supplied via extension, from a FHIR.MedicationRequest object
 // @param MedicationRequest FHIR object
 define function GetMedicationRequestDispensedDate(medRequest MedicationRequest):
   (medRequest) O
@@ -365,7 +380,7 @@ define function GetMedicationRequestDispensedDate(medRequest MedicationRequest):
     return Start
 
 
-// Returns the start date for a medication
+// @returns the start date for a medication
 // @param MedicationRequest FHIR object
 define function GetMedicationRequestStartDate(medRequest MedicationRequest):
   (medRequest) O
@@ -374,7 +389,7 @@ define function GetMedicationRequestStartDate(medRequest MedicationRequest):
     Start: if LastFillDate is not null then LastFillDate else O.authoredOn
     return Start
 
-// Returns the drug class values from extension in medication codeConcept
+// @return the drug class values of type System.List via querying for matching extension in a FHIR.CodeableConcept
 // @param MedicationRequest FHIR object
 define function getMedicationRequestDrugClass(medRequest MedicationRequest):
   (medRequest) O
@@ -844,31 +859,8 @@ define ReportStoolSoftenersAndLaxatives:
 
 // RISK CONSIDERATIONS
 
-// Helps calculate active medications based on end date rather than 'active' status
-define ActiveOpioidMedicationRequestsByEndDate:
-  [MedicationRequest: "Opioid Pain Medications"] O
-    let CalculatedEnd: GetMedicationRequestEndDate(O)
-    where CalculatedEnd same or after Today()
-
-define CurrentMME:
-  MMECalculator.TotalMME(ActiveOpioidMedicationRequestsByEndDate)
-
-
-define ReportCurrentMME:
-{
-  if CurrentMME is null then
-    null
-  else
-    (CurrentMME) M
-    return {
-      Name: 'Current Milligram Morephine Equivalent',
-      Result: M.value,
-      Date: ToString(Today())
-    }
-}
-
 define ReportMME:
-  [MedicationRequest: "Opioid Pain Medications"] O
+  (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
   let
     MME_Object: MMECalculator.MME(O),
     CalculatedEnd: GetMedicationRequestEndDate(O),
@@ -897,7 +889,7 @@ define ReportMMEByDates:
   (ReportMME) R
   where
     //make sure not to include null MME value
-    R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
+    R.End is not null and R.MMEValue is not null and ((year from Today() - year from R.CalculatedEnd) <= 2)
   return {
     Start: R.Start,
     End: R.End,
@@ -1182,7 +1174,6 @@ define Summary: {
     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
   },
   RiskConsiderations: {
-    CurrentMME: ReportCurrentMME,
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
     //for debugging, uncomment to test

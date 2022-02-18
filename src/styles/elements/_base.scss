@@ -49,6 +49,12 @@ a {
 .text-bold {
   font-weight: 600;
 }
+.text-muted {
+  color: $color-gray-dark;
+}
+.text-center {
+  text-align: center;
+}
 .small {
   font-size: 14px;
   font-weight: 500;

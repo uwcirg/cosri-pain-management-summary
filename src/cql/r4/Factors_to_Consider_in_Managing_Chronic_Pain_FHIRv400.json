@@ -6102,145 +6102,6 @@
                }
             }
          }, {
-            "name" : "ActiveOpioidMedicationRequestsByEndDate",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "O",
-                  "expression" : {
-                     "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-                     "codeProperty" : "medication",
-                     "codeComparator" : "in",
-                     "type" : "Retrieve",
-                     "codes" : {
-                        "name" : "Opioid Pain Medications",
-                        "preserve" : true,
-                        "type" : "ValueSetRef"
-                     }
-                  }
-               } ],
-               "let" : [ {
-                  "identifier" : "CalculatedEnd",
-                  "expression" : {
-                     "name" : "GetMedicationRequestEndDate",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "name" : "O",
-                        "type" : "AliasRef"
-                     } ]
-                  }
-               } ],
-               "relationship" : [ ],
-               "where" : {
-                  "type" : "SameOrAfter",
-                  "operand" : [ {
-                     "name" : "CalculatedEnd",
-                     "type" : "QueryLetRef"
-                  }, {
-                     "type" : "Today"
-                  } ]
-               }
-            }
-         }, {
-            "name" : "CurrentMME",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "name" : "TotalMME",
-               "libraryName" : "MMECalculator",
-               "type" : "FunctionRef",
-               "operand" : [ {
-                  "name" : "ActiveOpioidMedicationRequestsByEndDate",
-                  "type" : "ExpressionRef"
-               } ]
-            }
-         }, {
-            "name" : "ReportCurrentMME",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "List",
-               "element" : [ {
-                  "type" : "If",
-                  "condition" : {
-                     "type" : "IsNull",
-                     "operand" : {
-                        "name" : "CurrentMME",
-                        "type" : "ExpressionRef"
-                     }
-                  },
-                  "then" : {
-                     "type" : "As",
-                     "operand" : {
-                        "type" : "Null"
-                     },
-                     "asTypeSpecifier" : {
-                        "type" : "TupleTypeSpecifier",
-                        "element" : [ {
-                           "name" : "Name",
-                           "elementType" : {
-                              "name" : "{urn:hl7-org:elm-types:r1}String",
-                              "type" : "NamedTypeSpecifier"
-                           }
-                        }, {
-                           "name" : "Result",
-                           "elementType" : {
-                              "name" : "{urn:hl7-org:elm-types:r1}Decimal",
-                              "type" : "NamedTypeSpecifier"
-                           }
-                        }, {
-                           "name" : "Date",
-                           "elementType" : {
-                              "name" : "{urn:hl7-org:elm-types:r1}String",
-                              "type" : "NamedTypeSpecifier"
-                           }
-                        } ]
-                     }
-                  },
-                  "else" : {
-                     "type" : "Query",
-                     "source" : [ {
-                        "alias" : "M",
-                        "expression" : {
-                           "name" : "CurrentMME",
-                           "type" : "ExpressionRef"
-                        }
-                     } ],
-                     "relationship" : [ ],
-                     "return" : {
-                        "expression" : {
-                           "type" : "Tuple",
-                           "element" : [ {
-                              "name" : "Name",
-                              "value" : {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "Current Milligram Morephine Equivalent",
-                                 "type" : "Literal"
-                              }
-                           }, {
-                              "name" : "Result",
-                              "value" : {
-                                 "path" : "value",
-                                 "scope" : "M",
-                                 "type" : "Property"
-                              }
-                           }, {
-                              "name" : "Date",
-                              "value" : {
-                                 "type" : "ToString",
-                                 "operand" : {
-                                    "type" : "Today"
-                                 }
-                              }
-                           } ]
-                        }
-                     }
-                  }
-               } ]
-            }
-         }, {
             "name" : "ReportMME",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -6249,15 +6110,21 @@
                "source" : [ {
                   "alias" : "O",
                   "expression" : {
-                     "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-                     "codeProperty" : "medication",
-                     "codeComparator" : "in",
-                     "type" : "Retrieve",
-                     "codes" : {
-                        "name" : "Opioid Pain Medications",
-                        "preserve" : true,
-                        "type" : "ValueSetRef"
-                     }
+                     "type" : "Union",
+                     "operand" : [ {
+                        "name" : "PDMPMedicationRequests",
+                        "type" : "ExpressionRef"
+                     }, {
+                        "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                        "codeProperty" : "medication",
+                        "codeComparator" : "in",
+                        "type" : "Retrieve",
+                        "codes" : {
+                           "name" : "Opioid Pain Medications",
+                           "preserve" : true,
+                           "type" : "ValueSetRef"
+                        }
+                     } ]
                   }
                } ],
                "let" : [ {
@@ -9837,12 +9704,6 @@
                   "value" : {
                      "type" : "Tuple",
                      "element" : [ {
-                        "name" : "CurrentMME",
-                        "value" : {
-                           "name" : "ReportCurrentMME",
-                           "type" : "ExpressionRef"
-                        }
-                     }, {
                         "name" : "ReportMME",
                         "value" : {
                            "name" : "ReportMME",
