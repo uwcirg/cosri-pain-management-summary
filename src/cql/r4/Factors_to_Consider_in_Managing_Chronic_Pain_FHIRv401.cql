@@ -47,24 +47,24 @@
 //    remove age restriction as the inclusion criterion
 // Update 20210825
 //    Add Class for PDMP Medication
-//      see new function getMedicationRequestDrugClass to retrieve drug class
+//    see new function getMedicationRequestDrugClass to retrieve drug class
 // Update 20210927
 //    Add new sections for Sedative medications and Barbiturate medications under Risk consideration
-//      see ReportSedativeMedicationRequests & ReportBarbiturateMedicationRequests
+//    see ReportSedativeMedicationRequests & ReportBarbiturateMedicationRequests
 // Update 20211008
 //    Streamline/Fix MME date list function,  ReportMMEByDates, to ensure no null value is being
 //    included, added Rxnorm code for better debugging.  Remove MMEDateList function , which was
 //    returning the same thing as ReportMMEByDates
-// Update 20211012
-//    Add Service Request query for drug urine screen, in the case of Skagit & Kent sites,
-//    a custom system and
-//    code will be used to filter search, see new function, ReportUrineLabServiceRequestsByCustomCode
 // Update 20211116
-//    Add Service Request query for drug urine screen, in the case of Kent site, a custom system and code
+//    Add Service Request query for drug urine screen, in the case of Kent site for example, a site-specific custom system and code
 //    will be used to filter search, i.e. https://testdirectory.questdiagnostics.com/test, 39428
+//    see new function, ReportUrineLabServiceRequestsByCustomCode
 // Update 20211206
-//   Add Document Reference query for controlled substance agreement, a LOINC code of 94136-9 is used
-//      see new function ReportCSAgreement
+//    Add Document Reference query for controlled substance agreement, a LOINC code of 94136-9 is used
+//    see new function ReportCSAgreement
+// Update 20210204
+//    Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
+//    When Report MME, compile MME for medications classified as Opioid Medication and also from PDMP
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -267,8 +267,10 @@ define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
 define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.com/test'
 //system url for drug class, specific to COSRI app
 define DRUG_CLASS_SYSTEM_URL: 'http://cosri.org/fhir/drug_class'
-//lab panel test order code from lab corp and quest diagnostics
-define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428'}
+//system url for UWMC urine drug screen lab, TODO: replace when real one is available
+define UWMC_UDS_SYSTEM_URL:'https://fakelab.com/cdsr3'
+//lab panel test order code from lab corp and quest diagnostics, TODO: replace UWMC code, abc123, when real one is available
+define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428', 'abc123'}
 //CS agreement concept code
 define CS_AGREEMENT_CODE: '94136-9'
 
@@ -430,6 +432,7 @@ define function Abatement(c FHIR.Condition):
   })
 
 
+// @return dispensed quantity of type SimpleQuantity
 // @param MedicationRequest FHIR object
 // @return dispensed quantity of type SimpleQuantity
 define function GetMedicationRequestDispensedQuantity(medRequest FHIR.MedicationRequest):
@@ -443,7 +446,7 @@ define function GetMedicationRequestDispensedQuantity(medRequest FHIR.Medication
     return dispensedQuantity
 
 
-// Return pharmacy name
+// @return the text representation of pharmacy of type FHIR.string via extension
 // @param MedicationRequest FHIR object
 // @returns the text representation of pharmacy of type FHIR.string via extension
 define function GetMedicationRequestPharmacy(medRequest FHIR.MedicationRequest):
@@ -455,6 +458,8 @@ define function GetMedicationRequestPharmacy(medRequest FHIR.MedicationRequest):
       (pharmacyExtension.value as FHIR.string).value else null
     return pharmacy
 
+// @return the calculated last date for the prescription, of type System.date,
+//  based on dispensed supply duration starting from the start date (dispensed date or authored date)
 // @param MedicationRequest FHIR object
 // @return the calculated last date for the prescription, of type System.date,
 //  based on dispensed supply duration starting from the start date (dispensed date or authored date)
@@ -481,7 +486,7 @@ define function GetMedicationRequestEndDate(medRequest FHIR.MedicationRequest):
 
 
 // @param MedicationRequest FHIR object
-// @return dispensed date or last fill date, of type FHIR.date, supplied via extension, for the medicationRequest
+// @return dispensed date or last fill date, of type FHIR.date, supplied via extension, for a MedicationRequest object
 define function GetMedicationRequestDispensedDate(medRequest FHIR.MedicationRequest):
   (medRequest) O
   let
@@ -938,32 +943,8 @@ define ReportStoolSoftenersAndLaxatives:
 
 // RISK CONSIDERATIONS
 
-// Helps calculate active medications based on end date rather than 'active' status
-define ActiveOpioidMedicationRequestsByEndDate:
-  [MedicationRequest: "Opioid Pain Medications"] O
-    let CalculatedEnd: GetMedicationRequestEndDate(O)
-    where CalculatedEnd same or after Today()
-
-define CurrentMME:
-  MMECalculator.TotalMME(ActiveOpioidMedicationRequestsByEndDate)
-
-
-define ReportCurrentMME:
-{
-  if CurrentMME is null then
-    null
-  else
-    (CurrentMME) M
-    return {
-      Name: 'Current Milligram Morephine Equivalent',
-      Result: M.value,
-      Date: ToString(Today())
-    }
-}
-//Report MME
-
 define ReportMME:
-  [MedicationRequest: "Opioid Pain Medications"] O
+  (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
   let
     MME_Object: MMECalculator.MME(O),
     AuthoredDate: DateTimeText(O.authoredOn),
@@ -995,7 +976,7 @@ define ReportMMEByDates:
   (ReportMME) R
   where
     //make sure not to include null MME value
-    R.End is not null and R.MMEValue is not null and (year from Today() - year from R.CalculatedEnd <= 2)
+    R.End is not null and R.MMEValue is not null and ((year from Today() - year from R.CalculatedEnd) <= 2)
   return {
     Start: R.Start,
     End: R.End,
@@ -1047,7 +1028,10 @@ define ReportUrineLabServiceRequestsByCustomCode:
     c is not null and
     c.coding is not null and
     (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
-    (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE)
+    (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
+     c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
+     c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+    )
   )
   return {
     Name: ConceptText(c),
@@ -1300,7 +1284,6 @@ define Summary: {
     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
   },
   RiskConsiderations: {
-    CurrentMME: ReportCurrentMME,
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
     //for debugging, uncomment to test

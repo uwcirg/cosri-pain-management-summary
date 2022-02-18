@@ -78,7 +78,7 @@ export default class Summary extends Component {
         let dataKeySource = sections[subSection]["dataKeySource"];
         let dataKey = sections[subSection]["dataKey"];
         if (summary[dataKeySource] && Object.keys(summary[dataKeySource]).indexOf(dataKey) !== -1) {
-          count += summary[dataKeySource][dataKey] ? summary[dataKeySource][dataKey].filter(item=>item !== null).length : 0;
+          count += summary[dataKeySource][dataKey] ? summary[dataKeySource][dataKey].filter(item=>item).length : 0;
         }
       }
     }
@@ -285,26 +285,23 @@ export default class Summary extends Component {
         sortable: headerKey.sortable !== false
       };
 
-      let columnFormatter = headerKey.sorter?headerKey.sorter: headerKey.formatter;
-      if (column.sortable && columnFormatter) {
-        switch(columnFormatter) {
-          case 'dateTimeFormat':
-            column.sortMethod = sortit.dateTimeCompare;
-            break;
-          case 'dateFormat': case 'dateAgeFormat':
-            column.sortMethod = sortit.dateCompare;
-            break;
-          case 'datishFormat': case 'datishAgeFormat':
-            column.sortMethod = sortit.datishCompare;
-            break;
-          case 'ageFormat':
-            column.sortMethod = sortit.ageCompare;
-            break;
-          case 'quantityFormat':
-            column.sortMethod = sortit.quantityCompare;
-            break;
-          default:
-            // do nothing, rely on built-in sort
+      let columnFormatter = headerKey.formatter;
+      if (column.sortable) {
+        if (headerKey.sorter) {
+          if (sortit[headerKey.sorter]) {
+            column.sortMethod = sortit[headerKey.sorter];
+          }
+        } else if (columnFormatter) {
+          const sortObj = {
+            'dateTimeFormat': sortit.dateTimeCompare,
+            'dateFormat': sortit.dateCompare,
+            'dateAgeFormat': sortit.dateCompare,
+            'datishFormat': sortit.datishCompare,
+            'datishAgeFormat':sortit.datishCompare,
+            'ageFormat': sortit.ageCompare,
+            'quantityFormat':sortit.quantityCompare
+          };
+          if (sortObj[columnFormatter]) column.sortMethod = sortObj[columnFormatter];
         }
       }
 
@@ -571,7 +568,7 @@ export default class Summary extends Component {
     return (
       <h2 id={section} className="section__header">
         <div className="section__header-title">
-          {icon}
+          <span  title={title}>{icon}</span>
           <span className="title-text-container">
             <span className="title-text">{title}</span>
             <span className="info">

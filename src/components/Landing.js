@@ -5,10 +5,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import executeElm from '../utils/executeELM';
 import flagit from '../helpers/flagit';
-import {datishFormat, dateFormat, dateNumberFormat, extractDateFromGMTDateString} from '../helpers/formatit';
+import {
+  datishFormat,
+  dateFormat,
+  dateNumberFormat,
+  extractDateFromGMTDateString
+} from '../helpers/formatit';
 import {dateCompare} from '../helpers/sortit';
-import {getDiffDays} from '../helpers/utility';
-import {isInViewport} from '../helpers/utility';
+import {
+  getDiffDays,
+  isInViewport} from '../helpers/utility';
 import Timeout from '../helpers/timeout';
 import summaryMap from './summary.json';
 
@@ -434,16 +440,14 @@ export default class Landing extends Component {
                   this.writeToLog("alert flag: "+subitem.flagText, "warn", {tags: ["alert"]});
                 }
               });
-            } else {
-              if (subsection[1].flagText) {
-                alerts.push({
-                  id: subsection[1].subSection.dataKey,
-                  name: subsection[1].subSection.name,
-                  text: subsection[1].flagText,
-                  className: subsection[1].flagClass,
-                  priority: subsection[1].priority || 100
-                });
-              }
+            } else if (subsection[1].flagText) {
+              alerts.push({
+                id: subsection[1].subSection.dataKey,
+                name: subsection[1].subSection.name,
+                text: subsection[1].flagText,
+                className: subsection[1].flagClass,
+                priority: subsection[1].priority || 100
+              });
             }
           }
         }
@@ -483,6 +487,7 @@ export default class Landing extends Component {
     const START_DELIMITER_FIELD_NAME = "start_delimiter";
     const END_DELIMITER_FIELD_NAME = "end_delimiter";
     const PLACEHOLDER_FIELD_NAME = "placeholder";
+    const FINAL_CALCULATED_FIELD_FLAG = "final";
 
     //sort data by start date
     graph_data = graph_data.filter(function(item) {
@@ -584,28 +589,36 @@ export default class Landing extends Component {
         finalDataPoints.push(dataPoint);
       }
       //overlapping data points
-      if (prevObj && (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
-        //add data point with older value for the previous med
+      if (prevObj &&
+          (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
+        //add data point with MME value for the previous med as the connecting data point
         dataPoint = {};
         dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
         dataPoint[MMEValueFieldName] = getRealNumber(prevObj[MMEValueFieldName]);
         dataPoint[PLACEHOLDER_FIELD_NAME] = true;
         finalDataPoints.push(dataPoint);
         finalDataPoints.push(currentDataPoint);
-      } else if (prevObj && currentDataPoint[START_DELIMITER_FIELD_NAME] && dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
+      } else if (
+        prevObj &&
+        currentDataPoint[START_DELIMITER_FIELD_NAME] &&
+        dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
+        //a new data point as med starts after the previous med ends
         if (getDiffDays(prevObj[endDateFieldName], currentDataPoint[startDateFieldName]) > 1) {
             dataPoint = {};
             dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
             //add 0 value dummy data point to denote start of med where applicable
             dataPoint[MMEValueFieldName] = 0;
-            dataPoint[START_DELIMITER_FIELD_NAME] = true;
+            //dataPoint[START_DELIMITER_FIELD_NAME] = true;
             dataPoint[PLACEHOLDER_FIELD_NAME] = true;
             finalDataPoints.push(dataPoint);
         }
         //add current data point
         finalDataPoints.push(currentDataPoint);
       }
-      else if (nextObj && currentDataPoint[END_DELIMITER_FIELD_NAME] && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName])) && (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[endDateFieldName]))) {
+      else if (
+        nextObj &&
+        currentDataPoint[END_DELIMITER_FIELD_NAME] &&
+        (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName]))) {
           //add current data point
           finalDataPoints.push(currentDataPoint);
           if (getDiffDays(currentDataPoint[endDateFieldName], nextObj[startDateFieldName]) > 1) {
@@ -619,7 +632,8 @@ export default class Landing extends Component {
           }
       }
       else {
-          finalDataPoints.push(currentDataPoint);
+        if (!nextObj) currentDataPoint[FINAL_CALCULATED_FIELD_FLAG] = true;
+        finalDataPoints.push(currentDataPoint);
       }
 
       if (!nextObj) {
@@ -637,12 +651,16 @@ export default class Landing extends Component {
     let formattedData = (JSON.parse(JSON.stringify(finalDataPoints))).map(point => {
       let o = {};
       o[graphDateFieldName] = point[graphDateFieldName];
-      o[MMEValueFieldName] = parseFloat(getRealNumber(point[MMEValueFieldName])).toFixed(2);
+      o[MMEValueFieldName] = Math.round(getRealNumber(point[MMEValueFieldName]));
       if (point[PLACEHOLDER_FIELD_NAME]) {
         o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
       }
+      if (point[FINAL_CALCULATED_FIELD_FLAG]) {
+        o[FINAL_CALCULATED_FIELD_FLAG] = true;
+      }
       return o;
-    });
+    }).filter((item,index,ref)=>ref.findIndex(target=>(JSON.stringify(target) === JSON.stringify(item)))===index);
+
     summary[this.getOverviewSectionKey()+"_graph"] = formattedData;
   }
 
@@ -962,7 +980,7 @@ export default class Landing extends Component {
     return (
       <div className="landing">
         <div id="anchorTop"></div>
-        <div id="skiptocontent">&nbsp;</div>
+        <div id="skiptocontent"></div>
         {this.isNonProduction() && <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>}
         <Header
           patientName={summary.Patient.Name}

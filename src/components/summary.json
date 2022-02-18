@@ -167,14 +167,18 @@
         },
         "tables": [
           {
+            "defaultSorted": {
+              "id": "Dispensed",
+              "desc": true
+            },
             "headers": {
               "Drug Description": "Name",
-              "Class": {"key": "Class", "minWidth": 120, "formatter": "listToStringFormat", "sortable": true},
+              "Class": {"key": "Class", "formatter": "listToStringFormat", "sortable": true, "minWidth": 120},
               "Quantity": "Quantity",
               "Duration": "Duration",
               "MME": {"key": "MME", "formatter": "numberFormat", "default": "Not returned", "sortable": true},
-              "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
-              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat", "sorter": "dateTimeFormat" },
+              "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateCompare", "sortable": true },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat", "sorter": "dateCompare", "sortable": true},
               "Prescriber": "Prescriber",
               "Pharmacy": "Pharmacy"
             },
@@ -676,55 +680,6 @@
     "title": "Risk Considerations",
     "skipDataInfo": true,
     "sections":[
-      {
-        "name": "Most Recent MED",
-        "dataKey": "CurrentMME",
-        "dataKeySource": "RiskConsiderations",
-        "guideline": [
-          {
-            "type": "CDC",
-            "title": "CDC Guideline #5",
-            "text": "Use lowest effective dose."
-          }
-        ],
-        "info": [
-          {
-            "type": "elements",
-            "description": "Most Recent MED queries the following elements:",
-            "elements": [
-              {
-                "name": "Morphine Equivalent Dose (MED)",
-                "status": "Calculated end date is today or after today",
-                "lookback": "most recent MED available"
-              }
-            ]
-          }
-        ],
-        "alertMapping": {
-          "priority": 2
-        },
-        "tables": [
-          {
-            "headers": {
-              "Name": "Name",
-              "Result": { "key": "Result", "formatter": "quantityFormat" },
-              "Date": { "key": "Date", "formatter": "datishFormat" }
-            },
-            "flags": [
-              {
-                "flag": {
-                  "ifGreaterThanOrEqualTo": {
-                    "header": "Result",
-                    "value": 50
-                  }
-                },
-                "flagText": "Most recent MED assessment is 50+ MED/day.",
-                "flagDateField": "Date"
-              }
-            ]
-          }
-        ]
-      },
       {
         "name": "Benzodiazepine Medications",
         "dataKey": "BenzodiazepineMedications",

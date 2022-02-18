@@ -19,8 +19,7 @@
         margin-bottom: 4px;
         .toc-link {
           font-size: 0.85em;
-          //padding: 5px 8px 5px 42px;
-          padding: 5px 8px 5px 40px;
+          padding: 4px 8px 4px 24px;
           line-height: 1.45;
           width: 80%;
           max-width: 100%;
@@ -214,7 +213,7 @@
       .is-position-fixed ~ .close {
         &:before {
           position: fixed;
-          left: 196px;
+          left: 192px;
         }
       }
     }
@@ -304,11 +303,17 @@
         height: 0;
         width: 560px;
         padding: 0;
-        padding-bottom: 35%;
+        padding-bottom: 45%;
+        margin-bottom: 24px;
       }
-      @media(min-width: 768px) {
+      @media(min-width: 992px) {
         .MME-svg-container {
-          padding-bottom: 67%;
+          padding-bottom: 80%;
+        }
+      }
+      @media(min-width: 1400px) {
+        .MME-svg-container {
+          padding-bottom: 70%;
         }
       }
       .MMEChartSvg {
@@ -319,7 +324,7 @@
         top: 0;
       }
       .MMEgraph {
-        margin: 0 0 8px;
+        margin: 16px 0 8px;
         //padding-bottom: 16px;
         &.no-entry {
           display: flex;
@@ -498,6 +503,30 @@
         }
       }
 
+      .graph {
+        .stats-container {
+          margin-left: 24px;
+          margin-right: 24px;
+          margin-bottom: 16px;
+          font-size: 14px;
+          padding: 8px 16px;
+          border: 2px solid $color-gray-lighter;
+          min-height: 46px;
+          position: relative;
+          .stats-item {
+            margin-bottom: 4px;
+            width: 50%;
+            float: left;
+          }
+          .title {
+            margin-right: 8px;
+          }
+          .description {
+            font-weight: 600
+          }
+        }
+      }
+
       @media (min-width: 768px) {
         .panels {
           .sub-panels {
@@ -523,6 +552,7 @@
           .panel.graph {
             flex: 1;
             align-self: stretch;
+            min-width: 480px;
           }
         }
       }
@@ -915,11 +945,21 @@
     }
   }
 }
-@media (min-width: 768px) {
+@media (min-width: 992px) {
   .summary__display {
     .sections {
       .MME-svg-container {
         width: 100%;
+      }
+    }
+  }
+}
+
+@media (min-width: 1400px) {
+  .summary__display {
+    .sections {
+      .MME-svg-container {
+        width: 85%;
       }
     }
   }
