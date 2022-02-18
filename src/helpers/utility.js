@@ -66,3 +66,31 @@ export function isInViewport (elem) {
         bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
 };
+
+/*
+ * @param array of numbers
+ * @return the sum of numbers in the array
+ */
+export function sumArray (array) {
+    if (!array || !Array.isArray(array) || !array.length) return 0;
+    return array.reduce((a, b) => (isNaN(a)?0:a) + (isNaN(b)?0:b));
+}
+
+/*
+ * @param dateInput, a date string or object
+ * @param todayInput, optional today's date string or object
+ * @return return number of days difference of date input from today
+ */
+export function daysFromToday (dateInput, todayInput) {
+    let today = (new Date());
+    if (todayInput) today = todayInput instanceof Date ? todayInput : new Date(todayInput);
+    let originalDate = (dateInput instanceof Date ? dateInput : new Date(dateInput));
+    let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
+    let tzOffset = dObj.getTimezoneOffset() * 60000;
+    dObj.setTime(dObj.getTime() + tzOffset);
+    let oneDay = (1000 * 60 * 60 * 24);
+    let diff = (today.setHours(0,0,0,0) - dObj.setHours(0,0,0,0)) / oneDay;
+    //console.log("date " , dateInput, " dif ", diff)
+    if (isNaN(diff)) return 0;
+    return diff;
+}

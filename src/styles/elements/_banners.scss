@@ -7,7 +7,7 @@
   }
 
   &.error {
-    background-color: lighten($color-red, 15%);
+    background-color: $color-red-lightest;
     color: darken($color-red, 15%);
   }
 
