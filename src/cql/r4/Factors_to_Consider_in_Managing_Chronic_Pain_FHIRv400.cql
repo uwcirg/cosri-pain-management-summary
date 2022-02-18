@@ -61,7 +61,7 @@
 //   Add Document Reference query for controlled substance agreement, a LOINC code of 94136-9 is used
 //   see new function ReportCSAgreement
 // Update 20220218
-//   Add UDS system url and code for UWMC, TODO those are current faked ones, CHANGE to real ones when identified
+//   Add UDS system url and code for UWMC, TODO these are currently faked ones, CHANGE to real ones when identified
 // Update 20210204
 //   Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
 //   When Report MME, compile MME for medications classified as Opioid Medication and also from PDMP
@@ -208,9 +208,9 @@ define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
 define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
 //system url for quest diagnostics
 define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.com/test'
-//system url for UWMC urine drug screen lab
+//system url for UWMC urine drug screen lab, TODO: replace when real one is available
 define UWMC_UDS_SYSTEM_URL:'https://fakelab.com/cdsr3'
-//lab panel test order code from lab corp and quest diagnostics
+//lab panel test order code from lab corp and quest diagnostics, TODO: replace UWMC code, abc123, when real one is available
 define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428', 'abc123'}
 //CS agreement concept code
 define CS_AGREEMENT_CODE: '94136-9'
