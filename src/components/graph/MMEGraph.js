@@ -179,11 +179,6 @@ export default class MMEGraph extends Component {
       minDate = new Date(minDate);
       //console.log("min date ", minDate, " max date ", maxDate)
     }
-    let calcMaxDate = new Date(maxDate.valueOf());
-    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 1);
-    maxDate = new Date(maxDate);
-    const diffTime = Math.abs(maxDate - minDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     if (arrayDates.length) {
       /*
       * set up baseline data point starting at 0
@@ -207,8 +202,15 @@ export default class MMEGraph extends Component {
         todayDataPoint[yFieldName] = 0;
         todayDataPoint["placeholder"] = true;
         data = [...data, todayDataPoint];
+        maxDate = new Date();
       }
     }
+    let calcMaxDate = new Date(maxDate.valueOf());
+    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 1);
+    maxDate = new Date(maxDate);
+    const diffTime = Math.abs(maxDate - minDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
     let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
     let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
     let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
@@ -217,7 +219,7 @@ export default class MMEGraph extends Component {
       top: 8,
       right: 56,
       bottom: 48,
-      left: 40,
+      left: 56,
     };
 
     const width = parentWidth - margins.left - margins.right;
