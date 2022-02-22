@@ -537,6 +537,14 @@
       @media (min-width: 992px) {
         .panels {
           .sub-panels {
+            margin-left: -24px;
+          }
+        }
+      }
+
+      @media (min-width: 1400px) {
+        .panels {
+          .sub-panels {
             margin-left: -56px;
           }
         }

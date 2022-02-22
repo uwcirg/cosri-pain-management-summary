@@ -257,16 +257,22 @@ code "Morphine Milligram Equivalent (MME)": 'MME' from "LOCAL" display 'Morphine
 // back for qualifying active medications. By default, the inclusion logic will look back 180 days.
 parameter InclusionMedicationsLookbackPeriod default 180 days
 
-//system url identifier used to identify resources, e.g. MedicationRequest, from PDMP
+
+//COSRI specific
+//system url identifier used to identify resources, e.g. MedicationRequest, from PDMP, specific to COSRI app
 define PDMP_SYSTEM_VALUE: 'https://github.com/uwcirg/script-fhir-facade/'
+//system url for drug class in an extension, specific to COSRI app
+define DRUG_CLASS_SYSTEM_URL: 'http://cosri.org/fhir/drug_class'
+//system url for pharmacy in an extension, specific to COSRI app
+define PHARMACY_SYSTEM_URL: 'http://cosri.org/fhir/pharmacy_name'
+//system url for last refill in an extension, specific to COSRI app
+define LAST_FILL_SYSTEM_URL: 'http://cosri.org/fhir/last_fill'
 
 //site specific
 //system url for labcorp
 define LAB_CORP_SYSTEM_VALUE: 'https://www.labcorp.com/tests'
 //system url for quest diagnostics
 define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.com/test'
-//system url for drug class, specific to COSRI app
-define DRUG_CLASS_SYSTEM_URL: 'http://cosri.org/fhir/drug_class'
 //system url for UWMC urine drug screen lab, TODO: replace when real one is available
 define UWMC_UDS_SYSTEM_URL:'https://fakelab.com/cdsr3'
 //lab panel test order code from lab corp and quest diagnostics, TODO: replace UWMC code, abc123, when real one is available
@@ -453,10 +459,32 @@ define function GetMedicationRequestPharmacy(medRequest FHIR.MedicationRequest):
   (medRequest) O
   let
     //pharmacy is from extension
-    pharmacyExtension: O.dispenseRequest.extension[0],
+    pharmacyExtension: First(O.dispenseRequest.extension E where E.url ~ PHARMACY_SYSTEM_URL),
     pharmacy: if pharmacyExtension is not null then
       (pharmacyExtension.value as FHIR.string).value else null
     return pharmacy
+
+// @param MedicationRequest FHIR object
+// @return dispensed date or last fill date, of type FHIR.date, supplied via extension in a MedicationRequest FHIR object
+define function GetMedicationRequestDispensedDate(medRequest FHIR.MedicationRequest):
+  (medRequest) O
+  let
+    //last fill date is from extension
+    LastFillExtension: First(O.dispenseRequest.extension E where E.url ~ LAST_FILL_SYSTEM_URL),
+    Start: if LastFillExtension is not null then (LastFillExtension.value as FHIR.date) else null
+    return Start
+
+// @param MedicationRequest FHIR object
+// @return a list of drug class(s) type System.List via querying for matching drug class extension in a FHIR.CodeableConcept
+define function getMedicationRequestDrugClass(medRequest FHIR.MedicationRequest):
+  (medRequest) O
+  let
+    codeConcept: O.medication as FHIR.CodeableConcept,
+    values:
+      if codeConcept.extension is not null then
+        (codeConcept.extension E where E.url ~ DRUG_CLASS_SYSTEM_URL return E.value.value)
+      else null
+    return values
 
 // @return the calculated last date for the prescription, of type System.date,
 //  based on dispensed supply duration starting from the start date (dispensed date or authored date)
@@ -483,30 +511,6 @@ define function GetMedicationRequestEndDate(medRequest FHIR.MedicationRequest):
           date from ToDate(O.authoredOn + System.Quantity {value: CalculatedDuration, unit: CalculatedDurationUnit})
         else null
       end
-
-
-// @param MedicationRequest FHIR object
-// @return dispensed date or last fill date, of type FHIR.date, supplied via extension, for a MedicationRequest object
-define function GetMedicationRequestDispensedDate(medRequest FHIR.MedicationRequest):
-  (medRequest) O
-  let
-    //last fill date is from extension
-    LastFillExtension: O.dispenseRequest.extension[1],
-    Start: if LastFillExtension is not null then (LastFillExtension.value as FHIR.date) else null
-    return Start
-
-// @param MedicationRequest FHIR object
-// @return the drug class values of type System.List via querying for matching extension
-// in a FHIR.CodeableConcept
-define function getMedicationRequestDrugClass(medRequest FHIR.MedicationRequest):
-  (medRequest) O
-  let
-    codeConcept: O.medication as FHIR.CodeableConcept,
-    values:
-      if codeConcept.extension is not null then
-        (codeConcept.extension E where E.url ~ DRUG_CLASS_SYSTEM_URL return E.value.value)
-      else null
-    return values
 
 
 // ## Target population ##
