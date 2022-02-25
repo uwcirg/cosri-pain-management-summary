@@ -2034,37 +2034,75 @@
                "let" : [ {
                   "identifier" : "pharmacyExtension",
                   "expression" : {
-                     "type" : "First",
-                     "source" : {
-                        "type" : "Query",
-                        "source" : [ {
-                           "alias" : "E",
-                           "expression" : {
-                              "path" : "extension",
-                              "type" : "Property",
-                              "source" : {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
                                  "path" : "dispenseRequest",
                                  "scope" : "O",
                                  "type" : "Property"
                               }
                            }
-                        } ],
-                        "relationship" : [ ],
-                        "where" : {
-                           "type" : "Equivalent",
-                           "operand" : [ {
-                              "name" : "ToString",
-                              "libraryName" : "FHIRHelpers",
-                              "type" : "FunctionRef",
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "extension",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "dispenseRequest",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        } ]
+                     },
+                     "then" : {
+                        "type" : "First",
+                        "source" : {
+                           "type" : "Query",
+                           "source" : [ {
+                              "alias" : "E",
+                              "expression" : {
+                                 "path" : "extension",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "dispenseRequest",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           } ],
+                           "relationship" : [ ],
+                           "where" : {
+                              "type" : "Equivalent",
                               "operand" : [ {
-                                 "path" : "url",
-                                 "scope" : "E",
-                                 "type" : "Property"
+                                 "name" : "ToString",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "url",
+                                    "scope" : "E",
+                                    "type" : "Property"
+                                 } ]
+                              }, {
+                                 "name" : "PHARMACY_SYSTEM_URL",
+                                 "type" : "ExpressionRef"
                               } ]
-                           }, {
-                              "name" : "PHARMACY_SYSTEM_URL",
-                              "type" : "ExpressionRef"
-                           } ]
+                           }
+                        }
+                     },
+                     "else" : {
+                        "asType" : "{http://hl7.org/fhir}Extension",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
                         }
                      }
                   }
@@ -2143,37 +2181,75 @@
                "let" : [ {
                   "identifier" : "LastFillExtension",
                   "expression" : {
-                     "type" : "First",
-                     "source" : {
-                        "type" : "Query",
-                        "source" : [ {
-                           "alias" : "E",
-                           "expression" : {
-                              "path" : "extension",
-                              "type" : "Property",
-                              "source" : {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
                                  "path" : "dispenseRequest",
                                  "scope" : "O",
                                  "type" : "Property"
                               }
                            }
-                        } ],
-                        "relationship" : [ ],
-                        "where" : {
-                           "type" : "Equivalent",
-                           "operand" : [ {
-                              "name" : "ToString",
-                              "libraryName" : "FHIRHelpers",
-                              "type" : "FunctionRef",
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "extension",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "dispenseRequest",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        } ]
+                     },
+                     "then" : {
+                        "type" : "First",
+                        "source" : {
+                           "type" : "Query",
+                           "source" : [ {
+                              "alias" : "E",
+                              "expression" : {
+                                 "path" : "extension",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "dispenseRequest",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           } ],
+                           "relationship" : [ ],
+                           "where" : {
+                              "type" : "Equivalent",
                               "operand" : [ {
-                                 "path" : "url",
-                                 "scope" : "E",
-                                 "type" : "Property"
+                                 "name" : "ToString",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "url",
+                                    "scope" : "E",
+                                    "type" : "Property"
+                                 } ]
+                              }, {
+                                 "name" : "LAST_FILL_SYSTEM_URL",
+                                 "type" : "ExpressionRef"
                               } ]
-                           }, {
-                              "name" : "LAST_FILL_SYSTEM_URL",
-                              "type" : "ExpressionRef"
-                           } ]
+                           }
+                        }
+                     },
+                     "else" : {
+                        "asType" : "{http://hl7.org/fhir}Extension",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
                         }
                      }
                   }
@@ -2265,18 +2341,30 @@
                   "expression" : {
                      "type" : "If",
                      "condition" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
                            "operand" : {
-                              "path" : "extension",
-                              "type" : "Property",
-                              "source" : {
+                              "type" : "IsNull",
+                              "operand" : {
                                  "name" : "codeConcept",
                                  "type" : "QueryLetRef"
                               }
                            }
-                        }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "extension",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "codeConcept",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }
+                        } ]
                      },
                      "then" : {
                         "type" : "Query",
@@ -2408,43 +2496,62 @@
                   "expression" : {
                      "type" : "If",
                      "condition" : {
-                        "type" : "Not",
+                        "type" : "IsNull",
                         "operand" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "path" : "expectedSupplyDuration",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "dispenseRequest",
-                                 "scope" : "O",
-                                 "type" : "Property"
-                              }
-                           }
+                           "path" : "dispenseRequest",
+                           "scope" : "O",
+                           "type" : "Property"
                         }
                      },
                      "then" : {
-                        "path" : "value",
-                        "type" : "Property",
-                        "source" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "expectedSupplyDuration",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "dispenseRequest",
-                                 "scope" : "O",
-                                 "type" : "Property"
-                              }
-                           }
-                        }
-                     },
-                     "else" : {
                         "type" : "ToDecimal",
                         "operand" : {
                            "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                            "value" : "0",
                            "type" : "Literal"
+                        }
+                     },
+                     "else" : {
+                        "type" : "If",
+                        "condition" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "expectedSupplyDuration",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "dispenseRequest",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        },
+                        "then" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "expectedSupplyDuration",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "dispenseRequest",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        },
+                        "else" : {
+                           "type" : "ToDecimal",
+                           "operand" : {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "0",
+                              "type" : "Literal"
+                           }
                         }
                      }
                   }
@@ -2453,19 +2560,32 @@
                   "expression" : {
                      "type" : "If",
                      "condition" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
                            "operand" : {
-                              "path" : "expectedSupplyDuration",
-                              "type" : "Property",
-                              "source" : {
+                              "type" : "IsNull",
+                              "operand" : {
                                  "path" : "dispenseRequest",
                                  "scope" : "O",
                                  "type" : "Property"
                               }
                            }
-                        }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "expectedSupplyDuration",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "dispenseRequest",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        } ]
                      },
                      "then" : {
                         "path" : "value",
@@ -7446,7 +7566,7 @@
                },
                "sort" : {
                   "by" : [ {
-                     "direction" : "asc",
+                     "direction" : "desc",
                      "path" : "End",
                      "type" : "ByColumn"
                   } ]

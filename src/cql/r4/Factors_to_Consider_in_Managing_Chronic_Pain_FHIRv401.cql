@@ -65,6 +65,8 @@
 // Update 20210204
 //    Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
 //    When Report MME, compile MME for medications classified as Opioid Medication and also from PDMP
+// Update 20220218
+//   Add UDS system url and code for UWMC, TODO these are currently faked ones, CHANGE to real ones when identified
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -277,6 +279,7 @@ define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.c
 define UWMC_UDS_SYSTEM_URL:'https://fakelab.com/cdsr3'
 //lab panel test order code from lab corp and quest diagnostics, TODO: replace UWMC code, abc123, when real one is available
 define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428', 'abc123'}
+
 //CS agreement concept code
 define CS_AGREEMENT_CODE: '94136-9'
 
@@ -451,55 +454,59 @@ define function GetMedicationRequestDispensedQuantity(medRequest FHIR.Medication
       dispenseRequest.quantity.value.value else null
     return dispensedQuantity
 
-
-// @return the text representation of pharmacy of type FHIR.string via extension
 // @param MedicationRequest FHIR object
 // @returns the text representation of pharmacy of type FHIR.string via extension
 define function GetMedicationRequestPharmacy(medRequest FHIR.MedicationRequest):
   (medRequest) O
   let
     //pharmacy is from extension
-    pharmacyExtension: First(O.dispenseRequest.extension E where E.url ~ PHARMACY_SYSTEM_URL),
+    pharmacyExtension:
+      if O.dispenseRequest is not null and O.dispenseRequest.extension is not null then
+        First(O.dispenseRequest.extension E where E.url ~ PHARMACY_SYSTEM_URL)
+      else null,
     pharmacy: if pharmacyExtension is not null then
       (pharmacyExtension.value as FHIR.string).value else null
     return pharmacy
 
 // @param MedicationRequest FHIR object
-// @return dispensed date or last fill date, of type FHIR.date, supplied via extension in a MedicationRequest FHIR object
+// @return dispensed date or last fill date, of type FHIR.date, via extension in a MedicationRequest FHIR object
 define function GetMedicationRequestDispensedDate(medRequest FHIR.MedicationRequest):
   (medRequest) O
   let
     //last fill date is from extension
-    LastFillExtension: First(O.dispenseRequest.extension E where E.url ~ LAST_FILL_SYSTEM_URL),
+    LastFillExtension:
+      if O.dispenseRequest is not null and O.dispenseRequest.extension is not null then
+        First(O.dispenseRequest.extension E where E.url ~ LAST_FILL_SYSTEM_URL)
+      else null,
     Start: if LastFillExtension is not null then (LastFillExtension.value as FHIR.date) else null
     return Start
 
 // @param MedicationRequest FHIR object
-// @return a list of drug class(s) type System.List via querying for matching drug class extension in a FHIR.CodeableConcept
+// @return a list of drug class(s) of type System.List via querying for matching drug class extension in a FHIR.CodeableConcept
 define function getMedicationRequestDrugClass(medRequest FHIR.MedicationRequest):
   (medRequest) O
   let
     codeConcept: O.medication as FHIR.CodeableConcept,
     values:
-      if codeConcept.extension is not null then
+      //find matching extension containing drug class
+      if codeConcept is not null and codeConcept.extension is not null then
         (codeConcept.extension E where E.url ~ DRUG_CLASS_SYSTEM_URL return E.value.value)
       else null
     return values
 
-// @return the calculated last date for the prescription, of type System.date,
-//  based on dispensed supply duration starting from the start date (dispensed date or authored date)
 // @param MedicationRequest FHIR object
-// @return the calculated last date for the prescription, of type System.date,
-//  based on dispensed supply duration starting from the start date (dispensed date or authored date)
+// @return the calculated last date of type System.date for the MedicationRequest
+//  Calculation is based on dispensed supply duration, starting from the start date (dispensed date or authored date)
 define function GetMedicationRequestEndDate(medRequest FHIR.MedicationRequest):
   (medRequest) O
    let
     CalculatedDuration:
-      if O.dispenseRequest.expectedSupplyDuration is not null
+      if O.dispenseRequest is null then 0
+      else if O.dispenseRequest.expectedSupplyDuration is not null
       then  O.dispenseRequest.expectedSupplyDuration.value.value
       else 0,
     CalculatedDurationUnit:
-      if O.dispenseRequest.expectedSupplyDuration is not null
+      if  O.dispenseRequest is not null and O.dispenseRequest.expectedSupplyDuration is not null
       then  O.dispenseRequest.expectedSupplyDuration.unit.value
       else 'days',
     DispensedDate: GetMedicationRequestDispensedDate(O)
@@ -987,7 +994,7 @@ define ReportMMEByDates:
     rxNormCode: R.rxNormCode,
     MMEValue: R.MMEValue
   }
-  sort by End
+  sort by End desc
 
 define ReportPrescriptions:
   (OpioidMedicationRequests) M
