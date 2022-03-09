@@ -8,7 +8,7 @@ The Pain Management Summary SMART on FHIR application was developed to support t
 
 The Pain Management Summary SMART on FHIR application was piloted during Summer 2018.  Local modifications and development were needed to fully support this application in the pilot environment.  For example, custom development was needed to expose pain assessments via the FHIR API. See the pilot reports for more information.
 
-This application was originally piloted with support for FHIR DSTU2.  The app has been updated since the pilot to also support FHIR R4, although pilot R4 support has not been piloted in a clinical setting.  In addition, value sets and standardized codes have been updated since the pilot.  See the comments in the bundled CQL for details.
+This application was originally piloted with support for FHIR DSTU2.  The app has been updated since the pilot to also support FHIR R4.  In addition, value sets and standardized codes have been updated since the pilot.  See the comments in the bundled CQL for details.
 
 This prototype application is part of the [CDS Connect](https://cds.ahrq.gov/cdsconnect) project, sponsored by the [Agency for Healthcare Research and Quality](https://www.ahrq.gov/) (AHRQ), and developed under contract with AHRQ by [MITRE's CAMH](https://www.mitre.org/centers/cms-alliances-to-modernize-healthcare/who-we-are) FFRDC.
 
