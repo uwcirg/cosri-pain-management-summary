@@ -1271,26 +1271,18 @@
       }
     ]
   },
-
-
-
-  "EducationMaterials": {
-    "title":"Education Materials",
+  "PatientEducationMaterials": {
+    "title":"Patient Education Resources",
     "skipDataInfo": true,
     "dataSource": [{
       "endpoint": "{process.env.PUBLIC_URL}/assets/data/patientEducationReferences.json",
       "dataKey": "PatientEducationMaterials",
       "dataKeySource": "EducationMaterials"
-    },
-    {
-      "endpoint": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json",
-      "dataKey": "ProviderEducationMaterials",
-      "dataKeySource": "EducationMaterials"
     }],
     "omitCountDisplay": true,
     "sections": [
       {
-        "name": "Patient Resources",
+        "name": "Patient Education Resources",
         "dataKey": "PatientEducationMaterials",
         "dataKeySource": "EducationMaterials",
         "omitTitle": true,
@@ -1303,14 +1295,25 @@
                 "formatterArguments": ["title","url", "type", "size"],
                 "minWidth": 200,
                 "className": "title",
-                "header": true,
-                "sortable": false
+                "sortable": false,
+                "omitHeader": true
               }
             }
           }
         ]
-      },
-      {
+      }
+    ]
+  },
+  "ProviderEducationMaterials": {
+    "title":"Provider Resources",
+    "skipDataInfo": true,
+    "dataSource": [{
+      "endpoint": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json",
+      "dataKey": "ProviderEducationMaterials",
+      "dataKeySource": "EducationMaterials"
+    }],
+    "omitCountDisplay": true,
+    "sections": [{
         "name": "Provider Resources",
         "dataKey": "ProviderEducationMaterials",
         "dataKeySource": "EducationMaterials",
@@ -1324,8 +1327,8 @@
                 "formatterArguments": ["title","url", "type", "size"],
                 "minWidth": 200,
                 "className": "title",
-                "header": true,
-                "sortable": false
+                "sortable": false,
+                "omitHeader": true
               }
             }
           }

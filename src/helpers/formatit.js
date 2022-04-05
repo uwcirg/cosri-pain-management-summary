@@ -128,10 +128,17 @@ export function linkFormat(result, input) {
   }
   return (
     <div className="link-container">
-      <a href={input['url']} title={input['title']} target='_blank' rel='noopener noreferrer' className={input['className']}>{input['title']}</a>
-      {
-        input['type'] === "PDF" && <span className="muted info">({input['type']}, size: {input['size']})</span>
-      }
+        <a href={input['url']} target='_blank' rel='noopener noreferrer' className={input['className']}>
+          <div>
+            <span className={`title ${input['titleClassName']}`}>{input['title']}</span>
+            {
+              input['type'] === "PDF" && <span className="text-muted info">({input['type']}, size: {input['size']})</span>
+            }
+          </div>
+          {
+            input['subtitle'] && <div className="subtitle-container text-muted">{input['subtitle']}</div>
+          }
+         </a>
     </div>
   );
 }

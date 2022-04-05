@@ -39,6 +39,11 @@ h3:focus {
 a {
   color: $link-color;
   font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid $link-border-color;
+}
+.text-alert {
+  color: $color-alert;
 }
 .text-warning {
   color: $color-warning;
