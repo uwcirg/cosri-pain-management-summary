@@ -16,6 +16,7 @@ import MedicineIcon from '../icons/MedicineIcon';
 import RiskIcon from '../icons/RiskIcon';
 import RxIcon from '../icons/RxIcon';
 import TreatmentsIcon from '../icons/TreatmentsIcon';
+import ProviderIcon from '../icons/ProviderIcon';
 import UserIcon from '../icons/UserIcon';
 import FlaskIcon from '../icons/FlaskIcon';
 
@@ -270,6 +271,7 @@ export default class Summary extends Component {
       const column = {
         id: header,
         Header: () => {
+          if (headerKey.omitHeader) return "";
           if (headerKey.header) return <h3 className="col-header-title">{header}</h3>
           return <span className={`col-header col-${header} ${headerClass}`}>{header}</span>
         },
@@ -282,7 +284,7 @@ export default class Summary extends Component {
           }
           return value ? value: (headerKey.default ? headerKey.default : entry[headerKey.key]);
         },
-        sortable: headerKey.sortable !== false
+        sortable: headerKey.sortable !== false 
       };
 
       let columnFormatter = headerKey.formatter;
@@ -559,8 +561,10 @@ export default class Summary extends Component {
       icon = <RxIcon {...iconProps}/>;
     } else if (section === 'NonPharmacologicTreatments') {
       icon =  <TreatmentsIcon {...iconProps} />;
-    } else if (section === 'EducationMaterials') {
+    } else if (section === 'PatientEducationMaterials') {
       icon = <UserIcon {...iconProps} />;
+    } else if (section === 'ProviderEducationMaterials') {
+      icon = <ProviderIcon {...iconProps} />;
     } else if (section === 'UrineDrugScreens') {
       icon = <FlaskIcon {...iconProps} />;
     }

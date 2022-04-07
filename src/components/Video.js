@@ -65,7 +65,7 @@ export default class Video extends Component {
     return (
       <div>
         {/* element for toggling the visibility of video */}
-        <span title={title} onClick={this.handleClick} className={`video-link ${this.props.className}`}>{title}</span>
+        <span onClick={this.handleClick} className={`video-link ${this.props.className}`}>{title}</span>
         <ChevronDownIcon
           className={`${this.state.isToggleOn?'open': ''} link-toggle`}
           onClick={this.handleClick}
