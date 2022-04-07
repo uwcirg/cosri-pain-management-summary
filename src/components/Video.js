@@ -87,6 +87,7 @@ export default class Video extends Component {
   }
 }
 Video.propTypes = {
+  title: PropTypes.string.isRequired,
   src: PropTypes.string.isRequired,
   toggleable: PropTypes.bool
 };
