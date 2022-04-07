@@ -513,7 +513,7 @@
           font-size: 14px;
           padding: 8px 16px;
           border: 2px solid $color-gray-lighter;
-          min-height: 46px;
+          min-height: 36px;
           position: relative;
           .stats-item {
             margin-bottom: 4px;
@@ -714,6 +714,9 @@
               display: inline-block;
               font-weight: 600;
               font-size: 1.05em;
+              .title {
+                border-bottom: 0;
+              }
             }
 
             .rt-th:first-child,

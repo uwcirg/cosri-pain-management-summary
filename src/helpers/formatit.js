@@ -130,7 +130,7 @@ export function linkFormat(result, input) {
     <div className="link-container">
         <a href={input['url']} target='_blank' rel='noopener noreferrer' className={input['className']}>
           <div>
-            <span className={`title ${input['titleClassName']}`}>{input['title']}</span>
+            <span className={`title ${input['titleClassName'] ? input['titleClassName']: ""}`}>{input['title']}</span>
             {
               input['type'] === "PDF" && <span className="text-muted info">({input['type']}, size: {input['size']})</span>
             }
