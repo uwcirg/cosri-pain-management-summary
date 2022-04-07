@@ -479,6 +479,8 @@
               align-items: center;
               margin-bottom: 8px;
               color: $color-black;
+              border-bottom: 0;
+              line-height: 1.4;
               &:hover {
                 color: $color-black-darker;
                 cursor: pointer;
@@ -666,7 +668,7 @@
           padding-bottom: 8px;
           .single-column {
             .rt-tbody {
-              margin-top: -12px;
+              margin-top: -8px;
             }
           }
           &:first-of-type {
