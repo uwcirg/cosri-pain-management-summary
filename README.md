@@ -155,3 +155,9 @@ The data that is posted reports whether or not the patient met the CDS inclusion
 ```
 
 To enable posting of analytics, configure the `analytics_endpoint` and `x_api_key` in the `public/config.json` file. The default value is an empty string, which will not post any analytics.
+
+## Copyright, patent, trademark, and attribution notices
+
+See this repository's LICENSE file for relevant information about COSRI.
+
+This source code extends https://github.com/AHRQ-CDS/AHRQ-CDS-Connect-PAIN-MANAGEMENT-SUMMARY, copyright 2018 Agency for Healthcare Research and Quality per (https://github.com/AHRQ-CDS/AHRQ-CDS-Connect-PAIN-MANAGEMENT-SUMMARY/blob/master/LICENSE)
