@@ -148,6 +148,7 @@ export function linkFormat(result, input) {
       )}
     </React.Fragment>
   );
+  // if no link URL, just display the content without the link
   if (!referenceURL) return (<div className="link-container">{renderLinkContent()}</div>);
   return (
     <div className="link-container">
