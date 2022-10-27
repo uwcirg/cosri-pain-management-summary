@@ -356,6 +356,7 @@ export default class Landing extends Component {
   async getExternalData() {
     let dataSet = {};
     const promiseResultSet = [];
+    const systemType = String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase();
 
     /*
      * retrieve entries from Summary map, i.e. summary.json that requires fetching data via external API
@@ -363,6 +364,10 @@ export default class Landing extends Component {
     for (let key in summaryMap) {
       if (summaryMap[key].dataSource) {
         summaryMap[key].dataSource.forEach(item => {
+          if (item.endpoint && typeof item.endpoint === "object") {
+            if (item.endpoint[systemType]) item.endpoint = item.endpoint[systemType];
+            else item.endpoint  = item.endpoint["default"];
+          }
           promiseResultSet.push(item);
         });
       }

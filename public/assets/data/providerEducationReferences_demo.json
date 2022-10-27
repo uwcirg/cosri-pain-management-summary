@@ -1,0 +1,37 @@
+{
+    "ProviderEducationMaterials" :
+        [
+            {
+                "link": {
+                    "title": "Clarification of Opioid Prescribing Rules",
+                    "className": "education",
+                    "url": "https://doh.wa.gov/public-health-healthcare-providers/healthcare-professions-and-facilities/opioid-prescribing/healthcare-providers"
+                }
+            },
+            {
+                "link": {
+                    "title": "UW Center for Pain Relief TelePain Consultation Hotline (848) XXX-XXXX",
+                    "subtitle": "for one-to-one specialist help for pain management and prescribing",
+                    "titleClassName": "text-alert",
+                    "className": "education",
+                    "url": ""
+                }
+            },
+            {
+                "link": {
+                    "title": "Participate in TelePain Wednesday launch time sessions",
+                    "subtitle": "sign up to join didactic discussions around pain assessment and management, opioid prescribing, getting the most out of regulations, gain CME credit, and more",
+                    "className": "education",
+                    "url": "https://depts.washington.edu/anesth/care/pain/telepain/mini-site/connect.shtml"
+                }
+            },
+            {
+                "link": {
+                    "title": "Browse previous 20-minute TelePain sessions to see what they are all about",
+                    "className": "education",
+                    "url": "https://depts.washington.edu/anesth/care/pain/telepain/mini-site/recorded-didactic-presentations.shtml"
+                }
+            }
+        ]
+
+}
