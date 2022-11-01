@@ -1308,7 +1308,10 @@
     "title":"Provider Resources",
     "skipDataInfo": true,
     "dataSource": [{
-      "endpoint": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json",
+      "endpoint": {
+        "demo" : "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences_demo.json",
+        "default": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json"
+      },
       "dataKey": "ProviderEducationMaterials",
       "dataKeySource": "EducationMaterials"
     }],
