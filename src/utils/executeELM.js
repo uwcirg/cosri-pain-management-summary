@@ -14,9 +14,13 @@ import r4OMTKLogicELM from '../cql/r4/OMTKLogic.json';
 import valueSetDB from '../cql/valueset-db.json';
 import {getEnv, fetchEnvData} from './envConfig';
 
-function executeELM(collector, resourceTypes) {
+const noCacheHeader = {
+  "Cache-Control": "no-cache, no-store, max-age=0",
+};
+
+async function executeELM(collector, oResourceTypes) {
   let client, release, library;
-  resourceTypes = resourceTypes || {};
+  const resourceTypes = oResourceTypes || {};
   return new Promise((resolve) => {
     // First get our authorized client and send the FHIR release to the next step
     const results = FHIR.oauth2.ready().then((clientArg) => {
@@ -46,33 +50,136 @@ function executeELM(collector, resourceTypes) {
         })
         //return doSearch(client, release, name, collector);
       });
-      console.log("resources ",  requests);
+
+      // check if instrument resources need to be loaded
+      const surveyRequests = getInstrumentResponseRequests(client);
+      if (surveyRequests.length > 0)  {
+        ["Questionnaire Response", "Questionnaire"].forEach(item => resourceTypes[item] = true);
+      }
+    
+      console.log("resources ", requests);
+      console.log("survey resources ", surveyRequests);
       console.log("collector ", collector);
       console.log("resourceTypes ", resourceTypes)
 
       // Don't return until all the requests have been resolved
-      return Promise.all(requests).then((requestResults) => {
-        const resources = [];
-        requestResults.forEach(result => resources.push(...result));
-        return {
-          resourceType: "Bundle",
-          entry: resources.map(r => ({ resource: r }))
-        };;
-      });
+      return Promise.all([...requests, ...surveyRequests]).then(
+        (requestResults) => {
+          let resources = [];
+          requestResults.forEach((result) => {
+            result.forEach((item) => {
+              if (String(item.resourceType).toLowerCase() === "bundle") {
+                if (item.entry) {
+                  item.entry.forEach((o) => {
+                    if (o.resource) resources.push(o.resource);
+                  });
+                }
+              } else resources.push(item);
+            });
+          });
+          return {
+            resourceType: "Bundle",
+            entry: resources.map((r) => ({ resource: r })),
+          };
+        }
+      );
     })
     // then execute the library and return the results (wrapped in a Promise)
     .then((bundle) => {
       const patientSource = getPatientSource(release);
       const codeService = new cql.CodeService(valueSetDB);
+      console.log("library ", library)
       const executor = new cql.Executor(library, codeService);
       //debugging
       console.log("bundle loaded? ", bundle);
+      const hasQuestionnaire = bundle.entry.filter(item => item.resource && item.resource.resourceType === "Questionnaire").length > 0;
+      console.log("has responses? ", hasQuestionnaire);
       patientSource.loadBundles([bundle]);
       const results = executor.exec(patientSource);
-      return results.patientResults[Object.keys(results.patientResults)[0]];
+      console.log("CQL execution results ", results);
+      const evalResults =
+        results.patientResults[Object.keys(results.patientResults)[0]];
+      if (hasQuestionnaire) {
+        // return a promise?
+        return new Promise((resolve, reject) => {
+          let instrumentList = (getEnv("REACT_APP_SCORING_INSTRUMENT")).split(",");
+          const elmLibs = instrumentList.map((libId) =>
+            (async() => {
+              let elmJson = await import(`../cql/r4/survey/${libId.toUpperCase()}_LogicLibrary.json`).then(
+                (module) => module.default
+              );
+              return {
+                [libId]: elmJson
+              }
+            })()
+          );
+          Promise.all(elmLibs).then(results => {
+            console.log("lib results ", results);
+            results.forEach((o, index) => {
+              const entries = Object.entries(o);
+              const elm = entries[0][1];
+            //  if (index == 1) return true;
+
+              console.log("elm? ", elm)
+              let surveyLib = new cql.Library(
+                elm,
+                new cql.Repository({
+                  FHIRHelpers: r4HelpersELM,
+                  CDS_Connect_Commons_for_FHIRv102: r4CommonsELM,
+                })
+              );
+              const surveyExecutor = new cql.Executor(
+                surveyLib,
+                new cql.CodeService(valueSetDB)
+              );
+              const psource = cqlfhir.PatientSource.FHIRv400();
+              psource.loadBundles([bundle]);
+              let surveyResult = surveyExecutor.exec(
+                psource
+              );
+              
+              console.log("survey result ", surveyResult)
+            })
+            resolve(evalResults);
+          }, e => {
+            console.log(e);
+            reject("Error occurred importing ELM lib. See console for detail");
+          })
+        });
+      }
+      return evalResults;
     });
     resolve(results);
   });
+}
+
+function getInstrumentResponseRequests(client) {
+  if (!client) return [];
+  let instrumentList = getEnv("REACT_APP_SCORING_INSTRUMENT");
+  if (!instrumentList) return [];
+  const arrList = instrumentList.split(",").map(item => item.trim());
+  const options = {
+    pageLimit: 0, // unlimited pages
+  };
+  let requests = arrList.map((itemId) =>
+    client.request(
+      {
+        url: "Questionnaire?name:contains=" + itemId,
+        headers: noCacheHeader,
+      },
+      options
+    )
+  );
+  requests.push(
+    client.patient.request(
+      {
+        url: "QuestionnaireResponse",
+        headers: noCacheHeader,
+      },
+      options
+    )
+  );
+  return requests;
 }
 
 function getLibrary(release) {
@@ -113,22 +220,26 @@ function doSearch(client, release, type, collector) {
   const resources = [];
   const uri = `${type}?${params}`;
   return new Promise((resolve) => {
-    const results = client.patient.request({
-        url: uri,
-        headers: {
-          'Cache-Control': 'no-cache, no-store, max-age=0'
+    const results = client.patient
+      .request(
+        {
+          url: uri,
+          headers: noCacheHeader,
+        },
+        {
+          pageLimit: 0, // unlimited pages
+          onPage: processPage(uri, collector, resources),
         }
-      }, {
-      pageLimit: 0, // unlimited pages
-      onPage: processPage(uri, collector, resources)
-    }).then(() => {
-      return resources;
-    }).catch((error) => {
-      collector.push({ error: error, url: uri, type: type, data: error });
-      // don't return the error as we want partial results if available
-      // (and we don't want to halt the Promis.all that wraps this)
-      return resources;
-    });
+      )
+      .then(() => {
+        return resources;
+      })
+      .catch((error) => {
+        collector.push({ error: error, url: uri, type: type, data: error });
+        // don't return the error as we want partial results if available
+        // (and we don't want to halt the Promis.all that wraps this)
+        return resources;
+      });
     resolve(results);
   });
 }

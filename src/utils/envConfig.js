@@ -3,6 +3,7 @@ export function fetchEnvData() {
         console.log("Window config variables added. ");
         return;
     }
+    var xhr = new XMLHttpRequest();
     const setConfig = function () {
         if (!xhr.readyState === xhr.DONE) {
             return;
@@ -21,7 +22,6 @@ export function fetchEnvData() {
             }
         }
     };
-    var xhr = new XMLHttpRequest();
     xhr.open("GET", "/env.json", false);
     xhr.onreadystatechange = function() {
         //in the event of a communication error (such as the server going down),

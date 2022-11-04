@@ -1,28 +1,26 @@
-import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip';
-import tocbot from 'tocbot';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { Component } from "react";
+import ReactTooltip from "react-tooltip";
+import tocbot from "tocbot";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import executeElm from '../utils/executeELM';
-import flagit from '../helpers/flagit';
+import executeElm from "../utils/executeELM";
+import flagit from "../helpers/flagit";
 import {
   datishFormat,
   dateFormat,
   dateNumberFormat,
-  extractDateFromGMTDateString
-} from '../helpers/formatit';
-import {dateCompare} from '../helpers/sortit';
-import {
-  getDiffDays,
-  isInViewport} from '../helpers/utility';
-import Timeout from '../helpers/timeout';
-import summaryMap from './summary.json';
+  extractDateFromGMTDateString,
+} from "../helpers/formatit";
+import { dateCompare } from "../helpers/sortit";
+import { getDiffDays, isInViewport } from "../helpers/utility";
+import Timeout from "../helpers/timeout";
+import summaryMap from "../config/summary.json";
 
-import {getEnv, fetchEnvData} from '../utils/envConfig';
+import { getEnv, fetchEnvData } from "../utils/envConfig";
 import SystemBanner from "./SystemBanner";
-import Header from './Header';
-import Summary from './Summary';
-import Spinner from '../elements/Spinner';
+import Header from "./Header";
+import Summary from "./Summary";
+import Spinner from "../elements/Spinner";
 
 let uuid = 0;
 let processIntervalId = 0;
@@ -39,14 +37,17 @@ export default class Landing extends Component {
       result: null,
       loading: true,
       collector: [],
-      resourceTypes : {},
+      resourceTypes: {},
       externals: {},
       patientId: "",
-      loadingMessage: "Resources are being loaded..."
+      activeTab: 0,
+      loadingMessage: "Resources are being loaded...",
     };
     this.errorCollection = [];
     this.mmeErrors = false;
     this.tocInitialized = false;
+    // This binding is necessary to make `this` work in the callback
+    this.setActiveTab = this.setActiveTab.bind(this);
   }
 
   setPatientId() {
@@ -54,10 +55,15 @@ export default class Landing extends Component {
     /*
      * passed down via fhir.js
      */
-    let patientBundle = (this.state.collector).filter(item => item.data && item.data.resourceType && item.data.resourceType.toLowerCase() === "patient");
+    let patientBundle = this.state.collector.filter(
+      (item) =>
+        item.data &&
+        item.data.resourceType &&
+        item.data.resourceType.toLowerCase() === "patient"
+    );
     if (patientBundle.length) {
       this.setState({
-        patientId: patientBundle[0].data.id
+        patientId: patientBundle[0].data.id,
       });
     }
   }
@@ -70,26 +76,35 @@ export default class Landing extends Component {
       let totalResources = 0;
       let numResourcesLoaded = 0;
       let loadedResources = "";
-      const camel2title = (camelCase) => camelCase
-      .replace(/([A-Z])/g, (match) => ` ${match}`)
-      .replace(/^./, (match) => match.toUpperCase())
-      .trim();
+      const camel2title = (camelCase) =>
+        camelCase
+          .replace(/([A-Z])/g, (match) => ` ${match}`)
+          .replace(/^./, (match) => match.toUpperCase())
+          .trim();
       for (let key in resourcesTypes) {
         let title = camel2title(key);
         if (resourcesTypes[key]) {
           //data loaded text
           loadedResources += `<div class='text-success resource-item'>&#10003; ${title} data loaded</div>`;
-          numResourcesLoaded++;
+          numResourcesLoaded = numResourcesLoaded + 1;
         } else {
           //data loading in progress
           loadedResources += `<div class='text-warning text-bold resource-item'>Loading ${title} data...</div>`;
         }
-        totalResources++;
+        totalResources = totalResources + 1;
       }
-      let stillLoading = (numResourcesLoaded < totalResources);
-      let textClass = stillLoading?"text-warning": "text-success";
+      let stillLoading = numResourcesLoaded < totalResources;
+      let textClass = stillLoading ? "text-warning" : "text-success";
       this.setState({
-        loadingMessage: `<div><div class='title-text'>${totalResources === 0 ? "Gathering resources..." : totalResources + ' resources are to be loaded.'}</div><div class='${totalResources === 0 ? "hide" : "title-text"}'><span class='${textClass}'>${stillLoading ? numResourcesLoaded : totalResources} loaded ...</span></div><div class='resources-container'>${loadedResources}</div></div>`
+        loadingMessage: `<div><div class='title-text'>${
+          totalResources === 0
+            ? "Gathering resources..."
+            : totalResources + " resources are to be loaded."
+        }</div><div class='${
+          totalResources === 0 ? "hide" : "title-text"
+        }'><span class='${textClass}'>${
+          stillLoading ? numResourcesLoaded : totalResources
+        } loaded ...</span></div><div class='resources-container'>${loadedResources}</div></div>`,
       });
     }, 30);
   }
@@ -97,10 +112,10 @@ export default class Landing extends Component {
     clearInterval(processIntervalId);
   }
   processCollectorErrors() {
-    let collectorErrors = this.state.collector.filter(item => {
+    let collectorErrors = this.state.collector.filter((item) => {
       return item.error;
     });
-    collectorErrors.forEach(item => {
+    collectorErrors.forEach((item) => {
       this.setError(`[${item.type}] ${item.error}`);
     });
   }
@@ -113,25 +128,46 @@ export default class Landing extends Component {
       let o = pdmpMeds["PDMPMedications"];
       let errors = [];
       let errorItems = [];
-      o.forEach(item => {
+      o.forEach((item) => {
         //do not report medication that has been reported
-        if (errorItems.filter(errorItem => errorItem["name"] === item["name"]).length > 0) return true;
-        let isOpioid = item["Class"] && (item["Class"]).filter(medClass => {
-          return String(medClass).toLowerCase() === "opioid"}).length > 0;
+        if (
+          errorItems.filter((errorItem) => errorItem["name"] === item["name"])
+            .length > 0
+        )
+          return true;
+        let isOpioid =
+          item["Class"] &&
+          item["Class"].filter((medClass) => {
+            return String(medClass).toLowerCase() === "opioid";
+          }).length > 0;
         //IF not an opioid med don't raise error
         //look for medication that contains NDC code but not RxNorm Code, or contains all necessary information (NDC Code, RxNorm Code and Drug Class) but no MME
-        if (isOpioid && item["NDC_Code"] && (!item["RXNorm_Code"] || !item["MME"])) {
+        if (
+          isOpioid &&
+          item["NDC_Code"] &&
+          (!item["RXNorm_Code"] || !item["MME"])
+        ) {
           errorItems.push(item);
-          errors.push(`Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`);
+          errors.push(
+            `Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`
+          );
           //log failed MME calculation
-          this.writeToLog(`MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} Factor: ${item.factor}`, "error", {tags: ["mme-calc"]});
+          this.writeToLog(
+            `MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} Factor: ${item.factor}`,
+            "error",
+            { tags: ["mme-calc"] }
+          );
         }
         if (item.MME) {
           //log MME calculated if present
-          this.writeToLog(`MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`, "info", {tags: ["mme-calc"]});
+          this.writeToLog(
+            `MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`,
+            "info",
+            { tags: ["mme-calc"] }
+          );
         }
       });
-      errors.forEach(message => {
+      errors.forEach((message) => {
         this.setError(message);
       });
       //set MME error flag
@@ -153,40 +189,46 @@ export default class Landing extends Component {
     params.tags.push("cosri-frontend");
     const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
     const summary = this.state.result ? this.state.result.Summary : null;
-    const patientName = (summary&&summary.Patient?summary.Patient.Name:"");
+    const patientName = summary && summary.Patient ? summary.Patient.Name : "";
     let messageString = "";
-    if ((typeof message) === "object") {
+    if (typeof message === "object") {
       messageString = message.toString();
     } else messageString = message;
     fetch(auditURL, {
-      method: 'post',
+      method: "post",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({...{"patient": patientName, "message": (messageString), "level": level}, ...params})
+      body: JSON.stringify({
+        ...{ patient: patientName, message: messageString, level: level },
+        ...params,
+      }),
     })
-    .then((response) => {
-      if (!response.ok) {
-        throw Error(response.statusText);
-      }
-      return response.json();
-    })
-    .then(function (data) {
-      console.log('audit request succeeded with response ', data);
-    })
-    .catch(function (error) {
-      console.log('Request failed', error);
-    });
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        console.log("audit request succeeded with response ", data);
+      })
+      .catch(function (error) {
+        console.log("Request failed", error);
+      });
   }
   //save MME calculations to file for debugging purpose, development environment ONLY
   saveSummaryData() {
-    if (String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development") return;
+    if (String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development")
+      return;
     const summary = this.state.result ? this.state.result.Summary : null;
     if (!summary) return;
-    const patientName =  (summary&&summary.Patient?summary.Patient.Name:"");
+    const patientName = summary && summary.Patient ? summary.Patient.Name : "";
     //pdmp data
-    const pdmpData = summary["PDMPMedications"] ? summary["PDMPMedications"]["PDMPMedications"]: null;
+    const pdmpData = summary["PDMPMedications"]
+      ? summary["PDMPMedications"]["PDMPMedications"]
+      : null;
     if (!pdmpData) return;
     const pdmpContext = "CQL PMP MME Result";
     const fileName = patientName.replace(/\s/g, "_") + "_MME_Result";
@@ -194,7 +236,7 @@ export default class Landing extends Component {
       context: pdmpContext,
       data: pdmpData,
       filename: fileName,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
     //can save other data if needed
   }
@@ -204,26 +246,25 @@ export default class Landing extends Component {
     params = params || {};
     if (!params.data) return;
     fetch(saveDataURL, {
-      method: 'post',
+      method: "post",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(params)
+      body: JSON.stringify(params),
     })
-    .then((response) => {
-      if (!response.ok) {
-        throw Error(response.statusText);
-      }
-      return response.json();
-    })
-    .then(function (data) {
-      console.log('save data request succeeded with response ', data);
-    })
-    .catch(function (error) {
-      console.log('Request failed to save data: ', error);
-    });
-
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        console.log("save data request succeeded with response ", data);
+      })
+      .catch(function (error) {
+        console.log("Request failed to save data: ", error);
+      });
   }
   //hide and show sectioN(s) depending on config
   setSectionVis() {
@@ -231,13 +272,20 @@ export default class Landing extends Component {
       let sectionsToBeHidden = [];
       if (summaryMap[key]["sections"]) {
         //hide sub section if any
-        summaryMap[key]["sections"].forEach(section => {
-          if (getEnv(`REACT_APP_SUBSECTION_${section.dataKey.toUpperCase()}`) === "hidden") {
+        summaryMap[key]["sections"].forEach((section) => {
+          if (
+            getEnv(`REACT_APP_SUBSECTION_${section.dataKey.toUpperCase()}`) ===
+            "hidden"
+          ) {
             section["hideSection"] = true;
             sectionsToBeHidden.push(section);
           }
         });
-        if ((sectionsToBeHidden.length !== summaryMap[key]["sections"].length) && sectionsToBeHidden.length > 0) continue;
+        if (
+          sectionsToBeHidden.length !== summaryMap[key]["sections"].length &&
+          sectionsToBeHidden.length > 0
+        )
+          continue;
       }
       //hide main section if any
       if (getEnv(`REACT_APP_SECTION_${key.toUpperCase()}`) === "hidden") {
@@ -247,10 +295,12 @@ export default class Landing extends Component {
   }
   initEvents() {
     //education material links
-    document.querySelectorAll(".education").forEach(item => {
+    document.querySelectorAll(".education").forEach((item) => {
       item.addEventListener("click", (e) => {
-        this.writeToLog(`Education material: ${e.target.title}`, "info", {"tags": ["education"]});
-      })
+        this.writeToLog(`Education material: ${e.target.title}`, "info", {
+          tags: ["education"],
+        });
+      });
     });
     //support other events if need to
   }
@@ -265,62 +315,67 @@ export default class Landing extends Component {
     this.pingProcessProgress();
     let result = {};
     Promise.all([executeElm(this.state.collector, this.state.resourceTypes)])
-    .then(
-      response => {
+      .then((response) => {
         //set result from data from EPIC
         let EPICData = response[0];
-        result['Summary'] = EPICData ? {...EPICData['Summary']} : {};
+        //console.log("RESPONSES ", EPICData)
+        result["Summary"] = EPICData ? { ...EPICData["Summary"] } : {};
         this.setSectionVis();
-        const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+        const { sectionFlags, flaggedCount } = this.processSummary(
+          result.Summary
+        );
         this.setState({ result, sectionFlags, flaggedCount });
         this.setPatientId();
-        setTimeout(function() {
-          this.clearProcessInterval();
-        }.bind(this), 100);
+        setTimeout(
+          function () {
+            this.clearProcessInterval();
+          }.bind(this),
+          100
+        );
         this.processCollectorErrors();
         this.writeToLog("application loaded", "info");
         //add data from other sources, e.g. PDMP
-        Promise.all([this.getExternalData()]).then(
-          externalData => {
-            result['Summary'] = {...result["Summary"], ...externalData[0]};
+        Promise.all([this.getExternalData()])
+          .then((externalData) => {
+            result["Summary"] = { ...result["Summary"], ...externalData[0] };
             this.saveSummaryData();
-            const { sectionFlags, flaggedCount } = this.processSummary(result.Summary);
+            const { sectionFlags, flaggedCount } = this.processSummary(
+              result.Summary
+            );
             this.processSummaryErrors(result.Summary);
             this.processOverviewStatsData(result["Summary"]);
             this.processAlerts(result["Summary"], sectionFlags);
             this.processGraphData(result["Summary"]);
             this.setState({ result, sectionFlags, flaggedCount });
-            this.setState({ loading: false});
+            this.setState({ loading: false });
             this.initEvents();
-
-        }).catch((err) => {
-          console.log(err);
-          this.setState({ loading: false});
-          this.clearProcessInterval();
-          this.setError(err);
-        });
-      }
-    )
-    .catch((err) => {
-      console.error(err);
-      this.setState({loading: false});
-      this.clearProcessInterval();
-      this.setError(err);
-    });
-
+          })
+          .catch((err) => {
+            console.log(err);
+            this.setState({ loading: false });
+            this.clearProcessInterval();
+            this.setError(err);
+          });
+      })
+      .catch((err) => {
+        console.error(err);
+        this.setState({ loading: false });
+        this.clearProcessInterval();
+        this.setError(err);
+      });
   }
 
   componentDidUpdate() {
     const MIN_HEADER_HEIGHT = 100;
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       tocbot.init({
-        tocSelector: '.summary__nav',           // where to render the table of contents
-        contentSelector: '.summary__display',   // where to grab the headings to build the table of contents
-        headingSelector: 'h2, h3',              // which headings to grab inside of the contentSelector element
-        positionFixedSelector: '.summary__nav', // element to add the positionFixedClass to
-        collapseDepth: 0,                       // how many heading levels should not be collpased
-        includeHtml: true                       // include the HTML markup from the heading node, not just the text,
-        ,headingsOffset: MIN_HEADER_HEIGHT,
+        tocSelector: ".summary__nav", // where to render the table of contents
+        contentSelector: ".summary__display", // where to grab the headings to build the table of contents
+        headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
+        positionFixedSelector: ".summary__nav", // element to add the positionFixedClass to
+        collapseDepth: 0, // how many heading levels should not be collpased
+        includeHtml: true, // include the HTML markup from the heading node, not just the text,
+        headingsOffset: MIN_HEADER_HEIGHT,
         scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
         throttleTimeout: 175,
       });
@@ -330,23 +385,21 @@ export default class Landing extends Component {
     //page title
     document.title = "COSRI";
     this.handleHeaderPos();
-
   }
   /*
    * fixed header when scrolling in the event that it is not within viewport
    */
   handleHeaderPos() {
     window.requestAnimationFrame(() => {
-      document.addEventListener("scroll", function(e) {
+      document.addEventListener("scroll", function (e) {
         clearTimeout(scrollHeaderIntervalId);
-        scrollHeaderIntervalId = setTimeout(function() {
+        scrollHeaderIntervalId = setTimeout(function () {
           if (!isInViewport(document.querySelector("#anchorTop"))) {
             document.querySelector("body").classList.add("fixed");
             return;
           }
           document.querySelector("body").classList.remove("fixed");
         }, 200);
-
       });
     });
   }
@@ -363,11 +416,15 @@ export default class Landing extends Component {
      */
     for (let key in summaryMap) {
       if (summaryMap[key].dataSource) {
+<<<<<<< Updated upstream
         summaryMap[key].dataSource.forEach(item => {
           if (item.endpoint && typeof item.endpoint === "object") {
             if (item.endpoint[systemType]) item.endpoint = item.endpoint[systemType];
             else item.endpoint  = item.endpoint["default"];
           }
+=======
+        summaryMap[key].dataSource.forEach((item) => {
+>>>>>>> Stashed changes
           promiseResultSet.push(item);
         });
       }
@@ -377,11 +434,17 @@ export default class Landing extends Component {
       return dataSet;
     }
 
-    let results = await Promise.all(promiseResultSet.map(item => {
-      return this.fetchData(this.processEndPoint(item.endpoint), item.dataKey, item.dataKey)
-    })).catch(e => {
+    let results = await Promise.all(
+      promiseResultSet.map((item) => {
+        return this.fetchData(
+          this.processEndPoint(item.endpoint),
+          item.dataKey,
+          item.dataKey
+        );
+      })
+    ).catch((e) => {
       console.log(`Error parsing external data response json: ${e.message}`);
-      promiseResultSet.forEach(item => {
+      promiseResultSet.forEach((item) => {
         dataSet[item.dataKeySource] = null;
       });
       return dataSet;
@@ -392,21 +455,27 @@ export default class Landing extends Component {
       //require additional processing of result data
       if (item.processFunction && this[item.processFunction]) {
         try {
-          result = this[item.processFunction](results[index] ? results[index][item.dataKey] : null, item.dataKey);
-        } catch(e) {
-          console.log(`Error processing data result via processing function ${item.processFunction}: ${e}`);
+          result = this[item.processFunction](
+            results[index] ? results[index][item.dataKey] : null,
+            item.dataKey
+          );
+        } catch (e) {
+          console.log(
+            `Error processing data result via processing function ${item.processFunction}: ${e}`
+          );
         }
       }
       if (!dataSet[item.dataKeySource]) {
-        dataSet[item.dataKeySource] = {}
+        dataSet[item.dataKeySource] = {};
       }
-      dataSet[item.dataKeySource][item.dataKey] = result[item.dataKey] ? result[item.dataKey]: result;
-
+      dataSet[item.dataKeySource][item.dataKey] = result[item.dataKey]
+        ? result[item.dataKey]
+        : result;
     });
     return dataSet;
   }
 
-  getOverviewSectionKey () {
+  getOverviewSectionKey() {
     return "PatientRiskOverview";
   }
 
@@ -428,21 +497,38 @@ export default class Landing extends Component {
           }
           if (typeof subsection[1] === "object") {
             if (Array.isArray(subsection[1])) {
-              subsection[1].forEach(subitem => {
+              subsection[1].forEach((subitem) => {
                 //this prevents addition of duplicate alert text
-                let alertTextExist = alerts.filter(item => String(item.flagText).toLowerCase() === String(subitem.flagText).toLowerCase());
+                let alertTextExist = alerts.filter(
+                  (item) =>
+                    String(item.flagText).toLowerCase() ===
+                    String(subitem.flagText).toLowerCase()
+                );
                 if (!alertTextExist.length && subitem.flagText) {
-                  let flagDateText = subitem.flagDateText ? subitem.flagDateText : "";
+                  let flagDateText = subitem.flagDateText
+                    ? subitem.flagDateText
+                    : "";
                   alerts.push({
                     id: subitem.subSection.dataKey,
                     name: subitem.subSection.name,
                     flagText: subitem.flagText,
                     className: subitem.flagClass,
-                    text: subitem.flagText.indexOf("[DATE]") >= 0 ? (subitem.flagText.replace("[DATE]", datishFormat("", flagDateText))) : (subitem.flagText + (subitem.flagDateText ? ` (${datishFormat('',flagDateText)})`: "")),
-                    priority: subitem.priority || 100
+                    text:
+                      subitem.flagText.indexOf("[DATE]") >= 0
+                        ? subitem.flagText.replace(
+                            "[DATE]",
+                            datishFormat("", flagDateText)
+                          )
+                        : subitem.flagText +
+                          (subitem.flagDateText
+                            ? ` (${datishFormat("", flagDateText)})`
+                            : ""),
+                    priority: subitem.priority || 100,
                   });
                   //log alert
-                  this.writeToLog("alert flag: "+subitem.flagText, "warn", {tags: ["alert"]});
+                  this.writeToLog("alert flag: " + subitem.flagText, "warn", {
+                    tags: ["alert"],
+                  });
                 }
               });
             } else if (subsection[1].flagText) {
@@ -451,7 +537,7 @@ export default class Landing extends Component {
                 name: subsection[1].subSection.name,
                 text: subsection[1].flagText,
                 className: subsection[1].flagClass,
-                priority: subsection[1].priority || 100
+                priority: subsection[1].priority || 100,
               });
             }
           }
@@ -461,7 +547,10 @@ export default class Landing extends Component {
     alerts.sort(function (a, b) {
       return a.priority - b.priority;
     });
-    summary[this.getOverviewSectionKey()+"_alerts"] = alerts.filter((item,index,thisRef)=>thisRef.findIndex(t=>(t.text === item.text))===index);
+    summary[this.getOverviewSectionKey() + "_alerts"] = alerts.filter(
+      (item, index, thisRef) =>
+        thisRef.findIndex((t) => t.text === item.text) === index
+    );
   }
   processGraphData(summary) {
     let overviewSection = summaryMap[this.getOverviewSectionKey()];
@@ -480,60 +569,86 @@ export default class Landing extends Component {
     //demo config set to on, then draw just the demo graph data
     if (getEnv(graphConfig.demoConfigKey)) {
       graph_data = graphConfig.demoData;
-      summary[this.getOverviewSectionKey()+"_graph"] = graph_data;
+      summary[this.getOverviewSectionKey() + "_graph"] = graph_data;
       return;
     }
-    sections.forEach(item => {
-      if (summary[item.section_key] && summary[item.section_key][item.subSection_key]) {
-        graph_data = [...graph_data, ...summary[item.section_key][item.subSection_key]];
+    sections.forEach((item) => {
+      if (
+        summary[item.section_key] &&
+        summary[item.section_key][item.subSection_key]
+      ) {
+        graph_data = [
+          ...graph_data,
+          ...summary[item.section_key][item.subSection_key],
+        ];
       }
     });
-    const [startDateFieldName, endDateFieldName, MMEValueFieldName, graphDateFieldName] = [graphConfig.startDateField, graphConfig.endDateField, graphConfig.mmeField, graphConfig.graphDateField];
+    const [
+      startDateFieldName,
+      endDateFieldName,
+      MMEValueFieldName,
+      graphDateFieldName,
+    ] = [
+      graphConfig.startDateField,
+      graphConfig.endDateField,
+      graphConfig.mmeField,
+      graphConfig.graphDateField,
+    ];
     const START_DELIMITER_FIELD_NAME = "start_delimiter";
     const END_DELIMITER_FIELD_NAME = "end_delimiter";
     const PLACEHOLDER_FIELD_NAME = "placeholder";
     const FINAL_CALCULATED_FIELD_FLAG = "final";
 
     //sort data by start date
-    graph_data = graph_data.filter(function(item) {
-      return item[startDateFieldName] && item[endDateFieldName];
-    }).sort(function(a, b) {
-      return dateCompare(a[startDateFieldName], b[startDateFieldName]);
-    });
+    graph_data = graph_data
+      .filter(function (item) {
+        return item[startDateFieldName] && item[endDateFieldName];
+      })
+      .sort(function (a, b) {
+        return dateCompare(a[startDateFieldName], b[startDateFieldName]);
+      });
     /*
-    * 'NaN' is the value for null when coerced into number, need to make sure that is not included
-    */
-    const getRealNumber = o => o && !isNaN(o) ? o : 0;
+     * 'NaN' is the value for null when coerced into number, need to make sure that is not included
+     */
+    const getRealNumber = (o) => (o && !isNaN(o) ? o : 0);
     let dataPoints = [];
-    let prevObj = null, nextObj = null;
-    graph_data.forEach(function(currentMedicationItem, index) {
+    let prevObj = null,
+      nextObj = null;
+    graph_data.forEach(function (currentMedicationItem, index) {
       let dataPoint = {};
-      let startDate = extractDateFromGMTDateString(currentMedicationItem[startDateFieldName]);
-      let endDate = extractDateFromGMTDateString(currentMedicationItem[endDateFieldName]);
+      let startDate = extractDateFromGMTDateString(
+        currentMedicationItem[startDateFieldName]
+      );
+      let endDate = extractDateFromGMTDateString(
+        currentMedicationItem[endDateFieldName]
+      );
       let oStartDate = new Date(startDate);
       let diffDays = getDiffDays(startDate, endDate);
-      nextObj = (index+1) <= graph_data.length-1 ? graph_data[index+1]: null;
-      let currentMMEValue = getRealNumber(currentMedicationItem[MMEValueFieldName]);
+      nextObj =
+        index + 1 <= graph_data.length - 1 ? graph_data[index + 1] : null;
+      let currentMMEValue = getRealNumber(
+        currentMedicationItem[MMEValueFieldName]
+      );
       //add start date data point
       dataPoint = {};
       dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
       dataPoint[MMEValueFieldName] = currentMMEValue;
       dataPoint[START_DELIMITER_FIELD_NAME] = true;
-      dataPoint = {...dataPoint, ...currentMedicationItem};
+      dataPoint = { ...dataPoint, ...currentMedicationItem };
       dataPoints.push(dataPoint);
 
       //add intermediate data points between start and end dates
       if (diffDays >= 2) {
         for (let index = 2; index <= diffDays; index++) {
           let dataDate = new Date(oStartDate.valueOf());
-          dataDate.setTime(dataDate.getTime() + (index * 24 * 60 * 60 * 1000));
+          dataDate.setTime(dataDate.getTime() + index * 24 * 60 * 60 * 1000);
           dataDate = dateFormat("", dataDate, "YYYY-MM-DD");
           dataPoint = {};
           dataPoint[graphDateFieldName] = dataDate;
           dataPoint[MMEValueFieldName] = currentMMEValue;
           dataPoint[PLACEHOLDER_FIELD_NAME] = true;
           dataPoint[startDateFieldName] = dataDate;
-          dataPoint = {...dataPoint, ...currentMedicationItem};
+          dataPoint = { ...dataPoint, ...currentMedicationItem };
           dataPoints.push(dataPoint);
         }
       }
@@ -544,32 +659,31 @@ export default class Landing extends Component {
       dataPoint[MMEValueFieldName] = currentMMEValue;
       dataPoint[END_DELIMITER_FIELD_NAME] = true;
       dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-      dataPoint = {...dataPoint, ...currentMedicationItem};
+      dataPoint = { ...dataPoint, ...currentMedicationItem };
       dataPoints.push(dataPoint);
       prevObj = currentMedicationItem;
-
     });
 
     //sort data by date
-    dataPoints = dataPoints.sort(function(a, b) {
+    dataPoints = dataPoints.sort(function (a, b) {
       return dateCompare(a[graphDateFieldName], b[graphDateFieldName]);
     });
 
     //get all available dates
-    let arrDates = (dataPoints.map(item => item.date));
+    let arrDates = dataPoints.map((item) => item.date);
     arrDates = arrDates.filter((d, index) => {
       return arrDates.indexOf(d) === index;
     });
 
     //loop through graph data to ADD MME values for the ones occurring on the same date
     let cumMMEValue = 0;
-    arrDates.forEach(pointDate => {
+    arrDates.forEach((pointDate) => {
       cumMMEValue = 0;
-      let matchedItems = dataPoints.filter(d => {
+      let matchedItems = dataPoints.filter((d) => {
         return d.date === pointDate;
       });
       if (matchedItems.length <= 1) return true;
-      matchedItems.forEach(o => {
+      matchedItems.forEach((o) => {
         cumMMEValue += getRealNumber(o[MMEValueFieldName]);
       });
       dataPoints.forEach((dataPoint) => {
@@ -580,9 +694,9 @@ export default class Landing extends Component {
     });
     prevObj = null;
     let finalDataPoints = [];
-    dataPoints.forEach(function(currentDataPoint, index) {
+    dataPoints.forEach(function (currentDataPoint, index) {
       let dataPoint = {};
-      nextObj = dataPoints[index+1] ? dataPoints[index+1]: null;
+      nextObj = dataPoints[index + 1] ? dataPoints[index + 1] : null;
 
       if (!prevObj) {
         //add starting graph point
@@ -594,49 +708,65 @@ export default class Landing extends Component {
         finalDataPoints.push(dataPoint);
       }
       //overlapping data points
-      if (prevObj &&
-          (prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName])) {
+      if (
+        prevObj &&
+        prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]
+      ) {
         //add data point with MME value for the previous med as the connecting data point
         dataPoint = {};
         dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-        dataPoint[MMEValueFieldName] = getRealNumber(prevObj[MMEValueFieldName]);
+        dataPoint[MMEValueFieldName] = getRealNumber(
+          prevObj[MMEValueFieldName]
+        );
         dataPoint[PLACEHOLDER_FIELD_NAME] = true;
         finalDataPoints.push(dataPoint);
         finalDataPoints.push(currentDataPoint);
       } else if (
         prevObj &&
         currentDataPoint[START_DELIMITER_FIELD_NAME] &&
-        dateNumberFormat(currentDataPoint[startDateFieldName]) > dateNumberFormat(prevObj[endDateFieldName])) {
+        dateNumberFormat(currentDataPoint[startDateFieldName]) >
+          dateNumberFormat(prevObj[endDateFieldName])
+      ) {
         //a new data point as med starts after the previous med ends
-        if (getDiffDays(prevObj[endDateFieldName], currentDataPoint[startDateFieldName]) > 1) {
-            dataPoint = {};
-            dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-            //add 0 value dummy data point to denote start of med where applicable
-            dataPoint[MMEValueFieldName] = 0;
-            //dataPoint[START_DELIMITER_FIELD_NAME] = true;
-            dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-            finalDataPoints.push(dataPoint);
+        if (
+          getDiffDays(
+            prevObj[endDateFieldName],
+            currentDataPoint[startDateFieldName]
+          ) > 1
+        ) {
+          dataPoint = {};
+          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+          //add 0 value dummy data point to denote start of med where applicable
+          dataPoint[MMEValueFieldName] = 0;
+          //dataPoint[START_DELIMITER_FIELD_NAME] = true;
+          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+          finalDataPoints.push(dataPoint);
         }
         //add current data point
         finalDataPoints.push(currentDataPoint);
-      }
-      else if (
+      } else if (
         nextObj &&
         currentDataPoint[END_DELIMITER_FIELD_NAME] &&
-        (dateNumberFormat(currentDataPoint[endDateFieldName]) < dateNumberFormat(nextObj[startDateFieldName]))) {
-          //add current data point
-          finalDataPoints.push(currentDataPoint);
-          if (getDiffDays(currentDataPoint[endDateFieldName], nextObj[startDateFieldName]) > 1) {
-            dataPoint = {};
-            dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-            //add 0 value dummy data point to denote end of med where applicable
-            dataPoint[MMEValueFieldName] = 0;
-            dataPoint[END_DELIMITER_FIELD_NAME] = true;
-            dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-            finalDataPoints.push(dataPoint);
-          }
-      }
-      else {
+        dateNumberFormat(currentDataPoint[endDateFieldName]) <
+          dateNumberFormat(nextObj[startDateFieldName])
+      ) {
+        //add current data point
+        finalDataPoints.push(currentDataPoint);
+        if (
+          getDiffDays(
+            currentDataPoint[endDateFieldName],
+            nextObj[startDateFieldName]
+          ) > 1
+        ) {
+          dataPoint = {};
+          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
+          //add 0 value dummy data point to denote end of med where applicable
+          dataPoint[MMEValueFieldName] = 0;
+          dataPoint[END_DELIMITER_FIELD_NAME] = true;
+          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
+          finalDataPoints.push(dataPoint);
+        }
+      } else {
         if (!nextObj) currentDataPoint[FINAL_CALCULATED_FIELD_FLAG] = true;
         finalDataPoints.push(currentDataPoint);
       }
@@ -650,23 +780,32 @@ export default class Landing extends Component {
         dataPoint[PLACEHOLDER_FIELD_NAME] = true;
         finalDataPoints.push(dataPoint);
       }
-      prevObj = finalDataPoints[finalDataPoints.length-1];
+      prevObj = finalDataPoints[finalDataPoints.length - 1];
     });
     console.log("graph data ", finalDataPoints);
-    let formattedData = (JSON.parse(JSON.stringify(finalDataPoints))).map(point => {
-      let o = {};
-      o[graphDateFieldName] = point[graphDateFieldName];
-      o[MMEValueFieldName] = Math.round(getRealNumber(point[MMEValueFieldName]));
-      if (point[PLACEHOLDER_FIELD_NAME]) {
-        o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
-      }
-      if (point[FINAL_CALCULATED_FIELD_FLAG]) {
-        o[FINAL_CALCULATED_FIELD_FLAG] = true;
-      }
-      return o;
-    }).filter((item,index,ref)=>ref.findIndex(target=>(JSON.stringify(target) === JSON.stringify(item)))===index);
+    let formattedData = JSON.parse(JSON.stringify(finalDataPoints))
+      .map((point) => {
+        let o = {};
+        o[graphDateFieldName] = point[graphDateFieldName];
+        o[MMEValueFieldName] = Math.round(
+          getRealNumber(point[MMEValueFieldName])
+        );
+        if (point[PLACEHOLDER_FIELD_NAME]) {
+          o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
+        }
+        if (point[FINAL_CALCULATED_FIELD_FLAG]) {
+          o[FINAL_CALCULATED_FIELD_FLAG] = true;
+        }
+        return o;
+      })
+      .filter(
+        (item, index, ref) =>
+          ref.findIndex(
+            (target) => JSON.stringify(target) === JSON.stringify(item)
+          ) === index
+      );
 
-    summary[this.getOverviewSectionKey()+"_graph"] = formattedData;
+    summary[this.getOverviewSectionKey() + "_graph"] = formattedData;
   }
 
   processOverviewStatsData(summary) {
@@ -676,24 +815,29 @@ export default class Landing extends Component {
     }
     let stats = {};
     let config = overviewSection.statsConfig;
-    if (!config||!config.data) {
-      summary[this.getOverviewSectionKey()+"_stats"] = {};
+    if (!config || !config.data) {
+      summary[this.getOverviewSectionKey() + "_stats"] = {};
       return;
     }
-    let dataSource = summary[config.dataKeySource] ? summary[config.dataKeySource][config.dataKey]: [];
+    let dataSource = summary[config.dataKeySource]
+      ? summary[config.dataKeySource][config.dataKey]
+      : [];
 
     //compile tally of source identified by a key
-    config.data.forEach(item => {
-      let dataSet = [], statItem = {};
-      let keyMatch = item.keyMatch, summaryFields = item.summaryFields, matchSet = item.matchSet;
+    config.data.forEach((item) => {
+      let dataSet = [],
+        statItem = {};
+      let keyMatch = item.keyMatch,
+        summaryFields = item.summaryFields,
+        matchSet = item.matchSet;
       if (keyMatch && matchSet) {
-        (matchSet).forEach(subitem => {
+        matchSet.forEach((subitem) => {
           let matchItem = {};
           matchItem[keyMatch] = subitem.display_name;
           matchItem.data = [];
           /* get matching data for each key */
-          subitem.keys.forEach(key => {
-            let matchedData = dataSource.filter(d => {
+          subitem.keys.forEach((key) => {
+            let matchedData = dataSource.filter((d) => {
               if (Array.isArray(d[keyMatch])) {
                 return d[keyMatch].indexOf(key) !== -1;
               }
@@ -701,40 +845,51 @@ export default class Landing extends Component {
             });
             matchItem.data = [...matchItem.data, ...matchedData];
           });
-          summaryFields.forEach(summaryField => {
+          summaryFields.forEach((summaryField) => {
             if (summaryField.key === "total") {
               matchItem[summaryField.key] = matchItem.data.length;
               return true;
             }
             if (summaryField.identifier) return true;
-            let matchedDataByKey = (matchItem.data).filter(dItem => dItem[summaryField.key]);
+            let matchedDataByKey = matchItem.data.filter(
+              (dItem) => dItem[summaryField.key]
+            );
             //de-duplicate
-            matchItem[summaryField.key] = (Array.from(new Set(matchedDataByKey.map(dItem => dItem[summaryField.key])))).length;
+            matchItem[summaryField.key] = Array.from(
+              new Set(matchedDataByKey.map((dItem) => dItem[summaryField.key]))
+            ).length;
           });
           dataSet.push(matchItem);
         });
         statItem = {
-          fields : summaryFields,
-          data: dataSet
+          fields: summaryFields,
+          data: dataSet,
         };
         stats[item.title] = statItem;
       } //end if keyMatch & matchSet
       else if (keyMatch) {
-        let filteredStatsSource = dataSource.filter(element => element[item.keyMatch]);
-        filteredStatsSource = Array.from(new Set(filteredStatsSource.map(subitem => subitem[item.keyMatch])));
+        let filteredStatsSource = dataSource.filter(
+          (element) => element[item.keyMatch]
+        );
+        filteredStatsSource = Array.from(
+          new Set(filteredStatsSource.map((subitem) => subitem[item.keyMatch]))
+        );
         statItem[item.title] = filteredStatsSource.length;
         stats.push(statItem);
       }
     });
-    summary[this.getOverviewSectionKey()+"_stats"] = stats;
+    summary[this.getOverviewSectionKey() + "_stats"] = stats;
   }
 
   processEndPoint(endpoint) {
     if (!endpoint) return "";
-    return (endpoint)
-    .replace('{process.env.REACT_APP_CONF_API_URL}', getEnv("REACT_APP_CONF_API_URL"))
-    .replace('{process.env.PUBLIC_URL}', getEnv("PUBLIC_URL"))
-    .replace('{patientId}', this.getPatientId());
+    return endpoint
+      .replace(
+        "{process.env.REACT_APP_CONF_API_URL}",
+        getEnv("REACT_APP_CONF_API_URL")
+      )
+      .replace("{process.env.PUBLIC_URL}", getEnv("PUBLIC_URL"))
+      .replace("{patientId}", this.getPatientId());
   }
 
   async getDemoData(section) {
@@ -759,7 +914,7 @@ export default class Landing extends Component {
     summaryMap[datasetKey]["errorMessage"] = message;
   }
 
-  async fetchData (url, datasetKey, rootElement) {
+  async fetchData(url, datasetKey, rootElement) {
     let dataSet = {};
     dataSet[datasetKey] = {};
     const MAX_WAIT_TIME = 15000;
@@ -767,7 +922,7 @@ export default class Landing extends Component {
     let timeoutPromise = new Promise((resolve, reject) => {
       let id = setTimeout(() => {
         clearTimeout(id);
-        reject(`Timed out in ${MAX_WAIT_TIME} ms.`)
+        reject(`Timed out in ${MAX_WAIT_TIME} ms.`);
       }, MAX_WAIT_TIME);
     });
 
@@ -775,33 +930,43 @@ export default class Landing extends Component {
      * if for some reason fetching the request data doesn't resolve or reject withing the maximum waittime,
      * then the timeout promise will kick in
      */
-    let results = await Promise.race([
-      fetch(url),
-      timeoutPromise
-    ]).catch(e => {
-      this.setDataError(datasetKey, `There was error fetching data: ${e}`);
-    });
+    let results = await Promise.race([fetch(url), timeoutPromise]).catch(
+      (e) => {
+        this.setDataError(datasetKey, `There was error fetching data: ${e}`);
+      }
+    );
 
     let json = null;
     if (results) {
       try {
         //read response stream
-        json = await (results.json()).catch(e => {
-          this.setDataError(datasetKey, `There was error parsing data: ${e.message}`);
+        json = await results.json().catch((e) => {
+          this.setDataError(
+            datasetKey,
+            `There was error parsing data: ${e.message}`
+          );
         });
-      } catch(e) {
+      } catch (e) {
         this.setDataError(datasetKey, `There was error parsing data: ${e}`);
         json = null;
       }
     }
 
     if (!json) {
-      let demoResult = await this.getDemoData(summaryMap[datasetKey]).catch(e => {
-        this.setDataError(datasetKey, `There was error fetching demo data: ${e}`);
-      });
+      let demoResult = await this.getDemoData(summaryMap[datasetKey]).catch(
+        (e) => {
+          this.setDataError(
+            datasetKey,
+            `There was error fetching demo data: ${e}`
+          );
+        }
+      );
       //if unable to fetch data, set data to demo data if any
-      json = await(demoResult.json()).catch(e => {
-        this.setDataError(datasetKey, `There was error parsing demo data: ${e.message}`);
+      json = await demoResult.json().catch((e) => {
+        this.setDataError(
+          datasetKey,
+          `There was error parsing demo data: ${e.message}`
+        );
       });
       if (json && json[rootElement]) {
         this.setDemoDataFlag(datasetKey);
@@ -810,9 +975,12 @@ export default class Landing extends Component {
     let responseDataSet = null;
     try {
       responseDataSet = json[rootElement];
-    } catch(e) {
-      this.setDataError(datasetKey, `Data does not contained the required root element ${rootElement}: ${e}`);
-      responseDataSet  = null;
+    } catch (e) {
+      this.setDataError(
+        datasetKey,
+        `Data does not contained the required root element ${rootElement}: ${e}`
+      );
+      responseDataSet = null;
     }
     dataSet[datasetKey] = responseDataSet;
     return dataSet;
@@ -821,7 +989,7 @@ export default class Landing extends Component {
   getAnalyticsData(endpoint, apikey, summary) {
     const meetsInclusionCriteria = summary.Patient.MeetsInclusionCriteria;
     const applicationAnalytics = {
-      meetsInclusionCriteria
+      meetsInclusionCriteria,
     };
 
     if (meetsInclusionCriteria) {
@@ -833,8 +1001,11 @@ export default class Landing extends Component {
 
       // Build total number of entries for each subsection of the summary.
       Object.keys(cloneSections).forEach((sectionKey, i) => {
-        applicationAnalytics.sections.push({ section: sectionKey, subSections: [] });
-        Object.keys(cloneSections[sectionKey]).forEach(subSectionKey => {
+        applicationAnalytics.sections.push({
+          section: sectionKey,
+          subSections: [],
+        });
+        Object.keys(cloneSections[sectionKey]).forEach((subSectionKey) => {
           let SectionElement = cloneSections[sectionKey];
           if (!SectionElement) return true;
           const subSection = SectionElement[subSectionKey];
@@ -845,7 +1016,8 @@ export default class Landing extends Component {
           else count = 0;
           totalCount += count;
           applicationAnalytics.sections[i].subSections.push({
-            subSection: subSectionKey, numEntries: count
+            subSection: subSectionKey,
+            numEntries: count,
           });
         });
       });
@@ -858,15 +1030,16 @@ export default class Landing extends Component {
     const requestOptions = {
       body: jsonBody,
       headers: {
-        'x-api-key': `${apikey}`,
-        'Content-Type': 'application/json',
-        'Content-Length': jsonBody.length
+        "x-api-key": `${apikey}`,
+        "Content-Type": "application/json",
+        "Content-Length": jsonBody.length,
       },
-      method: 'POST'
+      method: "POST",
     };
 
-    fetch(`${endpoint}`, requestOptions)
-      .catch(err => { console.log(err) });
+    fetch(`${endpoint}`, requestOptions).catch((err) => {
+      console.log(err);
+    });
   }
 
   isNonProduction() {
@@ -874,19 +1047,27 @@ export default class Landing extends Component {
     return systemType && String(systemType).toLowerCase() !== "production";
   }
 
+  setActiveTab(index) {
+    this.setState({
+      activeTab: index
+    });
+  }
+
   processSummary(summary) {
     const sectionFlags = {};
     const sectionKeys = Object.keys(summaryMap);
     let flaggedCount = 0;
 
-    sectionKeys.forEach((sectionKey, i) => { // for each section
+    sectionKeys.forEach((sectionKey, i) => {
+      // for each section
       sectionFlags[sectionKey] = {};
       //don't process flags for section that will be hidden
       if (summaryMap[sectionKey]["hideSection"]) {
         summary[sectionKey] = [];
         return true;
       }
-      summaryMap[sectionKey]["sections"].forEach((subSection) => { // for each sub section
+      summaryMap[sectionKey]["sections"].forEach((subSection) => {
+        // for each sub section
         if (!subSection) return true;
         //don't process flags for sub section that will be hidden
         if (subSection["hideSection"]) {
@@ -898,87 +1079,146 @@ export default class Landing extends Component {
           return true;
         }
         const data = keySource[subSection.dataKey];
-        const entries = (Array.isArray(data) ? data : [data]).filter(r => r != null);
+        const entries = (Array.isArray(data) ? data : [data]).filter(
+          (r) => r != null
+        );
         const alertMapping = subSection.alertMapping || {};
 
         if (entries.length > 0) {
-          sectionFlags[sectionKey][subSection.dataKey] = entries.reduce((flaggedEntries, entry) => {
-            if (entry._id == null) {
-              entry._id = generateUuid();
-            }
-            const entryFlag = flagit(entry, subSection, summary);
-            if (entryFlag) {
-              flaggedCount += 1;
-              let flagText = typeof entryFlag === "object" ? entryFlag["text"]: entryFlag;
-              let flagClass = typeof entryFlag === "object" ? entryFlag["class"] : "";
-              let flagDateField =  typeof entryFlag === "object" ? entryFlag["date"] : (alertMapping.dateField ? alertMapping.dateField : null);
+          sectionFlags[sectionKey][subSection.dataKey] = entries.reduce(
+            (flaggedEntries, entry) => {
+              if (entry._id == null) {
+                entry._id = generateUuid();
+              }
+              const entryFlag = flagit(entry, subSection, summary);
+              if (entryFlag) {
+                flaggedCount += 1;
+                let flagText =
+                  typeof entryFlag === "object" ? entryFlag["text"] : entryFlag;
+                let flagClass =
+                  typeof entryFlag === "object" ? entryFlag["class"] : "";
+                let flagDateField =
+                  typeof entryFlag === "object"
+                    ? entryFlag["date"]
+                    : alertMapping.dateField
+                    ? alertMapping.dateField
+                    : null;
 
-              flaggedEntries.push({
-                'entryId': entry._id,
-                'entry': entry, 'subSection': subSection,
-                'flagText': flagText,
-                'flagClass': flagClass,
-                'flagCount': flaggedCount,
-                'flagDateText': entry && entry[flagDateField] ? extractDateFromGMTDateString(entry[flagDateField]): "",
-                'priority': alertMapping.priority? alertMapping.priority : 0});
-            }
+                flaggedEntries.push({
+                  entryId: entry._id,
+                  entry: entry,
+                  subSection: subSection,
+                  flagText: flagText,
+                  flagClass: flagClass,
+                  flagCount: flaggedCount,
+                  flagDateText:
+                    entry && entry[flagDateField]
+                      ? extractDateFromGMTDateString(entry[flagDateField])
+                      : "",
+                  priority: alertMapping.priority ? alertMapping.priority : 0,
+                });
+              }
 
-            return flaggedEntries;
-          }, []);
+              return flaggedEntries;
+            },
+            []
+          );
         } else {
-
           const sectionFlagged = flagit(null, subSection, summary);
-         // console.log("subSection? ", subSection, " flagged? ", sectionFlagged)
+          // console.log("subSection? ", subSection, " flagged? ", sectionFlagged)
           if (sectionFlagged) {
             flaggedCount += 1;
-            sectionFlags[sectionKey][subSection.dataKey] = [{
-              'flagText': typeof sectionFlagged === "object" ? sectionFlagged["text"]: sectionFlagged,
-              'flagCount': flaggedCount,
-              'subSection': subSection,
-              'priority': alertMapping.priority? alertMapping.priority : 0
-            }];
+            sectionFlags[sectionKey][subSection.dataKey] = [
+              {
+                flagText:
+                  typeof sectionFlagged === "object"
+                    ? sectionFlagged["text"]
+                    : sectionFlagged,
+                flagCount: flaggedCount,
+                subSection: subSection,
+                priority: alertMapping.priority ? alertMapping.priority : 0,
+              },
+            ];
           }
         }
       });
     });
 
-
     //console.log("sectionFlags ", sectionFlags);
     // Get the configured endpoint to use for POST for app analytics
     fetch(`${getEnv("PUBLIC_URL")}/config.json`)
-      .then(response => response.json())
-      .then(config => {
+      .then((response) => response.json())
+      .then((config) => {
         // Only provide analytics if the endpoint has been set
         if (config.analytics_endpoint) {
-          this.getAnalyticsData(config.analytics_endpoint, config.x_api_key, summary);
+          this.getAnalyticsData(
+            config.analytics_endpoint,
+            config.x_api_key,
+            summary
+          );
         }
       })
-      .catch(err => { console.log(err) });
-
+      .catch((err) => {
+        console.log(err);
+      });
 
     return { sectionFlags, flaggedCount };
   }
 
+  renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
+    return (
+      <Header
+        patientName={summary.Patient.Name}
+        patientDOB={datishFormat(this.state.result, patientResource.birthDate)}
+        patientGender={summary.Patient.Gender}
+        meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
+        patientSearchURL={PATIENT_SEARCH_URL}
+        siteID={getEnv("REACT_APP_SITE_ID")}
+      />
+    );
+  }
+
+  renderSummary(summary, sectionFlags) {
+    return (
+      <Summary
+        summary={summary}
+        patient={summary.Patient}
+        sectionFlags={sectionFlags}
+        collector={this.state.collector}
+        errorCollection={this.errorCollection}
+        mmeErrors={this.mmeErrors}
+        result={this.state.result}
+        versionString={getEnv("REACT_APP_VERSION_STRING")}
+      />
+    );
+  }
+
+  renderError(returnURL) {
+    return (
+      <div className="banner error root-error">
+        <div>
+          <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See
+          console for details.
+        </div>
+        <div className="banner__linkContainer">
+          <a href={returnURL}>Back to Patient Search</a>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     if (this.state.loading) {
-      return <Spinner loadingMessage={this.state.loadingMessage}/>;
+      return <Spinner loadingMessage={this.state.loadingMessage} />;
     }
+
     const PATIENT_SEARCH_ROOT_URL = getEnv("REACT_APP_DASHBOARD_URL");
-    const PATIENT_SEARCH_URL = PATIENT_SEARCH_ROOT_URL+"/clear_session";
+    const PATIENT_SEARCH_URL = PATIENT_SEARCH_ROOT_URL + "/clear_session";
 
     if (this.state.result == null) {
-      return (
-        <div className="banner error root-error">
-          <div>
-            <FontAwesomeIcon icon="exclamation-circle" title="error" /> Error: See console for details.
-          </div>
-          <div className="banner__linkContainer">
-            <a href={PATIENT_SEARCH_ROOT_URL}>Back to Patient Search</a>
-          </div>
-        </div>
-      );
+      return this.renderError(PATIENT_SEARCH_ROOT_URL);
     }
-    const patientResource = this.state.collector[0]['data'];
+    const patientResource = this.state.collector[0]["data"];
     const summary = this.state.result.Summary;
     const { sectionFlags } = this.state;
 
@@ -986,26 +1226,45 @@ export default class Landing extends Component {
       <div className="landing">
         <div id="anchorTop"></div>
         <div id="skiptocontent"></div>
-        {this.isNonProduction() && <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>}
-        <Header
-          patientName={summary.Patient.Name}
-          patientDOB={datishFormat(this.state.result,patientResource.birthDate)}
-          patientGender={summary.Patient.Gender}
-          meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
-          patientSearchURL={PATIENT_SEARCH_URL}
-          siteID={getEnv("REACT_APP_SITE_ID")}
-        />
+        {this.isNonProduction() && (
+          <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>
+        )}
+        {this.renderHeader(summary, patientResource, PATIENT_SEARCH_URL)}
+        <div className="warpper">
+          <div className="tabs">
+            <div
+              className={`tab ${this.state.activeTab === 0 ? "active" : ""}`}
+              onClick={() => this.setActiveTab(0)}
+              role="presentation"
+            >
+              Overview
+            </div>
+            <div
+              className={`tab ${this.state.activeTab === 1 ? "active" : ""}`}
+              onClick={() => this.setActiveTab(1)}
+              role="presentation"
+            >
+              Report
+            </div>
+          </div>
+          <div className="tab-panels">
+            <div
+              className={`tab-panel ${
+                this.state.activeTab === 0 ? "active" : ""
+              }`}
+            >
+              {this.renderSummary(summary, sectionFlags)}
+            </div>
+            <div
+              className={`tab-panel ${
+                this.state.activeTab === 1 ? "active" : ""
+              }`}
+            >
+              WTF
+            </div>
+          </div>
+        </div>
 
-        <Summary
-          summary={summary}
-          patient={summary.Patient}
-          sectionFlags={sectionFlags}
-          collector={this.state.collector}
-          errorCollection={this.errorCollection}
-          mmeErrors={this.mmeErrors}
-          result={this.state.result}
-          versionString={getEnv("REACT_APP_VERSION_STRING")}
-        />
         <ReactTooltip className="summary-tooltip" id="summaryTooltip" />
       </div>
     );

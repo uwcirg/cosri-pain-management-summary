@@ -1,0 +1,85 @@
+$tab-background-color: #fffffff6;
+
+.warpper{
+  display:flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+.tab {
+  cursor: pointer;
+  padding:10px 20px;
+  margin:0px 8px;
+  background:$color-black;
+  display:inline-block;
+  color:#fff;
+  border-radius:3px 3px 0px 0px;
+  box-shadow: 0 0.5rem 0.8rem $color-black;
+  min-width: 120px;
+  text-align: center;
+  letter-spacing: 0.08rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-radius: 8px 8px 0 0;
+}
+.tabs {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+// .panels {
+.tab-panels {
+  background:$tab-background-color;
+  border-top: 2px solid $tab-background-color;
+ // box-shadow: 0 2rem 2rem #00000080;
+ // min-height:75vh;
+  width:100%;
+  max-width: 100%;
+  border-radius:3px;
+  overflow:hidden;
+  padding:0;  
+}
+// .panel{
+.tab-panel {
+  display:none;
+  animation: fadein .8s;
+}
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+.panel-title{
+  font-size:1.5em;
+  font-weight:bold
+}
+// .radio {
+//   display:none;
+// }
+// #one:checked ~ .tab-panels #one-panel,
+// #two:checked ~ .tab-panels #two-panel{
+//   display:block
+// }
+.tab-panel {
+  display: none;
+  &.active {
+    display: block;
+  }
+}
+
+// #one:checked ~ .tabs #one-tab,
+// #two:checked ~ .tabs #two-tab {
+//   background:#fffffff6;
+//   color:$color-black;
+//   border-top: 3px solid $color-blue;
+// }
+
+.tabs {
+  .tab.active {
+    background:$tab-background-color;
+    color:$color-black;
+    border-top: 4px solid $color-blue;
+  }
+}
