@@ -18,6 +18,8 @@ const noCacheHeader = {
   "Cache-Control": "no-cache, no-store, max-age=0",
 };
 
+const INSTRUMENT_LIST = getEnv("REACT_APP_SCORING_INSTRUMENT");
+
 async function executeELM(collector, oResourceTypes) {
   let client, release, library;
   const resourceTypes = oResourceTypes || {};
@@ -52,11 +54,11 @@ async function executeELM(collector, oResourceTypes) {
       });
 
       // check if instrument resources need to be loaded
-      const surveyRequests = getInstrumentResponseRequests(client);
+      const surveyRequests = release === 4 ? getInstrumentResponseRequests(client) : [];
       if (surveyRequests.length > 0)  {
         ["Questionnaire Response", "Questionnaire"].forEach(item => resourceTypes[item] = true);
       }
-    
+
       console.log("resources ", requests);
       console.log("survey resources ", surveyRequests);
       console.log("collector ", collector);
@@ -88,76 +90,131 @@ async function executeELM(collector, oResourceTypes) {
     .then((bundle) => {
       const patientSource = getPatientSource(release);
       const codeService = new cql.CodeService(valueSetDB);
-      console.log("library ", library)
       const executor = new cql.Executor(library, codeService);
       //debugging
       console.log("bundle loaded? ", bundle);
-      const hasQuestionnaire = bundle.entry.filter(item => item.resource && item.resource.resourceType === "Questionnaire").length > 0;
-      console.log("has responses? ", hasQuestionnaire);
       patientSource.loadBundles([bundle]);
       const results = executor.exec(patientSource);
+      //debugging
       console.log("CQL execution results ", results);
       const evalResults =
         results.patientResults[Object.keys(results.patientResults)[0]];
-      if (hasQuestionnaire) {
-        // return a promise?
-        return new Promise((resolve, reject) => {
-          let instrumentList = (getEnv("REACT_APP_SCORING_INSTRUMENT")).split(",");
-          const elmLibs = instrumentList.map((libId) =>
-            (async() => {
-              let elmJson = await import(`../cql/r4/survey/${libId.toUpperCase()}_LogicLibrary.json`).then(
-                (module) => module.default
-              );
-              return {
-                [libId]: elmJson
-              }
-            })()
+      const hasQuestionnaire =
+        bundle.entry.filter(
+          (item) =>
+            item.resource && item.resource.resourceType === "Questionnaire"
+        ).length > 0;
+      if (!hasQuestionnaire) return evalResults;
+      
+      // return a promise
+      return new Promise((resolve, reject) => {
+        const elmLibs = getElmLibForInstruments();
+        Promise.all(elmLibs).then(results => {
+          const evaluatedSurveyResults = executeELMForInstruments(
+            results,
+            bundle
           );
-          Promise.all(elmLibs).then(results => {
-            console.log("lib results ", results);
-            results.forEach((o, index) => {
-              const entries = Object.entries(o);
-              const elm = entries[0][1];
-            //  if (index == 1) return true;
+          // results.forEach((o) => {
+          //   const entries = Object.entries(o);
+          //   const elm = entries[0][1];
+          //   let surveyLib = new cql.Library(
+          //     elm,
+          //     new cql.Repository({
+          //       FHIRHelpers: r4HelpersELM
+          //     })
+          //   );
+          //   const surveyExecutor = new cql.Executor(
+          //     surveyLib,
+          //     new cql.CodeService(valueSetDB)
+          //   );
+          //   const surveyPatientSource = cqlfhir.PatientSource.FHIRv400();
+          //   surveyPatientSource.loadBundles([bundle]);
+          //   let surveyResults = surveyExecutor.exec(surveyPatientSource);
+          //   const evalSurveyResult =
+          //     surveyResults.patientResults[
+          //       Object.keys(surveyResults.patientResults)[0]
+          //     ];
 
-              console.log("elm? ", elm)
-              let surveyLib = new cql.Library(
-                elm,
-                new cql.Repository({
-                  FHIRHelpers: r4HelpersELM,
-                  CDS_Connect_Commons_for_FHIRv102: r4CommonsELM,
-                })
-              );
-              const surveyExecutor = new cql.Executor(
-                surveyLib,
-                new cql.CodeService(valueSetDB)
-              );
-              const psource = cqlfhir.PatientSource.FHIRv400();
-              psource.loadBundles([bundle]);
-              let surveyResult = surveyExecutor.exec(
-                psource
-              );
-              
-              console.log("survey result ", surveyResult)
-            })
-            resolve(evalResults);
-          }, e => {
-            console.log(e);
-            reject("Error occurred importing ELM lib. See console for detail");
-          })
-        });
-      }
-      return evalResults;
+          //     if (!evalResults["Summary"]) {
+          //       evalResults["Summary"] = {};
+          //     }
+          //     if (!evalResults["Summary"]["SurveySummary"]) {
+          //       evalResults["Summary"]["SurveySummary"] = []
+          //     }
+          //     evalResults["Summary"]["SurveySummary"].push(evalSurveyResult);
+
+          //   console.log("survey result ", evalSurveyResult);
+          // });
+          const SURVEY_SUMMARY_KEY = "SurveySummary";
+          if (!evalResults["Summary"]) {
+            evalResults["Summary"] = {};
+          }
+          if (!evalResults["Summary"][SURVEY_SUMMARY_KEY]) {
+            evalResults["Summary"][SURVEY_SUMMARY_KEY] = [];
+          }
+          evalResults["Summary"][SURVEY_SUMMARY_KEY] = evaluatedSurveyResults;
+          //debug
+          console.log("final evaluated CQL results including surveys ", evalResults);
+          resolve(evalResults);
+        }, e => {
+          console.log(e);
+          reject("Error occurred importing ELM lib. See console for detail");
+        })
+      });
     });
     resolve(results);
   });
 }
 
+function executeELMForInstruments(arrayElms, bundle) {
+  if (!arrayElms) return [];
+  let evalResults = [];
+  arrayElms.forEach((o) => {
+    const entries = Object.entries(o);
+    const elm = entries[0][1];
+    let surveyLib = new cql.Library(
+      elm,
+      new cql.Repository({
+        FHIRHelpers: r4HelpersELM,
+      })
+    );
+    const surveyExecutor = new cql.Executor(
+      surveyLib,
+      new cql.CodeService(valueSetDB)
+    );
+    const surveyPatientSource = cqlfhir.PatientSource.FHIRv400();
+    surveyPatientSource.loadBundles([bundle]);
+    let surveyResults = surveyExecutor.exec(surveyPatientSource);
+    const evalSurveyResult =
+      surveyResults.patientResults[
+        Object.keys(surveyResults.patientResults)[0]
+      ];
+
+    evalResults.push(evalSurveyResult);
+    //debugging
+    console.log("evaluated results for ", entries[0][0], evalSurveyResult);
+  });
+  return evalResults;
+}
+
+function getElmLibForInstruments() {
+  let instrumentList = INSTRUMENT_LIST.split(",");
+  return instrumentList.map((libId) =>
+    (async () => {
+      let elmJson = await import(
+        `../cql/r4/survey/${libId.toUpperCase()}_LogicLibrary.json`
+      ).then((module) => module.default);
+      return {
+        [libId]: elmJson,
+      };
+    })()
+  );
+}
+
 function getInstrumentResponseRequests(client) {
   if (!client) return [];
-  let instrumentList = getEnv("REACT_APP_SCORING_INSTRUMENT");
-  if (!instrumentList) return [];
-  const arrList = instrumentList.split(",").map(item => item.trim());
+  if (!INSTRUMENT_LIST) return [];
+  const arrList = INSTRUMENT_LIST.split(",").map((item) => item.trim());
   const options = {
     pageLimit: 0, // unlimited pages
   };

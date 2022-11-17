@@ -300,7 +300,8 @@
           }
         }
       }
-      .MME-svg-container {
+      .MME-svg-container,
+      .survey-svg-container {
         position: relative;
         height: 0;
         width: 560px;
@@ -318,13 +319,15 @@
           padding-bottom: 70%;
         }
       }
-      .MMEChartSvg {
+      .MMEChartSvg,
+      .surveyChartSvg {
         position: absolute;
         height: 100%;
         width: 100%;
         left: 0;
         top: 0;
       }
+      .survey-graph,
       .MMEgraph {
         margin: 16px 0 8px;
         //padding-bottom: 16px;
@@ -413,7 +416,8 @@
         }
       }
       .panel.alerts,
-      .panel.rxsummary {
+      .panel.rxsummary,
+      .panel.surveysummary {
         margin-left: 16px;
         align-self: stretch;
         display: flex;
@@ -455,6 +459,13 @@
               margin-right:8px;
             }
             .table {
+              caption {
+                font-weight: 700;
+                margin-top: 4px;
+                margin-bottom: 8px;
+                font-size: 20px;
+                text-align: left;
+              }
               th {
                 text-align: left;
                 vertical-align: middle;
@@ -697,7 +708,10 @@
 
         .table {
           padding-bottom: 12px;
-
+          .icon-container {
+            position: relative;
+            top: 6px;
+          }
           .sub-section__table {
             border: 0;
 

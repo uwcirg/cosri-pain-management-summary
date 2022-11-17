@@ -106,6 +106,13 @@
             "dataSectionRefKey": "PatientRiskOverview_graph"
           },
           {
+            "type": "surveysummary",
+            "title": "Questionnaire Summary",
+            "data": {
+              "dataSectionRefKey": "SurveySummary"
+            }
+          },
+          {
             "type": "alerts",
             "title": "Patient Risk Assessment",
             "alertsData": {

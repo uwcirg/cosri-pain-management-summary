@@ -19,6 +19,7 @@ import summaryMap from "../config/summary.json";
 import { getEnv, fetchEnvData } from "../utils/envConfig";
 import SystemBanner from "./SystemBanner";
 import Header from "./Header";
+import Report from "./Report";
 import Summary from "./Summary";
 import Spinner from "../elements/Spinner";
 
@@ -317,9 +318,9 @@ export default class Landing extends Component {
     Promise.all([executeElm(this.state.collector, this.state.resourceTypes)])
       .then((response) => {
         //set result from data from EPIC
-        let EPICData = response[0];
-        //console.log("RESPONSES ", EPICData)
-        result["Summary"] = EPICData ? { ...EPICData["Summary"] } : {};
+        let fhirData = response[0];
+        console.log("RESPONSES ", fhirData)
+        result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         this.setSectionVis();
         const { sectionFlags, flaggedCount } = this.processSummary(
           result.Summary
@@ -366,7 +367,7 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    const MIN_HEADER_HEIGHT = 100;
+    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 140 : 100;
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       tocbot.init({
         tocSelector: ".summary__nav", // where to render the table of contents
@@ -416,15 +417,11 @@ export default class Landing extends Component {
      */
     for (let key in summaryMap) {
       if (summaryMap[key].dataSource) {
-<<<<<<< Updated upstream
         summaryMap[key].dataSource.forEach(item => {
           if (item.endpoint && typeof item.endpoint === "object") {
             if (item.endpoint[systemType]) item.endpoint = item.endpoint[systemType];
             else item.endpoint  = item.endpoint["default"];
           }
-=======
-        summaryMap[key].dataSource.forEach((item) => {
->>>>>>> Stashed changes
           promiseResultSet.push(item);
         });
       }
@@ -1188,9 +1185,65 @@ export default class Landing extends Component {
         errorCollection={this.errorCollection}
         mmeErrors={this.mmeErrors}
         result={this.state.result}
-        versionString={getEnv("REACT_APP_VERSION_STRING")}
       />
     );
+  }
+
+  shouldShowTabs() {
+    const tabs = this.getTabs();
+    return tabs && tabs.length > 1;
+  }
+
+  getTabs() {
+     let tabs = ["overview"];
+     const config_tab = getEnv("REACT_APP_TABS");
+     if (config_tab) tabs = config_tab.split(",");
+     return tabs;
+  }
+
+  renderTabs() {
+    const tabs = this.getTabs();
+    return (
+      <div className={"tabs " + (!this.shouldShowTabs() ? "hide" : "")}>
+        {tabs.map((item, index) => {
+          return (
+            <div
+              className={`tab ${
+                this.state.activeTab === index ? "active" : ""
+              }`}
+              onClick={() => this.setActiveTab(index)}
+              role="presentation"
+              key={`tab_${index}`}
+            >
+              {item}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  renderTabPanels(summary, sectionFlags) {
+    const tabs = this.getTabs();
+    return (<div className="tab-panels">
+      {
+        tabs.map((item, index) => {
+          return (
+            <div
+              className={`tab-panel ${
+                this.state.activeTab === index ? "active" : ""
+              }`}
+            >
+              {item === "overview" && this.renderSummary(summary, sectionFlags)}
+              {item === "report" && (
+                <Report summaryData={summary.SurveySummary}></Report>
+              )}
+              {/* other tab panel as specified here */}
+            </div>
+          );
+        })
+      }
+    </div>);
   }
 
   renderError(returnURL) {
@@ -1231,38 +1284,8 @@ export default class Landing extends Component {
         )}
         {this.renderHeader(summary, patientResource, PATIENT_SEARCH_URL)}
         <div className="warpper">
-          <div className="tabs">
-            <div
-              className={`tab ${this.state.activeTab === 0 ? "active" : ""}`}
-              onClick={() => this.setActiveTab(0)}
-              role="presentation"
-            >
-              Overview
-            </div>
-            <div
-              className={`tab ${this.state.activeTab === 1 ? "active" : ""}`}
-              onClick={() => this.setActiveTab(1)}
-              role="presentation"
-            >
-              Report
-            </div>
-          </div>
-          <div className="tab-panels">
-            <div
-              className={`tab-panel ${
-                this.state.activeTab === 0 ? "active" : ""
-              }`}
-            >
-              {this.renderSummary(summary, sectionFlags)}
-            </div>
-            <div
-              className={`tab-panel ${
-                this.state.activeTab === 1 ? "active" : ""
-              }`}
-            >
-              WTF
-            </div>
-          </div>
+          {this.renderTabs()}
+          {this.renderTabPanels(summary, sectionFlags)}
         </div>
 
         <ReactTooltip className="summary-tooltip" id="summaryTooltip" />

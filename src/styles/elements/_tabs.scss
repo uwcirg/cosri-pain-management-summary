@@ -21,15 +21,19 @@ $tab-background-color: #fffffff6;
   font-weight: 600;
   font-size: 1.1rem;
   border-radius: 8px 8px 0 0;
+  text-transform: capitalize;
 }
 .tabs {
   padding-left: 16px;
   padding-right: 16px;
+  &.hide {
+    display: none;
+  }
 }
 // .panels {
 .tab-panels {
   background:$tab-background-color;
-  border-top: 2px solid $tab-background-color;
+ // border-top: 2px solid $tab-background-color;
  // box-shadow: 0 2rem 2rem #00000080;
  // min-height:75vh;
   width:100%;
@@ -42,6 +46,9 @@ $tab-background-color: #fffffff6;
 .tab-panel {
   display:none;
   animation: fadein .8s;
+  &.active {
+    border-top: 2px solid $color-gray-lighter;
+  }
 }
 @keyframes fadein {
     from {

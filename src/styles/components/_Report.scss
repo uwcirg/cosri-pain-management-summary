@@ -1,0 +1,87 @@
+.report {
+  padding: 24px;
+  max-width: 1200px;
+  margin: auto;
+  .table {
+    padding-bottom: 12px;
+    .icon-container {
+      position: relative;
+      top: 6px;
+    }
+    caption {
+      font-weight: 700;
+      margin-top: 4px;
+      margin-bottom: 8px;
+      font-size: 20px;
+      text-align: left;
+    }
+    th {
+      text-align: left;
+      vertical-align: middle;
+      padding-right: 4px;
+      border-bottom: 2px solid $color-blue;
+    }
+    td:not(:first-of-type) {
+      text-align: center;
+      vertical-align: bottom;
+    }
+  }
+  .panel-container {
+    display: flex;
+    width: 100%;
+    gap: 16px;
+    flex-wrap: wrap;
+    .panel {
+      border: 2px solid $color-black;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 2;
+      flex: 1;
+      &__item {
+        border: 1px solid $color-gray-lighter;
+        padding: 8px;
+      }
+    }
+  }
+  .graph {
+    .legend {
+      margin-left: 72px;
+      border: 2px solid $color-gray-lighter;
+      width: 120px;
+      padding: 8px;
+      &__item {
+        font-weight: 600;
+        .icon {
+          width: 14px;
+          height: 14px;
+          display: inline-block;
+          margin-right: 8px;
+          border-radius: 100%;
+          &:not(:last-child) {
+            margin-bottom: 8px;
+          }
+        }
+      }
+    }
+    .axis-label {
+      font-size: 12px;
+    }
+    .axis-group {
+      text {
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .axis.left {
+        text {
+          transform: translateX(-4px);
+        }
+      }
+      .axis.bottom {
+        text {
+          transform: translateY(38px) translateX(-14px) rotate(-90deg);
+        }
+      }
+    }
+  }
+}

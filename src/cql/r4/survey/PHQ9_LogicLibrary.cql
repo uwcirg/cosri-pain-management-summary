@@ -227,7 +227,7 @@ define FullScore:
  */
 define function getAnswerValueByCode(code String):
   ((Phq9Questionnaire.item.answerOption) Q where Q.value.code = code) a
-  return a.extension[0].value.value as Integer
+  return if a is not null and a.extension is not null and a.extension[0].value.value is not null then (a.extension[0].value.value as Integer) else (0 as Integer)
 
 define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
   (responses r where r.linkId.value = linkId) I
@@ -238,7 +238,7 @@ define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.Que
     end
 
 define function getScoringByResponseItem(responses List<FHIR.QuestionnaireResponse.Item>, linkId String):
-  singleton from (((responses) o where o.linkId.value = linkId) I
+  First(((responses) o where o.linkId.value = linkId) I
   return 
     if I.answer[0].value.code is not null then getAnswerValueByCode(I.answer[0].value.code.value) else 0)
 
@@ -248,23 +248,53 @@ define function getResponsesByQuestionnaire(responses List<FHIR.QuestionnaireRes
       question: I.text.value,
       answer: First(GetResponseAnswerByLinkId(I.linkId.value, responses))
     }
- 
+
+// define function getTotalScoreByResponseItems(responses List<FHIR.QuestionnaireResponse.Item>):
+//   (
+//     (singleton from (getScoringByResponseItem(responses, question2LinkId)) as Integer) +
+//     (singleton from (getScoringByResponseItem(responses, question3LinkId)) as Integer) + 
+//     (singleton from (getScoringByResponseItem(responses, question4LinkId)) as Integer) +
+//     (singleton from (getScoringByResponseItem(responses, question5LinkId)) as Integer) +
+//     (singleton from (getScoringByResponseItem(responses, question6LinkId)) as Integer) +
+//     (singleton from (getScoringByResponseItem(responses, question7LinkId)) as Integer) +
+//     (singleton from (getScoringByResponseItem(responses, question8LinkId)) as Integer) +
+//     (singleton from (getScoringByResponseItem(responses, question9LinkId)) as Integer) +
+//     (singleton from (getScoringByResponseItem(responses, question10LinkId)) as Integer)
+//   )
+
+define function getTotalScoreByResponseItems(responses List<FHIR.QuestionnaireResponse.Item>):
+  responses I
+  let
+    score1: First(getScoringByResponseItem(responses, question1LinkId)),
+    score2: First(getScoringByResponseItem(responses, question2LinkId)),
+    score3: First(getScoringByResponseItem(responses, question3LinkId)),
+    score4: First(getScoringByResponseItem(responses, question4LinkId)),
+    score5: First(getScoringByResponseItem(responses, question5LinkId)),
+    score6: First(getScoringByResponseItem(responses, question6LinkId)),
+    score7: First(getScoringByResponseItem(responses, question7LinkId)),
+    score8: First(getScoringByResponseItem(responses, question8LinkId)),
+    score9: First(getScoringByResponseItem(responses, question9LinkId)),
+    score10: First(getScoringByResponseItem(responses, question10LinkId))
+    return (
+      Coalesce(score1, 0) +
+      Coalesce(score2, 0) +
+      Coalesce(score3, 0) +
+      Coalesce(score4, 0) +
+      Coalesce(score5, 0) +
+      Coalesce(score6, 0) + 
+      Coalesce(score7, 0) +
+      Coalesce(score8, 0) +
+      Coalesce(score9, 0) + 
+      Coalesce(score10, 0)
+    )
+
 define ResponsesSummary:
   (QuestionnaireResponses) I
   return Tuple {
     date: DateTimeText(I.authored),
     items: I.item,
     responses: getResponsesByQuestionnaire(I.item),
-    score: First(getScoringByResponseItem(I.item, question1LinkId)) +
-          First(getScoringByResponseItem(I.item, question2LinkId)) +
-          First(getScoringByResponseItem(I.item, question3LinkId)) + 
-          First(getScoringByResponseItem(I.item, question4LinkId)) +
-          First(getScoringByResponseItem(I.item, question5LinkId)) +
-          First(getScoringByResponseItem(I.item, question6LinkId)) +
-          First(getScoringByResponseItem(I.item, question7LinkId)) +
-          First(getScoringByResponseItem(I.item, question8LinkId)) +
-          First(getScoringByResponseItem(I.item, question9LinkId)) +
-          First(getScoringByResponseItem(I.item, question10LinkId)),
+    score: First(getTotalScoreByResponseItems(I.item)),
     authoredDate: I.authored,
     lastUpdated: I.meta.lastUpdated.value
   }

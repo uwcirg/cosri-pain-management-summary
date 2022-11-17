@@ -1719,8 +1719,8 @@
             "accessLevel" : "Public",
             "type" : "FunctionDef",
             "expression" : {
-               "type" : "SingletonFrom",
-               "operand" : {
+               "type" : "First",
+               "source" : {
                   "type" : "Query",
                   "source" : [ {
                      "alias" : "I",
@@ -1992,6 +1992,51 @@
                                        "operand" : [ {
                                           "type" : "Add",
                                           "operand" : [ {
+                                             "type" : "Coalesce",
+                                             "operand" : [ {
+                                                "type" : "First",
+                                                "source" : {
+                                                   "name" : "getScoringByResponseItem",
+                                                   "type" : "FunctionRef",
+                                                   "operand" : [ {
+                                                      "path" : "item",
+                                                      "scope" : "I",
+                                                      "type" : "Property"
+                                                   }, {
+                                                      "name" : "question1LinkId",
+                                                      "type" : "ExpressionRef"
+                                                   } ]
+                                                }
+                                             }, {
+                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                "value" : "0",
+                                                "type" : "Literal"
+                                             } ]
+                                          }, {
+                                             "type" : "Coalesce",
+                                             "operand" : [ {
+                                                "type" : "First",
+                                                "source" : {
+                                                   "name" : "getScoringByResponseItem",
+                                                   "type" : "FunctionRef",
+                                                   "operand" : [ {
+                                                      "path" : "item",
+                                                      "scope" : "I",
+                                                      "type" : "Property"
+                                                   }, {
+                                                      "name" : "question2LinkId",
+                                                      "type" : "ExpressionRef"
+                                                   } ]
+                                                }
+                                             }, {
+                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                "value" : "0",
+                                                "type" : "Literal"
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "type" : "Coalesce",
+                                          "operand" : [ {
                                              "type" : "First",
                                              "source" : {
                                                 "name" : "getScoringByResponseItem",
@@ -2001,26 +2046,19 @@
                                                    "scope" : "I",
                                                    "type" : "Property"
                                                 }, {
-                                                   "name" : "question1LinkId",
+                                                   "name" : "question3LinkId",
                                                    "type" : "ExpressionRef"
                                                 } ]
                                              }
                                           }, {
-                                             "type" : "First",
-                                             "source" : {
-                                                "name" : "getScoringByResponseItem",
-                                                "type" : "FunctionRef",
-                                                "operand" : [ {
-                                                   "path" : "item",
-                                                   "scope" : "I",
-                                                   "type" : "Property"
-                                                }, {
-                                                   "name" : "question2LinkId",
-                                                   "type" : "ExpressionRef"
-                                                } ]
-                                             }
+                                             "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                             "value" : "0",
+                                             "type" : "Literal"
                                           } ]
-                                       }, {
+                                       } ]
+                                    }, {
+                                       "type" : "Coalesce",
+                                       "operand" : [ {
                                           "type" : "First",
                                           "source" : {
                                              "name" : "getScoringByResponseItem",
@@ -2030,12 +2068,19 @@
                                                 "scope" : "I",
                                                 "type" : "Property"
                                              }, {
-                                                "name" : "question3LinkId",
+                                                "name" : "question4LinkId",
                                                 "type" : "ExpressionRef"
                                              } ]
                                           }
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
                                        } ]
-                                    }, {
+                                    } ]
+                                 }, {
+                                    "type" : "Coalesce",
+                                    "operand" : [ {
                                        "type" : "First",
                                        "source" : {
                                           "name" : "getScoringByResponseItem",
@@ -2045,12 +2090,19 @@
                                              "scope" : "I",
                                              "type" : "Property"
                                           }, {
-                                             "name" : "question4LinkId",
+                                             "name" : "question5LinkId",
                                              "type" : "ExpressionRef"
                                           } ]
                                        }
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "value" : "0",
+                                       "type" : "Literal"
                                     } ]
-                                 }, {
+                                 } ]
+                              }, {
+                                 "type" : "Coalesce",
+                                 "operand" : [ {
                                     "type" : "First",
                                     "source" : {
                                        "name" : "getScoringByResponseItem",
@@ -2060,12 +2112,19 @@
                                           "scope" : "I",
                                           "type" : "Property"
                                        }, {
-                                          "name" : "question5LinkId",
+                                          "name" : "question6LinkId",
                                           "type" : "ExpressionRef"
                                        } ]
                                     }
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
                                  } ]
-                              }, {
+                              } ]
+                           }, {
+                              "type" : "Coalesce",
+                              "operand" : [ {
                                  "type" : "First",
                                  "source" : {
                                     "name" : "getScoringByResponseItem",
@@ -2075,25 +2134,15 @@
                                        "scope" : "I",
                                        "type" : "Property"
                                     }, {
-                                       "name" : "question6LinkId",
+                                       "name" : "question7LinkId",
                                        "type" : "ExpressionRef"
                                     } ]
                                  }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
                               } ]
-                           }, {
-                              "type" : "First",
-                              "source" : {
-                                 "name" : "getScoringByResponseItem",
-                                 "type" : "FunctionRef",
-                                 "operand" : [ {
-                                    "path" : "item",
-                                    "scope" : "I",
-                                    "type" : "Property"
-                                 }, {
-                                    "name" : "question7LinkId",
-                                    "type" : "ExpressionRef"
-                                 } ]
-                              }
                            } ]
                         }
                      }, {

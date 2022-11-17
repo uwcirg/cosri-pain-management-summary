@@ -221,7 +221,7 @@ define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.Que
     end
 
 define function getScoringByResponseItem(responses List<FHIR.QuestionnaireResponse.Item>, linkId String):
-  singleton from (((responses) o where o.linkId.value = linkId) I
+  First(((responses) o where o.linkId.value = linkId) I
   return 
     if I.answer[0].value.code is not null then getAnswerValueByCode(I.answer[0].value.code.value) else 0)
 
@@ -238,13 +238,14 @@ define ResponsesSummary:
     date: DateTimeText(I.authored),
     items: I.item,
     responses: getResponsesByQuestionnaire(I.item),
-    score: First(getScoringByResponseItem(I.item, question1LinkId)) +
-          First(getScoringByResponseItem(I.item, question2LinkId)) +
-          First(getScoringByResponseItem(I.item, question3LinkId)) + 
-          First(getScoringByResponseItem(I.item, question4LinkId)) +
-          First(getScoringByResponseItem(I.item, question5LinkId)) +
-          First(getScoringByResponseItem(I.item, question6LinkId)) +
-          First(getScoringByResponseItem(I.item, question7LinkId)),
+    score: 
+          Coalesce(First(getScoringByResponseItem(I.item, question1LinkId)), 0) +
+          Coalesce(First(getScoringByResponseItem(I.item, question2LinkId)), 0) +
+          Coalesce(First(getScoringByResponseItem(I.item, question3LinkId)), 0) + 
+          Coalesce(First(getScoringByResponseItem(I.item, question4LinkId)), 0) +
+          Coalesce(First(getScoringByResponseItem(I.item, question5LinkId)), 0) +
+          Coalesce(First(getScoringByResponseItem(I.item, question6LinkId)), 0) +
+          Coalesce(First(getScoringByResponseItem(I.item, question7LinkId)), 0),
     authoredDate: I.authored,
     lastUpdated: I.meta.lastUpdated.value
   }

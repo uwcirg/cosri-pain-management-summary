@@ -27,6 +27,7 @@ import DataInfo from "./DataInfo";
 import Disclaimer from "./Disclaimer";
 import DevTools from "./DevTools";
 import InfoModal from "./InfoModal";
+import ScoringSummary from "./ScoringSummary";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
 import Version from "../elements/Version";
@@ -516,6 +517,20 @@ export default class Summary extends Component {
     );
   }
 
+  renderSurveySummaryPanel(panel) {
+    let surveyData =
+      this.props.summary[panel.data.dataSectionRefKey] || [];
+      console.log("survey data ", surveyData);
+    if (!surveyData || surveyData.length === 0) return null;
+    return (
+      <div className="sub-section__infopanel">
+        <div className="stats-container">
+          <div className="content">{<ScoringSummary summary={surveyData} title={panel.title}></ScoringSummary>}</div>
+        </div>
+      </div>
+    );
+  }
+
   renderPanel(section, panels, type) {
     let content = panels
       .filter((panel) => panel.type === type)
@@ -523,6 +538,7 @@ export default class Summary extends Component {
         return (
           <div key={`panel_${index}`} className={`panel ${panel.type}`}>
             {panel.type === "graph" && this.renderGraph(panel)}
+            {panel.type === "surveysummary" && this.renderSurveySummaryPanel(panel)}
             {panel.type === "rxsummary" && this.renderRxSummaryPanel(panel)}
             {panel.type === "alerts" && this.renderAlertsPanel(panel)}
           </div>
@@ -599,6 +615,7 @@ export default class Summary extends Component {
                 <div className="sub-panels">
                   {this.renderPanel(section, panels, "rxsummary")}
                   {this.renderPanel(section, panels, "alerts")}
+                  {this.renderPanel(section, panels, "surveysummary")}
                 </div>
               }
             </div>
@@ -821,7 +838,7 @@ export default class Summary extends Component {
               }}
             />
             {/* display released version string */}
-            <Version versionString={this.props.versionString} />
+            <Version />
             <ReactModal
               className="modal"
               overlayClassName="overlay"
@@ -848,6 +865,5 @@ Summary.propTypes = {
   collector: PropTypes.array.isRequired,
   errorCollection: PropTypes.array,
   mmeErrors: PropTypes.bool,
-  result: PropTypes.object.isRequired,
-  versionString: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  result: PropTypes.object.isRequired
 };

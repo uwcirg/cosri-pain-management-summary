@@ -94,3 +94,8 @@ export function daysFromToday (dateInput, todayInput) {
     if (isNaN(diff)) return 0;
     return diff;
 }
+
+
+export function range(start, end) {
+  return new Array(end - start + 1).fill(undefined).map((_, i) => i + start);
+}

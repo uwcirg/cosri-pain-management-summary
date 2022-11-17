@@ -29,7 +29,7 @@ class Line extends React.Component {
       .datum(data)
       .attr('id', this.props.lineID)
       .attr('stroke', this.props.strokeColor || "#217684")
-      .attr('stroke-width', this.props.strokeWidth || "2px")
+      .attr('stroke-width', this.props.strokeWidth || 2)
       .attr('fill', 'none')
       .attr('d', lineGenerator);
     if (this.props.dotted) {
@@ -37,78 +37,81 @@ class Line extends React.Component {
     }
 
     if (dataPoints) {
-      const radiusWidth  = 0.55;
+      const radiusWidth = dataPoints.radiusWidth
+        ? dataPoints.radiusWidth
+        : 0.55;
       const expandedRadiusWidth = radiusWidth * 4;
       const animationDuration = 100;
+      const dataId = dataPoints.id ? dataPoints.id : "data";
       select(node)
-      .selectAll('circle')
-      .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append('circle')
-      .attr('class', 'circle')
-      .attr('stroke', dataPoints.strokeColor)
-      .attr('stroke-width', dataPoints.dataStrokeWidth)
-      .attr('fill',dataPoints.dataStrokeFill)
-      .attr('r', radiusWidth)
-      .attr('id', (d, i) => `circle_${i}`)
-      .attr('cx', d => xScale(d[xName]))
-      .attr('cy', d => yScale(d[yName]))
-      .on("mouseover", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-          return;
-        }
-        select(`#circle_${i}`)
-        .transition()
-        .duration(animationDuration)
-        .attr("r", expandedRadiusWidth);
-        select(`#dataText_${i}`).attr("class", "show");
-        select(`#dataRect_${i}`).attr("class", "show");
-      })
-      .on("mouseout", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-          return;
-        }
-       select( `#circle_${i}`)
-        .transition()
-        .duration(animationDuration)
-        .attr("r", radiusWidth);
-        select(`#dataText_${i}`).attr("class", "hide");
-        select(`#dataRect_${i}`).attr("class", "hide");
-      });
+        .selectAll("circle")
+        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .enter()
+        .append("circle")
+        .attr("class", "circle")
+        .attr("stroke", dataPoints.strokeColor)
+        .attr("stroke-width", dataPoints.dataStrokeWidth)
+        .attr("fill", dataPoints.dataStrokeFill)
+        .attr("r", radiusWidth)
+        .attr("id", (d, i) => `circle_${dataId}${i}`)
+        .attr("cx", (d) => xScale(d[xName]))
+        .attr("cy", (d) => yScale(d[yName]))
+        .on("mouseover", (d, i) => {
+          if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
+            return;
+          }
+          select(`#circle_${dataId}${i}`)
+            .transition()
+            .duration(animationDuration)
+            .attr("r", expandedRadiusWidth);
+          select(`#dataText_${dataId}${i}`).attr("class", "show");
+          select(`#dataRect_${dataId}${i}`).attr("class", "show");
+        })
+        .on("mouseout", (d, i) => {
+          if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
+            return;
+          }
+          select(`#circle_${dataId}${i}`)
+            .transition()
+            .duration(animationDuration)
+            .attr("r", radiusWidth);
+          select(`#dataText_${dataId}${i}`).attr("class", "hide");
+          select(`#dataRect_${dataId}${i}`).attr("class", "hide");
+        });
 
       //rect
       select(node)
-      .selectAll('.rect-tooltip')
-      .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append("rect")
-      .attr("class", "rect-tooltip")
-      .attr('id', (d, i) => `dataRect_${i}`)
-      .attr("x", (d) => xScale(d[xName]) - 52)
-      .attr('y', d => yScale(d[yName]) + 12)
-      .attr("width", d => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
-      .attr("height", 20)
-      .attr('class', 'hide')
-      .style("stroke", "black")
-      .style("stroke-width", "0.25")
-      .style("fill", "#FFF");
+        .selectAll(".rect-tooltip")
+        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .enter()
+        .append("rect")
+        .attr("class", "rect-tooltip")
+        .attr("id", (d, i) => `dataRect_${dataId}${i}`)
+        .attr("x", (d) => xScale(d[xName]) - 52)
+        .attr("y", (d) => yScale(d[yName]) + 12)
+        .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
+        .attr("height", 20)
+        .attr("class", "hide")
+        .style("stroke", "black")
+        .style("stroke-width", "0.25")
+        .style("fill", "#FFF");
 
       //tooltip
       select(node)
-      .selectAll('text')
-      .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append('text')
-      .attr('id', (d, i) => `dataText_${i}`)
-      .attr('x', (d) => xScale(d[xName]) - 48)
-      .attr('y', d => yScale(d[yName]) + 26)
-      .attr('class', 'hide')
-      .attr('font-size', 11)
-      .attr("text-anchor", "start")
-      .attr('font-weight', 600)
-      .text(function(d) {
-        return `${formatDate(d[xName])}, ${d[yName]}`
-      });
+        .selectAll("text")
+        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .enter()
+        .append("text")
+        .attr("id", (d, i) => `dataText_${dataId}${i}`)
+        .attr("x", (d) => xScale(d[xName]) - 48)
+        .attr("y", (d) => yScale(d[yName]) + 26)
+        .attr("class", "hide")
+        .attr("font-size", 11)
+        .attr("text-anchor", "start")
+        .attr("font-weight", 600)
+        .text(function (d) {
+          return `${formatDate(d[xName])}, ${d[yName]}`;
+        });
     }
     this.updateChart();
   }
