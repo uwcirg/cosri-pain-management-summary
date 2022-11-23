@@ -11,6 +11,7 @@ import r4HelpersELM from '../cql/r4/FHIRHelpers.json';
 import r4MMECalculatorELM from '../cql/r4/MMECalculator.json';
 import r4OMTKDataELM from '../cql/r4/OMTKData.json';
 import r4OMTKLogicELM from '../cql/r4/OMTKLogic.json';
+import r4SurveyCommonELM from "../cql/r4/survey/Common_LogicLibrary.json";
 import valueSetDB from '../cql/valueset-db.json';
 import {getEnv, fetchEnvData} from './envConfig';
 
@@ -19,6 +20,8 @@ const noCacheHeader = {
 };
 
 const INSTRUMENT_LIST = getEnv("REACT_APP_SCORING_INSTRUMENTS");
+const FHIR_RELEASE_VERSION_2 = 2;
+const FHIR_RELEASE_VERSION_4 = 4;
 
 async function executeELM(collector, oResourceTypes) {
   let client, release, library;
@@ -54,13 +57,16 @@ async function executeELM(collector, oResourceTypes) {
       });
 
       // check if instrument resources need to be loaded
-      const surveyRequests = release === 4 ? getInstrumentResponseRequests(client) : [];
+      const surveyRequests =
+        release === FHIR_RELEASE_VERSION_4
+          ? getInstrumentQuestionnaireAndResponseRequests(client)
+          : [];
       if (surveyRequests.length > 0)  {
         ["Questionnaire Response", "Questionnaire"].forEach(item => resourceTypes[item] = true);
       }
 
-      console.log("resources ", requests);
-      console.log("survey resources ", surveyRequests);
+      //console.log("resources ", requests);
+      //console.log("survey resources ", surveyRequests);
       console.log("collector ", collector);
       console.log("resourceTypes ", resourceTypes)
 
@@ -97,24 +103,30 @@ async function executeELM(collector, oResourceTypes) {
       const results = executor.exec(patientSource);
       //debugging
       console.log("CQL execution results ", results);
+
       const evalResults =
-        results.patientResults[Object.keys(results.patientResults)[0]];
+        results.patientResults ? results.patientResults[
+          Object.keys(results.patientResults)[0]
+        ] : {};
+
       const hasQuestionnaire =
-        bundle.entry.filter(
+        bundle && bundle.entry.filter(
           (item) =>
             item.resource && item.resource.resourceType === "Questionnaire"
         ).length > 0;
+
       if (!hasQuestionnaire) return evalResults;
       
       // return a promise
       return new Promise((resolve, reject) => {
         const elmLibs = getElmLibForInstruments();
-        Promise.all(elmLibs).then(results => {
+        Promise.allSettled(elmLibs).then(results => {
           const evaluatedSurveyResults = executeELMForInstruments(
             results,
             bundle
           );
           const SURVEY_SUMMARY_KEY = "SurveySummary";
+  
           if (!evalResults["Summary"]) {
             evalResults["Summary"] = {};
           }
@@ -135,16 +147,17 @@ async function executeELM(collector, oResourceTypes) {
   });
 }
 
-function executeELMForInstruments(arrayElms, bundle) {
-  if (!arrayElms) return [];
+function executeELMForInstruments(arrayElmPromiseResult, bundle) {
+  if (!arrayElmPromiseResult) return [];
   let evalResults = [];
-  arrayElms.forEach((o) => {
-    const entries = Object.entries(o);
+  arrayElmPromiseResult.forEach((o) => {
+    if (o.status === "rejected") return true;
+    const entries = Object.entries(o.value);
     const qKey = entries[0][0];
     const elm = entries[0][1];
     if (!elm) {
       evalResults.push({
-        qKey: null
+        qKey: null,
       });
       return true;
     }
@@ -152,6 +165,7 @@ function executeELMForInstruments(arrayElms, bundle) {
       elm,
       new cql.Repository({
         FHIRHelpers: r4HelpersELM,
+        Common_LogicLibrary: r4SurveyCommonELM,
       })
     );
     const surveyExecutor = new cql.Executor(
@@ -193,13 +207,14 @@ function getElmLibForInstruments() {
   );
 }
 
-function getInstrumentResponseRequests(client) {
+function getInstrumentQuestionnaireAndResponseRequests(client) {
   if (!client) return [];
   if (!INSTRUMENT_LIST) return [];
   const arrList = INSTRUMENT_LIST.split(",").map((item) => item.trim());
   const options = {
     pageLimit: 0, // unlimited pages
   };
+  // questionnaire
   let requests = arrList.map((itemId) =>
     client.request(
       {
@@ -209,6 +224,7 @@ function getInstrumentResponseRequests(client) {
       options
     )
   );
+  // questionnaire responses
   requests.push(
     client.patient.request(
       {
@@ -223,12 +239,12 @@ function getInstrumentResponseRequests(client) {
 
 function getLibrary(release) {
   switch(release) {
-    case 2:
+    case FHIR_RELEASE_VERSION_2:
       return new cql.Library(dstu2FactorsELM, new cql.Repository({
         CDS_Connect_Commons_for_FHIRv102: dstu2CommonsELM,
         FHIRHelpers: dstu2HelpersELM
       }));
-    case 4:
+    case FHIR_RELEASE_VERSION_4:
       return new cql.Library(r4FactorsELM, new cql.Repository({
         CDS_Connect_Commons_for_FHIRv102: r4CommonsELM,
         FHIRHelpers: r4HelpersELM,
