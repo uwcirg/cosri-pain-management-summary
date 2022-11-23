@@ -81,6 +81,9 @@ body.ReactModal__Body--open {
         color: $color-blue;
       }
     }
+    p {
+      line-height: 1.45;
+    }
   }
   &__content {
     .title {

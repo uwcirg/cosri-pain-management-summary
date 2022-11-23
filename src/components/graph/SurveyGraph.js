@@ -4,12 +4,10 @@ import * as d3 from "d3";
 import { scaleLinear, scaleTime } from "d3-scale";
 import { line } from "d3-shape";
 import XYAxis from "./xy-axis";
+import Grid from "./grid";
 import Line from "./line";
 import { dateFormat } from "../../helpers/formatit";
 import qConfig from "../../config/questionnaire_config";
-// import { max } from "d3";
-// import { dateCompare } from "../../helpers/sortit";
-// import { sumArray, daysFromToday } from "../../helpers/utility";
 
 const defaultFields = {
   x: "date",
@@ -27,20 +25,19 @@ export default class SurveyGraph extends Component {
   }
 
   render() {
-    const parentWidth = 488;
-    const parentHeight = 380;
+    const parentWidth = 500;
+    const parentHeight = 396;
     const xIntervals = 12;
+    let propData = this.props.data || [];
     //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
-    // let computedData = this.props.data
-    //   ? this.props.data.map((item) => {
-    //       return {
-    //         ...item,
-    //       };
-    //     })
-    //   : null;
-    let data = this.props.data || [];
-    console.log("data? ", data);
+    let data = propData
+      ? propData.map((item) => {
+          return {
+            ...item,
+          };
+        })
+      : [];
     let noEntry = !data || !data.length;
     let baseLineDate = new Date();
     let maxDate = new Date();
@@ -53,15 +50,10 @@ export default class SurveyGraph extends Component {
       d[xFieldName] = dObj;
       return d;
     });
-    //var parseDate = d3.timeParse("%Y-%m-%d");
 
     data.forEach((item) => {
-      console.log("date? ", item[xFieldName]);
-      // item[xFieldName] = parseDate(item[xFieldName]);
       item[yFieldName] = +item[yFieldName];
     });
-    // console.log("formatted data ", data)
-    // const xExtent = d3.extent(data, (d) => d[xFieldName]);
 
     let arrayDates = data.map((d) => {
       return d[xFieldName];
@@ -93,12 +85,6 @@ export default class SurveyGraph extends Component {
       baseLineDate.setTime(
         new Date(minDate.valueOf()).getTime() - 30 * 24 * 60 * 60 * 1000
       );
-      // let baselineItem = {};
-      // baselineItem[xFieldName] = baseLineDate;
-      // baselineItem[yFieldName] = 0;
-      // baselineItem["baseline"] = true;
-      // baselineItem["placeholder"] = true;
-      // data.unshift(baselineItem);
       /*
        * set end point to today if not present
        */
@@ -109,11 +95,6 @@ export default class SurveyGraph extends Component {
           (item) => dateFormat("", item[xFieldName], "YYYY-MM-DD") === today
         ).length > 0;
       if (!containedTodayData) {
-        // let todayDataPoint = {};
-        // todayDataPoint[xFieldName] = todayObj;
-        // todayDataPoint[yFieldName] = 0;
-        // todayDataPoint["placeholder"] = true;
-        // data = [...data, todayDataPoint];
         maxDate = new Date();
       }
     }
@@ -122,9 +103,9 @@ export default class SurveyGraph extends Component {
     maxDate = new Date(maxDate);
 
     const margins = {
-      top: 16,
+      top: 24,
       right: 64,
-      bottom: 88,
+      bottom: 96,
       left: 64,
     };
 
@@ -134,7 +115,6 @@ export default class SurveyGraph extends Component {
       .domain([baseLineDate, maxDate])
       .rangeRound([0, width]);
     const yMaxValue = d3.max(data, (d) => d.score);
-    console.log("yMax ", yMaxValue);
     const yScale = scaleLinear()
       .domain([0, yMaxValue + 10])
       .range([height, 0])
@@ -149,41 +129,8 @@ export default class SurveyGraph extends Component {
         return d.qid;
       })
       .entries(data);
-    console.log("dataNest ", dataNest);
 
-    // d3.select("svg")
-    //   .selectAll(".line")
-    //   .append("g")
-    //   .attr("class", "line")
-    //   .data(sumstat)
-    //   .enter()
-    //   .append("path")
-    //   .attr("d", function (d) {
-    //     return d3
-    //       .line()
-    //       .x((d) => xScale(d[xFieldName]))
-    //       .y((d) => yScale(d[yFieldName]))
-    //       .curve(d3.curveCardinal)(d.values);
-    //   })
-    //   .attr("fill", "none")
-    //   .attr("stroke", (d) => "red")
-    //   .attr("stroke-width", 2);
-
-    // //append circle
-    // d3.select("svg")
-    //   .selectAll("circle")
-    //   .append("g")
-    //   .data(data)
-    //   .enter()
-    //   .append("circle")
-    //   .attr("r", 6)
-    //   .attr("cx", (d) => xScale(d.year))
-    //   .attr("cy", (d) => yScale(d.spending))
-    //   .style("fill", (d) => "red");
-
-    //set color pallete for different vairables
-    // var qids = sumstat.map((d) => d.key);
-    // var color = d3.scaleOrdinal().domain(qids).range(["green", "blue", "orange"]);
+    console.log("survey graph data nest ", dataNest);
 
     const lineGenerator = line()
       .x((d) => xScale(d[xFieldName]))
@@ -229,27 +176,21 @@ export default class SurveyGraph extends Component {
       ticks: 10,
     };
 
-    // const defaultLegendSettings = {
-    //   fontFamily: "sans-serif",
-    //   fontSize: yMaxValue >= 600 ? "8px" : "12px",
-    //   fontWeight: "600",
-    //   letterSpacing: "0.02rem",
-    //   x: xScale(baseLineDate) + 8,
-    // };
-
-    // const textMargin = 4;
-
-    //const dataLineProps = { ...defaultProps, ...additionalProps };
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
     const labelProps = {
       transform: "rotate(-90)",
       y: 0 - margins.left,
-      x: 0 - (graphHeight/2),
+      x: 0 - graphHeight / 2,
       dy: "1em",
     };
 
-    if (noEntry) return <div>No survey data to show.</div>;
+    if (noEntry)
+      return (
+        <div>
+          <b>No graph for questionnaire scores to show.</b>
+        </div>
+      );
 
     return (
       <React.Fragment>
@@ -262,9 +203,29 @@ export default class SurveyGraph extends Component {
               viewBox={`0 0 ${graphWidth} ${graphHeight}`}
             >
               <g transform={`translate(${margins.left}, ${margins.top})`}>
+                {/* y grid */}
+                <Grid
+                  {...{
+                    width: width,
+                    height: height,
+                    numTicks: 5,
+                    orientation: "left",
+                  }}
+                ></Grid>
+                {/* x grid */}
+                <Grid
+                  {...{
+                    width: width,
+                    height: height,
+                    numTicks: 10,
+                    orientation: "bottom",
+                  }}
+                ></Grid>
                 <XYAxis {...{ xSettings, ySettings }} />
-                <text className="axis-label" {...labelProps}>Value/Score</text>
-                {dataNest.map((data) => {
+                <text className="axis-label" {...labelProps}>
+                  Value / Score
+                </text>
+                {dataNest.map((data, index) => {
                   const lineProps = {
                     ...defaultProps,
                     ...{
@@ -278,18 +239,25 @@ export default class SurveyGraph extends Component {
                     qConfig[data.key]
                   );
                   return (
-                    <Line lineID={`dataLine_${data.key}`} data={data.values} {...lineProps} />
+                    <Line
+                      key={`line-${data.key}-${index}`}
+                      lineID={`dataLine_${data.key}`}
+                      data={data.values}
+                      {...lineProps}
+                    />
                   );
                 })}
               </g>
             </svg>
           </div>
           <div className="legend">
-            {dataNest.map((data) => (
-              <div className="legend__item">
+            {dataNest.map((data, index) => (
+              <div className="legend__item" key={`legend_${data.key}_${index}`}>
                 <span
                   className="icon"
-                  style={{ backgroundColor: qConfig[data.key].graph.strokeColor}}
+                  style={{
+                    backgroundColor: qConfig[data.key].graph.strokeColor,
+                  }}
                 ></span>
                 {data.key.toUpperCase()}
               </div>

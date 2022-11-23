@@ -27,6 +27,7 @@ const qConfig = {
       strokeFill: BLUE_COLOR,
       dataPoints: {
         ...defaults["dataPoints"],
+        id: "gad7_data",
         dataStrokeFill: BLUE_COLOR,
         strokeColor: BLUE_COLOR,
         strokeFill: BLUE_COLOR,
@@ -43,6 +44,7 @@ const qConfig = {
       strokeFill: ORANGE_COLOR,
       dataPoints: {
         ...defaults["dataPoints"],
+        id: "phq9_data",
         dataStrokeFill: ORANGE_COLOR,
         strokeColor: ORANGE_COLOR,
         strokeFill: ORANGE_COLOR,

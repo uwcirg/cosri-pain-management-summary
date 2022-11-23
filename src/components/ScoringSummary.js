@@ -32,8 +32,10 @@ export default class ScoringSummary extends Component {
         const comparisonToAlert = dataConfig ? dataConfig.comparisonToAlert: "";
         const currentScore = this.getCurrentScore(data.ResponsesSummary);
         const prevScore = this.getPreviousScore(data.ResponsesSummary);
-        console.log("current score ", currentScore, " prev score ", isNaN(prevScore))
-        console.log("comparison to alert ", comparisonToAlert)
+        //debug
+        console.log("current score ", currentScore, " prev score ", isNaN(prevScore));
+        //debug
+        console.log("comparison to alert ", comparisonToAlert);
         if (isNaN(prevScore) || isNaN(currentScore)) return "--";
         if (!isNaN(prevScore)) {
           if (comparisonToAlert === "low") {
@@ -61,9 +63,14 @@ export default class ScoringSummary extends Component {
       if (!dataConfig) return null;
       return <span>{"(" + dataConfig.minScore + "-" + dataConfig.maxScore + ")"}</span>
     }
+    getCurrentDisplayScore(data) {
+      if (!data) return "--";
+      if (!data.ResponsesSummary || !data.ResponsesSummary.length) return "--";
+      return data.FullScore;
+    }
     render() {
         const { summary } = this.props;
-        if (!summary) return null;
+        if (!summary || !summary.length) return <div><b>No questionnaire scoring summary available.</b></div>;
         return (
         <table className="table">
             <caption>{this.props.title || "Scoring Summary"}</caption>
@@ -79,8 +86,17 @@ export default class ScoringSummary extends Component {
                 return (
                   <tr key={`questionnaire_summary_row_${index}`}>
                     <td>{item.QuestionnaireName.toUpperCase()}</td>
-                    <td>{item.FullScore} {this.getRangeDisplay(item)}</td>
-                    <td><div className="icon-container">{this.getDisplayIcon(item)}</div></td>
+                    <td>
+                      <div className="flex">
+                        {this.getCurrentDisplayScore(item)}{" "}
+                        {this.getRangeDisplay(item)}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="icon-container">
+                        {this.getDisplayIcon(item)}
+                      </div>
+                    </td>
                   </tr>
                 );
             })}
@@ -92,5 +108,5 @@ export default class ScoringSummary extends Component {
 
 ScoringSummary.propTypes = {
   title: PropTypes.string,
-  summary: PropTypes.array.isRequired,
+  summary: PropTypes.array,
 };

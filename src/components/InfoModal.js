@@ -79,11 +79,24 @@ export default class InfoModal extends Component {
       </div>
     );
   }
+  renderDescription(description) {
+    return (
+      <div
+        className="description"
+        dangerouslySetInnerHTML={{ __html: description }}
+      ></div>
+    );
+  }
 
   render() {
     const { subSection, closeModal } = this.props;
-    const elements = subSection.info.find((el) => el.type === "elements");
-    const references = subSection.info.filter((el) => el.type === "reference");
+    const elements = subSection.info ? subSection.info.find(
+      (el) => el.type === "elements"
+    ) : null;
+    const references = subSection.info ? subSection.info.filter(
+      (el) => el.type === "reference"
+    ) : null;
+    const description = subSection.description;
 
     return (
       <div className="info-modal">
@@ -99,12 +112,13 @@ export default class InfoModal extends Component {
             </div>
           }
 
-          {references.length > 0 &&
+          {(references && references.length > 0) &&
             <div className="references">
               <h4>References:</h4>
               {this.renderReferences(references)}
             </div>
           }
+          {description && this.renderDescription(description)}
         </div>
       </div>
     );

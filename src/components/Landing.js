@@ -48,7 +48,7 @@ export default class Landing extends Component {
     this.mmeErrors = false;
     this.tocInitialized = false;
     // This binding is necessary to make `this` work in the callback
-    this.setActiveTab = this.setActiveTab.bind(this);
+    this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
   }
 
   setPatientId() {
@@ -319,7 +319,7 @@ export default class Landing extends Component {
       .then((response) => {
         //set result from data from EPIC
         let fhirData = response[0];
-        console.log("RESPONSES ", fhirData)
+        console.log("RESPONSES ", fhirData);
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         this.setSectionVis();
         const { sectionFlags, flaggedCount } = this.processSummary(
@@ -366,22 +366,30 @@ export default class Landing extends Component {
       });
   }
 
-  componentDidUpdate() {
+  initializeTocBot() {
     const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 140 : 100;
-    if (!this.tocInitialized && !this.state.loading && this.state.result) {
-      tocbot.init({
-        tocSelector: ".summary__nav", // where to render the table of contents
-        contentSelector: ".summary__display", // where to grab the headings to build the table of contents
-        headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
-        positionFixedSelector: ".summary__nav", // element to add the positionFixedClass to
-        collapseDepth: 0, // how many heading levels should not be collpased
-        includeHtml: true, // include the HTML markup from the heading node, not just the text,
-        headingsOffset: MIN_HEADER_HEIGHT,
-        scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-        throttleTimeout: 175,
-      });
+    tocbot.init({
+      tocSelector: ".active .summary__nav", // where to render the table of contents
+      contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
+      headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
+      positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
+      collapseDepth: 0, // how many heading levels should not be collpased
+      includeHtml: true, // include the HTML markup from the heading node, not just the text,
+      headingsOffset: MIN_HEADER_HEIGHT,
+      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+      throttleTimeout: 175,
+    });
+  }
 
+  componentDidUpdate() {
+    
+    if (!this.tocInitialized && !this.state.loading && this.state.result) {
+      this.initializeTocBot();
       this.tocInitialized = true;
+    } else {
+      if (this.tocInitialized) {
+        tocbot.refresh({ ...tocbot.options, hasInnerContainers: true });
+      }
     }
     //page title
     document.title = "COSRI";
@@ -417,10 +425,11 @@ export default class Landing extends Component {
      */
     for (let key in summaryMap) {
       if (summaryMap[key].dataSource) {
-        summaryMap[key].dataSource.forEach(item => {
+        summaryMap[key].dataSource.forEach((item) => {
           if (item.endpoint && typeof item.endpoint === "object") {
-            if (item.endpoint[systemType]) item.endpoint = item.endpoint[systemType];
-            else item.endpoint  = item.endpoint["default"];
+            if (item.endpoint[systemType])
+              item.endpoint = item.endpoint[systemType];
+            else item.endpoint = item.endpoint["default"];
           }
           promiseResultSet.push(item);
         });
@@ -1044,10 +1053,11 @@ export default class Landing extends Component {
     return systemType && String(systemType).toLowerCase() !== "production";
   }
 
-  setActiveTab(index) {
+  handleSetActiveTab(index) {
     this.setState({
-      activeTab: index
+      activeTab: index,
     });
+    console.log("WTF??")
   }
 
   processSummary(summary) {
@@ -1195,10 +1205,10 @@ export default class Landing extends Component {
   }
 
   getTabs() {
-     let tabs = ["overview"];
-     const config_tab = getEnv("REACT_APP_TABS");
-     if (config_tab) tabs = config_tab.split(",");
-     return tabs;
+    let tabs = ["overview"];
+    const config_tab = getEnv("REACT_APP_TABS");
+    if (config_tab) tabs = config_tab.split(",");
+    return tabs;
   }
 
   renderTabs() {
@@ -1211,7 +1221,7 @@ export default class Landing extends Component {
               className={`tab ${
                 this.state.activeTab === index ? "active" : ""
               }`}
-              onClick={() => this.setActiveTab(index)}
+              onClick={() => this.handleSetActiveTab(index)}
               role="presentation"
               key={`tab_${index}`}
             >
@@ -1225,14 +1235,15 @@ export default class Landing extends Component {
 
   renderTabPanels(summary, sectionFlags) {
     const tabs = this.getTabs();
-    return (<div className="tab-panels">
-      {
-        tabs.map((item, index) => {
+    return (
+      <div className="tab-panels">
+        {tabs.map((item, index) => {
           return (
             <div
               className={`tab-panel ${
                 this.state.activeTab === index ? "active" : ""
               }`}
+              key={`tab-panel_${item}`}
             >
               {item === "overview" && this.renderSummary(summary, sectionFlags)}
               {item === "report" && (
@@ -1241,9 +1252,9 @@ export default class Landing extends Component {
               {/* other tab panel as specified here */}
             </div>
           );
-        })
-      }
-    </div>);
+        })}
+      </div>
+    );
   }
 
   renderError(returnURL) {

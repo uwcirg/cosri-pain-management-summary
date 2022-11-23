@@ -28,6 +28,7 @@ import Disclaimer from "./Disclaimer";
 import DevTools from "./DevTools";
 import InfoModal from "./InfoModal";
 import ScoringSummary from "./ScoringSummary";
+import SideNav from "./SideNav";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
 import Version from "../elements/Version";
@@ -38,28 +39,28 @@ export default class Summary extends Component {
 
     this.state = {
       showModal: false,
-      showNav: true,
+     // showNav: true,
       modalSubSection: null,
       activeTab: 0,
     };
 
     this.elementRef = React.createRef();
-    this.navRef = React.createRef();
+    //this.navRef = React.createRef();
 
-    // This binding is necessary to make `this` work in the callback
-    this.handleNavToggle = this.handleNavToggle.bind(this);
+    // // This binding is necessary to make `this` work in the callback
+    // this.handleNavToggle = this.handleNavToggle.bind(this);
 
     this.subsectionTableProps = { id: "react_sub-section__table" };
 
     ReactModal.setAppElement("body");
   }
 
-  handleNavToggle(e) {
-    e.preventDefault();
-    this.setState((state) => ({
-      showNav: !state.showNav,
-    }));
-  }
+  // handleNavToggle(e) {
+  //   e.preventDefault();
+  //   this.setState((state) => ({
+  //     showNav: !state.showNav,
+  //   }));
+  // }
 
   handleOpenModal = (modalSubSection, event) => {
     //only open modal   on 'enter' or click
@@ -518,14 +519,18 @@ export default class Summary extends Component {
   }
 
   renderSurveySummaryPanel(panel) {
-    let surveyData =
-      this.props.summary[panel.data.dataSectionRefKey] || [];
-      console.log("survey data ", surveyData);
-    if (!surveyData || surveyData.length === 0) return null;
+    let surveyData = this.props.summary[panel.data.dataSectionRefKey] || [];
     return (
       <div className="sub-section__infopanel">
         <div className="stats-container">
-          <div className="content">{<ScoringSummary summary={surveyData} title={panel.title}></ScoringSummary>}</div>
+          <div className="content">
+            {
+              <ScoringSummary
+                summary={surveyData}
+                title={panel.title}
+              ></ScoringSummary>
+            }
+          </div>
         </div>
       </div>
     );
@@ -538,7 +543,8 @@ export default class Summary extends Component {
         return (
           <div key={`panel_${index}`} className={`panel ${panel.type}`}>
             {panel.type === "graph" && this.renderGraph(panel)}
-            {panel.type === "surveysummary" && this.renderSurveySummaryPanel(panel)}
+            {panel.type === "surveysummary" &&
+              this.renderSurveySummaryPanel(panel)}
             {panel.type === "rxsummary" && this.renderRxSummaryPanel(panel)}
             {panel.type === "alerts" && this.renderAlertsPanel(panel)}
           </div>
@@ -600,7 +606,6 @@ export default class Summary extends Component {
                     icon="info-circle"
                     title={`more info: ${subSection.name}`}
                     role="tooltip"
-                    tabIndex={0}
                   >
                     more info
                   </span>
@@ -770,9 +775,9 @@ export default class Summary extends Component {
       if (summaryMap[section]["hideSection"]) return true;
       sectionsToRender.push(section);
     });
-    const navToggleToolTip = this.state.showNav
-      ? "collapse side navigation menu"
-      : "expand side navigation menu";
+    // const navToggleToolTip = this.state.showNav
+    //   ? "collapse side navigation menu"
+    //   : "expand side navigation menu";
 
     return (
       <React.Fragment>
@@ -780,27 +785,25 @@ export default class Summary extends Component {
           Clinical Opioid Summary with Rx Integration
         </div>
         <div className="summary">
-          <div
+          {/* <div
             className={`${
               this.state.showNav ? "open" : ""
             } summary__nav-wrapper`}
           >
-            <ReactTooltip className="summary-tooltip" id="navTooltip" />
             <nav className="summary__nav"></nav>
-            <div
-              role="presentation"
-              ref={(ref) => (this.navRef = ref)}
-              data-for="navTooltip"
-              data-tip={navToggleToolTip}
-              data-place="right"
-              className={`${meetsInclusionCriteria ? "close" : "hide"}`}
-              title="toggle side navigation menu"
+            <SideNavButton
+              id="summarySideNavButton"
+              showNav={this.state.showNav}
+              navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
               onClick={(e) => {
                 this.handleNavToggle(e);
-                ReactTooltip.hide(this.navRef);
               }}
-            ></div>
-          </div>
+            ></SideNavButton>
+          </div> */}
+          <SideNav
+            id="summarySideNavButton"
+            navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
+          ></SideNav>
           <div className="summary__display" id="maincontent">
             {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
             {meetsInclusionCriteria && <ExclusionBanner />}
@@ -865,5 +868,5 @@ Summary.propTypes = {
   collector: PropTypes.array.isRequired,
   errorCollection: PropTypes.array,
   mmeErrors: PropTypes.bool,
-  result: PropTypes.object.isRequired
+  result: PropTypes.object.isRequired,
 };

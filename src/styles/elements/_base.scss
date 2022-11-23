@@ -22,7 +22,7 @@ body.fixed {
   .summary__nav {
     width: $summary-nav-width;
     &.is-position-fixed {
-      padding: calc(#{$min-header-height} + 36px) 0 20px 0px !important;
+      padding: calc(#{$min-header-height} + 48px) 0 20px 0px !important;
     }
   }
   .summary {
@@ -69,6 +69,10 @@ a {
 }
 .hide {
   display: none;
+}
+.flex {
+  display: flex;
+  justify-content: space-between;
 }
 .lds-ellipsis {
   display: inline-block;
