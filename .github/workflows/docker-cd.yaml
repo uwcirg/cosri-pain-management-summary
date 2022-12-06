@@ -15,6 +15,24 @@ jobs:
       - name: Set environment variable for version from git output
         run: echo "REACT_APP_VERSION_STRING=$(git describe --always --tags)" >> $GITHUB_ENV
 
+      - name: Publish to GitHub Container Registry
+        # TODO: pin to hash
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: ${{ github.repository }}
+          registry: ghcr.io
+
+          # GitHub actor
+          username: ${{ github.actor }}
+
+          # GitHub access token
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+          # create docker image tags to match git tags
+          tag_names: true
+          buildargs: VERSION_STRING
+
+      # # TODO remove after every *-environments migrated to GHCR
       - name: Publish to Dockerhub registry
         # todo: pin to hash
         uses: elgohr/Publish-Docker-Github-Action@master
