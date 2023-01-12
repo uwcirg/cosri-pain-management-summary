@@ -1057,7 +1057,6 @@ export default class Landing extends Component {
     this.setState({
       activeTab: index,
     });
-    console.log("WTF??")
   }
 
   processSummary(summary) {
@@ -1242,7 +1241,7 @@ export default class Landing extends Component {
             <div
               className={`tab-panel ${
                 this.state.activeTab === index ? "active" : ""
-              }`}
+              } ${tabs.length > 1 ? 'multi-tabs': ''}`}
               key={`tab-panel_${item}`}
             >
               {item === "overview" && this.renderSummary(summary, sectionFlags)}

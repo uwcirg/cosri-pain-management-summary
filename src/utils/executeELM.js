@@ -58,7 +58,7 @@ async function executeELM(collector, oResourceTypes) {
 
       // check if instrument resources need to be loaded
       const surveyRequests =
-        release === FHIR_RELEASE_VERSION_4
+        release === FHIR_RELEASE_VERSION_4 && INSTRUMENT_LIST
           ? getInstrumentQuestionnaireAndResponseRequests(client)
           : [];
       if (surveyRequests.length > 0)  {

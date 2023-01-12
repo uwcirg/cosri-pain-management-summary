@@ -76,7 +76,9 @@ $tab-background-color: #fffffff6;
   display: none;
   &.active {
     display: block;
-    border-top: 4px solid $color-blue;
+    &.multi-tabs {
+      border-top: 4px solid $color-blue;
+    }
   }
 }
 

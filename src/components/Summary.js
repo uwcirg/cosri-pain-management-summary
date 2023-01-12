@@ -519,7 +519,9 @@ export default class Summary extends Component {
   }
 
   renderSurveySummaryPanel(panel) {
-    let surveyData = this.props.summary[panel.data.dataSectionRefKey] || [];
+    let surveyData = this.props.summary[panel.data.dataSectionRefKey] || null;
+    console.log("survey data ", surveyData)
+    if (!surveyData) return null;
     return (
       <div className="sub-section__infopanel">
         <div className="stats-container">
