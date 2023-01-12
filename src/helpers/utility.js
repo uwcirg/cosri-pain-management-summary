@@ -95,7 +95,11 @@ export function daysFromToday (dateInput, todayInput) {
     return diff;
 }
 
-
 export function range(start, end) {
   return new Array(end - start + 1).fill(undefined).map((_, i) => i + start);
+}
+
+export function isNumber(target) {
+  if (typeof target === "number") return true;
+  return target !== null && !isNaN(target);
 }

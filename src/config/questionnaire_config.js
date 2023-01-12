@@ -1,5 +1,3 @@
-
-import {range} from "../helpers/utility";
 const PRIMARY_COLOR = "#168698";
 const ORANGE_COLOR = "orange";
 const BLUE_COLOR = "blue";
@@ -18,9 +16,6 @@ const defaults = {
 };
 const qConfig = {
   gad7: {
-    failedScores: range(16, 21),
-    minScore: 0,
-    maxScore: 21,
     graph: {
       ...defaults,
       strokeColor: BLUE_COLOR,
@@ -35,9 +30,6 @@ const qConfig = {
     },
   },
   phq9: {
-    failedScores: range(20, 27),
-    minScore: 0,
-    maxScore: 27,
     graph: {
       ...defaults,
       strokeColor: ORANGE_COLOR,

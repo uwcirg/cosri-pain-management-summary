@@ -21,7 +21,7 @@ export default class Report extends Component {
 
     ReactModal.setAppElement("body");
   }
-  
+
   handleOpenModal = (modalSubSection, event) => {
     //only open modal   on 'enter' or click
     if (event.keyCode === 13 || event.type === "click") {
@@ -51,7 +51,7 @@ export default class Report extends Component {
     return (
       <h2 id={`${section.dataKey}_section`} className="section__header">
         <div className="section__header-title">
-          {section.icon && <span title={section.title}>{section.icon}</span>}
+          {section.icon && <span title={section.title}>{section.icon()}</span>}
           <div className="section__header-title">{section.title}</div>
         </div>
         <FontAwesomeIcon
@@ -67,7 +67,9 @@ export default class Report extends Component {
       <div className="section">
         {/* {section.subtitle && <div>{section.subtitle}</div>} */}
         {section.sections.map((item, index) => {
-          const matchedData = summaryData.filter(o => o.dataKey === item.dataKey)[0];
+          const matchedData = summaryData.filter(
+            (o) => o.dataKey === item.dataKey
+          )[0];
           return (
             <div
               className="sub-section"
@@ -128,13 +130,16 @@ export default class Report extends Component {
       </span>
     );
   }
-  
+
   renderTopPanel(summaryData) {
+    const graphData = this.getGraphData(summaryData);
     return (
       <div className="panel-container">
-        <div className="panel graph">
-          <SurveyGraph data={this.getGraphData(summaryData)}></SurveyGraph>
-        </div>
+        {graphData.length > 0 && (
+          <div className="panel graph">
+            <SurveyGraph data={graphData}></SurveyGraph>
+          </div>
+        )}
         <div className="panel">
           {/* <div className="panel__item">Alerts go here</div> */}
           <div className="panel__item">
@@ -149,9 +154,7 @@ export default class Report extends Component {
     const { summaryData } = this.props;
     return (
       <div className="report summary">
-        <SideNav
-          id="reportSideNavButton"
-        ></SideNav>
+        <SideNav id="reportSideNavButton"></SideNav>
         <div className="summary__display">
           {this.renderTopPanel(summaryData)}
           <div className="sections">

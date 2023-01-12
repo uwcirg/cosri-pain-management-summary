@@ -14,7 +14,7 @@ import {
 import { dateCompare } from "../helpers/sortit";
 import { getDiffDays, isInViewport } from "../helpers/utility";
 import Timeout from "../helpers/timeout";
-import summaryMap from "../config/summary.json";
+import summaryMap from "../config/summary_config.json";
 
 import { getEnv, fetchEnvData } from "../utils/envConfig";
 import SystemBanner from "./SystemBanner";

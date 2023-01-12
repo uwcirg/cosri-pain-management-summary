@@ -26,8 +26,13 @@ define question4LinkId: '/69734-2'
 define question5LinkId: '/69735-9'
 define question6LinkId: '/69689-8'
 define question7LinkId: '/69736-7'
+define ScoringQuestionId: '/70274-6'
 
 define answerExtensionIndex: 1
+define ScoreParams: Tuple {
+  minScore: 0,
+  maxScore: 21
+}
 
 
 // -----------------------------------------------------------------------------
@@ -83,27 +88,27 @@ define Gad7ScoreQuestion1:
 
 // Question 2
 define Gad7ScoreQuestion2:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question2LinkId, answerExtensionIndex)
+  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.two, question2LinkId, answerExtensionIndex)
 
 // Question 3
 define Gad7ScoreQuestion3:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question3LinkId, answerExtensionIndex)
+  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.three, question3LinkId, answerExtensionIndex)
 
 // Question 4
 define Gad7ScoreQuestion4:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question4LinkId, answerExtensionIndex)
+  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.four, question4LinkId, answerExtensionIndex)
 
 // Question 5
 define Gad7ScoreQuestion5:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question5LinkId, answerExtensionIndex)
+  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.five, question5LinkId, answerExtensionIndex)
 
 // Question 6
 define Gad7ScoreQuestion6:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question6LinkId, answerExtensionIndex)
+  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.six, question6LinkId, answerExtensionIndex)
 
 // Question 7
 define Gad7ScoreQuestion7:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question7LinkId, answerExtensionIndex)
+  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.seven, question7LinkId, answerExtensionIndex)
 
 // Calculate the score for the Full GAD7
 // sum up all numeric values for all the answers
@@ -118,10 +123,7 @@ define FullScore:
  
 define ResponsesSummary:
   (QuestionnaireResponses) I
-  return Tuple {
-    date: LogicHelper.DateTimeText(I.authored),
-    items: I.item,
-    responses: LogicHelper.getResponsesByQuestionnaire(Gad7Questionnaire, I.item),
+  let
     score: 
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question1LinkId, answerExtensionIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question2LinkId, answerExtensionIndex)), 0) +
@@ -129,8 +131,20 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question4LinkId, answerExtensionIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question5LinkId, answerExtensionIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question6LinkId, answerExtensionIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)), 0),
-    authoredDate: I.authored,
-    lastUpdated: I.meta.lastUpdated.value
-  }
-  sort by date desc, lastUpdated desc
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)), 0)
+    return Tuple {
+      id: I.id.value,
+      date: LogicHelper.DateTimeText(I.authored),
+      items: I.item,
+      responses: LogicHelper.getResponsesByQuestionnaire(Gad7Questionnaire, I.item, ScoringQuestionId),
+      score: score,
+      scoreSeverity: case
+        when score > 15 then 'high'
+        when score between 10 and 14 then 'moderate'
+        when score between 5 and 9 then 'mild'
+        else 'low'
+      end, 
+      authoredDate: I.authored,
+      lastUpdated: I.meta.lastUpdated.value
+    }
+    sort by date desc, lastUpdated desc

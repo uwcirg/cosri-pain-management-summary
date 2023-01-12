@@ -73,6 +73,11 @@ a {
 .flex {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  column-gap: 4px;
+}
+.flex-start {
+  justify-content: flex-start;
 }
 .lds-ellipsis {
   display: inline-block;

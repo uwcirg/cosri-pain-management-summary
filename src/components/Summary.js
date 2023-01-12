@@ -6,7 +6,7 @@ import ReactTooltip from "react-tooltip";
 import ReactTable from "react-table";
 import ReactModal from "react-modal";
 
-import summaryMap from "../config/summary.json";
+import summaryMap from "../config/summary_config.json";
 import * as formatit from "../helpers/formatit";
 import * as sortit from "../helpers/sortit";
 
@@ -63,7 +63,7 @@ export default class Summary extends Component {
   // }
 
   handleOpenModal = (modalSubSection, event) => {
-    //only open modal   on 'enter' or click
+    //only open modal  on 'enter' or click
     if (event.keyCode === 13 || event.type === "click") {
       this.setState({ showModal: true, modalSubSection });
     }

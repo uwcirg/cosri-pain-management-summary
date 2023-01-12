@@ -25,9 +25,6 @@ export default class SurveyGraph extends Component {
   }
 
   render() {
-    const parentWidth = 500;
-    const parentHeight = 396;
-    const xIntervals = 12;
     let propData = this.props.data || [];
     //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
@@ -62,10 +59,13 @@ export default class SurveyGraph extends Component {
       maxDate = new Date(Math.max.apply(null, arrayDates));
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
-    const arrMonthsYears = [];
+    const arrMonthsYears = [],
+      arrYears = [];
     //date axis is in month intervals so check to see how many there are
     arrayDates.forEach((item) => {
-      let my = item.getMonth() + 1 + " " + item.getFullYear();
+      const yr = item.getFullYear();
+      const my = item.getMonth() + 1 + "-" + yr;
+      if (arrYears.indexOf(yr) === -1) arrYears.push(yr);
       if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
     });
     if (arrMonthsYears.length < 4) {
@@ -104,11 +104,12 @@ export default class SurveyGraph extends Component {
 
     const margins = {
       top: 24,
-      right: 64,
-      bottom: 96,
-      left: 64,
+      right: 32,
+      bottom: 88,
+      left: 72,
     };
-
+    const parentWidth = 520;
+    const parentHeight = 396;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;
     const xScale = scaleTime()
@@ -130,7 +131,7 @@ export default class SurveyGraph extends Component {
       })
       .entries(data);
 
-    console.log("survey graph data nest ", dataNest);
+    //console.log("survey graph data nest ", dataNest);
 
     const lineGenerator = line()
       .x((d) => xScale(d[xFieldName]))
@@ -158,7 +159,7 @@ export default class SurveyGraph extends Component {
         dataStrokeFill: dataStrokeColor,
       },
     };
-    const tickInterval = 1;
+    const tickInterval = arrYears.length > 1 ? 2 : 1;
 
     const xSettings = {
       scale: xScale,
@@ -167,7 +168,6 @@ export default class SurveyGraph extends Component {
       tickFormat: "%b %Y",
       tickType: "date",
       tickInterval: tickInterval,
-      ticks: Math.min(arrMonthsYears.length, xIntervals),
     };
     const ySettings = {
       scale: yScale,
@@ -178,12 +178,78 @@ export default class SurveyGraph extends Component {
 
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
-    const labelProps = {
-      transform: "rotate(-90)",
-      y: 0 - margins.left,
-      x: 0 - graphHeight / 2,
-      dy: "1em",
+
+    const renderYGrid = () => (
+      <Grid
+        {...{
+          width: width,
+          height: height,
+          numTicks: 5,
+          orientation: "left",
+        }}
+      ></Grid>
+    );
+
+    const renderXGrid = () => (
+      <Grid
+        {...{
+          width: width,
+          height: height,
+          numTicks: 10,
+          orientation: "bottom",
+        }}
+      ></Grid>
+    );
+
+    const renderYAxisLabel = () => {
+      const labelProps = {
+        transform: "rotate(-90)",
+        y: 0 - margins.left + 8,
+        x: 0 - graphHeight / 2,
+        dy: "1em",
+      };
+      return (
+        <text className="axis-label" {...labelProps}>
+          Value / Score
+        </text>
+      );
     };
+
+    const renderLines = () => {
+      return dataNest.map((data, index) => {
+        const lineProps = {
+          ...defaultProps,
+          ...{
+            ...qConfig[data.key].graph,
+          },
+        };
+        //console.log("data key ", data.key, " config ", qConfig[data.key]);
+        return (
+          <Line
+            key={`line-${data.key}-${index}`}
+            lineID={`dataLine_${data.key}`}
+            data={data.values}
+            {...lineProps}
+          />
+        );
+      });
+    };
+
+    const renderLegend = () => (
+      <div className="legend">
+        {dataNest.map((data, index) => (
+          <div className="legend__item" key={`legend_${data.key}_${index}`}>
+            <span
+              className="icon"
+              style={{
+                backgroundColor: qConfig[data.key].graph.strokeColor,
+              }}
+            ></span>
+            {data.key.toUpperCase()}
+          </div>
+        ))}
+      </div>
+    );
 
     if (noEntry)
       return (
@@ -204,65 +270,17 @@ export default class SurveyGraph extends Component {
             >
               <g transform={`translate(${margins.left}, ${margins.top})`}>
                 {/* y grid */}
-                <Grid
-                  {...{
-                    width: width,
-                    height: height,
-                    numTicks: 5,
-                    orientation: "left",
-                  }}
-                ></Grid>
+                {renderYGrid()}
                 {/* x grid */}
-                <Grid
-                  {...{
-                    width: width,
-                    height: height,
-                    numTicks: 10,
-                    orientation: "bottom",
-                  }}
-                ></Grid>
+                {renderXGrid()}
+                {renderYAxisLabel()}
+                {/* x and y axis */}
                 <XYAxis {...{ xSettings, ySettings }} />
-                <text className="axis-label" {...labelProps}>
-                  Value / Score
-                </text>
-                {dataNest.map((data, index) => {
-                  const lineProps = {
-                    ...defaultProps,
-                    ...{
-                      ...qConfig[data.key].graph,
-                    },
-                  };
-                  console.log(
-                    "data key ",
-                    data.key,
-                    " config ",
-                    qConfig[data.key]
-                  );
-                  return (
-                    <Line
-                      key={`line-${data.key}-${index}`}
-                      lineID={`dataLine_${data.key}`}
-                      data={data.values}
-                      {...lineProps}
-                    />
-                  );
-                })}
+                {renderLines()}
               </g>
             </svg>
           </div>
-          <div className="legend">
-            {dataNest.map((data, index) => (
-              <div className="legend__item" key={`legend_${data.key}_${index}`}>
-                <span
-                  className="icon"
-                  style={{
-                    backgroundColor: qConfig[data.key].graph.strokeColor,
-                  }}
-                ></span>
-                {data.key.toUpperCase()}
-              </div>
-            ))}
-          </div>
+          {renderLegend()}
         </div>
       </React.Fragment>
     );

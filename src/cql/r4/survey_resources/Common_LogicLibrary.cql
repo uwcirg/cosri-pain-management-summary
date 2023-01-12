@@ -94,9 +94,10 @@ define function MatchedReponsesByQuestionnaire(responses List<FHIR.Questionnaire
     sort by authored desc 
   )
 
-define function getResponsesByQuestionnaire(currentQuestionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>):
-  (currentQuestionnaire.item o where o.linkId.value != 'introduction') I 
+define function getResponsesByQuestionnaire(currentQuestionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
+  (currentQuestionnaire.item o where o.linkId.value != 'introduction' and o.linkId.value != scoringQuestionId) I 
   return {
+      linkId: I.linkId.value,
       question: I.text.value,
       answer: First(GetResponseAnswerByLinkId(I.linkId.value, responses))
     }

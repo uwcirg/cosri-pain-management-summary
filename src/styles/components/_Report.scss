@@ -3,9 +3,19 @@
   margin: auto;
   &.summary {
     height: 100%;
+    background-color: $color-gray-lightest;
+  }
+  .summary__nav-wrapper {
+    .summary__nav {
+      padding: 72px 0 20px 0px;
+    }
   }
   .summary__display {
     padding: 16px;
+    @media (min-width: 1200px) {
+      max-width: 1200px;
+      margin: auto;
+    }
     .sections {
       margin-top: 24px;
       .section {
@@ -27,7 +37,12 @@
           margin: 0;
           margin-right: 8px;
           .icon {
-            margin-left: 8px;
+            margin-left: 12px;
+            transition: transform 350ms ease 50ms;
+            color: $color-blue;
+          }
+          .info-icon {
+            margin-left: 0;
           }
           .date {
             margin-left: 4px;
@@ -36,8 +51,8 @@
             cursor: pointer;
           }
           &.active {
-            color: $color-blue;
-            font-weight: 600;
+            //color: $color-blue;
+            //font-weight: 600;
             .icon {
               transform: rotate(90deg);
             }
@@ -86,6 +101,7 @@
       padding-right: 4px;
       border-bottom: 2px solid $color-blue;
       padding: 4px 8px 2px 0;
+      font-size: 0.95em;
     }
     td:not(:first-of-type) {
       text-align: center;
@@ -93,26 +109,42 @@
     }
   }
   .response-table {
+    font-size: 0.9em;
+    height: 0;
+    overflow: hidden;
     margin: 8px 40px 24px;
     border: 2px solid $color-blue;
     border-collapse: collapse;
+    transition: height 0.4s cubic-bezier(0.865, 0.140, 0.095, 0.870);
+    &.active {
+      height: 100%;
+    }
     th {
       text-align: left;
       border-bottom: 1px solid $color-gray-lighter;
       padding: 8px;
-      &:first-of-type {
+      &:not(:last-of-type) {
         border-right: 1px solid $color-gray-lighter;
+      }
+      &:first-of-type {
+        width: 35%;
       }
     }
     td {
       padding: 4px 8px;
-      &:first-of-type {
+      &:not(:last-of-type) {
         border-right: 1px solid $color-gray-lighter;
       }
     }
     tr:not(:last-of-type) {
       td {
         border-bottom: 1px solid $color-gray-lighter;
+      }
+    }
+    tfoot {
+      td {
+        padding: 16px 8px;
+        border-top: 1px solid $color-gray-lighter;
       }
     }
   }
@@ -132,12 +164,18 @@
       &__item {
         border: 1px solid $color-gray-lighter;
         padding: 8px;
+        .table {
+          td {
+            padding: 2px;
+            font-size: 0.95em
+          }
+        }
       }
     }
   }
   .graph {
     .legend {
-      margin-left: 72px;
+      margin: 0 auto 8px auto;
       border: 2px solid $color-gray-lighter;
       width: 72px;
       padding: 8px 16px;

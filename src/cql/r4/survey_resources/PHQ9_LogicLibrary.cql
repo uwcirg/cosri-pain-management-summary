@@ -25,7 +25,12 @@ define question7LinkId: '/44252-5'
 define question8LinkId: '/44253-3'
 define question9LinkId: '/44260-8'
 define question10LinkId: '/69722-7'
+define ScoringQuestionId: '/44261-6'
 define extensionAnswerIndex: 0
+define ScoreParams: Tuple {
+  minScore: 0,
+  maxScore: 27
+}
 
 // -----------------------------------------------------------------------------
 // PATIENT INFORMATION
@@ -80,38 +85,38 @@ define Phq9ScoreQuestion1:
 
 // Question 2
 define Phq9ScoreQuestion2:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question2LinkId, extensionAnswerIndex)
+  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.two, question2LinkId, extensionAnswerIndex)
 
 // Question 3
 define Phq9ScoreQuestion3:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question3LinkId, extensionAnswerIndex)
+  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.three, question3LinkId, extensionAnswerIndex)
 
 // Question 4
 define Phq9ScoreQuestion4:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question4LinkId, extensionAnswerIndex)
+  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.four, question4LinkId, extensionAnswerIndex)
 
 // Question 5
 define Phq9ScoreQuestion5:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question5LinkId, extensionAnswerIndex)
+  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.five, question5LinkId, extensionAnswerIndex)
 
 // Question 6
 define Phq9ScoreQuestion6:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question6LinkId, extensionAnswerIndex)
+  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.six, question6LinkId, extensionAnswerIndex)
 
 // Question 7
 define Phq9ScoreQuestion7:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question7LinkId, extensionAnswerIndex)
+  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.seven, question7LinkId, extensionAnswerIndex)
 // Question 8
 define Phq9ScoreQuestion8:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question8LinkId, extensionAnswerIndex)
+  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.eight, question8LinkId, extensionAnswerIndex)
 
 // Question 9
 define Phq9ScoreQuestion9:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question9LinkId, extensionAnswerIndex)
+  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.nine, question9LinkId, extensionAnswerIndex)
 
 // Question 10
 define Phq9ScoreQuestion10:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question10LinkId, extensionAnswerIndex)
+  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.ten, question10LinkId, extensionAnswerIndex)
 
 // Calculate the score for the Full PHQ9
 // sum up all numeric values for all the answers
@@ -129,10 +134,7 @@ define FullScore:
 
 define ResponsesSummary:
   (QuestionnaireResponses) I
-  return Tuple {
-    date: LogicHelper.DateTimeText(I.authored),
-    items: I.item,
-    responses: LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item),
+  let
     score: 
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question1LinkId, extensionAnswerIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question2LinkId, extensionAnswerIndex)), 0) +
@@ -143,8 +145,22 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question10LinkId, extensionAnswerIndex)), 0),
-    authoredDate: I.authored,
-    lastUpdated: I.meta.lastUpdated.value
-  }
-  sort by date desc, lastUpdated desc
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question10LinkId, extensionAnswerIndex)), 0)
+    return Tuple {
+      id: I.id.value,
+      date: LogicHelper.DateTimeText(I.authored),
+      items: I.item,
+      responses: LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId),
+      score: score,
+      scoreSeverity:
+        case
+          when score >= 20 then 'high'
+          when score between 15 and 19 then 'moderately high'
+          when score between 10 and 14 then 'moderate'
+          when score between 5 and 9 then 'mild'
+          else 'low' 
+        end,
+      authoredDate: I.authored,
+      lastUpdated: I.meta.lastUpdated.value
+    }
+    sort by date desc, lastUpdated desc

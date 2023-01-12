@@ -1251,23 +1251,43 @@
                      } ],
                      "relationship" : [ ],
                      "where" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "Equal",
-                           "operand" : [ {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "linkId",
-                                 "scope" : "o",
-                                 "type" : "Property"
-                              }
-                           }, {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                              "value" : "introduction",
-                              "type" : "Literal"
-                           } ]
-                        }
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "Equal",
+                              "operand" : [ {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "linkId",
+                                    "scope" : "o",
+                                    "type" : "Property"
+                                 }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "introduction",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "Equal",
+                              "operand" : [ {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "linkId",
+                                    "scope" : "o",
+                                    "type" : "Property"
+                                 }
+                              }, {
+                                 "name" : "scoringQuestionId",
+                                 "type" : "OperandRef"
+                              } ]
+                           }
+                        } ]
                      }
                   }
                } ],
@@ -1276,6 +1296,17 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
+                        "name" : "linkId",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "linkId",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
                         "name" : "question",
                         "value" : {
                            "path" : "value",
@@ -1325,6 +1356,12 @@
                      "name" : "{http://hl7.org/fhir}QuestionnaireResponse.Item",
                      "type" : "NamedTypeSpecifier"
                   }
+               }
+            }, {
+               "name" : "scoringQuestionId",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}String",
+                  "type" : "NamedTypeSpecifier"
                }
             } ]
          }, {
