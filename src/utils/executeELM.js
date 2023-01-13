@@ -14,18 +14,19 @@ import r4OMTKLogicELM from '../cql/r4/OMTKLogic.json';
 import r4SurveyCommonELM from "../cql/r4/survey_resources/Common_LogicLibrary.json";
 import valueSetDB from '../cql/valueset-db.json';
 import {getEnv, fetchEnvData} from './envConfig';
+import {getEnvInstrumentList} from '../helpers/utility';
 
 const noCacheHeader = {
   "Cache-Control": "no-cache, no-store, max-age=0",
 };
-
-const INSTRUMENT_LIST = getEnv("REACT_APP_SCORING_INSTRUMENTS");
 const FHIR_RELEASE_VERSION_2 = 2;
 const FHIR_RELEASE_VERSION_4 = 4;
 
 async function executeELM(collector, oResourceTypes) {
   let client, release, library;
   const resourceTypes = oResourceTypes || {};
+  const INSTRUMENT_LIST = getEnvInstrumentList();
+  console.log("instrument list from environment variable ", INSTRUMENT_LIST)
   return new Promise((resolve) => {
     // First get our authorized client and send the FHIR release to the next step
     const results = FHIR.oauth2.ready().then((clientArg) => {
@@ -192,6 +193,7 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
 }
 
 function getElmLibForInstruments() {
+  const INSTRUMENT_LIST = getEnvInstrumentList();
   let instrumentList = INSTRUMENT_LIST.split(",");
   return instrumentList.map((libId) =>
     (async () => {
@@ -212,6 +214,7 @@ function getElmLibForInstruments() {
 }
 
 function getInstrumentQuestionnaireAndResponseRequests(client) {
+  const INSTRUMENT_LIST = getEnvInstrumentList();
   if (!client) return [];
   if (!INSTRUMENT_LIST) return [];
   const arrList = INSTRUMENT_LIST.split(",").map((item) => item.trim());

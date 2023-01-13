@@ -1,4 +1,5 @@
 import moment from "moment";
+import {getEnv} from "../utils/envConfig";
 /*
  * return number of days between two dates
  * @params dateString1 date #1 to be compared
@@ -108,4 +109,8 @@ export function isNumber(target) {
   if (typeof target === "number") return true;
   if (isNaN(target)) return false;
   return target !== null;
+}
+
+export function getEnvInstrumentList() {
+  return getEnv("REACT_APP_SCORING_INSTRUMENTS");
 }
