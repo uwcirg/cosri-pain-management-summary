@@ -142,6 +142,7 @@
   .panel-container {
     display: flex;
     width: 100%;
+    min-height: 80px;
     gap: 16px;
     flex-wrap: wrap;
     .panel {
@@ -220,4 +221,8 @@
       stroke: #ccc;
     }
   }
+}
+.no-entries {
+  font-style: italic;
+  color: #58676a;
 }

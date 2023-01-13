@@ -142,9 +142,10 @@ export default class Report extends Component {
         )}
         <div className="panel">
           {/* <div className="panel__item">Alerts go here</div> */}
-          <div className="panel__item">
+          {!summaryData && <div className="no-entries">No scoring summary available</div>}
+          {summaryData &&<div className="panel__item">
             <ScoringSummary summary={summaryData}></ScoringSummary>
-          </div>
+          </div>}
         </div>
       </div>
     );
