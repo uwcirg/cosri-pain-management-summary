@@ -67,9 +67,9 @@ export default class Report extends Component {
       <div className="section">
         {/* {section.subtitle && <div>{section.subtitle}</div>} */}
         {section.sections.map((item, index) => {
-          const matchedData = summaryData.filter(
+          const matchedData = summaryData && summaryData.length ? summaryData.filter(
             (o) => o.dataKey === item.dataKey
-          )[0];
+          )[0]: null;
           return (
             <div
               className="sub-section"
