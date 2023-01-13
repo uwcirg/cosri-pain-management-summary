@@ -7,7 +7,7 @@ import FailDownArrowIcon from "../icons/FailDownArrowIcon";
 import PassDownArrowIcon from "../icons/PassDownArrowIcon";
 import LineIcon from "../icons/LineIcon";
 import qConfig from "../config/questionnaire_config";
-import {isNumber} from "../helpers/utility";
+import { isNumber } from "../helpers/utility";
 
 export default class ScoringSummary extends Component {
   sortData(data) {
@@ -47,7 +47,7 @@ export default class ScoringSummary extends Component {
       "current score is number? ",
       isNumber(currentScore),
       "prev score ",
-      prevScore, 
+      prevScore,
       " prev score is number? ",
       isNumber(prevScore)
     );
@@ -86,48 +86,60 @@ export default class ScoringSummary extends Component {
     if (!data.ResponsesSummary || !data.ResponsesSummary.length) return "--";
     return isNumber(data.FullScore) ? data.FullScore : "--";
   }
+  getTitleDisplay() {
+    return this.props.title || "Scoring Summary";
+  }
+  renderTableHeaders() {
+    return (
+      <thead>
+        <tr>
+          <th>Questionnaire Name</th>
+          <th>Score</th>
+          <th>Compare to Last</th>
+        </tr>
+      </thead>
+    );
+  }
+  renderNoDataRow() {
+    return (
+      <tr>
+        <td colSpan="3">
+          <div className="no-entries">No data available</div>
+        </td>
+      </tr>
+    );
+  }
+  renderDataRows(summary) {
+    return summary.map((item, index) => {
+      return (
+        <tr key={`questionnaire_summary_row_${index}`}>
+          <td>{item.QuestionnaireName.toUpperCase()}</td>
+          <td>
+            <div className="flex">
+              <Score
+                score={this.getCurrentDisplayScore(item)}
+                scoreParams={this.getCurrentData(item.ResponsesSummary)}
+              ></Score>
+              <div>{this.getRangeDisplay(item)}</div>
+            </div>
+          </td>
+          <td>
+            <div className="icon-container">{this.getDisplayIcon(item)}</div>
+          </td>
+        </tr>
+      );
+    });
+  }
   render() {
     const { summary } = this.props;
-    if (!summary || !summary.length)
-      return (
-        <div>
-          <b>No questionnaire scoring summary available.</b>
-        </div>
-      );
+    const noSummaryData = !summary || !summary.length;
     return (
       <table className="table">
-        <caption>{this.props.title || "Scoring Summary"}</caption>
-        <thead>
-          <tr>
-            <th>Questionnaire Name</th>
-            <th>Score</th>
-            <th>Compare to Last</th>
-          </tr>
-        </thead>
+        <caption>{this.getTitleDisplay()}</caption>
+        {!noSummaryData && this.renderTableHeaders()}
         <tbody>
-          {summary.map((item, index) => {
-            return (
-              <tr key={`questionnaire_summary_row_${index}`}>
-                <td>{item.QuestionnaireName.toUpperCase()}</td>
-                <td>
-                  <div className="flex">
-                    <Score
-                      score={this.getCurrentDisplayScore(item)}
-                      scoreParams={this.getCurrentData(item.ResponsesSummary)}
-                    ></Score>
-                    <div>
-                      {this.getRangeDisplay(item)}
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div className="icon-container">
-                    {this.getDisplayIcon(item)}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+          {noSummaryData && this.renderNoDataRow()}
+          {!noSummaryData && this.renderDataRows(summary)}
         </tbody>
       </table>
     );

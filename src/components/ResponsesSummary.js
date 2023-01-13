@@ -32,6 +32,7 @@ export default class ResponsesSummary extends Component {
   getDisplayDate(targetObj) {
     if (!targetObj) return "--";
     const objDate = targetObj.date ? new Date(targetObj.date) : null;
+    // need to account for timezone offset for a UTC date/time
     if (objDate) {
       let tzOffset = objDate.getTimezoneOffset() * 60000;
       objDate.setTime(objDate.getTime() + tzOffset);
@@ -44,6 +45,10 @@ export default class ResponsesSummary extends Component {
         })
       : "";
     return displayDate;
+  }
+  getNumResponses(summary) {
+    if (!summary || !summary.ResponsesSummary) return 0;
+    return summary.ResponsesSummary.length
   }
   renderResponses(currentResponses, prevResponses) {
     if (!currentResponses && !prevResponses)
@@ -104,49 +109,76 @@ export default class ResponsesSummary extends Component {
       </table>
     );
   }
+  renderTableHeader() {
+    return (
+      <thead>
+        <tr>
+          <th>Score</th>
+          <th>Responses Completed</th>
+          <th>Responses</th>
+        </tr>
+      </thead>
+    );
+  }
+  renderScoreTableCell(summary) {
+    if (!summary) return <td>--</td>;
+    const score = summary.FullScore;
+    const scoreParams =
+      summary && summary.ResponsesSummary && summary.ResponsesSummary.length
+        ? summary.ResponsesSummary[0]
+        : null;
+    return (
+      <td>
+        <Score
+          score={score}
+          scoreParams={scoreParams}
+        ></Score>
+      </td>
+    );
+  }
+  renderNumResponsesTableCell(summary) {
+    return <td>{this.getNumResponses(summary)}</td>;
+  }
+  renderResponsesLinkTableCell(lastResponsesDate) {
+    return (
+      <td>
+        <div
+          role="presentation"
+          className={`link-container ${this.state.open ? "active" : ""}`}
+          onClick={(e) => this.setState({ open: !this.state.open })}
+        >
+          <div className="info-icon text-bold">
+            {lastResponsesDate && <span>responded on {lastResponsesDate}</span>}
+          </div>
+          <FontAwesomeIcon
+            className="icon"
+            icon="chevron-right"
+            title="expand/collapse"
+          />
+        </div>
+      </td>
+    );
+  }
   renderSummary(summary) {
-    const currentResponses = this.getCurrentResponses(summary);
-    const prevResponses = this.getPrevResponses(summary);
-    const noResponses = !currentResponses && !prevResponses;
+    const noResponses =
+      !summary || !summary.ResponsesSummary || !summary.ResponsesSummary.length;
+    const currentResponses = noResponses
+      ? null
+      : this.getCurrentResponses(summary);
+    const prevResponses = noResponses ? null : this.getPrevResponses(summary);
     if (noResponses)
       return <div className="no-entries">No recorded responses</div>;
     return (
       <React.Fragment>
         <table className="table">
-          <thead>
-            <tr>
-              <th>Score</th>
-              <th>Responses Completed</th>
-              <th>Responses</th>
-            </tr>
-          </thead>
+          {this.renderTableHeader()}
           <tbody>
             <tr>
-              <td>
-                <Score
-                  score={summary.FullScore}
-                  scoreParams={summary.ResponsesSummary[0]}
-                ></Score>
-              </td>
-              <td>{summary.ResponsesSummary.length}</td>
-              <td>
-                <div
-                  role="presentation"
-                  className={`link-container ${
-                    this.state.open ? "active" : ""
-                  }`}
-                  onClick={(e) => this.setState({ open: !this.state.open })}
-                >
-                  <div className="info-icon text-bold">
-                    Last responded on {this.getDisplayDate(currentResponses)}
-                  </div>
-                  <FontAwesomeIcon
-                    className="icon"
-                    icon="chevron-right"
-                    title="expand/collapse"
-                  />
-                </div>
-              </td>
+              {this.renderScoreTableCell(summary)}
+              {this.renderNumResponsesTableCell(summary)}
+              {this.renderResponsesLinkTableCell(
+                this.getDisplayDate(currentResponses)
+              )}
             </tr>
           </tbody>
         </table>
