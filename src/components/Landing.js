@@ -16,7 +16,7 @@ import { getDiffDays, isInViewport } from "../helpers/utility";
 import Timeout from "../helpers/timeout";
 import summaryMap from "../config/summary_config.json";
 
-import { getEnv, fetchEnvData } from "../utils/envConfig";
+import { getEnv, getEnvs, fetchEnvData } from "../utils/envConfig";
 import SystemBanner from "./SystemBanner";
 import Header from "./Header";
 import Report from "./Report";
@@ -311,6 +311,9 @@ export default class Landing extends Component {
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
      */
     fetchEnvData();
+
+    // write out environment variables:
+    getEnvs();
     //start time out countdown on DOM mounted
     Timeout();
     this.pingProcessProgress();

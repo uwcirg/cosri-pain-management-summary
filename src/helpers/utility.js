@@ -106,8 +106,6 @@ export function range(start, end) {
 
 export function isNumber(target) {
   if (typeof target === "number") return true;
-  console.log("target? ", target, " isNaN ? ", isNaN(target));
   if (isNaN(target)) return false;
-  console.log("shouldn't get here ")
   return target !== null;
 }
