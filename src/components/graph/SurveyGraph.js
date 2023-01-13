@@ -59,13 +59,11 @@ export default class SurveyGraph extends Component {
       maxDate = new Date(Math.max.apply(null, arrayDates));
       minDate = new Date(Math.min.apply(null, arrayDates));
     }
-    const arrMonthsYears = [],
-      arrYears = [];
+    const arrMonthsYears = [];
     //date axis is in month intervals so check to see how many there are
     arrayDates.forEach((item) => {
       const yr = item.getFullYear();
       const my = item.getMonth() + 1 + "-" + yr;
-      if (arrYears.indexOf(yr) === -1) arrYears.push(yr);
       if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
     });
     if (arrMonthsYears.length < 4) {
@@ -78,6 +76,10 @@ export default class SurveyGraph extends Component {
       minDate = new Date(minDate);
       //console.log("min date ", minDate, " max date ", maxDate)
     }
+     const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
+     const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
+     console.log("month diff between years ", monthsDiff);
+
     if (arrayDates.length) {
       /*
        * set up baseline data point starting at 0
@@ -159,7 +161,16 @@ export default class SurveyGraph extends Component {
         dataStrokeFill: dataStrokeColor,
       },
     };
-    const tickInterval = arrYears.length > 1 ? 2 : 1;
+
+    const tickInterval = (() => {
+      if (monthsDiff >= 84) return 7;
+      if (monthsDiff >= 72) return 6;
+      if (monthsDiff >= 60) return 5;
+      if (monthsDiff >= 48) return 4;
+      if (monthsDiff >= 36) return 3;
+      if (monthsDiff > 12) return 2;
+      return 1;
+    })();
 
     const xSettings = {
       scale: xScale,
