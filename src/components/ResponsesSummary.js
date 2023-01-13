@@ -148,7 +148,7 @@ export default class ResponsesSummary extends Component {
           onClick={(e) => this.setState({ open: !this.state.open })}
         >
           <div className="info-icon text-bold">
-            {lastResponsesDate && <span>responded on {lastResponsesDate}</span>}
+            {lastResponsesDate && <span>Last responded on {lastResponsesDate}</span>}
           </div>
           <FontAwesomeIcon
             className="icon"
