@@ -69,7 +69,7 @@ define IndexOfQuestion:
     }
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Gad7Questionnaire)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Gad7Questionnaire, 'GAD7')
 
 // Load the most recent completed questionnaireResponse
 define CurrentQuestionnaireResponse:
@@ -131,12 +131,16 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question4LinkId, answerExtensionIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question5LinkId, answerExtensionIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question6LinkId, answerExtensionIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)), 0)
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)), 0),
+    responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
+    responses: if Gad7Questionnaire is not null then 
+        LogicHelper.getResponsesByQuestionnaire(Gad7Questionnaire, I.item, ScoringQuestionId) else 
+        responsesOnly
     return Tuple {
       id: I.id.value,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: LogicHelper.getResponsesByQuestionnaire(Gad7Questionnaire, I.item, ScoringQuestionId),
+      responses: responses,
       score: score,
       scoreSeverity: case
         when score > 15 then 'high'

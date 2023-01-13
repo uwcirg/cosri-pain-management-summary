@@ -81,14 +81,16 @@ define function getResponseByQuestionId(responseItems List<FHIR.QuestionnaireRes
  * retrieve questionnaire responses matched to the target questionnaire
  * @param responses as FHIR.QuestionnaireResponse
  * @param questionnaire as FHIR.Questionnaire to match against
+ * @param keyword as String to match in the questionnaire element of the responses
  */
-define function MatchedReponsesByQuestionnaire(responses List<FHIR.QuestionnaireResponse>, currentQuestionnaire FHIR.Questionnaire):
+define function MatchedReponsesByQuestionnaire(responses List<FHIR.QuestionnaireResponse>, currentQuestionnaire FHIR.Questionnaire, keyword String):
   ((responses) Q
     where 
     (
       (
         PositionOf(Lower(currentQuestionnaire.name), Lower(Q.questionnaire.value)) != -1 or
-        PositionOf(Lower(currentQuestionnaire.id), Lower(Q.questionnaire.value)) != -1
+        PositionOf(Lower(currentQuestionnaire.id), Lower(Q.questionnaire.value)) != -1 or 
+        PositionOf(Lower(keyword), Lower(Q.questionnaire.value)) != -1
       ) and 
       Q.status.value = 'completed')
     sort by authored desc 
@@ -184,12 +186,11 @@ define function getScoringByResponseItem(questionnaire FHIR.Questionnaire, respo
  * @param responses as a list FHIR.QuestionnaireResponse.Item
  * @param scoringQuestionId as String
  */
-define function FormattedResponses(questionnaireItems List<FHIR.Questionnaire.Item>, responses List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
+define function FormattedResponsesByQuestionnaire(questionnaireItems List<FHIR.Questionnaire.Item>, responses List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
   ((questionnaireItems) O where O.linkId.value != 'introduction' and O.linkId.value != scoringQuestionId) Q
     let
       answerText: GetResponseAnswerByLinkId(Q.linkId.value, responses),
       answerValue: GetResponseValueByLinkId(Q.linkId.value, responses)
-
     return {
       id: Q.linkId.value,
       answer: if answerText is not null then First(answerText) else null,
@@ -197,3 +198,15 @@ define function FormattedResponses(questionnaireItems List<FHIR.Questionnaire.It
       question: if Q.linkId.value = scoringQuestionId then '<b>' + Q.text.value + '</b>' else Q.text.value,
       text: Q.text.value
     }
+
+define function FormattedQuestionnaireResponses(responseItems List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
+  ((responseItems) Q where Q.linkId.value != scoringQuestionId) I 
+  return {
+      linkId: I.linkId.value,
+      answer: case
+        //answer in FHIR coding format 
+        when I.answer[0].value.display is not null then I.answer[0].value.display.value
+        else I.answer[0].value.value
+      end,
+      question: I.text.value
+  }

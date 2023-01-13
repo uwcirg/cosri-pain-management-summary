@@ -1,5 +1,5 @@
 import flagit from '../../helpers/flagit';
-import summaryMap from '../../components/summary.json';
+import summaryMap from '../../config/summary_config.json';
 import {
   mockSummaryA, mockSummaryB, mockSummaryC, mockSummaryD, mockSummaryE, mockSummaryF, mockSummaryG
 } from '../../utils/testFixtures';

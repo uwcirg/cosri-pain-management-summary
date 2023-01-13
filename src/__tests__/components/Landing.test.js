@@ -13,3 +13,4 @@ it('renders without crashing', () => {
   const component = shallowRender(Landing, {});
   expect(component).toExist();
 });
+

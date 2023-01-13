@@ -45,22 +45,11 @@ export default class Summary extends Component {
     };
 
     this.elementRef = React.createRef();
-    //this.navRef = React.createRef();
-
-    // // This binding is necessary to make `this` work in the callback
-    // this.handleNavToggle = this.handleNavToggle.bind(this);
 
     this.subsectionTableProps = { id: "react_sub-section__table" };
 
     ReactModal.setAppElement("body");
   }
-
-  // handleNavToggle(e) {
-  //   e.preventDefault();
-  //   this.setState((state) => ({
-  //     showNav: !state.showNav,
-  //   }));
-  // }
 
   handleOpenModal = (modalSubSection, event) => {
     //only open modal  on 'enter' or click

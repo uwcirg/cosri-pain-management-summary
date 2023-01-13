@@ -111,16 +111,8 @@ async function executeELM(collector, oResourceTypes) {
         ] : {};
       
       if (!INSTRUMENT_LIST) return evalResults;
-
-      const hasQuestionnaire =
-        bundle && bundle.entry.filter(
-          (item) =>
-            item.resource && item.resource.resourceType === "Questionnaire"
-        ).length > 0;
-
-      if (!hasQuestionnaire) return evalResults;
       
-      // return a promise
+      // return a promise containing survey evaluated data
       return new Promise((resolve, reject) => {
         const elmLibs = getElmLibForInstruments();
         Promise.allSettled(elmLibs).then(results => {
@@ -132,9 +124,6 @@ async function executeELM(collector, oResourceTypes) {
   
           if (!evalResults["Summary"]) {
             evalResults["Summary"] = {};
-          }
-          if (!evalResults["Summary"][SURVEY_SUMMARY_KEY]) {
-            evalResults["Summary"][SURVEY_SUMMARY_KEY] = [];
           }
           evalResults["Summary"][SURVEY_SUMMARY_KEY] = evaluatedSurveyResults;
           //debug
@@ -149,7 +138,6 @@ async function executeELM(collector, oResourceTypes) {
     resolve(results);
   });
 }
-
 
 function executeELMForInstruments(arrayElmPromiseResult, bundle) {
   if (!arrayElmPromiseResult) return [];

@@ -102,7 +102,7 @@ export default class ScoringSummary extends Component {
   }
   renderNoDataRow() {
     return (
-      <tr>
+      <tr className="no-data-row">
         <td colSpan="3">
           <div className="no-entries">No data available</div>
         </td>
@@ -112,7 +112,7 @@ export default class ScoringSummary extends Component {
   renderDataRows(summary) {
     return summary.map((item, index) => {
       return (
-        <tr key={`questionnaire_summary_row_${index}`}>
+        <tr key={`questionnaire_summary_row_${index}`} className="data-row">
           <td>{item.QuestionnaireName.toUpperCase()}</td>
           <td>
             <div className="flex">

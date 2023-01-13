@@ -13,10 +13,6 @@ it('renders without crashing', () => {
   expect(component).toExist();
 });
 
-it('renders the scrolling nav', () => {
-  expect(component.find('.summary__nav')).toExist();
-});
-
 it('renders the summary display', () => {
   expect(component.find('.summary__display')).toExist();
 });

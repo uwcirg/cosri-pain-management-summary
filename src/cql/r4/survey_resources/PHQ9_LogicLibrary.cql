@@ -65,7 +65,7 @@ define IndexOfQuestion:
     }
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Phq9Questionnaire)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Phq9Questionnaire, 'PHQ9')
 
 // Load the most recent completed QuestionnaireResponse
 define CurrentQuestionnaireResponse:
@@ -145,12 +145,16 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question10LinkId, extensionAnswerIndex)), 0)
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question10LinkId, extensionAnswerIndex)), 0),
+    responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
+    responses: if Phq9Questionnaire is not null then 
+        LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
+        responsesOnly
     return Tuple {
       id: I.id.value,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId),
+      responses: responses,
       score: score,
       scoreSeverity:
         case
