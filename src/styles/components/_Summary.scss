@@ -9,6 +9,7 @@
 
   &__nav {
     color: $color-white;
+    background-color: $color-gray-dark;
     padding: 38px 0 20px;
     width: 248px;
     z-index: 1;
@@ -20,7 +21,7 @@
         .toc-link {
           font-size: 0.85em;
           padding: 4px 8px 4px 24px;
-          line-height: 1.5;
+          line-height: 1.55;
           width: 80%;
           max-width: 100%;
           border-bottom: 0;
@@ -461,6 +462,7 @@
               margin-right:8px;
             }
             .table {
+              width: 100%;
               caption {
                 font-weight: 700;
                 margin-top: 4px;

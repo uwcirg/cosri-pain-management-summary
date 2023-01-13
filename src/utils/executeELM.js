@@ -108,6 +108,8 @@ async function executeELM(collector, oResourceTypes) {
         results.patientResults ? results.patientResults[
           Object.keys(results.patientResults)[0]
         ] : {};
+      
+      if (!INSTRUMENT_LIST) return evalResults;
 
       const hasQuestionnaire =
         bundle && bundle.entry.filter(
@@ -146,6 +148,7 @@ async function executeELM(collector, oResourceTypes) {
     resolve(results);
   });
 }
+
 
 function executeELMForInstruments(arrayElmPromiseResult, bundle) {
   if (!arrayElmPromiseResult) return [];

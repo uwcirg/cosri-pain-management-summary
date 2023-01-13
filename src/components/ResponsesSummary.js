@@ -46,15 +46,17 @@ export default class ResponsesSummary extends Component {
     return displayDate;
   }
   renderResponses(currentResponses, prevResponses) {
-    const hasScores = !isNaN(currentResponses.score) || !isNaN(prevResponses.score);
+    if (!currentResponses && !prevResponses)
+      return <div>No recorded responses</div>;
+    const hasScores =
+      (currentResponses && !isNaN(currentResponses.score)) ||
+      (prevResponses && !isNaN(prevResponses.score));
     return (
       <table className={`response-table ${this.state.open ? "active" : ""}`}>
         <thead>
           <tr>
-            <th></th>
-            {currentResponses && (
-              <th>Most recent ( {this.getDisplayDate(currentResponses)} )</th>
-            )}
+            <th>{/* no need for header for question */}</th>
+            <th>Most recent ( {this.getDisplayDate(currentResponses)} )</th>
             {prevResponses && (
               <th>From last ( {this.getDisplayDate(prevResponses)} )</th>
             )}
@@ -103,10 +105,11 @@ export default class ResponsesSummary extends Component {
     );
   }
   renderSummary(summary) {
-    console.log("summary ", summary);
     const currentResponses = this.getCurrentResponses(summary);
     const prevResponses = this.getPrevResponses(summary);
     const noResponses = !currentResponses && !prevResponses;
+    if (noResponses)
+      return <div className="no-entries">No recorded responses</div>;
     return (
       <React.Fragment>
         <table className="table">
@@ -126,39 +129,24 @@ export default class ResponsesSummary extends Component {
                 ></Score>
               </td>
               <td>{summary.ResponsesSummary.length}</td>
-              {noResponses && <td>--</td>}
-              {!noResponses && (
-                <td>
-                  <div
-                    role="presentation"
-                    className={`link-container ${
-                      this.state.open ? "active" : ""
-                    }`}
-                    onClick={(e) => this.setState({ open: !this.state.open })}
-                  >
-                    <div className="info-icon text-bold">
-                      Last responded on {this.getDisplayDate(currentResponses)}
-                    </div>
-                    <FontAwesomeIcon
-                      className="icon"
-                      icon="chevron-right"
-                      title="expand/collapse"
-                    />
+              <td>
+                <div
+                  role="presentation"
+                  className={`link-container ${
+                    this.state.open ? "active" : ""
+                  }`}
+                  onClick={(e) => this.setState({ open: !this.state.open })}
+                >
+                  <div className="info-icon text-bold">
+                    Last responded on {this.getDisplayDate(currentResponses)}
                   </div>
-                </td>
-              )}
-              {/* {!noResponses && (
-                <td>
-                  {currentResponses &&
-                    this.renderResponseLink("most recent", currentResponses)}
-                </td>
-              )}
-              {!noResponses && (
-                <td>
-                  {prevResponses &&
-                    this.renderResponseLink("from last", prevResponses)}
-                </td>
-              )} */}
+                  <FontAwesomeIcon
+                    className="icon"
+                    icon="chevron-right"
+                    title="expand/collapse"
+                  />
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>

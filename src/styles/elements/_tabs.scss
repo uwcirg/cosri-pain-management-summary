@@ -9,7 +9,7 @@ $tab-background-color: #fffffff6;
 }
 .tab {
   cursor: pointer;
-  padding: 12px 20px;
+  padding: 14px 20px 12px;
   margin: 0px 12px;
   background: $color-gray-lightest;
   display: inline-block;
@@ -21,7 +21,7 @@ $tab-background-color: #fffffff6;
   letter-spacing: 0.1rem;
   font-weight: 600;
   font-size: 1.02rem;
-  border-radius: 8px 8px 0 0;
+  border-radius: 16px 16px 0 0;
   text-transform: uppercase;
   border-top: 1px solid $color-gray-lighter;
   border-left: 1px solid $color-gray-lighter;

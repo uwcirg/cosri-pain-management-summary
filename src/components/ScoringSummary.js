@@ -22,12 +22,12 @@ export default class ScoringSummary extends Component {
     return sortedData[0];
   }
   getPreviousScore(data) {
-    if (!data || data.length === 0 || data.length === 1) return parseInt(null);
+    if (!data || data.length === 0 || data.length === 1) return null;
     const sortedData = this.sortData(data);
     return parseInt(sortedData[1].score);
   }
   getCurrentScore(data) {
-    if (!data || data.length === 0) return parseInt(null);
+    if (!data || data.length === 0) return null;
     const sortedData = this.sortData(data);
     return parseInt(sortedData[0].score);
   }
@@ -40,12 +40,16 @@ export default class ScoringSummary extends Component {
     console.log(
       "current score ",
       currentScore,
-      " prev score ",
+      "current score is number? ",
+      isNumber(currentScore),
+      "prev score ",
+      prevScore, 
+      " prev score is number? ",
       isNumber(prevScore)
     );
     //debug
     console.log("comparison to alert ", comparisonToAlert);
-    if (!isNumber(prevScore) || !isNumber(currentScore)) return "--";
+    if (!isNumber(currentScore) || !isNumber(prevScore)) return "--";
     if (isNumber(prevScore)) {
       if (comparisonToAlert === "lower") {
         if (currentScore < prevScore)
