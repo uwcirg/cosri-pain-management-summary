@@ -6,10 +6,7 @@ import { transition } from 'd3-transition';
 import { timeMonth} from 'd3-time';
 
 class Axis extends React.Component {
-  constructor() {
-    super();
-    this.ref = React.createRef();
-  }
+
   componentDidMount() {
     this.renderAxis();
   }
@@ -17,8 +14,7 @@ class Axis extends React.Component {
     this.updateAxis();
   }
   renderAxis() {
-    const { scale, orient, ticks, tickType, tickFormat, tickInterval } = this.props;
-    const node = this.ref.current;
+    const { scale, orient, ticks, tickType, tickFormat, tickInterval} = this.props;
     let axis;
 
     if (orient === "bottom") {
@@ -34,7 +30,7 @@ class Axis extends React.Component {
       axis = axisLeft(scale)
         .ticks(ticks);
     }
-    select(node).call(axis);
+    select(`#axisGroup_${orient}`).call(axis);
   }
   updateAxis() {
     const { scale, orient, ticks } = this.props;
@@ -46,10 +42,10 @@ class Axis extends React.Component {
     }
   }
   render() {
-    const { orient, transform } = this.props;
+    const { orient, transform, axisGroupId } = this.props;
     return (
       <g
-        ref={this.ref}
+        id={axisGroupId || `axisGroup_${orient}`}
         transform={transform}
         className={`${orient} axis`}
       />

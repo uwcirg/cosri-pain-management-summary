@@ -4,7 +4,6 @@ $tab-background-color: #fffffff6;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 8px;
   height: 100%;
 }
 .tab {
@@ -79,26 +78,5 @@ $tab-background-color: #fffffff6;
     &.multi-tabs {
       border-top: 4px solid $color-blue;
     }
-  }
-}
-
-// .tabs {
-//   .tab.active {
-//     background: $color-blue;
-//     color: #fff;
-//     border-top: 4px solid $color-blue;
-//   }
-// }
-
-/* makes the element visible and scales it x30 */
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0;
-  }
-  
-  100% {
-    opacity: 1;
-    transform: scale(30, 30);
   }
 }
