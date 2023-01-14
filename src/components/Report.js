@@ -31,12 +31,13 @@ export default class Report extends Component {
   };
 
   renderSectionHeader(section) {
-    console.log("section ", section)
     return (
-      <h2 id={`${section.dataKey}`} className="section__header">
+      <h2 id={`${section.dataKey}_section`} className="section__header">
         <div className="section__header-title">
           {section.icon && <span title={section.title}>{section.icon()}</span>}
-          <div className="section__header-title">{section.title}</div>
+          <span className="title-text-container">
+            <span className="title-text">{section.title}</span>
+          </span>
         </div>
         <FontAwesomeIcon
           className="chevron"

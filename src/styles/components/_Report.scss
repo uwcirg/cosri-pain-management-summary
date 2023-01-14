@@ -224,6 +224,26 @@
       stroke: #ccc;
     }
   }
+  .summary__nav .title-text-container {
+    visibility: hidden;
+    width: 0;
+    transition: visibility 50ms ease;
+  }
+  .summary__nav .toc-list-item {
+    width: 48px;
+    height: 64px;
+    overflow: hidden;
+  }
+  .open {
+    .summary__nav .title-text-container {
+      visibility: visible;
+      width: 100%;
+    }
+    .summary__nav .toc-list-item {
+    width: 100%;
+    height: auto;
+  }
+  }
 }
 .no-entries {
   font-style: italic;
