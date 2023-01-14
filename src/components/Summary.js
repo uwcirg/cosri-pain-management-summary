@@ -27,7 +27,7 @@ import DataInfo from "./DataInfo";
 import Disclaimer from "./Disclaimer";
 import DevTools from "./DevTools";
 import InfoModal from "./InfoModal";
-import ScoringSummary from "./ScoringSummary";
+import ScoringSummary from "./report/ScoringSummary";
 import SideNav from "./SideNav";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";

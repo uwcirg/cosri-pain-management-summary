@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Score from "./Score";
-import PassUpArrowIcon from "../icons/PassUpArrowIcon";
-import FailUpArrowIcon from "../icons/FailUpArrowIcon";
-import FailDownArrowIcon from "../icons/FailDownArrowIcon";
-import PassDownArrowIcon from "../icons/PassDownArrowIcon";
-import LineIcon from "../icons/LineIcon";
-import qConfig from "../config/questionnaire_config";
-import { isNumber } from "../helpers/utility";
+import PassUpArrowIcon from "../../icons/PassUpArrowIcon";
+import FailUpArrowIcon from "../../icons/FailUpArrowIcon";
+import FailDownArrowIcon from "../../icons/FailDownArrowIcon";
+import PassDownArrowIcon from "../../icons/PassDownArrowIcon";
+import LineIcon from "../../icons/LineIcon";
+import qConfig from "../../config/questionnaire_config";
+import { isNumber } from "../../helpers/utility";
 
 export default class ScoringSummary extends Component {
   sortData(data) {
@@ -52,7 +52,7 @@ export default class ScoringSummary extends Component {
       isNumber(prevScore)
     );
     //debug
-    console.log("comparison to alert ", comparisonToAlert);
+    // console.log("comparison to alert ", comparisonToAlert);
     if (!isNumber(currentScore) || !isNumber(prevScore)) return "--";
     if (isNumber(prevScore)) {
       if (comparisonToAlert === "lower") {
@@ -75,8 +75,6 @@ export default class ScoringSummary extends Component {
     }
   }
   getRangeDisplay(data) {
-    // const dataConfig = qConfig[data.QuestionnaireName];
-    // if (!dataConfig) return null;
     const minScore = data.ScoreParams.minScore;
     const maxScore = data.ScoreParams.maxScore;
     return <span>{"(" + minScore + "-" + maxScore + ")"}</span>;
@@ -132,7 +130,11 @@ export default class ScoringSummary extends Component {
   }
   render() {
     const { summary } = this.props;
-    const noSummaryData = !summary || !summary.length;
+    console.log('summary ', summary)
+    const noSummaryData =
+      !summary ||
+      !summary.length ||
+      summary.filter((item) => item.ResponsesSummary && item.ResponsesSummary.length > 0).length  === 0;
     return (
       <table className="table">
         <caption>{this.getTitleDisplay()}</caption>

@@ -4,10 +4,7 @@ import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Collapsible from "react-collapsible";
 import InfoModal from "./InfoModal";
-import ResponsesSummary from "./ResponsesSummary";
-import ScoringSummary from "./ScoringSummary";
 import SideNav from "./SideNav";
-import SurveyGraph from "./graph/SurveyGraph";
 import reportSummarySections from "../config/report_config";
 
 export default class Report extends Component {
@@ -33,20 +30,6 @@ export default class Report extends Component {
     this.setState({ showModal: false });
   };
 
-  getGraphData(summaryData) {
-    if (!summaryData) return [];
-    let data = [];
-    summaryData.forEach((item) => {
-      if (!item.ResponsesSummary) return true;
-      const surveyData = item.ResponsesSummary.map((o) => {
-        o.qid = item.QuestionnaireName;
-        return o;
-      });
-      data = [...data, ...surveyData];
-    });
-    return data;
-  }
-
   renderSectionHeader(section) {
     return (
       <h2 id={`${section.dataKey}_section`} className="section__header">
@@ -63,9 +46,10 @@ export default class Report extends Component {
     );
   }
   renderSectionBody(summaryData, section) {
+    if (section.component) return section.component({summary: summaryData});
+    if (!section.sections || !section.sections.length) return null;
     return (
       <div className="section">
-        {/* {section.subtitle && <div>{section.subtitle}</div>} */}
         {section.sections.map((item, index) => {
           const matchedData = summaryData && summaryData.length ? summaryData.filter(
             (o) => o.dataKey === item.dataKey
@@ -76,9 +60,7 @@ export default class Report extends Component {
               key={`subsection_${item.dataKey}_${index}`}
             >
               {this.renderSubSectionHeader(item)}
-              {item.renderComponent === "ResponsesSummary" && (
-                <ResponsesSummary summary={matchedData}></ResponsesSummary>
-              )}
+              {item.component && item.component({summary: matchedData})}
             </div>
           );
         })}
@@ -130,33 +112,14 @@ export default class Report extends Component {
       </span>
     );
   }
-
-  renderTopPanel(summaryData) {
-    const graphData = this.getGraphData(summaryData);
-    return (
-      <div className="panel-container">
-        {graphData.length > 0 && (
-          <div className="panel graph">
-            <SurveyGraph data={graphData}></SurveyGraph>
-          </div>
-        )}
-        <div className="panel">
-          {/* <div className="panel__item">Alerts go here</div> */}
-          <div className="panel__item">
-            <ScoringSummary summary={summaryData}></ScoringSummary>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  
   render() {
     const { summaryData } = this.props;
     return (
       <div className="report summary">
         <SideNav id="reportSideNavButton"></SideNav>
         <div className="summary__display">
-          {this.renderTopPanel(summaryData)}
+          {/* {this.renderTopPanel(summaryData)} */}
           <div className="sections">
             {reportSummarySections.map((section, index) => {
               return (

@@ -1,6 +1,6 @@
 import { shallowRender } from "../../utils/testHelpers";
 import { mockSurveySummaryData } from "../../utils/testFixtures";
-import ScoringSummary from "../../components/ScoringSummary";
+import ScoringSummary from "../../components/report/ScoringSummary";
 
 const component = shallowRender(ScoringSummary, {
   summary: mockSurveySummaryData,

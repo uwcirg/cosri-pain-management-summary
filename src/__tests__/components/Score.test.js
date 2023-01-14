@@ -1,5 +1,5 @@
 import { shallowRender } from "../../utils/testHelpers";
-import Score from "../../components/Score";
+import Score from "../../components/report/Score";
 
 it("renders the score with high severity", () => {
     const component = shallowRender(Score, {

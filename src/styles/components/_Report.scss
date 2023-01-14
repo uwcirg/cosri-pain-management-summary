@@ -11,13 +11,13 @@
     }
   }
   .summary__display {
-    padding: 16px;
+    padding: 8px 16px 16px;
     @media (min-width: 1200px) {
       max-width: 1120px;
       margin: auto;
     }
     .sections {
-      margin-top: 24px;
+      //margin-top: 24px;
       .section {
         min-height: 72px;
         background: $color-white;
@@ -144,7 +144,9 @@
     display: flex;
     width: 100%;
     min-height: 80px;
-    gap: 16px;
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
     flex-wrap: wrap;
     .panel {
       border: 2px solid $color-black;

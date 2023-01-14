@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
-import { isNumber } from "../helpers/utility";
+import { isNumber } from "../../helpers/utility";
 
 export default class Score extends Component {
   render() {

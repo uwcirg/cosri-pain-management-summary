@@ -302,8 +302,7 @@
           }
         }
       }
-      .MME-svg-container,
-      .survey-svg-container {
+      .MME-svg-container {
         position: relative;
         height: 0;
         width: 560px;
@@ -321,8 +320,7 @@
           padding-bottom: 70%;
         }
       }
-      .MMEChartSvg,
-      .surveyChartSvg {
+      .MMEChartSvg {
         position: absolute;
         height: 100%;
         width: 100%;
@@ -408,6 +406,8 @@
         justify-content: flex-start;
         align-items: center;
         flex-wrap: wrap;
+        max-width: 1200px;
+        margin: auto;
         .sub-panels {
           flex-basis: 100%;
         }
