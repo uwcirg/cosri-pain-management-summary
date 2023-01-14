@@ -12,6 +12,7 @@ const iconProps = {
 const reportConfig = [
   {
     title: "Questionnaire Scores Overview",
+    dataKey: "scoringOverview",
     icon: (props) => (
       <ChartIcon {...iconProps} {...props} title="Score Overview" />
     ),
@@ -19,6 +20,7 @@ const reportConfig = [
   },
   {
     title: "Mental Health, Quality of Life and Sleep",
+    dataKey: "mentalHealthSection",
     subtitle:
       "Depression (PHQ9), Anxiety (GAD-7), Post Traumatic Stress Disorder(PTSD), Quality of Life(QoL), Obstructive Sleep Apnea(STOP), Sleep initiation, and Sleep Maintenance",
     icon: (props) => (

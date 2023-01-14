@@ -31,8 +31,9 @@ export default class Report extends Component {
   };
 
   renderSectionHeader(section) {
+    console.log("section ", section)
     return (
-      <h2 id={`${section.dataKey}_section`} className="section__header">
+      <h2 id={`${section.dataKey}`} className="section__header">
         <div className="section__header-title">
           {section.icon && <span title={section.title}>{section.icon()}</span>}
           <div className="section__header-title">{section.title}</div>
@@ -46,7 +47,7 @@ export default class Report extends Component {
     );
   }
   renderSectionBody(summaryData, section) {
-    if (section.component) return section.component({summary: summaryData});
+    if (section.component) return <div className="section">{section.component({summary: summaryData})}</div>;
     if (!section.sections || !section.sections.length) return null;
     return (
       <div className="section">
@@ -112,7 +113,7 @@ export default class Report extends Component {
       </span>
     );
   }
-  
+
   render() {
     const { summaryData } = this.props;
     return (
