@@ -48,21 +48,27 @@ export default class Report extends Component {
     );
   }
   renderSectionBody(summaryData, section) {
-    if (section.component) return <div className="section">{section.component({summary: summaryData})}</div>;
+    if (section.component)
+      return (
+        <div className="section">
+          {section.component({ summary: summaryData })}
+        </div>
+      );
     if (!section.sections || !section.sections.length) return null;
     return (
       <div className="section">
         {section.sections.map((item, index) => {
-          const matchedData = summaryData && summaryData.length ? summaryData.filter(
-            (o) => o.dataKey === item.dataKey
-          )[0]: null;
+          const matchedData =
+            summaryData && summaryData.length
+              ? summaryData.filter((o) => o.dataKey === item.dataKey)[0]
+              : null;
           return (
             <div
               className="sub-section"
               key={`subsection_${item.dataKey}_${index}`}
             >
               {this.renderSubSectionHeader(item)}
-              {item.component && item.component({summary: matchedData})}
+              {item.component && item.component({ summary: matchedData })}
             </div>
           );
         })}
@@ -137,7 +143,7 @@ export default class Report extends Component {
           </div>
         </div>
         <ReactModal
-          className="modal"
+          className="modal report-info-modal"
           overlayClassName="overlay"
           isOpen={this.state.showModal}
           onRequestClose={this.handleCloseModal}

@@ -9,7 +9,8 @@
 
   &__nav {
     color: $color-white;
-    padding: 38px 0 20px;
+    //padding: 38px 0 20px;
+    padding: calc(#{$min-header-height} + 48px) 0 20px 0px;
     width: 248px;
     z-index: 1;
     transition: opacity 450ms ease 100ms;
@@ -134,7 +135,7 @@
     .summary__nav {
      opacity: 1;
      z-index: 1;
-     padding: $min-header-height 0 20px 0px;
+     padding: 64px 0 20px 0px;
      .title-text-container {
        visibility: hidden;
        transition: visibility 350ms ease;

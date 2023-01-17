@@ -110,7 +110,7 @@ export default class SurveyGraph extends Component {
       bottom: 88,
       left: 72,
     };
-    const parentWidth = 520;
+    const parentWidth = 540;
     const parentHeight = 396;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;

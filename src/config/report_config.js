@@ -5,9 +5,9 @@ import OverViewComponent from "../components/report/Overview";
 import ResponsesSummary from "../components/report/ResponsesSummary";
 
 const iconProps = {
-    width: 35,
-    height: 35,
-    className: "sectionIcon",
+  width: 35,
+  height: 35,
+  className: "sectionIcon",
 };
 const reportConfig = [
   {

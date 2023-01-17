@@ -1,4 +1,8 @@
 .header {
+  position: fixed;
+  top: 0;
+  z-index: 998;
+  width: 100%;
   display: flex;
   align-items: center;
   height: $min-header-height;
@@ -22,23 +26,24 @@
     justify-content: center;
     flex-direction: column;
     height: 100%;
-    min-width: 240px;
+    min-width: $summary-nav-width;
+    background-color: #FFF;
     color: $color-white;
 
     &-img {
-     &.primary {
-       width: 180px;
-       max-width: 100%;
-     }
-     &.secondary {
-       width: 28px;
-     }
-     &.terciary {
-       position: relative;
-       margin-left: 20px;
-       top: -2px;
-       width: 140px;
-     }
+      &.primary {
+        width: 180px;
+        max-width: 100%;
+      }
+      &.secondary {
+        width: 28px;
+      }
+      &.terciary {
+        position: relative;
+        margin-left: 20px;
+        top: -2px;
+        width: 140px;
+      }
     }
 
     .entry {
@@ -70,7 +75,7 @@
     margin-top: 16px;
     align-self: flex-start;
     button {
-      min-width: 160px
+      min-width: 160px;
     }
   }
   &__logos {
@@ -116,7 +121,9 @@
         font-size: 0.95em;
         line-height: 1.45;
         margin-top: 6px;
-        .patient-age { margin-right: 16px; }
+        .patient-age {
+          margin-right: 16px;
+        }
         .patient-occupation {
           font-weight: 500;
           font-size: 0.95em;
@@ -147,7 +154,9 @@
           font-size: 3em;
           font-weight: 700;
           margin-right: 20px;
-          &.flagged { color: $color-red-dark; }
+          &.flagged {
+            color: $color-red-dark;
+          }
         }
 
         &-label {

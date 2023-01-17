@@ -7514,3 +7514,812 @@ export const mockSurveySummaryData = [
     dataKey: "gad7",
   },
 ];
+
+const mockSurveySummaryNoData = [
+  {
+    QuestionnaireName: "phq9",
+    QuestionnaireURL: "http://www.cdc.gov/ncbddd/fasd/phq9",
+    question1LinkId: "/44250-9",
+    question2LinkId: "/44255-8",
+    question3LinkId: "/44259-0",
+    question4LinkId: "/44254-1",
+    question5LinkId: "/44251-7",
+    question6LinkId: "/44258-2",
+    question7LinkId: "/44252-5",
+    question8LinkId: "/44253-3",
+    question9LinkId: "/44260-8",
+    question10LinkId: "/69722-7",
+    ScoringQuestionId: "/44261-6",
+    extensionAnswerIndex: 0,
+    ScoreParams: {
+      minScore: 0,
+      maxScore: 27,
+    },
+    Patient: {
+      identifier: [
+        {
+          system: {
+            value: "https://github.com/synthetichealth/synthea",
+          },
+          value: {
+            value: "3f228315-d2de-4292-a56a-b7c120c2875d",
+          },
+        },
+        {
+          type: {
+            coding: [
+              {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                },
+                code: {
+                  value: "MR",
+                },
+                display: {
+                  value: "Medical Record Number",
+                },
+              },
+            ],
+            text: {
+              value: "Medical Record Number",
+            },
+          },
+          system: {
+            value: "http://hospital.smarthealthit.org",
+          },
+          value: {
+            value: "3f228315-d2de-4292-a56a-b7c120c2875d",
+          },
+        },
+        {
+          type: {
+            coding: [
+              {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                },
+                code: {
+                  value: "SS",
+                },
+                display: {
+                  value: "Social Security Number",
+                },
+              },
+            ],
+            text: {
+              value: "Social Security Number",
+            },
+          },
+          system: {
+            value: "http://hl7.org/fhir/sid/us-ssn",
+          },
+          value: {
+            value: "999-58-3251",
+          },
+        },
+        {
+          type: {
+            coding: [
+              {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                },
+                code: {
+                  value: "DL",
+                },
+                display: {
+                  value: "Driver's License",
+                },
+              },
+            ],
+            text: {
+              value: "Driver's License",
+            },
+          },
+          system: {
+            value: "urn:oid:2.16.840.1.113883.4.3.25",
+          },
+          value: {
+            value: "S99913820",
+          },
+        },
+        {
+          type: {
+            coding: [
+              {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                },
+                code: {
+                  value: "PPN",
+                },
+                display: {
+                  value: "Passport Number",
+                },
+              },
+            ],
+            text: {
+              value: "Passport Number",
+            },
+          },
+          system: {
+            value:
+              "http://standardhealthrecord.org/fhir/StructureDefinition/passportNumber",
+          },
+          value: {
+            value: "X50228204X",
+          },
+        },
+      ],
+      name: [
+        {
+          use: {
+            value: "official",
+          },
+          family: {
+            value: "Abbott",
+          },
+          given: [
+            {
+              value: "Barney",
+            },
+          ],
+          prefix: [
+            {
+              value: "Mr.",
+            },
+          ],
+        },
+      ],
+      telecom: [
+        {
+          system: {
+            value: "phone",
+          },
+          value: {
+            value: "555-901-9296",
+          },
+          use: {
+            value: "home",
+          },
+        },
+      ],
+      gender: {
+        value: "male",
+      },
+      birthDate: {
+        value: "1964-03-18",
+      },
+      deceased: {
+        value: "1989-02-15T08:54:18+00:00",
+      },
+      address: [
+        {
+          line: [
+            {
+              value: "440 Russel Common Apt 7",
+            },
+          ],
+          city: {
+            value: "Framingham",
+          },
+          state: {
+            value: "Massachusetts",
+          },
+          postalCode: {
+            value: "01701",
+          },
+          country: {
+            value: "US",
+          },
+          extension: [
+            {
+              url: "http://hl7.org/fhir/StructureDefinition/geolocation",
+              extension: [
+                {
+                  url: "latitude",
+                  value: {
+                    value: 42.307905,
+                  },
+                },
+                {
+                  url: "longitude",
+                  value: {
+                    value: -71.436196,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      maritalStatus: {
+        coding: [
+          {
+            system: {
+              value: "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+            },
+            code: {
+              value: "S",
+            },
+            display: {
+              value: "Never Married",
+            },
+          },
+        ],
+        text: {
+          value: "Never Married",
+        },
+      },
+      multipleBirth: {
+        value: false,
+      },
+      communication: [
+        {
+          language: {
+            coding: [
+              {
+                system: {
+                  value: "urn:ietf:bcp:47",
+                },
+                code: {
+                  value: "en-US",
+                },
+                display: {
+                  value: "English",
+                },
+              },
+            ],
+            text: {
+              value: "English",
+            },
+          },
+        },
+      ],
+      text: {
+        status: {
+          value: "generated",
+        },
+      },
+      extension: [
+        {
+          url: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+          extension: [
+            {
+              url: "ombCategory",
+              value: {
+                system: {
+                  value: "urn:oid:2.16.840.1.113883.6.238",
+                },
+                code: {
+                  value: "2106-3",
+                },
+                display: {
+                  value: "White",
+                },
+              },
+            },
+            {
+              url: "text",
+              value: {
+                value: "White",
+              },
+            },
+          ],
+        },
+        {
+          url: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+          extension: [
+            {
+              url: "ombCategory",
+              value: {
+                system: {
+                  value: "urn:oid:2.16.840.1.113883.6.238",
+                },
+                code: {
+                  value: "2186-5",
+                },
+                display: {
+                  value: "Not Hispanic or Latino",
+                },
+              },
+            },
+            {
+              url: "text",
+              value: {
+                value: "Not Hispanic or Latino",
+              },
+            },
+          ],
+        },
+        {
+          url: "http://hl7.org/fhir/StructureDefinition/patient-mothersMaidenName",
+          value: {
+            value: "Luise Grant",
+          },
+        },
+        {
+          url: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+          value: {
+            value: "M",
+          },
+        },
+        {
+          url: "http://hl7.org/fhir/StructureDefinition/patient-birthPlace",
+          value: {
+            city: {
+              value: "Lee",
+            },
+            state: {
+              value: "Massachusetts",
+            },
+            country: {
+              value: "US",
+            },
+          },
+        },
+        {
+          url: "http://synthetichealth.github.io/synthea/disability-adjusted-life-years",
+          value: {
+            value: 0.3868990459023335,
+          },
+        },
+        {
+          url: "http://synthetichealth.github.io/synthea/quality-adjusted-life-years",
+          value: {
+            value: 23.613100954097668,
+          },
+        },
+      ],
+      id: {
+        value: "5ee05359-57bf-4cee-8e89-91382c07e162",
+      },
+      meta: {
+        versionId: {
+          value: "36",
+        },
+        lastUpdated: {
+          value: "2023-01-16T14:24:13.419-05:00",
+        },
+        tag: [
+          {
+            system: {
+              value: "https://smarthealthit.org/tags",
+            },
+            code: {
+              value: "synthea-5-2019",
+            },
+          },
+        ],
+      },
+    },
+    Phq9Questionnaire: null,
+    IndexOfQuestion: {
+      one: null,
+      two: null,
+      three: null,
+      four: null,
+      five: null,
+      six: null,
+      seven: null,
+      eight: null,
+      nine: null,
+      ten: null,
+    },
+    QuestionnaireResponses: [],
+    CurrentQuestionnaireResponse: null,
+    CurrentResponseItems: null,
+    Phq9ScoreQuestion1: 0,
+    Phq9ScoreQuestion2: 0,
+    Phq9ScoreQuestion3: 0,
+    Phq9ScoreQuestion4: 0,
+    Phq9ScoreQuestion5: 0,
+    Phq9ScoreQuestion6: 0,
+    Phq9ScoreQuestion7: 0,
+    Phq9ScoreQuestion8: 0,
+    Phq9ScoreQuestion9: 0,
+    Phq9ScoreQuestion10: 0,
+    FullScore: 0,
+    ResponsesSummary: [],
+    dataKey: "phq9",
+  },
+  {
+    QuestionnaireName: "gad7",
+    QuestionnaireURL: "http://www.cdc.gov/ncbddd/fasd/gad7",
+    question1LinkId: "/69725-0",
+    question2LinkId: "/68509-9",
+    question3LinkId: "/69733-4",
+    question4LinkId: "/69734-2",
+    question5LinkId: "/69735-9",
+    question6LinkId: "/69689-8",
+    question7LinkId: "/69736-7",
+    ScoringQuestionId: "/70274-6",
+    answerExtensionIndex: 1,
+    ScoreParams: {
+      minScore: 0,
+      maxScore: 21,
+    },
+    Patient: {
+      identifier: [
+        {
+          system: {
+            value: "https://github.com/synthetichealth/synthea",
+          },
+          value: {
+            value: "3f228315-d2de-4292-a56a-b7c120c2875d",
+          },
+        },
+        {
+          type: {
+            coding: [
+              {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                },
+                code: {
+                  value: "MR",
+                },
+                display: {
+                  value: "Medical Record Number",
+                },
+              },
+            ],
+            text: {
+              value: "Medical Record Number",
+            },
+          },
+          system: {
+            value: "http://hospital.smarthealthit.org",
+          },
+          value: {
+            value: "3f228315-d2de-4292-a56a-b7c120c2875d",
+          },
+        },
+        {
+          type: {
+            coding: [
+              {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                },
+                code: {
+                  value: "SS",
+                },
+                display: {
+                  value: "Social Security Number",
+                },
+              },
+            ],
+            text: {
+              value: "Social Security Number",
+            },
+          },
+          system: {
+            value: "http://hl7.org/fhir/sid/us-ssn",
+          },
+          value: {
+            value: "999-58-3251",
+          },
+        },
+        {
+          type: {
+            coding: [
+              {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                },
+                code: {
+                  value: "DL",
+                },
+                display: {
+                  value: "Driver's License",
+                },
+              },
+            ],
+            text: {
+              value: "Driver's License",
+            },
+          },
+          system: {
+            value: "urn:oid:2.16.840.1.113883.4.3.25",
+          },
+          value: {
+            value: "S99913820",
+          },
+        },
+        {
+          type: {
+            coding: [
+              {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                },
+                code: {
+                  value: "PPN",
+                },
+                display: {
+                  value: "Passport Number",
+                },
+              },
+            ],
+            text: {
+              value: "Passport Number",
+            },
+          },
+          system: {
+            value:
+              "http://standardhealthrecord.org/fhir/StructureDefinition/passportNumber",
+          },
+          value: {
+            value: "X50228204X",
+          },
+        },
+      ],
+      name: [
+        {
+          use: {
+            value: "official",
+          },
+          family: {
+            value: "Abbott",
+          },
+          given: [
+            {
+              value: "Barney",
+            },
+          ],
+          prefix: [
+            {
+              value: "Mr.",
+            },
+          ],
+        },
+      ],
+      telecom: [
+        {
+          system: {
+            value: "phone",
+          },
+          value: {
+            value: "555-901-9296",
+          },
+          use: {
+            value: "home",
+          },
+        },
+      ],
+      gender: {
+        value: "male",
+      },
+      birthDate: {
+        value: "1964-03-18",
+      },
+      deceased: {
+        value: "1989-02-15T08:54:18+00:00",
+      },
+      address: [
+        {
+          line: [
+            {
+              value: "440 Russel Common Apt 7",
+            },
+          ],
+          city: {
+            value: "Framingham",
+          },
+          state: {
+            value: "Massachusetts",
+          },
+          postalCode: {
+            value: "01701",
+          },
+          country: {
+            value: "US",
+          },
+          extension: [
+            {
+              url: "http://hl7.org/fhir/StructureDefinition/geolocation",
+              extension: [
+                {
+                  url: "latitude",
+                  value: {
+                    value: 42.307905,
+                  },
+                },
+                {
+                  url: "longitude",
+                  value: {
+                    value: -71.436196,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      maritalStatus: {
+        coding: [
+          {
+            system: {
+              value: "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+            },
+            code: {
+              value: "S",
+            },
+            display: {
+              value: "Never Married",
+            },
+          },
+        ],
+        text: {
+          value: "Never Married",
+        },
+      },
+      multipleBirth: {
+        value: false,
+      },
+      communication: [
+        {
+          language: {
+            coding: [
+              {
+                system: {
+                  value: "urn:ietf:bcp:47",
+                },
+                code: {
+                  value: "en-US",
+                },
+                display: {
+                  value: "English",
+                },
+              },
+            ],
+            text: {
+              value: "English",
+            },
+          },
+        },
+      ],
+      text: {
+        status: {
+          value: "generated",
+        },
+      },
+      extension: [
+        {
+          url: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+          extension: [
+            {
+              url: "ombCategory",
+              value: {
+                system: {
+                  value: "urn:oid:2.16.840.1.113883.6.238",
+                },
+                code: {
+                  value: "2106-3",
+                },
+                display: {
+                  value: "White",
+                },
+              },
+            },
+            {
+              url: "text",
+              value: {
+                value: "White",
+              },
+            },
+          ],
+        },
+        {
+          url: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+          extension: [
+            {
+              url: "ombCategory",
+              value: {
+                system: {
+                  value: "urn:oid:2.16.840.1.113883.6.238",
+                },
+                code: {
+                  value: "2186-5",
+                },
+                display: {
+                  value: "Not Hispanic or Latino",
+                },
+              },
+            },
+            {
+              url: "text",
+              value: {
+                value: "Not Hispanic or Latino",
+              },
+            },
+          ],
+        },
+        {
+          url: "http://hl7.org/fhir/StructureDefinition/patient-mothersMaidenName",
+          value: {
+            value: "Luise Grant",
+          },
+        },
+        {
+          url: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+          value: {
+            value: "M",
+          },
+        },
+        {
+          url: "http://hl7.org/fhir/StructureDefinition/patient-birthPlace",
+          value: {
+            city: {
+              value: "Lee",
+            },
+            state: {
+              value: "Massachusetts",
+            },
+            country: {
+              value: "US",
+            },
+          },
+        },
+        {
+          url: "http://synthetichealth.github.io/synthea/disability-adjusted-life-years",
+          value: {
+            value: 0.3868990459023335,
+          },
+        },
+        {
+          url: "http://synthetichealth.github.io/synthea/quality-adjusted-life-years",
+          value: {
+            value: 23.613100954097668,
+          },
+        },
+      ],
+      id: {
+        value: "5ee05359-57bf-4cee-8e89-91382c07e162",
+      },
+      meta: {
+        versionId: {
+          value: "36",
+        },
+        lastUpdated: {
+          value: "2023-01-16T14:24:13.419-05:00",
+        },
+        tag: [
+          {
+            system: {
+              value: "https://smarthealthit.org/tags",
+            },
+            code: {
+              value: "synthea-5-2019",
+            },
+          },
+        ],
+      },
+    },
+    CurrentQuestionnaireURL: "http://www.cdc.gov/ncbddd/fasd/gad7",
+    Gad7Questionnaire: null,
+    IndexOfQuestion: {
+      one: null,
+      two: null,
+      three: null,
+      four: null,
+      five: null,
+      six: null,
+      seven: null,
+    },
+    QuestionnaireResponses: [],
+    CurrentQuestionnaireResponse: null,
+    CurrentResponseItems: null,
+    Gad7ScoreQuestion1: 0,
+    Gad7ScoreQuestion2: 0,
+    Gad7ScoreQuestion3: 0,
+    Gad7ScoreQuestion4: 0,
+    Gad7ScoreQuestion5: 0,
+    Gad7ScoreQuestion6: 0,
+    Gad7ScoreQuestion7: 0,
+    FullScore: 0,
+    ResponsesSummary: [],
+    dataKey: "gad7",
+  },
+];

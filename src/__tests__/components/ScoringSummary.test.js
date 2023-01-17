@@ -1,5 +1,6 @@
 import { shallowRender } from "../../utils/testHelpers";
 import { mockSurveySummaryData } from "../../utils/testFixtures";
+import { mockSurveySummaryNoData } from "../../utils/testFixtures";
 import ScoringSummary from "../../components/report/ScoringSummary";
 
 const component = shallowRender(ScoringSummary, {
@@ -31,4 +32,11 @@ it("renders component without data - no header", () => {
 it("renders component without data - no data row", () => {
   const noDataComponent = shallowRender(ScoringSummary);
   expect(noDataComponent.find(".table th")).toHaveLength(0);
+});
+
+it("renders component without responses", () => {
+  const noDataComponent = shallowRender(ScoringSummary, {
+    summary: mockSurveySummaryNoData
+  });
+  expect(noDataComponent.find(".table .no-data-row")).toExist();
 });

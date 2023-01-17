@@ -20,6 +20,12 @@ export default class Overview extends Component {
   render() {
     const { summary } = this.props;
     const graphData = this.getGraphData(summary);
+    const noSummaryData =
+      !summary ||
+      !summary.length ||
+      summary.filter(
+        (item) => item.ResponsesSummary && item.ResponsesSummary.length > 0
+      ).length === 0;
     return (
       <div className="panel-container">
         {graphData.length > 0 && (
@@ -27,7 +33,7 @@ export default class Overview extends Component {
             <SurveyGraph data={graphData}></SurveyGraph>
           </div>
         )}
-        <div className="panel">
+        <div className={`panel ${noSummaryData ? 'no-entries': ''}`}>
           {/* <div className="panel__item">Alerts go here</div> */}
           <div className="panel__item">
             <ScoringSummary summary={summary}></ScoringSummary>
