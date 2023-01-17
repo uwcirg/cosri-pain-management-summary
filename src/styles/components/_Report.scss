@@ -38,7 +38,8 @@
       margin-right: auto;
     }
     .sections {
-      //margin-top: 24px;
+      height: 100%;
+      background-color: #FFF;
       .section {
         min-height: 72px;
         background: $color-white;
@@ -186,6 +187,7 @@
           td {
             padding: 2px;
             font-size: 0.95em;
+            white-space: nowrap;
           }
         }
         td:not(:first-of-type) {
