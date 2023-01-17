@@ -86,9 +86,11 @@
   &__summary {
     display: flex;
     justify-content: space-between;
+    background-color: #FFF;
     flex: 1;
     margin: 0;
     margin-right: 16px;
+    height: 100%;
 
     &-patient {
       display: flex;
