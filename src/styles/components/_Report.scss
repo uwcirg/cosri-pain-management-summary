@@ -174,7 +174,12 @@
       flex-direction: column;
       background: $color-white;
       gap: 2;
-      flex: 1;
+      flex: 1 1 100%;
+      @media (min-width: 992px) {
+        & {
+          flex: 1 1 0;
+        }
+      }
       &.no-entries {
         border: 0;
         padding: 0;
