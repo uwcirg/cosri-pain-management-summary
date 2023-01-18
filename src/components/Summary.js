@@ -39,7 +39,6 @@ export default class Summary extends Component {
 
     this.state = {
       showModal: false,
-     // showNav: true,
       modalSubSection: null,
       activeTab: 0,
     };
@@ -182,11 +181,6 @@ export default class Summary extends Component {
         {guidelineElement.map((item, index) => {
           return (
             <div key={`guideline_${index}`} className={`${item.type}`}>
-              {/* <FontAwesomeIcon
-                className="flag"
-                icon="exclamation-circle"
-                tabIndex={0}
-            /> <span className="text">{item.text}</span> */}
               {item.title && (
                 <span className="text">
                   <b className="title">{item.title}</b>: {item.text}
@@ -509,7 +503,6 @@ export default class Summary extends Component {
 
   renderSurveySummaryPanel(panel) {
     let surveyData = this.props.summary[panel.data.dataSectionRefKey] || null;
-    console.log("survey data ", surveyData)
     if (!surveyData) return null;
     return (
       <div className="sub-section__infopanel">
@@ -766,36 +759,18 @@ export default class Summary extends Component {
       if (summaryMap[section]["hideSection"]) return true;
       sectionsToRender.push(section);
     });
-    // const navToggleToolTip = this.state.showNav
-    //   ? "collapse side navigation menu"
-    //   : "expand side navigation menu";
 
     return (
       <React.Fragment>
-        <div className="summary__display-title">
-          Clinical Opioid Summary with Rx Integration
-        </div>
         <div className="summary">
-          {/* <div
-            className={`${
-              this.state.showNav ? "open" : ""
-            } summary__nav-wrapper`}
-          >
-            <nav className="summary__nav"></nav>
-            <SideNavButton
-              id="summarySideNavButton"
-              showNav={this.state.showNav}
-              navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
-              onClick={(e) => {
-                this.handleNavToggle(e);
-              }}
-            ></SideNavButton>
-          </div> */}
           <SideNav
             id="summarySideNavButton"
             navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
           ></SideNav>
           <div className="summary__display" id="maincontent">
+            <div className="summary__display-title">
+              Clinical Opioid Summary with Rx Integration
+            </div>
             {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
             {meetsInclusionCriteria && <ExclusionBanner />}
             {!meetsInclusionCriteria && (

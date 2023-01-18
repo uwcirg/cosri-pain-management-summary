@@ -385,7 +385,6 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       this.initializeTocBot();
       this.tocInitialized = true;
@@ -1244,7 +1243,7 @@ export default class Landing extends Component {
             <div
               className={`tab-panel ${
                 this.state.activeTab === index ? "active" : ""
-              } ${tabs.length > 1 ? 'multi-tabs': ''}`}
+              } ${tabs.length > 1 ? "multi-tabs" : ""}`}
               key={`tab-panel_${item}`}
             >
               {item === "overview" && this.renderSummary(summary, sectionFlags)}
