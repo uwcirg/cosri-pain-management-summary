@@ -202,7 +202,7 @@
       }
     }
     .is-position-fixed ~ .close {
-      top: $min-header-height;
+      top: calc(#{$min-header-height} + 16px);
       left: 0;
       position: fixed;
       z-index: 500;
@@ -408,11 +408,11 @@
           flex: 1 1;
         }
       }
-      // @media (min-width: 992px) {
-      //   .panels {
-      //     flex-wrap: nowrap;
-      //   }
-      // }
+      @media (min-width: 992px) {
+        .panels {
+          flex-wrap: nowrap;
+        }
+      }
       .panel.alerts,
       .panel.rxsummary,
       .panel.surveysummary {
