@@ -146,15 +146,6 @@
                "type" : "Literal"
             }
          }, {
-            "name" : "question10LinkId",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "/69722-7",
-               "type" : "Literal"
-            }
-         }, {
             "name" : "ScoringQuestionId",
             "context" : "Patient",
             "accessLevel" : "Public",

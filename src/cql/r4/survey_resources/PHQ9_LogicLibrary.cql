@@ -24,7 +24,6 @@ define question6LinkId: '/44258-2'
 define question7LinkId: '/44252-5'
 define question8LinkId: '/44253-3'
 define question9LinkId: '/44260-8'
-define question10LinkId: '/69722-7'
 define ScoringQuestionId: '/44261-6'
 define extensionAnswerIndex: 0
 define ScoreParams: Tuple {
