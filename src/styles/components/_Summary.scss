@@ -215,7 +215,7 @@
       .is-position-fixed ~ .close {
         &:before {
           position: fixed;
-          left: 200px;
+          left: 192px;
         }
       }
     }
@@ -316,11 +316,6 @@
           padding-bottom: 80%;
         }
       }
-      @media(min-width: 1400px) {
-        .MME-svg-container {
-          padding-bottom: 70%;
-        }
-      }
       .MMEChartSvg {
         position: absolute;
         height: 100%;
@@ -409,14 +404,15 @@
         max-width: 1200px;
         margin: auto;
         .sub-panels {
-          flex-basis: 100%;
+          // flex-basis: 100%;
+          flex: 1 1;
         }
       }
-      @media (min-width: 992px) {
-        .panels {
-          flex-wrap: nowrap;
-        }
-      }
+      // @media (min-width: 992px) {
+      //   .panels {
+      //     flex-wrap: nowrap;
+      //   }
+      // }
       .panel.alerts,
       .panel.rxsummary,
       .panel.surveysummary {
@@ -432,7 +428,7 @@
         color: $color-black;
         flex-wrap: wrap;
         padding: 0 16px 8px;
-        flex: 1 auto;
+        flex: 1 1;
         .sub-section__infopanel {
           border: 2px solid;
           padding: 12px;
@@ -545,21 +541,6 @@
         }
       }
 
-      @media (min-width: 768px) {
-        .panels {
-          .sub-panels {
-            flex-basis: 50%;
-          }
-        }
-      }
-      @media (min-width: 992px) {
-        .panels {
-          .sub-panels {
-            margin-left: -56px;
-          }
-        }
-      }
-
       @media (min-width: 992px) {
         .sub-section__panel {
           display: flex;
@@ -571,13 +552,6 @@
             flex: 1;
             align-self: stretch;
             min-width: 480px;
-          }
-        }
-      }
-      @media (min-width: 1600px) {
-        .panels {
-          .sub-panels {
-            flex-basis: 60%;
           }
         }
       }
@@ -831,13 +805,13 @@
           font-weight: 600;
           background-color: transparent;
           border: 0;
-          //transition: transform 350ms ease;
-          //transform: rotate(0);
+          transition: transform 350ms ease;
+          transform: rotate(0);
         }
         &.close {
-          // .close-button {
-          //   transform: rotate(-90deg);
-          // }
+          .close-button {
+            transform: rotate(-90deg);
+          }
           .content {
             display: none;
           }
@@ -995,17 +969,6 @@
     }
   }
 }
-
-@media (min-width: 1400px) {
-  .summary__display {
-    .sections {
-      .MME-svg-container {
-        width: 85%;
-      }
-    }
-  }
-}
-
 .summary-tooltip {
   font-size: 1em;
 }

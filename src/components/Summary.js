@@ -264,6 +264,7 @@ export default class Summary extends Component {
           let arrDisplay = props.value ? props.value.split("|") : null;
           let displayText = arrDisplay && arrDisplay[0] ? arrDisplay[0] : "";
           let displayClass = arrDisplay && arrDisplay[1] ? arrDisplay[1] : "";
+          if (!arrDisplay) return null;
           return (
             <FontAwesomeIcon
               className={`flag flag-entry ${
@@ -569,12 +570,12 @@ export default class Summary extends Component {
             id={`${subSection.dataKey}_title`}
             className={`sub-section__header`}
           >
-            <FontAwesomeIcon
+            {flaggedClass && <FontAwesomeIcon
               className={`flag flag-nav ${flaggedClass}`}
               icon={"circle"}
               title="flag"
               tabIndex={0}
-            />
+            />}
             <span className="sub-section__header__name">{subSection.name}</span>
             <span className="sub-section__header__info">
               {subSection.info && (
