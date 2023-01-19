@@ -379,6 +379,13 @@
                         "value" : "completed",
                         "type" : "Literal"
                      } ]
+                  },
+                  "sort" : {
+                     "by" : [ {
+                        "direction" : "desc",
+                        "path" : "authored",
+                        "type" : "ByColumn"
+                     } ]
                   }
                }
             }

@@ -70,7 +70,9 @@ define QuestionnaireResponses:
 define CurrentQuestionnaireResponse:
   First(QuestionnaireResponses QR
     where QR.status.value = 'completed'
+    sort by authored desc
   )
+  
 
 // Extract the items from the QuestionnaireResponse
 define CurrentResponseItems:

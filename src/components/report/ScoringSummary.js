@@ -83,7 +83,7 @@ export default class ScoringSummary extends Component {
   getCurrentDisplayScore(data) {
     if (!data) return "--";
     if (!data.ResponsesSummary || !data.ResponsesSummary.length) return "--";
-    return isNumber(data.FullScore) ? data.FullScore : "--";
+    return this.getCurrentScore(data.ResponsesSummary);
   }
   getTitleDisplay() {
     return this.props.title || "Scoring Summary";
