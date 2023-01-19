@@ -31,6 +31,7 @@ export default class ScoringSummary extends Component {
   getCurrentScore(data) {
     if (!data || data.length === 0) return null;
     const sortedData = this.sortData(data);
+    console.log("sortedData ", sortedData)
     const score = sortedData[0].score;
     if (!isNumber(score)) return null;
     return parseInt(score);
@@ -130,7 +131,6 @@ export default class ScoringSummary extends Component {
   }
   render() {
     const { summary } = this.props;
-    console.log('summary ', summary)
     const noSummaryData =
       !summary ||
       !summary.length ||

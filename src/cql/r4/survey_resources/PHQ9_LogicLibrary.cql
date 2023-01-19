@@ -60,8 +60,7 @@ define IndexOfQuestion:
       six: IndexOf(ItemLinkIds, question6LinkId),
       seven: IndexOf(ItemLinkIds, question7LinkId),
       eight: IndexOf(ItemLinkIds, question8LinkId),
-      nine: IndexOf(ItemLinkIds, question9LinkId),
-      ten: IndexOf(ItemLinkIds, question10LinkId)
+      nine: IndexOf(ItemLinkIds, question9LinkId)
     }
 
 define QuestionnaireResponses:
@@ -114,10 +113,6 @@ define Phq9ScoreQuestion8:
 define Phq9ScoreQuestion9:
   LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.nine, question9LinkId, extensionAnswerIndex)
 
-// Question 10
-define Phq9ScoreQuestion10:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.ten, question10LinkId, extensionAnswerIndex)
-
 // Calculate the score for the Full PHQ9
 // sum up all numeric values for all the answers
 define FullScore:
@@ -130,7 +125,6 @@ define FullScore:
   + Phq9ScoreQuestion7
   + Phq9ScoreQuestion8
   + Phq9ScoreQuestion9
-  + Phq9ScoreQuestion10
 
 define ResponsesSummary:
   (QuestionnaireResponses) I
@@ -144,8 +138,7 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question6LinkId, extensionAnswerIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question10LinkId, extensionAnswerIndex)), 0),
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0),
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
     responses: if Phq9Questionnaire is not null then 
         LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
@@ -167,4 +160,4 @@ define ResponsesSummary:
       authoredDate: I.authored,
       lastUpdated: I.meta.lastUpdated.value
     }
-    sort by date desc, lastUpdated desc
+    sort by authoredDate desc, lastUpdated desc

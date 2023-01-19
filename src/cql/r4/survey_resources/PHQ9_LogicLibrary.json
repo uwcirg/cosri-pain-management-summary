@@ -369,19 +369,6 @@
                               "type" : "ExpressionRef"
                            }
                         }
-                     }, {
-                        "name" : "ten",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question10LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
                      } ]
                   }
                }
@@ -724,35 +711,6 @@
                } ]
             }
          }, {
-            "name" : "Phq9ScoreQuestion10",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "name" : "getQuestionScore",
-               "libraryName" : "LogicHelper",
-               "type" : "FunctionRef",
-               "operand" : [ {
-                  "name" : "Phq9Questionnaire",
-                  "type" : "ExpressionRef"
-               }, {
-                  "name" : "CurrentResponseItems",
-                  "type" : "ExpressionRef"
-               }, {
-                  "path" : "ten",
-                  "type" : "Property",
-                  "source" : {
-                     "name" : "IndexOfQuestion",
-                     "type" : "ExpressionRef"
-                  }
-               }, {
-                  "name" : "question10LinkId",
-                  "type" : "ExpressionRef"
-               }, {
-                  "name" : "extensionAnswerIndex",
-                  "type" : "ExpressionRef"
-               } ]
-            }
-         }, {
             "name" : "FullScore",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -773,44 +731,38 @@
                                  "operand" : [ {
                                     "type" : "Add",
                                     "operand" : [ {
-                                       "type" : "Add",
-                                       "operand" : [ {
-                                          "name" : "Phq9ScoreQuestion1",
-                                          "type" : "ExpressionRef"
-                                       }, {
-                                          "name" : "Phq9ScoreQuestion2",
-                                          "type" : "ExpressionRef"
-                                       } ]
+                                       "name" : "Phq9ScoreQuestion1",
+                                       "type" : "ExpressionRef"
                                     }, {
-                                       "name" : "Phq9ScoreQuestion3",
+                                       "name" : "Phq9ScoreQuestion2",
                                        "type" : "ExpressionRef"
                                     } ]
                                  }, {
-                                    "name" : "Phq9ScoreQuestion4",
+                                    "name" : "Phq9ScoreQuestion3",
                                     "type" : "ExpressionRef"
                                  } ]
                               }, {
-                                 "name" : "Phq9ScoreQuestion5",
+                                 "name" : "Phq9ScoreQuestion4",
                                  "type" : "ExpressionRef"
                               } ]
                            }, {
-                              "name" : "Phq9ScoreQuestion6",
+                              "name" : "Phq9ScoreQuestion5",
                               "type" : "ExpressionRef"
                            } ]
                         }, {
-                           "name" : "Phq9ScoreQuestion7",
+                           "name" : "Phq9ScoreQuestion6",
                            "type" : "ExpressionRef"
                         } ]
                      }, {
-                        "name" : "Phq9ScoreQuestion8",
+                        "name" : "Phq9ScoreQuestion7",
                         "type" : "ExpressionRef"
                      } ]
                   }, {
-                     "name" : "Phq9ScoreQuestion9",
+                     "name" : "Phq9ScoreQuestion8",
                      "type" : "ExpressionRef"
                   } ]
                }, {
-                  "name" : "Phq9ScoreQuestion10",
+                  "name" : "Phq9ScoreQuestion9",
                   "type" : "ExpressionRef"
                } ]
             }
@@ -846,63 +798,32 @@
                                        "operand" : [ {
                                           "type" : "Add",
                                           "operand" : [ {
-                                             "type" : "Add",
+                                             "type" : "Coalesce",
                                              "operand" : [ {
-                                                "type" : "Coalesce",
-                                                "operand" : [ {
-                                                   "type" : "First",
-                                                   "source" : {
-                                                      "name" : "getScoringByResponseItem",
-                                                      "libraryName" : "LogicHelper",
-                                                      "type" : "FunctionRef",
-                                                      "operand" : [ {
-                                                         "name" : "Phq9Questionnaire",
-                                                         "type" : "ExpressionRef"
-                                                      }, {
-                                                         "path" : "item",
-                                                         "scope" : "I",
-                                                         "type" : "Property"
-                                                      }, {
-                                                         "name" : "question1LinkId",
-                                                         "type" : "ExpressionRef"
-                                                      }, {
-                                                         "name" : "extensionAnswerIndex",
-                                                         "type" : "ExpressionRef"
-                                                      } ]
-                                                   }
-                                                }, {
-                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                   "value" : "0",
-                                                   "type" : "Literal"
-                                                } ]
+                                                "type" : "First",
+                                                "source" : {
+                                                   "name" : "getScoringByResponseItem",
+                                                   "libraryName" : "LogicHelper",
+                                                   "type" : "FunctionRef",
+                                                   "operand" : [ {
+                                                      "name" : "Phq9Questionnaire",
+                                                      "type" : "ExpressionRef"
+                                                   }, {
+                                                      "path" : "item",
+                                                      "scope" : "I",
+                                                      "type" : "Property"
+                                                   }, {
+                                                      "name" : "question1LinkId",
+                                                      "type" : "ExpressionRef"
+                                                   }, {
+                                                      "name" : "extensionAnswerIndex",
+                                                      "type" : "ExpressionRef"
+                                                   } ]
+                                                }
                                              }, {
-                                                "type" : "Coalesce",
-                                                "operand" : [ {
-                                                   "type" : "First",
-                                                   "source" : {
-                                                      "name" : "getScoringByResponseItem",
-                                                      "libraryName" : "LogicHelper",
-                                                      "type" : "FunctionRef",
-                                                      "operand" : [ {
-                                                         "name" : "Phq9Questionnaire",
-                                                         "type" : "ExpressionRef"
-                                                      }, {
-                                                         "path" : "item",
-                                                         "scope" : "I",
-                                                         "type" : "Property"
-                                                      }, {
-                                                         "name" : "question2LinkId",
-                                                         "type" : "ExpressionRef"
-                                                      }, {
-                                                         "name" : "extensionAnswerIndex",
-                                                         "type" : "ExpressionRef"
-                                                      } ]
-                                                   }
-                                                }, {
-                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                   "value" : "0",
-                                                   "type" : "Literal"
-                                                } ]
+                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                "value" : "0",
+                                                "type" : "Literal"
                                              } ]
                                           }, {
                                              "type" : "Coalesce",
@@ -920,7 +841,7 @@
                                                       "scope" : "I",
                                                       "type" : "Property"
                                                    }, {
-                                                      "name" : "question3LinkId",
+                                                      "name" : "question2LinkId",
                                                       "type" : "ExpressionRef"
                                                    }, {
                                                       "name" : "extensionAnswerIndex",
@@ -949,7 +870,7 @@
                                                    "scope" : "I",
                                                    "type" : "Property"
                                                 }, {
-                                                   "name" : "question4LinkId",
+                                                   "name" : "question3LinkId",
                                                    "type" : "ExpressionRef"
                                                 }, {
                                                    "name" : "extensionAnswerIndex",
@@ -978,7 +899,7 @@
                                                 "scope" : "I",
                                                 "type" : "Property"
                                              }, {
-                                                "name" : "question5LinkId",
+                                                "name" : "question4LinkId",
                                                 "type" : "ExpressionRef"
                                              }, {
                                                 "name" : "extensionAnswerIndex",
@@ -1007,7 +928,7 @@
                                              "scope" : "I",
                                              "type" : "Property"
                                           }, {
-                                             "name" : "question6LinkId",
+                                             "name" : "question5LinkId",
                                              "type" : "ExpressionRef"
                                           }, {
                                              "name" : "extensionAnswerIndex",
@@ -1036,7 +957,7 @@
                                           "scope" : "I",
                                           "type" : "Property"
                                        }, {
-                                          "name" : "question7LinkId",
+                                          "name" : "question6LinkId",
                                           "type" : "ExpressionRef"
                                        }, {
                                           "name" : "extensionAnswerIndex",
@@ -1065,7 +986,7 @@
                                        "scope" : "I",
                                        "type" : "Property"
                                     }, {
-                                       "name" : "question8LinkId",
+                                       "name" : "question7LinkId",
                                        "type" : "ExpressionRef"
                                     }, {
                                        "name" : "extensionAnswerIndex",
@@ -1094,7 +1015,7 @@
                                     "scope" : "I",
                                     "type" : "Property"
                                  }, {
-                                    "name" : "question9LinkId",
+                                    "name" : "question8LinkId",
                                     "type" : "ExpressionRef"
                                  }, {
                                     "name" : "extensionAnswerIndex",
@@ -1123,7 +1044,7 @@
                                  "scope" : "I",
                                  "type" : "Property"
                               }, {
-                                 "name" : "question10LinkId",
+                                 "name" : "question9LinkId",
                                  "type" : "ExpressionRef"
                               }, {
                                  "name" : "extensionAnswerIndex",
@@ -1380,7 +1301,7 @@
                "sort" : {
                   "by" : [ {
                      "direction" : "desc",
-                     "path" : "date",
+                     "path" : "authoredDate",
                      "type" : "ByColumn"
                   }, {
                      "direction" : "desc",
