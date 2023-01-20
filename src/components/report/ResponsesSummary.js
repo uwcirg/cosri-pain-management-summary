@@ -188,9 +188,7 @@ export default class ResponsesSummary extends Component {
     );
   }
   render() {
-    const summary = this.props.summary;
-    if (!summary) return <div className="no-entries">No entries found</div>;
-    return this.renderSummary(summary);
+    return this.renderSummary(this.props.summary);
   }
 }
 

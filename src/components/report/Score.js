@@ -6,7 +6,9 @@ import { isNumber } from "../../helpers/utility";
 export default class Score extends Component {
   render() {
     const { score, scoreParams } = this.props;
-    const scoreSeverity = scoreParams ? String(scoreParams.scoreSeverity).toLowerCase() : null;
+    const scoreSeverity = scoreParams
+      ? String(scoreParams.scoreSeverity).toLowerCase()
+      : null;
     if (!isNumber(score)) return "--";
     if (scoreSeverity === "high")
       return (

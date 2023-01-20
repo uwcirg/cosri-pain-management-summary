@@ -33,7 +33,7 @@ export default class Overview extends Component {
             <SurveyGraph data={graphData}></SurveyGraph>
           </div>
         )}
-        <div className={`panel ${noSummaryData ? 'no-entries': ''}`}>
+        <div className={`panel ${noSummaryData ? "no-entries" : ""}`}>
           {/* <div className="panel__item">Alerts go here</div> */}
           <div className="panel__item">
             <ScoringSummary summary={summary}></ScoringSummary>
