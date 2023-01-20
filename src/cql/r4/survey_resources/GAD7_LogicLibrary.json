@@ -997,7 +997,7 @@
                                     "type" : "QueryLetRef"
                                  }, {
                                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "15",
+                                    "value" : "14",
                                     "type" : "Literal"
                                  } ]
                               },
