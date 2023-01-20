@@ -121,12 +121,11 @@ export default class ResponsesSummary extends Component {
     );
   }
   renderScoreTableCell(summary) {
-    if (!summary) return <td>--</td>;
-    const score = summary.FullScore;
-    const scoreParams =
-      summary && summary.ResponsesSummary && summary.ResponsesSummary.length
-        ? summary.ResponsesSummary[0]
-        : null;
+    const hasSummary =
+      summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
+    if (!hasSummary) return <td>--</td>;
+    const score = summary.ResponsesSummary[0].score;
+    const scoreParams = summary.ResponsesSummary[0];
     return (
       <td>
         <Score

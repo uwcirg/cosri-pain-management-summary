@@ -116,7 +116,7 @@ define Phq9ScoreQuestion9:
 
 // Calculate the score for the Full PHQ9
 // sum up all numeric values for all the answers
-define FullScore:
+define MostRecentFullScore:
   Phq9ScoreQuestion1
   + Phq9ScoreQuestion2
   + Phq9ScoreQuestion3

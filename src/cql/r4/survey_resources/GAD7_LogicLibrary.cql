@@ -113,7 +113,7 @@ define Gad7ScoreQuestion7:
 
 // Calculate the score for the Full GAD7
 // sum up all numeric values for all the answers
-define FullScore:
+define MostRecentFullScore:
   Gad7ScoreQuestion1
   + Gad7ScoreQuestion2
   + Gad7ScoreQuestion3

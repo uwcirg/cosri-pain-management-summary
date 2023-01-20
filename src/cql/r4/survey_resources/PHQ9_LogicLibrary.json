@@ -709,7 +709,7 @@
                } ]
             }
          }, {
-            "name" : "FullScore",
+            "name" : "MostRecentFullScore",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
