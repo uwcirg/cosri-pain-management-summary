@@ -322,7 +322,6 @@ export default class Landing extends Component {
       .then((response) => {
         //set result from data from EPIC
         let fhirData = response[0];
-        console.log("RESPONSES ", fhirData);
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         this.setSectionVis();
         const { sectionFlags, flaggedCount } = this.processSummary(
@@ -370,7 +369,6 @@ export default class Landing extends Component {
   }
 
   initializeTocBot() {
-    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 140 : 100;
     tocbot.init({
       tocSelector: ".active .summary__nav", // where to render the table of contents
       contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
@@ -378,9 +376,6 @@ export default class Landing extends Component {
       positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
       collapseDepth: 0, // how many heading levels should not be collpased
       includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      headingsOffset: MIN_HEADER_HEIGHT,
-      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-      throttleTimeout: 150,
     });
   }
 
@@ -401,17 +396,15 @@ export default class Landing extends Component {
    * fixed header when scrolling in the event that it is not within viewport
    */
   handleHeaderPos() {
-    window.requestAnimationFrame(() => {
-      document.addEventListener("scroll", function (e) {
-        clearTimeout(scrollHeaderIntervalId);
-        scrollHeaderIntervalId = setTimeout(function () {
-          if (!isInViewport(document.querySelector("#anchorTop"))) {
-            document.querySelector("body").classList.add("fixed");
-            return;
-          }
-          document.querySelector("body").classList.remove("fixed");
-        }, 150);
-      });
+    document.addEventListener("scroll", function () {
+      clearTimeout(scrollHeaderIntervalId);
+      scrollHeaderIntervalId = setTimeout(function () {
+        if (!isInViewport(document.querySelector("#anchorTop"))) {
+          document.querySelector("body").classList.add("fixed");
+          return;
+        }
+        document.querySelector("body").classList.remove("fixed");
+      }, 150);
     });
   }
   /*

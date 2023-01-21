@@ -484,7 +484,7 @@ export default class Summary extends Component {
                   role="tooltip"
                   data-iscapture="true"
                 />
-                {item.text}
+                <span className="text">{item.text}</span>
               </a>
             </div>
           );

@@ -486,11 +486,15 @@
               text-decoration: none;
               font-weight: 600;
               display: flex;
-              align-items: center;
+              align-items: flex-start;
               margin-bottom: 8px;
               color: $color-black;
               border-bottom: 0;
               line-height: 1.4;
+              .text {
+                position: relative;
+                top: 7px;
+              }
               &:hover {
                 color: $color-black-darker;
                 cursor: pointer;

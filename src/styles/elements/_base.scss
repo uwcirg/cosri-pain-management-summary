@@ -19,9 +19,12 @@ body.fixed {
     width: $summary-nav-width;
     &.is-position-fixed {
       padding: calc(#{$min-header-height} + 64px) 0 20px 0px !important;
-      //background-color: $color-gray-dark;
     }
   }
+}
+#anchorTop {
+  position: relative;
+  top: 0;
 }
 h3 {
   font-size: 1.2em;

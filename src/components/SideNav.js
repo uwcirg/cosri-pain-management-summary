@@ -35,7 +35,7 @@ export default class SideNav extends Component {
           data-for={navId}
           data-tip={navToggleToolTip}
           data-place="right"
-          className={`${this.props.navClassName} close`}
+          className={`${this.props.navClassName} summary__nav-button close`}
           title="toggle side navigation menu"
           onClick={(e) => {
             ReactTooltip.hide(this.navRef);

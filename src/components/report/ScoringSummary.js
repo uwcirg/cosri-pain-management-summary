@@ -133,7 +133,9 @@ export default class ScoringSummary extends Component {
     const noSummaryData =
       !summary ||
       !summary.length ||
-      summary.filter((item) => item.ResponsesSummary && item.ResponsesSummary.length > 0).length  === 0;
+      summary.filter(
+        (item) => item.ResponsesSummary && item.ResponsesSummary.length > 0
+      ).length === 0;
     return (
       <table className="table">
         <caption>{this.getTitleDisplay()}</caption>
