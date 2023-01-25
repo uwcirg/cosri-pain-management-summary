@@ -158,6 +158,8 @@ define ResponsesSummary:
           when score between 5 and 9 then 'mild'
           else 'low' 
         end,
+      totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId),
+      totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId)),
       authoredDate: I.authored,
       lastUpdated: I.meta.lastUpdated.value
     }

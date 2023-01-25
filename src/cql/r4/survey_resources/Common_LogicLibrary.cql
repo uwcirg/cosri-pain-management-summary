@@ -123,6 +123,19 @@ define function getAnswerOptionCodeValue(currentQuestionnaire FHIR.Questionnaire
  * @param responses as a list of FHIR.QuestionnaireResponse.Item
  */
 
+define AnswerQuestionTypes: {
+    'boolean',
+    'decimal',
+    'integer',
+    'date',
+    'dateTime',
+    'time',
+    'string',
+    'text',
+    'choice',
+    'open-choice'
+}
+
 
 define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
   (responses r where r.linkId.value = linkId) I
@@ -210,3 +223,9 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
       end,
       question: I.text.value
   }
+
+define function GetAnswerLinkIdsByQuestionnaire(currentQuestionnaire FHIR.Questionnaire, scoringQuestionId String):
+  (currentQuestionnaire C) O
+  let
+    responseItems: ((O.item) I where IndexOf(AnswerQuestionTypes, I.type.value) != -1 and I.linkId.value != scoringQuestionId)
+    return responseItems.linkId.value

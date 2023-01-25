@@ -1074,6 +1074,58 @@
                            }
                         }
                      }, {
+                        "name" : "totalAnsweredItems",
+                        "value" : {
+                           "type" : "Length",
+                           "operand" : {
+                              "type" : "Query",
+                              "source" : [ {
+                                 "alias" : "O",
+                                 "expression" : {
+                                    "path" : "item",
+                                    "scope" : "I",
+                                    "type" : "Property"
+                                 }
+                              } ],
+                              "relationship" : [ ],
+                              "where" : {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "Equal",
+                                    "operand" : [ {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "path" : "linkId",
+                                          "scope" : "O",
+                                          "type" : "Property"
+                                       }
+                                    }, {
+                                       "name" : "ScoringQuestionId",
+                                       "type" : "ExpressionRef"
+                                    } ]
+                                 }
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "totalItems",
+                        "value" : {
+                           "type" : "Length",
+                           "operand" : {
+                              "name" : "GetAnswerLinkIdsByQuestionnaire",
+                              "libraryName" : "LogicHelper",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "name" : "Gad7Questionnaire",
+                                 "type" : "ExpressionRef"
+                              }, {
+                                 "name" : "ScoringQuestionId",
+                                 "type" : "ExpressionRef"
+                              } ]
+                           }
+                        }
+                     }, {
                         "name" : "authoredDate",
                         "value" : {
                            "path" : "authored",

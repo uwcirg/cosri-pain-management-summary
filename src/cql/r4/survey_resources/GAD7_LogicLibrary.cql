@@ -148,7 +148,9 @@ define ResponsesSummary:
         when score between 10 and 14 then 'moderate'
         when score between 5 and 9 then 'mild'
         else 'low'
-      end, 
+      end,
+      totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId),
+      totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Gad7Questionnaire, ScoringQuestionId)),
       authoredDate: I.authored,
       lastUpdated: I.meta.lastUpdated.value
     }
