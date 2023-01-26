@@ -1295,24 +1295,7 @@
                               },
                               "then" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "severe depression",
-                                 "type" : "Literal"
-                              }
-                           }, {
-                              "when" : {
-                                 "type" : "Equal",
-                                 "operand" : [ {
-                                    "name" : "scoreSeverity",
-                                    "type" : "QueryLetRef"
-                                 }, {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                    "value" : "moderately high",
-                                    "type" : "Literal"
-                                 } ]
-                              },
-                              "then" : {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "moderately severe depression",
+                                 "value" : "severe anxiety",
                                  "type" : "Literal"
                               }
                            }, {
@@ -1329,7 +1312,7 @@
                               },
                               "then" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "moderate depression",
+                                 "value" : "moderate anxiety",
                                  "type" : "Literal"
                               }
                            }, {
@@ -1346,15 +1329,32 @@
                               },
                               "then" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "mild depression",
+                                 "value" : "mild anxiety",
                                  "type" : "Literal"
                               }
                            } ],
                            "else" : {
-                              "asType" : "{urn:hl7-org:elm-types:r1}String",
-                              "type" : "As",
-                              "operand" : {
-                                 "type" : "Null"
+                              "type" : "If",
+                              "condition" : {
+                                 "type" : "Greater",
+                                 "operand" : [ {
+                                    "name" : "score",
+                                    "type" : "QueryLetRef"
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
+                              },
+                              "then" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "minimal anxiety",
+                                 "type" : "Literal"
+                              },
+                              "else" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "",
+                                 "type" : "Literal"
                               }
                            }
                         }
@@ -1374,22 +1374,43 @@
                               } ],
                               "relationship" : [ ],
                               "where" : {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "Equal",
-                                    "operand" : [ {
-                                       "path" : "value",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "path" : "linkId",
-                                          "scope" : "O",
-                                          "type" : "Property"
-                                       }
-                                    }, {
-                                       "name" : "ScoringQuestionId",
-                                       "type" : "ExpressionRef"
-                                    } ]
-                                 }
+                                 "type" : "Or",
+                                 "operand" : [ {
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "Equal",
+                                       "operand" : [ {
+                                          "path" : "value",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "path" : "linkId",
+                                             "scope" : "O",
+                                             "type" : "Property"
+                                          }
+                                       }, {
+                                          "name" : "ScoringQuestionId",
+                                          "type" : "ExpressionRef"
+                                       } ]
+                                    }
+                                 }, {
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "Equal",
+                                       "operand" : [ {
+                                          "path" : "value",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "path" : "linkId",
+                                             "scope" : "O",
+                                             "type" : "Property"
+                                          }
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                          "value" : "/442649-1",
+                                          "type" : "Literal"
+                                       } ]
+                                    }
+                                 } ]
                               }
                            }
                         }

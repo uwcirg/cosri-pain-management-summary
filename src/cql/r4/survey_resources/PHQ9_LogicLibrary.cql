@@ -160,13 +160,12 @@ define ResponsesSummary:
       score: score,
       scoreSeverity: scoreSeverity,
       scoreMeaning: case
-        when scoreSeverity = 'high' then 'severe depression'
-        when scoreSeverity = 'moderately high' then 'moderately severe depression'
-        when scoreSeverity = 'moderate' then 'moderate depression'
-        when scoreSeverity = 'mild' then 'mild depression'
-        else null 
+        when scoreSeverity = 'high' then 'severe anxiety'
+        when scoreSeverity = 'moderate' then 'moderate anxiety'
+        when scoreSeverity = 'mild' then 'mild anxiety'
+        else if score > 0 then 'minimal anxiety' else '' 
       end,
-      totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId),
+      totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId or O.linkId.value != '/442649-1'),
       totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId)),
       authoredDate: I.authored,
       lastUpdated: I.meta.lastUpdated.value
