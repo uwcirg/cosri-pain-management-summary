@@ -1374,7 +1374,7 @@
                               } ],
                               "relationship" : [ ],
                               "where" : {
-                                 "type" : "Or",
+                                 "type" : "And",
                                  "operand" : [ {
                                     "type" : "Not",
                                     "operand" : {

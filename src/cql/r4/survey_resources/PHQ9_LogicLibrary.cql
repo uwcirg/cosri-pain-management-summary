@@ -165,7 +165,7 @@ define ResponsesSummary:
         when scoreSeverity = 'mild' then 'mild anxiety'
         else if score > 0 then 'minimal anxiety' else '' 
       end,
-      totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId or O.linkId.value != '/442649-1'),
+      totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId and O.linkId.value != '/442649-1'),
       totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId)),
       authoredDate: I.authored,
       lastUpdated: I.meta.lastUpdated.value
