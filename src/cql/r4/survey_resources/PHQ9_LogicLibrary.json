@@ -1224,6 +1224,23 @@
                         "type" : "QueryLetRef"
                      }
                   }
+               }, {
+                  "identifier" : "totalItems",
+                  "expression" : {
+                     "type" : "Length",
+                     "operand" : {
+                        "name" : "GetAnswerLinkIdsByQuestionnaire",
+                        "libraryName" : "LogicHelper",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "name" : "Phq9Questionnaire",
+                           "type" : "ExpressionRef"
+                        }, {
+                           "name" : "ScoringQuestionId",
+                           "type" : "ExpressionRef"
+                        } ]
+                     }
+                  }
                } ],
                "relationship" : [ ],
                "return" : {
@@ -1295,7 +1312,24 @@
                               },
                               "then" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "severe anxiety",
+                                 "value" : "severe depression",
+                                 "type" : "Literal"
+                              }
+                           }, {
+                              "when" : {
+                                 "type" : "Equal",
+                                 "operand" : [ {
+                                    "name" : "scoreSeverity",
+                                    "type" : "QueryLetRef"
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                    "value" : "moderately high",
+                                    "type" : "Literal"
+                                 } ]
+                              },
+                              "then" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "moderately severe depression",
                                  "type" : "Literal"
                               }
                            }, {
@@ -1312,7 +1346,7 @@
                               },
                               "then" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "moderate anxiety",
+                                 "value" : "moderate depression",
                                  "type" : "Literal"
                               }
                            }, {
@@ -1329,7 +1363,7 @@
                               },
                               "then" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "mild anxiety",
+                                 "value" : "mild depression",
                                  "type" : "Literal"
                               }
                            } ],
@@ -1348,7 +1382,7 @@
                               },
                               "then" : {
                                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "minimal anxiety",
+                                 "value" : "minimal depression",
                                  "type" : "Literal"
                               },
                               "else" : {
@@ -1361,75 +1395,52 @@
                      }, {
                         "name" : "totalAnsweredItems",
                         "value" : {
-                           "type" : "Length",
-                           "operand" : {
-                              "type" : "Query",
-                              "source" : [ {
-                                 "alias" : "O",
-                                 "expression" : {
-                                    "path" : "item",
-                                    "scope" : "I",
-                                    "type" : "Property"
+                           "type" : "Min",
+                           "source" : {
+                              "type" : "List",
+                              "element" : [ {
+                                 "type" : "Length",
+                                 "operand" : {
+                                    "type" : "Query",
+                                    "source" : [ {
+                                       "alias" : "O",
+                                       "expression" : {
+                                          "path" : "item",
+                                          "scope" : "I",
+                                          "type" : "Property"
+                                       }
+                                    } ],
+                                    "relationship" : [ ],
+                                    "where" : {
+                                       "type" : "Not",
+                                       "operand" : {
+                                          "type" : "Equal",
+                                          "operand" : [ {
+                                             "path" : "value",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "path" : "linkId",
+                                                "scope" : "O",
+                                                "type" : "Property"
+                                             }
+                                          }, {
+                                             "name" : "ScoringQuestionId",
+                                             "type" : "ExpressionRef"
+                                          } ]
+                                       }
+                                    }
                                  }
-                              } ],
-                              "relationship" : [ ],
-                              "where" : {
-                                 "type" : "And",
-                                 "operand" : [ {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "Equal",
-                                       "operand" : [ {
-                                          "path" : "value",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "path" : "linkId",
-                                             "scope" : "O",
-                                             "type" : "Property"
-                                          }
-                                       }, {
-                                          "name" : "ScoringQuestionId",
-                                          "type" : "ExpressionRef"
-                                       } ]
-                                    }
-                                 }, {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "Equal",
-                                       "operand" : [ {
-                                          "path" : "value",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "path" : "linkId",
-                                             "scope" : "O",
-                                             "type" : "Property"
-                                          }
-                                       }, {
-                                          "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                          "value" : "/442649-1",
-                                          "type" : "Literal"
-                                       } ]
-                                    }
-                                 } ]
-                              }
+                              }, {
+                                 "name" : "totalItems",
+                                 "type" : "QueryLetRef"
+                              } ]
                            }
                         }
                      }, {
                         "name" : "totalItems",
                         "value" : {
-                           "type" : "Length",
-                           "operand" : {
-                              "name" : "GetAnswerLinkIdsByQuestionnaire",
-                              "libraryName" : "LogicHelper",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "name" : "Phq9Questionnaire",
-                                 "type" : "ExpressionRef"
-                              }, {
-                                 "name" : "ScoringQuestionId",
-                                 "type" : "ExpressionRef"
-                              } ]
-                           }
+                           "name" : "totalItems",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "authoredDate",

@@ -151,7 +151,8 @@ define ResponsesSummary:
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
     responses: if Phq9Questionnaire is not null then 
         LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
-        responsesOnly
+        responsesOnly,
+    totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId))
     return Tuple {
       id: I.id.value,
       date: LogicHelper.DateTimeText(I.authored),
@@ -160,13 +161,14 @@ define ResponsesSummary:
       score: score,
       scoreSeverity: scoreSeverity,
       scoreMeaning: case
-        when scoreSeverity = 'high' then 'severe anxiety'
-        when scoreSeverity = 'moderate' then 'moderate anxiety'
-        when scoreSeverity = 'mild' then 'mild anxiety'
-        else if score > 0 then 'minimal anxiety' else '' 
+        when scoreSeverity = 'high' then 'severe depression'
+        when scoreSeverity = 'moderately high' then 'moderately severe depression'
+        when scoreSeverity = 'moderate' then 'moderate depression'
+        when scoreSeverity = 'mild' then 'mild depression'
+        else if score > 0 then 'minimal depression' else '' 
       end,
-      totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId and O.linkId.value != '/442649-1'),
-      totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId)),
+      totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId), totalItems}),
+      totalItems: totalItems,
       authoredDate: I.authored,
       lastUpdated: I.meta.lastUpdated.value
     }
