@@ -139,7 +139,7 @@ export default class ResponsesSummary extends Component {
     const hasSummary =
       summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
     if (!hasSummary) return <td>--</td>;
-    return <td>{this.getNumResponses(summary)}</td>;
+    return <td className="text-center">{this.getNumResponses(summary)}</td>;
   }
   renderResponsesLinkTableCell(lastResponsesDate) {
     return (

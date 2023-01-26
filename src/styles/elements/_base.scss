@@ -55,7 +55,10 @@ a {
   color: $color-gray-dark;
 }
 .text-center {
-  text-align: center;
+  text-align: center !important;
+}
+.text-capitalize {
+  text-transform: capitalize;
 }
 .small {
   font-size: 14px;

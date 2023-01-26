@@ -133,6 +133,12 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question5LinkId, answerExtensionIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question6LinkId, answerExtensionIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)), 0),
+    scoreSeverity: case
+        when score > 14 then 'high'
+        when score between 10 and 14 then 'moderate'
+        when score between 5 and 9 then 'mild'
+        else 'low'
+      end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
     responses: if Gad7Questionnaire is not null then 
         LogicHelper.getResponsesByQuestionnaire(Gad7Questionnaire, I.item, ScoringQuestionId) else 
@@ -143,11 +149,12 @@ define ResponsesSummary:
       items: I.item,
       responses: responses,
       score: score,
-      scoreSeverity: case
-        when score > 14 then 'high'
-        when score between 10 and 14 then 'moderate'
-        when score between 5 and 9 then 'mild'
-        else 'low'
+      scoreSeverity: scoreSeverity,
+      scoreMeaning: case
+        when scoreSeverity = 'high' then 'severe anxiety'
+        when scoreSeverity = 'moderate' then 'moderate anxiety'
+        when scoreSeverity = 'mild' then 'mild anxiety'
+        else if score > 0 then 'minimal anxiety' else '' 
       end,
       totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId),
       totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Gad7Questionnaire, ScoringQuestionId)),

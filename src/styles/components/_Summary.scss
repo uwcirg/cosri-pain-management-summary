@@ -689,6 +689,9 @@
 
         .table {
           padding-bottom: 12px;
+          td {
+            vertical-align: bottom;
+          }
           .icon-container {
             position: relative;
             top: 6px;

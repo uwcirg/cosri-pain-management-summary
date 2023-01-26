@@ -140,6 +140,14 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0),
+    scoreSeverity:
+        case
+          when score >= 20 then 'high'
+          when score between 15 and 19 then 'moderately high'
+          when score between 10 and 14 then 'moderate'
+          when score between 5 and 9 then 'mild'
+          else 'low' 
+        end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
     responses: if Phq9Questionnaire is not null then 
         LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
@@ -150,14 +158,14 @@ define ResponsesSummary:
       items: I.item,
       responses: responses,
       score: score,
-      scoreSeverity:
-        case
-          when score >= 20 then 'high'
-          when score between 15 and 19 then 'moderately high'
-          when score between 10 and 14 then 'moderate'
-          when score between 5 and 9 then 'mild'
-          else 'low' 
-        end,
+      scoreSeverity: scoreSeverity,
+      scoreMeaning: case
+        when scoreSeverity = 'high' then 'severe depression'
+        when scoreSeverity = 'moderately high' then 'moderately severe depression'
+        when scoreSeverity = 'moderate' then 'moderate depression'
+        when scoreSeverity = 'mild' then 'mild depression'
+        else null 
+      end,
       totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId),
       totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId)),
       authoredDate: I.authored,

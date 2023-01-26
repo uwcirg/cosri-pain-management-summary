@@ -75,9 +75,21 @@ export default class ScoringSummary extends Component {
     }
   }
   getRangeDisplay(data) {
+    if (!data || !data.ScoreParams) return null;
     const minScore = data.ScoreParams.minScore;
     const maxScore = data.ScoreParams.maxScore;
-    return <span>{"(" + minScore + "-" + maxScore + ")"}</span>;
+    return <span className="text-muted">{"(" + minScore + "-" + maxScore + ")"}</span>;
+  }
+  getNumAnswered(data) {
+    if (!this.getCurrentData(data.ResponsesSummary)) return null;
+    const totalItems = data.ResponsesSummary[0].totalItems;
+    const totalAnsweredItems = data.ResponsesSummary[0].totalAnsweredItems;
+    if (!totalItems || !totalAnsweredItems) return "--";
+    return `${totalAnsweredItems} / ${totalItems}`;
+  }
+  getScoreMeaning(data) {
+    if (!this.getCurrentData(data.ResponsesSummary)) return null;
+    return data.ResponsesSummary[0].scoreMeaning;
   }
   getCurrentDisplayScore(data) {
     if (!data) return "--";
@@ -91,8 +103,10 @@ export default class ScoringSummary extends Component {
     return (
       <thead>
         <tr>
-          <th>Questionnaire Name</th>
+          <th className="empty"></th>
           <th>Score</th>
+          <th># Answered</th>
+          <th className="text-center">Meaning</th>
           <th>Compare to Last</th>
         </tr>
       </thead>
@@ -111,7 +125,11 @@ export default class ScoringSummary extends Component {
     return summary.map((item, index) => {
       return (
         <tr key={`questionnaire_summary_row_${index}`} className="data-row">
-          <td>{item.QuestionnaireName.toUpperCase()}</td>
+          <td>
+            <span>
+              <b>{item.QuestionnaireName.toUpperCase()}</b>
+            </span>
+          </td>
           <td>
             <div className="flex">
               <Score
@@ -121,6 +139,8 @@ export default class ScoringSummary extends Component {
               <div>{this.getRangeDisplay(item)}</div>
             </div>
           </td>
+          <td>{this.getNumAnswered(item)}</td>
+          <td className="text-capitalize">{this.getScoreMeaning(item)}</td>
           <td>
             <div className="icon-container">{this.getDisplayIcon(item)}</div>
           </td>
