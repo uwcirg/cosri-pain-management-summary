@@ -179,6 +179,19 @@
       background: $color-white;
       gap: 2;
       flex: 1 1 100%;
+      &.graph {
+        max-width: 100%;
+      }
+      @media (min-width: 669px) {
+        &.graph {
+          max-width: 80%;
+        }
+      }
+      @media (min-width: 992px) {
+        &.graph {
+          max-width: 50%;
+        }
+      }
       @media (min-width: 1200px) {
         & {
           flex: 1 1 0;
