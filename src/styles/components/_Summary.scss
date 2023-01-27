@@ -816,9 +816,9 @@
           transform: rotate(0);
         }
         &.close {
-          .close-button {
-            transform: rotate(-90deg);
-          }
+          // .close-button {
+          //   transform: rotate(-90deg);
+          // }
           .content {
             display: none;
           }

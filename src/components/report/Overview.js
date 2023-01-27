@@ -36,7 +36,10 @@ export default class Overview extends Component {
         <div className={`panel ${noSummaryData ? "no-entries" : ""}`}>
           {/* <div className="panel__item">Alerts go here</div> */}
           <div className="panel__item">
-            <ScoringSummary summary={summary}></ScoringSummary>
+            <ScoringSummary
+              summary={summary}
+              showAnchorLinks={true}
+            ></ScoringSummary>
           </div>
         </div>
       </div>

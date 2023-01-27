@@ -78,7 +78,11 @@ export default class ScoringSummary extends Component {
     if (!data || !data.ScoreParams) return null;
     const minScore = data.ScoreParams.minScore;
     const maxScore = data.ScoreParams.maxScore;
-    return <span className="text-muted">{"(" + minScore + "-" + maxScore + ")"}</span>;
+    return (
+      <span className="text-muted">
+        {"(" + minScore + "-" + maxScore + ")"}
+      </span>
+    );
   }
   getNumAnswered(data) {
     if (!this.getCurrentData(data.ResponsesSummary)) return null;
@@ -121,13 +125,22 @@ export default class ScoringSummary extends Component {
       </tr>
     );
   }
-  renderDataRows(summary) {
+  renderDataRows(summary, showAnchorLinks) {
     return summary.map((item, index) => {
       return (
         <tr key={`questionnaire_summary_row_${index}`} className="data-row">
           <td>
             <span>
-              <b>{item.QuestionnaireName.toUpperCase()}</b>
+              {showAnchorLinks && (
+                <b>
+                  <a className="anchor" href={`#${item.QuestionnaireName}_title`} title={`Go to see more detail about ${item.QuestionnaireName}`}>
+                    {item.QuestionnaireName.toUpperCase()}
+                  </a>
+                </b>
+              )}
+              {!showAnchorLinks && (
+                <b>{item.QuestionnaireName.toUpperCase()}</b>
+              )}
             </span>
           </td>
           <td>
@@ -149,7 +162,7 @@ export default class ScoringSummary extends Component {
     });
   }
   render() {
-    const { summary } = this.props;
+    const { summary, showAnchorLinks } = this.props;
     const noSummaryData =
       !summary ||
       !summary.length ||
@@ -162,7 +175,7 @@ export default class ScoringSummary extends Component {
         {!noSummaryData && this.renderTableHeaders()}
         <tbody>
           {noSummaryData && this.renderNoDataRow()}
-          {!noSummaryData && this.renderDataRows(summary)}
+          {!noSummaryData && this.renderDataRows(summary, showAnchorLinks)}
         </tbody>
       </table>
     );
@@ -172,4 +185,5 @@ export default class ScoringSummary extends Component {
 ScoringSummary.propTypes = {
   title: PropTypes.string,
   summary: PropTypes.array,
+  showAnchorLinks: PropTypes.bool,
 };

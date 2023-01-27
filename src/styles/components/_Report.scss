@@ -32,7 +32,7 @@
     }
   }
   .summary__display {
-    padding: 16px 16px 16px;
+    padding: 8px;
     @media (min-width: 1200px) {
       max-width: 1160px;
       margin-left: auto;
@@ -173,7 +173,7 @@
     flex-wrap: wrap;
     .panel {
       border: 2px solid $color-black;
-      padding: 16px 8px;
+      padding: 8px;
       display: flex;
       flex-direction: column;
       background: $color-white;
@@ -216,7 +216,7 @@
       margin: 0 auto 8px auto;
       border: 2px solid $color-gray-lighter;
       width: 72px;
-      padding: 8px 16px;
+      padding: 0 16px;
       font-size: 0.9rem;
       &__item {
         font-weight: 600;
