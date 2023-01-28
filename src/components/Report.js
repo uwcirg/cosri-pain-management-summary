@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Collapsible from "react-collapsible";
 import InfoModal from "./InfoModal";
 import SideNav from "./SideNav";
+import Version from "../elements/Version";
 import reportSummarySections from "../config/report_config";
 
 export default class Report extends Component {
@@ -140,6 +141,7 @@ export default class Report extends Component {
                 </Collapsible>
               );
             })}
+            <Version />
           </div>
         </div>
         <ReactModal
