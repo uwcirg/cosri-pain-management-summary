@@ -16,22 +16,25 @@ export default class ScoringSummary extends Component {
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
   }
-  getCurrentData(data) {
+  getDataByIndex(data, index) {
     if (!data || data.length === 0) return null;
     const sortedData = this.sortData(data);
-    return sortedData[0];
+    return sortedData[index];
+  }
+  getCurrentData(data) {
+    return this.getDataByIndex(data, 0);
   }
   getPreviousScore(data) {
-    if (!data || data.length === 0 || data.length === 1) return null;
-    const sortedData = this.sortData(data);
-    const score = sortedData[1].score;
+    const sortedData = this.getDataByIndex(data, 1);
+    if (!sortedData) return null;
+    const score = sortedData.score;
     if (!isNumber(score)) return null;
     return parseInt(score);
   }
   getCurrentScore(data) {
-    if (!data || data.length === 0) return null;
-    const sortedData = this.sortData(data);
-    const score = sortedData[0].score;
+    const sortedData = this.getDataByIndex(data, 0);
+    if (!sortedData) return null;
+    const score = sortedData.score;
     if (!isNumber(score)) return null;
     return parseInt(score);
   }
@@ -96,8 +99,7 @@ export default class ScoringSummary extends Component {
     return data.ResponsesSummary[0].scoreMeaning;
   }
   getCurrentDisplayScore(data) {
-    if (!data) return "--";
-    if (!data.ResponsesSummary || !data.ResponsesSummary.length) return "--";
+    if (!this.getCurrentData(data.ResponsesSummary)) return "--";
     return this.getCurrentScore(data.ResponsesSummary);
   }
   getTitleDisplay() {
@@ -125,33 +127,48 @@ export default class ScoringSummary extends Component {
       </tr>
     );
   }
+  renderQuestionnaireLinkCell(questionnaireObj, showAnchorLinks) {
+    if (!questionnaireObj) return <td>--</td>;
+    const questionnaireName = questionnaireObj.QuestionnaireName;
+    return (
+      <td>
+        <span>
+          {showAnchorLinks && (
+            <b>
+              <a
+                className="anchor"
+                href={`#${questionnaireName}_title`}
+                title={`Go to see more detail about ${questionnaireName}`}
+              >
+                {questionnaireName.toUpperCase()}
+              </a>
+            </b>
+          )}
+          {!showAnchorLinks && <b>{questionnaireName.toUpperCase()}</b>}
+        </span>
+      </td>
+    );
+  }
+  renderScoreCell(data) {
+    if (!data || !data.ResponsesSummary) return <td>--</td>;
+    return (
+      <td>
+        <div className="flex">
+          <Score
+            score={this.getCurrentDisplayScore(data)}
+            scoreParams={this.getCurrentData(data.ResponsesSummary)}
+          ></Score>
+          <div>{this.getRangeDisplay(data)}</div>
+        </div>
+      </td>
+    );
+  }
   renderDataRows(summary, showAnchorLinks) {
     return summary.map((item, index) => {
       return (
         <tr key={`questionnaire_summary_row_${index}`} className="data-row">
-          <td>
-            <span>
-              {showAnchorLinks && (
-                <b>
-                  <a className="anchor" href={`#${item.QuestionnaireName}_title`} title={`Go to see more detail about ${item.QuestionnaireName}`}>
-                    {item.QuestionnaireName.toUpperCase()}
-                  </a>
-                </b>
-              )}
-              {!showAnchorLinks && (
-                <b>{item.QuestionnaireName.toUpperCase()}</b>
-              )}
-            </span>
-          </td>
-          <td>
-            <div className="flex">
-              <Score
-                score={this.getCurrentDisplayScore(item)}
-                scoreParams={this.getCurrentData(item.ResponsesSummary)}
-              ></Score>
-              <div>{this.getRangeDisplay(item)}</div>
-            </div>
-          </td>
+          {this.renderQuestionnaireLinkCell(item, showAnchorLinks)}
+          {this.renderScoreCell(item)}
           <td>{this.getNumAnswered(item)}</td>
           <td className="text-capitalize">{this.getScoreMeaning(item)}</td>
           <td>

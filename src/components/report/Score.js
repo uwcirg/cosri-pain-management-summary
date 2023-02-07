@@ -13,7 +13,7 @@ export default class Score extends Component {
     const iconClass =
       scoreSeverity === "high"
         ? "text-alert"
-        : (scoreSeverity === "moderate" || scoreSeverity === "moderately high")
+        : scoreSeverity === "moderate" || scoreSeverity === "moderately high"
         ? "text-warning"
         : "";
     if (!isNumber(score)) return "--";
