@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import InclusionBanner from "../../components/InclusionBanner";
 
-it("renders without crashing", () => {
+it("renders InclusionBanner without crashing", () => {
   const { container } = render(
     <InclusionBanner
       {...{
@@ -15,7 +15,7 @@ it("renders without crashing", () => {
   expect(bannerElement).toBeDefined();
 });
 
-it("closes the banner when the button is clicked", () => {
+it("closes the inclusion banner when the button is clicked", () => {
   const { container } = render(
     <InclusionBanner
       {...{

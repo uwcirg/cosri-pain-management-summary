@@ -2,7 +2,7 @@ import { render } from "@testing-library/react"
 import { mockSummaryA, mockSectionFlags } from '../../utils/testFixtures';
 import Summary from '../../components/Summary';
 
-it('renders without crashing', () => {
+it('renders Summary without crashing', () => {
   const { container } = render(
     <Summary
       {...{

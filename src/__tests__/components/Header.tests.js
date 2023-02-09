@@ -13,7 +13,7 @@ const paramObj = {
 };
 
 
-it("renders without crashing", () => {
+it("renders Header without crashing", () => {
   const { container } = render(
     <Header
       {...paramObj}

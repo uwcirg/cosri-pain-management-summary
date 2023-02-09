@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import ChevronDownIcon from "../icons/ChevronDownIcon";
 
 export default class ErrorBanner extends Component {
@@ -45,7 +46,7 @@ export default class ErrorBanner extends Component {
         <h4 className="error-banner__title">
           <FontAwesomeIcon
             className="icon"
-            icon="exclamation-circle"
+            icon={faExclamationCircle}
             title="notice"
           />{" "}
           Application Errors
