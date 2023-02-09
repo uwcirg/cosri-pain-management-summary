@@ -5,8 +5,8 @@ import extractResourcesFromELM from './extractResourcesFromELM';
 import dstu2FactorsELM from '../cql/dstu2/Factors_to_Consider_in_Managing_Chronic_Pain.json'
 import dstu2CommonsELM from '../cql/dstu2/CDS_Connect_Commons_for_FHIRv102.json';
 import dstu2HelpersELM from '../cql/dstu2/FHIRHelpers.json';
-import r4FactorsELM from '../cql/r4/Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400.json';
-import r4CommonsELM from '../cql/r4/CDS_Connect_Commons_for_FHIRv400.json';
+import r4FactorsELM from '../cql/r4/Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv401.json';
+import r4CommonsELM from '../cql/r4/CDS_Connect_Commons_for_FHIRv401.json';
 import r4HelpersELM from '../cql/r4/FHIRHelpers.json';
 import r4MMECalculatorELM from '../cql/r4/MMECalculator.json';
 import r4OMTKDataELM from '../cql/r4/OMTKData.json';
@@ -14,9 +14,47 @@ import r4OMTKLogicELM from '../cql/r4/OMTKLogic.json';
 import valueSetDB from '../cql/valueset-db.json';
 import {getEnv, fetchEnvData} from './envConfig';
 
+class VSACAwareCodeService extends cql.CodeService {
+  // Override findValueSetsByOid to extract OID from VSAC URLS
+  findValueSetsByOid(id) {
+    const [oid] = this.extractOidAndVersion(id);
+    return super.findValueSetsByOid(oid);
+  }
+
+  // Override findValueSet to extract OID from VSAC URLS
+  findValueSet(id, version) {
+    const [oid, embeddedVersion] = this.extractOidAndVersion(id);
+    return super.findValueSet(oid, version != null ? version : embeddedVersion);
+  }
+
+  /**
+   * Extracts the oid and version from a url, urn, or oid. Only url supports an embedded version
+   * (separately by |); urn and oid will never return a version. If the input value is not a valid
+   * urn or VSAC URL, it is assumed to be an oid and returned as-is.
+   * Borrowed from: https://github.com/cqframework/cql-exec-vsac/blob/master/lib/extractOidAndVersion.js
+   * @param {string} id - the urn, url, or oid
+   * @returns {[string,string]} the oid and optional version as a pair
+   */
+   extractOidAndVersion(id) {
+    if (id == null) return [];
+
+    // first check for VSAC FHIR URL (ideally https is preferred but support http just in case)
+    // if there is a | at the end, it indicates that a version string follows
+    let m = id.match(/^https?:\/\/cts\.nlm\.nih\.gov\/fhir\/ValueSet\/([^|]+)(\|(.+))?$/);
+    if (m) return m[3] == null ? [m[1]] : [m[1], m[3]];
+
+    // then check for urn:oid
+    m = id.match(/^urn:oid:(.+)$/);
+    if (m) return [m[1]];
+
+    // finally just return as-is
+    return [id];
+  }
+}
+
 function executeELM(collector, paramResourceTypes) {
   let client, release, library;
-  let resourceTypes = paramResourceTypes ? paramResourceTypes : {};
+  let resourceTypes = paramResourceTypes || {};
   return new Promise((resolve) => {
     // First get our authorized client and send the FHIR release to the next step
     const results = FHIR.oauth2.ready().then((clientArg) => {
@@ -63,7 +101,7 @@ function executeELM(collector, paramResourceTypes) {
     // then execute the library and return the results (wrapped in a Promise)
     .then((bundle) => {
       const patientSource = getPatientSource(release);
-      const codeService = new cql.CodeService(valueSetDB);
+      const codeService = new VSACAwareCodeService(valueSetDB);
       const executor = new cql.Executor(library, codeService);
       //debugging
       console.log("bundle loaded? ", bundle);
@@ -84,7 +122,7 @@ function getLibrary(release) {
       }));
     case 4:
       return new cql.Library(r4FactorsELM, new cql.Repository({
-        CDS_Connect_Commons_for_FHIRv102: r4CommonsELM,
+        CDS_Connect_Commons_for_FHIRv401: r4CommonsELM,
         FHIRHelpers: r4HelpersELM,
         MMECalculator: r4MMECalculatorELM,
         OMTKLogic: r4OMTKLogicELM,
@@ -100,7 +138,7 @@ function getPatientSource(release) {
     case 2:
       return cqlfhir.PatientSource.FHIRv102();
     case 4:
-      return cqlfhir.PatientSource.FHIRv400();
+      return cqlfhir.PatientSource.FHIRv401();
     default:
       throw new Error('Only FHIR DSTU2 and FHIR R4 servers are supported');
   }
