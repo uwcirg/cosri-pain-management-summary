@@ -20,6 +20,8 @@
 }
 
 .ReactTable {
+  width: 100%;
+  border-spacing: 0;
   .col-header {
     display: inline-block;
     border-bottom: 3px solid $color-blue;
@@ -79,4 +81,23 @@
 
 .pagination {
   border-top: 1px solid $color-gray-lighter;
+  margin-top: 16px;
+  padding: 8px 0 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  column-gap: 16px;
+  input {
+    height: 24px;
+  }
+  select {
+    height: 32px;
+  }
+  .button {
+    background-color: transparent;
+    border: 0;
+    font-size: 1rem;
+  }
 }

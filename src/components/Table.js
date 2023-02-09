@@ -1,41 +1,8 @@
 import React from "react";
-import styled from "styled-components";
 import { useFlexLayout, useTable, useSortBy, usePagination } from "react-table";
 import AscendingSortImg from "../icons/icon-sort-up.png";
 import DescenidngSortImg from "../icons/icon-sort-down.png";
 
-const Styles = styled.div`
-  table {
-    width: 100%;
-    border-spacing: 0;
-    th,
-    td {
-      margin: 0;
-    }
-  }
-
-  .pagination {
-    margin-top: 16px;
-    padding: 8px 0 8px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    width: 100%;
-    column-gap: 16px;
-    input {
-      height: 24px;
-    }
-    select {
-      height: 32px;
-    }
-  }
-  .button {
-    background-color: transparent;
-    border: 0;
-    font-size: 1rem;
-  }
-`;
 
 export default function Table({ columns, data, tableParams }) {
   const params = tableParams ? tableParams : {};
@@ -72,7 +39,7 @@ export default function Table({ columns, data, tableParams }) {
 
   // Render the UI for your table
   return (
-    <Styles>
+    <div>
       <table
         className={`ReactTable ${columns.length <= 2 ? "single-column" : ""}`}
         {...getTableProps()}
@@ -225,6 +192,6 @@ export default function Table({ columns, data, tableParams }) {
           </select>
         </div>
       )}
-    </Styles>
+    </div>
   );
 }
