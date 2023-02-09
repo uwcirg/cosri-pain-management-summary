@@ -1,4 +1,4 @@
-FROM node:10 as build-deps
+FROM node:14 as build-deps
 
 WORKDIR /opt/app
 
