@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ReactTable from 'react-table';
+import { faCircleXmark, faLink } from '@fortawesome/free-solid-svg-icons';
+import Table from "./Table";
 
 export default class InfoModal extends Component {
 
@@ -14,67 +15,84 @@ export default class InfoModal extends Component {
 
   renderElements = (elements) => {
     const tableElements = elements.elements;
-    const columns = [{
-      Header: () => <span className="col-header">Name</span>,
-      accessor: 'name',
-      minWidth: 225
-    },{
-      Header: () => <span className="col-header">Status</span>,
-      accessor: 'status'
-    },{
-      Header: () => <span className="col-header">Lookback</span>,
-      accessor: 'lookback'
-    }];
+    const columns = [
+      {
+        Header: () => <span className="col-header">Name</span>,
+        accessor: "name",
+        minWidth: 225,
+        disableSortBy: true,
+      },
+      {
+        Header: () => <span className="col-header">Status</span>,
+        accessor: "status",
+        disableSortBy: true,
+      },
+      {
+        Header: () => <span className="col-header">Lookback</span>,
+        accessor: "lookback",
+        disableSortBy: true,
+      },
+    ];
     return (
       <div className="element" role="table"
            aria-label={elements.description} aria-describedby={this.elementsTableProps.id}>
         <h4>{elements.description}</h4>
-        <ReactTable
-          className="elements__table"
+        <Table
+          //className="elements__table"
           columns={columns}
           data={tableElements}
-          minRows={1}
-          showPagination={false}
-          resizable={false}
-          getProps={() => this.elementsTableProps}
+          tableParams={{
+            minRows: 1,
+            showPagination: false,
+            resizable: false,
+            getProps: () => this.elementsTableProps
+          }}
         />
       </div>
     );
   }
 
   renderReferences = (references) => {
-    const columns = [{
-      Header:  () => <span className="col-header">Link</span>,
-      accessor: 'urlLink',
-      maxWidth: 50,
-      sortable: false
-    },{
-      Header:  () => <span className="col-header">Title</span>,
-      accessor: 'title'
-    },{
-      Header:  () => <span className="col-header">Details</span>,
-      accessor: 'details'
-    }];
+    const columns = [
+      {
+        Header: () => <span className="col-header">Link</span>,
+        accessor: "urlLink",
+        maxWidth: 50,
+        disableSortBy: true,
+      },
+      {
+        Header: () => <span className="col-header">Title</span>,
+        accessor: "title",
+        disableSortBy: true,
+      },
+      {
+        Header: () => <span className="col-header">Details</span>,
+        accessor: "details",
+        disableSortBy: true,
+      },
+    ];
 
     let data = references;
     data.forEach((reference) => {
       reference.urlLink = (
         <a href={reference.url} src={reference.title} target="_blank"
-           rel="noopener noreferrer"><FontAwesomeIcon icon="link" title="link" /></a>
+           rel="noopener noreferrer"><FontAwesomeIcon icon={faLink} title="link" /></a>
       );
     });
 
     return (
       <div className="reference" role="table"
            aria-label="References" aria-describedby={this.referencesTableProps.id}>
-        <ReactTable
+        <Table
           className="elements__table"
           columns={columns}
           data={data}
-          minRows={1}
-          showPagination={false}
-          resizable={false}
-          getProps={() => this.referencesTableProps}
+          tableParams={{
+            minRows: 1, 
+            showPagination: false,
+            resizable: false, 
+            getProps: () => this.referencesTableProps
+          }}
         />
       </div>
     );
@@ -89,22 +107,25 @@ export default class InfoModal extends Component {
       <div className="info-modal">
         <div className="info-modal__header">
           More Information for {subSection.name}
-          <FontAwesomeIcon icon="times" title="close" className="close-icon" onClick={closeModal}/>
+          <FontAwesomeIcon
+            icon={faCircleXmark}
+            title="close"
+            className="close-icon"
+            onClick={closeModal}
+          />
         </div>
 
         <div className="info-modal__body">
-          {elements != null &&
-            <div className="elements">
-              {this.renderElements(elements)}
-            </div>
-          }
+          {elements != null && (
+            <div className="elements">{this.renderElements(elements)}</div>
+          )}
 
-          {references.length > 0 &&
+          {references.length > 0 && (
             <div className="references">
               <h4>References:</h4>
               {this.renderReferences(references)}
             </div>
-          }
+          )}
         </div>
       </div>
     );

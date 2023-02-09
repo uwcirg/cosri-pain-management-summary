@@ -1,8 +1,8 @@
-import { shallowRender } from '../../utils/testHelpers';
+import { render } from "@testing-library/react"
 import Warning from '../../components/Warning';
 
-const component = shallowRender(Warning);
+const {container} = render(<Warning></Warning>);
 
-it('renders without crashing', () => {
-  expect(component).toExist();
+it('renders Warning without crashing', () => {
+  expect(container.querySelector(".warning")).toBeDefined();
 });

@@ -1,11 +1,11 @@
-import { shallowRender } from '../../utils/testHelpers';
+import { render } from "@testing-library/react";
 import FhirQuery from '../../components/FhirQuery';
 
-const component = shallowRender(FhirQuery, {
+const {container} = render(<FhirQuery {...{
   url: 'testUrl',
   data: {}
-});
+}}></FhirQuery>);
 
-it('renders without crashing', () => {
-  expect(component).toExist();
+it('renders FhirQuery without crashing', () => {
+  expect(container.querySelector(".fhir-query")).toBeDefined();
 });

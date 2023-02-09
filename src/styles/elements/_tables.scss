@@ -1,13 +1,42 @@
 .ReactTable * {
   box-sizing: inherit;
 }
+.sub-section {
+  .ReactTable {
+    td:first-of-type {
+      // flag cell
+      text-align: center;
+    }
+    &.single-column {
+      td:first-of-type {
+        flex: 0 !important;
+        width: 0 !important;
+      }
+      td:last-of-type {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}
 
 .ReactTable {
-  .rt-tbody .rt-tr-group {
+  .col-header {
+    display: inline-block;
+    border-bottom: 3px solid $color-blue;
+    padding: 0 16px 2px 0;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .col-header-title {
+    margin: 0;
+    border-bottom: 1px solid $color-gray-lighter;
+  }
+  tbody {
     border: 0;
     overflow: hidden;
 
-    .rt-tr {
+    tr {
       background: $color-white;
 
       &:hover {
@@ -16,103 +45,38 @@
     }
   }
 
-  .rt-tbody .rt-td,
-  .rt-thead .rt-th {
+  .flag-entry:not(.flagged) {
+    display: none;
+    width: 0 !important;
+  }
+  .flagged {
+    color: $color-red;
+  }
+
+  tbody td,
+  thead th {
     text-align: left;
     vertical-align: top;
     border: 0;
     padding: 4px 8px 4px 4px;
   }
 
-  .rt-thead .rt-th {
+  thead th {
     white-space: nowrap;
 
     &:focus {
       border: 1px dotted gray;
     }
-
-    &.-cursor-pointer {
-      span {
-        background-image: url('../../icons/icon-sort.png');
-        background-repeat: no-repeat;
-        background-size: 8px;
-        background-position: 96% 50%;
-      }
-
-      &.-sort-asc,
-      &.-sort-desc {
-        box-shadow: none;
-      }
-
-      &.-sort-asc span {
-        background-image: url('../../icons/icon-sort-up.png');
-      }
-
-      &.-sort-desc span {
-        background-image: url('../../icons/icon-sort-down.png');
-      }
-    }
-
-    .col-header {
-      display: inline-block;
-      border-bottom: 3px solid $color-blue;
-      //border-bottom: 3px solid $color-gold-light;
-      padding: 0 16px 2px 0;
-      font-weight: 600;
-    }
-
-    .col-header-title {
-      margin: 0;
-      border-bottom: 1px solid $color-gray-lighter;
-    }
-
   }
 
-  .rt-tbody .rt-td {
+  tbody td {
     white-space: normal;
     display: block;
     overflow: visible;
     line-height: 1.45;
   }
-  .pagination-bottom {
-    input,
-    select {
-      border-radius: 0;
-    }
-    input {
-      height: 24px;
-    }
-    select {
-      height: 32px;
-    }
-    .-pageJump {
-      input {
-        border-radius: 0;
-      }
-    }
+}
 
-    .-pagination {
-      box-shadow: none;
-      border-top: 1px solid $color-gray-lighter;
-      padding: 0;
-      padding-top: 4px;
-
-      button {
-        width: 60%;
-        margin: 4px auto;
-        height: 32px;
-      }
-
-      .-btn {
-        background: $color-blue;
-        color: #FFF;
-        &:hover {
-          background: $color-blue-darker;
-        }
-        &[disabled]:hover {
-          background: $color-blue;
-        }
-      }
-    }
-  }
+.pagination {
+  border-top: 1px solid $color-gray-lighter;
 }

@@ -1,14 +1,14 @@
-import React from 'react';
-import moment from 'moment';
-import VideoLink from '../components/Video';
+import React from "react";
+import moment from "moment";
+import VideoLink from "../components/Video";
 
 const dateRE = /^\d{4}-\d{2}-\d{2}(T|\b)/; // loosely matches '2012-04-05' or '2012-04-05T00:00:00.000+00:00'
 const quantityRE = /^(\d+(\.\d+)?)(\s+(\S+))?$/; // matches '40' or '40 a' (a is UCUM unit for years)
 const booleanRE = /^(true|false)$/; // matches 'true' or 'false'
 
-export function dateFormat(result, input, format) {
-  format = format || 'YYYY-MMM-DD';
-  if (input == null) return '';
+export function dateFormat(result, input, paramFormat) {
+  const format = paramFormat ? paramFormat : "YYYY-MMM-DD";
+  if (input == null) return "";
   return moment.parseZone(input).format(format);
 }
 
@@ -37,9 +37,9 @@ export function currentDateTimeFormat() {
 }
 
 export function dateAgeFormat(result, input) {
-  if (result == null || result.Patient == null || input == null) return '';
+  if (result == null || result.Patient == null || input == null) return "";
   const patientDOB = result.Patient.birthDate._json;
-  const patientAgeAtDate = moment(input).diff(patientDOB, 'years');
+  const patientAgeAtDate = moment(input).diff(patientDOB, "years");
   return `${dateFormat(result, input)} (age ${patientAgeAtDate})`;
 }
 
@@ -52,19 +52,33 @@ export function datishAgeFormat(result, input) {
 }
 
 export function ageFormat(result, input) {
-  if (input == null) return '';
+  if (input == null) return "";
   const m = quantityRE.exec(input);
   if (m) {
     const num = m[1];
-    if (m.length === 5 && m[4] != null) { // it has a unit
+    if (m.length === 5 && m[4] != null) {
+      // it has a unit
       switch (m[4]) {
-        case 'a': case 'y': case 'yr': case 'yrs': case 'year': case 'years':
+        case "a":
+        case "y":
+        case "yr":
+        case "yrs":
+        case "year":
+        case "years":
           return `age ${num}`; // no unit, years is implied
-        case 'mo': case 'mos': case 'month': case 'months':
+        case "mo":
+        case "mos":
+        case "month":
+        case "months":
           return `age ${num} months`;
-        case 'wk': case 'wks': case 'week': case 'weeks':
+        case "wk":
+        case "wks":
+        case "week":
+        case "weeks":
           return `age ${num} weeks`;
-        case 'd': case 'day': case 'days':
+        case "d":
+        case "day":
+        case "days":
           return `age ${num} days`;
         default:
           return `age ${input}`;
@@ -76,27 +90,34 @@ export function ageFormat(result, input) {
 }
 
 export function booleanFormat(result, input) {
-  if (input == null) return '';
+  if (input == null) return "";
   return `${input}`;
 }
 
 export function arrayFlatten(result, input, property, propertyAria, showAria) {
-  if (input == null) return '';
+  if (input == null) return "";
   return input.map((question, i) => {
-    let ariaLabel = '';
-    if (showAria) ariaLabel = `${question[property]} - Question Score: ${question[propertyAria]}`;
-    return <span key={i} aria-hidden={!showAria} aria-label={ariaLabel}>{question[property]}<br /></span>;
+    let ariaLabel = "";
+    if (showAria)
+      ariaLabel = `${question[property]} - Question Score: ${question[propertyAria]}`;
+    return (
+      <span key={i} aria-hidden={!showAria} aria-label={ariaLabel}>
+        {question[property]}
+        <br />
+      </span>
+    );
   });
 }
 
 export function quantityFormat(result, input) {
-  if (input == null) return '';
+  if (input == null) return "";
   const m = quantityRE.exec(input);
   if (m) {
     const num = m[1];
-    if (m.length === 5 && m[4] != null) { // it has a unit
+    if (m.length === 5 && m[4] != null) {
+      // it has a unit
       // re-name MME/day unit
-      const unit = m[4] === '{MME}/d' ? 'MME/day' : m[4];
+      const unit = m[4] === "{MME}/d" ? "MME/day" : m[4];
       return `${num} ${unit}`;
     }
     return `${num}`;
@@ -107,24 +128,24 @@ export function quantityFormat(result, input) {
 /*
  * TODO expand this to replace part of the text based on a provided matching criteria */
 export function stringSubstitutionFormat(result, input, replacement) {
-  if (input == null) return '';
-  if (replacement == null) return '';
+  if (input == null) return "";
+  if (replacement == null) return "";
   return replacement;
 }
 /*
  * format input as a anchor link or embed video link
  */
 export function linkFormat(result, input) {
-  let isVideoLink = input['type'] === 'video' && input['embedVideoSrc'];
+  let isVideoLink = input["type"] === "video" && input["embedVideoSrc"];
   const referenceURL = input["url"];
   if (isVideoLink) {
     return (
-        <VideoLink
-          title={input['title']}
-          src={input['embedVideoSrc']}
-          className={input['className']}
-          toggleable={true}
-        />
+      <VideoLink
+        title={input["title"]}
+        src={input["embedVideoSrc"]}
+        className={input["className"]}
+        toggleable={true}
+      />
     );
   }
   const renderLinkContent = () => (
@@ -149,12 +170,17 @@ export function linkFormat(result, input) {
     </React.Fragment>
   );
   // if no link URL, just display the content without the link
-  if (!referenceURL) return (<div>{renderLinkContent()}</div>);
+  if (!referenceURL) return <div>{renderLinkContent()}</div>;
   return (
     <div className="link-container">
-        <a href={referenceURL} target='_blank' rel='noopener noreferrer' className={input['className']}>
-          {renderLinkContent()}
-         </a>
+      <a
+        href={referenceURL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={input["className"]}
+      >
+        {renderLinkContent()}
+      </a>
     </div>
   );
 }
@@ -169,11 +195,15 @@ export function listFormat(result, input) {
     return "";
   }
   return (
-      <ul className="sectionList">
-          {input.map(function(item, index){
-              return <li key={ index } className={item.className}><b>{item.text}:</b> {item.value}</li>;
-            })}
-      </ul>
+    <ul className="sectionList">
+      {input.map(function (item, index) {
+        return (
+          <li key={index} className={item.className}>
+            <b>{item.text}:</b> {item.value}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -183,7 +213,6 @@ export function listToStringFormat(result, input) {
   }
   return input.join(", ");
 }
-
 
 /*
  * string formatter for FHIR codeableConcept element
@@ -199,51 +228,65 @@ export function listToStringFormat(result, input) {
     codingField: field in coding to match
     codingText: text in coding field to match
  */
-export function codeableConceptFormat(result, input, key, field, codingField, codingText) {
+export function codeableConceptFormat(
+  result,
+  input,
+  key,
+  field,
+  codingField,
+  codingText
+) {
   //console.log("input ? ", input, " key ", key, " field ", field)
   if (!input) {
-    return '';
+    return "";
   }
-  if (typeof input === 'object' &&
-      typeof input[key] === 'string') {
+  if (typeof input === "object" && typeof input[key] === "string") {
     return input[key];
   }
   if (Array.isArray(input) && key && field) {
-    let resultText = '';
-    input.forEach(item => {
+    let resultText = "";
+    input.forEach((item) => {
       if (item.hasOwnProperty(key) && item[key].hasOwnProperty(field)) {
         if (item[key]["coding"] && codingText) {
-          let matchedItem = (item[key]["coding"]).find(item => item.hasOwnProperty(codingField) && item[codingField] === codingText);
+          let matchedItem = item[key]["coding"].find(
+            (item) =>
+              item.hasOwnProperty(codingField) &&
+              item[codingField] === codingText
+          );
           if (!matchedItem) return true;
         }
-        resultText += (resultText?', ':'') + item[key][field];
+        resultText += (resultText ? ", " : "") + item[key][field];
       }
     });
     return resultText;
   }
-  if (typeof input === 'object' &&
-      input.hasOwnProperty(key) &&
-      input[key].hasOwnProperty(field)) {
-      if (field === 'text') {
-        return input[key][field];
+  if (
+    typeof input === "object" &&
+    input.hasOwnProperty(key) &&
+    input[key].hasOwnProperty(field)
+  ) {
+    if (field === "text") {
+      return input[key][field];
+    }
+    if (field === "coding") {
+      let matchedItem = input[key][field].find((item) =>
+        item.hasOwnProperty(codingField)
+      );
+      if (matchedItem) {
+        return matchedItem[codingField];
       }
-      if (field === 'coding') {
-        let matchedItem = (input[key][field]).find(item => item.hasOwnProperty(codingField));
-        if (matchedItem) {
-          return matchedItem[codingField];
-        }
-        return '';
-      }
-      return '';
+      return "";
+    }
+    return "";
   }
-  return '';
+  return "";
 }
 
 function _datishAgeFormat(result, input, showAge) {
   const df = showAge ? dateAgeFormat : dateFormat;
   if (input == null) {
-    return '';
-  } else if (typeof input === 'string') {
+    return "";
+  } else if (typeof input === "string") {
     // Test if it looks like a date format
     if (dateRE.test(input)) {
       return df(result, input);
@@ -255,20 +298,20 @@ function _datishAgeFormat(result, input, showAge) {
     // fall back to the string itself
     return input;
   } else if (input.Start || input.End) {
-    const start = input.Start ? df(result, input.Start) : 'unknown start';
-    const end = input.End ? df(result, input.End) : 'ongoing';
+    const start = input.Start ? df(result, input.Start) : "unknown start";
+    const end = input.End ? df(result, input.End) : "ongoing";
     return `${start} - ${end}`;
   } else if (input.Low || input.High) {
-    const low = input.Low ? ageFormat(result, input.Low) : 'age unknown';
-    const high = input.High ? ageFormat(result, input.High) : 'age unknown';
+    const low = input.Low ? ageFormat(result, input.Low) : "age unknown";
+    const high = input.High ? ageFormat(result, input.High) : "age unknown";
     return `${low} - ${high.slice(4)}`; // slice removes 'age ' prefix
   }
   // fall back to the input string
   return input;
 }
 
-export function numberFormat(result, input, precision) {
+export function numberFormat(result, input, paramPrecision) {
   if (!input) return "";
-  if (!precision) precision = 1;
+  const precision = !isNaN(paramPrecision) ? paramPrecision : 1;
   return parseFloat(input).toFixed(precision);
 }

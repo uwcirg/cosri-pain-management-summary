@@ -1,17 +1,30 @@
-import { shallowRender } from '../../utils/testHelpers';
-import ExclusionBanner from '../../components/ExclusionBanner';
+import { render, act } from "@testing-library/react";
+import ExclusionBanner from "../../components/ExclusionBanner";
 
-const component = shallowRender(ExclusionBanner, {
-  url: 'testUrl',
-  query: {}
+it("renders ExclusionBanner without crashing", () => {
+  const { container } = render(
+    <ExclusionBanner
+      {...{
+        url: "testUrl",
+        query: {},
+      }}
+    ></ExclusionBanner>
+  );
+  const bannerElement = container.querySelector(".exclusion-banner");
+  expect(bannerElement).toBeDefined();
 });
 
-it('renders without crashing', () => {
-  expect(component).toExist();
-});
-
-it('closes the banner when the button is clicked', () => {
-  expect(component.find('.exclusion-banner').hasClass('close')).toBe(false);
-  component.simulate('click');
-  expect(component.find('.exclusion-banner').hasClass('close')).toBe(true);
+it("closes the banner when the button is clicked", () => {
+  const { container } = render(
+    <ExclusionBanner
+      {...{
+        url: "testUrl",
+        query: {},
+      }}
+    ></ExclusionBanner>
+  );
+  const bannerElement = container.querySelector(".exclusion-banner");
+  expect(bannerElement.classList.contains("close")).toBe(false);
+  act(() => bannerElement.click());
+  expect(bannerElement.classList.contains("close")).toBe(true);
 });

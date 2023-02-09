@@ -1,12 +1,13 @@
-import { shallowRender } from '../../utils/testHelpers';
-import { currentDateTimeFormat } from '../../helpers/formatit';
-import DataInfo from '../../components/DataInfo';
+import "@testing-library/jest-dom";
+import { render} from "@testing-library/react";
+import { currentDateTimeFormat } from "../../helpers/formatit";
+import DataInfo from "../../components/DataInfo";
 
-const component = shallowRender(DataInfo, {
-    contentText: 'content is blank',
-    queryDateTime: currentDateTimeFormat()
-});
-
-it('renders without crashing', () => {
-  expect(component).toExist();
+it("renders DataInfo without crashing", () => {
+  const {container} = render(<DataInfo
+    contentText="content is blank"
+    queryDateTime={currentDateTimeFormat()}></DataInfo>
+  );
+  const dataInfoElement = container.querySelector(".data-provenance");
+  expect(dataInfoElement).toBeInTheDocument();
 });

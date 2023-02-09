@@ -1,10 +1,15 @@
-import { shallowRender } from '../../utils/testHelpers';
+import { render } from "@testing-library/react";
 import SystemBanner from '../../components/SystemBanner';
 
-const component = shallowRender(SystemBanner, {
-  type: "development"
-});
 
-it('renders without crashing', () => {
-  expect(component).toExist();
+
+it('renders SystemBanner (development) without crashing', () => {
+  const { container } = render(
+    <SystemBanner
+      {...{
+        type: "development",
+      }}
+    ></SystemBanner>
+  );
+  expect(container.querySelector(".system-banner")).toBeDefined();
 });

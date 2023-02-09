@@ -1,12 +1,12 @@
-import { shallowRender } from '../../utils/testHelpers';
+import {render} from "@testing-library/react"
 import Video from '../../components/Video';
 
-const component = shallowRender(Video, {
+const {container} = render(<Video {...{
     title: 'Test Video',
     src: 'https://www.youtube.com/embed/CF64WEju1pM',
     toggleable: true
-});
+}}></Video>);
 
-it('renders without crashing', () => {
-  expect(component).toExist();
+it('renders Video without crashing', () => {
+  expect(container.querySelector(".video-link")).toBeDefined();
 });

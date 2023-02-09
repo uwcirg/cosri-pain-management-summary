@@ -1,12 +1,15 @@
-import { shallowRender } from '../../utils/testHelpers';
-import DevTools from '../../components/DevTools';
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+import DevTools from "../../components/DevTools";
 
-const component = shallowRender(DevTools, {
-  collector: [],
-  result: {},
-  summary: {}
-});
-
-it('renders without crashing', () => {
-  expect(component).toExist();
+it("renders DevTool without crashing", () => {
+  const { container } = render(
+    <DevTools
+      collector={[]}
+      result={{}}
+      summary={{}}
+    ></DevTools>
+  );
+  const devToolElement = container.querySelector(".dev-tools");
+  expect(devToolElement).toBeInTheDocument();
 });

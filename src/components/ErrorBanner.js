@@ -1,43 +1,61 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ChevronDownIcon from '../icons/ChevronDownIcon';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ChevronDownIcon from "../icons/ChevronDownIcon";
 
 export default class ErrorBanner extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      displayed: true
+      displayed: true,
     };
-    this.handleCloseToggle= this.handleCloseToggle.bind(this);
+    this.handleCloseToggle = this.handleCloseToggle.bind(this);
   }
 
   handleClose = () => {
     this.setState({ displayed: false });
-  }
+  };
 
   handleCloseToggle(e) {
     e.preventDefault();
     e.stopPropagation();
-    this.setState(state => ({
-      displayed: !state.displayed
+    this.setState((state) => ({
+      displayed: !state.displayed,
     }));
   }
 
   render() {
-    const conditionalClass = this.state.displayed ? '': 'close';
+    const conditionalClass = this.state.displayed ? "" : "close";
     return (
       <div
         className={`error-banner ${conditionalClass}`}
-        role="banner">
-        <ChevronDownIcon className="close-button" icon="times" title="close" onClick={this.handleCloseToggle} width="25" height="25" />
-        <h4 className="error-banner__title" onClick={this.handleCloseToggle}><FontAwesomeIcon className="icon" icon="exclamation-circle" title="notice"/> Application Errors</h4>
+        role="link"
+        onClick={this.handleCloseToggle}
+        onKeyUp={this.handleCloseToggle}
+        tabIndex={0}
+      >
+        <ChevronDownIcon
+          className="close-button"
+          icon="times"
+          title="close"
+          onClick={this.handleCloseToggle}
+          width="25"
+          height="25"
+        />
+        <h4 className="error-banner__title">
+          <FontAwesomeIcon
+            className="icon"
+            icon="exclamation-circle"
+            title="notice"
+          />{" "}
+          Application Errors
+        </h4>
         <div className="error-banner__description">
-            <ul>
+          <ul>
             {this.props.errors.map((item, index) => {
-              return <li key={`"app_error_"+${index}`}>{item}</li>
+              return <li key={`"app_error_"+${index}`}>{item}</li>;
             })}
-            </ul>
+          </ul>
         </div>
       </div>
     );
@@ -45,5 +63,5 @@ export default class ErrorBanner extends Component {
 }
 
 ErrorBanner.propTypes = {
-  errors: PropTypes.array.isRequired
+  errors: PropTypes.array.isRequired,
 };

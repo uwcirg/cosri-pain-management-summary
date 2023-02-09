@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 export default class InclusionBanner extends Component {
   constructor() {
@@ -18,19 +19,28 @@ export default class InclusionBanner extends Component {
     return (
       <div
         className="inclusion-banner banner"
-        style={{display: this.state.displayed ? 'block' : 'none'}}
-        role="banner">
-        {this.props.dismissible &&
-          <FontAwesomeIcon className="close-button" icon="times" onClick={this.handleClose} title="close" />
-        }
+        style={{ display: this.state.displayed ? "block" : "none" }}
+        role="banner"
+      >
+        {this.props.dismissible && (
+          <FontAwesomeIcon
+            className="close-button"
+            icon={faXmark}
+            onClick={this.handleClose}
+            title="close"
+          />
+        )}
 
         <div className="inclusion-banner__tag banner warning-inside">
           This patient does not meet the applicable criteria.
         </div>
 
         <div className="inclusion-banner__description">
-          <strong><FontAwesomeIcon icon="exclamation-circle" title="warning" /> WARNING:</strong> This summary
-          applies only to patients 18 years or older. 
+          <strong>
+            <FontAwesomeIcon icon={faExclamationCircle} title="warning" />{" "}
+            WARNING:
+          </strong>{" "}
+          This summary applies only to patients 18 years or older.
           {/*
           who meet at least one of the following criteria:
 

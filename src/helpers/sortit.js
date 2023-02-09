@@ -49,7 +49,9 @@ export function dateCompare(a, b) {
   return stringCompare(aDate, bDate);
 }
 
-export function dateTimeCompare(a, b) {
+export function dateTimeCompare(date1, date2) {
+  let a = date1 ? date1: null;
+  let b = date2 ? date2 : null;
   if (a == null && b != null) {
     return 1;
   } else if (a != null && b == null) {

@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { mount, shallow, ReactWrapper } from 'enzyme';
 import createRouterContext from 'react-router-test-context';
 
+// OBSOLETE
+
 /**
  * Render a component with props, mocking the router context
  */

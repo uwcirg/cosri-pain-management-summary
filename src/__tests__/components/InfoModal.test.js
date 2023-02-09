@@ -1,12 +1,11 @@
-import { shallowRender } from '../../utils/testHelpers';
-import InfoModal from '../../components/InfoModal';
-import { mockSubSection } from '../../utils/testFixtures';
+import { render } from "@testing-library/react";
+import InfoModal from "../../components/InfoModal";
+import { mockSubSection } from "../../utils/testFixtures";
 
-const component = shallowRender(InfoModal, {
-  subSection: mockSubSection,
-  closeModal: () => {}
-});
-
-it('renders without crashing', () => {
-  expect(component).toExist();
+it("renders InfoModal without crashing", () => {
+  const { container } = render(
+    <InfoModal subSection={mockSubSection} closeModal={()=>{}}></InfoModal>
+  );
+  const infoModalElement = container.querySelector(".info-modal");
+  expect(infoModalElement).toBeDefined();
 });

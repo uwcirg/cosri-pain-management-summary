@@ -14,9 +14,9 @@ import r4OMTKLogicELM from '../cql/r4/OMTKLogic.json';
 import valueSetDB from '../cql/valueset-db.json';
 import {getEnv, fetchEnvData} from './envConfig';
 
-function executeELM(collector, resourceTypes) {
+function executeELM(collector, paramResourceTypes) {
   let client, release, library;
-  resourceTypes = resourceTypes || {};
+  let resourceTypes = paramResourceTypes ? paramResourceTypes : {};
   return new Promise((resolve) => {
     // First get our authorized client and send the FHIR release to the next step
     const results = FHIR.oauth2.ready().then((clientArg) => {

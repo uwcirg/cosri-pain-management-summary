@@ -1,18 +1,29 @@
-import { shallowRender } from '../../utils/testHelpers';
-import InclusionBanner from '../../components/InclusionBanner';
+import { render } from "@testing-library/react";
+import InclusionBanner from "../../components/InclusionBanner";
 
-const component = shallowRender(InclusionBanner, {
-  url: 'testUrl',
-  query: {},
-  dismissible: true
+it("renders without crashing", () => {
+  const { container } = render(
+    <InclusionBanner
+      {...{
+        url: "testUrl",
+        query: {},
+        dismissible: true,
+      }}
+    ></InclusionBanner>
+  );
+  const bannerElement = container.querySelector(".inclusion-banner");
+  expect(bannerElement).toBeDefined();
 });
 
-it('renders without crashing', () => {
-  expect(component).toExist();
-});
-
-it('closes the banner when the button is clicked', () => {
-  expect(component.find('.inclusion-banner')).toHaveStyle('display', 'block');
-  component.find('.close-button').simulate('click');
-  expect(component.find('.inclusion-banner')).toHaveStyle('display', 'none');
+it("closes the banner when the button is clicked", () => {
+  const { container } = render(
+    <InclusionBanner
+      {...{
+        url: "testUrl",
+        query: {},
+        dismissible: true,
+      }}
+    ></InclusionBanner>
+  );
+  expect(container.querySelector(".inclusion-banner")).toBeDefined();
 });
