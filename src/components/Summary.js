@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle, faCircle, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationCircle,
+  faCircle,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import Collapsible from "react-collapsible";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
@@ -155,8 +159,8 @@ export default class Summary extends Component {
   isSubsectionFlagged(section, subSection) {
     const { sectionFlags } = this.props;
     if (
-      (sectionFlags[section])  == null ||
-      (sectionFlags[section][subSection]) == null
+      sectionFlags[section] == null ||
+      sectionFlags[section][subSection] == null
     ) {
       return false;
     }
@@ -174,7 +178,8 @@ export default class Summary extends Component {
     const { sectionFlags } = this.props;
 
     let flagged = false;
-    if (!sectionFlags[section] || !sectionFlags[section][subSection]) return false;
+    if (!sectionFlags[section] || !sectionFlags[section][subSection])
+      return false;
     sectionFlags[section][subSection].forEach((flag) => {
       if (flag.entryId === entry._id) {
         flagged = flag.flagText + (flag.flagClass ? "|" + flag.flagClass : "");
@@ -231,7 +236,8 @@ export default class Summary extends Component {
               className="flag"
               icon={faExclamationCircle}
               tabIndex={0}
-            />{" "}
+              style={{marginRight: 8}}
+            />
             <span className="text">{item}</span>
           </div>
         );
@@ -269,33 +275,35 @@ export default class Summary extends Component {
     let tableID = `${subSection.dataKey}_table`;
 
     const headers = Object.keys(table.headers);
-    let columns = [
-      {
-        id: "flagged",
-        Header: <span aria-label="flag"></span>,
-        accessor: (entry) =>
-          this.isEntryFlagged(section, subSection.dataKey, entry),
-        Cell: (props) => {
-          let arrDisplay = props.value ? props.value.split("|") : null;
-          let displayText = arrDisplay && arrDisplay[0] ? arrDisplay[0] : "";
-          let displayClass = arrDisplay && arrDisplay[1] ? arrDisplay[1] : "";
-          return (
-            <FontAwesomeIcon
-              className={`flag flag-entry ${
-                displayText ? "flagged " + displayClass : ""
-              }`}
-              icon={faExclamationCircle}
-              title={displayText ? displayText : "flag"}
-              tabIndex={0}
-            />
-          );
-        },
-        disableSortBy: true,
-        width: 32,
-        minWidth: 32,
-        className: "flag-cell"
+    const hasFlaggedEntries = filteredEntries.some((entry) =>
+      this.isEntryFlagged(section, subSection.dataKey, entry)
+    );
+    let columns = [];
+    columns.push({
+      id: "flagged",
+      Header: <span aria-label="flag"></span>,
+      accessor: (entry) =>
+        this.isEntryFlagged(section, subSection.dataKey, entry),
+      Cell: (props) => {
+        let arrDisplay = props.value ? props.value.split("|") : null;
+        let displayText = arrDisplay && arrDisplay[0] ? arrDisplay[0] : "";
+        let displayClass = arrDisplay && arrDisplay[1] ? arrDisplay[1] : "";
+        return (
+          <FontAwesomeIcon
+            className={`flag flag-entry ${
+              displayText ? "flagged " + displayClass : ""
+            }`}
+            icon={faExclamationCircle}
+            title={displayText ? displayText : "flag"}
+            tabIndex={0}
+          />
+        );
       },
-    ];
+      disableSortBy: true,
+      width: hasFlaggedEntries ? 32 : 16,
+      minWidth: hasFlaggedEntries ? 32 : 16,
+      className: hasFlaggedEntries ? "flag-cell": "",
+    });
 
     headers.forEach((header) => {
       const headerKey = table.headers[header];
@@ -334,24 +342,6 @@ export default class Summary extends Component {
 
       let columnFormatter = headerKey.formatter;
       if (column.canSort) {
-        // if (headerKey.sorter) {
-        //   if (sortit[headerKey.sorter]) {
-        //     column.sortMethod = sortit[headerKey.sorter];
-        //   }
-        // } else if (columnFormatter) {
-        //   const sortObj = {
-        //     dateTimeFormat: sortit.dateTimeCompare,
-        //     dateFormat: sortit.dateCompare,
-        //     dateAgeFormat: sortit.dateCompare,
-        //     datishFormat: sortit.datishCompare,
-        //     datishAgeFormat: sortit.datishCompare,
-        //     ageFormat: sortit.ageCompare,
-        //     quantityFormat: sortit.quantityCompare,
-        //   };
-        //   if (sortObj[columnFormatter])
-        //     column.sortMethod = sortObj[columnFormatter];
-        // }
-
         if (headerKey.sorter) {
           if (sortit[headerKey.sorter]) {
             column.sortType = (rowA, rowB, columnId) =>
@@ -405,7 +395,8 @@ export default class Summary extends Component {
           tableParams={{
             defaultSorted: defaultSorted,
             pageSize: 10,
-            showPagination: filteredEntries.length > 10
+            showPagination: filteredEntries.length > 10,
+            tableProps: customProps
           }}
         ></Table>
         {/* <ReactTable

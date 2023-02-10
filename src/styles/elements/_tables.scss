@@ -16,6 +16,18 @@
         flex: 1 1 auto;
       }
     }
+    .flag-cell {
+      flex: 0 0 auto !important;
+      margin-left: 16px;
+      padding: 0;
+      max-width: 32px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      min-width: calc(52px + 10vw);
+    }
+
   }
 }
 
@@ -41,7 +53,7 @@
     tr {
       background: $color-white;
 
-      &:hover {
+      &:not(.no-hover):hover {
         background-color: $color-blue-lighter;
       }
     }
@@ -81,24 +93,28 @@
 
 .pagination {
   border-top: 1px solid $color-gray-lighter;
+  border-bottom: 1px solid $color-gray-lighter;
   margin-top: 16px;
-  padding: 8px 0 8px;
+  padding: 8px 16px 8px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   width: 100%;
-  column-gap: 16px;
+  column-gap: 24px;
   input {
-    height: 26px;
+    height: 32px;
+    width: 48px;
     text-align: center;
+    border: 1px solid $color-gray-lighter;
   }
   select {
-    height: 32px;
+    height: 36px;
+    border: 1px solid $color-gray-lighter;
   }
   .button {
     background-color: transparent;
     border: 0;
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 }

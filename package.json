@@ -1,6 +1,6 @@
 {
   "name": "pain-management-factors",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Pain Management Factors SMART-on-FHIR App",
   "license": "Apache-2.0",
   "dependencies": {
@@ -25,7 +25,6 @@
     "d3-time-format": "^2.2.3",
     "d3-transition": "^1.3.2",
     "fhirclient": "^2.5.2",
-    "gh-pages": "^5.0.0",
     "moment": "^2.24.0",
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
@@ -45,6 +44,7 @@
     "cors": "^2.8.5",
     "cql-exec-vsac": "^2.0.0",
     "express": "^4.17.1",
+    "gh-pages": "^5.0.0",
     "mock-local-storage": "^1.1.11",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
@@ -55,7 +55,9 @@
     "@testing-library/dom": "^7.21.4"
   },
   "resolutions": {
-    "ucum": "cmoesel/ucum.js#es5-friendly"
+    "immer": "^9.0.2",
+    "ssri": "^8.0.1",
+    "ansi-regex": "^5.0.1"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -84,7 +86,7 @@
     "eject": "rescripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "fix-vs-db": "node ./src/utils/fixVsDb",
+    "update-test-patients": "node ./src/utils/updateTestPatients",
     "upload-test-patients": "node ./src/utils/uploadTestPatients",
     "lint": "eslint ."
   }

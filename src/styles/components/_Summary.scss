@@ -628,7 +628,7 @@
           }
         }
         .no-entries {
-          padding: 0 16px 8px;
+          padding: 0 0px 8px;
           font-style: italic;
           color: $color-gray-light;
           margin-left: 24px;
@@ -687,7 +687,7 @@
           display: flex;
           align-items: center;
           border-bottom: 1px solid $color-gray-lighter;
-          padding: 12px 40px;
+          padding: 12px 20px;
           font-weight: 700;
           margin-bottom: 8px;
           .flag-nav {
@@ -720,25 +720,7 @@
                 border-bottom: 0;
               }
             }
-
-            .rt-th:first-child,
-            .rt-td:first-child {
-              max-width: 32px;
-              padding: 0;
-            }
-
-            .rt-th:nth-child(2),
-            .rt-td:nth-child(2) {
-              min-width: calc(52px + 10vw);
-            }
-            &.single-column {
-              .rt-th:nth-child(2),
-              .rt-td:nth-child(2) {
-                min-width: calc(100% - 160px);
-                max-width: calc(100% - 160px);
-              }
-            }
-
+            
             .flag-entry {
               font-size: 1em;
               margin-left: 16px;

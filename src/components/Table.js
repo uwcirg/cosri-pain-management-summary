@@ -45,66 +45,60 @@ export default function Table({ columns, data, tableParams }) {
           disabled={!canPreviousPage}
         >
           {"<<"}
-        </button>{" "}
+        </button>
         <button
           className="button"
           onClick={() => previousPage()}
           disabled={!canPreviousPage}
         >
           {"<"}
-        </button>{" "}
+        </button>
         <button
           className="button"
           onClick={() => nextPage()}
           disabled={!canNextPage}
         >
           {">"}
-        </button>{" "}
+        </button>
         <button
           className="button"
           onClick={() => gotoPage(pageCount - 1)}
           disabled={!canNextPage}
         >
           {">>"}
-        </button>{" "}
+        </button>
+      </div>
+      <div>
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+          }}
+        >
+          {[10, 20, 50, 100].map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              {pageSize}
+            </option>
+          ))}
+        </select>{" "}
+        rows per page
       </div>
       <div>
         <span>
           page{" "}
-          <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{" "}
-        </span>
-      </div>
-      <div>
-        <span>
-          go to page:{" "}
           <input
             type="number"
             defaultValue={pageIndex + 1}
+            min={1}
+            max={pageOptions.length}
             onChange={(e) => {
               const page = e.target.value ? Number(e.target.value) - 1 : 0;
               gotoPage(page);
             }}
-            style={{ width: "50px", border: "2px solid #ececec" }}
-          />
-        </span>{" "}
+          />{" "}
+          of {pageOptions.length}
+        </span>
       </div>
-      <select
-        value={pageSize}
-        onChange={(e) => {
-          setPageSize(Number(e.target.value));
-        }}
-        style={{
-          border: "2px solid #ececec",
-        }}
-      >
-        {[10, 20, 50, 100].map((pageSize) => (
-          <option key={pageSize} value={pageSize}>
-            Show {pageSize}
-          </option>
-        ))}
-      </select>
     </div>
   );
   const renderAscSortIcon = () => (
@@ -123,12 +117,17 @@ export default function Table({ columns, data, tableParams }) {
       height="6"
     />
   );
+  const emptyRows =
+    pageIndex > 0 ? Math.max(0, (1 + pageIndex) * pageSize - page.length) : 0;
+  
+
   // Render the UI for your table
   return (
     <div>
       <table
         className={`ReactTable ${columns.length <= 2 ? "single-column" : ""}`}
         {...getTableProps()}
+        {...(params.tableProps ? params.tableProps : {})}
       >
         <thead>
           {headerGroups.map((headerGroup) => (
@@ -143,12 +142,16 @@ export default function Table({ columns, data, tableParams }) {
                     }}
                   >
                     {column.render("Header")}{" "}
-                    {column.isSorted &&
-                      column.isSortedDesc &&
-                      <div style={{position: "relative", top: "-2px"}}>{renderDescSortIcon()}</div>}
-                    {column.isSorted &&
-                      !column.isSortedDesc &&
-                      <div style={{position: "relative", top: "-2px"}}>{renderAscSortIcon()}</div>}
+                    {column.isSorted && column.isSortedDesc && (
+                      <div style={{ position: "relative", top: "-2px" }}>
+                        {renderDescSortIcon()}
+                      </div>
+                    )}
+                    {column.isSorted && !column.isSortedDesc && (
+                      <div style={{ position: "relative", top: "-2px" }}>
+                        {renderAscSortIcon()}
+                      </div>
+                    )}
                     {!column.isSorted && !column.disableSortBy && (
                       <div
                         style={{
@@ -177,12 +180,27 @@ export default function Table({ columns, data, tableParams }) {
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => {
                   return (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    <td
+                      {...cell.getCellProps()}
+                      className={
+                        cell.column.className ? cell.column.className : ""
+                      }
+                    >
+                      {cell.render("Cell")}
+                    </td>
                   );
                 })}
               </tr>
             );
           })}
+          {emptyRows > 0 && (
+            <tr className="no-hover">
+              <td
+                colSpan={columns.length}
+                style={{ height: 33 * emptyRows }}
+              ></td>
+            </tr>
+          )}
         </tbody>
       </table>
       {/* 
