@@ -106,7 +106,7 @@ export default class SurveyGraph extends Component {
 
     const margins = {
       top: 24,
-      right: 32,
+      right: 16,
       bottom: 88,
       left: 72,
     };

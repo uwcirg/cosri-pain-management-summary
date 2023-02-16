@@ -184,7 +184,7 @@
        // max-width: 100%;
        // flex: 1.5 1 100%;
         display: flex;
-        flex: 1.25 1;
+        flex: 1.35 1;
         flex-direction: row;
         .survey-graph {
           flex: 1 1;
@@ -192,6 +192,9 @@
         .no-entries {
           flex: 1 1;
           padding: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       }
       // @media (min-width: 669px) {
@@ -241,10 +244,14 @@
       // margin: 8px auto 8px auto;
       margin: 0 auto;
       border: 1px solid $color-gray-lighter;
-      min-width: 140px;
+      min-width: 132px;
       //width: 72px;
-      padding: 16px 12px;
-      font-size: 0.95rem;
+      padding: 16px 12px 12px;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-self: center;
       &__item {
         font-weight: 600;
         display: flex;
