@@ -16,6 +16,38 @@ const defaultFields = {
 const xFieldName = defaultFields.x;
 const yFieldName = defaultFields.y;
 export default class SurveyGraph extends Component {
+  constructor() {
+    super(...arguments);
+    this.state = {
+      graphData: this.props.data,
+      originalGraphData: this.props.data,
+    };
+    // This binding is necessary to make `this` work in the callback
+    this.addQuestionnaireToSurveyGraph =
+      this.addQuestionnaireToSurveyGraph.bind(this);
+    this.removeQuestionnaireToSurveyGraph =
+      this.removeQuestionnaireToSurveyGraph.bind(this);
+  }
+  isInSurveyGraph(qid) {
+    return this.state.graphData.some((item) => item.qid === qid);
+  }
+  addQuestionnaireToSurveyGraph(qid) {
+    if (this.isInSurveyGraph(qid)) return;
+    const qData = this.state.originalGraphData.filter(
+      (item) => item.qid === qid
+    );
+    if (qData && qData.length)
+      this.setState({
+        graphData: [...this.state.graphData, ...qData],
+      });
+  }
+  removeQuestionnaireToSurveyGraph(qid) {
+    if (!this.isInSurveyGraph(qid)) return;
+    this.setState({
+      graphData: this.state.graphData.filter((item) => item.qid !== qid),
+    });
+  }
+
   compareDate(a, b) {
     let calcA = new Date(a[xFieldName]).getTime();
     let calcB = new Date(b[xFieldName]).getTime();
@@ -24,18 +56,59 @@ export default class SurveyGraph extends Component {
     return 0;
   }
 
+  renderLegend() {
+    const qids = [
+      ...new Set(this.state.originalGraphData.map((item) => item.qid)),
+    ];
+    return (
+      <div className="legend">
+        {qids.map((item, index) => (
+          <div className="legend__item" key={`legend_${item}_${index}`}>
+            <div>
+              <span
+                className="icon"
+                style={{
+                  backgroundColor: qConfig[item].graph.strokeColor,
+                }}
+              ></span>
+              <span>{item.toUpperCase()}</span>
+            </div>
+            <div className="select-icons-container">
+              <button
+                className="select-icon"
+                onClick={() => this.addQuestionnaireToSurveyGraph(item)}
+                disabled={this.isInSurveyGraph(item) ? true : false}
+                title={`Add ${item} to graph`}
+              >
+                +
+              </button>
+              <button
+                className="select-icon"
+                onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
+                disabled={this.isInSurveyGraph(item) ? false : true}
+                title={`Remove ${item} from graph`}
+              >
+                -
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   render() {
-    let propData = this.props.data || [];
+    //let propData = this.state.graphData || [];
     //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
-    let data = propData
-      ? propData.map((item) => {
+    let data = this.state.graphData
+      ? this.state.graphData.map((item) => {
           return {
             ...item,
           };
         })
       : [];
-    let noEntry = !data || !data.length;
+    let noEntry = !this.state.graphData || !this.state.graphData.length;
     let baseLineDate = new Date();
     let maxDate = new Date();
     let minDate = new Date().setDate(maxDate.getDate() - 365);
@@ -76,9 +149,9 @@ export default class SurveyGraph extends Component {
       minDate = new Date(minDate);
       //console.log("min date ", minDate, " max date ", maxDate)
     }
-     const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
-     const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
-     // console.log("month diff between years ", monthsDiff);
+    const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
+    const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
+    // console.log("month diff between years ", monthsDiff);
 
     if (arrayDates.length) {
       /*
@@ -245,28 +318,15 @@ export default class SurveyGraph extends Component {
         );
       });
     };
-
-    // const renderLegend = () => (
-    //   <div className="legend">
-    //     {dataNest.map((data, index) => (
-    //       <div className="legend__item" key={`legend_${data.key}_${index}`}>
-    //         <span
-    //           className="icon"
-    //           style={{
-    //             backgroundColor: qConfig[data.key].graph.strokeColor,
-    //           }}
-    //         ></span>
-    //         {data.key.toUpperCase()}
-    //       </div>
-    //     ))}
-    //   </div>
-    // );
-
+    
     if (noEntry)
       return (
-        <div className="no-entries">
-          <b>No graph to show.</b>
-        </div>
+        <React.Fragment>
+          <div className="no-entries">
+            <b>No graph to show.</b>
+          </div>
+          {this.state.originalGraphData.length > 0 && this.renderLegend()}
+        </React.Fragment>
       );
 
     return (
@@ -293,6 +353,7 @@ export default class SurveyGraph extends Component {
           </div>
           {/* {renderLegend()} */}
         </div>
+        {this.state.originalGraphData.length > 0 && this.renderLegend()}
       </React.Fragment>
     );
   }
