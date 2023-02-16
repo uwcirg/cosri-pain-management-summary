@@ -78,7 +78,7 @@ export default class SurveyGraph extends Component {
     }
      const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
      const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
-     console.log("month diff between years ", monthsDiff);
+     // console.log("month diff between years ", monthsDiff);
 
     if (arrayDates.length) {
       /*

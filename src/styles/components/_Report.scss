@@ -285,13 +285,16 @@
           background-image: none;
           width: 24px;
           height: 24px;
-          line-height: 1;
+          line-height: 0.55;
           margin-bottom: 8px;
           font-size: 1.1rem;
           cursor: pointer;
           &:not([disabled]) {
             color: $color-blue;
             font-weight: 600;
+          }
+          &[disabled] {
+            color: $color-disabled;
           }
         }
       }
