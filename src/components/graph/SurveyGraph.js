@@ -246,26 +246,26 @@ export default class SurveyGraph extends Component {
       });
     };
 
-    const renderLegend = () => (
-      <div className="legend">
-        {dataNest.map((data, index) => (
-          <div className="legend__item" key={`legend_${data.key}_${index}`}>
-            <span
-              className="icon"
-              style={{
-                backgroundColor: qConfig[data.key].graph.strokeColor,
-              }}
-            ></span>
-            {data.key.toUpperCase()}
-          </div>
-        ))}
-      </div>
-    );
+    // const renderLegend = () => (
+    //   <div className="legend">
+    //     {dataNest.map((data, index) => (
+    //       <div className="legend__item" key={`legend_${data.key}_${index}`}>
+    //         <span
+    //           className="icon"
+    //           style={{
+    //             backgroundColor: qConfig[data.key].graph.strokeColor,
+    //           }}
+    //         ></span>
+    //         {data.key.toUpperCase()}
+    //       </div>
+    //     ))}
+    //   </div>
+    // );
 
     if (noEntry)
       return (
-        <div>
-          <b>No graph for questionnaire scores to show.</b>
+        <div className="no-entries">
+          <b>No graph to show.</b>
         </div>
       );
 
@@ -291,7 +291,7 @@ export default class SurveyGraph extends Component {
               </g>
             </svg>
           </div>
-          {renderLegend()}
+          {/* {renderLegend()} */}
         </div>
       </React.Fragment>
     );
