@@ -268,9 +268,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
     .legend {
       margin: 0 auto;
       border: 1px solid #d8d8d8;
-      min-width: 120px;
+      min-width: 124px;
       padding: 12px 12px 8px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -304,13 +304,17 @@ $selector-box-shadow: 0 2px 2px #383e40;
           background-color: transparent;
           background-image: none;
           border-radius: 50%;
-          border: 1px solid;
+          border: 2px solid;
           width: 20px;
           height: 20px;
           cursor: pointer;
           &:not([disabled]) {
             color: $color-blue;
             font-weight: 600;
+            &:hover {
+              color: #FFF;
+              background-color: $color-blue;
+            }
           }
           &[disabled] {
             color: $color-disabled;

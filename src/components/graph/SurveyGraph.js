@@ -73,9 +73,9 @@ export default class SurveyGraph extends Component {
               ></span>
               <span>{item.toUpperCase()}</span>
             </div>
-            <div className="select-icons-container">
+            <div className="select-icons-container print-hidden">
               <button
-                className="select-icon"
+                className="select-icon plus"
                 onClick={() => this.addQuestionnaireToSurveyGraph(item)}
                 disabled={this.isInSurveyGraph(item) ? true : false}
                 title={`Add ${item} to graph`}
@@ -83,7 +83,7 @@ export default class SurveyGraph extends Component {
                 +
               </button>
               <button
-                className="select-icon"
+                className="select-icon minus"
                 onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
                 disabled={this.isInSurveyGraph(item) ? false : true}
                 title={`Remove ${item} from graph`}
