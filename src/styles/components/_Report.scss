@@ -217,6 +217,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
           // }
         }
       }
+      @media (min-width: 1400px) {
+        &.graph {
+          flex: 1.1 1;
+        }
+      }
       // @media (min-width: 669px) {
       //   &.graph {
       //     max-width: 80%;
