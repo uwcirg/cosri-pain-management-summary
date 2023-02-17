@@ -179,19 +179,16 @@ $selector-box-shadow: 0 2px 2px #383e40;
       flex-direction: column;
       background: $color-white;
       gap: 2;
-      //flex: 1 1 100%;
       flex: 1 1;
       &.graph {
         display: flex;
         flex: 1.35 1 100%;
         flex-wrap: wrap;
         flex-direction: row;
+        align-items: center;
         .survey-graph {
           flex: 1 1 100%;
           max-width: 100%;
-        }
-        .legend {
-          flex: 1 1 100%;
         }
         .no-entries {
           flex: 1 1;
@@ -215,9 +212,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
             flex: 3 1;
             max-width: 100%;
           }
-          .legend {
-            flex: 1 1;
-          }
+          // .legend {
+          //   flex: 1 1;
+          // }
         }
       }
       // @media (min-width: 669px) {
