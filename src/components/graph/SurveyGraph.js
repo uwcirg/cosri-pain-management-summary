@@ -318,7 +318,7 @@ export default class SurveyGraph extends Component {
         );
       });
     };
-    
+
     if (noEntry)
       return (
         <React.Fragment>
