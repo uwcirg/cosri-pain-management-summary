@@ -184,9 +184,14 @@ $selector-box-shadow: 0 2px 2px #383e40;
       &.graph {
         display: flex;
         flex: 1.35 1 100%;
+        flex-wrap: wrap;
         flex-direction: row;
         .survey-graph {
-          flex: 1 1;
+          flex: 1 1 100%;
+          max-width: 100%;
+        }
+        .legend {
+          flex: 1 1 100%;
         }
         .no-entries {
           flex: 1 1;
@@ -196,9 +201,23 @@ $selector-box-shadow: 0 2px 2px #383e40;
           justify-content: center;
         }
       }
-      @media (min-width: 992px) {
+      @media (min-width: 768px) {
+        &.graph {
+          .survey-graph {
+            max-width: 60%;
+          }
+        }
+      }
+      @media (min-width: 1200px) {
         &.graph {
           flex: 1.35 1;
+          .survey-graph {
+            flex: 3 1;
+            max-width: 100%;
+          }
+          .legend {
+            flex: 1 1;
+          }
         }
       }
       // @media (min-width: 669px) {
@@ -274,9 +293,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           display: inline-block;
           margin-right: 8px;
           border-radius: 100%;
-          // &:not(:last-child) {
-          //   margin-bottom: 8px;
-          // }
         }
         .select-icon {
           border: 0;
