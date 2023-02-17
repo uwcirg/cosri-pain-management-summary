@@ -19,8 +19,8 @@ export default class SurveyGraph extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      graphData: this.props.data,
-      originalGraphData: this.props.data,
+      graphData: [],
+      originalGraphData: [],
     };
     // This binding is necessary to make `this` work in the callback
     this.addQuestionnaireToSurveyGraph =
@@ -95,6 +95,13 @@ export default class SurveyGraph extends Component {
         ))}
       </div>
     );
+  }
+
+  componentDidMount() {
+    this.setState({
+      graphData: this.props.data,
+      originalGraphData: this.props.data
+    });
   }
 
   render() {
@@ -190,7 +197,7 @@ export default class SurveyGraph extends Component {
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
       .rangeRound([0, width]);
-    const yMaxValue = d3.max(data, (d) => d.score);
+    const yMaxValue = d3.max(data, (d) => d.maxScore ? d.maxScore : d.score);
     const yScale = scaleLinear()
       .domain([0, yMaxValue + 10])
       .range([height, 0])
@@ -351,7 +358,6 @@ export default class SurveyGraph extends Component {
               </g>
             </svg>
           </div>
-          {/* {renderLegend()} */}
         </div>
         {this.state.originalGraphData.length > 0 && this.renderLegend()}
       </React.Fragment>

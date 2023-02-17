@@ -10,6 +10,7 @@ export default class SideNav extends Component {
 
     // This binding is necessary to make `this` work in the callback
     this.handleNavToggle = this.handleNavToggle.bind(this);
+     this.handleResize = this.handleResize.bind(this);
   }
 
   handleNavToggle(e) {
@@ -17,6 +18,17 @@ export default class SideNav extends Component {
     this.setState((state) => ({
       showNav: !state.showNav,
     }));
+  }
+
+  handleResize() {
+    this.setState({
+      showNav: window.innerWidth <= 1200 ? false : true,
+    });
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", this.handleResize);
+    this.handleResize();
   }
 
   render() {

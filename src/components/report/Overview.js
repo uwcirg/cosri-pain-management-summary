@@ -10,11 +10,7 @@ export default class Overview extends Component {
     let data = [];
     summaryData.forEach((item) => {
       if (!item.ResponsesSummary) return true;
-      const surveyData = item.ResponsesSummary.map((o) => {
-        o.qid = item.QuestionnaireName;
-        return o;
-      });
-      data = [...data, ...surveyData];
+      data = [...data, ...item.ResponsesSummary];
     });
     return data;
   }

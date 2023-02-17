@@ -145,10 +145,13 @@ define ResponsesSummary:
         responsesOnly
     return Tuple {
       id: I.id.value,
+      qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responses,
       score: score,
+      minScore: ScoreParams.minScore,
+      maxScore: ScoreParams.maxScore,
       scoreSeverity: scoreSeverity,
       scoreMeaning: case
         when scoreSeverity = 'high' then 'severe anxiety'
