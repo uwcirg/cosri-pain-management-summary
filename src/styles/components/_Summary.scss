@@ -324,7 +324,7 @@
         top: 0;
       }
       .MMEgraph {
-        margin: 16px 0 8px;
+        margin: 16px auto 8px;
         //padding-bottom: 16px;
         &.no-entry {
           display: flex;
@@ -350,6 +350,11 @@
           }
           &.no-entry {
             align-items: center;
+          }
+        }
+        @media (min-width: 1600px) {
+          & {
+            max-width: 80%;
           }
         }
         .title {
@@ -401,8 +406,8 @@
         justify-content: flex-start;
         align-items: center;
         flex-wrap: wrap;
-        max-width: 1200px;
-        margin: auto;
+        // max-width: 1200px;
+        // margin: auto;
         .sub-panels {
           // flex-basis: 100%;
           flex: 1 1;
