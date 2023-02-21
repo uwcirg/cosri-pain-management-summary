@@ -249,13 +249,13 @@ export default class MMEGraph extends Component {
     const additionalProps = {
       "strokeColor": dataStrokeColor,
       "strokeFill": dataStrokeColor,
-      "strokeWidth": "2.25"
+      "strokeWidth": 2.25
     };
     additionalProps["dataPoints"] = {
         ...additionalProps,
         ...{
-          "dataStrokeWidth": "2.5",
-          "dataStrokeFill": dataStrokeColor
+          "strokeWidth": 2.5,
+          "strokeFill": dataStrokeColor
         }
     };
     const tickInterval =  Math.ceil((diffDays / 30) / xIntervals);

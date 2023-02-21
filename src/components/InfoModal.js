@@ -83,8 +83,7 @@ export default class InfoModal extends Component {
     return (
       <div
         className="description"
-        dangerouslySetInnerHTML={{ __html: description }}
-      ></div>
+      >{description}</div>
     );
   }
 
@@ -118,7 +117,7 @@ export default class InfoModal extends Component {
               {this.renderReferences(references)}
             </div>
           }
-          {description && this.renderDescription(description)}
+          {description && this.renderDescription(description())}
         </div>
       </div>
     );

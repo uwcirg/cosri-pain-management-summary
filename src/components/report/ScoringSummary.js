@@ -6,7 +6,6 @@ import FailUpArrowIcon from "../../icons/FailUpArrowIcon";
 import FailDownArrowIcon from "../../icons/FailDownArrowIcon";
 import PassDownArrowIcon from "../../icons/PassDownArrowIcon";
 import LineIcon from "../../icons/LineIcon";
-import qConfig from "../../config/questionnaire_config";
 import { isNumber } from "../../helpers/utility";
 
 export default class ScoringSummary extends Component {
@@ -39,8 +38,7 @@ export default class ScoringSummary extends Component {
     return parseInt(score);
   }
   getDisplayIcon(data) {
-    const dataConfig = qConfig[data.QuestionnaireName];
-    const comparisonToAlert = dataConfig ? dataConfig.comparisonToAlert : "";
+    const currentData = this.getCurrentData(data.ResponsesSummary);
     const currentScore = this.getCurrentScore(data.ResponsesSummary);
     const prevScore = this.getPreviousScore(data.ResponsesSummary);
     //debug
@@ -54,8 +52,11 @@ export default class ScoringSummary extends Component {
       " prev score is number? ",
       isNumber(prevScore)
     );
+    const comparisonToAlert = currentData.comparisonToAlert
+      ? currentData.comparisonToAlert
+      : ""; // TODO get it from response summary data
     //debug
-    // console.log("comparison to alert ", comparisonToAlert);
+    //console.log("comparison to alert ", comparisonToAlert);
     if (!isNumber(currentScore) || !isNumber(prevScore)) return "--";
     if (isNumber(prevScore)) {
       if (comparisonToAlert === "lower") {

@@ -7,7 +7,10 @@ import XYAxis from "./xy-axis";
 import Grid from "./grid";
 import Line from "./line";
 import { dateFormat } from "../../helpers/formatit";
-import qConfig from "../../config/questionnaire_config";
+import {
+  defaultLineAttributes,
+  getLineAttributes,
+} from "../../config/graph_config";
 
 const defaultFields = {
   x: "date",
@@ -28,6 +31,22 @@ export default class SurveyGraph extends Component {
     this.removeQuestionnaireToSurveyGraph =
       this.removeQuestionnaireToSurveyGraph.bind(this);
   }
+  getQIds() {
+    return [...new Set(this.state.originalGraphData.map((item) => item.qid))];
+  }
+  getLineAttributesByQId(qid) {
+    const qids = this.getQIds();
+    const lineAttributes = qids.map((qid, index) => {
+      return {
+        id: qid,
+        props: getLineAttributes(qid, "", index),
+      };
+    });
+    const matched = lineAttributes.filter((item) => item.id === qid);
+    if (matched.length) return matched[0].props;
+    return defaultLineAttributes;
+  }
+
   isInSurveyGraph(qid) {
     return this.state.graphData.some((item) => item.qid === qid);
   }
@@ -57,9 +76,7 @@ export default class SurveyGraph extends Component {
   }
 
   renderLegend() {
-    const qids = [
-      ...new Set(this.state.originalGraphData.map((item) => item.qid)),
-    ];
+    const qids = this.getQIds();
     return (
       <div className="legend">
         {qids.map((item, index) => (
@@ -68,7 +85,7 @@ export default class SurveyGraph extends Component {
               <span
                 className="icon"
                 style={{
-                  backgroundColor: qConfig[item].graph.strokeColor,
+                  backgroundColor: this.getLineAttributesByQId(item).strokeColor,
                 }}
               ></span>
               <span>{item.toUpperCase()}</span>
@@ -100,7 +117,7 @@ export default class SurveyGraph extends Component {
   componentDidMount() {
     this.setState({
       graphData: this.props.data,
-      originalGraphData: this.props.data
+      originalGraphData: this.props.data,
     });
   }
 
@@ -197,29 +214,17 @@ export default class SurveyGraph extends Component {
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
       .rangeRound([0, width]);
-    const yMaxValue = d3.max(data, (d) => d.maxScore ? d.maxScore : d.score);
+    const yMaxValue = d3.max(data, (d) => (d.maxScore ? d.maxScore : d.score));
     const yScale = scaleLinear()
       .domain([0, yMaxValue + 10])
       .range([height, 0])
       .nice();
 
-    //use .nest()function to group data so the line can be computed for each group
-
-    // Nest the entries by symbol
-    var dataNest = d3
-      .nest()
-      .key(function (d) {
-        return d.qid;
-      })
-      .entries(data);
-
-    //console.log("survey graph data nest ", dataNest);
-
     const lineGenerator = line()
       .x((d) => xScale(d[xFieldName]))
       .y((d) => yScale(d[yFieldName]));
 
-    const defaultProps = {
+    const defaultLineProps = {
       xScale: xScale,
       yScale: yScale,
       lineGenerator: lineGenerator,
@@ -270,6 +275,17 @@ export default class SurveyGraph extends Component {
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
 
+    //use .nest()function to group data so the line can be computed for each group
+
+    // Nest the entries by symbol
+    let dataNest = d3
+      .nest()
+      .key(function (d) {
+        return d.qid;
+      })
+      .entries(data);
+    //console.log("survey graph data nest ", dataNest);
+
     const renderYGrid = () => (
       <Grid
         {...{
@@ -308,19 +324,15 @@ export default class SurveyGraph extends Component {
 
     const renderLines = () => {
       return dataNest.map((data, index) => {
-        const lineProps = {
-          ...defaultProps,
-          ...{
-            ...qConfig[data.key].graph,
-          },
-        };
-        //console.log("data key ", data.key, " config ", qConfig[data.key]);
         return (
           <Line
             key={`line-${data.key}-${index}`}
             lineID={`dataLine_${data.key}`}
             data={data.values}
-            {...lineProps}
+            {...{
+              ...defaultLineProps,
+              ...this.getLineAttributesByQId(data.key),
+            }}
           />
         );
       });

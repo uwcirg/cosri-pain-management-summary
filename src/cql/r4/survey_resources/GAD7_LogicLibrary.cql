@@ -159,6 +159,7 @@ define ResponsesSummary:
         when scoreSeverity = 'mild' then 'mild anxiety'
         else if score > 0 then 'minimal anxiety' else '' 
       end,
+      comparisonToAlert: 'higher',
       totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId),
       totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Gad7Questionnaire, ScoringQuestionId)),
       authoredDate: I.authored,

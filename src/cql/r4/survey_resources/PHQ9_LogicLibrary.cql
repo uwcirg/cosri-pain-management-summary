@@ -170,6 +170,7 @@ define ResponsesSummary:
         when scoreSeverity = 'mild' then 'mild depression'
         else if score > 0 then 'minimal depression' else '' 
       end,
+      comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId), totalItems}),
       totalItems: totalItems,
       authoredDate: I.authored,

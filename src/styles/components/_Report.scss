@@ -74,9 +74,20 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin: 0;
           margin-right: 8px;
           .icon {
-            margin-left: 12px;
+            margin-left: 20px;
             transition: transform 350ms ease 50ms;
             color: $color-blue;
+            border-radius: 50%;
+            border: 1px solid;
+            width: 12px;
+            height: 12px;
+            padding: 4px;
+            &:hover {
+              background-color: $color-blue;
+              border-color: $color-blue;
+              color: #FFF;
+              cursor: pointer;
+            }
           }
           .info-icon {
             margin-left: 0;
@@ -130,8 +141,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
     font-size: 0.9em;
     height: 0;
     overflow: hidden;
-    margin: 8px 24px 24px;
-    border: 2px solid $color-blue;
+    margin: 8px 20px 24px;
+    border: 1px solid $color-blue;
     border-collapse: collapse;
     transition: height 0.4s cubic-bezier(0.865, 0.14, 0.095, 0.87);
     &.active {
@@ -314,6 +325,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
             &:hover {
               color: #FFF;
               background-color: $color-blue;
+              border-color: $color-blue;
             }
           }
           &[disabled] {
