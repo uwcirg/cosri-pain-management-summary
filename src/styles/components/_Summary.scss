@@ -202,7 +202,7 @@
       }
     }
     .is-position-fixed ~ .close {
-      top: calc(#{$min-header-height} + 16px);
+      top: calc(#{$min-header-height} + 8px);
       left: 0;
       position: fixed;
       z-index: 500;
@@ -332,6 +332,7 @@
           align-items: flex-start;
           justify-content: flex-start;
           margin-right: 24px;
+          height: 100%;
           .title {
             margin-left: 0;
             width: 100%;
@@ -342,6 +343,9 @@
             padding: 52px;
             background: $color-gray-lightest;
             position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
           }
         }
         @media (min-width: 992px) {
@@ -434,6 +438,7 @@
         flex-wrap: wrap;
         padding: 0 16px 8px;
         flex: 1 1;
+        align-self: stretch;
         .sub-section__infopanel {
           border: 2px solid;
           padding: 12px;

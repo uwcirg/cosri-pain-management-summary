@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 import ReactTooltip from "react-tooltip";
 
 export default class SideNav extends Component {
@@ -10,7 +10,7 @@ export default class SideNav extends Component {
 
     // This binding is necessary to make `this` work in the callback
     this.handleNavToggle = this.handleNavToggle.bind(this);
-     this.handleResize = this.handleResize.bind(this);
+    this.handleResize = this.handleResize.bind(this);
   }
 
   handleNavToggle(e) {
@@ -64,5 +64,5 @@ export default class SideNav extends Component {
 SideNav.propTypes = {
   id: PropTypes.string,
   navClassName: PropTypes.string,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };

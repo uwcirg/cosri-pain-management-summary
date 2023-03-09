@@ -1554,7 +1554,7 @@
                            } ],
                            "relationship" : [ ],
                            "where" : {
-                              "type" : "Equivalent",
+                              "type" : "Equal",
                               "operand" : [ {
                                  "name" : "ToString",
                                  "libraryName" : "FHIRHelpers",

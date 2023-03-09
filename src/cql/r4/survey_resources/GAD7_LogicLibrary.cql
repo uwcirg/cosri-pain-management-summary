@@ -13,10 +13,6 @@ include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 codesystem "LOINC": 'http://loinc.org'
 
 
-// Local (non-standard) codes
-// Not sure if this qualifies as LOCAL...
-// code "GAD7 Total Score code": '70274-6' from "LOCAL" display 'GAD7 Total Score'
-
 define QuestionnaireName: 'gad7'
 define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/gad7'
 define question1LinkId: '/69725-0'
@@ -28,7 +24,7 @@ define question6LinkId: '/69689-8'
 define question7LinkId: '/69736-7'
 define ScoringQuestionId: '/70274-6'
 
-define answerExtensionIndex: 1
+define answerExtensionIndex: 0
 define ScoreParams: Tuple {
   minScore: 0,
   maxScore: 21
@@ -70,69 +66,25 @@ define IndexOfQuestion:
 
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Gad7Questionnaire, 'GAD7')
-
-// Load the most recent completed questionnaireResponse
-define CurrentQuestionnaireResponse:
-  First(QuestionnaireResponses QR
-    where QR.status.value = 'completed'
-    sort by authored desc
-  )
-
-// Extract the items from the QuestionnaireResponse
-define CurrentResponseItems:
-  CurrentQuestionnaireResponse QR
-  return QR.item
-      
-// Question 1
-define Gad7ScoreQuestion1:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question1LinkId, answerExtensionIndex)
-
-// Question 2
-define Gad7ScoreQuestion2:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.two, question2LinkId, answerExtensionIndex)
-
-// Question 3
-define Gad7ScoreQuestion3:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.three, question3LinkId, answerExtensionIndex)
-
-// Question 4
-define Gad7ScoreQuestion4:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.four, question4LinkId, answerExtensionIndex)
-
-// Question 5
-define Gad7ScoreQuestion5:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.five, question5LinkId, answerExtensionIndex)
-
-// Question 6
-define Gad7ScoreQuestion6:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.six, question6LinkId, answerExtensionIndex)
-
-// Question 7
-define Gad7ScoreQuestion7:
-  LogicHelper.getQuestionScore(Gad7Questionnaire, CurrentResponseItems, IndexOfQuestion.seven, question7LinkId, answerExtensionIndex)
-
-// Calculate the score for the Full GAD7
-// sum up all numeric values for all the answers
-define MostRecentFullScore:
-  Gad7ScoreQuestion1
-  + Gad7ScoreQuestion2
-  + Gad7ScoreQuestion3
-  + Gad7ScoreQuestion4
-  + Gad7ScoreQuestion5
-  + Gad7ScoreQuestion6
-  + Gad7ScoreQuestion7
  
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
+    q1Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question1LinkId, answerExtensionIndex)),
+    q2Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question2LinkId, answerExtensionIndex)),
+    q3Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question3LinkId, answerExtensionIndex)),
+    q4Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question4LinkId, answerExtensionIndex)),
+    q5Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question5LinkId, answerExtensionIndex)),
+    q6Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
+    q7Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
     score: 
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question1LinkId, answerExtensionIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question2LinkId, answerExtensionIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question3LinkId, answerExtensionIndex)), 0) + 
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question4LinkId, answerExtensionIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question5LinkId, answerExtensionIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question6LinkId, answerExtensionIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)), 0),
+          Coalesce(q1Score, 0) * 1 +
+          Coalesce(q2Score, 0) * 1 +
+          Coalesce(q3Score, 0) * 1 + 
+          Coalesce(q4Score, 0) * 1 +
+          Coalesce(q5Score, 0) * 1 +
+          Coalesce(q6Score, 0) * 1 +
+          Coalesce(q7Score, 0) * 1,
     scoreSeverity: case
         when score > 14 then 'high'
         when score between 10 and 14 then 'moderate'

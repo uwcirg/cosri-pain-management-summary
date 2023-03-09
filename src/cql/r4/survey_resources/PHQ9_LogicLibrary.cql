@@ -65,68 +65,6 @@ define IndexOfQuestion:
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Phq9Questionnaire, 'PHQ9')
 
-// Load the most recent completed QuestionnaireResponse
-define CurrentQuestionnaireResponse:
-  First(QuestionnaireResponses QR
-    where QR.status.value = 'completed'
-    sort by authored desc
-  )
-  
-
-// Extract the items from the QuestionnaireResponse
-define CurrentResponseItems:
-  CurrentQuestionnaireResponse QR
-  return QR.item
-
-
-// Question 1
-define Phq9ScoreQuestion1:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.one, question1LinkId, extensionAnswerIndex)
-
-// Question 2
-define Phq9ScoreQuestion2:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.two, question2LinkId, extensionAnswerIndex)
-
-// Question 3
-define Phq9ScoreQuestion3:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.three, question3LinkId, extensionAnswerIndex)
-
-// Question 4
-define Phq9ScoreQuestion4:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.four, question4LinkId, extensionAnswerIndex)
-
-// Question 5
-define Phq9ScoreQuestion5:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.five, question5LinkId, extensionAnswerIndex)
-
-// Question 6
-define Phq9ScoreQuestion6:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.six, question6LinkId, extensionAnswerIndex)
-
-// Question 7
-define Phq9ScoreQuestion7:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.seven, question7LinkId, extensionAnswerIndex)
-// Question 8
-define Phq9ScoreQuestion8:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.eight, question8LinkId, extensionAnswerIndex)
-
-// Question 9
-define Phq9ScoreQuestion9:
-  LogicHelper.getQuestionScore(Phq9Questionnaire, CurrentResponseItems, IndexOfQuestion.nine, question9LinkId, extensionAnswerIndex)
-
-// Calculate the score for the Full PHQ9
-// sum up all numeric values for all the answers
-define MostRecentFullScore:
-  Phq9ScoreQuestion1
-  + Phq9ScoreQuestion2
-  + Phq9ScoreQuestion3
-  + Phq9ScoreQuestion4
-  + Phq9ScoreQuestion5
-  + Phq9ScoreQuestion6
-  + Phq9ScoreQuestion7
-  + Phq9ScoreQuestion8
-  + Phq9ScoreQuestion9
-
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let

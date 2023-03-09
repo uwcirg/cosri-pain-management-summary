@@ -160,7 +160,7 @@ define function GetResponseValueByLinkId(linkId String, responses List<FHIR.Ques
  * @return the value as Integer
  */
 define function getAnswerOptionExtensionValue(extList List<FHIR.Extension>):
-  (extList e where e.url ~ 'http://hl7.org/fhir/StructureDefinition/ordinalValue')[0].value.value as Integer
+  (extList e where e.url = 'http://hl7.org/fhir/StructureDefinition/ordinalValue')[0].value.value as Integer
 
 /*
  * retrieve the numeric value for the answer based on value code

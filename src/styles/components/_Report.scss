@@ -66,7 +66,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           padding-right: 16px;
         }
         .no-entries {
-          padding: 8px 16px 16px;
+          padding: 8px 0 16px;
         }
         .link-container {
           display: flex;
@@ -161,6 +161,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
     td {
       padding: 4px 8px;
+      line-height: 1.4;
       &:not(:last-of-type) {
         border-right: 1px solid $color-gray-lighter;
       }
@@ -202,10 +203,15 @@ $selector-box-shadow: 0 2px 2px #383e40;
           max-width: 100%;
         }
         .no-entries {
-          flex: 1 1;
+          //flex: 1 1;
+          width: 60%;
+          max-width: 100%;
+          height: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
+          margin-right: 8px;
+          background-color: $color-gray-lightest;
         }
       }
       @media (min-width: 768px) {

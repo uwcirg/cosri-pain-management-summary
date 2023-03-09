@@ -85,29 +85,32 @@ export default class SurveyGraph extends Component {
               <span
                 className="icon"
                 style={{
-                  backgroundColor: this.getLineAttributesByQId(item).strokeColor,
+                  backgroundColor:
+                    this.getLineAttributesByQId(item).strokeColor,
                 }}
               ></span>
               <span>{item.toUpperCase()}</span>
             </div>
-            <div className="select-icons-container print-hidden">
-              <button
-                className="select-icon plus"
-                onClick={() => this.addQuestionnaireToSurveyGraph(item)}
-                disabled={this.isInSurveyGraph(item) ? true : false}
-                title={`Add ${item} to graph`}
-              >
-                +
-              </button>
-              <button
-                className="select-icon minus"
-                onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
-                disabled={this.isInSurveyGraph(item) ? false : true}
-                title={`Remove ${item} from graph`}
-              >
-                -
-              </button>
-            </div>
+            {qids.length > 1 && (
+              <div className="select-icons-container print-hidden">
+                <button
+                  className="select-icon plus"
+                  onClick={() => this.addQuestionnaireToSurveyGraph(item)}
+                  disabled={this.isInSurveyGraph(item) ? true : false}
+                  title={`Add ${item} to graph`}
+                >
+                  +
+                </button>
+                <button
+                  className="select-icon minus"
+                  onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
+                  disabled={this.isInSurveyGraph(item) ? false : true}
+                  title={`Remove ${item} from graph`}
+                >
+                  -
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -341,7 +344,9 @@ export default class SurveyGraph extends Component {
     if (noEntry)
       return (
         <React.Fragment>
-          <div className="no-entries" style={{width: graphWidth, height: graphHeight}}>
+          <div
+            className="no-entries"
+          >
             <b>No graph to show.</b>
           </div>
           {this.state.originalGraphData.length > 0 && this.renderLegend()}

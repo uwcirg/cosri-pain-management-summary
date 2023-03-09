@@ -52,7 +52,7 @@ export default class ScoringSummary extends Component {
       " prev score is number? ",
       isNumber(prevScore)
     );
-    const comparisonToAlert = currentData.comparisonToAlert
+    const comparisonToAlert = currentData && currentData.comparisonToAlert
       ? currentData.comparisonToAlert
       : ""; // TODO get it from response summary data
     //debug
