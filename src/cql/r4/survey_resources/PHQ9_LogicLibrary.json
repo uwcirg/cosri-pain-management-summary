@@ -215,156 +215,6 @@
                }
             }
          }, {
-            "name" : "IndexOfQuestion",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "Q",
-                  "expression" : {
-                     "name" : "Phq9Questionnaire",
-                     "type" : "ExpressionRef"
-                  }
-               } ],
-               "let" : [ {
-                  "identifier" : "ItemLinkIds",
-                  "expression" : {
-                     "name" : "GetItemLinkIds",
-                     "libraryName" : "LogicHelper",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "name" : "Q",
-                        "type" : "AliasRef"
-                     } ]
-                  }
-               } ],
-               "relationship" : [ ],
-               "return" : {
-                  "expression" : {
-                     "type" : "Tuple",
-                     "element" : [ {
-                        "name" : "one",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question1LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "two",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question2LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "three",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question3LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "four",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question4LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "five",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question5LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "six",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question6LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "seven",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question7LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "eight",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question8LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "nine",
-                        "value" : {
-                           "type" : "IndexOf",
-                           "source" : {
-                              "name" : "ItemLinkIds",
-                              "type" : "QueryLetRef"
-                           },
-                           "element" : {
-                              "name" : "question9LinkId",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     } ]
-                  }
-               }
-            }
-         }, {
             "name" : "QuestionnaireResponses",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -416,6 +266,79 @@
                                        "operand" : [ {
                                           "type" : "Add",
                                           "operand" : [ {
+                                             "type" : "Multiply",
+                                             "operand" : [ {
+                                                "type" : "Coalesce",
+                                                "operand" : [ {
+                                                   "type" : "First",
+                                                   "source" : {
+                                                      "name" : "getScoringByResponseItem",
+                                                      "libraryName" : "LogicHelper",
+                                                      "type" : "FunctionRef",
+                                                      "operand" : [ {
+                                                         "name" : "Phq9Questionnaire",
+                                                         "type" : "ExpressionRef"
+                                                      }, {
+                                                         "path" : "item",
+                                                         "scope" : "I",
+                                                         "type" : "Property"
+                                                      }, {
+                                                         "name" : "question1LinkId",
+                                                         "type" : "ExpressionRef"
+                                                      }, {
+                                                         "name" : "extensionAnswerIndex",
+                                                         "type" : "ExpressionRef"
+                                                      } ]
+                                                   }
+                                                }, {
+                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                   "value" : "0",
+                                                   "type" : "Literal"
+                                                } ]
+                                             }, {
+                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                "value" : "1",
+                                                "type" : "Literal"
+                                             } ]
+                                          }, {
+                                             "type" : "Multiply",
+                                             "operand" : [ {
+                                                "type" : "Coalesce",
+                                                "operand" : [ {
+                                                   "type" : "First",
+                                                   "source" : {
+                                                      "name" : "getScoringByResponseItem",
+                                                      "libraryName" : "LogicHelper",
+                                                      "type" : "FunctionRef",
+                                                      "operand" : [ {
+                                                         "name" : "Phq9Questionnaire",
+                                                         "type" : "ExpressionRef"
+                                                      }, {
+                                                         "path" : "item",
+                                                         "scope" : "I",
+                                                         "type" : "Property"
+                                                      }, {
+                                                         "name" : "question2LinkId",
+                                                         "type" : "ExpressionRef"
+                                                      }, {
+                                                         "name" : "extensionAnswerIndex",
+                                                         "type" : "ExpressionRef"
+                                                      } ]
+                                                   }
+                                                }, {
+                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                   "value" : "0",
+                                                   "type" : "Literal"
+                                                } ]
+                                             }, {
+                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                "value" : "1",
+                                                "type" : "Literal"
+                                             } ]
+                                          } ]
+                                       }, {
+                                          "type" : "Multiply",
+                                          "operand" : [ {
                                              "type" : "Coalesce",
                                              "operand" : [ {
                                                 "type" : "First",
@@ -431,7 +354,7 @@
                                                       "scope" : "I",
                                                       "type" : "Property"
                                                    }, {
-                                                      "name" : "question1LinkId",
+                                                      "name" : "question3LinkId",
                                                       "type" : "ExpressionRef"
                                                    }, {
                                                       "name" : "extensionAnswerIndex",
@@ -444,35 +367,14 @@
                                                 "type" : "Literal"
                                              } ]
                                           }, {
-                                             "type" : "Coalesce",
-                                             "operand" : [ {
-                                                "type" : "First",
-                                                "source" : {
-                                                   "name" : "getScoringByResponseItem",
-                                                   "libraryName" : "LogicHelper",
-                                                   "type" : "FunctionRef",
-                                                   "operand" : [ {
-                                                      "name" : "Phq9Questionnaire",
-                                                      "type" : "ExpressionRef"
-                                                   }, {
-                                                      "path" : "item",
-                                                      "scope" : "I",
-                                                      "type" : "Property"
-                                                   }, {
-                                                      "name" : "question2LinkId",
-                                                      "type" : "ExpressionRef"
-                                                   }, {
-                                                      "name" : "extensionAnswerIndex",
-                                                      "type" : "ExpressionRef"
-                                                   } ]
-                                                }
-                                             }, {
-                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                "value" : "0",
-                                                "type" : "Literal"
-                                             } ]
+                                             "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                             "value" : "1",
+                                             "type" : "Literal"
                                           } ]
-                                       }, {
+                                       } ]
+                                    }, {
+                                       "type" : "Multiply",
+                                       "operand" : [ {
                                           "type" : "Coalesce",
                                           "operand" : [ {
                                              "type" : "First",
@@ -488,7 +390,7 @@
                                                    "scope" : "I",
                                                    "type" : "Property"
                                                 }, {
-                                                   "name" : "question3LinkId",
+                                                   "name" : "question4LinkId",
                                                    "type" : "ExpressionRef"
                                                 }, {
                                                    "name" : "extensionAnswerIndex",
@@ -500,8 +402,15 @@
                                              "value" : "0",
                                              "type" : "Literal"
                                           } ]
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "1",
+                                          "type" : "Literal"
                                        } ]
-                                    }, {
+                                    } ]
+                                 }, {
+                                    "type" : "Multiply",
+                                    "operand" : [ {
                                        "type" : "Coalesce",
                                        "operand" : [ {
                                           "type" : "First",
@@ -517,7 +426,7 @@
                                                 "scope" : "I",
                                                 "type" : "Property"
                                              }, {
-                                                "name" : "question4LinkId",
+                                                "name" : "question5LinkId",
                                                 "type" : "ExpressionRef"
                                              }, {
                                                 "name" : "extensionAnswerIndex",
@@ -529,8 +438,15 @@
                                           "value" : "0",
                                           "type" : "Literal"
                                        } ]
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "value" : "1",
+                                       "type" : "Literal"
                                     } ]
-                                 }, {
+                                 } ]
+                              }, {
+                                 "type" : "Multiply",
+                                 "operand" : [ {
                                     "type" : "Coalesce",
                                     "operand" : [ {
                                        "type" : "First",
@@ -546,7 +462,7 @@
                                              "scope" : "I",
                                              "type" : "Property"
                                           }, {
-                                             "name" : "question5LinkId",
+                                             "name" : "question6LinkId",
                                              "type" : "ExpressionRef"
                                           }, {
                                              "name" : "extensionAnswerIndex",
@@ -558,8 +474,15 @@
                                        "value" : "0",
                                        "type" : "Literal"
                                     } ]
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "1",
+                                    "type" : "Literal"
                                  } ]
-                              }, {
+                              } ]
+                           }, {
+                              "type" : "Multiply",
+                              "operand" : [ {
                                  "type" : "Coalesce",
                                  "operand" : [ {
                                     "type" : "First",
@@ -575,7 +498,7 @@
                                           "scope" : "I",
                                           "type" : "Property"
                                        }, {
-                                          "name" : "question6LinkId",
+                                          "name" : "question7LinkId",
                                           "type" : "ExpressionRef"
                                        }, {
                                           "name" : "extensionAnswerIndex",
@@ -587,8 +510,15 @@
                                     "value" : "0",
                                     "type" : "Literal"
                                  } ]
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "1",
+                                 "type" : "Literal"
                               } ]
-                           }, {
+                           } ]
+                        }, {
+                           "type" : "Multiply",
+                           "operand" : [ {
                               "type" : "Coalesce",
                               "operand" : [ {
                                  "type" : "First",
@@ -604,7 +534,7 @@
                                        "scope" : "I",
                                        "type" : "Property"
                                     }, {
-                                       "name" : "question7LinkId",
+                                       "name" : "question8LinkId",
                                        "type" : "ExpressionRef"
                                     }, {
                                        "name" : "extensionAnswerIndex",
@@ -616,8 +546,15 @@
                                  "value" : "0",
                                  "type" : "Literal"
                               } ]
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "1",
+                              "type" : "Literal"
                            } ]
-                        }, {
+                        } ]
+                     }, {
+                        "type" : "Multiply",
+                        "operand" : [ {
                            "type" : "Coalesce",
                            "operand" : [ {
                               "type" : "First",
@@ -633,7 +570,7 @@
                                     "scope" : "I",
                                     "type" : "Property"
                                  }, {
-                                    "name" : "question8LinkId",
+                                    "name" : "question9LinkId",
                                     "type" : "ExpressionRef"
                                  }, {
                                     "name" : "extensionAnswerIndex",
@@ -645,33 +582,9 @@
                               "value" : "0",
                               "type" : "Literal"
                            } ]
-                        } ]
-                     }, {
-                        "type" : "Coalesce",
-                        "operand" : [ {
-                           "type" : "First",
-                           "source" : {
-                              "name" : "getScoringByResponseItem",
-                              "libraryName" : "LogicHelper",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "name" : "Phq9Questionnaire",
-                                 "type" : "ExpressionRef"
-                              }, {
-                                 "path" : "item",
-                                 "scope" : "I",
-                                 "type" : "Property"
-                              }, {
-                                 "name" : "question9LinkId",
-                                 "type" : "ExpressionRef"
-                              }, {
-                                 "name" : "extensionAnswerIndex",
-                                 "type" : "ExpressionRef"
-                              } ]
-                           }
                         }, {
                            "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                           "value" : "0",
+                           "value" : "1",
                            "type" : "Literal"
                         } ]
                      } ]

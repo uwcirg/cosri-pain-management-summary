@@ -45,23 +45,6 @@ context Patient
 define Phq9Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
 
-// Determine the index of each question based upon the extracted link ID
-define IndexOfQuestion:
-  (Phq9Questionnaire) Q
-  let
-    ItemLinkIds: LogicHelper.GetItemLinkIds(Q)
-    return {
-      one: IndexOf(ItemLinkIds, question1LinkId),
-      two: IndexOf(ItemLinkIds, question2LinkId),
-      three: IndexOf(ItemLinkIds, question3LinkId),
-      four: IndexOf(ItemLinkIds, question4LinkId),
-      five: IndexOf(ItemLinkIds, question5LinkId),
-      six: IndexOf(ItemLinkIds, question6LinkId),
-      seven: IndexOf(ItemLinkIds, question7LinkId),
-      eight: IndexOf(ItemLinkIds, question8LinkId),
-      nine: IndexOf(ItemLinkIds, question9LinkId)
-    }
-
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Phq9Questionnaire, 'PHQ9')
 
@@ -69,15 +52,15 @@ define ResponsesSummary:
   (QuestionnaireResponses) I
   let
     score: 
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question1LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question2LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question3LinkId, extensionAnswerIndex)), 0) + 
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question4LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question5LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question6LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0),
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question1LinkId, extensionAnswerIndex)), 0) * 1 +
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question2LinkId, extensionAnswerIndex)), 0) * 1 +
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question3LinkId, extensionAnswerIndex)), 0) * 1 + 
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question4LinkId, extensionAnswerIndex)), 0) * 1 +
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question5LinkId, extensionAnswerIndex)), 0) * 1 +
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question6LinkId, extensionAnswerIndex)), 0) * 1 +
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)), 0) * 1 +
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) * 1 +
+          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0) * 1,
     scoreSeverity:
         case
           when score >= 20 then 'high'
@@ -115,3 +98,4 @@ define ResponsesSummary:
       lastUpdated: I.meta.lastUpdated.value
     }
     sort by authoredDate desc, lastUpdated desc
+    

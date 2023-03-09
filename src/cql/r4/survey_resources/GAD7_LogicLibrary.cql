@@ -41,28 +41,9 @@ context Patient
 // QUESTIONNAIRE AND QUESTIONNAIRERESPONSE LOGIC
 //------------------------------------------------------------------------------
 
-// We need to set the QuestionnaireURL parameter to an expression before we can use it
-define CurrentQuestionnaireURL:
-  QuestionnaireURL
-
 // Load Questionnaire
 define Gad7Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
-
-// Determine the index of each question based upon the extracted link ID
-define IndexOfQuestion:
-  (Gad7Questionnaire) Q
-  let
-    ItemLinkIds: LogicHelper.GetItemLinkIds(Q)
-    return {
-      one: IndexOf(ItemLinkIds, question1LinkId),
-      two: IndexOf(ItemLinkIds, question2LinkId),
-      three: IndexOf(ItemLinkIds, question3LinkId),
-      four: IndexOf(ItemLinkIds, question4LinkId),
-      five: IndexOf(ItemLinkIds, question5LinkId),
-      six: IndexOf(ItemLinkIds, question6LinkId),
-      seven: IndexOf(ItemLinkIds, question7LinkId)
-    }
 
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Gad7Questionnaire, 'GAD7')
