@@ -110,7 +110,7 @@ async function executeELM(collector, oResourceTypes) {
 
         // return a promise containing survey evaluated data
         return new Promise((resolve, reject) => {
-          const elmLibs = getElmLibForInstruments();
+          const elmLibs = getLibraryForInstruments();
           Promise.allSettled(elmLibs).then(
             (results) => {
               const evaluatedSurveyResults = executeELMForInstruments(
@@ -186,7 +186,7 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
   return evalResults;
 }
 
-function getElmLibForInstruments() {
+function getLibraryForInstruments() {
   const INSTRUMENT_LIST = getEnvInstrumentList();
   let instrumentList = INSTRUMENT_LIST.split(",");
   return instrumentList.map((libId) =>
