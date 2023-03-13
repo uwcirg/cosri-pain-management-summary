@@ -23,9 +23,11 @@ const FHIR_RELEASE_VERSION_2 = 2;
 const FHIR_RELEASE_VERSION_4 = 4;
 
 async function executeELM(collector, oResourceTypes) {
+  fetchEnvData();
   let client, release, library;
   const resourceTypes = oResourceTypes || {};
   const INSTRUMENT_LIST = getEnvInstrumentList();
+  const SURVEY_FHIR_RESOURCES = ["QuestionnaireResponse", "Questionnaire"];
   console.log("instrument list from environment variable ", INSTRUMENT_LIST);
   return new Promise((resolve) => {
     // First get our authorized client and send the FHIR release to the next step
@@ -45,7 +47,15 @@ async function executeELM(collector, oResourceTypes) {
       // then gather all the patient's relevant resource instances and send them in a bundle to the next step
       .then((pt) => {
         collector.push({ data: pt, url: `Patient/${pt.id}` });
-        const requests = extractResourcesFromELM(library).map((name) => {
+        const shouldLoadSurveyResources =
+          FHIR_RELEASE_VERSION_4 && INSTRUMENT_LIST;
+        const surveyResources = shouldLoadSurveyResources
+          ? SURVEY_FHIR_RESOURCES
+          : [];
+        const requests = [
+          ...extractResourcesFromELM(library),
+          ...surveyResources,
+        ].map((name) => {
           resourceTypes[name] = false;
           if (name === "Patient") {
             resourceTypes[name] = true;
@@ -56,50 +66,29 @@ async function executeELM(collector, oResourceTypes) {
             resourceTypes[name] = true;
             return resource;
           });
-          //return doSearch(client, release, name, collector);
         });
-
-        // check if instrument resources need to be loaded
-        const surveyRequests =
-          release === FHIR_RELEASE_VERSION_4 && INSTRUMENT_LIST
-            ? getInstrumentQuestionnaireAndResponseRequests(client)
-            : [];
-        if (surveyRequests.length > 0) {
-          const envSurveyFHIRResources = getEnv(
-            "REACT_APP_SURVEY_FHIR_RESOURCES"
-          );
-          const surveyFHIRResources = envSurveyFHIRResources
-            ? envSurveyFHIRResources.split(",")
-            : ["QuestionnaireResponse", "Questionnaire"];
-          surveyFHIRResources.forEach((item) => (resourceTypes[item] = true));
-        }
-
-        //console.log("resources ", requests);
-        //console.log("survey resources ", surveyRequests);
         console.log("collector ", collector);
         console.log("resourceTypes ", resourceTypes);
 
         // Don't return until all the requests have been resolved
-        return Promise.all([...requests, ...surveyRequests]).then(
-          (requestResults) => {
-            let resources = [];
-            requestResults.forEach((result) => {
-              result.forEach((item) => {
-                if (String(item.resourceType).toLowerCase() === "bundle") {
-                  if (item.entry) {
-                    item.entry.forEach((o) => {
-                      if (o.resource) resources.push(o.resource);
-                    });
-                  }
-                } else resources.push(item);
-              });
+        return Promise.all(requests).then((requestResults) => {
+          let resources = [];
+          requestResults.forEach((result) => {
+            result.forEach((item) => {
+              if (String(item.resourceType).toLowerCase() === "bundle") {
+                if (item.entry) {
+                  item.entry.forEach((o) => {
+                    if (o.resource) resources.push(o.resource);
+                  });
+                }
+              } else resources.push(item);
             });
-            return {
-              resourceType: "Bundle",
-              entry: resources.map((r) => ({ resource: r })),
-            };
-          }
-        );
+          });
+          return {
+            resourceType: "Bundle",
+            entry: resources.map((r) => ({ resource: r })),
+          };
+        });
       })
       // then execute the library and return the results (wrapped in a Promise)
       .then((bundle) => {
@@ -128,12 +117,13 @@ async function executeELM(collector, oResourceTypes) {
                 results,
                 bundle
               );
+              const PATIENT_SUMMARY_KEY = "Summary";
               const SURVEY_SUMMARY_KEY = "SurveySummary";
 
-              if (!evalResults["Summary"]) {
-                evalResults["Summary"] = {};
+              if (!evalResults[PATIENT_SUMMARY_KEY]) {
+                evalResults[PATIENT_SUMMARY_KEY] = {};
               }
-              evalResults["Summary"][SURVEY_SUMMARY_KEY] =
+              evalResults[PATIENT_SUMMARY_KEY][SURVEY_SUMMARY_KEY] =
                 evaluatedSurveyResults;
               //debug
               console.log(
@@ -217,37 +207,6 @@ function getElmLibForInstruments() {
   );
 }
 
-function getInstrumentQuestionnaireAndResponseRequests(client) {
-  const INSTRUMENT_LIST = getEnvInstrumentList();
-  if (!client) return [];
-  if (!INSTRUMENT_LIST) return [];
-  const arrList = INSTRUMENT_LIST.split(",").map((item) => item.trim());
-  const options = {
-    pageLimit: 0, // unlimited pages
-  };
-  // questionnaire
-  let requests = arrList.map((itemId) =>
-    client.request(
-      {
-        url: "Questionnaire?name:contains=" + itemId,
-        headers: noCacheHeader,
-      },
-      options
-    )
-  );
-  // questionnaire responses
-  requests.push(
-    client.patient.request(
-      {
-        url: "QuestionnaireResponse",
-        headers: noCacheHeader,
-      },
-      options
-    )
-  );
-  return requests;
-}
-
 function getLibrary(release) {
   switch (release) {
     case FHIR_RELEASE_VERSION_2:
@@ -291,18 +250,25 @@ function doSearch(client, release, type, collector) {
 
   const resources = [];
   const uri = `${type}?${params}`;
+  const nonPatientResourceTypes = ["questionnaire"];
+  const isNotPatientResourceType =
+    nonPatientResourceTypes.indexOf(type.toLowerCase()) !== -1;
+  const options = {
+    url: uri,
+    headers: noCacheHeader,
+  };
+  const fhirOptions = {
+    pageLimit: 0, // unlimited pages
+    onPage: processPage(uri, collector, resources),
+  };
   return new Promise((resolve) => {
-    const results = client.patient
-      .request(
-        {
-          url: uri,
-          headers: noCacheHeader,
-        },
-        {
-          pageLimit: 0, // unlimited pages
-          onPage: processPage(uri, collector, resources),
-        }
-      )
+    let results;
+    if (isNotPatientResourceType) {
+      results = client.request(options, fhirOptions);
+    } else {
+      results = client.patient.request(options, fhirOptions);
+    }
+    results
       .then(() => {
         return resources;
       })
@@ -344,13 +310,26 @@ function processPage(uri, collector, resources) {
 }
 
 function updateSearchParams(params, release, type) {
-  fetchEnvData();
+  //fetchEnvData();
+
+  const INSTRUMENT_LIST = getEnvInstrumentList();
+  if (INSTRUMENT_LIST) {
+    if (release === FHIR_RELEASE_VERSION_4) {
+      switch (type) {
+        case "Questionnaire":
+          params.set("name:contains", INSTRUMENT_LIST);
+          break;
+        default:
+        // nothing
+      }
+    }
+  }
   // If this is for Epic, there are some specific modifications needed for the queries to work properly
   if (
     getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES") &&
     String(getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")).toLowerCase() === "true"
   ) {
-    if (release === 2) {
+    if (release === FHIR_RELEASE_VERSION_2) {
       switch (type) {
         case "Observation":
           // Epic requires you to specify a category or code search parameter, so search on all categories
@@ -384,7 +363,7 @@ function updateSearchParams(params, release, type) {
         default:
         //nothing
       }
-    } else if (release === 4) {
+    } else if (release === FHIR_RELEASE_VERSION_4) {
       // NOTE: Epic doesn't currently support R4, but assuming R4 versions of Epic would need this
       switch (type) {
         case "Observation":
