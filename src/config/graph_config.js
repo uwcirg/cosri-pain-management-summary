@@ -12,18 +12,19 @@ export const defaultLineAttributes = {
 };
 
 export const COLORS = [
-  "#304ffe",
+  "#4a148c",
   "#827717",
+  "#304ffe",
   "#3f51b5",
-  "#fb8c00",
   "#673ab7",
   "#4a148c",
   "#880e4f",
   "#B404AE",
   "#2196f3",
+  "#fb8c00",
   "#6200ea",
   "#009688",
-  "#00bcd4",
+  "#880e4f",
   "#004d40",
   "#9e9d24",
   "#ff9800",
@@ -32,9 +33,10 @@ export const COLORS = [
   "#607d8b",
   "#006064",
   "#ff8a80",
-  "#c0ca33",
+  "#00bcd4",
   "#757575",
   "#455a64",
+  "#c0ca33",
 ];
 
 export function getLineAttributes(id, params, colorIndex) {

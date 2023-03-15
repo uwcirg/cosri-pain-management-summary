@@ -48,7 +48,7 @@ export default class ResponsesSummary extends Component {
   }
   getNumResponses(summary) {
     if (!summary || !summary.ResponsesSummary) return 0;
-    return summary.ResponsesSummary.length
+    return summary.ResponsesSummary.length;
   }
   renderResponses(currentResponses, prevResponses) {
     if (!currentResponses && !prevResponses)
@@ -128,10 +128,7 @@ export default class ResponsesSummary extends Component {
     const scoreParams = summary.ResponsesSummary[0];
     return (
       <td>
-        <Score
-          score={score}
-          scoreParams={scoreParams}
-        ></Score>
+        <Score score={score} scoreParams={scoreParams}></Score>
       </td>
     );
   }
@@ -149,9 +146,8 @@ export default class ResponsesSummary extends Component {
           className={`link-container ${this.state.open ? "active" : ""}`}
           onClick={(e) => this.setState({ open: !this.state.open })}
         >
-          <div className="info-icon text-bold">
-            {lastResponsesDate && <span>Last responded on {lastResponsesDate}</span>}
-          </div>
+          {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
+
           <FontAwesomeIcon
             className="icon"
             icon="chevron-right"

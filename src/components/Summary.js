@@ -566,38 +566,46 @@ export default class Summary extends Component {
           key={`${subSection.dataKey}_${index}`}
           className={`sub-section h3-wrapper  ${omitTitleClass}`}
         >
-          <h3
-            id={`${subSection.dataKey}_title`}
-            className={`sub-section__header`}
-          >
-            {flaggedClass && <FontAwesomeIcon
-              className={`flag flag-nav ${flaggedClass}`}
-              icon={"circle"}
-              title="flag"
-              tabIndex={0}
-            />}
-            <span className="sub-section__header__name">{subSection.name}</span>
-            <span className="sub-section__header__info">
-              {subSection.info && (
-                <div
-                  onClick={(event) => this.handleOpenModal(subSection, event)}
-                  onKeyDown={(event) => this.handleOpenModal(subSection, event)}
-                  role="button"
+          {!subSection.omitTitle && (
+            <h3
+              id={`${subSection.dataKey}_title`}
+              className={`sub-section__header`}
+            >
+              {flaggedClass && (
+                <FontAwesomeIcon
+                  className={`flag flag-nav ${flaggedClass}`}
+                  icon={"circle"}
+                  title="flag"
                   tabIndex={0}
-                  aria-label={subSection.name}
-                >
-                  <span
-                    className="info-icon"
-                    icon="info-circle"
-                    title={`more info: ${subSection.name}`}
-                    role="tooltip"
-                  >
-                    more info
-                  </span>
-                </div>
+                />
               )}
-            </span>
-          </h3>
+              <span className="sub-section__header__name">
+                {subSection.name}
+              </span>
+              <span className="sub-section__header__info">
+                {subSection.info && (
+                  <div
+                    onClick={(event) => this.handleOpenModal(subSection, event)}
+                    onKeyDown={(event) =>
+                      this.handleOpenModal(subSection, event)
+                    }
+                    role="button"
+                    tabIndex={0}
+                    aria-label={subSection.name}
+                  >
+                    <span
+                      className="info-icon"
+                      icon="info-circle"
+                      title={`more info: ${subSection.name}`}
+                      role="tooltip"
+                    >
+                      more info
+                    </span>
+                  </div>
+                )}
+              </span>
+            </h3>
+          )}
           {panels && (
             <div className="panels">
               {this.renderPanel(section, panels, "graph")}

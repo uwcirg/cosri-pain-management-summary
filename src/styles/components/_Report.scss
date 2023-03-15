@@ -34,11 +34,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
   }
   .summary__display {
     padding: 8px;
-    // @media (min-width: 1200px) {
-    //   max-width: 1160px;
-    //   margin-left: auto;
-    //   margin-right: auto;
-    // }
     .sections {
       height: 100%;
       background-color: #FFF;
@@ -62,8 +57,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-top: 0;
         }
         .table {
-          padding-left: 16px;
-          padding-right: 16px;
+          margin-left: 24px;
+          margin-right: 24px;
+          margin-bottom: 16px;
+          border-collapse: collapse;
+          th {
+            padding: 4px 24px 2px 0;
+          }
         }
         .no-entries {
           padding: 8px 0 16px;
@@ -76,15 +76,15 @@ $selector-box-shadow: 0 2px 2px #383e40;
           .icon {
             margin-left: 20px;
             transition: transform 350ms ease 50ms;
-            color: $color-blue;
+            color: $link-color;
             border-radius: 50%;
             border: 1px solid;
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             padding: 4px;
             &:hover {
-              background-color: $color-blue;
-              border-color: $color-blue;
+              background-color: $link-color;
+              border-color: $link-color;
               color: #FFF;
               cursor: pointer;
             }
@@ -119,8 +119,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
     caption {
       font-weight: 700;
       margin-top: 4px;
-      margin-bottom: 8px;
-      margin-left: 8px;
+      margin-bottom: 10px;
+      margin-left: 0;
       font-size: 20px;
       text-align: left;
     }
@@ -129,7 +129,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       vertical-align: bottom;
       padding-right: 4px;
       border-bottom: 2px solid $color-blue;
-      padding: 4px 8px 2px 0;
+      padding: 4px 12px 2px 0;
       font-size: 0.95em;
     }
     td {
@@ -201,6 +201,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
         .survey-graph {
           flex: 1 1 100%;
           max-width: 100%;
+          .circle:hover {
+            cursor: pointer;
+          }
         }
         .no-entries {
           //flex: 1 1;
@@ -264,6 +267,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           width: 100%;
           padding-left: 4px;
           padding-right: 4px;
+          border-collapse: collapse;
           td {
             padding: 2px;
             font-size: 0.95em;
@@ -325,12 +329,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
           height: 20px;
           cursor: pointer;
           &:not([disabled]) {
-            color: $color-blue;
+            color: $link-color;
             font-weight: 600;
             &:hover {
               color: #FFF;
-              background-color: $color-blue;
-              border-color: $color-blue;
+              background-color: $link-color;
+              border-color: $link-color;
             }
           }
           &[disabled] {

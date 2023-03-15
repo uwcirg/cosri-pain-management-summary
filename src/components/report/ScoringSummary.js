@@ -83,7 +83,7 @@ export default class ScoringSummary extends Component {
     const minScore = data.ScoreParams.minScore;
     const maxScore = data.ScoreParams.maxScore;
     return (
-      <span className="text-muted">
+      <span className="text-muted sub">
         {"(" + minScore + "-" + maxScore + ")"}
       </span>
     );
