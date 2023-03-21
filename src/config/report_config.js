@@ -47,7 +47,7 @@ const reportConfig = [
               depression may help to mitigate pain.
             </p>
             <p>PHQ-9 scores and association with levels of depression:</p>
-            <table cellspacing="8">
+            <table cellSpacing="8">
               <tr>
                 <td>0</td>
                 <td>No depression</td>
@@ -91,7 +91,7 @@ const reportConfig = [
               past two weeks.
             </p>
             <p>GAD-7 scores and association with levels of anxiety:</p>
-            <table cellspacing="8">
+            <table cellSpacing="8">
               <tr>
                 <td>0-4</td>
                 <td>Minimal anxiety</td>

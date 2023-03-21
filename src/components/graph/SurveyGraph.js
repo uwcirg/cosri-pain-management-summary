@@ -105,7 +105,9 @@ export default class SurveyGraph extends Component {
                   className="select-icon minus"
                   onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
                   disabled={
-                    this.isInSurveyGraph(item) ? false : true
+                    this.isInSurveyGraph(item)
+                      ? false
+                      : true
                   }
                   title={`Remove ${item} from graph`}
                 >

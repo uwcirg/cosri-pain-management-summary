@@ -65,16 +65,22 @@ $selector-box-shadow: 0 2px 2px #383e40;
             padding: 4px 24px 2px 0;
           }
         }
+        @media (min-width: 992px) {
+          .table {
+            width: calc(80% - 48px);
+          }
+        }
         .no-entries {
           padding: 8px 0 16px;
         }
         .link-container {
           display: flex;
           align-items: center;
+          justify-content: center;
           margin: 0;
           margin-right: 8px;
           .icon {
-            margin-left: 20px;
+            margin-left: 24px;
             transition: transform 350ms ease 50ms;
             color: $link-color;
             border-radius: 50%;
@@ -145,6 +151,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
     border: 1px solid $color-blue;
     border-collapse: collapse;
     transition: height 0.4s cubic-bezier(0.865, 0.14, 0.095, 0.87);
+    @media (min-width: 992px) {
+      width: 85%;
+    }
     &.active {
       height: 100%;
     }
@@ -156,7 +165,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         border-right: 1px solid $color-gray-lighter;
       }
       &:first-of-type {
-        width: 35%;
+        width: 28%;
       }
     }
     td {
@@ -165,6 +174,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
       &:not(:last-of-type) {
         border-right: 1px solid $color-gray-lighter;
       }
+    }
+    tbody tr:nth-child(odd) {
+      background-color: $color-gray-lightest;
     }
     tr:not(:last-of-type) {
       td {
@@ -231,9 +243,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
             flex: 3 1;
             max-width: 100%;
           }
-          // .legend {
-          //   flex: 1 1;
-          // }
         }
       }
       @media (min-width: 1400px) {
@@ -241,21 +250,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           flex: 1.1 1;
         }
       }
-      // @media (min-width: 669px) {
-      //   &.graph {
-      //     max-width: 80%;
-      //   }
-      // }
-      // @media (min-width: 992px) {
-      //   &.graph {
-      //     max-width: 40%;
-      //   }
-      // }
-      // @media (min-width: 1200px) {
-      //   & {
-      //     flex: 1 1 0;
-      //   }
-      // }
       &.no-entries {
         border: 0;
         padding: 0;
@@ -288,7 +282,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     .legend {
       margin: 0 auto;
       border: 1px solid #d8d8d8;
-      min-width: 124px;
+      min-width: 116px;
       padding: 12px 12px 8px;
       font-size: 0.75rem;
       display: flex;
@@ -310,8 +304,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         .icon {
           top: -4px;
-          width: 14px;
-          height: 14px;
+          width: 12px;
+          height: 12px;
           display: inline-block;
           margin-right: 8px;
           border-radius: 100%;

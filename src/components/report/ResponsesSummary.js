@@ -128,7 +128,11 @@ export default class ResponsesSummary extends Component {
     const scoreParams = summary.ResponsesSummary[0];
     return (
       <td>
-        <Score score={score} scoreParams={scoreParams}></Score>
+        <Score
+          score={score}
+          scoreParams={scoreParams}
+          cssClass="flex-center"
+        ></Score>
       </td>
     );
   }

@@ -5,21 +5,22 @@ import { isNumber } from "../../helpers/utility";
 
 export default class Score extends Component {
   render() {
-    const { score, scoreParams } = this.props;
+    const { score, scoreParams, cssClass } = this.props;
     const scoreSeverity = scoreParams
       ? String(scoreParams.scoreSeverity).toLowerCase()
       : null;
-    const coloredSeverities = ["high", "moderately high", "moderate"];
+    const arrColoredSeverities = ["high", "moderately high", "moderate"];
+    const arrModerateSeverities = ["moderate", "moderately high"];
     const iconClass =
       scoreSeverity === "high"
         ? "text-alert"
-        : scoreSeverity === "moderate" || scoreSeverity === "moderately high"
+        : arrModerateSeverities.indexOf(scoreSeverity) !== -1
         ? "text-warning"
         : "";
     if (!isNumber(score)) return "--";
-    if (coloredSeverities.indexOf(scoreSeverity) !== -1)
+    if (arrColoredSeverities.indexOf(scoreSeverity) !== -1)
       return (
-        <div className="flex flex-start">
+        <div className={`flex flex-start ${cssClass}`}>
           <span className={iconClass}>{score}</span>
           <FontAwesomeIcon
             className={iconClass}
@@ -28,11 +29,12 @@ export default class Score extends Component {
           />
         </div>
       );
-    return score;
+    return <div className={`flex flex-start ${cssClass}`}>{score}</div>;
   }
 }
 
 Score.propTypes = {
   score: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   scoreParams: PropTypes.object,
+  cssClass: PropTypes.string
 };
