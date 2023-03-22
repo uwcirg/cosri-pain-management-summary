@@ -184,7 +184,7 @@ export default class ResponsesSummary extends Component {
             </tr>
           </tbody>
         </table>
-        <div className={this.state.open ? "show" : "hide"}>
+        <div className={`accordion-content ${this.state.open ? "active" : ""}`}>
           {this.renderResponses(currentResponses, prevResponses)}
         </div>
       </React.Fragment>

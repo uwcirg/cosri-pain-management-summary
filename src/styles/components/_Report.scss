@@ -29,6 +29,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
       .toc-list-item {
         width: calc(100% - 8px);
         height: auto;
+        .sub-section__header__name {
+          display: flex;
+        }
       }
     }
   }
@@ -67,7 +70,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         @media (min-width: 992px) {
           .table {
-            width: calc(80% - 48px);
+            width: calc(65% - 48px);
           }
         }
         .no-entries {
@@ -370,5 +373,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
   .no-entries {
     font-style: italic;
     color: #58676a;
+  }
+  .accordion-content {
+    overflow: hidden;
+    max-height: 0;
+    transition: all 0.3s cubic-bezier(0.45,0.05,0.55,0.95);
+    &.active {
+      max-height: 2400px;
+    }
   }
 }

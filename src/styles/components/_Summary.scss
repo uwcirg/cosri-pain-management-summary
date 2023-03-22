@@ -599,6 +599,8 @@
           color: $link-color;
           cursor: pointer;
           font-weight: 600;
+          min-width: 90px;
+          display: inline-block;
         }
         .video-container {
           margin-top: 12px;
