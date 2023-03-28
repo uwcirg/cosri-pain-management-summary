@@ -84,7 +84,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-right: 8px;
           .icon {
             margin-left: 24px;
-            transition: transform 350ms ease 50ms;
+            transition: transform 400ms ease;
             color: $link-color;
             border-radius: 50%;
             border: 1px solid;
@@ -153,7 +153,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     margin: 8px 20px 24px;
     border: 1px solid $color-blue;
     border-collapse: collapse;
-    transition: height 0.4s cubic-bezier(0.865, 0.14, 0.095, 0.87);
+    transition: height 0.35s cubic-bezier(0.865, 0.14, 0.095, 0.87);
     @media (min-width: 992px) {
       width: 85%;
     }
@@ -266,11 +266,16 @@ $selector-box-shadow: 0 2px 2px #383e40;
           padding-right: 4px;
           border-collapse: collapse;
           td {
-            padding: 2px;
+            padding: 6px 4px;
             font-size: 0.95em;
             white-space: nowrap;
             &.empty {
               min-width: 40px;
+            }
+          }
+          tr:first-of-type {
+            td {
+              padding: 6px 4px 0;
             }
           }
         }

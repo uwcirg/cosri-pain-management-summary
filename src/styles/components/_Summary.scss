@@ -499,6 +499,11 @@
                 text-align: center;
                 vertical-align: bottom;
               }
+              tr:first-of-type {
+                td {
+                  padding-top: 6px;
+                }
+              }
             }
           }
           .alerts-container {
