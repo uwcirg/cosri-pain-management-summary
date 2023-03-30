@@ -1,8 +1,7 @@
-import React from 'react';
-import { select } from 'd3-selection';
-import {timeFormat} from "d3-time-format";
-import { transition } from 'd3-transition';
-
+import React from "react";
+import { select } from "d3-selection";
+import { timeFormat } from "d3-time-format";
+import { transition } from "d3-transition";
 
 class Line extends React.Component {
   constructor() {
@@ -10,30 +9,39 @@ class Line extends React.Component {
     this.ref = React.createRef();
     this.state = {
       xName: "",
-      yName: ""
-    }
+      yName: "",
+    };
   }
   componentDidMount() {
     const node = this.ref.current;
-    const { data, lineGenerator, xName, yName, xScale, yScale, dataPoints } = this.props;
+    const {
+      data,
+      lineGenerator,
+      xName,
+      yName,
+      xScale,
+      yScale,
+      dataPoints,
+      showPrintLabel,
+    } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
 
     this.setState({
       xName: xName,
-      yName: yName
+      yName: yName,
     });
 
     let formatDate = timeFormat(`%Y-%b-%d`);
     let currentNode = select(node)
-      .append('path')
+      .append("path")
       .datum(data)
-      .attr('id', this.props.lineID)
-      .attr('stroke', this.props.strokeColor || "#217684")
-      .attr('stroke-width', this.props.strokeWidth || 2)
-      .attr('fill', 'none')
-      .attr('d', lineGenerator);
+      .attr("id", this.props.lineID)
+      .attr("stroke", this.props.strokeColor || "#217684")
+      .attr("stroke-width", this.props.strokeWidth || 2)
+      .attr("fill", "none")
+      .attr("d", lineGenerator);
     if (this.props.dotted) {
-      currentNode.style("stroke-dasharray", (this.props.dotSpacing || "3, 3"))  // <== This line here!!
+      currentNode.style("stroke-dasharray", this.props.dotSpacing || "3, 3"); // <== This line here!!
     }
 
     if (dataPoints) {
@@ -42,7 +50,7 @@ class Line extends React.Component {
         : 0.55;
       const expandedRadiusWidth = radiusWidth * 4;
       const animationDuration = 100;
-      const dataId = dataPoints.id ? dataPoints.id : "data";
+      const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
       select(node)
         .selectAll("circle")
         .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
@@ -112,6 +120,25 @@ class Line extends React.Component {
         .text(function (d) {
           return `${formatDate(d[xName])}, ${d[yName]}`;
         });
+
+      //print label - PRINT ONLY
+      if (showPrintLabel) {
+        select(node)
+          .selectAll(".text")
+          .data(data.filter((item, index) => index === 0))
+          .enter()
+          .append("text")
+          .attr("id", (d, i) => `dataLabelText_${dataId}${i}`)
+          .attr("x", (d) => xScale(d[xName]) - 48)
+          .attr("y", (d) => yScale(d[yName]) - 12)
+          .attr("class", "print-only print-title")
+          .attr("font-size", 11)
+          .attr("text-anchor", "start")
+          .attr("font-weight", 600)
+          .text(function () {
+            return dataId.replace(/_/g, " ");
+          });
+      }
     }
     this.updateChart();
   }
@@ -119,19 +146,13 @@ class Line extends React.Component {
     this.updateChart();
   }
   updateChart() {
-    const {
-          lineGenerator, data,
-        } = this.props;
+    const { lineGenerator, data } = this.props;
 
     const t = transition().duration(1000);
 
     const line = select(this.props.lineID);
 
-    line
-      .datum(data)
-      .transition(t)
-      .attr('d', lineGenerator);
-
+    line.datum(data).transition(t).attr("d", lineGenerator);
   }
   render() {
     return <g className={this.props.className} ref={this.ref} />;

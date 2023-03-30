@@ -140,23 +140,10 @@ a {
     transform: translate(12px, 0);
   }
 }
-
-@media print {
-  .summary__display {
-    background-color: #fff !important;
-  }
-  .header {
-    height: auto;
-  }
-  .summary__nav-wrapper,
-  .tabs,
-  .header__search,
-  .header__summary-dashboard {
-    display: none;
-  }
-  .section__header {
-    .chevron {
-      display: none;
-    }
-  }
+.print-hidden {
+  display: block;
 }
+.print-only {
+  display: none;
+}
+

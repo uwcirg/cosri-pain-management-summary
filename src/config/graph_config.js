@@ -50,7 +50,7 @@ export function getLineAttributes(id, params, colorIndex) {
     strokeFill: color,
     strokeWidth: lineParams.strokeWidth ? lineParams.strokeWidth : 2.25,
     dataPoints: {
-      id: `${id}_data`,
+      id: `${id}`,
       strokeWidth: lineParams.dataStrokeWidth ? lineParams.dataStrokeWidth : 4,
       strokeFill: color,
       strokeColor: color,

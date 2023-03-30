@@ -238,7 +238,7 @@ export default class SurveyGraph extends Component {
       width: width,
       height: height,
       xName: xFieldName,
-      yName: yFieldName,
+      yName: yFieldName
     };
     const dataStrokeColor = "#168698";
     const additionalProps = {
@@ -336,6 +336,7 @@ export default class SurveyGraph extends Component {
             key={`line-${data.key}-${index}`}
             lineID={`dataLine_${data.key}`}
             data={data.values}
+            showPrintLabel={true}
             {...{
               ...defaultLineProps,
               ...this.getLineAttributesByQId(data.key),

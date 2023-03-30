@@ -50,7 +50,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         margin-bottom: 8px;
         margin-top: 8px;
         &__header {
-          padding: 0 20px 12px !important;
+          padding: 0 20px 12px;
         }
         &__header__name {
           display: flex;
@@ -62,7 +62,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         .table {
           margin-left: 24px;
           margin-right: 24px;
-          margin-bottom: 16px;
+          margin-bottom: 8px;
           border-collapse: collapse;
           th {
             padding: 4px 24px 2px 0;
