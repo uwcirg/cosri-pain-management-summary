@@ -22,6 +22,7 @@ class Line extends React.Component {
       xScale,
       yScale,
       dataPoints,
+      className,
       showPrintLabel,
     } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
@@ -39,6 +40,7 @@ class Line extends React.Component {
       .attr("stroke", this.props.strokeColor || "#217684")
       .attr("stroke-width", this.props.strokeWidth || 2)
       .attr("fill", "none")
+      .attr("class", className)
       .attr("d", lineGenerator);
     if (this.props.dotted) {
       currentNode.style("stroke-dasharray", this.props.dotSpacing || "3, 3"); // <== This line here!!

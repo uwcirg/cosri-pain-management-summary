@@ -31,6 +31,100 @@ export default class SurveyGraph extends Component {
     this.removeQuestionnaireToSurveyGraph =
       this.removeQuestionnaireToSurveyGraph.bind(this);
   }
+  componentDidMount() {
+    this.setState({
+      graphData: this.props.data,
+      originalGraphData: this.props.data,
+    });
+  }
+
+  getDataForGraph(dataSource) {
+    let baseLineDate = new Date();
+    let maxDate = new Date();
+    let minDate = new Date().setDate(maxDate.getDate() - 365);
+    //let propData = this.state.graphData || [];
+    //make a copy of the data so as not to accidentally mutate it
+    //need to make sure the dates are sorted for line to draw correctly
+    let data = dataSource
+      ? dataSource.map((item) => {
+          return {
+            ...item,
+          };
+        })
+      : [];
+    data = data.filter((d) => d[xFieldName]);
+    data = data.map((d) => {
+      let dObj = new Date(d[xFieldName]);
+      let tzOffset = dObj.getTimezoneOffset() * 60000;
+      dObj.setTime(dObj.getTime() + tzOffset);
+      d[xFieldName] = dObj;
+      return d;
+    });
+
+    data.forEach((item) => {
+      item[yFieldName] = +item[yFieldName];
+    });
+
+    let arrayDates = data.map((d) => {
+      return d[xFieldName];
+    });
+    if (arrayDates.length) {
+      maxDate = new Date(Math.max.apply(null, arrayDates));
+      minDate = new Date(Math.min.apply(null, arrayDates));
+    }
+    const arrMonthsYears = [];
+    //date axis is in month intervals so check to see how many there are
+    arrayDates.forEach((item) => {
+      const yr = item.getFullYear();
+      const my = item.getMonth() + 1 + "-" + yr;
+      if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
+    });
+    if (arrMonthsYears.length < 4) {
+      /*
+       * make sure graph has appropiate end points on the graph
+       * if the total count of data points is less than the initial set number of intervals
+       */
+      let calcMinDate = new Date(minDate.valueOf());
+      minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
+      minDate = new Date(minDate);
+      //console.log("min date ", minDate, " max date ", maxDate)
+    }
+    const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
+    const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
+    // console.log("month diff between years ", monthsDiff);
+
+    if (arrayDates.length) {
+      /*
+       * set up baseline data point starting at 0
+       */
+      baseLineDate.setTime(
+        new Date(minDate.valueOf()).getTime() - 30 * 24 * 60 * 60 * 1000
+      );
+      /*
+       * set end point to today if not present
+       */
+      let todayObj = new Date();
+      let today = dateFormat("", todayObj, "YYYY-MM-DD");
+      const containedTodayData =
+        data.filter(
+          (item) => dateFormat("", item[xFieldName], "YYYY-MM-DD") === today
+        ).length > 0;
+      if (!containedTodayData) {
+        maxDate = new Date();
+      }
+    }
+    let calcMaxDate = new Date(maxDate.valueOf());
+    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 31);
+    maxDate = new Date(maxDate);
+    return {
+      data: data,
+      baseLineDate: baseLineDate,
+      maxDate: maxDate,
+      minDate: minDate,
+      monthsDiff: monthsDiff,
+    };
+  }
+
   getQIds() {
     return [...new Set(this.state.originalGraphData.map((item) => item.qid))];
   }
@@ -104,11 +198,7 @@ export default class SurveyGraph extends Component {
                 <button
                   className="select-icon minus"
                   onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
-                  disabled={
-                    this.isInSurveyGraph(item)
-                      ? false
-                      : true
-                  }
+                  disabled={this.isInSurveyGraph(item) ? false : true}
                   title={`Remove ${item} from graph`}
                 >
                   -
@@ -121,92 +211,12 @@ export default class SurveyGraph extends Component {
     );
   }
 
-  componentDidMount() {
-    this.setState({
-      graphData: this.props.data,
-      originalGraphData: this.props.data,
-    });
-  }
-
   render() {
-    //let propData = this.state.graphData || [];
-    //make a copy of the data so as not to accidentally mutate it
-    //need to make sure the dates are sorted for line to draw correctly
-    let data = this.state.graphData
-      ? this.state.graphData.map((item) => {
-          return {
-            ...item,
-          };
-        })
-      : [];
     let noEntry = !this.state.graphData || !this.state.graphData.length;
-    let baseLineDate = new Date();
-    let maxDate = new Date();
-    let minDate = new Date().setDate(maxDate.getDate() - 365);
-    data = data.filter((d) => d[xFieldName]);
-    data = data.map((d) => {
-      let dObj = new Date(d[xFieldName]);
-      let tzOffset = dObj.getTimezoneOffset() * 60000;
-      dObj.setTime(dObj.getTime() + tzOffset);
-      d[xFieldName] = dObj;
-      return d;
-    });
 
-    data.forEach((item) => {
-      item[yFieldName] = +item[yFieldName];
-    });
-
-    let arrayDates = data.map((d) => {
-      return d[xFieldName];
-    });
-    if (arrayDates.length) {
-      maxDate = new Date(Math.max.apply(null, arrayDates));
-      minDate = new Date(Math.min.apply(null, arrayDates));
-    }
-    const arrMonthsYears = [];
-    //date axis is in month intervals so check to see how many there are
-    arrayDates.forEach((item) => {
-      const yr = item.getFullYear();
-      const my = item.getMonth() + 1 + "-" + yr;
-      if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
-    });
-    if (arrMonthsYears.length < 4) {
-      /*
-       * make sure graph has appropiate end points on the graph
-       * if the total count of data points is less than the initial set number of intervals
-       */
-      let calcMinDate = new Date(minDate.valueOf());
-      minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
-      minDate = new Date(minDate);
-      //console.log("min date ", minDate, " max date ", maxDate)
-    }
-    const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
-    const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
-    // console.log("month diff between years ", monthsDiff);
-
-    if (arrayDates.length) {
-      /*
-       * set up baseline data point starting at 0
-       */
-      baseLineDate.setTime(
-        new Date(minDate.valueOf()).getTime() - 30 * 24 * 60 * 60 * 1000
-      );
-      /*
-       * set end point to today if not present
-       */
-      let todayObj = new Date();
-      let today = dateFormat("", todayObj, "YYYY-MM-DD");
-      const containedTodayData =
-        data.filter(
-          (item) => dateFormat("", item[xFieldName], "YYYY-MM-DD") === today
-        ).length > 0;
-      if (!containedTodayData) {
-        maxDate = new Date();
-      }
-    }
-    let calcMaxDate = new Date(maxDate.valueOf());
-    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 31);
-    maxDate = new Date(maxDate);
+    const { data, maxDate, baseLineDate, monthsDiff } = this.getDataForGraph(
+      this.state.graphData
+    );
 
     const margins = {
       top: 24,
@@ -238,7 +248,7 @@ export default class SurveyGraph extends Component {
       width: width,
       height: height,
       xName: xFieldName,
-      yName: yFieldName
+      yName: yFieldName,
     };
     const dataStrokeColor = "#168698";
     const additionalProps = {
@@ -285,13 +295,14 @@ export default class SurveyGraph extends Component {
     //use .nest()function to group data so the line can be computed for each group
 
     // Nest the entries by symbol
-    let dataNest = d3
-      .nest()
-      .key(function (d) {
-        return d.qid;
-      })
-      .entries(data);
-    //console.log("survey graph data nest ", dataNest);
+    const getDataNest = (data) =>
+      d3
+        .nest()
+        .key(function (d) {
+          return d.qid;
+        })
+        .entries(data);
+    //console.log("survey graph data nest ", getDataNest(data));
 
     const renderYGrid = () => (
       <Grid
@@ -329,14 +340,15 @@ export default class SurveyGraph extends Component {
       );
     };
 
-    const renderLines = () => {
-      return dataNest.map((data, index) => {
+    const renderLines = (dataSource, props) => {
+      return getDataNest(dataSource).map((data, index) => {
         return (
           <Line
             key={`line-${data.key}-${index}`}
             lineID={`dataLine_${data.key}`}
             data={data.values}
             showPrintLabel={true}
+            {...props}
             {...{
               ...defaultLineProps,
               ...this.getLineAttributesByQId(data.key),
@@ -346,12 +358,15 @@ export default class SurveyGraph extends Component {
       });
     };
 
+    const renderLinesForPrint = () =>
+      renderLines(this.getDataForGraph(this.state.originalGraphData).data, {
+        className: "print-only",
+      });
+
     if (noEntry)
       return (
         <React.Fragment>
-          <div
-            className="no-entries"
-          >
+          <div className="no-entries">
             <b>No graph to show.</b>
           </div>
           {this.state.originalGraphData.length > 0 && this.renderLegend()}
@@ -376,7 +391,10 @@ export default class SurveyGraph extends Component {
                 {renderYAxisLabel()}
                 {/* x and y axis */}
                 <XYAxis {...{ xSettings, ySettings }} />
-                {renderLines()}
+                {renderLines(data, {
+                  className: "print-hidden",
+                })}
+                {renderLinesForPrint()}
               </g>
             </svg>
           </div>
