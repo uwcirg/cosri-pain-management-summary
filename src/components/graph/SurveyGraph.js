@@ -171,6 +171,9 @@ export default class SurveyGraph extends Component {
 
   renderLegend() {
     const qids = this.getQIds();
+    const onlyOneLeft =
+      this.state.graphData &&
+      [...new Set(this.state.graphData.map((item) => item.qid))].length === 1;
     return (
       <div className="legend">
         {qids.map((item, index) => (
@@ -198,7 +201,13 @@ export default class SurveyGraph extends Component {
                 <button
                   className="select-icon minus"
                   onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
-                  disabled={this.isInSurveyGraph(item) ? false : true}
+                  disabled={
+                    onlyOneLeft
+                      ? true
+                      : this.isInSurveyGraph(item)
+                      ? false
+                      : true
+                  }
                   title={`Remove ${item} from graph`}
                 >
                   -
@@ -212,7 +221,7 @@ export default class SurveyGraph extends Component {
   }
 
   render() {
-    let noEntry = !this.state.graphData || !this.state.graphData.length;
+    const noEntry = !this.state.graphData || !this.state.graphData.length;
 
     const { data, maxDate, baseLineDate, monthsDiff } = this.getDataForGraph(
       this.state.graphData
@@ -391,9 +400,11 @@ export default class SurveyGraph extends Component {
                 {renderYAxisLabel()}
                 {/* x and y axis */}
                 <XYAxis {...{ xSettings, ySettings }} />
+                {/* lines drawn for screen display ONLY */}
                 {renderLines(data, {
                   className: "print-hidden",
                 })}
+                {/* lines drawn for printing ONLY */}
                 {renderLinesForPrint()}
               </g>
             </svg>
