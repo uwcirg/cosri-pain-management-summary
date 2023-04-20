@@ -79,6 +79,7 @@ async function executeELM(collector, oResourceTypes) {
                 if (item.entry) {
                   item.entry.forEach((o) => {
                     if (o.resource) resources.push(o.resource);
+                    else resources.push(o);
                   });
                 }
               } else resources.push(item);
