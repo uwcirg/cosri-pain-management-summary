@@ -15,12 +15,6 @@ body.fixed {
     background: #fff;
     box-shadow: 1px 1px 2px $color-gray-light;
   }
-  .summary__nav {
-    width: $summary-nav-width;
-    &.is-position-fixed {
-      padding: calc(#{$min-header-height} + 64px) 0 20px 0px !important;
-    }
-  }
 }
 #anchorTop {
   position: relative;
@@ -38,6 +32,12 @@ a {
   font-weight: 600;
   text-decoration: none;
   border-bottom: 1px solid $link-border-color;
+}
+.text-center {
+    text-align: center;
+}
+.text-left {
+    text-align: left;
 }
 .text-alert {
   color: $color-alert;
@@ -78,6 +78,12 @@ a {
   justify-content: space-between;
   align-items: center;
   column-gap: 4px;
+}
+.flex-1 {
+    flex: 1;
+}
+.flex-space-between {
+    justify-content: space-between;
 }
 .flex-start {
   justify-content: flex-start;

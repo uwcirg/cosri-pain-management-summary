@@ -107,10 +107,11 @@ export function range(start, end) {
 
 export function isNumber(target) {
   if (typeof target === "number") return true;
+  if (target == null || target === "") return false;
   if (isNaN(target)) return false;
-  return target !== null;
 }
 
 export function getEnvInstrumentList() {
-  return getEnv("REACT_APP_SCORING_INSTRUMENTS");
+    const envList = getEnv("REACT_APP_SCORING_INSTRUMENTS");
+  return envList ? String(envList).replace(/_/g, " ") : "";
 }

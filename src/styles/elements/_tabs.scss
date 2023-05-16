@@ -1,5 +1,5 @@
 $tab-background-color: #fffffff6;
-
+$tab-height: 49px;
 .warpper {
   display: flex;
   flex-direction: column;
@@ -15,7 +15,7 @@ $tab-background-color: #fffffff6;
   display: inline-block;
   color: $color-disabled;
   border-radius: 8px 8px 0px 0px;
-  box-shadow: 0 0.3rem 0.5rem $color-gray;
+  box-shadow: 0 2px 4px $color-gray;
   min-width: 120px;
   text-align: center;
   letter-spacing: 0.1rem;
@@ -39,6 +39,14 @@ $tab-background-color: #fffffff6;
 .tabs {
   padding-left: 36px;
   padding-right: 36px;
+  display: flex;
+  width: calc(100% - 72px);
+  min-height: $tab-height;
+  background: #FFF;
+  position: fixed;
+  z-index: 999;
+  border-bottom: 4px solid $color-blue;
+  box-shadow: 16px 16px 8px -16px $color-gray-light;
   &.hide {
     display: none;
   }
@@ -58,6 +66,11 @@ $tab-background-color: #fffffff6;
   animation: fadein 0.8s;
   position: relative;
   box-shadow: inset 4px 4px 24px -12px $color-gray;
+}
+.has-tabs {
+    .tab-panel {
+        margin-top: $tab-height;
+    }
 }
 @keyframes fadein {
   from {

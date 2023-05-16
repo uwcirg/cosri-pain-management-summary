@@ -13,7 +13,7 @@ export default class ResponsesSummary extends Component {
     if (!responses) return null;
     const matchedItem = responses.filter((item) => item.linkId === linkId);
     if (!matchedItem.length) return null;
-    return matchedItem[0].answer;
+    return matchedItem[0].answer || "--";
   }
   getCurrentResponses(summary) {
     if (
@@ -51,11 +51,20 @@ export default class ResponsesSummary extends Component {
     return summary.ResponsesSummary.length;
   }
   renderResponses(currentResponses, prevResponses) {
-    if (!currentResponses && !prevResponses)
+    if (!currentResponses && !prevResponses) {
       return <div>No recorded responses</div>;
+    }
     const hasScores =
-      (currentResponses && !isNaN(currentResponses.score)) ||
-      (prevResponses && !isNaN(prevResponses.score));
+      (currentResponses &&
+        !isNaN(currentResponses.score) &&
+        !currentResponses.responses.some((item) =>
+          item.question.includes("score")
+        )) ||
+      (prevResponses &&
+        !isNaN(prevResponses.score) &&
+        !prevResponses.responses.some((item) =>
+          item.question.includes("score")
+        ));
     return (
       <table className={`response-table ${this.state.open ? "active" : ""}`}>
         <thead>
@@ -70,8 +79,14 @@ export default class ResponsesSummary extends Component {
         <tbody>
           {currentResponses.responses.map((item, index) => (
             <tr key={`response_row_${item.id}_${index}`}>
-              <td>{item.question}</td>
-              <td>{item.answer}</td>
+              <td>
+                {item.question.includes("score") ? (
+                  <b>{item.question}</b>
+                ) : (
+                  item.question
+                )}
+              </td>
+              <td>{item.answer || "--"}</td>
               {prevResponses && (
                 <td>
                   {this.getMatchedLinkIdAnswer(
@@ -87,7 +102,11 @@ export default class ResponsesSummary extends Component {
           <tfoot>
             <tr>
               <td>
-                <b>Score</b>
+                <b>
+                  {currentResponses.scoreDescription
+                    ? currentResponses.scoreDescription
+                    : "Score"}
+                </b>
               </td>
               <td>
                 <Score
@@ -123,11 +142,11 @@ export default class ResponsesSummary extends Component {
   renderScoreTableCell(summary) {
     const hasSummary =
       summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
-    if (!hasSummary) return <td>--</td>;
+    if (!hasSummary) return <td cssClass="text-center">--</td>;
     const score = summary.ResponsesSummary[0].score;
     const scoreParams = summary.ResponsesSummary[0];
     return (
-      <td>
+      <td className="text-center">
         <Score
           score={score}
           scoreParams={scoreParams}
@@ -139,7 +158,7 @@ export default class ResponsesSummary extends Component {
   renderNumResponsesTableCell(summary) {
     const hasSummary =
       summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
-    if (!hasSummary) return <td>--</td>;
+    if (!hasSummary) return <td className="text-center">--</td>;
     return <td className="text-center">{this.getNumResponses(summary)}</td>;
   }
   renderResponsesLinkTableCell(lastResponsesDate) {

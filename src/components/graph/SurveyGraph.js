@@ -62,7 +62,7 @@ export default class SurveyGraph extends Component {
     });
 
     data.forEach((item) => {
-      item[yFieldName] = +item[yFieldName];
+      item[yFieldName] = isNaN(item[yFieldName]) ? 0 : +item[yFieldName];
     });
 
     let arrayDates = data.map((d) => {
@@ -175,47 +175,49 @@ export default class SurveyGraph extends Component {
       this.state.graphData &&
       [...new Set(this.state.graphData.map((item) => item.qid))].length === 1;
     return (
-      <div className="legend">
-        {qids.map((item, index) => (
-          <div className="legend__item" key={`legend_${item}_${index}`}>
-            <div>
-              <span
-                className="icon"
-                style={{
-                  backgroundColor:
-                    this.getLineAttributesByQId(item).strokeColor,
-                }}
-              ></span>
-              <span>{item.toUpperCase()}</span>
-            </div>
-            {qids.length > 1 && (
-              <div className="select-icons-container print-hidden">
-                <button
-                  className="select-icon plus"
-                  onClick={() => this.addQuestionnaireToSurveyGraph(item)}
-                  disabled={this.isInSurveyGraph(item) ? true : false}
-                  title={`Add ${item} to graph`}
-                >
-                  +
-                </button>
-                <button
-                  className="select-icon minus"
-                  onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
-                  disabled={
-                    onlyOneLeft
-                      ? true
-                      : this.isInSurveyGraph(item)
-                      ? false
-                      : true
-                  }
-                  title={`Remove ${item} from graph`}
-                >
-                  -
-                </button>
+      <div className="legend-container">
+        <div className="legend">
+          {qids.map((item, index) => (
+            <div className="legend__item" key={`legend_${item}_${index}`}>
+              <div>
+                <span
+                  className="icon"
+                  style={{
+                    backgroundColor:
+                      this.getLineAttributesByQId(item).strokeColor,
+                  }}
+                ></span>
+                <span>{item.toUpperCase()}</span>
               </div>
-            )}
-          </div>
-        ))}
+              {qids.length > 1 && (
+                <div className="select-icons-container print-hidden">
+                  <button
+                    className="select-icon plus"
+                    onClick={() => this.addQuestionnaireToSurveyGraph(item)}
+                    disabled={this.isInSurveyGraph(item) ? true : false}
+                    title={`Add ${item} to graph`}
+                  >
+                    +
+                  </button>
+                  <button
+                    className="select-icon minus"
+                    onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
+                    disabled={
+                      onlyOneLeft
+                        ? true
+                        : this.isInSurveyGraph(item)
+                        ? false
+                        : true
+                    }
+                    title={`Remove ${item} from graph`}
+                  >
+                    -
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -234,7 +236,8 @@ export default class SurveyGraph extends Component {
       left: 64,
     };
     const parentWidth = 540;
-    const parentHeight = 396;
+    // 396
+    const parentHeight = 500;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;
     const xScale = scaleTime()
@@ -242,7 +245,7 @@ export default class SurveyGraph extends Component {
       .rangeRound([0, width]);
     const yMaxValue = d3.max(data, (d) => (d.maxScore ? d.maxScore : d.score));
     const yScale = scaleLinear()
-      .domain([0, yMaxValue + 10])
+      .domain([0, yMaxValue])
       .range([height, 0])
       .nice();
 
@@ -318,7 +321,7 @@ export default class SurveyGraph extends Component {
         {...{
           width: width,
           height: height,
-          numTicks: 5,
+          numTicks: 6,
           orientation: "left",
         }}
       ></Grid>
@@ -329,7 +332,7 @@ export default class SurveyGraph extends Component {
         {...{
           width: width,
           height: height,
-          numTicks: 10,
+          numTicks: 8,
           orientation: "bottom",
         }}
       ></Grid>

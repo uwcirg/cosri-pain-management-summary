@@ -154,9 +154,9 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
     const qKey = entries[0][0];
     const elm = entries[0][1];
     if (!elm) {
-      evalResults.push({
-        qKey: null,
-      });
+    //   evalResults.push({
+    //     qKey: null,
+    //   });
       return true;
     }
     let surveyLib = new cql.Library(
@@ -193,7 +193,7 @@ function getLibraryForInstruments() {
     (async () => {
       let elmJson = null;
       elmJson = await import(
-        `../cql/r4/survey_resources/${libId.toUpperCase()}_LogicLibrary.json`
+        `../cql/r4/survey_resources/${(libId.replace(/\s/g, "_")).toUpperCase()}_LogicLibrary.json`
       )
         .then((module) => module.default)
         .catch((e) => {

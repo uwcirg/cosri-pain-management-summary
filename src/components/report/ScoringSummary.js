@@ -122,7 +122,7 @@ export default class ScoringSummary extends Component {
   renderNoDataRow() {
     return (
       <tr className="no-data-row">
-        <td colSpan="3">
+        <td colSpan="3" className="text-left">
           <div className="no-entries">No data available</div>
         </td>
       </tr>
@@ -132,7 +132,7 @@ export default class ScoringSummary extends Component {
     if (!questionnaireObj) return <td>--</td>;
     const questionnaireName = questionnaireObj.QuestionnaireName;
     return (
-      <td>
+      <td className="text-left">
         <span>
           {showAnchorLinks && (
             <b>
@@ -158,14 +158,16 @@ export default class ScoringSummary extends Component {
           <Score
             score={this.getCurrentDisplayScore(data)}
             scoreParams={this.getCurrentData(data.ResponsesSummary)}
+            cssClass="flex-1"
           ></Score>
-          <div>{this.getRangeDisplay(data)}</div>
+          <div className="flex-1">{this.getRangeDisplay(data)}</div>
         </div>
       </td>
     );
   }
   renderDataRows(summary, showAnchorLinks) {
-    return summary.map((item, index) => {
+    const dataToShow = summary.filter(item => !item.ExcludeFromScoring);
+    return dataToShow.map((item, index) => {
       return (
         <tr key={`questionnaire_summary_row_${index}`} className="data-row">
           {this.renderQuestionnaireLinkCell(item, showAnchorLinks)}

@@ -1,6 +1,7 @@
 import React from "react";
 import UserIcon from "../icons/UserIcon";
 import ChartIcon from "../icons/ChartIcon";
+import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
 import OverViewComponent from "../components/report/Overview";
 import ResponsesSummary from "../components/report/ResponsesSummary";
 
@@ -17,6 +18,59 @@ const reportConfig = [
       <ChartIcon {...iconProps} {...props} title="Score Overview" />
     ),
     component: (props) => <OverViewComponent {...props}></OverViewComponent>,
+  },
+  {
+    title: "Pain and Limitation",
+    dataKey: "painLimitationSection",
+    icon: (props) => (
+      <MedicalHistoryIcon
+        {...iconProps}
+        {...props}
+        title="Pain and Limitation"
+      />
+    ),
+    sections: [
+      {
+        name: "PEG",
+        dataKey: "peg",
+        title:
+          "Pain intensity, Enjoyment of life, General activity (PEG) 3 item pain scale",
+        description: () => (
+          <div>
+            <p>
+              Pain intensity, Enjoyment of life, General activity (PEG) 3 item
+              pain scale.
+            </p>
+            <p>
+              Based on both {" "}
+              <a
+                href="https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7
+              </a>
+              {" "}and{" "}
+              <a
+                href="https://loinc.org/91148-7/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                https://loinc.org/91148-7/{" "}
+              </a>{" "}
+              (not FHIR), conserving and harmonizing codes from those.
+            </p>
+            <p>
+              Note that these two had different codes for the first question,
+              and that it was implemented in the loinc FHIR as a decimal (not a
+              choice), but academic references did not support that, so the
+              decision here was to implement a choice with novel codes.
+            </p>
+          </div>
+        ),
+        component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
+      },
+    ],
   },
   {
     title: "Mental Health, Quality of Life and Sleep",

@@ -49,6 +49,8 @@ export default class Landing extends Component {
     this.tocInitialized = false;
     // This binding is necessary to make `this` work in the callback
     this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
+    this.handleHeaderPos = this.handleHeaderPos.bind(this);
+    this.anchorTopRef = React.createRef();
   }
 
   setPatientId() {
@@ -184,10 +186,10 @@ export default class Landing extends Component {
   writeToLog(message, level, params) {
     if (!getEnv("REACT_APP_CONF_API_URL")) return;
     if (!message) return;
-    if (!level) level = "info";
-    if (!params) params = {};
-    if (!params.tags) params.tags = [];
-    params.tags.push("cosri-frontend");
+    const logLevel = level ? level: "info";
+    const logParams = params ? params : {};
+    if (!logParams.tags) logParams.tags = [];
+    logParams.tags.push("cosri-frontend");
     const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
     const summary = this.state.result ? this.state.result.Summary : null;
     const patientName = summary && summary.Patient ? summary.Patient.Name : "";
@@ -202,8 +204,8 @@ export default class Landing extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...{ patient: patientName, message: messageString, level: level },
-        ...params,
+        ...{ patient: patientName, message: messageString, level: logLevel },
+        ...logParams,
       }),
     })
       .then((response) => {
@@ -241,10 +243,10 @@ export default class Landing extends Component {
     });
     //can save other data if needed
   }
-  saveData(params) {
+  saveData(queryParams) {
     if (!getEnv("REACT_APP_CONF_API_URL")) return;
     const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
-    params = params || {};
+    const params = queryParams || {};
     if (!params.data) return;
     fetch(saveDataURL, {
       method: "post",
@@ -351,6 +353,7 @@ export default class Landing extends Component {
             this.processGraphData(result["Summary"]);
             this.setState({ result, sectionFlags, flaggedCount });
             this.setState({ loading: false });
+            console.log("summary ", result);
             this.initEvents();
           })
           .catch((err) => {
@@ -376,7 +379,7 @@ export default class Landing extends Component {
       positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
       collapseDepth: 0, // how many heading levels should not be collpased
       includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      fixedSidebarOffset: this.shouldShowTabs() ? 140: "auto"
+      fixedSidebarOffset: this.shouldShowTabs() ? 140 : "auto",
     });
   }
 
@@ -391,21 +394,24 @@ export default class Landing extends Component {
     }
     //page title
     document.title = "COSRI";
+    if (this.shouldShowTabs()) {
+        document.querySelector("body").classList.add("has-tabs");
+    }
     this.handleHeaderPos();
   }
   /*
    * fixed header when scrolling in the event that it is not within viewport
    */
   handleHeaderPos() {
-    document.addEventListener("scroll", function () {
+    document.addEventListener("scroll",  () => {
       clearTimeout(scrollHeaderIntervalId);
       scrollHeaderIntervalId = setTimeout(function () {
-        if (!isInViewport(document.querySelector("#anchorTop"))) {
+        if (!isInViewport(this.anchorTopRef.current)) {
           document.querySelector("body").classList.add("fixed");
           return;
         }
         document.querySelector("body").classList.remove("fixed");
-      }, 150);
+      }.bind(this), 150);
     });
   }
   /*
@@ -1053,6 +1059,7 @@ export default class Landing extends Component {
     this.setState({
       activeTab: index,
     });
+    window.scrollTo(0, 0);
   }
 
   processSummary(summary) {
@@ -1220,7 +1227,7 @@ export default class Landing extends Component {
               role="presentation"
               key={`tab_${index}`}
             >
-              {item}
+              {item.replace(/_/g, " ")}
             </div>
           );
         })}
@@ -1244,6 +1251,11 @@ export default class Landing extends Component {
               {item === "report" && (
                 <Report summaryData={summary.SurveySummary}></Report>
               )}
+              {/* {item === "detailed_report" && (
+                <DetailedReport
+                  data={summary.Patient.Documents}
+                ></DetailedReport>
+              )} */}
               {/* other tab panel as specified here */}
             </div>
           );
@@ -1283,7 +1295,7 @@ export default class Landing extends Component {
 
     return (
       <div className="landing">
-        <div id="anchorTop"></div>
+        <div id="anchorTop" ref={this.anchorTopRef}></div>
         <div id="skiptocontent"></div>
         {this.isNonProduction() && (
           <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>

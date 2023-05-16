@@ -61,7 +61,11 @@ export default class Report extends Component {
         {section.sections.map((item, index) => {
           const matchedData =
             summaryData && summaryData.length
-              ? summaryData.filter((o) => o.dataKey === item.dataKey)[0]
+              ? summaryData.filter(
+                  (o) =>
+                    String(o.dataKey).toLowerCase() ===
+                    String(item.dataKey).toLowerCase()
+                )[0]
               : null;
           return (
             <div

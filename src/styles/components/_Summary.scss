@@ -11,9 +11,13 @@
     color: $color-white;
     //padding: 38px 0 20px;
     padding: calc(#{$min-header-height} + 48px) 0 20px 0px;
-    width: 240px;
+    width: $summary-nav-width;
     z-index: 1;
     transition: opacity 450ms ease 100ms;
+
+    &.is-position-fixed {
+        padding: calc(#{$min-header-height} + 64px) 0 20px 0px;
+    }
 
     .toc-list.is-collapsible {
       .toc-list-item {
@@ -439,6 +443,7 @@
         margin-left: 16px;
         align-self: stretch;
         display: flex;
+        width: calc(100% - 48px);
       }
 
       .sub-section__panel {
@@ -454,7 +459,8 @@
           border: 2px solid;
           padding: 12px;
           margin-bottom: 8px;
-          width: 480px;
+          width: 100%;
+         // width: 480px;
           .panel-title {
             font-weight: 700;
             margin-bottom: 8px;
@@ -720,6 +726,7 @@
           padding-bottom: 12px;
           td {
             vertical-align: bottom;
+            line-height: 1.5;
           }
           .icon-container {
             position: relative;
@@ -1018,4 +1025,16 @@
   .flagged {
     color: $color-orange-light !important;
   }
+}
+.has-tabs {
+    .summary {
+        &__nav.is-position-fixed {
+            padding: calc(#{$min-header-height-include-tabs} + 64px) 0 20px 0px !important;
+        }
+        &__nav-wrapper {
+            .is-position-fixed ~ .close {
+                top: calc(#{$min-header-height-include-tabs} + 8px);
+            }
+        }
+    }
 }

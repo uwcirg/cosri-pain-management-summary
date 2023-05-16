@@ -37,6 +37,12 @@ $print-header-height: 102px;
     padding-top: $print-header-height;
   }
   .report {
+    .panel-item, object {
+        page-break-inside: avoid;
+    }
+    object {
+        margin-top: 108px;
+    }
     .sub-section:last-of-type {
       padding-top: $print-header-height;
     }

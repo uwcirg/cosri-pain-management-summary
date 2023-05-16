@@ -39,7 +39,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     padding: 8px;
     .sections {
       height: 100%;
-      background-color: #FFF;
+      background-color: #fff;
       .section {
         min-height: 72px;
         background: $color-white;
@@ -94,7 +94,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
             &:hover {
               background-color: $link-color;
               border-color: $link-color;
-              color: #FFF;
+              color: #fff;
               cursor: pointer;
             }
           }
@@ -199,9 +199,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
     min-height: 80px;
     gap: 4px;
     flex-wrap: wrap;
+    justify-content: center;
     .panel {
       border: 2px solid $color-black;
       padding: 8px;
+      align-self: stretch;
       display: flex;
       flex-direction: column;
       background: $color-white;
@@ -209,13 +211,30 @@ $selector-box-shadow: 0 2px 2px #383e40;
       flex: 1 1;
       &.graph {
         display: flex;
-        flex: 1.35 1 100%;
+        //  flex: 1.35 1 100%;
+        flex: 1 1;
         flex-wrap: wrap;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
+        min-width: calc(50% - 48px);
+        max-width: calc(100% - 240px);
+
+        //min-width: 45%;
         .survey-graph {
-          flex: 1 1 100%;
-          max-width: 100%;
+          // flex: 1 1 100%;
+          flex: 1 1;
+          width: 100%;
+         // width: calc(100% - 64px);
+          //  @media (min-width: 1024px) {
+          //     width: 100%;
+          //  }
+          @media (min-width: 992px) {
+            width: calc(100% - 72px);
+          }
+          @media (min-width: 1600px) {
+            width: calc(100% - 120px);
+          }
+          //  max-width: 100%;
           .circle:hover {
             cursor: pointer;
           }
@@ -232,34 +251,56 @@ $selector-box-shadow: 0 2px 2px #383e40;
           background-color: $color-gray-lightest;
         }
       }
-      @media (min-width: 768px) {
-        &.graph {
-          .survey-graph {
-            max-width: 60%;
-          }
-        }
-      }
-      @media (min-width: 1200px) {
-        &.graph {
-          flex: 1.35 1;
-          .survey-graph {
-            flex: 3 1;
-            max-width: 100%;
-          }
-        }
-      }
-      @media (min-width: 1400px) {
-        &.graph {
-          flex: 1.1 1;
-        }
-      }
+      //   @media (min-width: 768px) {
+      //     &.graph {
+      //       .survey-graph {
+      //         max-width: 50%;
+      //       }
+      //     }
+      //   }
+      //   @media (min-width: 1200px) {
+      //     &.graph {
+      //      // flex: 1.35 1;
+      //      flex: 1.35 1;
+      //       .survey-graph {
+      //         flex: 3 1;
+      //         max-width: 100%;
+      //       }
+      //     }
+      //   }
+      //   @media (min-width: 1400px) {
+      //     &.graph {
+      //      // flex: 1.1 1;
+      //      flex: 1.5 1;
+      //     }
+      //   }
+      //   @media (min-width: 1600px) {
+      //     &.graph {
+      //      flex: 1.1 1;
+      //     }
+      //   }
       &.no-entries {
         border: 0;
         padding: 0;
       }
       &__item {
-        border: 1px solid $color-gray-lighter;
+        align-self: center;
+        width: calc(100% - 16px);
+        text-align: center;
+        flex: 1 1;
+        &:not(:last-of-type) {
+          margin-bottom: 8px;
+        }
+        &.bordered {
+          border: 1px solid $color-gray-lighter;
+        }
+        &.full-width {
+          width: calc(100% - 16px);
+          // width: 100%;
+          // align-self: stretch;
+        }
         padding: 8px;
+       
         .table {
           width: 100%;
           padding-left: 4px;
@@ -269,6 +310,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
             padding: 6px 4px;
             font-size: 0.95em;
             white-space: nowrap;
+            line-height: 1.45;
             &.empty {
               min-width: 40px;
             }
@@ -287,10 +329,16 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
   }
   .graph {
+    .legend-container {
+      flex: 1 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
     .legend {
       margin: 0 auto;
       border: 1px solid #d8d8d8;
-      min-width: 116px;
+      min-width: 160px;
       padding: 12px 12px 8px;
       font-size: 0.75rem;
       display: flex;
@@ -334,7 +382,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
             color: $link-color;
             font-weight: 600;
             &:hover {
-              color: #FFF;
+              color: #fff;
               background-color: $link-color;
               border-color: $link-color;
             }
@@ -382,9 +430,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
   .accordion-content {
     overflow: hidden;
     max-height: 0;
-    transition: all 0.3s cubic-bezier(0.45,0.05,0.55,0.95);
+    transition: all 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
     &.active {
       max-height: 2400px;
     }
+  }
+  #detailedReport {
+    width: 100%;
+    height: calc(100vh - 152px);
   }
 }

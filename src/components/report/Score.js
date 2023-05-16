@@ -17,10 +17,10 @@ export default class Score extends Component {
         : arrModerateSeverities.indexOf(scoreSeverity) !== -1
         ? "text-warning"
         : "";
-    if (!isNumber(score)) return "--";
+    if (!score || !isNumber(score)) return "--";
     if (arrColoredSeverities.indexOf(scoreSeverity) !== -1)
       return (
-        <div className={`flex flex-start ${cssClass}`}>
+        <div className={`flex flex-space-between ${cssClass}`}>
           <span className={iconClass}>{score}</span>
           <FontAwesomeIcon
             className={iconClass}
@@ -29,7 +29,7 @@ export default class Score extends Component {
           />
         </div>
       );
-    return <div className={`flex flex-start ${cssClass}`}>{score}</div>;
+    return <div className={`flex ${cssClass}`}>{score}</div>;
   }
 }
 

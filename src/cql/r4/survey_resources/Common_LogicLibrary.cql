@@ -136,6 +136,10 @@ define AnswerQuestionTypes: {
     'open-choice'
 }
 
+define function GetArrayAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
+  (responses r where r.linkId.value = linkId) I
+  return I.answer
+
 
 define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
   (responses r where r.linkId.value = linkId) I
