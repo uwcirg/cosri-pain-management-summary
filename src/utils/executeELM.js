@@ -79,6 +79,7 @@ async function executeELM(collector, oResourceTypes) {
                 if (item.entry) {
                   item.entry.forEach((o) => {
                     if (o.resource) resources.push(o.resource);
+                    else resources.push(o);
                   });
                 }
               } else resources.push(item);
@@ -102,7 +103,7 @@ async function executeELM(collector, oResourceTypes) {
         //debugging
         console.log("CQL execution results ", results);
 
-        const evalResults = results.patientResults
+        let evalResults = results.patientResults
           ? results.patientResults[Object.keys(results.patientResults)[0]]
           : {};
 
@@ -112,9 +113,9 @@ async function executeELM(collector, oResourceTypes) {
         return new Promise((resolve, reject) => {
           const elmLibs = getLibraryForInstruments();
           Promise.allSettled(elmLibs).then(
-            (results) => {
+            (elmResults) => {
               const evaluatedSurveyResults = executeELMForInstruments(
-                results,
+                elmResults,
                 bundle
               );
               const PATIENT_SUMMARY_KEY = "Summary";
