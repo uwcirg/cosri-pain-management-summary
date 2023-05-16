@@ -128,7 +128,18 @@ export default class ResponsesSummary extends Component {
       </table>
     );
   }
-  renderTableHeader() {
+  renderTableHeader(columns) {
+    if (columns) {
+      return (
+        <thead>
+          <tr>
+            {columns.map((column) => (
+              <th>{column.description}</th>
+            ))}
+          </tr>
+        </thead>
+      );
+    }
     return (
       <thead>
         <tr>
@@ -180,7 +191,7 @@ export default class ResponsesSummary extends Component {
       </td>
     );
   }
-  renderSummary(summary) {
+  renderSummary(summary, columns) {
     const noResponses =
       !summary || !summary.ResponsesSummary || !summary.ResponsesSummary.length;
     const currentResponses = noResponses
@@ -192,13 +203,31 @@ export default class ResponsesSummary extends Component {
     return (
       <React.Fragment>
         <table className="table">
-          {this.renderTableHeader()}
+          {this.renderTableHeader(columns)}
           <tbody>
             <tr>
-              {this.renderScoreTableCell(summary)}
-              {this.renderNumResponsesTableCell(summary)}
-              {this.renderResponsesLinkTableCell(
-                this.getDisplayDate(currentResponses)
+              {columns &&
+                columns.map((column) => {
+                  if (column.key === "score")
+                    return this.renderScoreTableCell(summary);
+                  else if (column.key === "responses")
+                    return this.renderResponsesLinkTableCell(
+                      this.getDisplayDate(currentResponses)
+                    );
+                  else {
+                    if (currentResponses[column.key])
+                      return <td className="text-center">{currentResponses[column.key]}</td>;
+                    else return <td className="text-center">--</td>;
+                  }
+                })}
+              {!columns && (
+                <React.Fragment>
+                  {this.renderScoreTableCell(summary)}
+                  {this.renderNumResponsesTableCell(summary)}
+                  {this.renderResponsesLinkTableCell(
+                    this.getDisplayDate(currentResponses)
+                  )}
+                </React.Fragment>
               )}
             </tr>
           </tbody>
@@ -210,10 +239,11 @@ export default class ResponsesSummary extends Component {
     );
   }
   render() {
-    return this.renderSummary(this.props.summary);
+    return this.renderSummary(this.props.summary, this.props.columns);
   }
 }
 
 ResponsesSummary.propTypes = {
   summary: PropTypes.object,
+  columns: PropTypes.array,
 };

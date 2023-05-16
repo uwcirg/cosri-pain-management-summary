@@ -101,6 +101,15 @@
                "type" : "Literal"
             }
          }, {
+            "name" : "SumScoreQuestionId",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "CIRG-PEG-SUM",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "extensionAnswerIndex",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -205,6 +214,27 @@
                            "type" : "FunctionRef",
                            "operand" : [ {
                               "name" : "ScoringQuestionId",
+                              "type" : "ExpressionRef"
+                           }, {
+                              "path" : "item",
+                              "scope" : "I",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }
+                  }
+               }, {
+                  "identifier" : "sumScore",
+                  "expression" : {
+                     "type" : "ToInteger",
+                     "operand" : {
+                        "type" : "First",
+                        "source" : {
+                           "name" : "GetResponseAnswerByLinkId",
+                           "libraryName" : "LogicHelper",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "SumScoreQuestionId",
                               "type" : "ExpressionRef"
                            }, {
                               "path" : "item",
@@ -490,11 +520,28 @@
                            }
                         }
                      }, {
-                        "name" : "scoreDescription",
+                        "name" : "responses_completed",
                         "value" : {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                           "value" : "Mean Score",
-                           "type" : "Literal"
+                           "type" : "Length",
+                           "operand" : {
+                              "type" : "ToList",
+                              "operand" : {
+                                 "name" : "I",
+                                 "type" : "AliasRef"
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "sum_score",
+                        "value" : {
+                           "name" : "sumScore",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "mean_score",
+                        "value" : {
+                           "name" : "score",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "score",

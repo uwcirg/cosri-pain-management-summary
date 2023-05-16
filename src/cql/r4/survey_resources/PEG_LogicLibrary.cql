@@ -19,6 +19,7 @@ define Question1LinkId: '108518'
 define Question2LinkId: '91145-3'
 define Question3LinkId: '91146-1'
 define ScoringQuestionId: '91147-9' // Mean score
+define SumScoreQuestionId: 'CIRG-PEG-SUM'
 define extensionAnswerIndex: 0
 define ScoreParams: Tuple {
   minScore: 0,
@@ -46,6 +47,7 @@ define ResponsesSummary:
   (QuestionnaireResponses) I
   let
     score: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(ScoringQuestionId, I.item))), // mean score
+    sumScore: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(SumScoreQuestionId, I.item))), // mean score
     scoreSeverity:
         case
           when score > 6 then 'high'
@@ -70,7 +72,9 @@ define ResponsesSummary:
       Question1Score: ToInteger(Question1Score),
       Question2Score: ToInteger(Question2Score),
       Question3Score: ToInteger(Question3Score),
-      scoreDescription: 'Mean Score',
+      responses_completed: Length(I),
+      sum_score: sumScore,
+      mean_score: score,
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,

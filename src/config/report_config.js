@@ -42,15 +42,15 @@ const reportConfig = [
               pain scale.
             </p>
             <p>
-              Based on both {" "}
+              Based on both{" "}
               <a
                 href="https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7
-              </a>
-              {" "}and{" "}
+              </a>{" "}
+              and{" "}
               <a
                 href="https://loinc.org/91148-7/"
                 target="_blank"
@@ -68,7 +68,29 @@ const reportConfig = [
             </p>
           </div>
         ),
-        component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
+        component: (props) => (
+          <ResponsesSummary
+            columns={[
+              {
+                key: "score",
+                description: "Mean Score",
+              },
+              {
+                key: "sum_score",
+                description: "Sum Score",
+              },
+              {
+                key: "responses_completed",
+                description: "Responses completed",
+              },
+              {
+                key: "responses",
+                description: "Responses",
+              },
+            ]}
+            {...props}
+          ></ResponsesSummary>
+        ),
       },
     ],
   },
