@@ -14,7 +14,7 @@ import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import r4SurveyCommonELM from "../cql/r4/survey_resources/Common_LogicLibrary.json";
 import valueSetDB from "../cql/valueset-db.json";
 import { getEnv, fetchEnvData } from "./envConfig";
-import { getEnvInstrumentList } from "../helpers/utility";
+import { getReportInstrumentList } from "../helpers/utility";
 
 const noCacheHeader = {
   "Cache-Control": "no-cache, no-store, max-age=0",
@@ -26,9 +26,9 @@ async function executeELM(collector, oResourceTypes) {
   fetchEnvData();
   let client, release, library;
   const resourceTypes = oResourceTypes || {};
-  const INSTRUMENT_LIST = getEnvInstrumentList();
+  const INSTRUMENT_LIST = getReportInstrumentList();
   const SURVEY_FHIR_RESOURCES = ["QuestionnaireResponse", "Questionnaire"];
-  console.log("instrument list from environment variable ", INSTRUMENT_LIST);
+  console.log("instrument list to be loaded for report: ", INSTRUMENT_LIST);
   return new Promise((resolve) => {
     // First get our authorized client and send the FHIR release to the next step
     const results = FHIR.oauth2
@@ -188,9 +188,9 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
 }
 
 function getLibraryForInstruments() {
-  const INSTRUMENT_LIST = getEnvInstrumentList();
-  let instrumentList = INSTRUMENT_LIST.split(",");
-  return instrumentList.map((libId) =>
+  const INSTRUMENT_LIST = getReportInstrumentList();
+  if (!INSTRUMENT_LIST) return null;
+  return INSTRUMENT_LIST.map((libId) =>
     (async () => {
       let elmJson = null;
       elmJson = await import(
@@ -313,12 +313,12 @@ function processPage(uri, collector, resources) {
 function updateSearchParams(params, release, type) {
   //fetchEnvData();
 
-  const INSTRUMENT_LIST = getEnvInstrumentList();
+  const INSTRUMENT_LIST = getReportInstrumentList();
   if (INSTRUMENT_LIST) {
     if (release === FHIR_RELEASE_VERSION_4) {
       switch (type) {
         case "Questionnaire":
-          params.set("name:contains", INSTRUMENT_LIST);
+          params.set("name:contains", INSTRUMENT_LIST.join(","));
           break;
         default:
         // nothing

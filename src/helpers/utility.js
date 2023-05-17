@@ -1,5 +1,6 @@
 import moment from "moment";
 import {getEnv} from "../utils/envConfig";
+import reportSummarySections from "../config/report_config";
 /*
  * return number of days between two dates
  * @params dateString1 date #1 to be compared
@@ -114,4 +115,12 @@ export function isNumber(target) {
 export function getEnvInstrumentList() {
     const envList = getEnv("REACT_APP_SCORING_INSTRUMENTS");
   return envList ? String(envList).replace(/_/g, " ") : "";
+}
+
+export function getReportInstrumentList() {
+  const qList = reportSummarySections
+    .filter((section) => section.questionnaires)
+    .map((section) => section.questionnaires);
+  if (!qList.length) return null;
+  return qList.flat();
 }

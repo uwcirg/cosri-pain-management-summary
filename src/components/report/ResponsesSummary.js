@@ -133,8 +133,8 @@ export default class ResponsesSummary extends Component {
       return (
         <thead>
           <tr>
-            {columns.map((column) => (
-              <th>{column.description}</th>
+            {columns.map((column, index) => (
+              <th key={`header_${column.key}_${index}`}>{column.description}</th>
             ))}
           </tr>
         </thead>
@@ -150,7 +150,7 @@ export default class ResponsesSummary extends Component {
       </thead>
     );
   }
-  renderScoreTableCell(summary) {
+  renderScoreTableCell(summary, key) {
     const hasSummary =
       summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
     if (!hasSummary) return <td cssClass="text-center">--</td>;
@@ -162,6 +162,7 @@ export default class ResponsesSummary extends Component {
           score={score}
           scoreParams={scoreParams}
           cssClass="flex-center"
+          key={key}
         ></Score>
       </td>
     );
@@ -172,9 +173,9 @@ export default class ResponsesSummary extends Component {
     if (!hasSummary) return <td className="text-center">--</td>;
     return <td className="text-center">{this.getNumResponses(summary)}</td>;
   }
-  renderResponsesLinkTableCell(lastResponsesDate) {
+  renderResponsesLinkTableCell(lastResponsesDate, key) {
     return (
-      <td>
+      <td key={key}>
         <div
           role="presentation"
           className={`link-container ${this.state.open ? "active" : ""}`}
@@ -207,25 +208,27 @@ export default class ResponsesSummary extends Component {
           <tbody>
             <tr>
               {columns &&
-                columns.map((column) => {
+                columns.map((column, index) => {
                   if (column.key === "score")
-                    return this.renderScoreTableCell(summary);
+                    return this.renderScoreTableCell(summary, `score_cell_${index}`);
                   else if (column.key === "responses")
                     return this.renderResponsesLinkTableCell(
-                      this.getDisplayDate(currentResponses)
+                      this.getDisplayDate(currentResponses),
+                      `responses_cell_${index}`
                     );
                   else {
                     if (currentResponses[column.key])
-                      return <td className="text-center">{currentResponses[column.key]}</td>;
-                    else return <td className="text-center">--</td>;
+                      return <td className="text-center" key={`${column.key}_${index}`}>{currentResponses[column.key]}</td>;
+                    else return <td className="text-center"  key={`${column.key}_${index}`}>--</td>;
                   }
                 })}
               {!columns && (
                 <React.Fragment>
-                  {this.renderScoreTableCell(summary)}
+                  {this.renderScoreTableCell(summary, `score_cell`)}
                   {this.renderNumResponsesTableCell(summary)}
                   {this.renderResponsesLinkTableCell(
-                    this.getDisplayDate(currentResponses)
+                    this.getDisplayDate(currentResponses),
+                    "responses_cell"
                   )}
                 </React.Fragment>
               )}

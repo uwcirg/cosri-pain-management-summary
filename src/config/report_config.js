@@ -22,6 +22,7 @@ const reportConfig = [
   {
     title: "Pain and Limitation",
     dataKey: "painLimitationSection",
+    questionnaires: ["peg", "body diagram"],
     icon: (props) => (
       <MedicalHistoryIcon
         {...iconProps}
@@ -97,6 +98,7 @@ const reportConfig = [
   {
     title: "Mental Health, Quality of Life and Sleep",
     dataKey: "mentalHealthSection",
+    questionnaires: ["phq", "gad7"],
     icon: (props) => (
       <UserIcon
         {...iconProps}
