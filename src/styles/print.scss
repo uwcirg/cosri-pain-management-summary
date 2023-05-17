@@ -11,10 +11,11 @@ $print-header-height: 102px;
     padding: 0;
   }
   .header {
+    position: relative;
     height: auto;
   }
   .warpper {
-    padding-top: $print-header-height;
+    padding-top: 24px;
   }
   .anchor {
     border-bottom: 0;
@@ -33,24 +34,56 @@ $print-header-height: 102px;
   .Collapsible:first-of-type {
     page-break-after: always;
   }
-  .Collapsible:not(:first-of-type) {
-    padding-top: $print-header-height;
-  }
+  //   .Collapsible:not(:first-of-type) {
+  //     padding-top: $print-header-height;
+  //   }
   .report {
-    .panel-item, object {
+    .Collapsible {
+        &:not(:first-of-type) {
+            .section__header {
+                display: none !important;
+              }
+        }
+    }
+    .section__header {
+      color: #444 !important;
+      background: #f7f7f7 !important;
+      height: auto !important;
+      padding: 8px 0 !important;
+    }
+    .panel-container {
+      .panel.graph {
+        max-width: calc(100% - 180px);
+      }
+      .panel,
+      object {
+        border: 0;
+      }
+      .panel__item {
+     //   page-break-inside: avoid;
+        height: 100%;
+      }
+      .panel {
         page-break-inside: avoid;
-    }
-    object {
-        margin-top: 108px;
-    }
-    .sub-section:last-of-type {
-      padding-top: $print-header-height;
-    }
-    .sub-section:not(:last-of-type) {
-      page-break-after: always;
+      }
+      object {
+        transform: scale(0.7);
+      }
     }
     .sub-section {
+      //padding-top: $print-header-height;
+      box-shadow: none;
+      border: 0;
+      background-color: #FFF;
+      page-break-inside: avoid;
+      &:not(:last-of-type) {
+        page-break-after: always;
+      }
       margin-top: 0;
+      .sub-section__header {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+      }
       .table {
         margin-left: 8px !important;
         margin-right: 8px !important;
@@ -61,11 +94,7 @@ $print-header-height: 102px;
     }
     .accordion-content {
       overflow: auto;
-      max-height: 100%;
-    }
-    .sub-section__header {
-      padding-left: 8px !important;
-      padding-right: 8px !important;
+      max-height: 2400px;
     }
     .response-table {
       margin: 8px;
@@ -88,6 +117,9 @@ $print-header-height: 102px;
   .section {
     padding: 8px 0;
     border: 0;
+    .sub-panels {
+        page-break-inside: avoid;
+    }
   }
   .sub-section {
     box-shadow: none !important;
@@ -106,13 +138,13 @@ $print-header-height: 102px;
       padding: 0;
     }
   }
-  .link-container, 
+  .link-container,
   .cdc-disclaimer {
     a[href] {
-        display: block;
-        &:after {
-            content: ' (source: ' attr(href) ') ';
-        }
+      display: block;
+      &:after {
+        content: " (source: " attr(href) ") ";
+      }
     }
   }
   .disclaimers-container {

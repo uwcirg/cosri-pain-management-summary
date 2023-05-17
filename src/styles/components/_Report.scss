@@ -307,7 +307,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           padding-right: 4px;
           border-collapse: collapse;
           td {
-            padding: 6px 4px;
+            padding: 6px 4px 0;
             font-size: 0.95em;
             white-space: nowrap;
             line-height: 1.45;
@@ -315,11 +315,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
               min-width: 40px;
             }
           }
-          tr:first-of-type {
-            td {
-              padding: 6px 4px 0;
-            }
-          }
+        //   tr:first-of-type {
+        //     td {
+        //       padding: 6px 4px 0;
+        //     }
+        //   }
         }
         td:not(:first-of-type) {
           text-align: center;

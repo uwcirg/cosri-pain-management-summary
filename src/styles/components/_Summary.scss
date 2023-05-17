@@ -9,8 +9,7 @@
 
   &__nav {
     color: $color-white;
-    //padding: 38px 0 20px;
-    padding: calc(#{$min-header-height} + 48px) 0 20px 0px;
+    padding: 88px 0 20px 0px;
     width: $summary-nav-width;
     z-index: 1;
     transition: opacity 450ms ease 100ms;
@@ -140,7 +139,6 @@
     .summary__nav {
      opacity: 1;
      z-index: 1;
-     padding: 88px 0 20px 0px;
      .title-text-container {
        visibility: hidden;
        transition: visibility 350ms ease;
@@ -505,11 +503,11 @@
                 text-align: center;
                 vertical-align: bottom;
               }
-              tr:first-of-type {
-                td {
-                  padding-top: 6px;
-                }
-              }
+            //   tr:first-of-type {
+            //     td {
+            //       padding-top: 6px;
+            //     }
+            //   }
             }
           }
           .alerts-container {
