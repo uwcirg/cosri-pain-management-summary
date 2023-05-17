@@ -95,7 +95,7 @@ define ResponsesSummary:
       comparisonToAlert: 'higher',
       totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId),
       totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Gad7Questionnaire, ScoringQuestionId)),
-      authoredDate: I.authored,
+      authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value
     }
-    sort by date desc, lastUpdated desc
+    sort by authoredDate desc, lastUpdated desc

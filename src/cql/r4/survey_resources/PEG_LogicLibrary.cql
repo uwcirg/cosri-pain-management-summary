@@ -43,6 +43,9 @@ define PegQuestionnaire:
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PegQuestionnaire, 'PEG')
 
+define ResponsesCompleted:
+    Length(QuestionnaireResponses)
+
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
@@ -72,7 +75,7 @@ define ResponsesSummary:
       Question1Score: ToInteger(Question1Score),
       Question2Score: ToInteger(Question2Score),
       Question3Score: ToInteger(Question3Score),
-      responses_completed: Length(I),
+      responses_completed: ResponsesCompleted,
       sum_score: sumScore,
       mean_score: score,
       score: score,
@@ -88,7 +91,7 @@ define ResponsesSummary:
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId), totalItems}),
       totalItems: totalItems,
-      authoredDate: I.authored,
+      authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value
     }
     sort by authoredDate desc, lastUpdated desc

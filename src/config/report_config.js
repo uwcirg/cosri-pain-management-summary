@@ -98,7 +98,7 @@ const reportConfig = [
   {
     title: "Mental Health, Quality of Life and Sleep",
     dataKey: "mentalHealthSection",
-    questionnaires: ["phq", "gad7"],
+    questionnaires: ["phq9", "gad7"],
     icon: (props) => (
       <UserIcon
         {...iconProps}

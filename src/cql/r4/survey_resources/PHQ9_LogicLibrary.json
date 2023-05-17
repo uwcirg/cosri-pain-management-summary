@@ -1011,9 +1011,13 @@
                      }, {
                         "name" : "authoredDate",
                         "value" : {
-                           "path" : "authored",
-                           "scope" : "I",
-                           "type" : "Property"
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "authored",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }
                         }
                      }, {
                         "name" : "lastUpdated",

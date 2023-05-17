@@ -58,7 +58,7 @@ define ResponsesSummary:
       date: LogicHelper.DateTimeText(I.authored),
       painLocations: painLocations(I.item),
       severePainLocation: severePainLocation(I.item),
-      authoredDate: I.authored,
+      authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value
     }
     sort by authoredDate desc, lastUpdated desc

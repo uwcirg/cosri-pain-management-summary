@@ -94,7 +94,7 @@ define ResponsesSummary:
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId), totalItems}),
       totalItems: totalItems,
-      authoredDate: I.authored,
+      authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value
     }
     sort by authoredDate desc, lastUpdated desc
