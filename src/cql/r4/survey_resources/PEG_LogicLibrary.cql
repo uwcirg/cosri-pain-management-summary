@@ -50,7 +50,7 @@ define ResponsesSummary:
   (QuestionnaireResponses) I
   let
     score: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(ScoringQuestionId, I.item))), // mean score
-    sumScore: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(SumScoreQuestionId, I.item))), // mean score
+    sumScoreFromQuestionnaire: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(SumScoreQuestionId, I.item))), // mean score
     scoreSeverity:
         case
           when score > 6 then 'high'
@@ -62,9 +62,11 @@ define ResponsesSummary:
     responses: if PegQuestionnaire is not null then 
         LogicHelper.getResponsesByQuestionnaire(PegQuestionnaire, I.item, '') else 
         responsesOnly,
-    Question1Score: First(LogicHelper.GetResponseAnswerByLinkId(Question1LinkId, I.item)),
-    Question2Score: First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item)),
-    Question3Score: First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item)),
+    Question1Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question1LinkId, I.item))), 0),
+    Question2Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item))), 0),
+    Question3Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item))), 0),
+    sumScore: Question1Score + Question2Score + Question3Score,
+    meanScore: Round(sumScore / 3),
     totalItems: 3
     return Tuple {
       id: I.id.value,
@@ -72,13 +74,15 @@ define ResponsesSummary:
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responses,
-      Question1Score: ToInteger(Question1Score),
-      Question2Score: ToInteger(Question2Score),
-      Question3Score: ToInteger(Question3Score),
+      Question1Score: Question1Score,
+      Question2Score: Question2Score,
+      Question3Score: Question3Score,
+      sumScoreFromQuestionnaire: sumScoreFromQuestionnaire,
+      meanScoreFromQuestionnaire: score,
       responses_completed: ResponsesCompleted,
-      sum_score: sumScore,
-      mean_score: score,
-      score: score,
+      sum_score: if sumScore is not null then sumScore else sumScoreFromQuestionnaire,
+      mean_score: if meanScore is not null then meanScore else score,
+      score: if meanScore is not null then meanScore else score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
       scoreSeverity: scoreSeverity,

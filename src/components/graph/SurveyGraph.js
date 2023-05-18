@@ -133,7 +133,7 @@ export default class SurveyGraph extends Component {
     const lineAttributes = qids.map((qid, index) => {
       return {
         id: qid,
-        props: getLineAttributes(qid, "", index),
+        props: getLineAttributes(qid, null, index),
       };
     });
     const matched = lineAttributes.filter((item) => item.id === qid);
@@ -237,7 +237,7 @@ export default class SurveyGraph extends Component {
     };
     const parentWidth = 540;
     // 396
-    const parentHeight = 500;
+    const parentHeight = 508;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;
     const xScale = scaleTime()

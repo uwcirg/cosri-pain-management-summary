@@ -66,9 +66,9 @@ $print-header-height: 102px;
       .panel {
         page-break-inside: avoid;
       }
-      object {
-        transform: scale(0.7);
-      }
+    //   object {
+    //     transform: scale(0.7);
+    //   }
     }
     .sub-section {
       //padding-top: $print-header-height;
