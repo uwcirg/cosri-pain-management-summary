@@ -18,12 +18,13 @@ define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/peg'
 define Question1LinkId: '108518'
 define Question2LinkId: '91145-3'
 define Question3LinkId: '91146-1'
-define ScoringQuestionId: '91147-9' // Mean score
+define ScoringQuestionId: 'CIRG-PEG-SUM' // Mean score
+define MeanScoreQuestionId: '91147-9' // Mean score
 define SumScoreQuestionId: 'CIRG-PEG-SUM'
 define extensionAnswerIndex: 0
 define ScoreParams: Tuple {
   minScore: 0,
-  maxScore: 10
+  maxScore: 30
 }
 
 // -----------------------------------------------------------------------------
@@ -49,13 +50,13 @@ define ResponsesCompleted:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    score: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(ScoringQuestionId, I.item))), // mean score
-    sumScoreFromQuestionnaire: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(SumScoreQuestionId, I.item))), // mean score
+    score: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(ScoringQuestionId, I.item))), // sum score
+    sumScoreFromQuestionnaire: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(SumScoreQuestionId, I.item))), // sum score
+    meanScoreFromQuestionnaire: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(MeanScoreQuestionId, I.item))), // mean score
     scoreSeverity:
         case
-          when score > 6 then 'high'
-          when score between 4 and 6 then 'moderate'
-          when score between 1 and 3 then 'mild'
+          when score > 15 then 'high'
+          when score between 1 and 14 then 'mild'
           else 'low' 
         end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ''),
@@ -78,18 +79,16 @@ define ResponsesSummary:
       Question2Score: Question2Score,
       Question3Score: Question3Score,
       sumScoreFromQuestionnaire: sumScoreFromQuestionnaire,
-      meanScoreFromQuestionnaire: score,
+      meanScoreFromQuestionnaire: meanScoreFromQuestionnaire,
       responses_completed: ResponsesCompleted,
       sum_score: if sumScore is not null then sumScore else sumScoreFromQuestionnaire,
-      mean_score: if meanScore is not null then meanScore else score,
-      score: if meanScore is not null then meanScore else score,
+      mean_score: if meanScore is not null then meanScore else meanScoreFromQuestionnaire,
+      score: if sumScore is not null then sumScore else score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
       scoreSeverity: scoreSeverity,
       scoreMeaning: case
-        when scoreSeverity = 'high' then 'severe pain'
-        when scoreSeverity = 'moderate' then 'moderate pain'
-        when scoreSeverity = 'mild' then 'mild pain'
+        when scoreSeverity = 'high' then 'high pain'
         else '' 
       end,
       comparisonToAlert: 'higher',
