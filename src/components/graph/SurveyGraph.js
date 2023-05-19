@@ -197,7 +197,7 @@ export default class SurveyGraph extends Component {
                     disabled={this.isInSurveyGraph(item) ? true : false}
                     title={`Add ${item} to graph`}
                   >
-                    +
+                    show
                   </button>
                   <button
                     className="select-icon minus"
@@ -211,7 +211,7 @@ export default class SurveyGraph extends Component {
                     }
                     title={`Remove ${item} from graph`}
                   >
-                    -
+                    hide
                   </button>
                 </div>
               )}

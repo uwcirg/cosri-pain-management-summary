@@ -334,11 +334,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
       display: flex;
       justify-content: center;
       align-items: center;
+      min-width: 30%;
     }
     .legend {
       margin: 0 auto;
       border: 1px solid #d8d8d8;
       min-width: 160px;
+      width: 100%;
       padding: 12px 12px 8px;
       font-size: 0.75rem;
       display: flex;
@@ -373,10 +375,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
           font-weight: 300;
           background-color: transparent;
           background-image: none;
-          border-radius: 50%;
-          border: 2px solid;
-          width: 20px;
-          height: 20px;
+          padding: 2px 6px;
+          border: 1px solid;
+          border-radius: 12px;
+          font-size: 0.7rem;
+        //  width: 20px;
+         // height: 20px;
           cursor: pointer;
           &:not([disabled]) {
             color: $link-color;
