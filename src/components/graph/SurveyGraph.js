@@ -232,7 +232,7 @@ export default class SurveyGraph extends Component {
     const margins = {
       top: 24,
       right: 16,
-      bottom: 88,
+      bottom: 72, //88
       left: 64,
     };
     const parentWidth = 540;

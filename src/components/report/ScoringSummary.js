@@ -153,7 +153,7 @@ export default class ScoringSummary extends Component {
   renderScoreCell(data) {
     if (!data || !data.ResponsesSummary) return <td>--</td>;
     return (
-      <td>
+      <td style={{whiteSpace: "nowrap"}}>
         <div className="flex">
           <Score
             score={this.getCurrentDisplayScore(data)}
