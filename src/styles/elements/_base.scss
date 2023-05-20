@@ -34,10 +34,13 @@ a {
   border-bottom: 1px solid $link-border-color;
 }
 .text-center {
-    text-align: center;
+  text-align: center;
 }
 .text-left {
-    text-align: left;
+  text-align: left;
+}
+.text-right {
+  text-align: right;
 }
 .text-alert {
   color: $color-alert;

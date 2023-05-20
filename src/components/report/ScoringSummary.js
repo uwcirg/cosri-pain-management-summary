@@ -160,7 +160,7 @@ export default class ScoringSummary extends Component {
             scoreParams={this.getCurrentData(data.ResponsesSummary)}
             cssClass="flex-1"
           ></Score>
-          <div className="flex-1">{this.getRangeDisplay(data)}</div>
+          <div className="flex-1 text-right">{this.getRangeDisplay(data)}</div>
         </div>
       </td>
     );
