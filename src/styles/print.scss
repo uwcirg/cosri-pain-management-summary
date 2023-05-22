@@ -34,6 +34,11 @@ $print-header-height: 102px;
   .Collapsible:first-of-type {
     page-break-after: always;
   }
+  .panels {
+    .panel, .sub-panels {
+      page-break-inside: avoid;
+    }
+  }
   //   .Collapsible:not(:first-of-type) {
   //     padding-top: $print-header-height;
   //   }
