@@ -79,7 +79,7 @@ export default class SurveyGraph extends Component {
       const my = item.getMonth() + 1 + "-" + yr;
       if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
     });
-    if (arrMonthsYears.length < 4) {
+    //if (arrMonthsYears.length < 4) {
       /*
        * make sure graph has appropiate end points on the graph
        * if the total count of data points is less than the initial set number of intervals
@@ -88,7 +88,7 @@ export default class SurveyGraph extends Component {
       minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
       minDate = new Date(minDate);
       //console.log("min date ", minDate, " max date ", maxDate)
-    }
+    //}
     const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
     const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
     // console.log("month diff between years ", monthsDiff);
@@ -230,7 +230,7 @@ export default class SurveyGraph extends Component {
     );
 
     const margins = {
-      top: 24,
+      top: 40,
       right: 16,
       bottom: 72, //88
       left: 64,
@@ -242,12 +242,13 @@ export default class SurveyGraph extends Component {
     const height = parentHeight - margins.top - margins.bottom;
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
-      .rangeRound([0, width]);
+      .rangeRound([0, width])
+      .nice();
     const yMaxValue = d3.max(data, (d) => (d.maxScore ? d.maxScore : d.score));
     const yScale = scaleLinear()
       .domain([0, yMaxValue])
       .range([height, 0])
-      .nice();
+      //.nice();
 
     const lineGenerator = line()
       .x((d) => xScale(d[xFieldName]))
@@ -298,8 +299,8 @@ export default class SurveyGraph extends Component {
       scale: yScale,
       orient: "left",
       transform: "translate(0, 0)",
-      ticks: 10,
-    };
+      ticks: yMaxValue,
+    }; 
 
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
@@ -337,6 +338,40 @@ export default class SurveyGraph extends Component {
         }}
       ></Grid>
     );
+
+    const valueLabelProps = {
+      dy: "1em",
+      fontSize: "0.65rem",
+      fontWeight: 600
+    }
+
+    const renderMaxYValueLabel = () => {
+      const labelProps = {
+        ...valueLabelProps,
+        y: 0 - Math.ceil(margins.top / 2) - 4,
+        x: 0 - Math.ceil(margins.left / 2) - 4 ,
+        fill: "red",
+      };
+      return (
+        <text {...labelProps}>
+          Worse
+        </text>
+      );
+    }
+
+    const renderMinYValueLabel = () => {
+      const labelProps = {
+        ...valueLabelProps,
+        y: 0 - Math.ceil(margins.top / 2) + graphHeight - margins.bottom - 8,
+        x: 0 - Math.ceil(margins.left / 2) - 4 ,
+        fill: "green",
+      };
+      return (
+        <text {...labelProps}>
+          Better
+        </text>
+      );
+    }
 
     const renderYAxisLabel = () => {
       const labelProps = {
@@ -401,6 +436,8 @@ export default class SurveyGraph extends Component {
                 {/* x grid */}
                 {renderXGrid()}
                 {renderYAxisLabel()}
+                {renderMaxYValueLabel()}
+                {renderMinYValueLabel()}
                 {/* x and y axis */}
                 <XYAxis {...{ xSettings, ySettings }} />
                 {/* lines drawn for screen display ONLY */}

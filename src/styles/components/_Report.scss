@@ -216,7 +216,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         flex-direction: column;
         align-items: center;
         min-width: calc(50% - 48px);
-        max-width: calc(100% - 240px);
+        max-width: calc(100% - 320px);
         .survey-graph {
           flex: 1 1;
           width: 100%;
@@ -289,7 +289,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-width: 30%;
+      min-width: 33%;
     }
     .legend {
       margin: 0 auto;
@@ -362,12 +362,27 @@ $selector-box-shadow: 0 2px 2px #383e40;
       }
       .axis.left {
         text {
+          font-size: 0.65rem;
           transform: translateX(-4px);
+          &:first-of-type, &:last-of-type {
+            font-size: 0.7rem;
+          }
+        }
+        .tick:first-of-type {
+          text {
+            color: green;
+          }
+        }
+        .tick:last-of-type {
+          text {
+            color: red;
+          }
         }
       }
       .axis.bottom {
         text {
-          transform: translateY(38px) translateX(-14px) rotate(-90deg);
+          font-size: 0.85rem;
+          transform: translateY(42px) translateX(-13px) rotate(-90deg);
         }
       }
     }
