@@ -96,8 +96,8 @@ export default class ScoringSummary extends Component {
     return `${totalAnsweredItems} / ${totalItems}`;
   }
   getScoreMeaning(data) {
-    if (!this.getCurrentData(data.ResponsesSummary)) return null;
-    return data.ResponsesSummary[0].scoreMeaning;
+    if (!this.getCurrentData(data.ResponsesSummary)) return "--";
+    return data.ResponsesSummary[0].scoreMeaning || "--";
   }
   getCurrentDisplayScore(data) {
     if (!this.getCurrentData(data.ResponsesSummary)) return "--";
