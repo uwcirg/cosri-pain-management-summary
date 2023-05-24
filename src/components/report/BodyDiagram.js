@@ -60,46 +60,52 @@ export default class BodyDiagram extends Component {
       }
     }
   }
-  render() {
-    if (!this.getData()) return false;
+  renderLegend() {
     const iconStyle = {
       width: 12,
       height: 12,
       border: "1px solid",
     };
     return (
-      <div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: 6,
-            marginTop: 8,
-            marginBottom: 24,
-            fontSize: "0.9rem",
-          }}
-          className="print-hidden"
-        >
-          <div className="flex">
-            <div
-              style={{
-                ...iconStyle,
-                background: "red",
-              }}
-            ></div>
-            <div>Worst Pain</div>
-          </div>
-          <div className="flex">
-            <div
-              style={{
-                ...iconStyle,
-                background: "yellow",
-              }}
-            ></div>
-            <div>Other Locations</div>
-          </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          gap: 6,
+          marginTop: 8,
+          marginBottom: 24,
+          fontSize: "0.9rem",
+        }}
+        className="print-hidden"
+      >
+        <div className="flex">
+          <div
+            style={{
+              ...iconStyle,
+              background: "red",
+            }}
+          ></div>
+          <div>Worst Pain</div>
         </div>
+        <div className="flex">
+          <div
+            style={{
+              ...iconStyle,
+              background: "yellow",
+            }}
+          ></div>
+          <div>Other Locations</div>
+        </div>
+      </div>
+    );
+  }
+  render() {
+    if (!this.getData()) return false;
+
+    return (
+      <div>
+        {this.renderLegend()}
         <object
           data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
           type="image/svg+xml"

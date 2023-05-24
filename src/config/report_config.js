@@ -43,7 +43,7 @@ const reportConfig = [
               pain scale.
             </p>
             <p>
-              Based on both{" "}
+              Based primarily on{" "}
               <a
                 href="https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7"
                 target="_blank"
@@ -51,7 +51,7 @@ const reportConfig = [
               >
                 https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7
               </a>{" "}
-              and{" "}
+              and to a lesser extent{" "}
               <a
                 href="https://loinc.org/91148-7/"
                 target="_blank"
@@ -59,13 +59,17 @@ const reportConfig = [
               >
                 https://loinc.org/91148-7/{" "}
               </a>{" "}
-              (not FHIR), conserving and harmonizing codes from those.
+              , using codes from the former.
             </p>
             <p>
-              Note that these two had different codes for the first question,
-              and that it was implemented in the loinc FHIR as a decimal (not a
-              choice), but academic references did not support that, so the
-              decision here was to implement a choice with novel codes.
+              Note that these two references had different codes for the first
+              question and that it was implemented at fhir.loinc.org as a
+              decimal (not a choice), but academic references did not support
+              that.
+            </p>
+            <p>
+              The CIRG-PEG-SUM item is a scoring variant used at UW Medicine's
+              Center for Pain Relief.
             </p>
           </div>
         ),

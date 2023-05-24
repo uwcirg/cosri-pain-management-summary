@@ -211,36 +211,26 @@ $selector-box-shadow: 0 2px 2px #383e40;
       flex: 1 1;
       &.graph {
         display: flex;
-        //  flex: 1.35 1 100%;
         flex: 1 1;
         flex-wrap: wrap;
         flex-direction: column;
         align-items: center;
         min-width: calc(50% - 48px);
         max-width: calc(100% - 240px);
-
-        //min-width: 45%;
         .survey-graph {
-          // flex: 1 1 100%;
           flex: 1 1;
           width: 100%;
-         // width: calc(100% - 64px);
-          //  @media (min-width: 1024px) {
-          //     width: 100%;
-          //  }
           @media (min-width: 992px) {
             width: calc(100% - 72px);
           }
           @media (min-width: 1600px) {
             width: calc(100% - 120px);
           }
-          //  max-width: 100%;
           .circle:hover {
             cursor: pointer;
           }
         }
         .no-entries {
-          //flex: 1 1;
           width: 60%;
           max-width: 100%;
           height: 100%;
@@ -251,34 +241,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           background-color: $color-gray-lightest;
         }
       }
-      //   @media (min-width: 768px) {
-      //     &.graph {
-      //       .survey-graph {
-      //         max-width: 50%;
-      //       }
-      //     }
-      //   }
-      //   @media (min-width: 1200px) {
-      //     &.graph {
-      //      // flex: 1.35 1;
-      //      flex: 1.35 1;
-      //       .survey-graph {
-      //         flex: 3 1;
-      //         max-width: 100%;
-      //       }
-      //     }
-      //   }
-      //   @media (min-width: 1400px) {
-      //     &.graph {
-      //      // flex: 1.1 1;
-      //      flex: 1.5 1;
-      //     }
-      //   }
-      //   @media (min-width: 1600px) {
-      //     &.graph {
-      //      flex: 1.1 1;
-      //     }
-      //   }
       &.no-entries {
         border: 0;
         padding: 0;
@@ -296,8 +258,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         &.full-width {
           width: calc(100% - 16px);
-          // width: 100%;
-          // align-self: stretch;
         }
         padding: 8px;
        
@@ -315,11 +275,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
               min-width: 40px;
             }
           }
-        //   tr:first-of-type {
-        //     td {
-        //       padding: 6px 4px 0;
-        //     }
-        //   }
         }
         td:not(:first-of-type) {
           text-align: center;
@@ -379,8 +334,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           border: 1px solid;
           border-radius: 12px;
           font-size: 0.7rem;
-        //  width: 20px;
-         // height: 20px;
           cursor: pointer;
           &:not([disabled]) {
             color: $link-color;

@@ -1,4 +1,3 @@
-$print-header-height: 102px;
 @media print {
   .print-only {
     display: block;
@@ -39,9 +38,6 @@ $print-header-height: 102px;
       page-break-inside: avoid;
     }
   }
-  //   .Collapsible:not(:first-of-type) {
-  //     padding-top: $print-header-height;
-  //   }
   .report {
     .Collapsible {
         &:not(:first-of-type) {
@@ -65,18 +61,13 @@ $print-header-height: 102px;
         border: 0;
       }
       .panel__item {
-     //   page-break-inside: avoid;
         height: 100%;
       }
       .panel {
         page-break-inside: avoid;
       }
-    //   object {
-    //     transform: scale(0.7);
-    //   }
     }
     .sub-section {
-      //padding-top: $print-header-height;
       box-shadow: none;
       border: 0;
       background-color: #FFF;
