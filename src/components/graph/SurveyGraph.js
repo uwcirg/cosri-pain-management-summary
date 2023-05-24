@@ -80,14 +80,14 @@ export default class SurveyGraph extends Component {
       if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
     });
     //if (arrMonthsYears.length < 4) {
-      /*
-       * make sure graph has appropiate end points on the graph
-       * if the total count of data points is less than the initial set number of intervals
-       */
-      let calcMinDate = new Date(minDate.valueOf());
-      minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
-      minDate = new Date(minDate);
-      //console.log("min date ", minDate, " max date ", maxDate)
+    /*
+     * make sure graph has appropiate end points on the graph
+     * if the total count of data points is less than the initial set number of intervals
+     */
+    let calcMinDate = new Date(minDate.valueOf());
+    minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
+    minDate = new Date(minDate);
+    //console.log("min date ", minDate, " max date ", maxDate)
     //}
     const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
     const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
@@ -169,11 +169,16 @@ export default class SurveyGraph extends Component {
     return 0;
   }
 
+  onlyOneLeft() {
+    return (
+      this.state.graphData &&
+      [...new Set(this.state.graphData.map((item) => item.qid))].length === 1
+    );
+  }
+
   renderLegend() {
     const qids = this.getQIds();
-    const onlyOneLeft =
-      this.state.graphData &&
-      [...new Set(this.state.graphData.map((item) => item.qid))].length === 1;
+    const onlyOneLeft = this.onlyOneLeft();
     return (
       <div className="legend-container">
         <div className="legend">
@@ -245,10 +250,8 @@ export default class SurveyGraph extends Component {
       .rangeRound([0, width])
       .nice();
     const yMaxValue = d3.max(data, (d) => (d.maxScore ? d.maxScore : d.score));
-    const yScale = scaleLinear()
-      .domain([0, yMaxValue])
-      .range([height, 0])
-      //.nice();
+    const yScale = scaleLinear().domain([0, yMaxValue]).range([height, 0]);
+    //.nice();
 
     const lineGenerator = line()
       .x((d) => xScale(d[xFieldName]))
@@ -300,7 +303,8 @@ export default class SurveyGraph extends Component {
       orient: "left",
       transform: "translate(0, 0)",
       ticks: yMaxValue,
-    }; 
+      className: this.onlyOneLeft() ? "show-max-min-labels" : "",
+    };
 
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
@@ -342,36 +346,28 @@ export default class SurveyGraph extends Component {
     const valueLabelProps = {
       dy: "1em",
       fontSize: "0.65rem",
-      fontWeight: 600
-    }
+      fontWeight: 600,
+    };
 
     const renderMaxYValueLabel = () => {
       const labelProps = {
         ...valueLabelProps,
         y: 0 - Math.ceil(margins.top / 2) - 4,
-        x: 0 - Math.ceil(margins.left / 2) - 4 ,
+        x: 0 - Math.ceil(margins.left / 2) - 12,
         fill: "red",
       };
-      return (
-        <text {...labelProps}>
-          Worse
-        </text>
-      );
-    }
+      return <text {...labelProps}>Worse</text>;
+    };
 
     const renderMinYValueLabel = () => {
       const labelProps = {
         ...valueLabelProps,
-        y: 0 - Math.ceil(margins.top / 2) + graphHeight - margins.bottom - 8,
-        x: 0 - Math.ceil(margins.left / 2) - 4 ,
+        y: 0 - Math.ceil(margins.top / 2) + graphHeight - margins.bottom - 12,
+        x: 0 - Math.ceil(margins.left / 2) - 12,
         fill: "green",
       };
-      return (
-        <text {...labelProps}>
-          Better
-        </text>
-      );
-    }
+      return <text {...labelProps}>Better</text>;
+    };
 
     const renderYAxisLabel = () => {
       const labelProps = {
@@ -436,8 +432,8 @@ export default class SurveyGraph extends Component {
                 {/* x grid */}
                 {renderXGrid()}
                 {renderYAxisLabel()}
-                {renderMaxYValueLabel()}
-                {renderMinYValueLabel()}
+                {this.onlyOneLeft() && renderMaxYValueLabel()}
+                {this.onlyOneLeft() && renderMinYValueLabel()}
                 {/* x and y axis */}
                 <XYAxis {...{ xSettings, ySettings }} />
                 {/* lines drawn for screen display ONLY */}

@@ -75,7 +75,7 @@ export default class BodyDiagram extends Component {
           gap: 6,
           marginTop: 8,
           marginBottom: 24,
-          fontSize: "0.9rem",
+          fontSize: "0.8rem",
         }}
         className="print-hidden"
       >

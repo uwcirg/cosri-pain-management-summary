@@ -39,9 +39,9 @@ class Axis extends React.Component {
     select(node).call(axis);
   }
   render() {
-    const { orient, transform } = this.props;
+    const { orient, transform, className} = this.props;
     return (
-      <g ref={this.ref} transform={transform} className={`${orient} axis`} />
+      <g ref={this.ref} transform={transform} className={`${orient} axis ${className}`} />
     );
   }
 }

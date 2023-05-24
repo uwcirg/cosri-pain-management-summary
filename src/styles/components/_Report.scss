@@ -214,6 +214,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         flex: 1 1;
         flex-wrap: wrap;
         flex-direction: column;
+        gap: 12px;
         align-items: center;
         min-width: calc(50% - 48px);
         max-width: calc(100% - 320px);
@@ -260,7 +261,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           width: calc(100% - 16px);
         }
         padding: 8px;
-       
+
         .table {
           width: 100%;
           padding-left: 4px;
@@ -364,18 +365,21 @@ $selector-box-shadow: 0 2px 2px #383e40;
         text {
           font-size: 0.65rem;
           transform: translateX(-4px);
-          &:first-of-type, &:last-of-type {
+          &:first-of-type,
+          &:last-of-type {
             font-size: 0.7rem;
           }
         }
-        .tick:first-of-type {
-          text {
-            color: green;
+        &.show-max-min-labels {
+          .tick:first-of-type {
+            text {
+              color: green;
+            }
           }
-        }
-        .tick:last-of-type {
-          text {
-            color: red;
+          .tick:last-of-type {
+            text {
+              color: red;
+            }
           }
         }
       }
