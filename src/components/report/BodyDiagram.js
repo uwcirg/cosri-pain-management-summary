@@ -66,6 +66,8 @@ export default class BodyDiagram extends Component {
       height: 12,
       border: "1px solid",
     };
+    const WORST_PAIN_COLOR = "red";
+    const OTHER_LOCATION_COLOR = "yellow";
     return (
       <div
         style={{
@@ -83,7 +85,7 @@ export default class BodyDiagram extends Component {
           <div
             style={{
               ...iconStyle,
-              background: "red",
+              background: WORST_PAIN_COLOR,
             }}
           ></div>
           <div>Worst Pain</div>
@@ -92,7 +94,7 @@ export default class BodyDiagram extends Component {
           <div
             style={{
               ...iconStyle,
-              background: "yellow",
+              background: OTHER_LOCATION_COLOR,
             }}
           ></div>
           <div>Other Locations</div>
