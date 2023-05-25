@@ -53,12 +53,12 @@ define ResponsesSummary:
     score: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(ScoringQuestionId, I.item))), // sum score
     sumScoreFromQuestionnaire: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(SumScoreQuestionId, I.item))), // sum score
     meanScoreFromQuestionnaire: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(MeanScoreQuestionId, I.item))), // mean score
-    scoreSeverity:
-        case
-          when score > 15 then 'high'
-          when score between 1 and 14 then 'mild'
-          else 'low' 
-        end,
+    //scoreSeverity:
+        // case
+        //   when score > 15 then 'high'
+        //   when score between 1 and 14 then 'mild'
+        //   else 'low' 
+        // end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ''),
     responses: if PegQuestionnaire is not null then 
         LogicHelper.getResponsesByQuestionnaire(PegQuestionnaire, I.item, '') else 
@@ -86,11 +86,11 @@ define ResponsesSummary:
       score: if sumScore is not null then sumScore else score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
-      scoreSeverity: scoreSeverity,
-      scoreMeaning: case
-        when scoreSeverity = 'high' then 'high pain'
-        else '' 
-      end,
+      //scoreSeverity: scoreSeverity,
+      // scoreMeaning: case
+      //   when scoreSeverity = 'high' then 'high pain'
+      //   else '' 
+      // end,
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId), totalItems}),
       totalItems: totalItems,

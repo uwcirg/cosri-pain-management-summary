@@ -286,64 +286,6 @@
                      }
                   }
                }, {
-                  "identifier" : "scoreSeverity",
-                  "expression" : {
-                     "type" : "Case",
-                     "caseItem" : [ {
-                        "when" : {
-                           "type" : "Greater",
-                           "operand" : [ {
-                              "name" : "score",
-                              "type" : "QueryLetRef"
-                           }, {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                              "value" : "15",
-                              "type" : "Literal"
-                           } ]
-                        },
-                        "then" : {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                           "value" : "high",
-                           "type" : "Literal"
-                        }
-                     }, {
-                        "when" : {
-                           "type" : "And",
-                           "operand" : [ {
-                              "type" : "GreaterOrEqual",
-                              "operand" : [ {
-                                 "name" : "score",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "1",
-                                 "type" : "Literal"
-                              } ]
-                           }, {
-                              "type" : "LessOrEqual",
-                              "operand" : [ {
-                                 "name" : "score",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "14",
-                                 "type" : "Literal"
-                              } ]
-                           } ]
-                        },
-                        "then" : {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                           "value" : "mild",
-                           "type" : "Literal"
-                        }
-                     } ],
-                     "else" : {
-                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                        "value" : "low",
-                        "type" : "Literal"
-                     }
-                  }
-               }, {
                   "identifier" : "responsesOnly",
                   "expression" : {
                      "name" : "FormattedQuestionnaireResponses",
@@ -699,40 +641,6 @@
                            "source" : {
                               "name" : "ScoreParams",
                               "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "scoreSeverity",
-                        "value" : {
-                           "name" : "scoreSeverity",
-                           "type" : "QueryLetRef"
-                        }
-                     }, {
-                        "name" : "scoreMeaning",
-                        "value" : {
-                           "type" : "Case",
-                           "caseItem" : [ {
-                              "when" : {
-                                 "type" : "Equal",
-                                 "operand" : [ {
-                                    "name" : "scoreSeverity",
-                                    "type" : "QueryLetRef"
-                                 }, {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                    "value" : "high",
-                                    "type" : "Literal"
-                                 } ]
-                              },
-                              "then" : {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                 "value" : "high pain",
-                                 "type" : "Literal"
-                              }
-                           } ],
-                           "else" : {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                              "value" : "",
-                              "type" : "Literal"
                            }
                         }
                      }, {
