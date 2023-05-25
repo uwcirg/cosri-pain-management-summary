@@ -238,7 +238,7 @@ export default class SurveyGraph extends Component {
       top: 40,
       right: 16,
       bottom: 72, //88
-      left: 64,
+      left: 56,
     };
     const parentWidth = 540;
     // 396
@@ -372,7 +372,7 @@ export default class SurveyGraph extends Component {
     const renderYAxisLabel = () => {
       const labelProps = {
         transform: "rotate(-90)",
-        y: 0 - margins.left + 4,
+        y: 0 - margins.left,
         x: 0 - graphHeight / 2,
         dy: "1em",
       };
