@@ -302,42 +302,6 @@
                      } ]
                   }
                }, {
-                  "identifier" : "responses",
-                  "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "name" : "PegQuestionnaire",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     },
-                     "then" : {
-                        "name" : "getResponsesByQuestionnaire",
-                        "libraryName" : "LogicHelper",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "PegQuestionnaire",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "path" : "item",
-                           "scope" : "I",
-                           "type" : "Property"
-                        }, {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                           "value" : "",
-                           "type" : "Literal"
-                        } ]
-                     },
-                     "else" : {
-                        "name" : "responsesOnly",
-                        "type" : "QueryLetRef"
-                     }
-                  }
-               }, {
                   "identifier" : "Question1Score",
                   "expression" : {
                      "type" : "Coalesce",
@@ -512,7 +476,7 @@
                      }, {
                         "name" : "responses",
                         "value" : {
-                           "name" : "responses",
+                           "name" : "responsesOnly",
                            "type" : "QueryLetRef"
                         }
                      }, {

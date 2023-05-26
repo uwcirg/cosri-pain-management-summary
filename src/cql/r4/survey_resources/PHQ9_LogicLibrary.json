@@ -768,56 +768,11 @@
                      } ]
                   }
                }, {
-                  "identifier" : "responses",
-                  "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "name" : "Phq9Questionnaire",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     },
-                     "then" : {
-                        "name" : "getResponsesByQuestionnaire",
-                        "libraryName" : "LogicHelper",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "Phq9Questionnaire",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "path" : "item",
-                           "scope" : "I",
-                           "type" : "Property"
-                        }, {
-                           "name" : "ScoringQuestionId",
-                           "type" : "ExpressionRef"
-                        } ]
-                     },
-                     "else" : {
-                        "name" : "responsesOnly",
-                        "type" : "QueryLetRef"
-                     }
-                  }
-               }, {
                   "identifier" : "totalItems",
                   "expression" : {
-                     "type" : "Length",
-                     "operand" : {
-                        "name" : "GetAnswerLinkIdsByQuestionnaire",
-                        "libraryName" : "LogicHelper",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "Phq9Questionnaire",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "name" : "ScoringQuestionId",
-                           "type" : "ExpressionRef"
-                        } ]
-                     }
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "9",
+                     "type" : "Literal"
                   }
                } ],
                "relationship" : [ ],
@@ -863,7 +818,7 @@
                      }, {
                         "name" : "responses",
                         "value" : {
-                           "name" : "responses",
+                           "name" : "responsesOnly",
                            "type" : "QueryLetRef"
                         }
                      }, {

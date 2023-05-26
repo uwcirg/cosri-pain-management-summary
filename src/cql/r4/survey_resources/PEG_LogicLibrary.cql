@@ -60,9 +60,9 @@ define ResponsesSummary:
         //   else 'low' 
         // end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ''),
-    responses: if PegQuestionnaire is not null then 
-        LogicHelper.getResponsesByQuestionnaire(PegQuestionnaire, I.item, '') else 
-        responsesOnly,
+    // responses: if PegQuestionnaire is not null then 
+    //     LogicHelper.getResponsesByQuestionnaire(PegQuestionnaire, I.item, '') else 
+    //     responsesOnly,
     Question1Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question1LinkId, I.item))), 0),
     Question2Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item))), 0),
     Question3Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item))), 0),
@@ -74,7 +74,7 @@ define ResponsesSummary:
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: responses,
+      responses: responsesOnly,
       Question1Score: Question1Score,
       Question2Score: Question2Score,
       Question3Score: Question3Score,

@@ -73,16 +73,17 @@ define ResponsesSummary:
           else 'low' 
         end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
-    responses: if Phq9Questionnaire is not null then 
-        LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
-        responsesOnly,
-    totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId))
+    totalItems: 9
+    // responses: if Phq9Questionnaire is not null then 
+    //     LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
+    //     responsesOnly,
+    // totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId))
     return Tuple {
       id: I.id.value,
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: responses,
+      responses: responsesOnly,
       score: 
       case 
         when scoreQuestionResponse is not null then scoreQuestionResponse
