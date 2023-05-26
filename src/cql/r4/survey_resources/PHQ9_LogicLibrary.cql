@@ -52,7 +52,7 @@ define QuestionnaireResponses:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    score: 
+    itemTotalScore: 
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question1LinkId, extensionAnswerIndex)), 0) * 1 +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question2LinkId, extensionAnswerIndex)), 0) * 1 +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question3LinkId, extensionAnswerIndex)), 0) * 1 + 
@@ -64,6 +64,12 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0) * 1,
     scoreQuestionResponse: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId)),
     scoreQuestion2Response: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId2)),
+    score:
+      case 
+          when scoreQuestionResponse is not null then scoreQuestionResponse
+          when scoreQuestion2Response is not null then scoreQuestion2Response
+          else itemTotalScore
+      end,
     scoreSeverity:
         case
           when score >= 20 then 'high'
@@ -84,12 +90,7 @@ define ResponsesSummary:
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responsesOnly,
-      score: 
-      case 
-        when scoreQuestionResponse is not null then scoreQuestionResponse
-        when scoreQuestion2Response is not null then scoreQuestion2Response
-        else score
-      end,
+      score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
       scoreSeverity: scoreSeverity,

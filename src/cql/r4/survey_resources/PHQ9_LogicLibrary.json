@@ -257,7 +257,7 @@
                   }
                } ],
                "let" : [ {
-                  "identifier" : "score",
+                  "identifier" : "itemTotalScore",
                   "expression" : {
                      "type" : "Add",
                      "operand" : [ {
@@ -635,6 +635,64 @@
                      }
                   }
                }, {
+                  "identifier" : "score",
+                  "expression" : {
+                     "type" : "Case",
+                     "caseItem" : [ {
+                        "when" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "scoreQuestionResponse",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        },
+                        "then" : {
+                           "name" : "ToInteger",
+                           "libraryName" : "FHIRHelpers",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}integer",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "scoreQuestionResponse",
+                                 "type" : "QueryLetRef"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "when" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "scoreQuestion2Response",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        },
+                        "then" : {
+                           "name" : "ToInteger",
+                           "libraryName" : "FHIRHelpers",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "asType" : "{http://hl7.org/fhir}integer",
+                              "type" : "As",
+                              "operand" : {
+                                 "name" : "scoreQuestion2Response",
+                                 "type" : "QueryLetRef"
+                              }
+                           } ]
+                        }
+                     } ],
+                     "else" : {
+                        "name" : "itemTotalScore",
+                        "type" : "QueryLetRef"
+                     }
+                  }
+               }, {
                   "identifier" : "scoreSeverity",
                   "expression" : {
                      "type" : "Case",
@@ -824,60 +882,8 @@
                      }, {
                         "name" : "score",
                         "value" : {
-                           "type" : "Case",
-                           "caseItem" : [ {
-                              "when" : {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "name" : "scoreQuestionResponse",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }
-                              },
-                              "then" : {
-                                 "name" : "ToInteger",
-                                 "libraryName" : "FHIRHelpers",
-                                 "type" : "FunctionRef",
-                                 "operand" : [ {
-                                    "asType" : "{http://hl7.org/fhir}integer",
-                                    "type" : "As",
-                                    "operand" : {
-                                       "name" : "scoreQuestionResponse",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 } ]
-                              }
-                           }, {
-                              "when" : {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "name" : "scoreQuestion2Response",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }
-                              },
-                              "then" : {
-                                 "name" : "ToInteger",
-                                 "libraryName" : "FHIRHelpers",
-                                 "type" : "FunctionRef",
-                                 "operand" : [ {
-                                    "asType" : "{http://hl7.org/fhir}integer",
-                                    "type" : "As",
-                                    "operand" : {
-                                       "name" : "scoreQuestion2Response",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 } ]
-                              }
-                           } ],
-                           "else" : {
-                              "name" : "score",
-                              "type" : "QueryLetRef"
-                           }
+                           "name" : "score",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "minScore",

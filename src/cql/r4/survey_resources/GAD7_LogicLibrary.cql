@@ -59,7 +59,7 @@ define ResponsesSummary:
     q5Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question5LinkId, answerExtensionIndex)),
     q6Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
     q7Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
-    score: 
+    itemTotalScore: 
           Coalesce(q1Score, 0) * 1 +
           Coalesce(q2Score, 0) * 1 +
           Coalesce(q3Score, 0) * 1 + 
@@ -69,6 +69,12 @@ define ResponsesSummary:
           Coalesce(q7Score, 0) * 1,
     scoreQuestionResponse: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId)),
     scoreQuestion2Response: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId2)),
+    score: 
+      case 
+        when scoreQuestionResponse is not null then scoreQuestionResponse
+        when scoreQuestion2Response is not null then scoreQuestion2Response
+        else itemTotalScore
+      end,
     scoreSeverity: case
         when score > 14 then 'high'
         when score between 10 and 14 then 'moderate'
@@ -76,21 +82,17 @@ define ResponsesSummary:
         else 'low'
       end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
-    responses: if Gad7Questionnaire is not null then 
-        LogicHelper.getResponsesByQuestionnaire(Gad7Questionnaire, I.item, ScoringQuestionId) else 
-        responsesOnly
+    totalItems: 7
+    // responses: if Gad7Questionnaire is not null then 
+    //     LogicHelper.getResponsesByQuestionnaire(Gad7Questionnaire, I.item, ScoringQuestionId) else 
+    //     responsesOnly
     return Tuple {
       id: I.id.value,
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: responses,
-      score: 
-        case 
-          when scoreQuestionResponse is not null then scoreQuestionResponse
-          when scoreQuestion2Response is not null then scoreQuestion2Response
-          else score
-        end,
+      responses: responsesOnly,
+      score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
       scoreSeverity: scoreSeverity,
@@ -101,8 +103,8 @@ define ResponsesSummary:
         else if score > 0 then 'minimal anxiety' else '' 
       end,
       comparisonToAlert: 'higher',
-      totalAnsweredItems: Length((I.item) O where O.linkId.value != ScoringQuestionId),
-      totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Gad7Questionnaire, ScoringQuestionId)),
+      totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId), totalItems}),
+      totalItems: totalItems,
       authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value
     }
