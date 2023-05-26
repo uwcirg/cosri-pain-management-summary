@@ -8,10 +8,14 @@ export default class ResponsesSummary extends Component {
     super(...arguments);
     this.state = { open: false };
   }
-  getMatchedLinkIdAnswer(responses, linkId) {
-    if (!linkId) return null;
+  getMatchedAnswerByItem(responses, targetItem) {
+    if (!targetItem) return null;
     if (!responses) return null;
-    const matchedItem = responses.filter((item) => item.linkId === linkId);
+    const matchedItem = responses.filter(
+      (item) =>
+        item.linkId === targetItem.linkId ||
+        item.question === targetItem.question
+    );
     if (!matchedItem.length) return null;
     return matchedItem[0].answer || "--";
   }
@@ -86,13 +90,14 @@ export default class ResponsesSummary extends Component {
                   item.question
                 )}
               </td>
-              <td>{item.answer || parseInt(item.answer) === 0 ? item.answer : "--"}</td>
+              <td>
+                {item.answer || parseInt(item.answer) === 0
+                  ? item.answer
+                  : "--"}
+              </td>
               {prevResponses && (
                 <td>
-                  {this.getMatchedLinkIdAnswer(
-                    prevResponses.responses,
-                    item.linkId
-                  )}
+                  {this.getMatchedAnswerByItem(prevResponses.responses, item)}
                 </td>
               )}
             </tr>
