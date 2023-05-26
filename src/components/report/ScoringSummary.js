@@ -42,16 +42,16 @@ export default class ScoringSummary extends Component {
     const currentScore = this.getCurrentScore(data.ResponsesSummary);
     const prevScore = this.getPreviousScore(data.ResponsesSummary);
     //debug
-    console.log(
-      "current score ",
-      currentScore,
-      "current score is number? ",
-      isNumber(currentScore),
-      "prev score ",
-      prevScore,
-      " prev score is number? ",
-      isNumber(prevScore)
-    );
+    // console.log(
+    //   "current score ",
+    //   currentScore,
+    //   "current score is number? ",
+    //   isNumber(currentScore),
+    //   "prev score ",
+    //   prevScore,
+    //   " prev score is number? ",
+    //   isNumber(prevScore)
+    // );
     const comparisonToAlert = currentData && currentData.comparisonToAlert
       ? currentData.comparisonToAlert
       : ""; // TODO get it from response summary data

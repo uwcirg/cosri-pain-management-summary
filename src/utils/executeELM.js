@@ -71,10 +71,14 @@ async function executeELM(collector, oResourceTypes) {
         console.log("resourceTypes ", resourceTypes);
 
         // Don't return until all the requests have been resolved
-        return Promise.all(requests).then((requestResults) => {
+        return Promise.allSettled(requests).then((requestResults) => {
           let resources = [];
           requestResults.forEach((result) => {
-            result.forEach((item) => {
+            const {status, value} = result;
+            console.log("status ", status, " result ", value);
+            if (status === "rejected") return true;
+            if (!value || !value.length) return true;
+            value.forEach((item) => {
               if (String(item.resourceType).toLowerCase() === "bundle") {
                 if (item.entry) {
                   item.entry.forEach((o) => {
