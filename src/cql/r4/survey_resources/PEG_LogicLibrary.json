@@ -512,7 +512,7 @@
                      }, {
                         "name" : "responses",
                         "value" : {
-                           "name" : "responsesOnly",
+                           "name" : "responses",
                            "type" : "QueryLetRef"
                         }
                      }, {

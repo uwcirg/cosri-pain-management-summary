@@ -84,7 +84,7 @@ define ResponsesSummary:
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: responsesOnly,
+      responses: responses,
       score: 
         case 
           when scoreQuestionResponse is not null then scoreQuestionResponse
