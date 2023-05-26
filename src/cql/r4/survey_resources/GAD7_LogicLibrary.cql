@@ -23,6 +23,7 @@ define question5LinkId: '/69735-9'
 define question6LinkId: '/69689-8'
 define question7LinkId: '/69736-7'
 define ScoringQuestionId: '/70274-6'
+define ScoringQuestionId2: '70274-6'  //TODO verify which one is the correct question id
 
 define answerExtensionIndex: 0
 define ScoreParams: Tuple {
@@ -66,6 +67,8 @@ define ResponsesSummary:
           Coalesce(q5Score, 0) * 1 +
           Coalesce(q6Score, 0) * 1 +
           Coalesce(q7Score, 0) * 1,
+    scoreQuestionResponse: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId)),
+    scoreQuestion2Response: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId2)),
     scoreSeverity: case
         when score > 14 then 'high'
         when score between 10 and 14 then 'moderate'
@@ -81,8 +84,13 @@ define ResponsesSummary:
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: responses,
-      score: score,
+      responses: responsesOnly,
+      score: 
+        case 
+          when scoreQuestionResponse is not null then scoreQuestionResponse
+          when scoreQuestion2Response is not null then scoreQuestion2Response
+          else score
+        end,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
       scoreSeverity: scoreSeverity,

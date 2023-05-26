@@ -134,7 +134,9 @@ export default class ResponsesSummary extends Component {
         <thead>
           <tr>
             {columns.map((column, index) => (
-              <th key={`header_${column.key}_${index}`}>{column.description}</th>
+              <th key={`header_${column.key}_${index}`}>
+                {column.description}
+              </th>
             ))}
           </tr>
         </thead>
@@ -171,7 +173,9 @@ export default class ResponsesSummary extends Component {
     const hasSummary =
       summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
     if (!hasSummary) return <td className="text-center">--</td>;
-    return <td className="text-center">{this.getNumResponses(summary)}</td>;
+    return (
+      <td className="text-center">{this.getNumResponses(summary) || "--"}</td>
+    );
   }
   renderResponsesLinkTableCell(lastResponsesDate, key) {
     return (
@@ -210,7 +214,10 @@ export default class ResponsesSummary extends Component {
               {columns &&
                 columns.map((column, index) => {
                   if (column.key === "score")
-                    return this.renderScoreTableCell(summary, `score_cell_${index}`);
+                    return this.renderScoreTableCell(
+                      summary,
+                      `score_cell_${index}`
+                    );
                   else if (column.key === "responses")
                     return this.renderResponsesLinkTableCell(
                       this.getDisplayDate(currentResponses),
@@ -218,8 +225,23 @@ export default class ResponsesSummary extends Component {
                     );
                   else {
                     if (currentResponses[column.key])
-                      return <td className="text-center" key={`${column.key}_${index}`}>{currentResponses[column.key]}</td>;
-                    else return <td className="text-center"  key={`${column.key}_${index}`}>--</td>;
+                      return (
+                        <td
+                          className="text-center"
+                          key={`${column.key}_${index}`}
+                        >
+                          {currentResponses[column.key]}
+                        </td>
+                      );
+                    else
+                      return (
+                        <td
+                          className="text-center"
+                          key={`${column.key}_${index}`}
+                        >
+                          --
+                        </td>
+                      );
                   }
                 })}
               {!columns && (

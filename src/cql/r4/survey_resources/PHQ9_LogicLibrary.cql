@@ -25,6 +25,7 @@ define question7LinkId: '/44252-5'
 define question8LinkId: '/44253-3'
 define question9LinkId: '/44260-8'
 define ScoringQuestionId: '/44261-6'
+define ScoringQuestionId2: '44261-6' //which one is it?
 define extensionAnswerIndex: 0
 define ScoreParams: Tuple {
   minScore: 0,
@@ -61,6 +62,8 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)), 0) * 1 +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) * 1 +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0) * 1,
+    scoreQuestionResponse: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId)),
+    scoreQuestion2Response: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId2)),
     scoreSeverity:
         case
           when score >= 20 then 'high'
@@ -79,8 +82,13 @@ define ResponsesSummary:
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: responses,
-      score: score,
+      responses: responsesOnly,
+      score: 
+      case 
+        when scoreQuestionResponse is not null then scoreQuestionResponse
+        when scoreQuestion2Response is not null then scoreQuestion2Response
+        else score
+      end,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
       scoreSeverity: scoreSeverity,

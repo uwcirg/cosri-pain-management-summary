@@ -74,7 +74,7 @@ define ResponsesSummary:
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: responses,
+      responses: responsesOnly,
       Question1Score: Question1Score,
       Question2Score: Question2Score,
       Question3Score: Question3Score,
