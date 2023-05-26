@@ -86,7 +86,7 @@ export default class ResponsesSummary extends Component {
                   item.question
                 )}
               </td>
-              <td>{item.answer || "--"}</td>
+              <td>{item.answer || parseInt(item.answer) === 0 ? item.answer : "--"}</td>
               {prevResponses && (
                 <td>
                   {this.getMatchedLinkIdAnswer(
