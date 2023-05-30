@@ -603,15 +603,21 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getResponseByQuestionId",
+                        "name" : "getScoringByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
+                           "name" : "Phq9Questionnaire",
+                           "type" : "ExpressionRef"
+                        }, {
                            "path" : "item",
                            "scope" : "I",
                            "type" : "Property"
                         }, {
                            "name" : "ScoringQuestionId",
+                           "type" : "ExpressionRef"
+                        }, {
+                           "name" : "extensionAnswerIndex",
                            "type" : "ExpressionRef"
                         } ]
                      }
@@ -621,15 +627,21 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getResponseByQuestionId",
+                        "name" : "getScoringByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
+                           "name" : "Phq9Questionnaire",
+                           "type" : "ExpressionRef"
+                        }, {
                            "path" : "item",
                            "scope" : "I",
                            "type" : "Property"
                         }, {
                            "name" : "ScoringQuestionId2",
+                           "type" : "ExpressionRef"
+                        }, {
+                           "name" : "extensionAnswerIndex",
                            "type" : "ExpressionRef"
                         } ]
                      }
@@ -650,17 +662,8 @@
                            }
                         },
                         "then" : {
-                           "name" : "ToInteger",
-                           "libraryName" : "FHIRHelpers",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "asType" : "{http://hl7.org/fhir}integer",
-                              "type" : "As",
-                              "operand" : {
-                                 "name" : "scoreQuestionResponse",
-                                 "type" : "QueryLetRef"
-                              }
-                           } ]
+                           "name" : "scoreQuestionResponse",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "when" : {
@@ -674,17 +677,8 @@
                            }
                         },
                         "then" : {
-                           "name" : "ToInteger",
-                           "libraryName" : "FHIRHelpers",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "asType" : "{http://hl7.org/fhir}integer",
-                              "type" : "As",
-                              "operand" : {
-                                 "name" : "scoreQuestion2Response",
-                                 "type" : "QueryLetRef"
-                              }
-                           } ]
+                           "name" : "scoreQuestion2Response",
+                           "type" : "QueryLetRef"
                         }
                      } ],
                      "else" : {
@@ -880,6 +874,18 @@
                            "type" : "QueryLetRef"
                         }
                      }, {
+                        "name" : "scoringQuestionResponse",
+                        "value" : {
+                           "name" : "scoreQuestionResponse",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "scoringQuestion2Response",
+                        "value" : {
+                           "name" : "scoreQuestion2Response",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "name" : "score",
                         "value" : {
                            "name" : "score",
@@ -1036,22 +1042,42 @@
                                     } ],
                                     "relationship" : [ ],
                                     "where" : {
-                                       "type" : "Not",
-                                       "operand" : {
-                                          "type" : "Equal",
-                                          "operand" : [ {
-                                             "path" : "value",
-                                             "type" : "Property",
-                                             "source" : {
-                                                "path" : "linkId",
-                                                "scope" : "O",
-                                                "type" : "Property"
-                                             }
-                                          }, {
-                                             "name" : "ScoringQuestionId",
-                                             "type" : "ExpressionRef"
-                                          } ]
-                                       }
+                                       "type" : "And",
+                                       "operand" : [ {
+                                          "type" : "Not",
+                                          "operand" : {
+                                             "type" : "Equal",
+                                             "operand" : [ {
+                                                "path" : "value",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "path" : "linkId",
+                                                   "scope" : "O",
+                                                   "type" : "Property"
+                                                }
+                                             }, {
+                                                "name" : "ScoringQuestionId",
+                                                "type" : "ExpressionRef"
+                                             } ]
+                                          }
+                                       }, {
+                                          "type" : "Not",
+                                          "operand" : {
+                                             "type" : "Equal",
+                                             "operand" : [ {
+                                                "path" : "value",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "path" : "linkId",
+                                                   "scope" : "O",
+                                                   "type" : "Property"
+                                                }
+                                             }, {
+                                                "name" : "ScoringQuestionId2",
+                                                "type" : "ExpressionRef"
+                                             } ]
+                                          }
+                                       } ]
                                     }
                                  }
                               }, {

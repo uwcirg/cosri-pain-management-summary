@@ -13,7 +13,8 @@ export default class ResponsesSummary extends Component {
     if (!responses) return null;
     const matchedItem = responses.filter(
       (item) =>
-        item.linkId === targetItem.linkId ||
+        String(item.linkId).includes(targetItem.linkId) ||
+        String(targetItem.linkId).includes(item.linkId) ||
         item.question === targetItem.question
     );
     if (!matchedItem.length) return null;

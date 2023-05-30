@@ -67,8 +67,8 @@ define ResponsesSummary:
           Coalesce(q5Score, 0) * 1 +
           Coalesce(q6Score, 0) * 1 +
           Coalesce(q7Score, 0) * 1,
-    scoreQuestionResponse: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId)),
-    scoreQuestion2Response: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId2)),
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
+    scoreQuestion2Response: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, ScoringQuestionId2, answerExtensionIndex)),
     score: 
       case 
         when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -92,6 +92,8 @@ define ResponsesSummary:
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responsesOnly,
+      scoreQuestionResponse: scoreQuestionResponse,
+      scoreQuestion2Response: scoreQuestion2Response,
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
@@ -103,7 +105,7 @@ define ResponsesSummary:
         else if score > 0 then 'minimal anxiety' else '' 
       end,
       comparisonToAlert: 'higher',
-      totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId), totalItems}),
+      totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId and O.linkId.value != ScoringQuestionId2), totalItems}),
       totalItems: totalItems,
       authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value

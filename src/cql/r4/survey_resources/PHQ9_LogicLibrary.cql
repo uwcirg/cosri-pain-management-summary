@@ -62,8 +62,8 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)), 0) * 1 +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) * 1 +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0) * 1,
-    scoreQuestionResponse: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId)),
-    scoreQuestion2Response: First(LogicHelper.getResponseByQuestionId(I.item, ScoringQuestionId2)),
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
+    scoreQuestion2Response: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, ScoringQuestionId2, extensionAnswerIndex)),
     score:
       case 
           when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -90,6 +90,8 @@ define ResponsesSummary:
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responsesOnly,
+      scoringQuestionResponse: scoreQuestionResponse,
+      scoringQuestion2Response: scoreQuestion2Response,
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
@@ -102,7 +104,7 @@ define ResponsesSummary:
         else if score > 0 then 'minimal depression' else '' 
       end,
       comparisonToAlert: 'higher',
-      totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId), totalItems}),
+      totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId and O.linkId.value != ScoringQuestionId2), totalItems}),
       totalItems: totalItems,
       authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value

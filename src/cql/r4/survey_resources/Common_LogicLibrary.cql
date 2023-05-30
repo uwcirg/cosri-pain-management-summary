@@ -68,12 +68,12 @@ define function getQuestionScore(
 
 /*
  @param question linkId of type FHIR.String
- @return answer element with that linkId
+ @return answer element value with that linkId
  */
 define function getResponseByQuestionId(responseItems List<FHIR.QuestionnaireResponse.Item>, qid String):
   (
     (GetCurrentResponses(responseItems)) R
-    where R.id = qid
+    where (PositionOf(R.id, qid) != -1 or PositionOf(qid, R.id) != -1)
   ) CR 
   return if CR is not null then CR.answer else null
 
@@ -137,12 +137,12 @@ define AnswerQuestionTypes: {
 }
 
 define function GetArrayAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
-  (responses r where r.linkId.value = linkId) I
+  (responses r where PositionOf(r.linkId.value, linkId) != -1 or PositionOf(linkId, r.linkId.value) != -1) I
   return I.answer
 
 
 define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
-  (responses r where r.linkId.value = linkId) I
+  (responses r where PositionOf(r.linkId.value, linkId) != -1 or PositionOf(linkId, r.linkId.value) != -1) I
   return case
       //answer in FHIR coding format 
       when I.answer[0].value.display is not null then I.answer[0].value.display.value
@@ -191,11 +191,13 @@ define function getAnswerValueByCode(questionnaire FHIR.Questionnaire, code Stri
  * @return score in Integer
  */
 define function getScoringByResponseItem(questionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>, linkId String, extensionIndex Integer):
-  (singleton from (((responses) o where o.linkId.value = linkId) I
+  (singleton from (((responses) o where PositionOf(linkId, o.linkId.value) != -1 or PositionOf(o.linkId.value, linkId) != -1) I
   return 
     if I is null then ({null as Integer})
     else
-      if I.answer[0].value.code is not null then getAnswerValueByCode(questionnaire, I.answer[0].value.code.value, extensionIndex) else 0 as Integer))
+      if I.answer[0].value.code is not null and questionnaire is not null then getAnswerValueByCode(questionnaire, I.answer[0].value.code.value, extensionIndex) 
+      else if I.answer[0].value.value is not null then I.answer[0].value.value 
+      else 0 as Integer))
 
 /* 
  * retrieve responses in a list of Tuple of formatted question and answer
