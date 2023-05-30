@@ -206,6 +206,28 @@
                }
             }
          }, {
+            "name" : "QuestionnaireItems",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "Q",
+                  "expression" : {
+                     "name" : "Gad7Questionnaire",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "path" : "item",
+                     "scope" : "Q",
+                     "type" : "Property"
+                  }
+               }
+            }
+         }, {
             "name" : "QuestionnaireResponses",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -992,6 +1014,12 @@
                         "value" : {
                            "name" : "totalItems",
                            "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "questionnaireItems",
+                        "value" : {
+                           "name" : "QuestionnaireItems",
+                           "type" : "ExpressionRef"
                         }
                      }, {
                         "name" : "authoredDate",

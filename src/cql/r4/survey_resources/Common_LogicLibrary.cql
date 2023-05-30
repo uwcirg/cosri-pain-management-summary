@@ -35,7 +35,7 @@ define function GetMatchQuestionnaire(QuestionnaireName String, QuestionnaireURL
 define function GetCurrentResponses(responseItems List<FHIR.QuestionnaireResponse.Item>):
   (responseItems) I
   return Tuple {
-    id: I.linkId.value,
+    linkId: I.linkId.value,
     answer: I.answer.value[0] // Assuming only one answer per question
   }
 
@@ -73,7 +73,7 @@ define function getQuestionScore(
 define function getResponseByQuestionId(responseItems List<FHIR.QuestionnaireResponse.Item>, qid String):
   (
     (GetCurrentResponses(responseItems)) R
-    where (PositionOf(R.id, qid) != -1 or PositionOf(qid, R.id) != -1)
+    where (PositionOf(R.linkId, qid) != -1 or PositionOf(qid, R.linkId) != -1)
   ) CR 
   return if CR is not null then CR.answer else null
 
@@ -98,10 +98,13 @@ define function MatchedReponsesByQuestionnaire(responses List<FHIR.Questionnaire
 
 define function getResponsesByQuestionnaire(currentQuestionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
   (currentQuestionnaire.item o where o.linkId.value != 'introduction' and o.linkId.value != scoringQuestionId) I 
+  let
+   answer: First(GetResponseAnswerByLinkId(I.linkId.value, responses))
   return {
       linkId: I.linkId.value,
       question: I.text.value,
-      answer: First(GetResponseAnswerByLinkId(I.linkId.value, responses))
+      answer: answer,
+      answerText: I.answerOption[ToInteger(answer)].value.display.value
     }
 
 
@@ -211,7 +214,7 @@ define function FormattedResponsesByQuestionnaire(questionnaireItems List<FHIR.Q
       answerText: GetResponseAnswerByLinkId(Q.linkId.value, responses),
       answerValue: GetResponseValueByLinkId(Q.linkId.value, responses)
     return {
-      id: Q.linkId.value,
+      linkId: Q.linkId.value,
       answer: if answerText is not null then First(answerText) else null,
       value: if answerValue is not null then First(answerValue) else null,
       question: if Q.linkId.value = scoringQuestionId then '<b>' + Q.text.value + '</b>' else Q.text.value,

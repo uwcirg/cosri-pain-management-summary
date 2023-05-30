@@ -46,6 +46,10 @@ context Patient
 define Gad7Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
 
+define QuestionnaireItems:
+  (Gad7Questionnaire) Q 
+  return Q.item
+
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Gad7Questionnaire, 'GAD7')
  
@@ -107,6 +111,7 @@ define ResponsesSummary:
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId and O.linkId.value != ScoringQuestionId2), totalItems}),
       totalItems: totalItems,
+      questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value
     }

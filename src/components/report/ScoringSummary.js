@@ -106,6 +106,12 @@ export default class ScoringSummary extends Component {
   getTitleDisplay() {
     return this.props.title || "Scoring Summary";
   }
+  handleGoToSection(event, id) {
+    event.preventDefault();
+    const targetElement = document.querySelector(id);
+    if (!targetElement) return;
+    targetElement.scrollIntoView();
+  }
   renderTableHeaders() {
     return (
       <thead>
@@ -131,6 +137,7 @@ export default class ScoringSummary extends Component {
   renderQuestionnaireLinkCell(questionnaireObj, showAnchorLinks) {
     if (!questionnaireObj) return <td>--</td>;
     const questionnaireName = questionnaireObj.QuestionnaireName;
+    const anchorId = `#${questionnaireName}_title`;
     return (
       <td className="text-left">
         <span>
@@ -138,7 +145,8 @@ export default class ScoringSummary extends Component {
             <b>
               <a
                 className="anchor"
-                href={`#${questionnaireName}_title`}
+                href={`${anchorId}`}
+                onClick={(e) => this.handleGoToSection(e, anchorId)}
                 title={`Go to see more detail about ${questionnaireName}`}
               >
                 {questionnaireName.toUpperCase()}

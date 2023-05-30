@@ -353,7 +353,7 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
-                        "name" : "id",
+                        "name" : "linkId",
                         "value" : {
                            "path" : "value",
                            "type" : "Property",
@@ -454,7 +454,7 @@
                               "operand" : [ {
                                  "type" : "PositionOf",
                                  "pattern" : {
-                                    "path" : "id",
+                                    "path" : "linkId",
                                     "scope" : "R",
                                     "type" : "Property"
                                  },
@@ -482,7 +482,7 @@
                                     "type" : "OperandRef"
                                  },
                                  "string" : {
-                                    "path" : "id",
+                                    "path" : "linkId",
                                     "scope" : "R",
                                     "type" : "Property"
                                  }
@@ -1420,6 +1420,28 @@
                      }
                   }
                } ],
+               "let" : [ {
+                  "identifier" : "answer",
+                  "expression" : {
+                     "type" : "First",
+                     "source" : {
+                        "name" : "GetResponseAnswerByLinkId",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "linkId",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }
+                        }, {
+                           "name" : "responses",
+                           "type" : "OperandRef"
+                        } ]
+                     }
+                  }
+               } ],
                "relationship" : [ ],
                "return" : {
                   "expression" : {
@@ -1449,22 +1471,35 @@
                      }, {
                         "name" : "answer",
                         "value" : {
-                           "type" : "First",
+                           "name" : "answer",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "answerText",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
                            "source" : {
-                              "name" : "GetResponseAnswerByLinkId",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
+                              "path" : "display",
+                              "type" : "Property",
+                              "source" : {
                                  "path" : "value",
                                  "type" : "Property",
                                  "source" : {
-                                    "path" : "linkId",
-                                    "scope" : "I",
-                                    "type" : "Property"
+                                    "type" : "Indexer",
+                                    "operand" : [ {
+                                       "path" : "answerOption",
+                                       "scope" : "I",
+                                       "type" : "Property"
+                                    }, {
+                                       "type" : "ToInteger",
+                                       "operand" : {
+                                          "name" : "answer",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    } ]
                                  }
-                              }, {
-                                 "name" : "responses",
-                                 "type" : "OperandRef"
-                              } ]
+                              }
                            }
                         }
                      } ]
@@ -2331,7 +2366,7 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
-                        "name" : "id",
+                        "name" : "linkId",
                         "value" : {
                            "path" : "value",
                            "type" : "Property",

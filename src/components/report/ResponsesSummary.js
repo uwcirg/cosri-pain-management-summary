@@ -8,17 +8,59 @@ export default class ResponsesSummary extends Component {
     super(...arguments);
     this.state = { open: false };
   }
-  getMatchedAnswerByItem(responses, targetItem) {
+  getMatchedAnswerTextByLinkId(summary, linkId, answerValue) {
+    const reportedAnswerValue = answerValue || "--";
+    if (
+      !summary ||
+      !summary.questionnaireItems ||
+      !summary.questionnaireItems.length
+    )
+      return reportedAnswerValue;
+    const matchedItem = summary.questionnaireItems.filter((item) => {
+      return (
+        String(item.linkId.value).includes(linkId) ||
+        String(linkId).includes(item.linkId.value)
+      );
+    });
+    if (!matchedItem.length) return reportedAnswerValue;
+    const answerOption = matchedItem[0].answerOption;
+    if (answerOption && answerOption.length) {
+      const matchedOption = answerOption
+        .filter((option) => {
+          const extension = option.extension;
+          if (extension && extension.length) {
+            const matchedExtensions = extension.filter(
+              (o) => o.value && o.value.value === answerValue
+            );
+            return matchedExtensions.length > 0;
+          } else return false;
+        })
+        .map((item) =>
+          item.value && item.value.display
+            ? item.value.display.value
+            : answerValue
+        );
+      if (matchedOption.length) return (matchedOption[0]) || "--";
+      else return reportedAnswerValue;
+    } else return reportedAnswerValue;
+  }
+  getMatchedAnswerByItem(summary, targetItem) {
     if (!targetItem) return null;
-    if (!responses) return null;
-    const matchedItem = responses.filter(
+    if (!summary || !summary.responses) return "--";
+    const matchedItem = summary.responses.filter(
       (item) =>
         String(item.linkId).includes(targetItem.linkId) ||
         String(targetItem.linkId).includes(item.linkId) ||
         item.question === targetItem.question
     );
-    if (!matchedItem.length) return null;
-    return matchedItem[0].answer || "--";
+    if (!matchedItem.length) return "--";
+    return (
+      this.getMatchedAnswerTextByLinkId(
+        summary,
+        targetItem.linkId,
+        matchedItem[0].answer
+      ) || "--"
+    );
   }
   getCurrentResponses(summary) {
     if (
@@ -83,7 +125,7 @@ export default class ResponsesSummary extends Component {
         </thead>
         <tbody>
           {currentResponses.responses.map((item, index) => (
-            <tr key={`response_row_${item.id}_${index}`}>
+            <tr key={`response_row_${item.linkId}_${index}`}>
               <td>
                 {item.question.includes("score") ? (
                   <b>{item.question}</b>
@@ -93,13 +135,15 @@ export default class ResponsesSummary extends Component {
               </td>
               <td>
                 {item.answer || parseInt(item.answer) === 0
-                  ? item.answer
+                  ? this.getMatchedAnswerTextByLinkId(
+                      currentResponses,
+                      item.linkId,
+                      item.answer
+                    )
                   : "--"}
               </td>
               {prevResponses && (
-                <td>
-                  {this.getMatchedAnswerByItem(prevResponses.responses, item)}
-                </td>
+                <td>{this.getMatchedAnswerByItem(prevResponses, item)}</td>
               )}
             </tr>
           ))}
@@ -165,7 +209,7 @@ export default class ResponsesSummary extends Component {
     const score = summary.ResponsesSummary[0].score;
     const scoreParams = summary.ResponsesSummary[0];
     return (
-      <td className="text-center">
+      <td className="text-center" key={key}>
         <Score
           score={score}
           scoreParams={scoreParams}

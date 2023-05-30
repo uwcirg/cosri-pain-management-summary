@@ -46,6 +46,10 @@ context Patient
 define Phq9Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
 
+define QuestionnaireItems:
+  (Phq9Questionnaire) Q 
+  return Q.item
+
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Phq9Questionnaire, 'PHQ9')
 
@@ -79,10 +83,10 @@ define ResponsesSummary:
           else 'low' 
         end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
-    totalItems: 9
-    // responses: if Phq9Questionnaire is not null then 
-    //     LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
-    //     responsesOnly,
+    totalItems: 9,
+    responsesByQuestionnaire: if Phq9Questionnaire is not null then 
+        LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
+        null
     // totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId))
     return Tuple {
       id: I.id.value,
@@ -90,6 +94,7 @@ define ResponsesSummary:
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responsesOnly,
+      responsesByQuestionnaire: responsesByQuestionnaire,
       scoringQuestionResponse: scoreQuestionResponse,
       scoringQuestion2Response: scoreQuestion2Response,
       score: score,
@@ -106,6 +111,7 @@ define ResponsesSummary:
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId and O.linkId.value != ScoringQuestionId2), totalItems}),
       totalItems: totalItems,
+      questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value
     }
