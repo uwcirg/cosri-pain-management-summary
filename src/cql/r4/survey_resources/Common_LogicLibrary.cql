@@ -96,6 +96,12 @@ define function MatchedReponsesByQuestionnaire(responses List<FHIR.Questionnaire
     sort by authored desc 
   )
 
+/*
+ * retrieve list of Tuples containing question and its corresponding answer
+ * @param currentQuestionnaire of type FHIR.Questionnaire
+ * @param responses of type FHIR.QuestionnaireResponse.Item
+ * @param ScoringQuestionId question id for question containing score 
+ */
 define function getResponsesByQuestionnaire(currentQuestionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
   (currentQuestionnaire.item o where o.linkId.value != 'introduction' and o.linkId.value != scoringQuestionId) I 
   let
@@ -139,11 +145,13 @@ define AnswerQuestionTypes: {
     'open-choice'
 }
 
+// retrieve a list of answer element from the questionnaire response item
 define function GetArrayAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
   (responses r where PositionOf(r.linkId.value, linkId) != -1 or PositionOf(linkId, r.linkId.value) != -1) I
   return I.answer
 
 
+// retrieve a list of answer values from the questionnaire response item
 define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
   (responses r where PositionOf(r.linkId.value, linkId) != -1 or PositionOf(linkId, r.linkId.value) != -1) I
   return case
@@ -214,17 +222,18 @@ define function FormattedResponsesByQuestionnaire(questionnaireItems List<FHIR.Q
       answerText: GetResponseAnswerByLinkId(Q.linkId.value, responses),
       answerValue: GetResponseValueByLinkId(Q.linkId.value, responses)
     return {
-      linkId: Q.linkId.value,
+      linkId: if Q.linkId.value is not null then Q.linkId.value else 'n/a',
       answer: if answerText is not null then First(answerText) else null,
       value: if answerValue is not null then First(answerValue) else null,
       question: if Q.linkId.value = scoringQuestionId then '<b>' + Q.text.value + '</b>' else Q.text.value,
       text: Q.text.value
     }
 
-define function FormattedQuestionnaireResponses(responseItems List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
-  ((responseItems) Q where Q.linkId.value != scoringQuestionId) I 
+// retrieve list of questionnaire response including answer and question text
+define function FormattedQuestionnaireResponses(responseItems List<FHIR.QuestionnaireResponse.Item>):
+  ((responseItems) Q) I 
   return {
-      linkId: I.linkId.value,
+      linkId: if I.linkId.value is not null then I.linkId.value else 'n/a',
       answer: case
         //answer in FHIR coding format 
         when I.answer[0].value.display is not null then I.answer[0].value.display.value
@@ -233,6 +242,7 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
       question: I.text.value
   }
 
+// retreive link Id's in list for a questionnaire, excluding question containing score
 define function GetAnswerLinkIdsByQuestionnaire(currentQuestionnaire FHIR.Questionnaire, scoringQuestionId String):
   (currentQuestionnaire C) O
   let

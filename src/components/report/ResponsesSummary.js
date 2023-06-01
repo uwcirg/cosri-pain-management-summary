@@ -40,7 +40,7 @@ export default class ResponsesSummary extends Component {
             ? item.value.display.value
             : answerValue
         );
-      if (matchedOption.length) return (matchedOption[0]) || "--";
+      if (matchedOption.length && matchedOption[0]) return matchedOption[0];
       else return reportedAnswerValue;
     } else return reportedAnswerValue;
   }
@@ -90,7 +90,7 @@ export default class ResponsesSummary extends Component {
           month: "short",
           day: "2-digit",
         })
-      : "";
+      : "--";
     return displayDate;
   }
   getNumResponses(summary) {

@@ -82,11 +82,11 @@ define ResponsesSummary:
           when score between 5 and 9 then 'mild'
           else 'low' 
         end,
-    responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
-    totalItems: 9,
-    responsesByQuestionnaire: if Phq9Questionnaire is not null then 
-        LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
-        null
+    responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
+    totalItems: 9
+    // responsesByQuestionnaire: if Phq9Questionnaire is not null then 
+    //     LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
+    //     null
     // totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId))
     return Tuple {
       id: I.id.value,
@@ -94,7 +94,7 @@ define ResponsesSummary:
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responsesOnly,
-      responsesByQuestionnaire: responsesByQuestionnaire,
+      //responsesByQuestionnaire: responsesByQuestionnaire,
       scoringQuestionResponse: scoreQuestionResponse,
       scoringQuestion2Response: scoreQuestion2Response,
       score: score,

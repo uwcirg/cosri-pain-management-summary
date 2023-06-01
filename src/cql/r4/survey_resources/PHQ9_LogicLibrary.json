@@ -836,9 +836,6 @@
                         "path" : "item",
                         "scope" : "I",
                         "type" : "Property"
-                     }, {
-                        "name" : "ScoringQuestionId",
-                        "type" : "ExpressionRef"
                      } ]
                   }
                }, {
@@ -847,74 +844,6 @@
                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                      "value" : "9",
                      "type" : "Literal"
-                  }
-               }, {
-                  "identifier" : "responsesByQuestionnaire",
-                  "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "name" : "Phq9Questionnaire",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     },
-                     "then" : {
-                        "name" : "getResponsesByQuestionnaire",
-                        "libraryName" : "LogicHelper",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "Phq9Questionnaire",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "path" : "item",
-                           "scope" : "I",
-                           "type" : "Property"
-                        }, {
-                           "name" : "ScoringQuestionId",
-                           "type" : "ExpressionRef"
-                        } ]
-                     },
-                     "else" : {
-                        "type" : "As",
-                        "operand" : {
-                           "type" : "Null"
-                        },
-                        "asTypeSpecifier" : {
-                           "type" : "ListTypeSpecifier",
-                           "elementType" : {
-                              "type" : "TupleTypeSpecifier",
-                              "element" : [ {
-                                 "name" : "linkId",
-                                 "elementType" : {
-                                    "name" : "{urn:hl7-org:elm-types:r1}String",
-                                    "type" : "NamedTypeSpecifier"
-                                 }
-                              }, {
-                                 "name" : "question",
-                                 "elementType" : {
-                                    "name" : "{urn:hl7-org:elm-types:r1}String",
-                                    "type" : "NamedTypeSpecifier"
-                                 }
-                              }, {
-                                 "name" : "answer",
-                                 "elementType" : {
-                                    "name" : "{urn:hl7-org:elm-types:r1}String",
-                                    "type" : "NamedTypeSpecifier"
-                                 }
-                              }, {
-                                 "name" : "answerText",
-                                 "elementType" : {
-                                    "name" : "{urn:hl7-org:elm-types:r1}String",
-                                    "type" : "NamedTypeSpecifier"
-                                 }
-                              } ]
-                           }
-                        }
-                     }
                   }
                } ],
                "relationship" : [ ],
@@ -961,12 +890,6 @@
                         "name" : "responses",
                         "value" : {
                            "name" : "responsesOnly",
-                           "type" : "QueryLetRef"
-                        }
-                     }, {
-                        "name" : "responsesByQuestionnaire",
-                        "value" : {
-                           "name" : "responsesByQuestionnaire",
                            "type" : "QueryLetRef"
                         }
                      }, {

@@ -85,7 +85,7 @@ define ResponsesSummary:
         when score between 5 and 9 then 'mild'
         else 'low'
       end,
-    responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ScoringQuestionId),
+    responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
     totalItems: 7
     // responses: if Gad7Questionnaire is not null then 
     //     LogicHelper.getResponsesByQuestionnaire(Gad7Questionnaire, I.item, ScoringQuestionId) else 

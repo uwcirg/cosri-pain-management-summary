@@ -81,7 +81,7 @@ const reportConfig = [
                 description: "Sum Score",
               },
               {
-                key: "score",
+                key: "mean_score",
                 description: "Mean Score",
               },
               {

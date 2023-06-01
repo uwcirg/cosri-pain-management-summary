@@ -754,9 +754,6 @@
                         "path" : "item",
                         "scope" : "I",
                         "type" : "Property"
-                     }, {
-                        "name" : "ScoringQuestionId",
-                        "type" : "ExpressionRef"
                      } ]
                   }
                }, {

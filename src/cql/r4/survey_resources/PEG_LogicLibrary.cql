@@ -15,12 +15,11 @@ codesystem "LOINC": 'http://loinc.org'
 
 define QuestionnaireName: 'peg'
 define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/peg'
-define Question1LinkId: '108518'
+define Question1LinkId: '75893-8'
 define Question2LinkId: '91145-3'
 define Question3LinkId: '91146-1'
-define ScoringQuestionId: 'CIRG-PEG-SUM' // Mean score
+define ScoringQuestionId: '91147-9' // Mean score
 define MeanScoreQuestionId: '91147-9' // Mean score
-define SumScoreQuestionId: 'CIRG-PEG-SUM'
 define extensionAnswerIndex: 0
 define ScoreParams: Tuple {
   minScore: 0,
@@ -54,8 +53,6 @@ define ResponsesCompleted:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    score: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(ScoringQuestionId, I.item))), // sum score
-    sumScoreFromQuestionnaire: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(SumScoreQuestionId, I.item))), // sum score
     meanScoreFromQuestionnaire: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(MeanScoreQuestionId, I.item))), // mean score
     //scoreSeverity:
         // case
@@ -63,7 +60,7 @@ define ResponsesSummary:
         //   when score between 1 and 14 then 'mild'
         //   else 'low' 
         // end,
-    responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item, ''),
+    responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
     // responses: if PegQuestionnaire is not null then 
     //     LogicHelper.getResponsesByQuestionnaire(PegQuestionnaire, I.item, '') else 
     //     responsesOnly,
@@ -71,8 +68,9 @@ define ResponsesSummary:
     Question2Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item))), 0),
     Question3Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item))), 0),
     sumScore: Question1Score + Question2Score + Question3Score,
-    meanScore: Round(sumScore / 3),
-    totalItems: 3
+    scoredItems: responsesOnly R where R.linkId != MeanScoreQuestionId return R.answer,
+    meanScore: if meanScoreFromQuestionnaire > 0 then meanScoreFromQuestionnaire else Round(sumScore / 3),
+    totalItems: 9
     return Tuple {
       id: I.id.value,
       qid: QuestionnaireName,
@@ -82,12 +80,12 @@ define ResponsesSummary:
       Question1Score: Question1Score,
       Question2Score: Question2Score,
       Question3Score: Question3Score,
-      sumScoreFromQuestionnaire: sumScoreFromQuestionnaire,
       meanScoreFromQuestionnaire: meanScoreFromQuestionnaire,
       responses_completed: ResponsesCompleted,
-      sum_score: if sumScore is not null then sumScore else sumScoreFromQuestionnaire,
-      mean_score: if meanScore is not null then meanScore else meanScoreFromQuestionnaire,
-      score: if sumScore is not null then sumScore else score,
+      sum_score: sumScore,
+      mean_score: meanScoreFromQuestionnaire,
+      scoredItems: scoredItems,
+      score: sumScore,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
       //scoreSeverity: scoreSeverity,
@@ -96,7 +94,7 @@ define ResponsesSummary:
       //   else '' 
       // end,
       comparisonToAlert: 'higher',
-      totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId), totalItems}),
+      totalAnsweredItems: Min({Length((I.item) O where O.answer is not null and (O.linkId.value is null or (O.linkId.value is not null and O.linkId.value != ScoringQuestionId and O.linkId != MeanScoreQuestionId))), totalItems}),
       totalItems: totalItems,
       questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,

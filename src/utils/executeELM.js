@@ -324,6 +324,9 @@ function updateSearchParams(params, release, type) {
         case "Questionnaire":
           params.set("name:contains", INSTRUMENT_LIST.join(","));
           break;
+        case "QuestionnaireResponse":
+          params.set("_count", 200);
+          break;
         default:
         // nothing
       }

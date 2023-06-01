@@ -2368,12 +2368,35 @@
                      "element" : [ {
                         "name" : "linkId",
                         "value" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "linkId",
-                              "scope" : "Q",
-                              "type" : "Property"
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "linkId",
+                                       "scope" : "Q",
+                                       "type" : "Property"
+                                    }
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "linkId",
+                                 "scope" : "Q",
+                                 "type" : "Property"
+                              }
+                           },
+                           "else" : {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                              "value" : "n/a",
+                              "type" : "Literal"
                            }
                         }
                      }, {
@@ -2583,25 +2606,7 @@
                            "type" : "OperandRef"
                         }
                      } ],
-                     "relationship" : [ ],
-                     "where" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "Equal",
-                           "operand" : [ {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "linkId",
-                                 "scope" : "Q",
-                                 "type" : "Property"
-                              }
-                           }, {
-                              "name" : "scoringQuestionId",
-                              "type" : "OperandRef"
-                           } ]
-                        }
-                     }
+                     "relationship" : [ ]
                   }
                } ],
                "relationship" : [ ],
@@ -2611,12 +2616,35 @@
                      "element" : [ {
                         "name" : "linkId",
                         "value" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "linkId",
-                              "scope" : "I",
-                              "type" : "Property"
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "linkId",
+                                       "scope" : "I",
+                                       "type" : "Property"
+                                    }
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "linkId",
+                                 "scope" : "I",
+                                 "type" : "Property"
+                              }
+                           },
+                           "else" : {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                              "value" : "n/a",
+                              "type" : "Literal"
                            }
                         }
                      }, {
@@ -2723,12 +2751,6 @@
                      "name" : "{http://hl7.org/fhir}QuestionnaireResponse.Item",
                      "type" : "NamedTypeSpecifier"
                   }
-               }
-            }, {
-               "name" : "scoringQuestionId",
-               "operandTypeSpecifier" : {
-                  "name" : "{urn:hl7-org:elm-types:r1}String",
-                  "type" : "NamedTypeSpecifier"
                }
             } ]
          }, {
