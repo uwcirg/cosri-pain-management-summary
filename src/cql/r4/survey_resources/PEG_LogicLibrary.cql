@@ -70,7 +70,7 @@ define ResponsesSummary:
     sumScore: Question1Score + Question2Score + Question3Score,
     scoredItems: responsesOnly R where R.linkId != MeanScoreQuestionId return R.answer,
     meanScore: if meanScoreFromQuestionnaire > 0 then meanScoreFromQuestionnaire else Round(sumScore / 3),
-    totalItems: 9
+    totalItems: 3
     return Tuple {
       id: I.id.value,
       qid: QuestionnaireName,
