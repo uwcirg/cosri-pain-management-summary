@@ -326,6 +326,7 @@ function updateSearchParams(params, release, type) {
           break;
         case "QuestionnaireResponse":
           params.set("_count", 200);
+          params.set("_sort", "_lastUpdated");
           break;
         default:
         // nothing
