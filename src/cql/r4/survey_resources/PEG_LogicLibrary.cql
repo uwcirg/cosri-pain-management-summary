@@ -68,7 +68,6 @@ define ResponsesSummary:
     Question2Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item))), 0),
     Question3Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item))), 0),
     sumScore: Question1Score + Question2Score + Question3Score,
-    scoredItems: responsesOnly R where R.linkId != MeanScoreQuestionId return R.answer,
     meanScore: if meanScoreFromQuestionnaire > 0 then meanScoreFromQuestionnaire else Round(sumScore / 3),
     totalItems: 3
     return Tuple {
@@ -80,11 +79,9 @@ define ResponsesSummary:
       Question1Score: Question1Score,
       Question2Score: Question2Score,
       Question3Score: Question3Score,
-      meanScoreFromQuestionnaire: meanScoreFromQuestionnaire,
       responses_completed: ResponsesCompleted,
       sum_score: sumScore,
-      mean_score: meanScoreFromQuestionnaire,
-      scoredItems: scoredItems,
+      mean_score: if meanScoreFromQuestionnaire is not null then meanScoreFromQuestionnaire else meanScore,
       score: sumScore,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
@@ -94,7 +91,14 @@ define ResponsesSummary:
       //   else '' 
       // end,
       comparisonToAlert: 'higher',
-      totalAnsweredItems: Min({Length((I.item) O where O.answer is not null and (O.linkId.value is null or (O.linkId.value is not null and O.linkId.value != ScoringQuestionId and O.linkId != MeanScoreQuestionId))), totalItems}),
+      totalAnsweredItems: Min({Length(
+        (I.item) O where 
+          (PositionOf(O.linkId.value, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId.value) = -1)
+          and
+          (First(LogicHelper.GetResponseAnswerByLinkId(O.linkId.value, O))
+            is not null
+          )
+        ), totalItems}),
       totalItems: totalItems,
       questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,

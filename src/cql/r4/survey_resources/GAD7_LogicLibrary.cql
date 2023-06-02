@@ -23,7 +23,6 @@ define question5LinkId: '/69735-9'
 define question6LinkId: '/69689-8'
 define question7LinkId: '/69736-7'
 define ScoringQuestionId: '/70274-6'
-define ScoringQuestionId2: '70274-6'  //TODO verify which one is the correct question id
 
 define answerExtensionIndex: 0
 define ScoreParams: Tuple {
@@ -72,11 +71,9 @@ define ResponsesSummary:
           Coalesce(q6Score, 0) * 1 +
           Coalesce(q7Score, 0) * 1,
     scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
-    scoreQuestion2Response: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, ScoringQuestionId2, answerExtensionIndex)),
     score: 
       case 
         when scoreQuestionResponse is not null then scoreQuestionResponse
-        when scoreQuestion2Response is not null then scoreQuestion2Response
         else itemTotalScore
       end,
     scoreSeverity: case
@@ -97,7 +94,6 @@ define ResponsesSummary:
       items: I.item,
       responses: responsesOnly,
       scoreQuestionResponse: scoreQuestionResponse,
-      scoreQuestion2Response: scoreQuestion2Response,
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
@@ -109,7 +105,14 @@ define ResponsesSummary:
         else if score > 0 then 'minimal anxiety' else '' 
       end,
       comparisonToAlert: 'higher',
-      totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId and O.linkId.value != ScoringQuestionId2), totalItems}),
+      totalAnsweredItems: Min({Length(
+        (I.item) O where 
+          (PositionOf(O.linkId.value, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId.value) = -1)
+          and
+          (First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, O, O.linkId.value, answerExtensionIndex))
+            is not null
+          )
+        ), totalItems}),
       totalItems: totalItems,
       questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,

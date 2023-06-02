@@ -103,7 +103,10 @@ define function MatchedReponsesByQuestionnaire(responses List<FHIR.Questionnaire
  * @param ScoringQuestionId question id for question containing score 
  */
 define function getResponsesByQuestionnaire(currentQuestionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
-  (currentQuestionnaire.item o where o.linkId.value != 'introduction' and o.linkId.value != scoringQuestionId) I 
+  (currentQuestionnaire.item o 
+    where o.linkId.value != 'introduction' and 
+    (PositionOf(o.linkId.value, scoringQuestionId) != -1 or PositionOf(scoringQuestionId, o.linkId.value) != -1)
+  ) I 
   let
    answer: First(GetResponseAnswerByLinkId(I.linkId.value, responses))
   return {
@@ -166,7 +169,7 @@ define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.Que
  * @param responses as a list of FHIR.QuestionnaireResponse.Item
  */
 define function GetResponseValueByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
-  (responses r where r.linkId.value = linkId) I
+  (responses r where PositionOf(r.linkId.value, linkId) != -1 or PositionOf(linkId, r.linkId.value) != -1) I
   return I.answer[0].value
 
 /*

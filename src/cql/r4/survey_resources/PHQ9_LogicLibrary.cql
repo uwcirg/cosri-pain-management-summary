@@ -67,11 +67,9 @@ define ResponsesSummary:
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) * 1 +
           Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0) * 1,
     scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
-    scoreQuestion2Response: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, ScoringQuestionId2, extensionAnswerIndex)),
     score:
       case 
           when scoreQuestionResponse is not null then scoreQuestionResponse
-          when scoreQuestion2Response is not null then scoreQuestion2Response
           else itemTotalScore
       end,
     scoreSeverity:
@@ -84,19 +82,13 @@ define ResponsesSummary:
         end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
     totalItems: 9
-    // responsesByQuestionnaire: if Phq9Questionnaire is not null then 
-    //     LogicHelper.getResponsesByQuestionnaire(Phq9Questionnaire, I.item, ScoringQuestionId) else 
-    //     null
-    // totalItems: Length(LogicHelper.GetAnswerLinkIdsByQuestionnaire(Phq9Questionnaire, ScoringQuestionId))
     return Tuple {
       id: I.id.value,
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responsesOnly,
-      //responsesByQuestionnaire: responsesByQuestionnaire,
       scoringQuestionResponse: scoreQuestionResponse,
-      scoringQuestion2Response: scoreQuestion2Response,
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
@@ -109,7 +101,14 @@ define ResponsesSummary:
         else if score > 0 then 'minimal depression' else '' 
       end,
       comparisonToAlert: 'higher',
-      totalAnsweredItems: Min({Length((I.item) O where O.linkId.value != ScoringQuestionId and O.linkId.value != ScoringQuestionId2), totalItems}),
+      totalAnsweredItems: Min({Length(
+        (I.item) O where 
+          (PositionOf(O.linkId.value, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId.value) = -1)
+          and
+          (First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, O, O.linkId.value, extensionAnswerIndex))
+            is not null
+          )
+        ), totalItems}),
       totalItems: totalItems,
       questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,
