@@ -106,12 +106,9 @@ define ResponsesSummary:
       end,
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length(
-        (I.item) O where 
-          (PositionOf(O.linkId.value, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId.value) = -1)
-          and
-          (First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, O, O.linkId.value, answerExtensionIndex))
-            is not null
-          )
+        (responsesOnly) O where 
+          (PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)
+          and O.answer is not null
         ), totalItems}),
       totalItems: totalItems,
       questionnaireItems: QuestionnaireItems,

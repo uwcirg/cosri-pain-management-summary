@@ -569,9 +569,8 @@
                                     "source" : [ {
                                        "alias" : "O",
                                        "expression" : {
-                                          "path" : "item",
-                                          "scope" : "I",
-                                          "type" : "Property"
+                                          "name" : "responsesOnly",
+                                          "type" : "QueryLetRef"
                                        }
                                     } ],
                                     "relationship" : [ ],
@@ -584,13 +583,9 @@
                                              "operand" : [ {
                                                 "type" : "PositionOf",
                                                 "pattern" : {
-                                                   "path" : "value",
-                                                   "type" : "Property",
-                                                   "source" : {
-                                                      "path" : "linkId",
-                                                      "scope" : "O",
-                                                      "type" : "Property"
-                                                   }
+                                                   "path" : "linkId",
+                                                   "scope" : "O",
+                                                   "type" : "Property"
                                                 },
                                                 "string" : {
                                                    "name" : "ScoringQuestionId",
@@ -613,13 +608,9 @@
                                                    "type" : "ExpressionRef"
                                                 },
                                                 "string" : {
-                                                   "path" : "value",
-                                                   "type" : "Property",
-                                                   "source" : {
-                                                      "path" : "linkId",
-                                                      "scope" : "O",
-                                                      "type" : "Property"
-                                                   }
+                                                   "path" : "linkId",
+                                                   "scope" : "O",
+                                                   "type" : "Property"
                                                 }
                                              }, {
                                                 "type" : "Negate",
@@ -635,27 +626,9 @@
                                           "operand" : {
                                              "type" : "IsNull",
                                              "operand" : {
-                                                "type" : "First",
-                                                "source" : {
-                                                   "name" : "GetResponseAnswerByLinkId",
-                                                   "libraryName" : "LogicHelper",
-                                                   "type" : "FunctionRef",
-                                                   "operand" : [ {
-                                                      "path" : "value",
-                                                      "type" : "Property",
-                                                      "source" : {
-                                                         "path" : "linkId",
-                                                         "scope" : "O",
-                                                         "type" : "Property"
-                                                      }
-                                                   }, {
-                                                      "type" : "ToList",
-                                                      "operand" : {
-                                                         "name" : "O",
-                                                         "type" : "AliasRef"
-                                                      }
-                                                   } ]
-                                                }
+                                                "path" : "answer",
+                                                "scope" : "O",
+                                                "type" : "Property"
                                              }
                                           }
                                        } ]
