@@ -111,6 +111,9 @@
   .error-banner__description {
     display: block;
     padding-right: 48px;
+    * {
+      font-size: 1em !important;
+    }
   }
   .close-button {
     position: absolute;
