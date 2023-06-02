@@ -68,7 +68,7 @@ const reportConfig = [
               that.
             </p>
             <p>
-              The sume score, i.e. the CIRG-PEG-SUM item on the questionnaire, is a scoring variant used at UW Medicine's
+              The sum score, i.e. the CIRG-PEG-SUM item on the questionnaire, is a scoring variant used at UW Medicine's
               Center for Pain Relief.
             </p>
           </div>
