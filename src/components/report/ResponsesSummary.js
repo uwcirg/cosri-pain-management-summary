@@ -9,7 +9,7 @@ export default class ResponsesSummary extends Component {
     this.state = { open: false };
   }
   getMatchedAnswerTextByLinkId(summary, linkId, answerValue) {
-    const reportedAnswerValue = answerValue || "--";
+    const reportedAnswerValue = answerValue == null ? "--" : answerValue;
     if (
       !summary ||
       !summary.questionnaireItems ||
@@ -54,12 +54,10 @@ export default class ResponsesSummary extends Component {
         item.question === targetItem.question
     );
     if (!matchedItem.length) return "--";
-    return (
-      this.getMatchedAnswerTextByLinkId(
-        summary,
-        targetItem.linkId,
-        matchedItem[0].answer
-      ) || "--"
+    return this.getMatchedAnswerTextByLinkId(
+      summary,
+      targetItem.linkId,
+      matchedItem[0].answer
     );
   }
   getCurrentResponses(summary) {
