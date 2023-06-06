@@ -132,13 +132,11 @@ export default class ResponsesSummary extends Component {
                 )}
               </td>
               <td>
-                {item.answer || parseInt(item.answer) === 0
-                  ? this.getMatchedAnswerTextByLinkId(
-                      currentResponses,
-                      item.linkId,
-                      item.answer
-                    )
-                  : "--"}
+                {this.getMatchedAnswerTextByLinkId(
+                  currentResponses,
+                  item.linkId,
+                  item.answer
+                )}
               </td>
               {prevResponses && (
                 <td>{this.getMatchedAnswerByItem(prevResponses, item)}</td>
