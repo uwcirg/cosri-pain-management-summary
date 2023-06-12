@@ -177,14 +177,22 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
     );
     const surveyPatientSource = cqlfhir.PatientSource.FHIRv400();
     surveyPatientSource.loadBundles([bundle]);
-    let surveyResults = surveyExecutor.exec(surveyPatientSource);
-    let evalSurveyResult =
-      surveyResults.patientResults[
-        Object.keys(surveyResults.patientResults)[0]
-      ];
-    evalSurveyResult.dataKey = qKey;
-
-    evalResults.push(evalSurveyResult);
+    let surveyResults;
+    try {
+      surveyResults = surveyExecutor.exec(surveyPatientSource);
+    } catch(e) {
+      surveyResults = null;
+      console.log(`Error executing CQL for ${qKey} `, e)
+    }
+    let evalSurveyResult;
+    if (surveyResults && surveyResults.patientResults) {
+      evalSurveyResult =
+        surveyResults.patientResults[
+          Object.keys(surveyResults.patientResults)[0]
+        ];
+      evalSurveyResult.dataKey = qKey;
+      evalResults.push(evalSurveyResult);
+    }
     //debugging
     console.log("evaluated results for ", qKey, evalSurveyResult);
   });

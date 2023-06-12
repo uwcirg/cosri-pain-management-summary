@@ -126,6 +126,15 @@ define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.Que
       else I.answer[0].value.value
     end
 
+// retrieve a list of answer element from a matched questionnaire response item by linkId
+/* @param linkId, of type String
+ * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
+ * @return {List<QuestionnaireResponse.item.answer>}
+ */
+define function GetArrayAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
+  (responses r where PositionOf(r.linkId.value, linkId) != -1 or PositionOf(linkId, r.linkId.value) != -1) I
+  return I.answer
+
 /*
  * retrieve single-valued answer to the question in a QuestionnaireResponse
  * @param linkId, of type String
