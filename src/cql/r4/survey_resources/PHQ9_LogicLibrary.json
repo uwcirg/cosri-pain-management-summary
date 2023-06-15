@@ -155,15 +155,6 @@
                "type" : "Literal"
             }
          }, {
-            "name" : "ScoringQuestionId2",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "44261-6",
-               "type" : "Literal"
-            }
-         }, {
             "name" : "extensionAnswerIndex",
             "context" : "Patient",
             "accessLevel" : "Public",
