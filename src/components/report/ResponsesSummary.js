@@ -90,7 +90,7 @@ export default class ResponsesSummary extends Component {
     if (!summary || !summary.ResponsesSummary) return 0;
     return summary.ResponsesSummary.length;
   }
-  renderResponses(summaryItems) {
+  renderResponses(summaryItems, endIndex) {
     if (!summaryItems || !summaryItems.length) {
       return <div>No recorded responses</div>;
     }
@@ -99,7 +99,7 @@ export default class ResponsesSummary extends Component {
         <thead>
           <tr>
             <th>{/* no need for header for question */}</th>
-            {summaryItems.map((item) => {
+            {summaryItems.slice(0, endIndex ? endIndex : summaryItems.length).map((item) => {
               return (
                 <th
                   key={`response_header_${item.id}`}
@@ -128,7 +128,7 @@ export default class ResponsesSummary extends Component {
                 )}
               </td>
               {summaryItems.length > 1 &&
-                summaryItems.slice(1).map((o, index) => {
+                summaryItems.slice(1, endIndex ? endIndex : summaryItems.length).map((o, index) => {
                   return (
                     <td>
                       {this.getMatchedAnswerByItem(summaryItems[index], item)}
@@ -215,7 +215,6 @@ export default class ResponsesSummary extends Component {
     const currentResponses = noResponses
       ? null
       : this.getCurrentResponses(summary);
-    // const prevResponses = noResponses ? null : this.getPrevResponses(summary);
     if (noResponses)
       return <div className="no-entries">No recorded responses</div>;
     return (
@@ -271,8 +270,11 @@ export default class ResponsesSummary extends Component {
           </tbody>
         </table>
         <div className={`accordion-content ${this.state.open ? "active" : ""}`}>
-          <div className="response-table-wrapper">
+          <div className="response-table-wrapper print-hidden">
             {this.renderResponses(summary.ResponsesSummary)}
+          </div>
+          <div className="print-only">
+            {this.renderResponses(summary.ResponsesSummary, 3)}
           </div>
         </div>
       </React.Fragment>
