@@ -69,11 +69,6 @@ export default class ResponsesSummary extends Component {
       return null;
     return summary.ResponsesSummary[0];
   }
-  getPrevResponses(summary) {
-    if (!this.getCurrentResponses(summary)) return null;
-    if (summary.ResponsesSummary.length <= 1) return null;
-    return summary.ResponsesSummary[1];
-  }
   getDisplayDate(targetObj) {
     if (!targetObj) return "--";
     const objDate = targetObj.date ? new Date(targetObj.date) : null;
@@ -83,7 +78,7 @@ export default class ResponsesSummary extends Component {
       objDate.setTime(objDate.getTime() + tzOffset);
     }
     const displayDate = objDate
-      ? objDate.toLocaleDateString("en-us", {
+      ? objDate.toLocaleString("en-us", {
           year: "numeric",
           month: "short",
           day: "2-digit",
@@ -95,35 +90,29 @@ export default class ResponsesSummary extends Component {
     if (!summary || !summary.ResponsesSummary) return 0;
     return summary.ResponsesSummary.length;
   }
-  renderResponses(currentResponses, prevResponses) {
-    if (!currentResponses && !prevResponses) {
+  renderResponses(summaryItems) {
+    if (!summaryItems || !summaryItems.length) {
       return <div>No recorded responses</div>;
     }
-    const hasScores =
-      (currentResponses &&
-        !isNaN(currentResponses.score) &&
-        !currentResponses.responses.some((item) =>
-          item.question.includes("score")
-        )) ||
-      (prevResponses &&
-        !isNaN(prevResponses.score) &&
-        !prevResponses.responses.some((item) =>
-          item.question.includes("score")
-        ));
     return (
       <table className={`response-table ${this.state.open ? "active" : ""}`}>
         <thead>
           <tr>
             <th>{/* no need for header for question */}</th>
-            <th>Most recent ( {this.getDisplayDate(currentResponses)} )</th>
-            {prevResponses && (
-              <th>From last ( {this.getDisplayDate(prevResponses)} )</th>
-            )}
+            {summaryItems.map((item) => {
+              return (
+                <th
+                  key={`response_header_${item.id}`}
+                >
+                  {this.getDisplayDate(item)}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
-          {currentResponses.responses.map((item, index) => (
-            <tr key={`response_row_${item.linkId}_${index}`}>
+          {summaryItems[0].responses.map((item, rindex) => (
+            <tr key={`response_row_${item.linkId}_${rindex}`}>
               <td>
                 {item.question.includes("score") ? (
                   <b>{item.question}</b>
@@ -133,44 +122,22 @@ export default class ResponsesSummary extends Component {
               </td>
               <td>
                 {this.getMatchedAnswerTextByLinkId(
-                  currentResponses,
+                  summaryItems[0],
                   item.linkId,
                   item.answer
                 )}
               </td>
-              {prevResponses && (
-                <td>{this.getMatchedAnswerByItem(prevResponses, item)}</td>
-              )}
+              {summaryItems.length > 1 &&
+                summaryItems.slice(1).map((o, index) => {
+                  return (
+                    <td>
+                      {this.getMatchedAnswerByItem(summaryItems[index], item)}
+                    </td>
+                  );
+                })}
             </tr>
           ))}
         </tbody>
-        {hasScores && (
-          <tfoot>
-            <tr>
-              <td>
-                <b>
-                  {currentResponses.scoreDescription
-                    ? currentResponses.scoreDescription
-                    : "Score"}
-                </b>
-              </td>
-              <td>
-                <Score
-                  score={currentResponses.score}
-                  scoreParams={currentResponses}
-                ></Score>
-              </td>
-              {prevResponses && (
-                <td>
-                  <Score
-                    score={prevResponses.score}
-                    scoreParams={prevResponses}
-                  ></Score>
-                </td>
-              )}
-            </tr>
-          </tfoot>
-        )}
       </table>
     );
   }
@@ -248,7 +215,7 @@ export default class ResponsesSummary extends Component {
     const currentResponses = noResponses
       ? null
       : this.getCurrentResponses(summary);
-    const prevResponses = noResponses ? null : this.getPrevResponses(summary);
+    // const prevResponses = noResponses ? null : this.getPrevResponses(summary);
     if (noResponses)
       return <div className="no-entries">No recorded responses</div>;
     return (
@@ -304,7 +271,9 @@ export default class ResponsesSummary extends Component {
           </tbody>
         </table>
         <div className={`accordion-content ${this.state.open ? "active" : ""}`}>
-          {this.renderResponses(currentResponses, prevResponses)}
+          <div className="response-table-wrapper">
+            {this.renderResponses(summary.ResponsesSummary)}
+          </div>
         </div>
       </React.Fragment>
     );

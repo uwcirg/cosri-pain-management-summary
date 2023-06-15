@@ -2,6 +2,9 @@
   .print-only {
     display: block;
   }
+  .print-cell-hidden {
+    display: none;
+  }
   .print-hidden {
     display: none;
   }
@@ -91,6 +94,10 @@
     .accordion-content {
       overflow: auto;
       max-height: 2400px;
+    }
+    .response-table-wrapper {
+      margin-left: 0;
+      margin-right: 0;
     }
     .response-table {
       margin: 8px;

@@ -152,6 +152,9 @@ a {
 .print-hidden {
   display: block;
 }
+.print-cell-hidden {
+  display: table-cell;
+}
 .print-only {
   display: none;
 }

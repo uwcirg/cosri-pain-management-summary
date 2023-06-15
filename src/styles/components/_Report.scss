@@ -146,17 +146,23 @@ $selector-box-shadow: 0 2px 2px #383e40;
       vertical-align: bottom;
     }
   }
+  .response-table-wrapper {
+    max-width: 960px;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-left: 24px;
+    margin-right: 24px;
+    margin-bottom: 24px;
+  }
   .response-table {
+    table-layout: fixed;
     font-size: 0.9em;
     height: 0;
     overflow: hidden;
-    margin: 8px 20px 24px;
+    margin: 8px 0 24px;
     border: 1px solid $color-blue;
     border-collapse: collapse;
     transition: height 0.35s cubic-bezier(0.865, 0.14, 0.095, 0.87);
-    @media (min-width: 992px) {
-      width: 85%;
-    }
     &.active {
       height: 100%;
     }
@@ -164,11 +170,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
       text-align: left;
       border-bottom: 1px solid $color-gray-lighter;
       padding: 8px;
+      white-space: nowrap;
       &:not(:last-of-type) {
         border-right: 1px solid $color-gray-lighter;
       }
       &:first-of-type {
         width: 28%;
+        min-width: 320px;
       }
     }
     td {
