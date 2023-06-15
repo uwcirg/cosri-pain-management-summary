@@ -133,7 +133,7 @@ export default class ResponsesSummary extends Component {
                   .map((o, index) => {
                     return (
                       <td key={`${item.id}_response_${index}`}>
-                        {this.getMatchedAnswerByItem(summaryItems[index], item)}
+                        {this.getMatchedAnswerByItem(o, item)}
                       </td>
                     );
                   })}
