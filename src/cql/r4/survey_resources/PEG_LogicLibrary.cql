@@ -64,9 +64,12 @@ define ResponsesSummary:
     // responses: if PegQuestionnaire is not null then 
     //     LogicHelper.getResponsesByQuestionnaire(PegQuestionnaire, I.item, '') else 
     //     responsesOnly,
-    Question1Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question1LinkId, I.item))), 0),
-    Question2Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item))), 0),
-    Question3Score: Coalesce(ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item))), 0),
+    Question1Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question1LinkId, I.item)),
+    Question2Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item)),
+    Question3Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item)),
+    Question1Score: Coalesce(ToInteger(Question1Answer), 0),
+    Question2Score: Coalesce(ToInteger(Question2Answer), 0),
+    Question3Score: Coalesce(ToInteger(Question3Answer), 0),
     sumScore: Question1Score + Question2Score + Question3Score,
     meanScore: if meanScoreFromQuestionnaire > 0 then meanScoreFromQuestionnaire else Round(sumScore / 3),
     totalItems: 3
@@ -76,12 +79,24 @@ define ResponsesSummary:
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responsesOnly,
+      Question1Answer: Question1Answer,
+      Question2Answer: Question2Answer,
+      Question3Answer: Question3Answer,
       Question1Score: Question1Score,
       Question2Score: Question2Score,
       Question3Score: Question3Score,
       responses_completed: ResponsesCompleted,
-      sum_score: sumScore,
-      mean_score: if meanScoreFromQuestionnaire is not null then meanScoreFromQuestionnaire else meanScore,
+      sum_score: 
+        if Question1Answer is not null and Question2Answer is not null and Question3Answer is not null then
+          sumScore
+        else null,
+      mean_score: 
+        if Question1Answer is not null and Question2Answer is not null and Question3Answer is not null then 
+          if meanScoreFromQuestionnaire is not null then 
+            meanScoreFromQuestionnaire 
+          else 
+            meanScore
+        else null,
       score: sumScore,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,

@@ -99,15 +99,15 @@ export default class ResponsesSummary extends Component {
         <thead>
           <tr>
             <th>{/* no need for header for question */}</th>
-            {summaryItems.slice(0, endIndex ? endIndex : summaryItems.length).map((item) => {
-              return (
-                <th
-                  key={`response_header_${item.id}`}
-                >
-                  {this.getDisplayDate(item)}
-                </th>
-              );
-            })}
+            {summaryItems
+              .slice(0, endIndex ? endIndex : summaryItems.length)
+              .map((item) => {
+                return (
+                  <th key={`response_header_${item.id}`}>
+                    {this.getDisplayDate(item)}
+                  </th>
+                );
+              })}
           </tr>
         </thead>
         <tbody>
@@ -128,13 +128,15 @@ export default class ResponsesSummary extends Component {
                 )}
               </td>
               {summaryItems.length > 1 &&
-                summaryItems.slice(1, endIndex ? endIndex : summaryItems.length).map((o, index) => {
-                  return (
-                    <td>
-                      {this.getMatchedAnswerByItem(summaryItems[index], item)}
-                    </td>
-                  );
-                })}
+                summaryItems
+                  .slice(1, endIndex ? endIndex : summaryItems.length)
+                  .map((o, index) => {
+                    return (
+                      <td key={`${item.id}_response_${index}`}>
+                        {this.getMatchedAnswerByItem(summaryItems[index], item)}
+                      </td>
+                    );
+                  })}
             </tr>
           ))}
         </tbody>
