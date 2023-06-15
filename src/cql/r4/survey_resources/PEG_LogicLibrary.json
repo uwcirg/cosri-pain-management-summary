@@ -373,20 +373,64 @@
                }, {
                   "identifier" : "sumScore",
                   "expression" : {
-                     "type" : "Add",
-                     "operand" : [ {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "And",
+                           "operand" : [ {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "Question1Answer",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }, {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "Question2Answer",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           } ]
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "Question3Answer",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        } ]
+                     },
+                     "then" : {
                         "type" : "Add",
                         "operand" : [ {
-                           "name" : "Question1Score",
-                           "type" : "QueryLetRef"
+                           "type" : "Add",
+                           "operand" : [ {
+                              "name" : "Question1Score",
+                              "type" : "QueryLetRef"
+                           }, {
+                              "name" : "Question2Score",
+                              "type" : "QueryLetRef"
+                           } ]
                         }, {
-                           "name" : "Question2Score",
+                           "name" : "Question3Score",
                            "type" : "QueryLetRef"
                         } ]
-                     }, {
-                        "name" : "Question3Score",
-                        "type" : "QueryLetRef"
-                     } ]
+                     },
+                     "else" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
+                     }
                   }
                }, {
                   "identifier" : "meanScore",
@@ -411,23 +455,43 @@
                         }
                      },
                      "else" : {
-                        "type" : "Round",
-                        "operand" : {
-                           "type" : "Divide",
-                           "operand" : [ {
-                              "type" : "ToDecimal",
+                        "type" : "If",
+                        "condition" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
                               "operand" : {
                                  "name" : "sumScore",
                                  "type" : "QueryLetRef"
                               }
-                           }, {
-                              "type" : "ToDecimal",
-                              "operand" : {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "3",
-                                 "type" : "Literal"
-                              }
-                           } ]
+                           }
+                        },
+                        "then" : {
+                           "type" : "Round",
+                           "operand" : {
+                              "type" : "Divide",
+                              "operand" : [ {
+                                 "type" : "ToDecimal",
+                                 "operand" : {
+                                    "name" : "sumScore",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }, {
+                                 "type" : "ToDecimal",
+                                 "operand" : {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "3",
+                                    "type" : "Literal"
+                                 }
+                              } ]
+                           }
+                        },
+                        "else" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           }
                         }
                      }
                   }
@@ -530,122 +594,14 @@
                      }, {
                         "name" : "sum_score",
                         "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "And",
-                              "operand" : [ {
-                                 "type" : "And",
-                                 "operand" : [ {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "name" : "Question1Answer",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }
-                                 }, {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "name" : "Question2Answer",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "name" : "Question3Answer",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }
-                              } ]
-                           },
-                           "then" : {
-                              "name" : "sumScore",
-                              "type" : "QueryLetRef"
-                           },
-                           "else" : {
-                              "asType" : "{urn:hl7-org:elm-types:r1}Integer",
-                              "type" : "As",
-                              "operand" : {
-                                 "type" : "Null"
-                              }
-                           }
+                           "name" : "sumScore",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "mean_score",
                         "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "And",
-                              "operand" : [ {
-                                 "type" : "And",
-                                 "operand" : [ {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "name" : "Question1Answer",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }
-                                 }, {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "name" : "Question2Answer",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "name" : "Question3Answer",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }
-                              } ]
-                           },
-                           "then" : {
-                              "type" : "If",
-                              "condition" : {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "name" : "meanScoreFromQuestionnaire",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }
-                              },
-                              "then" : {
-                                 "type" : "ToDecimal",
-                                 "operand" : {
-                                    "name" : "meanScoreFromQuestionnaire",
-                                    "type" : "QueryLetRef"
-                                 }
-                              },
-                              "else" : {
-                                 "name" : "meanScore",
-                                 "type" : "QueryLetRef"
-                              }
-                           },
-                           "else" : {
-                              "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                              "type" : "As",
-                              "operand" : {
-                                 "type" : "Null"
-                              }
-                           }
+                           "name" : "meanScore",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "score",

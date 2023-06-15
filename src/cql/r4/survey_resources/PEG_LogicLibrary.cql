@@ -70,8 +70,15 @@ define ResponsesSummary:
     Question1Score: Coalesce(ToInteger(Question1Answer), 0),
     Question2Score: Coalesce(ToInteger(Question2Answer), 0),
     Question3Score: Coalesce(ToInteger(Question3Answer), 0),
-    sumScore: Question1Score + Question2Score + Question3Score,
-    meanScore: if meanScoreFromQuestionnaire > 0 then meanScoreFromQuestionnaire else Round(sumScore / 3),
+    sumScore: 
+    if Question1Answer is not null and Question2Answer is not null and Question3Answer is not null then
+      Question1Score + Question2Score + Question3Score
+    else null,
+    meanScore: 
+      if meanScoreFromQuestionnaire > 0 
+      then meanScoreFromQuestionnaire 
+      else 
+        if sumScore is not null then Round(sumScore / 3) else null,
     totalItems: 3
     return Tuple {
       id: I.id.value,
@@ -86,17 +93,8 @@ define ResponsesSummary:
       Question2Score: Question2Score,
       Question3Score: Question3Score,
       responses_completed: ResponsesCompleted,
-      sum_score: 
-        if Question1Answer is not null and Question2Answer is not null and Question3Answer is not null then
-          sumScore
-        else null,
-      mean_score: 
-        if Question1Answer is not null and Question2Answer is not null and Question3Answer is not null then 
-          if meanScoreFromQuestionnaire is not null then 
-            meanScoreFromQuestionnaire 
-          else 
-            meanScore
-        else null,
+      sum_score: sumScore,
+      mean_score: meanScore,
       score: sumScore,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
