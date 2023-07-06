@@ -20,7 +20,7 @@ export const COLORS = [
   "#304ffe",
   "#3f51b5",
   "#673ab7",
-  "#4a148c",
+  "#D68C72",
   "#880e4f",
   "#B404AE",
   "#2196f3",
@@ -28,7 +28,7 @@ export const COLORS = [
   "#6200ea",
   "#009688",
   "#880e4f",
-  "#004d40",
+  "#96008B",
   "#9e9d24",
   "#ff9800",
   "#ffeb3b",
@@ -40,6 +40,8 @@ export const COLORS = [
   "#757575",
   "#455a64",
   "#c0ca33",
+  "#B633CA",
+  "#33AACA"
 ];
 
 export function getLineAttributes(id, params, colorIndex) {
