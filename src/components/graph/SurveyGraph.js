@@ -52,7 +52,7 @@ export default class SurveyGraph extends Component {
           };
         })
       : [];
-    data = data.filter((d) => d[xFieldName]);
+    data = data.filter((d) => d[xFieldName] && d[yFieldName] !== null && !isNaN(d[yFieldName]));
     data = data.map((d) => {
       let dObj = new Date(d[xFieldName]);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
