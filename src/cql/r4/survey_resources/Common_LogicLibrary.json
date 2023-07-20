@@ -1637,12 +1637,12 @@
             "accessLevel" : "Public",
             "type" : "FunctionDef",
             "expression" : {
-               "type" : "SingletonFrom",
-               "operand" : {
-                  "type" : "Query",
-                  "source" : [ {
-                     "alias" : "I",
-                     "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "I",
+                  "expression" : {
+                     "type" : "SingletonFrom",
+                     "operand" : {
                         "type" : "Query",
                         "source" : [ {
                            "alias" : "o",
@@ -1713,82 +1713,41 @@
                            } ]
                         }
                      }
-                  } ],
-                  "relationship" : [ ],
-                  "return" : {
-                     "expression" : {
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "IsNull",
+                        "operand" : {
+                           "name" : "I",
+                           "type" : "AliasRef"
+                        }
+                     },
+                     "then" : {
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        },
+                        "asTypeSpecifier" : {
+                           "type" : "ListTypeSpecifier",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }
+                     },
+                     "else" : {
                         "type" : "If",
                         "condition" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "name" : "I",
-                              "type" : "AliasRef"
-                           }
-                        },
-                        "then" : {
-                           "type" : "List",
-                           "element" : [ {
-                              "strict" : false,
-                              "type" : "As",
+                           "type" : "And",
+                           "operand" : [ {
+                              "type" : "Not",
                               "operand" : {
-                                 "type" : "Null"
-                              },
-                              "asTypeSpecifier" : {
-                                 "name" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "type" : "NamedTypeSpecifier"
-                              }
-                           } ]
-                        },
-                        "else" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "And",
-                              "operand" : [ {
-                                 "type" : "Not",
+                                 "type" : "IsNull",
                                  "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "path" : "code",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "path" : "value",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "type" : "Indexer",
-                                             "operand" : [ {
-                                                "path" : "answer",
-                                                "scope" : "I",
-                                                "type" : "Property"
-                                             }, {
-                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                "value" : "0",
-                                                "type" : "Literal"
-                                             } ]
-                                          }
-                                       }
-                                    }
-                                 }
-                              }, {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "name" : "questionnaire",
-                                       "type" : "OperandRef"
-                                    }
-                                 }
-                              } ]
-                           },
-                           "then" : {
-                              "name" : "getAnswerValueByCode",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "name" : "questionnaire",
-                                 "type" : "OperandRef"
-                              }, {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
                                     "path" : "code",
                                     "type" : "Property",
                                     "source" : {
@@ -1808,107 +1767,137 @@
                                        }
                                     }
                                  }
-                              }, {
-                                 "name" : "extensionIndex",
-                                 "type" : "OperandRef"
-                              } ]
-                           },
-                           "else" : {
-                              "type" : "ToList",
+                              }
+                           }, {
+                              "type" : "Not",
                               "operand" : {
-                                 "asType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "type" : "As",
+                                 "type" : "IsNull",
                                  "operand" : {
-                                    "type" : "If",
-                                    "condition" : {
-                                       "type" : "Not",
+                                    "name" : "questionnaire",
+                                    "type" : "OperandRef"
+                                 }
+                              }
+                           } ]
+                        },
+                        "then" : {
+                           "name" : "getAnswerValueByCode",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "questionnaire",
+                              "type" : "OperandRef"
+                           }, {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "code",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "type" : "Indexer",
+                                       "operand" : [ {
+                                          "path" : "answer",
+                                          "scope" : "I",
+                                          "type" : "Property"
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
+                                       } ]
+                                    }
+                                 }
+                              }
+                           }, {
+                              "name" : "extensionIndex",
+                              "type" : "OperandRef"
+                           } ]
+                        },
+                        "else" : {
+                           "type" : "ToList",
+                           "operand" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "If",
+                                 "condition" : {
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "IsNull",
                                        "operand" : {
-                                          "type" : "IsNull",
-                                          "operand" : {
-                                             "path" : "value",
-                                             "type" : "Property",
-                                             "source" : {
-                                                "path" : "value",
-                                                "type" : "Property",
-                                                "source" : {
-                                                   "type" : "Indexer",
-                                                   "operand" : [ {
-                                                      "path" : "answer",
-                                                      "scope" : "I",
-                                                      "type" : "Property"
-                                                   }, {
-                                                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                      "value" : "0",
-                                                      "type" : "Literal"
-                                                   } ]
-                                                }
-                                             }
-                                          }
-                                       }
-                                    },
-                                    "then" : {
-                                       "path" : "value",
-                                       "type" : "Property",
-                                       "source" : {
                                           "path" : "value",
                                           "type" : "Property",
                                           "source" : {
-                                             "type" : "Indexer",
-                                             "operand" : [ {
-                                                "path" : "answer",
-                                                "scope" : "I",
-                                                "type" : "Property"
-                                             }, {
-                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                "value" : "0",
-                                                "type" : "Literal"
-                                             } ]
+                                             "path" : "value",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "type" : "Indexer",
+                                                "operand" : [ {
+                                                   "path" : "answer",
+                                                   "scope" : "I",
+                                                   "type" : "Property"
+                                                }, {
+                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                   "value" : "0",
+                                                   "type" : "Literal"
+                                                } ]
+                                             }
                                           }
                                        }
-                                    },
-                                    "else" : {
-                                       "type" : "As",
-                                       "operand" : {
-                                          "strict" : false,
-                                          "type" : "As",
-                                          "operand" : {
+                                    }
+                                 },
+                                 "then" : {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "type" : "Indexer",
+                                          "operand" : [ {
+                                             "path" : "answer",
+                                             "scope" : "I",
+                                             "type" : "Property"
+                                          }, {
                                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                                              "value" : "0",
                                              "type" : "Literal"
-                                          },
-                                          "asTypeSpecifier" : {
-                                             "name" : "{urn:hl7-org:elm-types:r1}Integer",
-                                             "type" : "NamedTypeSpecifier"
-                                          }
-                                       },
-                                       "asTypeSpecifier" : {
-                                          "type" : "ChoiceTypeSpecifier",
-                                          "choice" : [ {
-                                             "name" : "{urn:hl7-org:elm-types:r1}Boolean",
-                                             "type" : "NamedTypeSpecifier"
-                                          }, {
-                                             "name" : "{urn:hl7-org:elm-types:r1}Time",
-                                             "type" : "NamedTypeSpecifier"
-                                          }, {
-                                             "name" : "{urn:hl7-org:elm-types:r1}DateTime",
-                                             "type" : "NamedTypeSpecifier"
-                                          }, {
-                                             "name" : "{urn:hl7-org:elm-types:r1}Integer",
-                                             "type" : "NamedTypeSpecifier"
-                                          }, {
-                                             "name" : "{http://hl7.org/fhir}decimal",
-                                             "type" : "NamedTypeSpecifier"
-                                          }, {
-                                             "name" : "{urn:hl7-org:elm-types:r1}Date",
-                                             "type" : "NamedTypeSpecifier"
-                                          }, {
-                                             "name" : "{urn:hl7-org:elm-types:r1}String",
-                                             "type" : "NamedTypeSpecifier"
-                                          }, {
-                                             "name" : "{urn:hl7-org:elm-types:r1}Decimal",
-                                             "type" : "NamedTypeSpecifier"
                                           } ]
                                        }
+                                    }
+                                 },
+                                 "else" : {
+                                    "type" : "As",
+                                    "operand" : {
+                                       "type" : "Null"
+                                    },
+                                    "asTypeSpecifier" : {
+                                       "type" : "ChoiceTypeSpecifier",
+                                       "choice" : [ {
+                                          "name" : "{urn:hl7-org:elm-types:r1}Boolean",
+                                          "type" : "NamedTypeSpecifier"
+                                       }, {
+                                          "name" : "{urn:hl7-org:elm-types:r1}Time",
+                                          "type" : "NamedTypeSpecifier"
+                                       }, {
+                                          "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                          "type" : "NamedTypeSpecifier"
+                                       }, {
+                                          "name" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "type" : "NamedTypeSpecifier"
+                                       }, {
+                                          "name" : "{http://hl7.org/fhir}decimal",
+                                          "type" : "NamedTypeSpecifier"
+                                       }, {
+                                          "name" : "{urn:hl7-org:elm-types:r1}Date",
+                                          "type" : "NamedTypeSpecifier"
+                                       }, {
+                                          "name" : "{urn:hl7-org:elm-types:r1}String",
+                                          "type" : "NamedTypeSpecifier"
+                                       }, {
+                                          "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                          "type" : "NamedTypeSpecifier"
+                                       } ]
                                     }
                                  }
                               }

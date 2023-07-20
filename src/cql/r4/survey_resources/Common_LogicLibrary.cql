@@ -178,13 +178,13 @@ define function getAnswerValueByCode(questionnaire FHIR.Questionnaire, code Stri
  * @return {System.Integer}
  */
 define function getScoringByResponseItem(questionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>, linkId String, extensionIndex Integer):
-  (singleton from (((responses) o where PositionOf(linkId, o.linkId.value) != -1 or PositionOf(o.linkId.value, linkId) != -1) I
+  (singleton from ((responses) o where PositionOf(linkId, o.linkId.value) != -1 or PositionOf(o.linkId.value, linkId) != -1)) I
   return 
-    if I is null then ({null as Integer})
+    if I is null then null
     else
       if I.answer[0].value.code is not null and questionnaire is not null then getAnswerValueByCode(questionnaire, I.answer[0].value.code.value, extensionIndex) 
       else if I.answer[0].value.value is not null then I.answer[0].value.value 
-      else 0 as Integer))
+      else null
 
 /* 
  * retrieve questionnaire responses in a list of Tuple of formatted question and answer

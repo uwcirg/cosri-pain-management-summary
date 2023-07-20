@@ -236,23 +236,46 @@
                   }
                } ],
                "let" : [ {
+                  "identifier" : "meanScoreResponse",
+                  "expression" : {
+                     "type" : "First",
+                     "source" : {
+                        "name" : "GetResponseAnswerByLinkId",
+                        "libraryName" : "LogicHelper",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "name" : "MeanScoreQuestionId",
+                           "type" : "ExpressionRef"
+                        }, {
+                           "path" : "item",
+                           "scope" : "I",
+                           "type" : "Property"
+                        } ]
+                     }
+                  }
+               }, {
                   "identifier" : "meanScoreFromQuestionnaire",
                   "expression" : {
-                     "type" : "ToInteger",
-                     "operand" : {
-                        "type" : "First",
-                        "source" : {
-                           "name" : "GetResponseAnswerByLinkId",
-                           "libraryName" : "LogicHelper",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "name" : "MeanScoreQuestionId",
-                              "type" : "ExpressionRef"
-                           }, {
-                              "path" : "item",
-                              "scope" : "I",
-                              "type" : "Property"
-                           } ]
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "IsNull",
+                        "operand" : {
+                           "name" : "meanScoreResponse",
+                           "type" : "QueryLetRef"
+                        }
+                     },
+                     "then" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
+                     },
+                     "else" : {
+                        "type" : "ToInteger",
+                        "operand" : {
+                           "name" : "meanScoreResponse",
+                           "type" : "QueryLetRef"
                         }
                      }
                   }
@@ -437,14 +460,26 @@
                   "expression" : {
                      "type" : "If",
                      "condition" : {
-                        "type" : "Greater",
+                        "type" : "And",
                         "operand" : [ {
-                           "name" : "meanScoreFromQuestionnaire",
-                           "type" : "QueryLetRef"
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "meanScoreFromQuestionnaire",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
                         }, {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                           "value" : "0",
-                           "type" : "Literal"
+                           "type" : "Greater",
+                           "operand" : [ {
+                              "name" : "meanScoreFromQuestionnaire",
+                              "type" : "QueryLetRef"
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "0",
+                              "type" : "Literal"
+                           } ]
                         } ]
                      },
                      "then" : {
@@ -546,8 +581,40 @@
                      }, {
                         "name" : "responses",
                         "value" : {
-                           "name" : "responsesOnly",
-                           "type" : "QueryLetRef"
+                           "type" : "Union",
+                           "operand" : [ {
+                              "name" : "responsesOnly",
+                              "type" : "QueryLetRef"
+                           }, {
+                              "type" : "ToList",
+                              "operand" : {
+                                 "type" : "Tuple",
+                                 "element" : [ {
+                                    "name" : "linkId",
+                                    "value" : {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "PEG_total_score",
+                                       "type" : "Literal"
+                                    }
+                                 }, {
+                                    "name" : "question",
+                                    "value" : {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "PEG score",
+                                       "type" : "Literal"
+                                    }
+                                 }, {
+                                    "name" : "answer",
+                                    "value" : {
+                                       "type" : "ToString",
+                                       "operand" : {
+                                          "name" : "sumScore",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    }
+                                 } ]
+                              }
+                           } ]
                         }
                      }, {
                         "name" : "Question1Answer",
@@ -657,49 +724,66 @@
                                     "where" : {
                                        "type" : "And",
                                        "operand" : [ {
-                                          "type" : "Or",
+                                          "type" : "And",
                                           "operand" : [ {
-                                             "type" : "Equal",
+                                             "type" : "Or",
                                              "operand" : [ {
-                                                "type" : "PositionOf",
-                                                "pattern" : {
-                                                   "path" : "linkId",
-                                                   "scope" : "O",
-                                                   "type" : "Property"
-                                                },
-                                                "string" : {
-                                                   "name" : "ScoringQuestionId",
-                                                   "type" : "ExpressionRef"
-                                                }
+                                                "type" : "Equal",
+                                                "operand" : [ {
+                                                   "type" : "PositionOf",
+                                                   "pattern" : {
+                                                      "path" : "linkId",
+                                                      "scope" : "O",
+                                                      "type" : "Property"
+                                                   },
+                                                   "string" : {
+                                                      "name" : "ScoringQuestionId",
+                                                      "type" : "ExpressionRef"
+                                                   }
+                                                }, {
+                                                   "type" : "Negate",
+                                                   "operand" : {
+                                                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                      "value" : "1",
+                                                      "type" : "Literal"
+                                                   }
+                                                } ]
                                              }, {
-                                                "type" : "Negate",
-                                                "operand" : {
-                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                   "value" : "1",
-                                                   "type" : "Literal"
-                                                }
+                                                "type" : "Equal",
+                                                "operand" : [ {
+                                                   "type" : "PositionOf",
+                                                   "pattern" : {
+                                                      "name" : "ScoringQuestionId",
+                                                      "type" : "ExpressionRef"
+                                                   },
+                                                   "string" : {
+                                                      "path" : "linkId",
+                                                      "scope" : "O",
+                                                      "type" : "Property"
+                                                   }
+                                                }, {
+                                                   "type" : "Negate",
+                                                   "operand" : {
+                                                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                      "value" : "1",
+                                                      "type" : "Literal"
+                                                   }
+                                                } ]
                                              } ]
                                           }, {
-                                             "type" : "Equal",
-                                             "operand" : [ {
-                                                "type" : "PositionOf",
-                                                "pattern" : {
-                                                   "name" : "ScoringQuestionId",
-                                                   "type" : "ExpressionRef"
-                                                },
-                                                "string" : {
+                                             "type" : "Not",
+                                             "operand" : {
+                                                "type" : "Equal",
+                                                "operand" : [ {
                                                    "path" : "linkId",
                                                    "scope" : "O",
                                                    "type" : "Property"
-                                                }
-                                             }, {
-                                                "type" : "Negate",
-                                                "operand" : {
-                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                   "value" : "1",
+                                                }, {
+                                                   "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                                   "value" : "PEG score",
                                                    "type" : "Literal"
-                                                }
-                                             } ]
+                                                } ]
+                                             }
                                           } ]
                                        }, {
                                           "type" : "Not",

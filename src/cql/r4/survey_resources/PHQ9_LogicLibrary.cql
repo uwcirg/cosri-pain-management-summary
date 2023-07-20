@@ -55,16 +55,37 @@ define QuestionnaireResponses:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    itemTotalScore: 
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question1LinkId, extensionAnswerIndex)), 0) * 1 +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question2LinkId, extensionAnswerIndex)), 0) * 1 +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question3LinkId, extensionAnswerIndex)), 0) * 1 + 
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question4LinkId, extensionAnswerIndex)), 0) * 1 +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question5LinkId, extensionAnswerIndex)), 0) * 1 +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question6LinkId, extensionAnswerIndex)), 0) * 1 +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)), 0) * 1 +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)), 0) * 1 +
-          Coalesce(First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)), 0) * 1,
+    Question1Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
+    Question2Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
+    Question3Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
+    Question4Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
+    Question5Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question5LinkId, extensionAnswerIndex)),
+    Question6Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question6LinkId, extensionAnswerIndex)),
+    Question7Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)),
+    Question8Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)),
+    Question9Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)),
+    itemTotalScore:
+          case 
+            when Question1Score is null then null
+            when Question2Score is null then null
+            when Question3Score is null then null
+            when Question4Score is null then null
+            when Question5Score is null then null
+            when Question6Score is null then null
+            when Question7Score is null then null
+            when Question8Score is null then null
+            when Question9Score is null then null
+            else
+              Coalesce(Question1Score, 0) * 1 +
+              Coalesce(Question2Score, 0) * 1 +
+              Coalesce(Question3Score, 0) * 1 + 
+              Coalesce(Question4Score, 0) * 1 +
+              Coalesce(Question5Score, 0) * 1 +
+              Coalesce(Question6Score, 0) * 1 +
+              Coalesce(Question7Score, 0) * 1 +
+              Coalesce(Question8Score, 0) * 1 +
+              Coalesce(Question9Score, 0) * 1 
+          end,
     scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
     score:
       case 

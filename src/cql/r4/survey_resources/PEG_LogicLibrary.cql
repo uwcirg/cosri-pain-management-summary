@@ -53,7 +53,10 @@ define ResponsesCompleted:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    meanScoreFromQuestionnaire: ToInteger(First(LogicHelper.GetResponseAnswerByLinkId(MeanScoreQuestionId, I.item))), // mean score
+    meanScoreResponse: First(LogicHelper.GetResponseAnswerByLinkId(MeanScoreQuestionId, I.item)),
+    meanScoreFromQuestionnaire: 
+      if meanScoreResponse is null then null
+      else ToInteger(meanScoreResponse), // mean score
     //scoreSeverity:
         // case
         //   when score > 15 then 'high'
@@ -75,7 +78,7 @@ define ResponsesSummary:
       Question1Score + Question2Score + Question3Score
     else null,
     meanScore: 
-      if meanScoreFromQuestionnaire > 0 
+      if meanScoreFromQuestionnaire is not null and meanScoreFromQuestionnaire > 0 
       then meanScoreFromQuestionnaire 
       else 
         if sumScore is not null then Round(sumScore / 3) else null,
@@ -85,7 +88,12 @@ define ResponsesSummary:
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: responsesOnly,
+      // TODO remove this when sum score is reported
+      responses: responsesOnly union {
+        linkId: 'PEG_total_score',
+        question: 'PEG score',
+        answer: ToString(sumScore)
+      },
       Question1Answer: Question1Answer,
       Question2Answer: Question2Answer,
       Question3Answer: Question3Answer,
@@ -106,8 +114,10 @@ define ResponsesSummary:
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length(
         (responsesOnly) O where 
-          (PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)
-          and O.answer is not null
+          (
+            PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)
+            and O.linkId != 'PEG score'
+            and O.answer is not null
         ), totalItems}),
       totalItems: totalItems,
       questionnaireItems: QuestionnaireItems,

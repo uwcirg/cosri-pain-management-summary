@@ -63,13 +63,23 @@ define ResponsesSummary:
     q6Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
     q7Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
     itemTotalScore: 
+      case
+        when q1Score is null then null
+        when q2Score is null then null
+        when q3Score is null then null
+        when q4Score is null then null
+        when q5Score is null then null
+        when q6Score is null then null
+        when q7Score is null then null
+        else 
           Coalesce(q1Score, 0) * 1 +
           Coalesce(q2Score, 0) * 1 +
           Coalesce(q3Score, 0) * 1 + 
           Coalesce(q4Score, 0) * 1 +
           Coalesce(q5Score, 0) * 1 +
           Coalesce(q6Score, 0) * 1 +
-          Coalesce(q7Score, 0) * 1,
+          Coalesce(q7Score, 0) * 1
+      end,
     scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
     score: 
       case 
