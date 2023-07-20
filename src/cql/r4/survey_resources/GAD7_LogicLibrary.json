@@ -420,10 +420,49 @@
                      }
                   }
                }, {
+                  "identifier" : "scoreQuestionResponse",
+                  "expression" : {
+                     "type" : "First",
+                     "source" : {
+                        "name" : "getScoringByResponseItem",
+                        "libraryName" : "LogicHelper",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "name" : "Gad7Questionnaire",
+                           "type" : "ExpressionRef"
+                        }, {
+                           "path" : "item",
+                           "scope" : "I",
+                           "type" : "Property"
+                        }, {
+                           "name" : "ScoringQuestionId",
+                           "type" : "ExpressionRef"
+                        }, {
+                           "name" : "answerExtensionIndex",
+                           "type" : "ExpressionRef"
+                        } ]
+                     }
+                  }
+               }, {
                   "identifier" : "itemTotalScore",
                   "expression" : {
                      "type" : "Case",
                      "caseItem" : [ {
+                        "when" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "scoreQuestionResponse",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        },
+                        "then" : {
+                           "name" : "scoreQuestionResponse",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
                         "when" : {
                            "type" : "IsNull",
                            "operand" : {
@@ -669,53 +708,10 @@
                      }
                   }
                }, {
-                  "identifier" : "scoreQuestionResponse",
-                  "expression" : {
-                     "type" : "First",
-                     "source" : {
-                        "name" : "getScoringByResponseItem",
-                        "libraryName" : "LogicHelper",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "Gad7Questionnaire",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "path" : "item",
-                           "scope" : "I",
-                           "type" : "Property"
-                        }, {
-                           "name" : "ScoringQuestionId",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "name" : "answerExtensionIndex",
-                           "type" : "ExpressionRef"
-                        } ]
-                     }
-                  }
-               }, {
                   "identifier" : "score",
                   "expression" : {
-                     "type" : "Case",
-                     "caseItem" : [ {
-                        "when" : {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "IsNull",
-                              "operand" : {
-                                 "name" : "scoreQuestionResponse",
-                                 "type" : "QueryLetRef"
-                              }
-                           }
-                        },
-                        "then" : {
-                           "name" : "scoreQuestionResponse",
-                           "type" : "QueryLetRef"
-                        }
-                     } ],
-                     "else" : {
-                        "name" : "itemTotalScore",
-                        "type" : "QueryLetRef"
-                     }
+                     "name" : "itemTotalScore",
+                     "type" : "QueryLetRef"
                   }
                }, {
                   "identifier" : "scoreSeverity",

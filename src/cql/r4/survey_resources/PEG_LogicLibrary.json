@@ -396,42 +396,54 @@
                }, {
                   "identifier" : "sumScore",
                   "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "type" : "And",
-                        "operand" : [ {
-                           "type" : "And",
-                           "operand" : [ {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "name" : "Question1Answer",
-                                    "type" : "QueryLetRef"
-                                 }
-                              }
-                           }, {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "name" : "Question2Answer",
-                                    "type" : "QueryLetRef"
-                                 }
-                              }
-                           } ]
-                        }, {
-                           "type" : "Not",
+                     "type" : "Case",
+                     "caseItem" : [ {
+                        "when" : {
+                           "type" : "IsNull",
                            "operand" : {
-                              "type" : "IsNull",
-                              "operand" : {
-                                 "name" : "Question3Answer",
-                                 "type" : "QueryLetRef"
-                              }
+                              "name" : "Question1Answer",
+                              "type" : "QueryLetRef"
                            }
-                        } ]
-                     },
-                     "then" : {
+                        },
+                        "then" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           }
+                        }
+                     }, {
+                        "when" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "name" : "Question2Answer",
+                              "type" : "QueryLetRef"
+                           }
+                        },
+                        "then" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           }
+                        }
+                     }, {
+                        "when" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "name" : "Question3Answer",
+                              "type" : "QueryLetRef"
+                           }
+                        },
+                        "then" : {
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           }
+                        }
+                     } ],
+                     "else" : {
                         "type" : "Add",
                         "operand" : [ {
                            "type" : "Add",
@@ -446,13 +458,6 @@
                            "name" : "Question3Score",
                            "type" : "QueryLetRef"
                         } ]
-                     },
-                     "else" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}Integer",
-                        "type" : "As",
-                        "operand" : {
-                           "type" : "Null"
-                        }
                      }
                   }
                }, {

@@ -64,8 +64,10 @@ define ResponsesSummary:
     Question7Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question7LinkId, extensionAnswerIndex)),
     Question8Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question8LinkId, extensionAnswerIndex)),
     Question9Score: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, question9LinkId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
     itemTotalScore:
-          case 
+          case
+            when scoreQuestionResponse is not null then scoreQuestionResponse
             when Question1Score is null then null
             when Question2Score is null then null
             when Question3Score is null then null
@@ -86,12 +88,8 @@ define ResponsesSummary:
               Coalesce(Question8Score, 0) * 1 +
               Coalesce(Question9Score, 0) * 1 
           end,
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Phq9Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
-    score:
-      case 
-          when scoreQuestionResponse is not null then scoreQuestionResponse
-          else itemTotalScore
-      end,
+    
+    score: itemTotalScore,
     scoreSeverity:
         case
           when score >= 20 then 'high'

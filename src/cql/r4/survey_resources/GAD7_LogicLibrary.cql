@@ -62,8 +62,10 @@ define ResponsesSummary:
     q5Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question5LinkId, answerExtensionIndex)),
     q6Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
     q7Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
     itemTotalScore: 
       case
+        when scoreQuestionResponse is not null then scoreQuestionResponse
         when q1Score is null then null
         when q2Score is null then null
         when q3Score is null then null
@@ -80,12 +82,7 @@ define ResponsesSummary:
           Coalesce(q6Score, 0) * 1 +
           Coalesce(q7Score, 0) * 1
       end,
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
-    score: 
-      case 
-        when scoreQuestionResponse is not null then scoreQuestionResponse
-        else itemTotalScore
-      end,
+    score: itemTotalScore,
     scoreSeverity: case
         when score > 14 then 'high'
         when score between 10 and 14 then 'moderate'
