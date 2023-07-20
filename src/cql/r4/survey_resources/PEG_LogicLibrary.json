@@ -399,6 +399,33 @@
                      "type" : "Case",
                      "caseItem" : [ {
                         "when" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "meanScoreFromQuestionnaire",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        },
+                        "then" : {
+                           "type" : "Add",
+                           "operand" : [ {
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "name" : "Question1Score",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "name" : "Question2Score",
+                                 "type" : "QueryLetRef"
+                              } ]
+                           }, {
+                              "name" : "Question3Score",
+                              "type" : "QueryLetRef"
+                           } ]
+                        }
+                     }, {
+                        "when" : {
                            "type" : "IsNull",
                            "operand" : {
                               "name" : "Question1Answer",
