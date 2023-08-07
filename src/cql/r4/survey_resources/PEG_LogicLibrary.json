@@ -254,7 +254,7 @@
                      }
                   }
                }, {
-                  "identifier" : "meanScoreFromQuestionnaire",
+                  "identifier" : "reportedMeanScore",
                   "expression" : {
                      "type" : "If",
                      "condition" : {
@@ -403,7 +403,7 @@
                            "operand" : {
                               "type" : "IsNull",
                               "operand" : {
-                                 "name" : "meanScoreFromQuestionnaire",
+                                 "name" : "reportedMeanScore",
                                  "type" : "QueryLetRef"
                               }
                            }
@@ -498,14 +498,14 @@
                            "operand" : {
                               "type" : "IsNull",
                               "operand" : {
-                                 "name" : "meanScoreFromQuestionnaire",
+                                 "name" : "reportedMeanScore",
                                  "type" : "QueryLetRef"
                               }
                            }
                         }, {
                            "type" : "Greater",
                            "operand" : [ {
-                              "name" : "meanScoreFromQuestionnaire",
+                              "name" : "reportedMeanScore",
                               "type" : "QueryLetRef"
                            }, {
                               "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
@@ -517,7 +517,7 @@
                      "then" : {
                         "type" : "ToDecimal",
                         "operand" : {
-                           "name" : "meanScoreFromQuestionnaire",
+                           "name" : "reportedMeanScore",
                            "type" : "QueryLetRef"
                         }
                      },

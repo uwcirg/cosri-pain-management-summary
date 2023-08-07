@@ -54,7 +54,7 @@ define ResponsesSummary:
   (QuestionnaireResponses) I
   let
     meanScoreResponse: First(LogicHelper.GetResponseAnswerByLinkId(MeanScoreQuestionId, I.item)),
-    meanScoreFromQuestionnaire: 
+    reportedMeanScore: 
       if meanScoreResponse is null then null
       else ToInteger(meanScoreResponse), // mean score
     //scoreSeverity:
@@ -75,17 +75,18 @@ define ResponsesSummary:
     Question3Score: Coalesce(ToInteger(Question3Answer), 0),
     sumScore: 
       case
-        when meanScoreFromQuestionnaire is not null then
+        when reportedMeanScore is not null then
           Question1Score + Question2Score + Question3Score
         when Question1Answer is null then null
         when Question2Answer is null then null
         when Question3Answer is null then null
         else
+          // only get sum score of score from each question is available
           Question1Score + Question2Score + Question3Score
       end,
     meanScore: 
-      if meanScoreFromQuestionnaire is not null and meanScoreFromQuestionnaire > 0 
-      then meanScoreFromQuestionnaire 
+      if reportedMeanScore is not null and reportedMeanScore > 0 
+      then reportedMeanScore 
       else 
         if sumScore is not null then Round(sumScore / 3) else null,
     totalItems: 3
