@@ -184,7 +184,7 @@ export default class SurveyGraph extends Component {
         <div className="legend">
           {qids.map((item, index) => (
             <div className="legend__item" key={`legend_${item}_${index}`}>
-              <div>
+              <div className="legend__item--key">
                 <span
                   className="icon"
                   style={{

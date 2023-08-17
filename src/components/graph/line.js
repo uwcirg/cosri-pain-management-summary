@@ -99,11 +99,12 @@ class Line extends React.Component {
         .attr("id", (d, i) => `dataRect_${dataId}${i}`)
         .attr("x", (d) => xScale(d[xName]) - 52)
         .attr("y", (d) => yScale(d[yName]) + 12)
-        .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
-        .attr("height", 20)
+        .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 8)
+        .attr("height", 28)
         .attr("class", "hide")
-        .style("stroke", "black")
-        .style("stroke-width", "0.25")
+        .style("stroke", "#777")
+        .style("stroke-width", "0.5")
+        .style("rx", 4)
         .style("fill", "#FFF");
 
       //tooltip
@@ -113,10 +114,10 @@ class Line extends React.Component {
         .enter()
         .append("text")
         .attr("id", (d, i) => `dataText_${dataId}${i}`)
-        .attr("x", (d) => xScale(d[xName]) - 48)
-        .attr("y", (d) => yScale(d[yName]) + 26)
+        .attr("x", (d) => xScale(d[xName]) - 36)
+        .attr("y", (d) => yScale(d[yName]) + 30)
         .attr("class", "hide")
-        .attr("font-size", 11)
+        .attr("font-size", 12)
         .attr("text-anchor", "start")
         .attr("font-weight", 600)
         .text(function (d) {
