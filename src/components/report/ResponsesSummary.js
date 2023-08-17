@@ -50,8 +50,7 @@ export default class ResponsesSummary extends Component {
     const matchedItem = summary.responses.filter(
       (item) =>
         String(item.linkId).includes(targetItem.linkId) ||
-        String(targetItem.linkId).includes(item.linkId) ||
-        item.question === targetItem.question
+        String(targetItem.linkId).includes(item.linkId)
     );
     if (!matchedItem.length) return "--";
     return this.getMatchedAnswerTextByLinkId(

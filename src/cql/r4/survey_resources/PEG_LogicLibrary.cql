@@ -75,8 +75,6 @@ define ResponsesSummary:
     Question3Score: Coalesce(ToInteger(Question3Answer), 0),
     sumScore: 
       case
-        when reportedMeanScore is not null then
-          Question1Score + Question2Score + Question3Score
         when Question1Answer is null then null
         when Question2Answer is null then null
         when Question3Answer is null then null
