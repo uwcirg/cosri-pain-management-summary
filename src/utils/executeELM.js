@@ -55,9 +55,7 @@ class VSACAwareCodeService extends cql.CodeService {
 function executeELM(collector, paramResourceTypes) {
   let client, release, library;
   let resourceTypes = paramResourceTypes || {};
-  return new Promise((resolve) => {
-    // First get our authorized client and send the FHIR release to the next step
-    const results = FHIR.oauth2.ready().then((clientArg) => {
+  return FHIR.oauth2.ready().then((clientArg) => {
       client = clientArg;
       return client.getFhirRelease();
     })
@@ -106,11 +104,15 @@ function executeELM(collector, paramResourceTypes) {
       //debugging
       console.log("bundle loaded? ", bundle);
       patientSource.loadBundles([bundle]);
-      const results = executor.exec(patientSource);
+      return executor.exec(patientSource);
+      // const results = executor.exec(patientSource);
+      // return results.patientResults[Object.keys(results.patientResults)[0]];
+    })
+    // Then return the results
+    .then((results) => {
       return results.patientResults[Object.keys(results.patientResults)[0]];
     });
-    resolve(results);
-  });
+   // resolve(results);
 }
 
 function getLibrary(release) {

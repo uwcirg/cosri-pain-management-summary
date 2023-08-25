@@ -115,7 +115,7 @@ Run the app via one of the options above, then:
 
 Testing this SMART App is more meaningful when we can supply test patients that exercise various aspects of the application.  Test patients are represented as FHIR bundles at `src/utils/dstu2_test_patients` and `r4_test_patients`.  To upload the test patients to the public SMART sandbox:
 
-1. Run `yarn upload-test-patients`
+1. Run `npm run upload-test-patients`
 
 This adds a number of patients, mostly with the last name "Jackson" (for example, "Fuller Jackson" has entries in every section of the app).  The SMART sandbox may be reset at any time, so you may need to run this command again if the database has been reset.
 

@@ -15,9 +15,9 @@ import {
 import { dateCompare } from "../helpers/sortit";
 import { getDiffDays, isInViewport } from "../helpers/utility";
 import Timeout from "../helpers/timeout";
-import summaryMap from "./summary.json";
+import summaryMap from "../config/summary_config.json";
 
-import { getEnv, fetchEnvData } from "../utils/envConfig";
+import { getEnv, getEnvs, fetchEnvData } from "../utils/envConfig";
 import SystemBanner from "./SystemBanner";
 import Header from "./Header";
 import Summary from "./Summary";
@@ -41,11 +41,16 @@ export default class Landing extends Component {
       resourceTypes: {},
       externals: {},
       patientId: "",
+      activeTab: 0,
       loadingMessage: "Resources are being loaded...",
     };
     this.errorCollection = [];
     this.mmeErrors = false;
     this.tocInitialized = false;
+    // This binding is necessary to make `this` work in the callback
+    this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
+    this.handleHeaderPos = this.handleHeaderPos.bind(this);
+    this.anchorTopRef = React.createRef();
   }
 
   setPatientId() {
@@ -312,6 +317,10 @@ export default class Landing extends Component {
      * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
      */
     fetchEnvData();
+
+    // write out environment variables:
+    getEnvs();
+
     //start time out countdown on DOM mounted
     Timeout();
     this.pingProcessProgress();
@@ -366,44 +375,50 @@ export default class Landing extends Component {
       });
   }
 
-  componentDidUpdate() {
-    const MIN_HEADER_HEIGHT = 100;
-    if (!this.tocInitialized && !this.state.loading && this.state.result) {
-      tocbot.init({
-        tocSelector: ".summary__nav", // where to render the table of contents
-        contentSelector: ".summary__display", // where to grab the headings to build the table of contents
-        headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
-        positionFixedSelector: ".summary__nav", // element to add the positionFixedClass to
-        collapseDepth: 0, // how many heading levels should not be collpased
-        includeHtml: true, // include the HTML markup from the heading node, not just the text,
-        headingsOffset: MIN_HEADER_HEIGHT,
-        scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-        throttleTimeout: 175,
-      });
+  initializeTocBot() {
+    tocbot.init({
+      tocSelector: ".active .summary__nav", // where to render the table of contents
+      contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
+      headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
+      positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
+      collapseDepth: 0, // how many heading levels should not be collpased
+      includeHtml: true, // include the HTML markup from the heading node, not just the text,
+      fixedSidebarOffset: this.shouldShowTabs() ? 140 : "auto",
+    });
+  }
 
+  componentDidUpdate() {
+    if (!this.tocInitialized && !this.state.loading && this.state.result) {
+      this.initializeTocBot();
       this.tocInitialized = true;
+    } else {
+      if (this.tocInitialized) {
+        tocbot.refresh({ ...tocbot.options, hasInnerContainers: true });
+      }
     }
     //page title
     document.title = "COSRI";
+    if (this.shouldShowTabs()) {
+        document.querySelector("body").classList.add("has-tabs");
+    }
     this.handleHeaderPos();
   }
   /*
    * fixed header when scrolling in the event that it is not within viewport
    */
   handleHeaderPos() {
-    window.requestAnimationFrame(() => {
-      document.addEventListener("scroll", function (e) {
-        clearTimeout(scrollHeaderIntervalId);
-        scrollHeaderIntervalId = setTimeout(function () {
-          if (!isInViewport(document.querySelector("#anchorTop"))) {
-            document.querySelector("body").classList.add("fixed");
-            return;
-          }
-          document.querySelector("body").classList.remove("fixed");
-        }, 200);
-      });
+    document.addEventListener("scroll",  () => {
+      clearTimeout(scrollHeaderIntervalId);
+      scrollHeaderIntervalId = setTimeout(function () {
+        if (!isInViewport(this.anchorTopRef.current)) {
+          document.querySelector("body").classList.add("fixed");
+          return;
+        }
+        document.querySelector("body").classList.remove("fixed");
+      }.bind(this), 150);
     });
   }
+  
   /*
    * function for retrieving data from other sources e.g. PDMP
    */
@@ -1045,6 +1060,13 @@ export default class Landing extends Component {
     return systemType && String(systemType).toLowerCase() !== "production";
   }
 
+  handleSetActiveTab(index) {
+    this.setState({
+      activeTab: index,
+    });
+    window.scrollTo(0, 0);
+  }
+
   processSummary(summary) {
     const sectionFlags = {};
     const sectionKeys = Object.keys(summaryMap);
@@ -1157,6 +1179,110 @@ export default class Landing extends Component {
     return { sectionFlags, flaggedCount };
   }
 
+  renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
+    return (
+      <Header
+        patientName={summary.Patient.Name}
+        patientDOB={datishFormat(this.state.result, patientResource.birthDate)}
+        patientGender={summary.Patient.Gender}
+        meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
+        patientSearchURL={PATIENT_SEARCH_URL}
+        siteID={getEnv("REACT_APP_SITE_ID")}
+      />
+    );
+  }
+
+  renderSummary(summary, sectionFlags) {
+    return (
+      <Summary
+        summary={summary}
+        patient={summary.Patient}
+        sectionFlags={sectionFlags}
+        collector={this.state.collector}
+        errorCollection={this.errorCollection}
+        mmeErrors={this.mmeErrors}
+        result={this.state.result}
+      />
+    );
+  }
+
+  shouldShowTabs() {
+    const tabs = this.getTabs();
+    return tabs && tabs.length > 1;
+  }
+
+  getTabs() {
+    let tabs = ["overview"];
+    const config_tab = getEnv("REACT_APP_TABS");
+    if (config_tab) tabs = config_tab.split(",");
+    return tabs;
+  }
+
+  renderTabs() {
+    const tabs = this.getTabs();
+    return (
+      <div className={"tabs " + (!this.shouldShowTabs() ? "hide" : "")}>
+        {tabs.map((item, index) => {
+          return (
+            <div
+              className={`tab ${
+                this.state.activeTab === index ? "active" : ""
+              }`}
+              onClick={() => this.handleSetActiveTab(index)}
+              role="presentation"
+              key={`tab_${index}`}
+            >
+              {item.replace(/_/g, " ")}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  renderTabPanels(summary, sectionFlags) {
+    const tabs = this.getTabs();
+    return (
+      <div className="tab-panels">
+        {tabs.map((item, index) => {
+          return (
+            <div
+              className={`tab-panel ${
+                this.state.activeTab === index ? "active" : ""
+              } ${tabs.length > 1 ? "multi-tabs" : ""}`}
+              key={`tab-panel_${item}`}
+            >
+              {item === "overview" && this.renderSummary(summary, sectionFlags)}
+              {/* {item === "report" && (
+                <Report summaryData={summary.SurveySummary}></Report>
+              )} */}
+              {/* {item === "detailed_report" && (
+                <DetailedReport
+                  data={summary.Patient.Documents}
+                ></DetailedReport>
+              )} */}
+              {/* other tab panel as specified here */}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  renderError(returnURL) {
+    return (
+      <div className="banner error root-error">
+        <div>
+          <FontAwesomeIcon icon={faExclamationCircle} title="error" /> Error: See
+          console for details.
+        </div>
+        <div className="banner__linkContainer">
+          <a href={returnURL}>Back to Patient Search</a>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     if (this.state.loading) {
       return <Spinner loadingMessage={this.state.loadingMessage} />;
@@ -1165,17 +1291,7 @@ export default class Landing extends Component {
     const PATIENT_SEARCH_URL = PATIENT_SEARCH_ROOT_URL + "/clear_session";
 
     if (this.state.result == null) {
-      return (
-        <div className="banner error root-error">
-          <div>
-            <FontAwesomeIcon icon={faExclamationCircle} title="error" /> Error:
-            See console for details.
-          </div>
-          <div className="banner__linkContainer">
-            <a href={PATIENT_SEARCH_ROOT_URL}>Back to Patient Search</a>
-          </div>
-        </div>
-      );
+      return this.renderError(PATIENT_SEARCH_ROOT_URL);
     }
     const patientResource = this.state.collector[0]["data"];
     const summary = this.state.result.Summary;
@@ -1183,33 +1299,16 @@ export default class Landing extends Component {
 
     return (
       <div className="landing">
-        <div id="anchorTop"></div>
+        <div id="anchorTop" ref={this.anchorTopRef}></div>
         <div id="skiptocontent"></div>
         {this.isNonProduction() && (
           <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>
         )}
-        <Header
-          patientName={summary.Patient.Name}
-          patientDOB={datishFormat(
-            this.state.result,
-            patientResource.birthDate
-          )}
-          patientGender={summary.Patient.Gender}
-          meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
-          patientSearchURL={PATIENT_SEARCH_URL}
-          siteID={getEnv("REACT_APP_SITE_ID")}
-        />
-
-        <Summary
-          summary={summary}
-          patient={summary.Patient}
-          sectionFlags={sectionFlags}
-          collector={this.state.collector}
-          errorCollection={this.errorCollection}
-          mmeErrors={this.mmeErrors}
-          result={this.state.result}
-          versionString={getEnv("REACT_APP_VERSION_STRING")}
-        />
+        {this.renderHeader(summary, patientResource, PATIENT_SEARCH_URL)}
+        <div className="warpper">
+          {this.renderTabs()}
+          {this.renderTabPanels(summary, sectionFlags)}
+        </div>
         {/* <ReactTooltip className="summary-tooltip" id="summaryTooltip" /> */}
       </div>
     );

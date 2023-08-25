@@ -63,20 +63,16 @@ export default class Header extends Component {
         </div>
         <div className="header__summary">
           <div className="header__summary-patient">
-            <div className="patient-info">
-              <div>
-                <FontAwesomeIcon
-                  className="patient-icon"
-                  icon={faUser}
-                  title="patient"
-                />
-                <h1 className="patient-name">{patientName}</h1>
-              </div>
-              <div className="patient-demographics">
-                <span className="patient-dob" aria-label="Date of birth">
-                  DOB: {patientDOB}
-                </span>
-                <span className="patient-gender">{patientGender}</span>
+          <div className="patient-info">
+              <div className="flex" style={{alignItems: "flex-start"}}>
+                <FontAwesomeIcon className="patient-icon" icon={faUser} title="patient" />
+                <div>
+                  <h1 className="patient-name">{patientName}</h1>
+                  <div className="patient-demographics">
+                    <span className="patient-dob" aria-label="Date of birth">DOB: {patientDOB}</span>
+                    <span className="patient-gender">{patientGender}</span>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="header__search">

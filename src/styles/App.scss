@@ -12,9 +12,13 @@
 @import 'elements/modal';
 @import 'elements/spinner';
 @import 'elements/tables';
+@import 'elements/tabs';
 @import 'elements/button';
 @import 'elements/version';
 
 // component-specific
 @import 'components/Header';
 @import 'components/Summary';
+
+// print
+@import 'print';

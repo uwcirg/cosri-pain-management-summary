@@ -54,7 +54,7 @@ export default class ErrorBanner extends Component {
         <div className="error-banner__description">
           <ul>
             {this.props.errors.map((item, index) => {
-              return <li key={`"app_error_"+${index}`}>{item}</li>;
+              return <li key={`"app_error_"+${index}`} dangerouslySetInnerHTML={{__html: item}}></li>;
             })}
           </ul>
         </div>

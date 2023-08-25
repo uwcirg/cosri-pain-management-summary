@@ -12,7 +12,7 @@ import "react-tooltip/dist/react-tooltip.css";
 // import ReactTable from "react-table";
 import ReactModal from "react-modal";
 
-import summaryMap from "./summary.json";
+import summaryMap from "../config/summary_config.json";
 import * as formatit from "../helpers/formatit";
 import * as sortit from "../helpers/sortit";
 
@@ -34,6 +34,7 @@ import Disclaimer from "./Disclaimer";
 import DevTools from "./DevTools";
 import InfoModal from "./InfoModal";
 import Table from "./Table";
+import SideNav from "./SideNav";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
 import Version from "../elements/Version";
@@ -44,15 +45,11 @@ export default class Summary extends Component {
 
     this.state = {
       showModal: false,
-      showNav: true,
       modalSubSection: null,
+      activeTab: 0,
     };
 
     this.elementRef = React.createRef();
-    this.navRef = React.createRef();
-
-    // This binding is necessary to make `this` work in the callback
-    this.handleNavToggle = this.handleNavToggle.bind(this);
 
     this.subsectionTableProps = { id: "react_sub-section__table" };
 
@@ -772,35 +769,16 @@ export default class Summary extends Component {
       if (summaryMap[section]["hideSection"]) return true;
       sectionsToRender.push(section);
     });
-    const navToggleToolTip = this.state.showNav
-      ? "collapse side navigation menu"
-      : "expand side navigation menu";
+    // const navToggleToolTip = this.state.showNav
+    //   ? "collapse side navigation menu"
+    //   : "expand side navigation menu";
 
     return (
       <div className="summary">
-        <div
-          className={`${this.state.showNav ? "open" : ""} summary__nav-wrapper`}
-        >
-          <nav className="summary__nav"></nav>
-          <div
-            id="navTooltip"
-            ref={(ref) => (this.navRef = ref)}
-            className={`${meetsInclusionCriteria ? "close" : "hide"}`}
-            title="toggle side navigation menu"
-            onClick={(e) => {
-              this.handleNavToggle(e);
-            }}
-            onKeyUp={(e) => {
-              this.handleNavToggle(e);
-            }}
-            role="button"
-            tabIndex={0}
-          ></div>
-          <Tooltip anchorId="navTooltip" place="right" style={{ zIndex: 9999 }}>
-            <div>{navToggleToolTip}</div>
-          </Tooltip>
-        </div>
-
+        <SideNav
+          id="summarySideNavButton"
+          navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
+        ></SideNav>
         <div className="summary__display" id="maincontent">
           <div className="summary__display-title">
             Clinical Opioid Summary with Rx Integration
@@ -852,7 +830,7 @@ export default class Summary extends Component {
             }}
           />
           {/* display released version string */}
-          <Version versionString={this.props.versionString} />
+          <Version />
 
           <ReactModal
             className="modal"
@@ -880,5 +858,4 @@ Summary.propTypes = {
   errorCollection: PropTypes.array,
   mmeErrors: PropTypes.bool,
   result: PropTypes.object.isRequired,
-  versionString: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

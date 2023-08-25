@@ -2,7 +2,7 @@ import "react-app-polyfill/ie11";
 import "react-app-polyfill/stable";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 
 import "./utils/fontawesomeLibrary";
@@ -14,9 +14,9 @@ import "./styles/App.scss";
 const domNode = document.getElementById("root");
 const root = createRoot(domNode);
 root.render(
-  <Router basename={process.env.PUBLIC_URL}>
+  <BrowserRouter basename={process.env.PUBLIC_URL}>
     <Root />
-  </Router>
+  </BrowserRouter>
 );
 
 // If you want your app to work offline and load faster, you can change

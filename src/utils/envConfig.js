@@ -54,3 +54,27 @@ export function getEnv(key) {
   if (envDefined && process.env[key]) return process.env[key];
   return "";
 }
+
+export function getEnvs() {
+  let arrEnvs = [];
+  const blacklist = ["SECRET", "KEY", "TOKEN", "CREDENTIALS"];
+  if (window["appConfig"]) {
+    const keys = Object.keys(window["appConfig"]);
+    keys.forEach((key) => {
+      if (blacklist.indexOf(key.toUpperCase()) !== -1) return true;
+      arrEnvs.push({ key: key, value: window["appConfig"][key] });
+    });
+  }
+  const envDefined = typeof process !== "undefined" && process.env;
+  if (envDefined) {
+    const envKeys = Object.keys(process.env);
+    envKeys.forEach((key) => {
+      if (blacklist.indexOf(key.toUpperCase()) !== -1) return true;
+      arrEnvs.push({ key: key, value: process.env[key] });
+    });
+  }
+
+  console.log("Environment variables ", arrEnvs);
+  return arrEnvs;
+}
+
