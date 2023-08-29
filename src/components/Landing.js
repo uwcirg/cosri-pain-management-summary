@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import tocbot from "tocbot";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-// import { Tooltip } from "react-tooltip";
-// import "react-tooltip/dist/react-tooltip.css";
 import executeElm from "../utils/executeELM";
 import flagit from "../helpers/flagit";
 import {

@@ -653,7 +653,7 @@
           }
         }
         .no-entries {
-          padding: 0 16px 8px;
+          padding: 0 4px 8px;
           font-style: italic;
           color: $color-gray-light;
           margin-left: 24px;
@@ -712,7 +712,7 @@
           display: flex;
           align-items: center;
           border-bottom: 1px solid $color-gray-lighter;
-          padding: 12px 40px;
+          padding: 12px 28px;
           font-weight: 700;
           margin-bottom: 8px;
           .flag-nav {
