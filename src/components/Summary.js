@@ -9,7 +9,6 @@ import {
 import Collapsible from "react-collapsible";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
-// import ReactTable from "react-table";
 import ReactModal from "react-modal";
 
 import summaryMap from "../config/summary_config.json";
@@ -396,28 +395,6 @@ export default class Summary extends Component {
             tableProps: customProps
           }}
         ></Table>
-        {/* <ReactTable
-          columns={columns}
-          data={filteredEntries}
-          minRows={1}
-          showPagination={filteredEntries.length > 10}
-          pageSizeOptions={[10, 20, 50, 100]}
-          defaultPageSize={10}
-          defaultSorted={defaultSorted}
-          resizable={false}
-          getProps={() => customProps}
-          getTheadThProps={(state, rowInfo, column, instance) => {
-            return {
-              tabIndex: 0,
-              onKeyPress: (e, handleOriginal) => {
-                if (e.which === 13) {
-                  instance.sortColumn(column);
-                  e.stopPropagation();
-                }
-              },
-            };
-          }}
-        /> */}
       </div>
     );
   }
@@ -505,13 +482,13 @@ export default class Summary extends Component {
                 <FontAwesomeIcon
                   className={`flag ${item.className}`}
                   icon={faExclamationCircle}
-                  id={`alert_tooltip_${index}`}
+                  id={`alert_icon_${index}`}
+                  data-tooltip-id={`alert_summary_${index}_tooltip`}
+                  data-tooltip-content={`Go to ${item.name} section`}
                 />
                 {item.text}
               </a>
-              <Tooltip anchorId={`alert_tooltip_${index}`}>
-                <div>{`Go to ${item.name} section`}</div>
-              </Tooltip>
+              <Tooltip id={`alert_summary_${index}_tooltip`}></Tooltip>
             </div>
           );
         })
@@ -721,11 +698,13 @@ export default class Summary extends Component {
                 className={`flag flag-header ${flaggedClass}`}
                 icon={faExclamationCircle}
                 id={`${section}_tooltipicon`}
+                data-tooltip-id={`${section}_tooltip_alert_content`}
+                data-tooltip-content={flaggedText}
               />
               <Tooltip
-                anchorId={`${section}_tooltipicon`}
-                content={flaggedText}
+                id={`${section}_tooltip_alert_content`}
                 place="top"
+                className="summary-tooltip"
               ></Tooltip>
             </span>
           </span>
@@ -769,10 +748,6 @@ export default class Summary extends Component {
       if (summaryMap[section]["hideSection"]) return true;
       sectionsToRender.push(section);
     });
-    // const navToggleToolTip = this.state.showNav
-    //   ? "collapse side navigation menu"
-    //   : "expand side navigation menu";
-
     return (
       <div className="summary">
         <SideNav

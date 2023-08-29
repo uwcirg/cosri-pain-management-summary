@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-// import ReactTooltip from "react-tooltip";
 import tocbot from "tocbot";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-
+// import { Tooltip } from "react-tooltip";
+// import "react-tooltip/dist/react-tooltip.css";
 import executeElm from "../utils/executeELM";
 import flagit from "../helpers/flagit";
 import {
@@ -13,7 +13,12 @@ import {
   extractDateFromGMTDateString,
 } from "../helpers/formatit";
 import { dateCompare } from "../helpers/sortit";
-import { getDiffDays, isInViewport } from "../helpers/utility";
+import {
+  getDiffDays,
+  isInViewport,
+  postData,
+  writeToLog,
+} from "../helpers/utility";
 import Timeout from "../helpers/timeout";
 import summaryMap from "../config/summary_config.json";
 
@@ -144,7 +149,7 @@ export default class Landing extends Component {
             return String(medClass).toLowerCase() === "opioid";
           }).length > 0;
         // IF not an opioid med don't raise error
-        // look for medication that contains NDC code but not RxNorm Code, 
+        // look for medication that contains NDC code but not RxNorm Code,
         // or contains all necessary information (NDC Code, RxNorm Code and Drug Class) but no MME
         if (
           isOpioid &&
@@ -157,7 +162,7 @@ export default class Landing extends Component {
             total MME and the MME overview graph are not reflective of total MME for this patient.`
           );
           //log failed MME calculation
-          this.writeToLog(
+          writeToLog(
             `MME calculation failure: 
              Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} 
              Factor: ${item.factor}`,
@@ -167,7 +172,7 @@ export default class Landing extends Component {
         }
         if (item.MME) {
           //log MME calculated if present
-          this.writeToLog(
+          writeToLog(
             `MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`,
             "info",
             { tags: ["mme-calc"] }
@@ -184,46 +189,7 @@ export default class Landing extends Component {
   setError(message) {
     if (!message) return;
     this.errorCollection.push(message);
-    this.writeToLog(message, "error");
-  }
-  //write to audit log
-  writeToLog(message, paramLevel, paramOptions) {
-    if (!getEnv("REACT_APP_CONF_API_URL")) return;
-    if (!message) return;
-    const level = paramLevel ? paramLevel : "info";
-    const params = paramOptions ? paramOptions : {};
-    if (!params.tags) params.tags = [];
-    params.tags.push("cosri-frontend");
-    const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
-    const summary = this.state.result ? this.state.result.Summary : null;
-    const patientName = summary && summary.Patient ? summary.Patient.Name : "";
-    let messageString = "";
-    if (typeof message === "object") {
-      messageString = message.toString();
-    } else messageString = message;
-    fetch(auditURL, {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...{ patient: patientName, message: messageString, level: level },
-        ...params,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then(function (data) {
-        console.log("audit request succeeded with response ", data);
-      })
-      .catch(function (error) {
-        console.log("Request failed", error);
-      });
+    writeToLog(message, "error");
   }
   //save MME calculations to file for debugging purpose, development environment ONLY
   saveSummaryData() {
@@ -247,31 +213,14 @@ export default class Landing extends Component {
     });
     //can save other data if needed
   }
+  getSaveDataURL() {
+    if (!getEnv("REACT_APP_CONF_API_URL")) return "";
+    return `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
+  }
   saveData(paramOptions) {
-    if (!getEnv("REACT_APP_CONF_API_URL")) return;
-    const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
     const params = paramOptions ? paramOptions : {};
+    postData(this.getSaveDataURL(), params);
     if (!params.data) return;
-    fetch(saveDataURL, {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then(function (data) {
-        console.log("save data request succeeded with response ", data);
-      })
-      .catch(function (error) {
-        console.log("Request failed to save data: ", error);
-      });
   }
   //hide and show sectioN(s) depending on config
   setSectionVis() {
@@ -304,7 +253,7 @@ export default class Landing extends Component {
     //education material links
     document.querySelectorAll(".education").forEach((item) => {
       item.addEventListener("click", (e) => {
-        this.writeToLog(`Education material: ${e.target.title}`, "info", {
+        writeToLog(`Education material: ${e.target.title}`, "info", {
           tags: ["education"],
         });
       });
@@ -343,7 +292,7 @@ export default class Landing extends Component {
           100
         );
         this.processCollectorErrors();
-        this.writeToLog("application loaded", "info");
+        writeToLog("application loaded", "info");
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData()])
           .then((externalData) => {
@@ -353,11 +302,16 @@ export default class Landing extends Component {
               result.Summary
             );
             this.processSummaryErrors(result.Summary);
-            this.processOverviewStatsData(result["Summary"]);
-            this.processAlerts(result["Summary"], sectionFlags);
-            this.processGraphData(result["Summary"]);
-            this.setState({ result, sectionFlags, flaggedCount });
-            this.setState({ loading: false });
+            this.setOverviewStatsData(result["Summary"]);
+            this.setSummaryAlerts(result["Summary"], sectionFlags);
+            this.setSummaryGraphData(result["Summary"]);
+            this.setState({
+              result,
+              sectionFlags,
+              flaggedCount,
+              loading: false,
+            });
+            //this.setState({ loading: false });
             this.initEvents();
           })
           .catch((err) => {
@@ -399,7 +353,7 @@ export default class Landing extends Component {
     //page title
     document.title = "COSRI";
     if (this.shouldShowTabs()) {
-        document.querySelector("body").classList.add("has-tabs");
+      document.querySelector("body").classList.add("has-tabs");
     }
     this.handleHeaderPos();
   }
@@ -407,18 +361,21 @@ export default class Landing extends Component {
    * fixed header when scrolling in the event that it is not within viewport
    */
   handleHeaderPos() {
-    document.addEventListener("scroll",  () => {
+    document.addEventListener("scroll", () => {
       clearTimeout(scrollHeaderIntervalId);
-      scrollHeaderIntervalId = setTimeout(function () {
-        if (!isInViewport(this.anchorTopRef.current)) {
-          document.querySelector("body").classList.add("fixed");
-          return;
-        }
-        document.querySelector("body").classList.remove("fixed");
-      }.bind(this), 150);
+      scrollHeaderIntervalId = setTimeout(
+        function () {
+          if (!isInViewport(this.anchorTopRef.current)) {
+            document.querySelector("body").classList.add("fixed");
+            return;
+          }
+          document.querySelector("body").classList.remove("fixed");
+        }.bind(this),
+        150
+      );
     });
   }
-  
+
   /*
    * function for retrieving data from other sources e.g. PDMP
    */
@@ -449,7 +406,7 @@ export default class Landing extends Component {
 
     let results = await Promise.all(
       promiseResultSet.map((item) => {
-        return this.fetchData(
+        return this.fetchDataByEndPoint(
           this.processEndPoint(item.endpoint),
           item.dataKey,
           item.dataKey
@@ -492,7 +449,7 @@ export default class Landing extends Component {
     return "PatientRiskOverview";
   }
 
-  processAlerts(summary, sectionFlags) {
+  setSummaryAlerts(summary, sectionFlags) {
     let overviewSection = summaryMap[this.getOverviewSectionKey()];
     if (!overviewSection) {
       return false;
@@ -539,7 +496,7 @@ export default class Landing extends Component {
                     priority: subitem.priority || 100,
                   });
                   //log alert
-                  this.writeToLog("alert flag: " + subitem.flagText, "warn", {
+                  writeToLog("alert flag: " + subitem.flagText, "warn", {
                     tags: ["alert"],
                   });
                 }
@@ -557,15 +514,17 @@ export default class Landing extends Component {
         }
       }
     }
-    alerts.sort(function (a, b) {
-      return a.priority - b.priority;
-    });
-    summary[this.getOverviewSectionKey() + "_alerts"] = alerts.filter(
-      (item, index, thisRef) =>
-        thisRef.findIndex((t) => t.text === item.text) === index
-    );
+    alerts
+      .sort(function (a, b) {
+        return a.priority - b.priority;
+      })
+      .filter(
+        (item, index, thisRef) =>
+          thisRef.findIndex((t) => t.text === item.text) === index
+      );
+    summary[this.getOverviewSectionKey() + "_alerts"] = alerts;
   }
-  processGraphData(summary) {
+  setSummaryGraphData(summary) {
     let overviewSection = summaryMap[this.getOverviewSectionKey()];
     if (!overviewSection) {
       return false;
@@ -821,7 +780,7 @@ export default class Landing extends Component {
     summary[this.getOverviewSectionKey() + "_graph"] = formattedData;
   }
 
-  processOverviewStatsData(summary) {
+  setOverviewStatsData(summary) {
     let overviewSection = summaryMap[this.getOverviewSectionKey()];
     if (!overviewSection) {
       return false;
@@ -927,7 +886,7 @@ export default class Landing extends Component {
     summaryMap[datasetKey]["errorMessage"] = message;
   }
 
-  async fetchData(url, datasetKey, rootElement) {
+  async fetchDataByEndPoint(url, datasetKey, rootElement) {
     let dataSet = {};
     dataSet[datasetKey] = {};
     const MAX_WAIT_TIME = 15000;
@@ -1273,8 +1232,8 @@ export default class Landing extends Component {
     return (
       <div className="banner error root-error">
         <div>
-          <FontAwesomeIcon icon={faExclamationCircle} title="error" /> Error: See
-          console for details.
+          <FontAwesomeIcon icon={faExclamationCircle} title="error" /> Error:
+          See console for details.
         </div>
         <div className="banner__linkContainer">
           <a href={returnURL}>Back to Patient Search</a>
@@ -1309,7 +1268,6 @@ export default class Landing extends Component {
           {this.renderTabs()}
           {this.renderTabPanels(summary, sectionFlags)}
         </div>
-        {/* <ReactTooltip className="summary-tooltip" id="summaryTooltip" /> */}
       </div>
     );
   }

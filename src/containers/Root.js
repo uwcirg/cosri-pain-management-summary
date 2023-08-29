@@ -9,6 +9,7 @@ const Root = (props) => {
     <App>
       <Routes>
         <Route exact path="/" element={<Landing></Landing>} />
+        <Route exact path="/clear_session" element={<Landing></Landing>} />
       </Routes>
     </App>
   );

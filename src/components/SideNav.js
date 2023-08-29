@@ -38,33 +38,48 @@ export default class SideNav extends Component {
       : "expand side navigation menu";
     const navId = this.props.id ? this.props.id : "sideNavButton";
     return (
-      <div
-        className={`${this.state.showNav ? "open" : ""} summary__nav-wrapper`}
-      >
-        <nav className="summary__nav"></nav>
+      <>
         <div
-          role="button"
-          ref={(ref) => (this.navRef = ref)}
-          data-for={navId}
-          data-tip={navToggleToolTip}
-          data-place="right"
-          className={`${this.props.navClassName} summary__nav-button close`}
-          title="toggle side navigation menu"
-          onClick={(e) => {
-            Tooltip.hide(this.navRef);
-            this.handleNavToggle(e);
-            if (this.props.onClick) this.props.onClick();
-          }}
-          onKeyUp={(e) => {
-            this.handleNavToggle(e);
-          }}
-          tabIndex={0}
-        ></div>
-        <Tooltip anchorId={navId}  className="summary-tooltip" place="right" style={{ zIndex: 9999 }}>
+          className={`${this.state.showNav ? "open" : ""} summary__nav-wrapper`}
+        >
+          <nav className="summary__nav"></nav>
+          <div
+            role="button"
+            ref={(ref) => (this.navRef = ref)}
+            data-for={navId}
+            data-tip={navToggleToolTip}
+            data-place="right"
+            className={`${this.props.navClassName} summary__nav-button close`}
+            title="toggle side navigation menu"
+            onClick={(e) => {
+              this.handleNavToggle(e);
+              if (this.props.onClick) this.props.onClick();
+            }}
+            onKeyUp={(e) => {
+              this.handleNavToggle(e);
+            }}
+            tabIndex={0}
+            data-tooltip-id={`${navId}_tooltip`}
+            data-tooltip-content={navToggleToolTip}
+            //data-tooltip-hidden={!this.state.showNav}
+          ></div>
+          {/* <Tooltip
+            id={navId}
+            className="summary-tooltip"
+            place="right"
+            style={{ zIndex: 9999 }}
+          >
             <div>{navToggleToolTip}</div>
+          </Tooltip> */}
+          <Tooltip
+            id={`${navId}_tooltip`}
+            place="right"
+            style={{ zIndex: 9999 }}
+          >
           </Tooltip>
-        {/* <ReactTooltip className="summary-tooltip" id={navId} /> */}
-      </div>
+        </div>
+        
+      </>
     );
   }
 }
