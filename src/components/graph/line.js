@@ -97,15 +97,15 @@ class Line extends React.Component {
         .append("rect")
         .attr("class", "rect-tooltip")
         .attr("id", (d, i) => `dataRect_${dataId}${i}`)
-        .attr("x", (d) => xScale(d[xName]) - 52)
+        .attr("x", (d) => xScale(d[xName]) - 44)
         .attr("y", (d) => yScale(d[yName]) + 12)
-        .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 8)
-        .attr("height", 28)
+        .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
+        .attr("height", 26)
         .attr("class", "hide")
-        .style("stroke", "#777")
+        .style("stroke", "#ececec")
         .style("stroke-width", "0.5")
         .style("rx", 4)
-        .style("fill", "#FFF");
+        .style("fill", "transparent");
 
       //tooltip
       select(node)
@@ -117,9 +117,9 @@ class Line extends React.Component {
         .attr("x", (d) => xScale(d[xName]) - 36)
         .attr("y", (d) => yScale(d[yName]) + 30)
         .attr("class", "hide")
-        .attr("font-size", 12)
+        .attr("font-size", 10)
         .attr("text-anchor", "start")
-        .attr("font-weight", 600)
+        .attr("font-weight", 500)
         .text(function (d) {
           return `${formatDate(d[xName])}, ${d[yName]}`;
         });

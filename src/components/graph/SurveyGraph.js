@@ -37,7 +37,7 @@ export default class SurveyGraph extends Component {
       graphData: this.props.data,
       originalGraphData: this.props.data,
     });
-    setTimeout(() => this.copyImage(null, "surveyGraphSvg_printOnly"), 500);
+    setTimeout(() => this.copyImage(null, "surveyGraphSvg_printOnly"), 1000);
   }
 
   getDataForGraph(dataSource) {
@@ -231,7 +231,7 @@ export default class SurveyGraph extends Component {
     );
   }
 
-  copyImage (event, imageElementId) {
+  copyImage(event, imageElementId) {
     if (event) event.stopPropagation();
     var svg = document.querySelector("#surveyGraphSvg");
     if (!svg) return;
@@ -240,21 +240,27 @@ export default class SurveyGraph extends Component {
     var canvas = document.createElement("canvas");
     var ctx = canvas.getContext("2d");
 
-    var img = document.querySelector("#" + (imageElementId ? imageElementId : "surveyGraphSvg_img"));
+    var img = document.querySelector(
+      "#" + (imageElementId ? imageElementId : "surveyGraphSvg_img")
+    );
     img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
     img.onload = function () {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0, img.width, img.height);
       canvas.toBlob((blob) => {
-        navigator.clipboard.write([
-          new window.ClipboardItem({ "image/png": blob }),
-        ]);
+        try {
+          navigator.clipboard.write([
+            new window.ClipboardItem({ "image/png": blob }),
+          ]);
+        } catch(e) {
+          console.log("Unable to copy image to clipboard ", e)
+        }
       }, "image/png");
       // Now is done
       console.log(canvas.toDataURL("image/png"));
     };
-  };
+  }
 
   render() {
     const noEntry = !this.state.graphData || !this.state.graphData.length;
@@ -440,7 +446,7 @@ export default class SurveyGraph extends Component {
         </React.Fragment>
       );
 
-    const renderGraph = () => {
+    const renderGraph = (state) => {
       return (
         <svg
           id="surveyGraphSvg"
@@ -473,9 +479,11 @@ export default class SurveyGraph extends Component {
 
     return (
       <React.Fragment>
-        <div className="survey-graph">
-          <div className="survey-svg-container">
-            {renderGraph()}
+        <div className="survey-graph" style={{position: "relative"}}>
+          <div
+            className="survey-svg-container"
+          >
+            {renderGraph(this.state)}
           </div>
           <img
             id="surveyGraphSvg_img"
@@ -486,26 +494,28 @@ export default class SurveyGraph extends Component {
           <img
             id="surveyGraphSvg_printOnly"
             alt="for print"
-            class="print-image"
+            className="print-image"
             style={{ zIndex: -1, position: "absolute" }}
           ></img>
-          <a
+          <button
             onClick={this.copyImage}
-            role="button"
-            href
             style={{
               textAlign: "right",
               margin: "16px 8px",
               borderBottom: 0,
               fontSize: "0.9rem",
               mouse: "pointer",
+              position: "absolute",
+              right: 0,
+              top: 0,
               // uncomment to show this
-              display: "none"
+              display: "none",
             }}
             className="print-hidden"
           >
-            <FontAwesomeIcon icon="copy"></FontAwesomeIcon> <span>Copy graph</span>
-          </a>
+            <FontAwesomeIcon icon="copy"></FontAwesomeIcon>{" "}
+            <span>Copy graph</span>
+          </button>
         </div>
         {this.state.originalGraphData.length > 0 && this.renderLegend()}
       </React.Fragment>
