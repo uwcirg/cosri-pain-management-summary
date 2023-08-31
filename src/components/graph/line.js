@@ -74,8 +74,8 @@ class Line extends React.Component {
             .transition()
             .duration(animationDuration)
             .attr("r", expandedRadiusWidth);
-          select(`#dataText_${dataId}${i}`).attr("class", "show");
-          select(`#dataRect_${dataId}${i}`).attr("class", "show");
+          select(`#dataText_${dataId}${i}`).style("display", "block");
+          select(`#dataRect_${dataId}${i}`).style("display", "block");
         })
         .on("mouseout", (d, i) => {
           if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
@@ -85,8 +85,8 @@ class Line extends React.Component {
             .transition()
             .duration(animationDuration)
             .attr("r", radiusWidth);
-          select(`#dataText_${dataId}${i}`).attr("class", "hide");
-          select(`#dataRect_${dataId}${i}`).attr("class", "hide");
+          select(`#dataText_${dataId}${i}`).style("display", "none");
+          select(`#dataRect_${dataId}${i}`).style("display", "none");
         });
 
       //rect
@@ -101,11 +101,11 @@ class Line extends React.Component {
         .attr("y", (d) => yScale(d[yName]) + 12)
         .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
         .attr("height", 26)
-        .attr("class", "hide")
-        .style("stroke", "#ececec")
+        .style("display", "none")
+        .style("stroke", "#777")
         .style("stroke-width", "0.5")
         .style("rx", 4)
-        .style("fill", "transparent");
+        .style("fill", "white");
 
       //tooltip
       select(node)
@@ -116,10 +116,10 @@ class Line extends React.Component {
         .attr("id", (d, i) => `dataText_${dataId}${i}`)
         .attr("x", (d) => xScale(d[xName]) - 36)
         .attr("y", (d) => yScale(d[yName]) + 30)
-        .attr("class", "hide")
+        .style("display", "none")
         .attr("font-size", 10)
         .attr("text-anchor", "start")
-        .attr("font-weight", 500)
+        .attr("font-weight", 600)
         .text(function (d) {
           return `${formatDate(d[xName])}, ${d[yName]}`;
         });
