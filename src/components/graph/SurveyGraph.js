@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as d3 from "d3";
 import { scaleLinear, scaleTime } from "d3-scale";
 import { line } from "d3-shape";
@@ -36,6 +37,7 @@ export default class SurveyGraph extends Component {
       graphData: this.props.data,
       originalGraphData: this.props.data,
     });
+    setTimeout(() => this.copyImage(null, "surveyGraphSvg_printOnly"), 500);
   }
 
   getDataForGraph(dataSource) {
@@ -52,7 +54,9 @@ export default class SurveyGraph extends Component {
           };
         })
       : [];
-    data = data.filter((d) => d[xFieldName] && d[yFieldName] !== null && !isNaN(d[yFieldName]));
+    data = data.filter(
+      (d) => d[xFieldName] && d[yFieldName] !== null && !isNaN(d[yFieldName])
+    );
     data = data.map((d) => {
       let dObj = new Date(d[xFieldName]);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
@@ -226,6 +230,31 @@ export default class SurveyGraph extends Component {
       </div>
     );
   }
+
+  copyImage (event, imageElementId) {
+    if (event) event.stopPropagation();
+    var svg = document.querySelector("#surveyGraphSvg");
+    if (!svg) return;
+    var svgData = new XMLSerializer().serializeToString(svg);
+
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+
+    var img = document.querySelector("#" + (imageElementId ? imageElementId : "surveyGraphSvg_img"));
+    img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+    img.onload = function () {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0, img.width, img.height);
+      canvas.toBlob((blob) => {
+        navigator.clipboard.write([
+          new window.ClipboardItem({ "image/png": blob }),
+        ]);
+      }, "image/png");
+      // Now is done
+      console.log(canvas.toDataURL("image/png"));
+    };
+  };
 
   render() {
     const noEntry = !this.state.graphData || !this.state.graphData.length;
@@ -401,11 +430,6 @@ export default class SurveyGraph extends Component {
       });
     };
 
-    const renderLinesForPrint = () =>
-      renderLines(this.getDataForGraph(this.state.originalGraphData).data, {
-        className: "print-only",
-      });
-
     if (noEntry)
       return (
         <React.Fragment>
@@ -416,35 +440,72 @@ export default class SurveyGraph extends Component {
         </React.Fragment>
       );
 
+    const renderGraph = () => {
+      return (
+        <svg
+          id="surveyGraphSvg"
+          className="surveyChartSvg print-hidden"
+          width="100%"
+          height="100%"
+          viewBox={`0 0 ${graphWidth} ${graphHeight}`}
+          style={{
+            fontFamily: "Open Sans, Arial, sans-serif",
+          }}
+        >
+          <g transform={`translate(${margins.left}, ${margins.top})`}>
+            {/* y grid */}
+            {renderYGrid()}
+            {/* x grid */}
+            {renderXGrid()}
+            {renderYAxisLabel()}
+            {this.onlyOneLeft() && renderMaxYValueLabel()}
+            {this.onlyOneLeft() && renderMinYValueLabel()}
+            {/* x and y axis */}
+            <XYAxis {...{ xSettings, ySettings }} />
+            {/* lines drawn for screen display ONLY */}
+            {renderLines(data, {
+              className: "print-hidden",
+            })}
+          </g>
+        </svg>
+      );
+    };
+
     return (
       <React.Fragment>
         <div className="survey-graph">
           <div className="survey-svg-container">
-            <svg
-              className="surveyChartSvg"
-              width="100%"
-              height="100%"
-              viewBox={`0 0 ${graphWidth} ${graphHeight}`}
-            >
-              <g transform={`translate(${margins.left}, ${margins.top})`}>
-                {/* y grid */}
-                {renderYGrid()}
-                {/* x grid */}
-                {renderXGrid()}
-                {renderYAxisLabel()}
-                {this.onlyOneLeft() && renderMaxYValueLabel()}
-                {this.onlyOneLeft() && renderMinYValueLabel()}
-                {/* x and y axis */}
-                <XYAxis {...{ xSettings, ySettings }} />
-                {/* lines drawn for screen display ONLY */}
-                {renderLines(data, {
-                  className: "print-hidden",
-                })}
-                {/* lines drawn for printing ONLY */}
-                {renderLinesForPrint()}
-              </g>
-            </svg>
+            {renderGraph()}
           </div>
+          <img
+            id="surveyGraphSvg_img"
+            alt="for copy"
+            style={{ zIndex: -1, position: "absolute" }}
+            className="print-hidden"
+          ></img>
+          <img
+            id="surveyGraphSvg_printOnly"
+            alt="for print"
+            class="print-image"
+            style={{ zIndex: -1, position: "absolute" }}
+          ></img>
+          <a
+            onClick={this.copyImage}
+            role="button"
+            href
+            style={{
+              textAlign: "right",
+              margin: "16px 8px",
+              borderBottom: 0,
+              fontSize: "0.9rem",
+              mouse: "pointer",
+              // uncomment to show this
+              display: "none"
+            }}
+            className="print-hidden"
+          >
+            <FontAwesomeIcon icon="copy"></FontAwesomeIcon> <span>Copy graph</span>
+          </a>
         </div>
         {this.state.originalGraphData.length > 0 && this.renderLegend()}
       </React.Fragment>

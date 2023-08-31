@@ -26,6 +26,10 @@ class Axis extends React.Component {
 
     if (orient === "bottom") {
       axis = axisBottom(scale);
+      select(node)
+        .selectAll(".tick text")
+        .style("transform", "translateY(42px) translateX(-13px) rotate(-90deg)")
+        .style("font-size", "12");
       if (tickType === "date") {
         axis.tickFormat(timeFormat(tickFormat || "%d %b %y"));
         //spaced out ticks by month in tick interval
@@ -35,6 +39,9 @@ class Axis extends React.Component {
     //TODO allow other tick type and formatting here
     if (orient === "left") {
       axis = axisLeft(scale).ticks(ticks);
+      select(node)
+        .selectAll(".tick text")
+        .style("font-size", "12");
     }
     select(node).call(axis);
   }

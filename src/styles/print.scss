@@ -2,6 +2,11 @@
   .print-only {
     display: block;
   }
+  #surveyGraphSvg_printOnly,
+  .print-image {
+    position:  relative !important;
+    z-index: 1 !important;
+  }
   .print-cell-hidden {
     display: none;
   }

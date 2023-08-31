@@ -29,6 +29,9 @@ class Grid extends React.Component {
       GridLines = axis(yScale).ticks(numTicks || 5).tickSize(-width).tickFormat("");
       select(node).call(GridLines).style("stroke-dasharray", "2, 2");
     }
+    select(node)
+        .selectAll("line")
+        .attr("stroke", "#ccc");
   }
 
   render() {
