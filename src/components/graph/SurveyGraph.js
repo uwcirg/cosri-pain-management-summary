@@ -31,13 +31,14 @@ export default class SurveyGraph extends Component {
       this.addQuestionnaireToSurveyGraph.bind(this);
     this.removeQuestionnaireToSurveyGraph =
       this.removeQuestionnaireToSurveyGraph.bind(this);
+    this.copyImage = this.copyImage.bind(this);
   }
   componentDidMount() {
     this.setState({
       graphData: this.props.data,
       originalGraphData: this.props.data,
     });
-    setTimeout(() => this.copyImage(null, "surveyGraphSvg_printOnly"), 1000);
+    setTimeout(() => this.copyImage(null, "surveyGraphSvg_printOnly", false), 1000);
   }
 
   getDataForGraph(dataSource) {
@@ -231,11 +232,11 @@ export default class SurveyGraph extends Component {
     );
   }
 
-  copyImage(event, imageElementId) {
+  copyImage(event, imageElementId, copyToClipboard) {
     if (event) event.stopPropagation();
-    var svg = document.querySelector("#surveyGraphSvg");
-    if (!svg) return;
-    var svgData = new XMLSerializer().serializeToString(svg);
+    var svgElement = document.querySelector("#surveyGraphSvg");
+    if (!svgElement) return;
+    var svgData = new XMLSerializer().serializeToString(svgElement);
 
     var canvas = document.createElement("canvas");
     var ctx = canvas.getContext("2d");
@@ -248,17 +249,20 @@ export default class SurveyGraph extends Component {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0, img.width, img.height);
-      canvas.toBlob((blob) => {
-        try {
-          navigator.clipboard.write([
-            new window.ClipboardItem({ "image/png": blob }),
-          ]);
-        } catch(e) {
-          console.log("Unable to copy image to clipboard ", e)
-        }
-      }, "image/png");
+      if (copyToClipboard) {
+        canvas.toBlob((blob) => {
+          try {
+            navigator.clipboard.write([
+              new window.ClipboardItem({ "image/png": blob }),
+            ]);
+          } catch(e) {
+            alert("Unable to copy image to clipboard.  See console for detail.");
+            console.log("Unable to write image to clipboard ", e)
+          }
+        }, "image/png");
+      }
       // Now is done
-      console.log(canvas.toDataURL("image/png"));
+      //console.log(canvas.toDataURL("image/png"));
     };
   }
 
@@ -410,9 +414,12 @@ export default class SurveyGraph extends Component {
         y: 0 - margins.left,
         x: 0 - graphHeight / 2,
         dy: "1em",
+        fontSize: "14px",
+        fontWeight: 600,
+        fill: "currentcolor"
       };
       return (
-        <text className="axis-label" {...labelProps}>
+        <text {...labelProps}>
           Value / Score
         </text>
       );
@@ -485,12 +492,13 @@ export default class SurveyGraph extends Component {
           >
             {renderGraph(this.state)}
           </div>
-          <img
+          <img 
             id="surveyGraphSvg_img"
-            alt="for copy"
+            alt=""
+            className="print-image"
             style={{ zIndex: -1, position: "absolute" }}
-            className="print-hidden"
-          ></img>
+          >
+          </img>
           <img
             id="surveyGraphSvg_printOnly"
             alt="for print"
@@ -498,20 +506,20 @@ export default class SurveyGraph extends Component {
             style={{ zIndex: -1, position: "absolute" }}
           ></img>
           <button
-            onClick={this.copyImage}
+            onClick={(e) => this.copyImage(e, "surveyGraphSvg_img", true)}
+            className="print-hidden button-default rounded"
             style={{
-              textAlign: "right",
-              margin: "16px 8px",
-              borderBottom: 0,
               fontSize: "0.9rem",
               mouse: "pointer",
               position: "absolute",
               right: 0,
               top: 0,
+              zIndex: 20,
+              padding: "4px 16px",
+              margin: "0 16px",
               // uncomment to show this
               display: "none",
             }}
-            className="print-hidden"
           >
             <FontAwesomeIcon icon="copy"></FontAwesomeIcon>{" "}
             <span>Copy graph</span>

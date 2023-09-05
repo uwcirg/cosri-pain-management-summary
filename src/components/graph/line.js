@@ -115,7 +115,7 @@ class Line extends React.Component {
         .append("text")
         .attr("id", (d, i) => `dataText_${dataId}${i}`)
         .attr("x", (d) => xScale(d[xName]) - 36)
-        .attr("y", (d) => yScale(d[yName]) + 30)
+        .attr("y", (d) => yScale(d[yName]) + 28)
         .style("display", "none")
         .attr("font-size", 10)
         .attr("text-anchor", "start")
@@ -126,14 +126,15 @@ class Line extends React.Component {
 
       //print label - PRINT ONLY
       if (showPrintLabel) {
+        console.log("WTF ? ", showPrintLabel)
         select(node)
           .selectAll(".text")
           .data(data.filter((item, index) => index === (data.length-1)))
           .enter()
           .append("text")
-          .attr("id", (d, i) => `dataLabelText_${dataId}${i}`)
+          .attr("id", (d, i) => `dataPrintText_${dataId}${i}`)
           .attr("x", (d) => xScale(d[xName]) - 6)
-          .attr("y", (d) => yScale(d[yName]) - 12)
+          .attr("y", (d) => yScale(d[yName]) - 16)
           .attr("class", "print-only print-title")
           .attr("font-size", 11)
           .attr("text-anchor", "start")
