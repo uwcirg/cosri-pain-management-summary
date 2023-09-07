@@ -12,6 +12,7 @@ import {
   defaultLineAttributes,
   getLineAttributes,
 } from "../../config/graph_config";
+import { downloadSVGImage } from "../../helpers/utility";
 
 const defaultFields = {
   x: "date",
@@ -26,19 +27,39 @@ export default class SurveyGraph extends Component {
       graphData: [],
       originalGraphData: [],
     };
+    this.downloadButtonRef = React.createRef();
     // This binding is necessary to make `this` work in the callback
     this.addQuestionnaireToSurveyGraph =
       this.addQuestionnaireToSurveyGraph.bind(this);
     this.removeQuestionnaireToSurveyGraph =
       this.removeQuestionnaireToSurveyGraph.bind(this);
-    this.copyImage = this.copyImage.bind(this);
+    this.showDownloadButton = 
+      this.showDownloadButton.bind(this);
+    this.hideDownloadButton = 
+      this.hideDownloadButton.bind(this);
+    //this.renderImageFromSVG = this.renderImageFromSVG.bind(this);
   }
   componentDidMount() {
     this.setState({
       graphData: this.props.data,
       originalGraphData: this.props.data,
     });
-    setTimeout(() => this.copyImage(null, "surveyGraphSvg_printOnly", false), 1000);
+    setTimeout(() => this.renderImageFromSVG("surveyGraphSvg_printOnly"), 1000);
+    // document.querySelector(".panel.graph").addEventListener("onmouseover", () => {
+    //   this.showDownloadButton();
+    // })
+    // document.querySelector(".panel.graph").addEventListener("onmouseout", () => {
+    //   this.hideDownloadButton();
+    // })
+  }
+
+  showDownloadButton() {
+    // document.querySelector("#btnSurveyGraphDownload").style.display = "block";
+    this.downloadButtonRef.current.style.display = "block";
+  }
+  hideDownloadButton() {
+    //document.querySelector("#btnSurveyGraphDownload").style.display = "none";
+    this.downloadButtonRef.current.style.display = "none";
   }
 
   getDataForGraph(dataSource) {
@@ -232,16 +253,16 @@ export default class SurveyGraph extends Component {
     );
   }
 
-  copyImage(event, imageElementId, copyToClipboard) {
-    if (event) event.stopPropagation();
-    var svgElement = document.querySelector("#surveyGraphSvg");
+  renderImageFromSVG(imageElementId) {
+    // if (event) event.stopPropagation();
+    const svgElement = document.querySelector("#surveyGraphSvg");
     if (!svgElement) return;
-    var svgData = new XMLSerializer().serializeToString(svgElement);
+    const svgData = new XMLSerializer().serializeToString(svgElement);
 
-    var canvas = document.createElement("canvas");
-    var ctx = canvas.getContext("2d");
+    let canvas = document.createElement("canvas");
+    let ctx = canvas.getContext("2d");
 
-    var img = document.querySelector(
+    let img = document.querySelector(
       "#" + (imageElementId ? imageElementId : "surveyGraphSvg_img")
     );
     img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
@@ -249,18 +270,17 @@ export default class SurveyGraph extends Component {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0, img.width, img.height);
-      if (copyToClipboard) {
-        canvas.toBlob((blob) => {
-          try {
-            navigator.clipboard.write([
-              new window.ClipboardItem({ "image/png": blob }),
-            ]);
-          } catch(e) {
-            alert("Unable to copy image to clipboard.  See console for detail.");
-            console.log("Unable to write image to clipboard ", e)
-          }
-        }, "image/png");
-      }
+      // if (copyToClipboard) {
+      //   canvas.toBlob((blob) => {
+      //     // try {
+      //     //   navigator.clipboard.write([
+      //     //     new window.ClipboardItem({ "image/png": blob }),
+      //     //   ]);
+      //     // } catch(e) {
+      //     //   alert("Unable to copy image to clipboard.  See console for detail.");
+      //     //   console.log("Unable to write image to clipboard ", e)
+      //     // }
+      // }
       // Now is done
       //console.log(canvas.toDataURL("image/png"));
     };
@@ -416,13 +436,9 @@ export default class SurveyGraph extends Component {
         dy: "1em",
         fontSize: "14px",
         fontWeight: 600,
-        fill: "currentcolor"
+        fill: "currentcolor",
       };
-      return (
-        <text {...labelProps}>
-          Value / Score
-        </text>
-      );
+      return <text {...labelProps}>Value / Score</text>;
     };
 
     const renderLines = (dataSource, props) => {
@@ -453,7 +469,7 @@ export default class SurveyGraph extends Component {
         </React.Fragment>
       );
 
-    const renderGraph = (state) => {
+    const renderGraph = () => {
       return (
         <svg
           id="surveyGraphSvg"
@@ -486,19 +502,14 @@ export default class SurveyGraph extends Component {
 
     return (
       <React.Fragment>
-        <div className="survey-graph" style={{position: "relative"}}>
-          <div
-            className="survey-svg-container"
-          >
-            {renderGraph(this.state)}
-          </div>
-          <img 
+        <div className="survey-graph" style={{ position: "relative" }} onMouseEnter={this.showDownloadButton} onMouseLeave={this.hideDownloadButton}>
+          <div className="survey-svg-container">{renderGraph(this.state)}</div>
+          {/* <img
             id="surveyGraphSvg_img"
             alt=""
             className="print-image"
             style={{ zIndex: -1, position: "absolute" }}
-          >
-          </img>
+          ></img> */}
           <img
             id="surveyGraphSvg_printOnly"
             alt="for print"
@@ -506,23 +517,37 @@ export default class SurveyGraph extends Component {
             style={{ zIndex: -1, position: "absolute" }}
           ></img>
           <button
-            onClick={(e) => this.copyImage(e, "surveyGraphSvg_img", true)}
+           // id="btnSurveyGraphDownload"
+            ref={this.downloadButtonRef}
+            onClick={(e) =>
+              downloadSVGImage(
+                e,
+                document.querySelector("#surveyGraphSvg"),
+                "surveyGraphSvg_img",
+                "survey_graph"
+              )
+            }
             className="print-hidden button-default rounded"
             style={{
               fontSize: "0.9rem",
-              mouse: "pointer",
+              //    mouse: "pointer",
               position: "absolute",
-              right: 0,
-              top: 0,
+              // right: 0,
+              // top: 0,
               zIndex: 20,
-              padding: "4px 16px",
-              margin: "0 16px",
+              bottom: 0,
+              left: 0,
+              //  padding: "4px 16px",
+              // margin: "0 8px",
               // uncomment to show this
               display: "none",
             }}
           >
-            <FontAwesomeIcon icon="copy"></FontAwesomeIcon>{" "}
-            <span>Copy graph</span>
+            <FontAwesomeIcon
+              icon="download"
+              title="Download graph"
+            ></FontAwesomeIcon>{" "}
+            {/* <span>Download graph</span> */}
           </button>
         </div>
         {this.state.originalGraphData.length > 0 && this.renderLegend()}

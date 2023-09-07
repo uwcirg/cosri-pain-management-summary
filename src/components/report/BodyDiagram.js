@@ -1,14 +1,27 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { downloadSVGImage } from "../../helpers/utility";
 
 export default class BodyDiagram extends Component {
   constructor(props) {
     super(props);
     this.BodyDiagramRef = React.createRef();
+    this.downloadButtonRef = React.createRef();
+    this.showDownloadButton = this.showDownloadButton.bind(this);
+    this.hideDownloadButton = this.hideDownloadButton.bind(this);
   }
   componentDidMount() {
     const svgElement = this.BodyDiagramRef.current;
     svgElement.addEventListener("load", () => this.fillInParts());
+  }
+
+  showDownloadButton() {
+    this.downloadButtonRef.current.style.visibility = "visible";
+  }
+  hideDownloadButton() {
+    console.log("WTF Shouid hide this no?")
+    this.downloadButtonRef.current.style.visibility = "hidden";
   }
 
   getData() {
@@ -106,7 +119,11 @@ export default class BodyDiagram extends Component {
     if (!this.getData()) return false;
 
     return (
-      <div>
+      <div
+        style={{ position: "relative" }}
+        onMouseEnter={this.showDownloadButton}
+        onMouseLeave={this.hideDownloadButton}
+      >
         {this.renderLegend()}
         <object
           data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
@@ -116,6 +133,24 @@ export default class BodyDiagram extends Component {
         >
           Body diagram
         </object>
+        <button
+          ref={this.downloadButtonRef}
+          onClick={(e) =>
+            downloadSVGImage(e, this.getSourceDocument(), null, "body_diagram")
+          }
+          className="print-hidden button-default rounded"
+          style={{
+            fontSize: "0.9rem",
+            // uncomment to show this
+            visibility: "hidden",
+          }}
+        >
+          <FontAwesomeIcon
+            icon="download"
+            title="Download body diagram"
+          ></FontAwesomeIcon>{" "}
+          {/* <span>Download graph</span> */}
+        </button>
       </div>
     );
   }

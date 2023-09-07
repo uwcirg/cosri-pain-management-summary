@@ -201,11 +201,12 @@ export default class ResponsesSummary extends Component {
         >
           {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
 
-          <FontAwesomeIcon
-            className="icon"
-            icon="chevron-right"
-            title="expand/collapse"
-          />
+          <div className="icon">
+            <FontAwesomeIcon
+              icon="chevron-right"
+              title="expand/collapse"
+            />
+          </div>
         </div>
       </td>
     );

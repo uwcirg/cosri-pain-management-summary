@@ -84,13 +84,16 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-right: 8px;
           .icon {
             margin-left: 24px;
-            transition: transform 400ms ease;
+            svg {
+              transition: transform 400ms ease;
+            }
             color: $link-color;
-            border-radius: 50%;
-            border: 1px solid;
-            width: 16px;
-            height: 16px;
-            padding: 4px;
+            border-radius: 100vmax;
+            border: 1px solid $link-border-color;
+            // width: 16px;
+            // height: 16px;
+            padding: 0 20px;
+            text-align: center;
             &:hover {
               background-color: $link-color;
               border-color: $link-color;
@@ -110,7 +113,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
           }
           &.active {
             .icon {
-              transform: rotate(90deg);
+              svg {
+                transform: rotate(90deg);
+              }
             }
           }
         }

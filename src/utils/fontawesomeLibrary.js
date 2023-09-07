@@ -8,7 +8,8 @@ import {
   faLink,
   faTimes,
   faExclamationCircle,
-  faUserCircle
+  faUserCircle,
+  faDownload
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -16,6 +17,7 @@ library.add(
   faChevronRight,
   faCircle,
   faCopy,
+  faDownload,
   faInfoCircle,
   faLink,
   faTimes,

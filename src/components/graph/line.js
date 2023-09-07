@@ -126,7 +126,6 @@ class Line extends React.Component {
 
       //print label - PRINT ONLY
       if (showPrintLabel) {
-        console.log("WTF ? ", showPrintLabel)
         select(node)
           .selectAll(".text")
           .data(data.filter((item, index) => index === (data.length-1)))

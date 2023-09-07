@@ -124,3 +124,43 @@ export function getReportInstrumentList() {
   if (!qList.length) return null;
   return qList.flat();
 }
+
+export function downloadSVGImage(event, svgElement, imageElementId, downloadFileName) {
+  if (event) event.stopPropagation();
+  if (!svgElement) return;
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+
+  let canvas = document.createElement("canvas");
+  let ctx = canvas.getContext("2d");
+
+  let img = document.querySelector(
+    "#" + (imageElementId)
+  );
+  if (!img) {
+    img = document.createElement("img");
+    img.classList.add("print-image");
+    img.style.zIndex = -1;
+    img.style.position = "absolute";
+    img.style.opacity = 0;
+    document.body.appendChild(img);
+  }
+  img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+  img.onload = function () {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+
+    canvas.toBlob((blob) => {
+      const imageURL = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = imageURL;
+      link.download = downloadFileName ? downloadFileName : "image";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      document.body.removeChild(img);
+    }, "image/png");
+    // Now is done
+    //console.log(canvas.toDataURL("image/png"));
+  };
+}
