@@ -274,6 +274,7 @@ export default class SurveyGraph extends Component {
           left: 0,
           display: "none",
         }}
+        title="download graph"
       >
         <FontAwesomeIcon
           icon="download"

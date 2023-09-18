@@ -252,6 +252,7 @@ export default class BodyDiagram extends Component {
           fontSize: "0.9rem",
           visibility: "hidden",
         }}
+        title="render body diagram"
       >
         <FontAwesomeIcon
           icon="download"
@@ -261,7 +262,7 @@ export default class BodyDiagram extends Component {
     );
   }
   render() {
-    if (!this.state.summaryData) return null;
+    if (!this.state.summaryData || !this.state.summaryData.length) return null;
     console.log("body diagram data: ", this.getSummaryData());
     return (
       <div

@@ -16,9 +16,12 @@ export default class Overview extends Component {
   }
   getBodyDiagramDataSummaryData(summaryData) {
     if (!summaryData) return null;
-    return summaryData
+    const matchedData = summaryData
       .filter((item) => String(item.dataKey).toLowerCase() === "body diagram")
       .map((item) => item.ResponsesSummary);
+      console.log("matched data ", matchedData)
+    if (!matchedData.length || !matchedData[0] || !matchedData[0].length) return null;
+    return matchedData;
   }
   render() {
     const { summary } = this.props;
@@ -56,9 +59,7 @@ export default class Overview extends Component {
                 alignItems: "center",
               }}
             >
-              <BodyDiagram
-                summary={BodyDiagramData}
-              ></BodyDiagram>
+              <BodyDiagram summary={BodyDiagramData}></BodyDiagram>
             </div>
           )}
         </div>
