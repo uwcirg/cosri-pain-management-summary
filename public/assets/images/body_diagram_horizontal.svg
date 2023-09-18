@@ -38,6 +38,9 @@
    inkscape:current-layer="svg2" />
   <style
    id="style3">
+   #svg2 {
+      font-family: sans-serif;
+   }
 path {
     fill:white;
     stroke:black;

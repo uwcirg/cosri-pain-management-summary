@@ -22,7 +22,7 @@ select {
     position: relative;
     display: flex;
     width: 10em;
-    height: 2.4em;
+    height: 2em;
     border-radius: 0.25em;
     overflow: hidden;
     border: 1px solid $color-gray-lighter;
@@ -33,7 +33,7 @@ select {
     position: absolute;
     top: 0;
     right: 0;
-    padding: 0.7em;
+    padding: 0.55em;
     background-color: #FFF;
     color: $color-blue-dark;
     transition: .25s all ease;

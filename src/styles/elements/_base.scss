@@ -86,12 +86,15 @@ a {
     flex: 1;
 }
 .flex-space-between {
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 .flex-start {
+  display: flex;
   justify-content: flex-start;
 }
 .flex-center {
+  display: flex;
   justify-content: center;
 }
 .lds-ellipsis {

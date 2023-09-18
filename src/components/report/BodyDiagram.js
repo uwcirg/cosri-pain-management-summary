@@ -280,15 +280,17 @@ export default class BodyDiagram extends Component {
           {this.renderDateSelector()}
           {this.renderPrintOnlyLabel()}
         </div>
-        <object
-          data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
-          type="image/svg+xml"
-          alt="Body diagram"
-          ref={this.BodyDiagramRef}
-          className="print-hidden"
-        >
-          Body diagram
-        </object>
+        <div className="flex flex-center">
+          <object
+            data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
+            type="image/svg+xml"
+            alt="Body diagram"
+            ref={this.BodyDiagramRef}
+            className="print-hidden"
+          >
+            Body diagram
+          </object>
+        </div>
         {this.renderPrintOnlyImage()}
         {this.renderDownloadButton()}
       </div>
