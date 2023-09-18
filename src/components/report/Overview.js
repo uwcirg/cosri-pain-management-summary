@@ -14,50 +14,17 @@ export default class Overview extends Component {
     });
     return data;
   }
-  getAnswersFromFhirObjects(fhirObjects, description = "pain") {
-    if (!fhirObjects) return null;
-    let answers = null;
-    fhirObjects.forEach((key) => {
-      if (!answers) answers = {};
-      answers[key] =
-        answers[key] && answers[key].length
-          ? [...answers[key], description]
-          : [description];
-    });
-    return answers;
-  }
-  getBodyDiagramData(summaryData) {
+  getBodyDiagramDataSummaryData(summaryData) {
     if (!summaryData) return null;
-    const matchedData = summaryData.filter(
-      (item) => String(item.dataKey).toLowerCase() === "body diagram"
-    );
-    if (!matchedData.length) return null;
-    if (
-      !matchedData[0].ResponsesSummary ||
-      !matchedData[0].ResponsesSummary.length
-    )
-      return null;
-    const responses = matchedData[0].ResponsesSummary[0];
-    const painLocations = responses.painLocations;
-    let answers = null;
-    if (painLocations && painLocations.length) {
-      answers = this.getAnswersFromFhirObjects(painLocations);
-    }
-    const severePainLocation = responses.severePainLocation;
-    if (severePainLocation && severePainLocation.length) {
-      if (!answers) answers = {};
-      answers = {
-        ...answers,
-        ...this.getAnswersFromFhirObjects(severePainLocation, "severe_pain"),
-      };
-    }
-    return answers;
+    return summaryData
+      .filter((item) => String(item.dataKey).toLowerCase() === "body diagram")
+      .map((item) => item.ResponsesSummary);
   }
   render() {
     const { summary } = this.props;
     const dataToShow = summary.filter((item) => !item.ExcludeFromScoring);
     const graphData = this.getGraphData(dataToShow);
-    const BodyDiagramData = this.getBodyDiagramData(summary);
+    const BodyDiagramData = this.getBodyDiagramDataSummaryData(summary);
     const noSummaryData =
       !summary ||
       !summary.length ||
@@ -90,8 +57,8 @@ export default class Overview extends Component {
               }}
             >
               <BodyDiagram
-              answers={this.getBodyDiagramData(summary)}
-            ></BodyDiagram>
+                summary={BodyDiagramData}
+              ></BodyDiagram>
             </div>
           )}
         </div>

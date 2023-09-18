@@ -8,10 +8,10 @@
     z-index: 1 !important;
   }
   .print-cell-hidden {
-    display: none;
+    display: none !important;
   }
   .print-hidden {
-    display: none;
+    display: none !important;
   }
   .summary__display {
     background-color: #fff !important;
@@ -27,6 +27,13 @@
   .anchor {
     border-bottom: 0;
     color: $color-black;
+  }
+  .select {
+    border: 0;
+    color: $color-black;
+  }
+  .select::after {
+    display: none;
   }
   .section__header {
     padding: 8px !important;

@@ -12,7 +12,7 @@ import {
   defaultLineAttributes,
   getLineAttributes,
 } from "../../config/graph_config";
-import { downloadSVGImage } from "../../helpers/utility";
+import { downloadSVGImage, renderImageFromSVG } from "../../helpers/utility";
 
 const defaultFields = {
   x: "date",
@@ -33,35 +33,29 @@ export default class SurveyGraph extends Component {
       this.addQuestionnaireToSurveyGraph.bind(this);
     this.removeQuestionnaireToSurveyGraph =
       this.removeQuestionnaireToSurveyGraph.bind(this);
-    this.showDownloadButton = 
-      this.showDownloadButton.bind(this);
-    this.hideDownloadButton = 
-      this.hideDownloadButton.bind(this);
-    //this.renderImageFromSVG = this.renderImageFromSVG.bind(this);
+    this.showDownloadButton = this.showDownloadButton.bind(this);
+    this.hideDownloadButton = this.hideDownloadButton.bind(this);
+    this.graphRef = React.createRef();
+    this.printImageRef = React.createRef();
   }
   componentDidMount() {
     this.setState({
       graphData: this.props.data,
       originalGraphData: this.props.data,
     });
-    setTimeout(() => this.renderImageFromSVG("surveyGraphSvg_printOnly"), 1000);
-    // document.querySelector(".panel.graph").addEventListener("onmouseover", () => {
-    //   this.showDownloadButton();
-    // })
-    // document.querySelector(".panel.graph").addEventListener("onmouseout", () => {
-    //   this.hideDownloadButton();
-    // })
+    setTimeout(
+      () =>
+        renderImageFromSVG(this.printImageRef.current, this.graphRef.current),
+      1000
+    );
   }
 
   showDownloadButton() {
-    // document.querySelector("#btnSurveyGraphDownload").style.display = "block";
     this.downloadButtonRef.current.style.display = "block";
   }
   hideDownloadButton() {
-    //document.querySelector("#btnSurveyGraphDownload").style.display = "none";
     this.downloadButtonRef.current.style.display = "none";
   }
-
   getDataForGraph(dataSource) {
     let baseLineDate = new Date();
     let maxDate = new Date();
@@ -253,39 +247,41 @@ export default class SurveyGraph extends Component {
     );
   }
 
-  renderImageFromSVG(imageElementId) {
-    // if (event) event.stopPropagation();
-    const svgElement = document.querySelector("#surveyGraphSvg");
-    if (!svgElement) return;
-    const svgData = new XMLSerializer().serializeToString(svgElement);
-
-    let canvas = document.createElement("canvas");
-    let ctx = canvas.getContext("2d");
-
-    let img = document.querySelector(
-      "#" + (imageElementId ? imageElementId : "surveyGraphSvg_img")
+  renderPrintOnlyImage() {
+    return (
+      <img
+        ref={this.printImageRef}
+        alt="for print"
+        className="print-image"
+        style={{ zIndex: -1, position: "absolute" }}
+      ></img>
     );
-    img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
-    img.onload = function () {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0, img.width, img.height);
-      // if (copyToClipboard) {
-      //   canvas.toBlob((blob) => {
-      //     // try {
-      //     //   navigator.clipboard.write([
-      //     //     new window.ClipboardItem({ "image/png": blob }),
-      //     //   ]);
-      //     // } catch(e) {
-      //     //   alert("Unable to copy image to clipboard.  See console for detail.");
-      //     //   console.log("Unable to write image to clipboard ", e)
-      //     // }
-      // }
-      // Now is done
-      //console.log(canvas.toDataURL("image/png"));
-    };
   }
 
+  renderDownloadButton() {
+    return (
+      <button
+        ref={this.downloadButtonRef}
+        onClick={(e) =>
+          downloadSVGImage(e, this.graphRef.current, null, "survey_graph")
+        }
+        className="print-hidden button-default rounded"
+        style={{
+          fontSize: "0.9rem",
+          position: "absolute",
+          zIndex: 20,
+          bottom: 0,
+          left: 0,
+          display: "none",
+        }}
+      >
+        <FontAwesomeIcon
+          icon="download"
+          title="Download graph"
+        ></FontAwesomeIcon>{" "}
+      </button>
+    );
+  }
   render() {
     const noEntry = !this.state.graphData || !this.state.graphData.length;
 
@@ -472,7 +468,7 @@ export default class SurveyGraph extends Component {
     const renderGraph = () => {
       return (
         <svg
-          id="surveyGraphSvg"
+          ref={this.graphRef}
           className="surveyChartSvg print-hidden"
           width="100%"
           height="100%"
@@ -502,53 +498,15 @@ export default class SurveyGraph extends Component {
 
     return (
       <React.Fragment>
-        <div className="survey-graph" style={{ position: "relative" }} onMouseEnter={this.showDownloadButton} onMouseLeave={this.hideDownloadButton}>
+        <div
+          className="survey-graph"
+          style={{ position: "relative" }}
+          onMouseEnter={this.showDownloadButton}
+          onMouseLeave={this.hideDownloadButton}
+        >
           <div className="survey-svg-container">{renderGraph(this.state)}</div>
-          {/* <img
-            id="surveyGraphSvg_img"
-            alt=""
-            className="print-image"
-            style={{ zIndex: -1, position: "absolute" }}
-          ></img> */}
-          <img
-            id="surveyGraphSvg_printOnly"
-            alt="for print"
-            className="print-image"
-            style={{ zIndex: -1, position: "absolute" }}
-          ></img>
-          <button
-           // id="btnSurveyGraphDownload"
-            ref={this.downloadButtonRef}
-            onClick={(e) =>
-              downloadSVGImage(
-                e,
-                document.querySelector("#surveyGraphSvg"),
-                "surveyGraphSvg_img",
-                "survey_graph"
-              )
-            }
-            className="print-hidden button-default rounded"
-            style={{
-              fontSize: "0.9rem",
-              //    mouse: "pointer",
-              position: "absolute",
-              // right: 0,
-              // top: 0,
-              zIndex: 20,
-              bottom: 0,
-              left: 0,
-              //  padding: "4px 16px",
-              // margin: "0 8px",
-              // uncomment to show this
-              display: "none",
-            }}
-          >
-            <FontAwesomeIcon
-              icon="download"
-              title="Download graph"
-            ></FontAwesomeIcon>{" "}
-            {/* <span>Download graph</span> */}
-          </button>
+          {this.renderPrintOnlyImage()}
+          {this.renderDownloadButton()}
         </div>
         {this.state.originalGraphData.length > 0 && this.renderLegend()}
       </React.Fragment>

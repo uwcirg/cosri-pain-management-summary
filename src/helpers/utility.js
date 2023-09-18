@@ -125,6 +125,53 @@ export function getReportInstrumentList() {
   return qList.flat();
 }
 
+export function getDisplayDateFromISOString(isocDateString) {
+  if (!isocDateString) return "--";
+  const objDate = new Date(isocDateString);
+  if (isNaN(objDate)) return "--";
+  // need to account for timezone offset for a UTC date/time
+  let tzOffset = objDate.getTimezoneOffset() * 60000;
+  objDate.setTime(objDate.getTime() + tzOffset);
+  const displayDate = objDate
+    ? objDate.toLocaleString("en-us", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+      })
+    : "--";
+  return displayDate;
+}
+
+export function renderImageFromSVG(imageElement, svgElement) {
+  if (!svgElement) return;
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+
+  let canvas = document.createElement("canvas");
+  let ctx = canvas.getContext("2d");
+
+  let img = imageElement;
+  if (!img) return;
+  img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+  img.onload = function () {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+    // if (copyToClipboard) {
+    //   canvas.toBlob((blob) => {
+    //     // try {
+    //     //   navigator.clipboard.write([
+    //     //     new window.ClipboardItem({ "image/png": blob }),
+    //     //   ]);
+    //     // } catch(e) {
+    //     //   alert("Unable to copy image to clipboard.  See console for detail.");
+    //     //   console.log("Unable to write image to clipboard ", e)
+    //     // }
+    // }
+    // Now is done
+    //console.log(canvas.toDataURL("image/png"));
+  };
+}
+
 export function downloadSVGImage(event, svgElement, imageElementId, downloadFileName) {
   if (event) event.stopPropagation();
   if (!svgElement) return;

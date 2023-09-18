@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Score from "./Score";
+import {getDisplayDateFromISOString} from "../../helpers/utility";
 
 export default class ResponsesSummary extends Component {
   constructor() {
@@ -70,20 +71,7 @@ export default class ResponsesSummary extends Component {
   }
   getDisplayDate(targetObj) {
     if (!targetObj) return "--";
-    const objDate = targetObj.date ? new Date(targetObj.date) : null;
-    // need to account for timezone offset for a UTC date/time
-    if (objDate) {
-      let tzOffset = objDate.getTimezoneOffset() * 60000;
-      objDate.setTime(objDate.getTime() + tzOffset);
-    }
-    const displayDate = objDate
-      ? objDate.toLocaleString("en-us", {
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-        })
-      : "--";
-    return displayDate;
+    return getDisplayDateFromISOString(targetObj.date);
   }
   getNumResponses(summary) {
     if (!summary || !summary.ResponsesSummary) return 0;

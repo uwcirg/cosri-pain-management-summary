@@ -2,29 +2,78 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { downloadSVGImage } from "../../helpers/utility";
+import {
+  getDisplayDateFromISOString,
+  renderImageFromSVG,
+} from "../../helpers/utility";
 
 export default class BodyDiagram extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      summaryData: this.getSummaryData(),
+      selectedDate: this.getMostRecentDate(),
+    };
     this.BodyDiagramRef = React.createRef();
     this.downloadButtonRef = React.createRef();
+    this.printImageRef = React.createRef();
     this.showDownloadButton = this.showDownloadButton.bind(this);
     this.hideDownloadButton = this.hideDownloadButton.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
   }
+
   componentDidMount() {
     const svgElement = this.BodyDiagramRef.current;
-    svgElement.addEventListener("load", () => this.fillInParts());
+    if (svgElement) {
+      svgElement.addEventListener("load", () => {
+        this.fillInParts();
+        renderImageFromSVG(
+          this.printImageRef.current,
+          this.getSourceDocument()
+        );
+      });
+    }
+  }
+
+  handleSelectChange(e) {
+    console.log("selected ", e.target.value);
+    this.setState(
+      {
+        selectedDate: e.target.value,
+      },
+      () => this.fillInParts()
+    );
   }
 
   showDownloadButton() {
     this.downloadButtonRef.current.style.visibility = "visible";
   }
   hideDownloadButton() {
-    console.log("WTF Shouid hide this no?")
     this.downloadButtonRef.current.style.visibility = "hidden";
   }
+  getAnswersFromFhirObjects(fhirObjects, description = "pain") {
+    if (!fhirObjects) return null;
+    let answers = null;
+    fhirObjects.forEach((key) => {
+      if (!answers) answers = {};
+      answers[key] =
+        answers[key] && answers[key].length
+          ? [...answers[key], description]
+          : [description];
+    });
+    return answers;
+  }
 
-  getData() {
+  getSummaryData() {
+    if (!this.props.summary || !this.props.summary.length) return null;
+    return this.props.summary[0].sort((a, b) => {
+      const date1 = new Date(a);
+      const date2 = new Date(b);
+      return date2 - date1;
+    });
+  }
+
+  getAnswerData() {
     // const testData = {
     //   back_left_posterior_neck: ["pain"],
     //   back_midline_posterior_neck: ["pain"],
@@ -37,7 +86,35 @@ export default class BodyDiagram extends Component {
     //   front_left_brow: ["severe_pain"],
     // };
     // //{"front_left_cheek":["severe_pain"]}
-    return this.props.answers ? this.props.answers : null;
+    const summaryData =
+      this.state.summaryData && this.state.summaryData.length
+        ? this.state.summaryData
+        : this.getSummaryData();
+    if (!summaryData || !summaryData.length) return null;
+    const responses = this.state.selectedDate
+      ? summaryData.find((item) => item.date === this.state.selectedDate)
+      : summaryData[0];
+    if (!responses) return false;
+    const painLocations = responses.painLocations;
+    let answers = null;
+    if (painLocations && painLocations.length) {
+      answers = this.getAnswersFromFhirObjects(painLocations);
+    }
+    const severePainLocation = responses.severePainLocation;
+    if (severePainLocation && severePainLocation.length) {
+      if (!answers) answers = {};
+      answers = {
+        ...answers,
+        ...this.getAnswersFromFhirObjects(severePainLocation, "severe_pain"),
+      };
+    }
+    return answers;
+  }
+
+  getMostRecentDate() {
+    const summaryData = this.getSummaryData();
+    if (!summaryData || !summaryData.length) return null;
+    return summaryData[0].date;
   }
 
   getSourceDocument() {
@@ -57,8 +134,12 @@ export default class BodyDiagram extends Component {
   fillInParts() {
     const doc = this.getSourceDocument();
     if (!doc) return;
-    const answers = this.getData();
+    const answers = this.getAnswerData();
     if (!answers) return;
+    doc.querySelectorAll("svg path").forEach((node) => {
+      node.classList.remove("pain");
+      node.classList.remove("severe_pain");
+    });
     for (let body_part_path in answers) {
       // Check that prop is not inherited
       if (answers.hasOwnProperty(body_part_path)) {
@@ -72,6 +153,33 @@ export default class BodyDiagram extends Component {
         }
       }
     }
+  }
+  renderDateSelector() {
+    const summaryData = this.state.summaryData;
+    if (!summaryData || !summaryData.length) return null;
+    if (summaryData.length === 1)
+      return getDisplayDateFromISOString(summaryData[0].date);
+    const dates = summaryData.map((item) => {
+      return {
+        key: getDisplayDateFromISOString(item.date),
+        value: item.date,
+      };
+    });
+    return (
+      <div className="select print-hidden">
+        <select
+          value={this.state.selectedDate}
+          onChange={this.handleSelectChange}
+          onBlur={this.handleSelectChange}
+        >
+          {dates.map((date, index) => (
+            <option value={date.value} key={`bd_date_option_${index}`}>
+              {date.key}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
   }
   renderLegend() {
     const iconStyle = {
@@ -88,8 +196,6 @@ export default class BodyDiagram extends Component {
           flexDirection: "column",
           alignItems: "flex-start",
           gap: 6,
-          marginTop: 8,
-          marginBottom: 24,
           fontSize: "0.8rem",
         }}
         className="print-hidden"
@@ -115,47 +221,80 @@ export default class BodyDiagram extends Component {
       </div>
     );
   }
+  renderPrintOnlyLabel() {
+    // print only label
+    return (
+      <h4 className="print-only">
+        Pain locations reported on:{" "}
+        {getDisplayDateFromISOString(this.getMostRecentDate())}
+      </h4>
+    );
+  }
+  renderPrintOnlyImage() {
+    return (
+      <img
+        ref={this.printImageRef}
+        alt="for print"
+        className="print-image"
+        style={{ zIndex: -1, position: "absolute" }}
+      ></img>
+    );
+  }
+  renderDownloadButton() {
+    return (
+      <button
+        ref={this.downloadButtonRef}
+        onClick={(e) =>
+          downloadSVGImage(e, this.getSourceDocument(), null, "body_diagram")
+        }
+        className="print-hidden button-default rounded"
+        style={{
+          fontSize: "0.9rem",
+          visibility: "hidden",
+        }}
+      >
+        <FontAwesomeIcon
+          icon="download"
+          title="Download body diagram"
+        ></FontAwesomeIcon>{" "}
+      </button>
+    );
+  }
   render() {
-    if (!this.getData()) return false;
-
+    if (!this.state.summaryData) return null;
+    console.log("body diagram data: ", this.getSummaryData());
     return (
       <div
-        style={{ position: "relative" }}
+        style={{
+          position: "relative",
+          width: "100%",
+          paddingLeft: "4px",
+          paddingRight: "4px",
+        }}
         onMouseEnter={this.showDownloadButton}
         onMouseLeave={this.hideDownloadButton}
       >
-        {this.renderLegend()}
+        <div className="flex" style={{ marginTop: 8, marginBottom: 24 }}>
+          {this.renderLegend()}
+          {this.renderDateSelector()}
+          {this.renderPrintOnlyLabel()}
+        </div>
         <object
           data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
           type="image/svg+xml"
           alt="Body diagram"
           ref={this.BodyDiagramRef}
+          className="print-hidden"
         >
           Body diagram
         </object>
-        <button
-          ref={this.downloadButtonRef}
-          onClick={(e) =>
-            downloadSVGImage(e, this.getSourceDocument(), null, "body_diagram")
-          }
-          className="print-hidden button-default rounded"
-          style={{
-            fontSize: "0.9rem",
-            // uncomment to show this
-            visibility: "hidden",
-          }}
-        >
-          <FontAwesomeIcon
-            icon="download"
-            title="Download body diagram"
-          ></FontAwesomeIcon>{" "}
-          {/* <span>Download graph</span> */}
-        </button>
+        {this.renderPrintOnlyImage()}
+        {this.renderDownloadButton()}
       </div>
     );
   }
 }
 
 BodyDiagram.propTypes = {
-  answers: PropTypes.object,
+  summary: PropTypes.array,
 };
