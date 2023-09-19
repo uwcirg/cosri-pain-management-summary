@@ -234,8 +234,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
         align-items: center;
         min-width: calc(50% - 48px);
         max-width: calc(100% - 320px);
+        .date-selector {
+          width: calc(100% - 16px);
+          margin-top: 8px;
+        }
         .survey-graph {
-          flex: 1 1;
+       //   flex: 1 1;
           width: 100%;
           @media (min-width: 992px) {
             width: calc(100% - 72px);
@@ -309,7 +313,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       min-width: calc(100% - 120px);
     }
     .legend {
-      margin: 16px auto;
+      margin: 8px auto;
       border: 1px solid $color-gray-lightest;
       min-width: 100%;
       width: 100%;

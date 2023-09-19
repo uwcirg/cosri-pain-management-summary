@@ -85,6 +85,9 @@ a {
 .flex-1 {
     flex: 1;
 }
+.flex-gap-1 {
+  gap: 8px;
+}
 .flex-space-between {
   display: flex;
   justify-content: space-between;
@@ -96,6 +99,10 @@ a {
 .flex-center {
   display: flex;
   justify-content: center;
+}
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
 }
 .lds-ellipsis {
   display: inline-block;

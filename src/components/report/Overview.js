@@ -19,7 +19,6 @@ export default class Overview extends Component {
     const matchedData = summaryData
       .filter((item) => String(item.dataKey).toLowerCase() === "body diagram")
       .map((item) => item.ResponsesSummary);
-      console.log("matched data ", matchedData)
     if (!matchedData.length || !matchedData[0] || !matchedData[0].length) return null;
     return matchedData;
   }

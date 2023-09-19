@@ -39,7 +39,7 @@
   <style
    id="style3">
    #svg2 {
-      font-family: sans-serif;
+      font-family: Open Sans, Arial, sans-serif;
    }
 path {
     fill:white;

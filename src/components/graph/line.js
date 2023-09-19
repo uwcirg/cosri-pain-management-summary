@@ -10,9 +10,34 @@ class Line extends React.Component {
     this.state = {
       xName: "",
       yName: "",
+      data: null,
     };
   }
   componentDidMount() {
+    this.removeAll();
+    this.updateChart();
+  }
+  componentDidUpdate(prevProps, prevState) {
+    // console.log(
+    //   "prev data ",
+    //   prevState.data,
+    //   " current data ",
+    //   this.props.data
+    // );
+    if (prevState.data !== this.props.data) {
+      this.removeAll();
+      this.updateChart();
+    }
+  }
+  removeAll() {
+    const node = this.ref.current;
+    let currentNode = select(node);
+    currentNode.selectAll("path").remove();
+    currentNode.selectAll("circle").remove();
+    currentNode.selectAll("rect").remove();
+    currentNode.selectAll("text").remove();
+  }
+  updateChart() {
     const node = this.ref.current;
     const {
       data,
@@ -30,6 +55,7 @@ class Line extends React.Component {
     this.setState({
       xName: xName,
       yName: yName,
+      data: data,
     });
 
     let formatDate = timeFormat(`%Y-%b-%d`);
@@ -46,115 +72,106 @@ class Line extends React.Component {
       currentNode.style("stroke-dasharray", this.props.dotSpacing || "3, 3"); // <== This line here!!
     }
 
-    if (dataPoints) {
-      const radiusWidth = dataPoints.radiusWidth
-        ? dataPoints.radiusWidth
-        : 0.55;
-      const expandedRadiusWidth = radiusWidth * 4;
-      const animationDuration = 100;
-      const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
-      select(node)
-        .selectAll("circle")
-        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-        .enter()
-        .append("circle")
-        .attr("class", "circle")
-        .attr("stroke", dataPoints.strokeColor)
-        .attr("stroke-width", dataPoints.strokeWidth)
-        .attr("fill", dataPoints.strokeFill)
-        .attr("r", radiusWidth)
-        .attr("id", (d, i) => `circle_${dataId}${i}`)
-        .attr("cx", (d) => xScale(d[xName]))
-        .attr("cy", (d) => yScale(d[yName]))
-        .on("mouseover", (d, i) => {
-          if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-            return;
-          }
-          select(`#circle_${dataId}${i}`)
-            .transition()
-            .duration(animationDuration)
-            .attr("r", expandedRadiusWidth);
-          select(`#dataText_${dataId}${i}`).style("display", "block");
-          select(`#dataRect_${dataId}${i}`).style("display", "block");
-        })
-        .on("mouseout", (d, i) => {
-          if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-            return;
-          }
-          select(`#circle_${dataId}${i}`)
-            .transition()
-            .duration(animationDuration)
-            .attr("r", radiusWidth);
-          select(`#dataText_${dataId}${i}`).style("display", "none");
-          select(`#dataRect_${dataId}${i}`).style("display", "none");
-        });
+    if (!dataPoints) {
+      return;
+    }
 
-      //rect
-      select(node)
-        .selectAll(".rect-tooltip")
-        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-        .enter()
-        .append("rect")
-        .attr("class", "rect-tooltip")
-        .attr("id", (d, i) => `dataRect_${dataId}${i}`)
-        .attr("x", (d) => xScale(d[xName]) - 44)
-        .attr("y", (d) => yScale(d[yName]) + 12)
-        .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
-        .attr("height", 26)
-        .style("display", "none")
-        .style("stroke", "#777")
-        .style("stroke-width", "0.5")
-        .style("rx", 4)
-        .style("fill", "white");
+    const radiusWidth = dataPoints.radiusWidth ? dataPoints.radiusWidth : 0.55;
+    const expandedRadiusWidth = radiusWidth * 4;
+    const animationDuration = 100;
+    const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
 
-      //tooltip
+    select(node)
+      .selectAll("circle")
+      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+      .enter()
+      .append("circle")
+      .attr("class", "circle")
+      .attr("stroke", dataPoints.strokeColor)
+      .attr("stroke-width", dataPoints.strokeWidth)
+      .attr("fill", dataPoints.strokeFill)
+      .attr("r", radiusWidth)
+      .attr("id", (d, i) => `circle_${dataId}${i}`)
+      .attr("cx", (d) => xScale(d[xName]))
+      .attr("cy", (d) => yScale(d[yName]))
+      .on("mouseover", (d, i) => {
+        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
+          return;
+        }
+        select(`#circle_${dataId}${i}`)
+          .transition()
+          .duration(animationDuration)
+          .attr("r", expandedRadiusWidth);
+        select(`#dataText_${dataId}${i}`).style("display", "block");
+        select(`#dataRect_${dataId}${i}`).style("display", "block");
+      })
+      .on("mouseout", (d, i) => {
+        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
+          return;
+        }
+        select(`#circle_${dataId}${i}`)
+          .transition()
+          .duration(animationDuration)
+          .attr("r", radiusWidth);
+        select(`#dataText_${dataId}${i}`).style("display", "none");
+        select(`#dataRect_${dataId}${i}`).style("display", "none");
+      });
+
+    //rect
+    select(node)
+      .selectAll(".rect-tooltip")
+      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+      .enter()
+      .append("rect")
+      .attr("class", "rect-tooltip")
+      .attr("id", (d, i) => `dataRect_${dataId}${i}`)
+      .attr("x", (d) => xScale(d[xName]) - 44)
+      .attr("y", (d) => yScale(d[yName]) + 12)
+      .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
+      .attr("height", 26)
+      .style("display", "none")
+      .style("stroke", "#777")
+      .style("stroke-width", "0.5")
+      .style("rx", 4)
+      .style("fill", "white");
+
+    //tooltip
+    select(node)
+      .selectAll("text")
+      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+      .enter()
+      .append("text")
+      .attr("id", (d, i) => `dataText_${dataId}${i}`)
+      .attr("x", (d) => xScale(d[xName]) - 36)
+      .attr("y", (d) => yScale(d[yName]) + 28)
+      .style("display", "none")
+      .attr("font-size", 10)
+      .attr("text-anchor", "start")
+      .attr("font-weight", 600)
+      .text(function (d) {
+        return `${formatDate(d[xName])}, ${d[yName]}`;
+      });
+
+    //print label - PRINT ONLY
+    if (showPrintLabel) {
       select(node)
-        .selectAll("text")
-        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .selectAll(".text")
+        .data(data.filter((item, index) => index === data.length - 1))
         .enter()
         .append("text")
-        .attr("id", (d, i) => `dataText_${dataId}${i}`)
-        .attr("x", (d) => xScale(d[xName]) - 36)
-        .attr("y", (d) => yScale(d[yName]) + 28)
-        .style("display", "none")
-        .attr("font-size", 10)
+        .attr("id", (d, i) => `dataPrintText_${dataId}${i}`)
+        .attr("x", (d) => xScale(d[xName]) - 6)
+        .attr("y", (d) => yScale(d[yName]) - 16)
+        .attr("class", "print-only print-title")
+        .attr("font-size", 11)
         .attr("text-anchor", "start")
         .attr("font-weight", 600)
-        .text(function (d) {
-          return `${formatDate(d[xName])}, ${d[yName]}`;
+        .text(function () {
+          return dataId.replace(/_/g, " ");
         });
-
-      //print label - PRINT ONLY
-      if (showPrintLabel) {
-        select(node)
-          .selectAll(".text")
-          .data(data.filter((item, index) => index === (data.length-1)))
-          .enter()
-          .append("text")
-          .attr("id", (d, i) => `dataPrintText_${dataId}${i}`)
-          .attr("x", (d) => xScale(d[xName]) - 6)
-          .attr("y", (d) => yScale(d[yName]) - 16)
-          .attr("class", "print-only print-title")
-          .attr("font-size", 11)
-          .attr("text-anchor", "start")
-          .attr("font-weight", 600)
-          .text(function () {
-            return dataId.replace(/_/g, " ");
-          });
-      }
     }
-    this.updateChart();
-  }
-  componentDidUpdate() {
-    this.updateChart();
-  }
-  updateChart() {
-    const { lineGenerator, data } = this.props;
-
     const t = transition().duration(1000);
-
     const line = select(this.props.lineID);
-
     line.datum(data).transition(t).attr("d", lineGenerator);
   }
   render() {

@@ -24,8 +24,13 @@ export default class SurveyGraph extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      graphData: [],
-      originalGraphData: [],
+      graphData: this.props.data ? this.props.data : [],
+      originalGraphData: this.props.data ? this.props.data : [],
+      selectedDateRange: "2 years",
+      qids:
+        this.props.data && this.props.data.length
+          ? [...new Set(this.props.data.map((item) => item.qid))]
+          : [],
     };
     this.downloadButtonRef = React.createRef();
     // This binding is necessary to make `this` work in the callback
@@ -35,14 +40,11 @@ export default class SurveyGraph extends Component {
       this.removeQuestionnaireToSurveyGraph.bind(this);
     this.showDownloadButton = this.showDownloadButton.bind(this);
     this.hideDownloadButton = this.hideDownloadButton.bind(this);
+    this.setDateRange = this.setDateRange.bind(this);
     this.graphRef = React.createRef();
     this.printImageRef = React.createRef();
   }
   componentDidMount() {
-    this.setState({
-      graphData: this.props.data,
-      originalGraphData: this.props.data,
-    });
     setTimeout(
       () =>
         renderImageFromSVG(this.printImageRef.current, this.graphRef.current),
@@ -60,7 +62,6 @@ export default class SurveyGraph extends Component {
     let baseLineDate = new Date();
     let maxDate = new Date();
     let minDate = new Date().setDate(maxDate.getDate() - 365);
-    //let propData = this.state.graphData || [];
     //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
     let data = dataSource
@@ -73,6 +74,26 @@ export default class SurveyGraph extends Component {
     data = data.filter(
       (d) => d[xFieldName] && d[yFieldName] !== null && !isNaN(d[yFieldName])
     );
+
+    const years = this.getSelectedDateRange(this.state.selectedDateRange);
+    if (years) {
+      data = data.filter((item) => {
+        const itemDate = new Date(item[xFieldName]);
+        const today = new Date();
+        const isInSurvey = this.state.qids.indexOf(item.qid) !== -1;
+        if (isNaN(itemDate)) return isInSurvey;
+        const diffYears = today.getFullYear() - itemDate.getFullYear();
+        return isInSurvey && diffYears >= 0 && diffYears <= years;
+      });
+    }
+    const qids =
+      this.state.qids && this.state.qids.length ? this.state.qids : null;
+    if (qids) {
+      data = data.filter((item) => {
+        return this.state.qids.indexOf(item.qid) !== -1;
+      });
+    }
+
     data = data.map((d) => {
       let dObj = new Date(d[xFieldName]);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
@@ -146,7 +167,13 @@ export default class SurveyGraph extends Component {
   }
 
   getQIds() {
-    return [...new Set(this.state.originalGraphData.map((item) => item.qid))];
+    let srcData = this.state.originalGraphData.filter(
+      (item) =>
+        item[xFieldName] &&
+        item[yFieldName] !== null &&
+        !isNaN(item[yFieldName])
+    );
+    return [...new Set(srcData.map((item) => item.qid))];
   }
   getLineAttributesByQId(qid) {
     const qids = this.getQIds();
@@ -169,15 +196,20 @@ export default class SurveyGraph extends Component {
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
     );
-    if (qData && qData.length)
+    if (qData && qData.length) {
+      const updatedData = [...this.state.graphData, ...qData];
       this.setState({
-        graphData: [...this.state.graphData, ...qData],
+        graphData: updatedData,
+        qids: [...new Set(updatedData.map((item) => item.qid))],
       });
+    }
   }
   removeQuestionnaireToSurveyGraph(qid) {
     if (!this.isInSurveyGraph(qid)) return;
+    const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
     this.setState({
-      graphData: this.state.graphData.filter((item) => item.qid !== qid),
+      graphData: updatedData,
+      qids: [...new Set(updatedData.map((item) => item.qid))],
     });
   }
 
@@ -189,16 +221,43 @@ export default class SurveyGraph extends Component {
     return 0;
   }
 
-  onlyOneLeft() {
+  hasOnlyOneGraphLine() {
+    const { data } = this.getDataForGraph(this.state.graphData);
     return (
-      this.state.graphData &&
-      [...new Set(this.state.graphData.map((item) => item.qid))].length === 1
+      data &&
+      data.length &&
+      [...new Set(data.map((item) => item.qid))].length === 1
     );
+  }
+
+  getSelectedDateRange(value) {
+    const years = value === "2 years" ? 2 : value === "5 years" ? 5 : "all";
+    return years;
+  }
+
+  setDateRange(e) {
+    const years = this.getSelectedDateRange(e.target.value);
+    let updatedData = this.state.originalGraphData.filter(
+      (o) => this.state.qids.indexOf(o.qid) !== -1
+    );
+    if (years !== "all") {
+      updatedData = updatedData.filter((item) => {
+        const itemDate = new Date(item[xFieldName]);
+        const today = new Date();
+        if (isNaN(itemDate)) return false;
+        const diffYears = today.getFullYear() - itemDate.getFullYear();
+        return diffYears >= 0 && diffYears <= years;
+      });
+    }
+    this.setState({
+      graphData: updatedData,
+      selectedDateRange: e.target.value,
+    });
   }
 
   renderLegend() {
     const qids = this.getQIds();
-    const onlyOneLeft = this.onlyOneLeft();
+    const hasOnlyOneGraphLine = this.hasOnlyOneGraphLine();
     return (
       <div className="legend-container">
         <div className="legend">
@@ -228,7 +287,7 @@ export default class SurveyGraph extends Component {
                     className="select-icon minus"
                     onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
                     disabled={
-                      onlyOneLeft
+                      hasOnlyOneGraphLine
                         ? true
                         : this.isInSurveyGraph(item)
                         ? false
@@ -269,6 +328,7 @@ export default class SurveyGraph extends Component {
         style={{
           fontSize: "0.9rem",
           position: "absolute",
+          color: "#777",
           zIndex: 20,
           bottom: 0,
           left: 0,
@@ -283,6 +343,40 @@ export default class SurveyGraph extends Component {
       </button>
     );
   }
+
+  renderDateRangeSelector() {
+    const items = [
+      {
+        key: "Last 2 years",
+        value: "2 years",
+      },
+      {
+        key: "Last 5 years",
+        value: "5 years",
+      },
+      {
+        key: "All",
+        value: "all",
+      },
+    ];
+    return (
+      <div className="select">
+        <select
+          value={this.state.selectedDateRange}
+          onChange={this.setDateRange}
+          onBlur={this.setDateRange}
+        >
+          {items.map((item, index) => {
+            return (
+              <option key={`graph_date_option_${index}`} value={item.value}>
+                {item.key}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+    );
+  }
   render() {
     const noEntry = !this.state.graphData || !this.state.graphData.length;
 
@@ -291,9 +385,9 @@ export default class SurveyGraph extends Component {
     );
 
     const margins = {
-      top: 40,
+      top: 16,
       right: 16,
-      bottom: 72, //88
+      bottom: 72,
       left: 56,
     };
     const parentWidth = 540;
@@ -359,7 +453,7 @@ export default class SurveyGraph extends Component {
       orient: "left",
       transform: "translate(0, 0)",
       ticks: yMaxValue,
-      className: this.onlyOneLeft() ? "show-max-min-labels" : "",
+      className: this.hasOnlyOneGraphLine() ? "show-max-min-labels" : "",
     };
 
     const graphWidth = width + margins.left + margins.right;
@@ -408,7 +502,7 @@ export default class SurveyGraph extends Component {
     const renderMaxYValueLabel = () => {
       const labelProps = {
         ...valueLabelProps,
-        y: 0 - Math.ceil(margins.top / 2) - 4,
+        y: 0 - Math.ceil(margins.top / 2) - 10,
         x: 0 - Math.ceil(margins.left / 2) - 12,
         fill: "red",
       };
@@ -418,7 +512,7 @@ export default class SurveyGraph extends Component {
     const renderMinYValueLabel = () => {
       const labelProps = {
         ...valueLabelProps,
-        y: 0 - Math.ceil(margins.top / 2) + graphHeight - margins.bottom - 12,
+        y: 0 - Math.ceil(margins.top / 2) + graphHeight - margins.bottom - 4,
         x: 0 - Math.ceil(margins.left / 2) - 12,
         fill: "green",
       };
@@ -438,18 +532,19 @@ export default class SurveyGraph extends Component {
       return <text {...labelProps}>Value / Score</text>;
     };
 
-    const renderLines = (dataSource, props) => {
-      return getDataNest(dataSource).map((data, index) => {
+    const renderLines = (props) => {
+      const { data } = this.getDataForGraph(this.state.graphData);
+      return getDataNest(data).map((o, index) => {
         return (
           <Line
-            key={`line-${data.key}-${index}`}
-            lineID={`dataLine_${data.key}`}
-            data={data.values}
+            key={`line-${o.key}-${index}`}
+            lineID={`dataLine_${o.key}`}
+            data={o.values}
             showPrintLabel={true}
             {...props}
             {...{
               ...defaultLineProps,
-              ...this.getLineAttributesByQId(data.key),
+              ...this.getLineAttributesByQId(o.key),
             }}
           />
         );
@@ -484,12 +579,12 @@ export default class SurveyGraph extends Component {
             {/* x grid */}
             {renderXGrid()}
             {renderYAxisLabel()}
-            {this.onlyOneLeft() && renderMaxYValueLabel()}
-            {this.onlyOneLeft() && renderMinYValueLabel()}
+            {this.hasOnlyOneGraphLine() && renderMaxYValueLabel()}
+            {this.hasOnlyOneGraphLine() && renderMinYValueLabel()}
             {/* x and y axis */}
             <XYAxis {...{ xSettings, ySettings }} />
             {/* lines drawn for screen display ONLY */}
-            {renderLines(data, {
+            {renderLines({
               className: "print-hidden",
             })}
           </g>
@@ -505,11 +600,18 @@ export default class SurveyGraph extends Component {
           onMouseEnter={this.showDownloadButton}
           onMouseLeave={this.hideDownloadButton}
         >
-          <div className="survey-svg-container">{renderGraph(this.state)}</div>
+          {this.state.originalGraphData.length > 0 && (
+            <div className="flex flex-gap-1 flex-end date-selector">
+              {this.renderDateRangeSelector()}
+            </div>
+          )}
+          <div className="survey-svg-container">{renderGraph()}</div>
           {this.renderPrintOnlyImage()}
           {this.renderDownloadButton()}
         </div>
-        {this.state.originalGraphData.length > 0 && this.renderLegend()}
+        {this.state.originalGraphData.length > 0 && (
+          <div className="flex flex-gap-1">{this.renderLegend()}</div>
+        )}
       </React.Fragment>
     );
   }

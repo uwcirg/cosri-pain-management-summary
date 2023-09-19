@@ -36,7 +36,6 @@ export default class BodyDiagram extends Component {
   }
 
   handleSelectChange(e) {
-    console.log("selected ", e.target.value);
     this.setState(
       {
         selectedDate: e.target.value,
@@ -251,8 +250,9 @@ export default class BodyDiagram extends Component {
         style={{
           fontSize: "0.9rem",
           visibility: "hidden",
+          color: "#777"
         }}
-        title="render body diagram"
+        title="download body diagram image"
       >
         <FontAwesomeIcon
           icon="download"
@@ -269,8 +269,8 @@ export default class BodyDiagram extends Component {
         style={{
           position: "relative",
           width: "100%",
-          paddingLeft: "4px",
-          paddingRight: "4px",
+          paddingLeft: "8px",
+          paddingRight: "8px",
         }}
         onMouseEnter={this.showDownloadButton}
         onMouseLeave={this.hideDownloadButton}
