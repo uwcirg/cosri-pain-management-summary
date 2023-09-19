@@ -344,6 +344,10 @@ export default class SurveyGraph extends Component {
     );
   }
 
+  renderPrintOnlyDateRange() {
+    return <h4 className="print-only">Last 2 years</h4>;
+  }
+
   renderDateRangeSelector() {
     const items = [
       {
@@ -360,7 +364,7 @@ export default class SurveyGraph extends Component {
       },
     ];
     return (
-      <div className="select">
+      <div className="select print-hidden">
         <select
           value={this.state.selectedDateRange}
           onChange={this.setDateRange}
@@ -603,6 +607,7 @@ export default class SurveyGraph extends Component {
           {this.state.originalGraphData.length > 0 && (
             <div className="flex flex-gap-1 flex-end date-selector">
               {this.renderDateRangeSelector()}
+              {this.renderPrintOnlyDateRange()}
             </div>
           )}
           <div className="survey-svg-container">{renderGraph()}</div>
