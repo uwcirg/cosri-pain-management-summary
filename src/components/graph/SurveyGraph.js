@@ -231,7 +231,20 @@ export default class SurveyGraph extends Component {
   }
 
   getSelectedDateRange(value) {
-    const years = value === "2 years" ? 2 : value === "5 years" ? 5 : "all";
+    let years = "all";
+    switch (String(value).toLowerCase()) {
+      case "1 year":
+        years = 1;
+        break;
+      case "2 years":
+        years = 2;
+        break;
+      case "5 years":
+        years = 5;
+        break;
+      default:
+        break;
+    }
     return years;
   }
 
@@ -350,6 +363,10 @@ export default class SurveyGraph extends Component {
 
   renderDateRangeSelector() {
     const items = [
+      {
+        key: "Last 1 year",
+        value: "1 year",
+      },
       {
         key: "Last 2 years",
         value: "2 years",
