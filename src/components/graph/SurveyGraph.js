@@ -40,7 +40,7 @@ export default class SurveyGraph extends Component {
       this.removeQuestionnaireToSurveyGraph.bind(this);
     this.showDownloadButton = this.showDownloadButton.bind(this);
     this.hideDownloadButton = this.hideDownloadButton.bind(this);
-    this.setDateRange = this.setDateRange.bind(this);
+    this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
     this.graphRef = React.createRef();
     this.printImageRef = React.createRef();
   }
@@ -76,23 +76,8 @@ export default class SurveyGraph extends Component {
     );
 
     const years = this.getSelectedDateRange(this.state.selectedDateRange);
-    if (years) {
-      data = data.filter((item) => {
-        const itemDate = new Date(item[xFieldName]);
-        const today = new Date();
-        const isInSurvey = this.state.qids.indexOf(item.qid) !== -1;
-        if (isNaN(itemDate)) return isInSurvey;
-        const diffYears = today.getFullYear() - itemDate.getFullYear();
-        return isInSurvey && diffYears >= 0 && diffYears <= years;
-      });
-    }
-    const qids =
-      this.state.qids && this.state.qids.length ? this.state.qids : null;
-    if (qids) {
-      data = data.filter((item) => {
-        return this.state.qids.indexOf(item.qid) !== -1;
-      });
-    }
+    data = this.getFilteredDataByNumYears(data, years);
+    data = this.getFilteredDataByQids(data);
 
     data = data.map((d) => {
       let dObj = new Date(d[xFieldName]);
@@ -165,7 +150,6 @@ export default class SurveyGraph extends Component {
       monthsDiff: monthsDiff,
     };
   }
-
   getQIds() {
     let srcData = this.state.originalGraphData.filter(
       (item) =>
@@ -174,6 +158,17 @@ export default class SurveyGraph extends Component {
         !isNaN(item[yFieldName])
     );
     return [...new Set(srcData.map((item) => item.qid))];
+  }
+  getFilteredDataByQids(dataSource) {
+    if (!dataSource) return null;
+    const qids =
+      this.state.qids && this.state.qids.length ? this.state.qids : null;
+    if (qids) {
+      return dataSource.filter((item) => {
+        return this.state.qids.indexOf(item.qid) !== -1;
+      });
+    }
+    return dataSource;
   }
   getLineAttributesByQId(qid) {
     const qids = this.getQIds();
@@ -230,6 +225,19 @@ export default class SurveyGraph extends Component {
     );
   }
 
+  getFilteredDataByNumYears(dataSource, numYears) {
+    if (!dataSource) return null;
+    if (numYears == null || isNaN(numYears)) return dataSource;
+    console.log("shouldn't get here")
+    return dataSource.filter((item) => {
+      const itemDate = new Date(item[xFieldName]);
+      const today = new Date();
+      if (isNaN(itemDate)) return false;
+      const diffYears = today.getFullYear() - itemDate.getFullYear();
+      return diffYears >= 0 && diffYears <= numYears;
+    });
+  }
+
   getSelectedDateRange(value) {
     let years = "all";
     switch (String(value).toLowerCase()) {
@@ -248,20 +256,10 @@ export default class SurveyGraph extends Component {
     return years;
   }
 
-  setDateRange(e) {
+  handleDateRangeChange(e) {
     const years = this.getSelectedDateRange(e.target.value);
-    let updatedData = this.state.originalGraphData.filter(
-      (o) => this.state.qids.indexOf(o.qid) !== -1
-    );
-    if (years !== "all") {
-      updatedData = updatedData.filter((item) => {
-        const itemDate = new Date(item[xFieldName]);
-        const today = new Date();
-        if (isNaN(itemDate)) return false;
-        const diffYears = today.getFullYear() - itemDate.getFullYear();
-        return diffYears >= 0 && diffYears <= years;
-      });
-    }
+    let updatedData = this.getFilteredDataByQids(this.state.originalGraphData);
+    updatedData = this.getFilteredDataByNumYears(updatedData, years);
     this.setState({
       graphData: updatedData,
       selectedDateRange: e.target.value,
@@ -384,8 +382,8 @@ export default class SurveyGraph extends Component {
       <div className="select print-hidden">
         <select
           value={this.state.selectedDateRange}
-          onChange={this.setDateRange}
-          onBlur={this.setDateRange}
+          onChange={this.handleDateRangeChange}
+          onBlur={this.handleDateRangeChange}
         >
           {items.map((item, index) => {
             return (
