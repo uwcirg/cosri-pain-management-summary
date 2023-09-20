@@ -245,7 +245,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
             width: calc(100% - 72px);
           }
           @media (min-width: 1600px) {
-            width: calc(100% - 120px);
+            width: calc(100% - 160px);
           }
           .circle:hover {
             cursor: pointer;
@@ -313,7 +313,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       min-width: calc(100% - 120px);
     }
     .legend {
-      margin: 8px auto;
+      margin: 4px auto 8px;
       border: 1px solid $color-gray-lightest;
       min-width: 100%;
       width: 100%;

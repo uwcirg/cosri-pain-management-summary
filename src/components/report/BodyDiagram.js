@@ -250,7 +250,8 @@ export default class BodyDiagram extends Component {
         style={{
           fontSize: "0.9rem",
           visibility: "hidden",
-          color: "#777"
+          color: "#777",
+          minWidth: "64px"
         }}
         title="download body diagram image"
       >

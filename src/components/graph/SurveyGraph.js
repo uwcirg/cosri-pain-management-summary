@@ -342,7 +342,9 @@ export default class SurveyGraph extends Component {
           zIndex: 20,
           bottom: 0,
           left: 0,
+          minWidth: "48px",
           display: "none",
+          backgroundColor: "transparent"
         }}
         title="download graph"
       >
