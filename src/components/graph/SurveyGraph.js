@@ -228,7 +228,6 @@ export default class SurveyGraph extends Component {
   getFilteredDataByNumYears(dataSource, numYears) {
     if (!dataSource) return null;
     if (numYears == null || isNaN(numYears)) return dataSource;
-    console.log("shouldn't get here")
     return dataSource.filter((item) => {
       const itemDate = new Date(item[xFieldName]);
       const today = new Date();

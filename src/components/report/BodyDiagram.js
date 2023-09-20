@@ -65,7 +65,7 @@ export default class BodyDiagram extends Component {
 
   getSummaryData() {
     if (!this.props.summary || !this.props.summary.length) return null;
-    return this.props.summary[0].sort((a, b) => {
+    return this.props.summary.sort((a, b) => {
       const date1 = new Date(a);
       const date2 = new Date(b);
       return date2 - date1;
@@ -73,7 +73,7 @@ export default class BodyDiagram extends Component {
   }
 
   getAnswerData() {
-    // const testData = {
+    // const testData = [{
     //   back_left_posterior_neck: ["pain"],
     //   back_midline_posterior_neck: ["pain"],
     //   back_right_posterior_neck: ["pain"],
@@ -83,7 +83,7 @@ export default class BodyDiagram extends Component {
     //   back_left_posterior_head: ["pain"],
     //   back_right_posterior_head: ["pain"],
     //   front_left_brow: ["severe_pain"],
-    // };
+    // }
     // //{"front_left_cheek":["severe_pain"]}
     const summaryData =
       this.state.summaryData && this.state.summaryData.length
@@ -92,7 +92,7 @@ export default class BodyDiagram extends Component {
     if (!summaryData || !summaryData.length) return null;
     const responses = this.state.selectedDate
       ? summaryData.find((item) => item.date === this.state.selectedDate)
-      : summaryData[0];
+      : summaryData;
     if (!responses) return false;
     const painLocations = responses.painLocations;
     let answers = null;
