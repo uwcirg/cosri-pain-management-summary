@@ -5,13 +5,16 @@ select {
     /* Personalize */
     flex: 1;
     padding: 0 1em;
-    color: $color-blue-dark;
+    color: $link-color;
     background-color: #FFF;
     background-image: none;
     cursor: pointer;
     border: 0;
     outline-width: 0;
     outline: none;
+    &:hover {
+      color: $link-color-dark;
+    }
   }
   /* Remove IE arrow */
   select::-ms-expand {
@@ -25,7 +28,7 @@ select {
     height: 2em;
     border-radius: 0.25em;
     overflow: hidden;
-    border: 1px solid $color-gray-lighter;
+    border: 1px solid $link-border-color;
   }
   /* Arrow */
   .select::after {
@@ -35,11 +38,11 @@ select {
     right: 0;
     padding: 0.55em;
     background-color: #FFF;
-    color: $color-blue-dark;
+    color: $link-color;
     transition: .25s all ease;
     pointer-events: none;
   }
   /* Transition */
   .select:hover::after {
-    color: $color-blue-darker;
+    color: $link-color-dark;
   }

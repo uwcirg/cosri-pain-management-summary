@@ -610,6 +610,9 @@
           font-weight: 600;
           min-width: 90px;
           display: inline-block;
+          &:hover {
+            color: $link-color-dark;
+          }
         }
         .video-container {
           margin-top: 12px;
