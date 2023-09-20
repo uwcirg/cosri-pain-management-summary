@@ -28,7 +28,7 @@ class Axis extends React.Component {
       axis = axisBottom(scale);
       select(node)
         .selectAll(".tick text")
-        .style("transform", "translateY(42px) translateX(-13px) rotate(-90deg)")
+        .style("transform", "translateY(38px) translateX(-13px) rotate(-90deg)")
         .style("font-size", "12");
       if (tickType === "date") {
         axis.tickFormat(timeFormat(tickFormat || "%d %b %y"));
