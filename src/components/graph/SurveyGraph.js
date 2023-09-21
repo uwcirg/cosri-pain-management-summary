@@ -142,7 +142,7 @@ export default class SurveyGraph extends Component {
        * set up baseline data point starting at 0
        */
       // new Date(minDate.valueOf()).getTime() - 30 * 24 * 60 * 60 * 1000
-      baseLineDate.setTime(new Date(minDate.valueOf()).getTime());
+      baseLineDate.setTime(new Date(minDate.valueOf()).getTime() - 15 * 24 * 60 * 60 * 1000);
       /*
        * set end point to today if not present
        */
@@ -275,6 +275,7 @@ export default class SurveyGraph extends Component {
 
   handleDateRangeChange(e) {
     const years = this.getSelectedDateRange(e.target.value);
+    console.log("num years selected: ", years);
     let updatedData = this.getFilteredDataByQids(this.state.originalGraphData);
     updatedData = this.getFilteredDataByNumYears(updatedData, years);
     this.setState({
@@ -434,8 +435,8 @@ export default class SurveyGraph extends Component {
           <input
             type="range"
             id="slider"
-            min={0}
-            max={numYears}
+            min={1}
+            max={numYears+1}
             step={1}
             defaultValue={defaultMaxValue}
             className="slider"
@@ -443,7 +444,7 @@ export default class SurveyGraph extends Component {
           />
           <div className="scale">
             {arrNum.map((item, index) => (
-              <span key={`scale_${index}`}>{item}</span>
+              <span key={`scale_${index}`}>{item+1}</span>
             ))}
             {/* <span>1</span>
             <span>2</span>
