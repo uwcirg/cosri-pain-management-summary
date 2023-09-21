@@ -26,12 +26,13 @@ export default class SurveyGraph extends Component {
     this.state = {
       graphData: this.props.data ? this.props.data : [],
       originalGraphData: this.props.data ? this.props.data : [],
-      selectedDateRange: "2 years",
+      selectedDateRange: this.getNumYearsFromData(),
       qids:
         this.props.data && this.props.data.length
           ? [...new Set(this.props.data.map((item) => item.qid))]
           : [],
     };
+    this.numYears = this.getNumYearsFromData();
     this.downloadButtonRef = React.createRef();
     // This binding is necessary to make `this` work in the callback
     this.addQuestionnaireToSurveyGraph =
@@ -51,7 +52,22 @@ export default class SurveyGraph extends Component {
       1000
     );
   }
-
+  shouldShowAccessories() {
+    return this.state.originalGraphData.length > 0;
+  }
+  getNumYearsFromData() {
+    if (!this.props.data || !this.props.data.length) return 0;
+    let arrayDates = this.props.data.map((d) => {
+      return new Date(d[xFieldName]);
+    });
+    if (arrayDates.length) {
+      const maxDate = new Date(Math.max.apply(null, arrayDates));
+      const minDate = new Date(Math.min.apply(null, arrayDates));
+      if (isNaN(maxDate) || isNaN(minDate)) return 0;
+      return Math.round(maxDate.getFullYear() - minDate.getFullYear());
+    }
+    return 0;
+  }
   showDownloadButton() {
     this.downloadButtonRef.current.style.display = "block";
   }
@@ -111,7 +127,9 @@ export default class SurveyGraph extends Component {
      * if the total count of data points is less than the initial set number of intervals
      */
     let calcMinDate = new Date(minDate.valueOf());
-    minDate = calcMinDate.setDate(calcMinDate.getDate() - 30);
+    minDate = calcMinDate.setDate(
+      calcMinDate.getDate() - 30 * this.state.selectedDateRange
+    );
     minDate = new Date(minDate);
     //console.log("min date ", minDate, " max date ", maxDate)
     //}
@@ -123,9 +141,8 @@ export default class SurveyGraph extends Component {
       /*
        * set up baseline data point starting at 0
        */
-      baseLineDate.setTime(
-        new Date(minDate.valueOf()).getTime() - 30 * 24 * 60 * 60 * 1000
-      );
+      // new Date(minDate.valueOf()).getTime() - 30 * 24 * 60 * 60 * 1000
+      baseLineDate.setTime(new Date(minDate.valueOf()).getTime());
       /*
        * set end point to today if not present
        */
@@ -238,21 +255,22 @@ export default class SurveyGraph extends Component {
   }
 
   getSelectedDateRange(value) {
-    let years = "all";
-    switch (String(value).toLowerCase()) {
-      case "1 year":
-        years = 1;
-        break;
-      case "2 years":
-        years = 2;
-        break;
-      case "5 years":
-        years = 5;
-        break;
-      default:
-        break;
-    }
-    return years;
+    // let years = "all";
+    // switch (String(value).toLowerCase()) {
+    //   case "1 year":
+    //     years = 1;
+    //     break;
+    //   case "2 years":
+    //     years = 2;
+    //     break;
+    //   case "5 years":
+    //     years = 5;
+    //     break;
+    //   default:
+    //     break;
+    // }
+    // return years;
+    return parseInt(value);
   }
 
   handleDateRangeChange(e) {
@@ -340,11 +358,11 @@ export default class SurveyGraph extends Component {
           position: "absolute",
           color: "#777",
           zIndex: 20,
-          bottom: 0,
-          left: 0,
+          top: "24px",
+          right: "24px",
           minWidth: "48px",
           display: "none",
-          backgroundColor: "transparent"
+          backgroundColor: "transparent",
         }}
         title="download graph"
       >
@@ -394,6 +412,47 @@ export default class SurveyGraph extends Component {
             );
           })}
         </select>
+      </div>
+    );
+  }
+
+  renderSlider() {
+    const numYears = this.getNumYearsFromData();
+    const defaultMaxValue = numYears && numYears >= 2 ? numYears : 2;
+    const createArray = (N) => {
+      return [...Array(N).keys()].map((i) => i + 1);
+    };
+    const arrNum = createArray(defaultMaxValue);
+    return (
+      <div className="slider-parent-container">
+        <div className="top-info-text">
+          Last <span>{this.state.selectedDateRange}</span>{" "}
+          {parseInt(this.state.selectedDateRange) > 1 && "years"}
+          {parseInt(this.state.selectedDateRange) === 1 && "year"}
+        </div>
+        <div className="slider-container">
+          <input
+            type="range"
+            id="slider"
+            min={0}
+            max={numYears}
+            step={1}
+            defaultValue={defaultMaxValue}
+            className="slider"
+            onChange={this.handleDateRangeChange}
+          />
+          <div className="scale">
+            {arrNum.map((item, index) => (
+              <span key={`scale_${index}`}>{item}</span>
+            ))}
+            {/* <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span> */}
+          </div>
+        </div>
+        <div className="bottom-info-text">date range (in years)</div>
       </div>
     );
   }
@@ -571,16 +630,6 @@ export default class SurveyGraph extends Component {
       });
     };
 
-    if (noEntry)
-      return (
-        <React.Fragment>
-          <div className="no-entries">
-            <b>No graph to show.</b>
-          </div>
-          {this.state.originalGraphData.length > 0 && this.renderLegend()}
-        </React.Fragment>
-      );
-
     const renderGraph = () => {
       return (
         <svg
@@ -612,6 +661,16 @@ export default class SurveyGraph extends Component {
       );
     };
 
+    if (noEntry)
+      return (
+        <React.Fragment>
+          <div className="no-entries">
+            <b>No graph to show.</b>
+          </div>
+          {this.shouldShowAccessories() && this.renderLegend()}
+        </React.Fragment>
+      );
+
     return (
       <React.Fragment>
         <div
@@ -620,17 +679,18 @@ export default class SurveyGraph extends Component {
           onMouseEnter={this.showDownloadButton}
           onMouseLeave={this.hideDownloadButton}
         >
-          {this.state.originalGraphData.length > 0 && (
+          {/* {this.state.originalGraphData.length > 0 && (
             <div className="flex flex-gap-1 flex-end date-selector">
               {this.renderDateRangeSelector()}
               {this.renderPrintOnlyDateRange()}
             </div>
-          )}
+          )} */}
           <div className="survey-svg-container">{renderGraph()}</div>
           {this.renderPrintOnlyImage()}
           {this.renderDownloadButton()}
         </div>
-        {this.state.originalGraphData.length > 0 && (
+        {this.shouldShowAccessories() && this.renderSlider()}
+        {this.shouldShowAccessories() && (
           <div className="flex flex-gap-1">{this.renderLegend()}</div>
         )}
       </React.Fragment>

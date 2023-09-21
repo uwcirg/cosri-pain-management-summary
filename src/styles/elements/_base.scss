@@ -86,7 +86,7 @@ a {
   column-gap: 4px;
 }
 .flex-1 {
-    flex: 1;
+  flex: 1;
 }
 .flex-gap-1 {
   gap: 8px;
@@ -171,4 +171,9 @@ a {
 .print-only {
   display: none;
 }
-
+.print-image {
+  &.absolute {
+    z-index: -1;
+    position: absolute;
+  }
+}

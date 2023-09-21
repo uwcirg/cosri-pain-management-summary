@@ -26,7 +26,8 @@ $tab-height: 49px;
   border-top: 1px solid $color-gray-lighter;
   border-left: 1px solid $color-gray-lighter;
   border-right: 1px solid $color-gray-lighter;
-  transition: background 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9), border 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9);
+  transition: background 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9),
+    border 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9);
   &.active {
     background: $color-blue;
     color: #fff;
@@ -42,7 +43,7 @@ $tab-height: 49px;
   display: flex;
   width: calc(100% - 72px);
   min-height: $tab-height;
-  background: #FFF;
+  background: #fff;
   position: fixed;
   z-index: 999;
   border-bottom: 4px solid $color-blue;
@@ -68,9 +69,9 @@ $tab-height: 49px;
   box-shadow: inset 4px 4px 24px -12px $color-gray;
 }
 .has-tabs {
-    .tab-panel {
-        margin-top: $tab-height;
-    }
+  .tab-panel {
+    margin-top: $tab-height;
+  }
 }
 @keyframes fadein {
   from {

@@ -3,7 +3,8 @@
     display: block;
   }
   #surveyGraphSvg_printOnly,
-  .print-image {
+  .print-image,
+  .panel .print-image {
     position:  relative !important;
     z-index: 1 !important;
   }
@@ -48,11 +49,11 @@
   .Collapsible:first-of-type {
     page-break-after: always;
   }
-  .panels {
-    .panel, .sub-panels {
-      page-break-inside: avoid;
-    }
-  }
+  // .panels {
+  //   .panel, .sub-panels {
+  //     page-break-inside: avoid;
+  //   }
+  // }
   .report {
     .Collapsible {
         &:not(:first-of-type) {
@@ -68,6 +69,7 @@
       padding: 8px 0 !important;
     }
     .panel-container {
+      display: block;
       .panel.graph {
         max-width: calc(100% - 180px);
       }
@@ -75,12 +77,16 @@
       object {
         border: 0;
       }
+      .panel:not(:first-of-type) {
+        page-break-before: always;
+      }
       .panel__item {
         height: 100%;
       }
-      .panel {
-        page-break-inside: avoid;
-      }
+      // .panel, 
+      // .panel__item{
+      //   page-break-inside: avoid;
+      // }
     }
     .sub-section {
       box-shadow: none;
@@ -132,9 +138,9 @@
   .section {
     padding: 8px 0;
     border: 0;
-    .sub-panels {
-        page-break-inside: avoid;
-    }
+    // .sub-panels {
+    //     page-break-inside: avoid;
+    // }
   }
   .sub-section {
     box-shadow: none !important;
@@ -183,7 +189,8 @@
   .tabs,
   .version__display,
   .video-link,
-  .icon {
+  .icon,
+  .slider-parent-container {
     display: none !important;
   }
 }

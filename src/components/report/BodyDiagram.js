@@ -234,8 +234,7 @@ export default class BodyDiagram extends Component {
       <img
         ref={this.printImageRef}
         alt="for print"
-        className="print-image"
-        style={{ zIndex: -1, position: "absolute" }}
+        className="print-image absolute"
       ></img>
     );
   }
