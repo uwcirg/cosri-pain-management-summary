@@ -270,8 +270,8 @@ export default class BodyDiagram extends Component {
         style={{
           position: "relative",
           width: "100%",
-          paddingLeft: "8px",
-          paddingRight: "8px",
+          paddingLeft: "4px",
+          paddingRight: "4px",
         }}
         onMouseEnter={this.showDownloadButton}
         onMouseLeave={this.hideDownloadButton}

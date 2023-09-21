@@ -25,7 +25,7 @@ select {
     position: relative;
     display: flex;
     width: 10em;
-    height: 2em;
+    height: 1.8em;
     border-radius: 0.25em;
     overflow: hidden;
     border: 1px solid $link-border-color;
@@ -36,7 +36,7 @@ select {
     position: absolute;
     top: 0;
     right: 0;
-    padding: 0.55em;
+    padding: 0.45em;
     background-color: #FFF;
     color: $link-color;
     transition: .25s all ease;
