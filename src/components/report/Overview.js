@@ -9,7 +9,7 @@ export default class Overview extends Component {
     if (!summaryData) return [];
     let data = [];
     summaryData.forEach((item) => {
-      if (!item.ResponsesSummary) return true;
+      if (!item.ResponsesSummary || !item.ResponsesSummary.length) return true;
       data = [...data, ...item.ResponsesSummary];
     });
     return data;
