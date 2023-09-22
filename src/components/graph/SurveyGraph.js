@@ -443,6 +443,7 @@ export default class SurveyGraph extends Component {
             onChange={this.handleDateRangeChange}
           />
           <div className="scale">
+            <span>1</span>
             {arrNum.map((item, index) => (
               <span key={`scale_${index}`}>{item+1}</span>
             ))}

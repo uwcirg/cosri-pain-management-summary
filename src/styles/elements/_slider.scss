@@ -29,6 +29,10 @@ input[type="range"] {
     &:not(:last-of-type) {
       left: 8px;
     }
+    &:first-of-type {
+        left: 4;
+        flex: 0
+    }
   }
 }
 
