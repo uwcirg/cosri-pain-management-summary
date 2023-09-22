@@ -30,7 +30,7 @@ export default class SurveyGraph extends Component {
     this.state = {
       graphData: this.props.data ? this.props.data : [],
       originalGraphData: this.props.data ? this.props.data : [],
-      selectedDateRange: this.getScaleTicksForSlider().max,
+      selectedDateRange: this.getScaleInfoForSlider().max,
       qids:
         this.props.data && this.props.data.length
           ? [...new Set(this.props.data.map((item) => item.qid))]
@@ -306,6 +306,7 @@ export default class SurveyGraph extends Component {
   handleDateRangeChange(e) {
     const years = this.getSelectedDateRange(e.target.value);
     let updatedData = this.getFilteredDataByQids(this.state.originalGraphData);
+    console.log("data? ", updatedData);
     this.setState({
       graphData: this.getFilteredDataByNumYears(updatedData, years),
       selectedDateRange: e.target.value,
@@ -451,7 +452,7 @@ export default class SurveyGraph extends Component {
     );
   }
 
-  getScaleTicksForSlider() {
+  getScaleInfoForSlider() {
     const numYears = this.getNumYearsFromData(this.props.data);
     const defaultMaxValue = numYears && numYears > 0 ? numYears : 0;
     const createArray = (N) => {
@@ -474,13 +475,14 @@ export default class SurveyGraph extends Component {
         return m > arrDiffYears[0];
       });
     };
-    const arrNum =  defaultMaxValue > 1
-    ? createArray(Math.round(defaultMaxValue))
-    : getArrMonths();
+    const arrNum =
+      defaultMaxValue > 1
+        ? createArray(Math.round(defaultMaxValue))
+        : getArrMonths();
     return {
       arrNum: arrNum,
       min: arrNum.length ? arrNum[0] : 0,
-      max: arrNum.length ? arrNum[arrNum.length-1] : 0,
+      max: arrNum.length ? arrNum[arrNum.length - 1] : 0,
       unit: defaultMaxValue > 1 ? "year" : "month",
     };
   }
@@ -512,7 +514,7 @@ export default class SurveyGraph extends Component {
     //   defaultMaxValue > 1
     //     ? createArray(Math.round(defaultMaxValue))
     //     : getArrMonths();
-    const {arrNum, unit} = this.getScaleTicksForSlider();
+    const { arrNum, unit } = this.getScaleInfoForSlider();
     const selectedRange = parseFloat(this.state.selectedDateRange);
     // console.log("numYears ", numYears);
     console.log("selected ", selectedRange);
@@ -564,6 +566,8 @@ export default class SurveyGraph extends Component {
   render() {
     const noEntry =
       !this.state.originalGraphData || !this.state.originalGraphData.length;
+
+    const noStateEntry = !this.state.graphData || !this.state.graphData.length;
 
     const { data, maxDate, baseLineDate, monthsDiff } = this.getDataForGraph(
       this.state.graphData
@@ -785,19 +789,26 @@ export default class SurveyGraph extends Component {
           onMouseEnter={this.showDownloadButton}
           onMouseLeave={this.hideDownloadButton}
         >
-          {/* {this.state.originalGraphData.length > 0 && (
-            <div className="flex flex-gap-1 flex-end date-selector">
-              {this.renderDateRangeSelector()}
-              {this.renderPrintOnlyDateRange()}
+          {noStateEntry && (
+            <div
+              className="flex flex-center text-warning"
+              style={{ minHeight: height + margins.bottom + 8, background: "#f4f5f6" }}
+            >
+              <FontAwesomeIcon icon="exclamation-circle" title="notice" />
+              <div>{`No data for ${this.state.qids.join(
+                ", "
+              )} within this date range`}</div>
             </div>
-          )} */}
-          <div className="survey-svg-container">{renderGraph()}</div>
+          )}
+          {!noStateEntry && (
+            <div className="survey-svg-container">{renderGraph()}</div>
+          )}
           {this.renderPrintOnlyImage()}
           {this.renderDownloadButton()}
         </div>
         {this.shouldShowAccessories() && (
           <React.Fragment>
-            {this.renderSlider()}{" "}
+            {this.renderSlider()}
             <div className="flex flex-gap-1">{this.renderLegend()}</div>
           </React.Fragment>
         )}
