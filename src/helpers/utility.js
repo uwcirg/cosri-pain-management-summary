@@ -211,3 +211,14 @@ export function downloadSVGImage(event, svgElement, imageElementId, downloadFile
     //console.log(canvas.toDataURL("image/png"));
   };
 }
+
+export function getDifferenceInYears(fromDate, toDate) {
+  if (!fromDate || !(fromDate instanceof Date)) return 0;
+  if (!toDate || !(toDate instanceof Date)) return 0;
+  if (isNaN(fromDate)) return 0;
+  let diff = (toDate.getTime() - fromDate.getTime()) / 1000;
+  diff /= 60 * 60 * 24;
+  const diffYears = diff / 365.25;
+  // console.log("difference in years ", diffYears);
+  return diffYears;
+}

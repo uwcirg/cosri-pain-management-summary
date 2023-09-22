@@ -3,6 +3,8 @@
   margin: 8px auto;
   position: relative;
   left: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
   @media (min-width: 1200px) {
     width: calc(100% - 120px);
   }
