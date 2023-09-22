@@ -424,6 +424,7 @@ export default class SurveyGraph extends Component {
       return [...Array(N).keys()].map((i) => i + 1);
     };
     const arrNum = createArray(defaultMaxValue);
+    console.log("arrNum ", arrNum)
     return (
       <div className="slider-parent-container">
         <div className="top-info-text">
@@ -436,16 +437,15 @@ export default class SurveyGraph extends Component {
             type="range"
             id="slider"
             min={1}
-            max={numYears+1}
+            max={numYears}
             step={1}
             defaultValue={defaultMaxValue}
             className="slider"
             onChange={this.handleDateRangeChange}
           />
           <div className="scale">
-            <span>1</span>
             {arrNum.map((item, index) => (
-              <span key={`scale_${index}`}>{item+1}</span>
+              <span key={`scale_${index}`}>{item}</span>
             ))}
             {/* <span>1</span>
             <span>2</span>
