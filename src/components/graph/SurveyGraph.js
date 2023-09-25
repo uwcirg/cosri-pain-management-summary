@@ -17,6 +17,7 @@ import {
   getDifferenceInYears,
   renderImageFromSVG,
 } from "../../helpers/utility";
+import { months } from "moment";
 
 const defaultFields = {
   x: "date",
@@ -60,29 +61,16 @@ export default class SurveyGraph extends Component {
   }
   getNumYearsFromData(dataSource) {
     if (!dataSource || !dataSource.length) return 0;
-    let arrayDates = dataSource.map((d) => {
-      return new Date(d[xFieldName]);
-    });
+    let arrayDates = dataSource
+      .filter((d) => !isNaN(new Date(d[xFieldName])))
+      .map((d) => {
+        return new Date(d[xFieldName]);
+      });
     if (arrayDates.length) {
       const minDate = new Date(Math.min.apply(null, arrayDates));
       if (isNaN(minDate)) return 0;
-      // const diffYears = parseFloat(
-      //   maxDate.getFullYear() - minDate.getFullYear()
-      // );
-      // if (!diffYears) {
-      //   const getDifferenceInMonth = (dateFrom, dateTo) => {
-      //     return (
-      //       dateTo.getMonth() -
-      //       dateFrom.getMonth() +
-      //       12 * (dateTo.getFullYear() - dateFrom.getFullYear())
-      //     );
-      //   };
-      //   const monthDiff = getDifferenceInMonth(minDate, maxDate);
-
-      //   return monthDiff > 0 ? monthDiff / 12 : 1;
-      // }
       const numYears = getDifferenceInYears(minDate, new Date());
-      return numYears.toFixed(1);
+      return numYears.toFixed(2);
     }
     return 0;
   }
@@ -306,7 +294,6 @@ export default class SurveyGraph extends Component {
   handleDateRangeChange(e) {
     const years = this.getSelectedDateRange(e.target.value);
     let updatedData = this.getFilteredDataByQids(this.state.originalGraphData);
-    console.log("data? ", updatedData);
     this.setState({
       graphData: this.getFilteredDataByNumYears(updatedData, years),
       selectedDateRange: e.target.value,
@@ -458,6 +445,19 @@ export default class SurveyGraph extends Component {
     const createArray = (N) => {
       return [...Array(N).keys()].map((i) => i + 1);
     };
+    const fillInArray = (originalArray) => {
+      let newArray = [];
+      for (var i = 0; i < originalArray.length - 1; i++) {
+        let start = originalArray[i];
+        let end = originalArray[i + 1];
+
+        // Add values between start and end (inclusive) to the new array
+        newArray = newArray.concat(
+          Array.from({ length: end - start + 1 }, (_, index) => start + index)
+        );
+      }
+      return newArray;
+    };
     const getArrMonths = () => {
       const arrMonths = [0.25, 0.5, 0.75, 1];
       const arrDiffYears = this.props.data
@@ -472,12 +472,16 @@ export default class SurveyGraph extends Component {
           return getDifferenceInYears(itemDate, today);
         });
       return arrMonths.filter((m) => {
-        return m > arrDiffYears[0];
+        return m >= arrDiffYears[0].toFixed(2);
       });
     };
+
+    const updatedArrNum = fillInArray(createArray(Math.ceil(defaultMaxValue)));
     const arrNum =
       defaultMaxValue > 1
-        ? createArray(Math.round(defaultMaxValue))
+        ? updatedArrNum.filter(
+            (element, index) => updatedArrNum.indexOf(element) === index
+          )
         : getArrMonths();
     return {
       arrNum: arrNum,
@@ -488,53 +492,50 @@ export default class SurveyGraph extends Component {
   }
 
   renderSlider() {
-    // const numYears = this.getNumYearsFromData(this.state.originalGraphData);
-    // const defaultMaxValue = numYears && numYears > 0 ? numYears : 0;
-    // const createArray = (N) => {
-    //   return [...Array(N).keys()].map((i) => i + 1);
-    // };
-    // const getArrMonths = () => {
-    //   const arrMonths = [0.25, 0.5, 0.75, 1];
-    //   const arrDiffYears = this.state.originalGraphData
-    //     .filter((item) => {
-    //       const itemDate = new Date(item[xFieldName]);
-    //       if (isNaN(itemDate)) return false;
-    //       return true;
-    //     })
-    //     .map((item) => {
-    //       const today = new Date();
-    //       const itemDate = new Date(item[xFieldName]);
-    //       return getDifferenceInYears(itemDate, today);
-    //     });
-    //   return arrMonths.filter((m) => {
-    //     return m > arrDiffYears[0];
-    //   });
-    // };
-    // const arrNum =
-    //   defaultMaxValue > 1
-    //     ? createArray(Math.round(defaultMaxValue))
-    //     : getArrMonths();
     const { arrNum, unit } = this.getScaleInfoForSlider();
     const selectedRange = parseFloat(this.state.selectedDateRange);
-    // console.log("numYears ", numYears);
-    console.log("selected ", selectedRange);
-    console.log("arrNum ", arrNum);
+    //console.log("number of years total: ", numYears);
+    console.log("selected value: ", selectedRange);
+    console.log("arrNum: ", arrNum);
     const inYears = unit === "year";
     // console.log("max value ", defaultMaxValue);
     const getDisplayDateRange = () => {
       if (selectedRange <= 1) {
-        if (inYears) return "Last 1 year";
-        return `Last ${Math.round(selectedRange * 12)} months`;
+        if (selectedRange === 1) {
+          if (inYears) return "Last 1 year";
+          else return "Last 12 months";
+        }
+        const months = Math.floor(selectedRange * 12);
+        const remainingMonths = selectedRange * 12 - months;
+        const days = Math.round(remainingMonths * 30.44);
+        const monthsDisplay = months
+          ? months > 1
+            ? `${months} months`
+            : `${months} month`
+          : "";
+        const daysDisplay = days
+          ? days > 1
+            ? `${days} days`
+            : `${days} day`
+          : "";
+
+        return `Last ${monthsDisplay} ${daysDisplay}`;
       }
-      if (selectedRange % 1 === 0)
-        return `Last ${selectedRange.toFixed(0)} years`;
+      if (selectedRange % 1 === 0) {
+        const fixedYears = selectedRange.toFixed(0);
+        const yearsDisplay =
+          fixedYears > 1 ? `${fixedYears} years` : `${fixedYears} year`;
+        return `Last ${yearsDisplay}`;
+      }
       const numMonths = Math.floor(
         (selectedRange - Math.floor(selectedRange)) * 12
       );
-      const monthsDisplay = numMonths ? numMonths + " months" : "";
-      return `Last ${Math.floor(selectedRange)} year${
-        Math.floor(selectedRange) <= 1 ? "" : "s"
-      } ${monthsDisplay}`;
+      const years = Math.floor(selectedRange);
+      const monthsDisplay = numMonths
+        ? numMonths + "  " + (months > 1 ? "months" : "month")
+        : "";
+      const yearsDisplay = years + " " + (years > 1 ? "years" : "year");
+      return `Last ${yearsDisplay} ${monthsDisplay}`;
     };
     if (arrNum.length <= 1) return null;
     return (
@@ -546,20 +547,20 @@ export default class SurveyGraph extends Component {
             id="slider"
             min={arrNum[0]}
             max={arrNum[arrNum.length - 1]}
-            step={0.01}
+            step={0.001}
             defaultValue={arrNum[arrNum.length - 1]}
             className="slider"
             onChange={this.handleDateRangeChange}
           />
           <div className="scale">
             {arrNum.map((item, index) => (
-              <span key={`scale_${index}`}>{!inYears ? item * 12 : item}</span>
+              <span key={`scale_${index}`}>
+                {item < 1 || !inYears ? item * 12 : item}
+              </span>
             ))}
           </div>
         </div>
-        <div className="bottom-info-text">
-          {`date range (in ${!inYears ? "months" : "years"})`}
-        </div>
+        <div className="bottom-info-text">{`date range (in ${unit})`}</div>
       </div>
     );
   }
@@ -792,7 +793,10 @@ export default class SurveyGraph extends Component {
           {noStateEntry && (
             <div
               className="flex flex-center text-warning"
-              style={{ minHeight: height + margins.bottom + 8, background: "#f4f5f6" }}
+              style={{
+                minHeight: height + margins.bottom + 8,
+                background: "#f4f5f6",
+              }}
             >
               <FontAwesomeIcon icon="exclamation-circle" title="notice" />
               <div>{`No data for ${this.state.qids.join(
