@@ -7,7 +7,6 @@ import { line } from "d3-shape";
 import XYAxis from "./xy-axis";
 import Grid from "./grid";
 import Line from "./line";
-import { dateFormat } from "../../helpers/formatit";
 import {
   defaultLineAttributes,
   getLineAttributes,
@@ -83,7 +82,8 @@ export default class SurveyGraph extends Component {
   getDataForGraph(dataSource) {
     let baseLineDate = new Date();
     let maxDate = new Date();
-    let minDate = new Date().setDate(maxDate.getDate() - 365);
+    let minDate = new Date();
+    //let minDate = new Date().setDate(maxDate.getDate() - 365);
     //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
     let data = dataSource
@@ -113,60 +113,25 @@ export default class SurveyGraph extends Component {
       item[yFieldName] = isNaN(item[yFieldName]) ? 0 : +item[yFieldName];
     });
 
-    let arrayDates = data.map((d) => {
-      return d[xFieldName];
-    });
-    if (arrayDates.length) {
-      maxDate = new Date(Math.max.apply(null, arrayDates));
-      minDate = new Date(Math.min.apply(null, arrayDates));
-    }
-    const arrMonthsYears = [];
-    //date axis is in month intervals so check to see how many there are
-    arrayDates.forEach((item) => {
-      const yr = item.getFullYear();
-      const my = item.getMonth() + 1 + "-" + yr;
-      if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
-    });
-    //if (arrMonthsYears.length < 4) {
-    /*
-     * make sure graph has appropiate end points on the graph
-     * if the total count of data points is less than the initial set number of intervals
-     */
-    let calcMinDate = new Date(minDate.valueOf());
-    minDate = calcMinDate.setDate(
-      calcMinDate.getDate() - 30 * this.state.selectedDateRange
+    data.filter((item) => !isNaN(item[xFieldName]));
+
+    minDate = new Date();
+    minDate = new Date(
+      minDate.setDate(
+        minDate.getDate() -
+          Math.floor(30.44 * 12 * this.state.selectedDateRange)
+      )
     );
-    minDate = new Date(minDate);
-    //console.log("min date ", minDate, " max date ", maxDate)
-    //}
+    minDate = new Date(minDate.setDate(minDate.getDate() - 30));
     const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
     const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
-    // console.log("month diff between years ", monthsDiff);
 
-    if (arrayDates.length) {
-      /*
-       * set up baseline data point starting at 0
-       */
-      // new Date(minDate.valueOf()).getTime() - 30 * 24 * 60 * 60 * 1000
-      baseLineDate.setTime(
-        new Date(minDate.valueOf()).getTime() - 15 * 24 * 60 * 60 * 1000
-      );
-      /*
-       * set end point to today if not present
-       */
-      let todayObj = new Date();
-      let today = dateFormat("", todayObj, "YYYY-MM-DD");
-      const containedTodayData =
-        data.filter(
-          (item) => dateFormat("", item[xFieldName], "YYYY-MM-DD") === today
-        ).length > 0;
-      if (!containedTodayData) {
-        maxDate = new Date();
-      }
-    }
+    baseLineDate.setTime(new Date(minDate.valueOf()).getTime());
+    baseLineDate = new Date(baseLineDate.setDate(baseLineDate.getDate() - 30));
     let calcMaxDate = new Date(maxDate.valueOf());
-    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 31);
-    maxDate = new Date(maxDate);
+    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
+    maxDate = !(maxDate instanceof Date) ? new Date(maxDate) : maxDate;
+    console.log("min date ", minDate, " max date ", maxDate, " baseline ", baseLineDate)
     return {
       data: data,
       baseLineDate: baseLineDate,
@@ -521,12 +486,6 @@ export default class SurveyGraph extends Component {
 
         return `Last ${monthsDisplay} ${daysDisplay}`;
       }
-      if (selectedRange % 1 === 0) {
-        const fixedYears = selectedRange.toFixed(0);
-        const yearsDisplay =
-          fixedYears > 1 ? `${fixedYears} years` : `${fixedYears} year`;
-        return `Last ${yearsDisplay}`;
-      }
       const numMonths = Math.floor(
         (selectedRange - Math.floor(selectedRange)) * 12
       );
@@ -588,7 +547,7 @@ export default class SurveyGraph extends Component {
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
       .rangeRound([0, width])
-      .nice();
+     // .nice();
     const yMaxValue = d3.max(data, (d) => (d.maxScore ? d.maxScore : d.score));
     const yScale = scaleLinear().domain([0, yMaxValue]).range([height, 0]);
     //.nice();
@@ -621,11 +580,12 @@ export default class SurveyGraph extends Component {
     };
 
     const tickInterval = (() => {
-      if (monthsDiff >= 84) return 7;
-      if (monthsDiff >= 72) return 6;
-      if (monthsDiff >= 60) return 5;
-      if (monthsDiff >= 48) return 4;
-      if (monthsDiff >= 36) return 3;
+      if (monthsDiff >= 114) return 24;
+      if (monthsDiff >= 108) return 20;
+      if (monthsDiff >= 96) return 16;
+      if (monthsDiff >= 84) return 12;
+      if (monthsDiff >= 72) return 8;
+      if (monthsDiff >= 36) return 4;
       if (monthsDiff > 12) return 2;
       return 1;
     })();
@@ -794,7 +754,7 @@ export default class SurveyGraph extends Component {
             <div
               className="flex flex-center text-warning"
               style={{
-                minHeight: height + margins.bottom + 8,
+                minHeight: height + margins.bottom + margins.top,
                 background: "#f4f5f6",
               }}
             >
