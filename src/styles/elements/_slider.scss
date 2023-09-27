@@ -23,17 +23,44 @@ input[type="range"] {
 .scale {
   display: flex;
   justify-content: space-between;
-  span {
+  position: relative;
+  .label {
     flex: 1;
     text-align: right;
     font-size: 12px;
     position: relative;
     &:not(:last-of-type) {
-      left: 8px;
+      left: 1%;
     }
     &:first-of-type {
-        left: 4;
+       // left: 4px;
         flex: 0
+    }
+    // text-align: center;
+    // position: absolute;
+    // transform: translateX(-50%);
+    // .label:nth-of-type(1) {
+    //   left: 0%;
+    // }
+    
+    // .label:nth-of-type(2) {
+    //   left: 25%;
+    // }
+    
+    // .label:nth-of-type(3) {
+    //   left: 50%;
+    // }
+    
+    // .label:nth-of-type(4) {
+    //   left: 75%;
+    // }
+    
+    // .label:nth-of-type(5) {
+    //   left: 100%;
+    // }
+    &.active {
+      color: $color-blue-dark;
+      font-weight: 900;
     }
   }
 }

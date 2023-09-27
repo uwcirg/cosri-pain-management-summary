@@ -37,6 +37,8 @@ export default class SurveyGraph extends Component {
           : [],
     };
     this.downloadButtonRef = React.createRef();
+    this.scaleLabelRefs = [];
+
     // This binding is necessary to make `this` work in the callback
     this.addQuestionnaireToSurveyGraph =
       this.addQuestionnaireToSurveyGraph.bind(this);
@@ -49,11 +51,18 @@ export default class SurveyGraph extends Component {
     this.printImageRef = React.createRef();
   }
   componentDidMount() {
+    this.createScaleRefs();
     setTimeout(
       () =>
         renderImageFromSVG(this.printImageRef.current, this.graphRef.current),
       1000
     );
+  }
+  createScaleRefs() {
+    // Initialize the array with React.createRef() objects
+    for (let i = 0; i < this.state.selectedDateRange * 12 * 30; i++) {
+      this.scaleLabelRefs.push(React.createRef());
+    }
   }
   shouldShowAccessories() {
     return this.state.originalGraphData.length > 0;
@@ -131,7 +140,14 @@ export default class SurveyGraph extends Component {
     let calcMaxDate = new Date(maxDate.valueOf());
     maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
     maxDate = !(maxDate instanceof Date) ? new Date(maxDate) : maxDate;
-    console.log("min date ", minDate, " max date ", maxDate, " baseline ", baseLineDate)
+    // console.log(
+    //   "min date ",
+    //   minDate,
+    //   " max date ",
+    //   maxDate,
+    //   " baseline ",
+    //   baseLineDate
+    // );
     return {
       data: data,
       baseLineDate: baseLineDate,
@@ -256,13 +272,30 @@ export default class SurveyGraph extends Component {
     return parseFloat(value);
   }
 
-  handleDateRangeChange(e) {
-    const years = this.getSelectedDateRange(e.target.value);
-    let updatedData = this.getFilteredDataByQids(this.state.originalGraphData);
-    this.setState({
-      graphData: this.getFilteredDataByNumYears(updatedData, years),
-      selectedDateRange: e.target.value,
+  updateScale() {
+    this.scaleLabelRefs.forEach((ref) => {
+      if (!ref.current) return;
+      const labelValue = parseFloat(ref.current.getAttribute("datavalue"));
+      const diff = Math.abs(this.state.selectedDateRange - labelValue);
+      if (diff <= 0.001) {
+        ref.current.classList.add("active");
+      } else {
+        ref.current.classList.remove("active");
+      }
     });
+  }
+
+  handleDateRangeChange(e) {
+    const selectedValue = e.target.value;
+    const years = this.getSelectedDateRange(selectedValue);
+    let updatedData = this.getFilteredDataByQids(this.state.originalGraphData);
+    this.setState(
+      {
+        graphData: this.getFilteredDataByNumYears(updatedData, years),
+        selectedDateRange: selectedValue,
+      },
+      this.updateScale
+    );
   }
 
   renderLegend() {
@@ -410,21 +443,41 @@ export default class SurveyGraph extends Component {
     const createArray = (N) => {
       return [...Array(N).keys()].map((i) => i + 1);
     };
-    const fillInArray = (originalArray) => {
-      let newArray = [];
-      for (var i = 0; i < originalArray.length - 1; i++) {
-        let start = originalArray[i];
-        let end = originalArray[i + 1];
+    const arrYears = createArray(Math.ceil(defaultMaxValue));
+    console.log("arr years ", arrYears);
+    // const fillInArray = (originalArray) => {
+    //   let newArray = [];
+    //   for (var i = 0; i < originalArray.length - 1; i++) {
+    //     let start = originalArray[i];
+    //     let end = originalArray[i + 1];
 
-        // Add values between start and end (inclusive) to the new array
-        newArray = newArray.concat(
-          Array.from({ length: end - start + 1 }, (_, index) => start + index)
-        );
+    //     // Add values between start and end (inclusive) to the new array
+    //     newArray = newArray.concat(
+    //       Array.from({ length: end - start + 1 }, (_, index) => start + index)
+    //     );
+    //   }
+    //   return newArray;
+    // };
+    const createArrayInMonths = (numYears) => {
+      console.log("num years ", numYears);
+      let arrNum = [];
+      for (
+        let i = arrYears[0] * 12;
+        i <= arrYears[arrYears.length - 1] * 12;
+        i++
+      ) {
+        if (i % 12 === 0) arrNum.push(i / 12);
+        else {
+          arrNum.push(Math.floor(i / 12) + (i / 12 - Math.floor(i / 12)));
+        }
       }
-      return newArray;
+      return arrNum;
     };
     const getArrMonths = () => {
-      const arrMonths = [0.25, 0.5, 0.75, 1];
+      // const arrMonths = [0.25, 0.5, 0.75, 1];
+      const arrMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
+        (n) => n / 12
+      );
       const arrDiffYears = this.props.data
         .filter((item) => {
           const itemDate = new Date(item[xFieldName]);
@@ -441,13 +494,15 @@ export default class SurveyGraph extends Component {
       });
     };
 
-    const updatedArrNum = fillInArray(createArray(Math.ceil(defaultMaxValue)));
-    const arrNum =
-      defaultMaxValue > 1
-        ? updatedArrNum.filter(
-            (element, index) => updatedArrNum.indexOf(element) === index
-          )
-        : getArrMonths();
+    // const updatedArrNum = fillInArray(createArray(Math.ceil(defaultMaxValue)));
+    //.filter((element, index) => updatedArrNum.indexOf(element) === index);
+    // const arrAllNum = [...new Set([...updatedArrNum, ...getArrMonths()])].sort(
+    //   (a, b) => a - b
+    // );
+    const arrAllNum = [
+      ...new Set([...getArrMonths(), ...createArrayInMonths(defaultMaxValue)]),
+    ].sort((a, b) => a - b);
+    const arrNum = defaultMaxValue > 1 ? arrAllNum : getArrMonths();
     return {
       arrNum: arrNum,
       min: arrNum.length ? arrNum[0] : 0,
@@ -470,29 +525,34 @@ export default class SurveyGraph extends Component {
           if (inYears) return "Last 1 year";
           else return "Last 12 months";
         }
-        const months = Math.floor(selectedRange * 12);
+        const AVG_DAYS_IN_MONTH = 30;
+        let months = Math.floor(selectedRange * 12);
         const remainingMonths = selectedRange * 12 - months;
-        const days = Math.round(remainingMonths * 30.44);
+        const days = Math.round(remainingMonths * AVG_DAYS_IN_MONTH);
+        if (days === AVG_DAYS_IN_MONTH) months = months + 1;
         const monthsDisplay = months
           ? months > 1
             ? `${months} months`
             : `${months} month`
           : "";
-        const daysDisplay = days
-          ? days > 1
-            ? `${days} days`
-            : `${days} day`
-          : "";
+        const daysDisplay =
+          days && days < AVG_DAYS_IN_MONTH
+            ? days > 1
+              ? `${days} days`
+              : `${days} day`
+            : "";
 
         return `Last ${monthsDisplay} ${daysDisplay}`;
       }
-      const numMonths = Math.floor(
+      const numMonths = Math.ceil(
         (selectedRange - Math.floor(selectedRange)) * 12
       );
-      const years = Math.floor(selectedRange);
-      const monthsDisplay = numMonths
-        ? numMonths + "  " + (months > 1 ? "months" : "month")
-        : "";
+      let years = Math.floor(selectedRange);
+      if (numMonths === 12) years = years + 1;
+      const monthsDisplay =
+        numMonths && numMonths < 12
+          ? numMonths + "  " + (months > 1 ? "months" : "month")
+          : "";
       const yearsDisplay = years + " " + (years > 1 ? "years" : "year");
       return `Last ${yearsDisplay} ${monthsDisplay}`;
     };
@@ -513,13 +573,31 @@ export default class SurveyGraph extends Component {
           />
           <div className="scale">
             {arrNum.map((item, index) => (
-              <span key={`scale_${index}`}>
-                {item < 1 || !inYears ? item * 12 : item}
+              <span
+                key={`scale_${index}`}
+                className={`label ${
+                  Math.abs(this.state.selectedDateRange - item) < 0.001
+                    ? "active"
+                    : ""
+                }`}
+                ref={this.scaleLabelRefs[index]}
+                datavalue={item}
+                // style={{
+                //   left: inYears ? `${(1/(arrNum.length+12)) * 100}%` : 0 
+                // }}
+              >
+                {item < 1 || !inYears
+                  ? !inYears
+                    ? item * 12 + "mo"
+                    : (item / 0.25) % 1 === 0 ? (item*12)+"mo" : ""
+                  : item % 1 === 0
+                  ? item + "yr"
+                  : ""}
               </span>
             ))}
           </div>
         </div>
-        <div className="bottom-info-text">{`date range (in ${unit})`}</div>
+        <div className="bottom-info-text">date range</div>
       </div>
     );
   }
@@ -546,8 +624,8 @@ export default class SurveyGraph extends Component {
     const height = parentHeight - margins.top - margins.bottom;
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
-      .rangeRound([0, width])
-     // .nice();
+      .rangeRound([0, width]);
+    // .nice();
     const yMaxValue = d3.max(data, (d) => (d.maxScore ? d.maxScore : d.score));
     const yScale = scaleLinear().domain([0, yMaxValue]).range([height, 0]);
     //.nice();
