@@ -522,8 +522,7 @@ export default class SurveyGraph extends Component {
     const getDisplayDateRange = () => {
       if (selectedRange <= 1) {
         if (selectedRange === 1) {
-          if (inYears) return "Last 1 year";
-          else return "Last 12 months";
+          return "Last 1 year";
         }
         const AVG_DAYS_IN_MONTH = 30;
         let months = Math.floor(selectedRange * 12);
@@ -544,10 +543,10 @@ export default class SurveyGraph extends Component {
 
         return `Last ${monthsDisplay} ${daysDisplay}`;
       }
-      const numMonths = Math.floor(
+      const numMonths = Math.round(
         (selectedRange - Math.floor(selectedRange)) * 12
       );
-      let years = Math.floor(selectedRange);
+      let years = Math.round(selectedRange);
       if (numMonths === 12) years = years + 1;
       const monthsDisplay =
         numMonths && numMonths < 12
@@ -583,13 +582,16 @@ export default class SurveyGraph extends Component {
                 ref={this.scaleLabelRefs[index]}
                 datavalue={item}
                 // style={{
-                //   left: inYears ? `${(1/(arrNum.length+12)) * 100}%` : 0 
+                //   left: inYears ? `${(1/(arrNum.length+12)) * 100}%` : 0
                 // }}
               >
                 {item < 1 || !inYears
                   ? !inYears
                     ? item * 12 + "mo"
-                    : (item / 0.25) % 1 === 0 ? (item*12)+"mo" : ""
+                    : // : (item / 0.25) % 1 === 0 ? (item*12)+"mo" : ""
+                    item === arrNum[0] || (item / 0.75) % 1 === 0
+                    ? item * 12 + "mo"
+                    : ""
                   : item % 1 === 0
                   ? item + "yr"
                   : ""}
