@@ -253,21 +253,6 @@ export default class SurveyGraph extends Component {
   }
 
   getSelectedDateRange(value) {
-    // let years = "all";
-    // switch (String(value).toLowerCase()) {
-    //   case "1 year":
-    //     years = 1;
-    //     break;
-    //   case "2 years":
-    //     years = 2;
-    //     break;
-    //   case "5 years":
-    //     years = 5;
-    //     break;
-    //   default:
-    //     break;
-    // }
-    // return years;
     return parseFloat(value);
   }
 
@@ -275,9 +260,18 @@ export default class SurveyGraph extends Component {
     this.scaleLabelRefs.forEach((ref) => {
       if (!ref.current) return;
       const labelValue = parseFloat(ref.current.getAttribute("datavalue"));
+      const labelUnit = ref.current.getAttribute("dataunit");
       const diff = Math.abs(this.state.selectedDateRange - labelValue);
-      console.log("diff ", diff);
-      if (diff <= 0.001) {
+      const comparisonValue = labelUnit === "year" ? 0.05 : 0.001;
+      console.log(
+        "label value ",
+        labelValue,
+        " selected ",
+        this.state.selectedDateRange,
+        " diff ",
+        diff
+      );
+      if (diff <= comparisonValue) {
         ref.current.classList.add("active");
       } else {
         ref.current.classList.remove("active");
@@ -452,22 +446,7 @@ export default class SurveyGraph extends Component {
       return [...Array(N).keys()].map((i) => i + 1);
     };
     const arrYears = createArray(Math.ceil(defaultMaxValue));
-    console.log("arr years ", arrYears);
-    // const fillInArray = (originalArray) => {
-    //   let newArray = [];
-    //   for (var i = 0; i < originalArray.length - 1; i++) {
-    //     let start = originalArray[i];
-    //     let end = originalArray[i + 1];
-
-    //     // Add values between start and end (inclusive) to the new array
-    //     newArray = newArray.concat(
-    //       Array.from({ length: end - start + 1 }, (_, index) => start + index)
-    //     );
-    //   }
-    //   return newArray;
-    // };
-    const createArrayInMonths = (numYears) => {
-      console.log("num years ", numYears);
+    const createArrayInMonths = () => {
       let arrNum = [];
       for (
         let i = arrYears[0] * 12;
@@ -482,7 +461,6 @@ export default class SurveyGraph extends Component {
       return arrNum;
     };
     const getArrMonths = () => {
-      // const arrMonths = [0.25, 0.5, 0.75, 1];
       const arrMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
         (n) => n / 12
       );
@@ -501,12 +479,6 @@ export default class SurveyGraph extends Component {
         return m >= arrDiffYears[0].toFixed(2);
       });
     };
-
-    // const updatedArrNum = fillInArray(createArray(Math.ceil(defaultMaxValue)));
-    //.filter((element, index) => updatedArrNum.indexOf(element) === index);
-    // const arrAllNum = [...new Set([...updatedArrNum, ...getArrMonths()])].sort(
-    //   (a, b) => a - b
-    // );
     const arrAllNum = [
       ...new Set([...getArrMonths(), ...createArrayInMonths(defaultMaxValue)]),
     ].sort((a, b) => a - b);
@@ -546,7 +518,7 @@ export default class SurveyGraph extends Component {
     const numMonths = Math.round(
       (selectedRange - Math.floor(selectedRange)) * 12
     );
-    let years = Math.round(selectedRange);
+    let years = Math.floor(selectedRange);
     if (numMonths === 12) years = years + 1;
     const monthsDisplay =
       numMonths && numMonths < 12
@@ -579,9 +551,14 @@ export default class SurveyGraph extends Component {
             min={arrNum[0]}
             max={arrNum[arrNum.length - 1]}
             step={"any"}
-            value={this.state.selectedDateRange}
-            defaultValue={arrNum[arrNum.length - 1]}
+            value={
+              this.state.selectedDateRange
+                ? this.state.selectedDateRange
+                : arrNum[arrNum.length - 1]
+            }
+            // defaultValue={arrNum[arrNum.length - 1]}
             className="slider"
+            onInput={this.handleDateRangeChange}
             onChange={this.handleDateRangeChange}
           />
           <div className="scale">
@@ -595,9 +572,7 @@ export default class SurveyGraph extends Component {
                 }`}
                 ref={this.scaleLabelRefs[index]}
                 datavalue={item}
-                // style={{
-                //   left: inYears ? `${(1/(arrNum.length+12)) * 100}%` : 0
-                // }}
+                dataunit={item < 1 ? "month" : "year"}
               >
                 {item < 1 || !inYears
                   ? !inYears
