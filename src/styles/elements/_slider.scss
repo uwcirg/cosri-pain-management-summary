@@ -26,12 +26,12 @@ input[type="range"] {
   position: relative;
   .label {
     flex: 1;
-    text-align: right;
+    text-align: left;
     font-size: 12px;
     position: relative;
-    &:not(:last-of-type) {
-      left: 1%;
-    }
+    // &:not(:last-of-type) {
+    //   left: 1%;
+    // }
     &:first-of-type {
        // left: 4px;
         flex: 0

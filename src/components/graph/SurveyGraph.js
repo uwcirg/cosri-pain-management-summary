@@ -544,7 +544,7 @@ export default class SurveyGraph extends Component {
 
         return `Last ${monthsDisplay} ${daysDisplay}`;
       }
-      const numMonths = Math.ceil(
+      const numMonths = Math.floor(
         (selectedRange - Math.floor(selectedRange)) * 12
       );
       let years = Math.floor(selectedRange);
@@ -566,7 +566,7 @@ export default class SurveyGraph extends Component {
             id="slider"
             min={arrNum[0]}
             max={arrNum[arrNum.length - 1]}
-            step={0.001}
+            step={"any"}
             defaultValue={arrNum[arrNum.length - 1]}
             className="slider"
             onChange={this.handleDateRangeChange}
