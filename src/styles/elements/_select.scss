@@ -5,6 +5,7 @@ select {
     /* Personalize */
     flex: 1;
     padding: 0 1em;
+    width: auto;
     color: $link-color;
     background-color: #FFF;
     background-image: none;
@@ -24,7 +25,8 @@ select {
   .select {
     position: relative;
     display: flex;
-    width: 10em;
+    width: auto;
+    min-width: 11rem;
     height: 1.8em;
     border-radius: 0.25em;
     overflow: hidden;

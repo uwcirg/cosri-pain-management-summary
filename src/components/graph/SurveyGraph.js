@@ -16,7 +16,6 @@ import {
   getDifferenceInYears,
   renderImageFromSVG,
 } from "../../helpers/utility";
-import { months } from "moment";
 
 const defaultFields = {
   x: "date",
@@ -277,6 +276,7 @@ export default class SurveyGraph extends Component {
       if (!ref.current) return;
       const labelValue = parseFloat(ref.current.getAttribute("datavalue"));
       const diff = Math.abs(this.state.selectedDateRange - labelValue);
+      console.log("diff ", diff);
       if (diff <= 0.001) {
         ref.current.classList.add("active");
       } else {
@@ -402,20 +402,28 @@ export default class SurveyGraph extends Component {
   renderDateRangeSelector() {
     const items = [
       {
+        key: this.getDisplayDateRange(),
+        value: this.state.selectedDateRange,
+      },
+      {
+        key: "Last 6 months",
+        value: "0.5",
+      },
+      {
+        key: "Last 9 months",
+        value: "0.75",
+      },
+      {
         key: "Last 1 year",
-        value: "1 year",
+        value: "1",
       },
       {
         key: "Last 2 years",
-        value: "2 years",
+        value: "2",
       },
       {
         key: "Last 5 years",
-        value: "5 years",
-      },
-      {
-        key: "All",
-        value: "all",
+        value: "5",
       },
     ];
     return (
@@ -510,6 +518,43 @@ export default class SurveyGraph extends Component {
       unit: defaultMaxValue > 1 ? "year" : "month",
     };
   }
+  getDisplayDateRange() {
+    const selectedRange = parseFloat(this.state.selectedDateRange);
+    if (selectedRange <= 1) {
+      if (selectedRange === 1) {
+        return "Last 1 year";
+      }
+      const AVG_DAYS_IN_MONTH = 30;
+      let months = Math.floor(selectedRange * 12);
+      const remainingMonths = selectedRange * 12 - months;
+      const days = Math.round(remainingMonths * AVG_DAYS_IN_MONTH);
+      if (days === AVG_DAYS_IN_MONTH) months = months + 1;
+      const monthsDisplay = months
+        ? months > 1
+          ? `${months} months`
+          : `${months} month`
+        : "";
+      const daysDisplay =
+        days && days < AVG_DAYS_IN_MONTH
+          ? days > 1
+            ? `${days} days`
+            : `${days} day`
+          : "";
+
+      return `Last ${monthsDisplay} ${daysDisplay}`;
+    }
+    const numMonths = Math.round(
+      (selectedRange - Math.floor(selectedRange)) * 12
+    );
+    let years = Math.round(selectedRange);
+    if (numMonths === 12) years = years + 1;
+    const monthsDisplay =
+      numMonths && numMonths < 12
+        ? numMonths + "  " + (numMonths > 1 ? "months" : "month")
+        : "";
+    const yearsDisplay = years + " " + (years > 1 ? "years" : "year");
+    return `Last ${yearsDisplay} ${monthsDisplay}`;
+  }
 
   renderSlider() {
     const { arrNum, unit } = this.getScaleInfoForSlider();
@@ -518,47 +563,15 @@ export default class SurveyGraph extends Component {
     console.log("selected value: ", selectedRange);
     console.log("arrNum: ", arrNum);
     const inYears = unit === "year";
-    // console.log("max value ", defaultMaxValue);
-    const getDisplayDateRange = () => {
-      if (selectedRange <= 1) {
-        if (selectedRange === 1) {
-          return "Last 1 year";
-        }
-        const AVG_DAYS_IN_MONTH = 30;
-        let months = Math.floor(selectedRange * 12);
-        const remainingMonths = selectedRange * 12 - months;
-        const days = Math.round(remainingMonths * AVG_DAYS_IN_MONTH);
-        if (days === AVG_DAYS_IN_MONTH) months = months + 1;
-        const monthsDisplay = months
-          ? months > 1
-            ? `${months} months`
-            : `${months} month`
-          : "";
-        const daysDisplay =
-          days && days < AVG_DAYS_IN_MONTH
-            ? days > 1
-              ? `${days} days`
-              : `${days} day`
-            : "";
-
-        return `Last ${monthsDisplay} ${daysDisplay}`;
-      }
-      const numMonths = Math.round(
-        (selectedRange - Math.floor(selectedRange)) * 12
-      );
-      let years = Math.round(selectedRange);
-      if (numMonths === 12) years = years + 1;
-      const monthsDisplay =
-        numMonths && numMonths < 12
-          ? numMonths + "  " + (months > 1 ? "months" : "month")
-          : "";
-      const yearsDisplay = years + " " + (years > 1 ? "years" : "year");
-      return `Last ${yearsDisplay} ${monthsDisplay}`;
-    };
     if (arrNum.length <= 1) return null;
     return (
       <div className="slider-parent-container">
-        <div className="top-info-text">{getDisplayDateRange()}</div>
+        {!inYears && (
+          <div className="top-info-text">{this.getDisplayDateRange()}</div>
+        )}
+        {inYears && (
+          <div className="top-info-text">{this.renderDateRangeSelector()}</div>
+        )}
         <div className="slider-container">
           <input
             type="range"
@@ -566,6 +579,7 @@ export default class SurveyGraph extends Component {
             min={arrNum[0]}
             max={arrNum[arrNum.length - 1]}
             step={"any"}
+            value={this.state.selectedDateRange}
             defaultValue={arrNum[arrNum.length - 1]}
             className="slider"
             onChange={this.handleDateRangeChange}
@@ -834,8 +848,10 @@ export default class SurveyGraph extends Component {
             <div
               className="flex flex-center text-warning"
               style={{
-                minHeight: height + margins.bottom + margins.top,
-                background: "#f4f5f6",
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                background: "#f4f5f64d",
               }}
             >
               <FontAwesomeIcon icon="exclamation-circle" title="notice" />
@@ -844,9 +860,10 @@ export default class SurveyGraph extends Component {
               )} within this date range`}</div>
             </div>
           )}
-          {!noStateEntry && (
+          {/* {!noStateEntry && (
             <div className="survey-svg-container">{renderGraph()}</div>
-          )}
+          )} */}
+          <div className="survey-svg-container">{renderGraph()}</div>
           {this.renderPrintOnlyImage()}
           {this.renderDownloadButton()}
         </div>
