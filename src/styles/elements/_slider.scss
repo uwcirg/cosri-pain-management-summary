@@ -1,16 +1,17 @@
 .slider-parent-container {
-  width: calc(100% - 88px);
-  margin: auto;
+  //width: calc(100% - 88px);
+  width: calc(100% - 56px);
+  margin: 16px auto;
   position: relative;
   left: 16px;
   padding-left: 16px;
   padding-right: 16px;
-  @media (min-width: 1200px) {
-    width: calc(100% - 120px);
-  }
-  @media (min-width: 1600px) {
-    width: calc(100% - 180px);
-  }
+  // @media (min-width: 1200px) {
+  //   width: calc(100% - 120px);
+  // }
+  // @media (min-width: 1600px) {
+  //   width: calc(100% - 180px);
+  // }
 }
 .slider-container {
   width: 100%;

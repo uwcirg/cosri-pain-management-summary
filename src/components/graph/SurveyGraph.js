@@ -37,6 +37,7 @@ export default class SurveyGraph extends Component {
     };
     this.downloadButtonRef = React.createRef();
     this.scaleLabelRefs = [];
+    this.switchCheckboxRefs = [];
 
     // This binding is necessary to make `this` work in the callback
     this.addQuestionnaireToSurveyGraph =
@@ -46,6 +47,7 @@ export default class SurveyGraph extends Component {
     this.showDownloadButton = this.showDownloadButton.bind(this);
     this.hideDownloadButton = this.hideDownloadButton.bind(this);
     this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
+    this.handleSwitchChange = this.handleSwitchChange.bind(this);
     this.graphRef = React.createRef();
     this.printImageRef = React.createRef();
   }
@@ -56,6 +58,12 @@ export default class SurveyGraph extends Component {
         renderImageFromSVG(this.printImageRef.current, this.graphRef.current),
       1000
     );
+  }
+  initSwitchCheckboxRefs() {
+    // Initialize the array with React.createRef() objects
+    for (let i = 0; i < this.state.qids.length; i++) {
+      this.switchCheckboxRefs.push(React.createRef());
+    }
   }
   createScaleRefs() {
     // Initialize the array with React.createRef() objects
@@ -279,6 +287,24 @@ export default class SurveyGraph extends Component {
     });
   }
 
+  handleSwitchChange(e) {
+    const itemValue = e.target.value;
+    console.log("WTF ? ", e.target);
+    console.log("IS it checked? ", e.target.checked);
+    if (e.target.checked) {
+      this.addQuestionnaireToSurveyGraph(itemValue);
+    } else {
+      this.removeQuestionnaireToSurveyGraph(itemValue);
+    }
+    // if (e.target.checked) {
+    //   this.addQuestionnaireToSurveyGraph(itemValue);
+    //   e.target.checked = false;
+    //   return;
+    // }
+    // e.target.checked = true;
+    // this.removeQuestionnaireToSurveyGraph(itemValue);
+  }
+
   handleDateRangeChange(e) {
     const selectedValue = e.target.value;
     const years = this.getSelectedDateRange(selectedValue);
@@ -294,7 +320,7 @@ export default class SurveyGraph extends Component {
 
   renderLegend() {
     const qids = this.getQIds();
-    const hasOnlyOneGraphLine = this.hasOnlyOneGraphLine();
+    // const hasOnlyOneGraphLine = this.hasOnlyOneGraphLine();
     return (
       <div className="legend-container">
         <div className="legend">
@@ -312,7 +338,31 @@ export default class SurveyGraph extends Component {
               </div>
               {qids.length > 1 && (
                 <div className="select-icons-container print-hidden">
-                  <button
+                  <label
+                    className={`switch ${
+                      !this.isSurveyInDateRange(item) ? "disabled" : ""
+                    }`}
+                    title={
+                      this.isInSurveyGraph(item)
+                        ? `Remove ${item} from graph`
+                        : `Add ${item} to graph`
+                    }
+                  >
+                    <input
+                      type="checkbox"
+                      value={item}
+                      onChange={this.handleSwitchChange}
+                      disabled={
+                        !this.isSurveyInDateRange(item) ||
+                        (this.isInSurveyGraph(item) &&
+                          this.hasOnlyOneGraphLine())
+                      }
+                      ref={this.switchCheckboxRefs[index]}
+                      checked={this.isInSurveyGraph(item)}
+                    />
+                    <span className="switch-slider round"></span>
+                  </label>
+                  {/* <button
                     className="select-icon plus"
                     onClick={() => this.addQuestionnaireToSurveyGraph(item)}
                     disabled={
@@ -339,7 +389,7 @@ export default class SurveyGraph extends Component {
                     title={`Remove ${item} from graph`}
                   >
                     hide
-                  </button>
+                  </button> */}
                 </div>
               )}
             </div>
@@ -373,8 +423,8 @@ export default class SurveyGraph extends Component {
           position: "absolute",
           color: "#777",
           zIndex: 20,
-          top: "24px",
-          right: "24px",
+          top: "32px",
+          right: "32px",
           minWidth: "48px",
           display: "none",
           backgroundColor: "transparent",
@@ -608,7 +658,8 @@ export default class SurveyGraph extends Component {
       bottom: 72,
       left: 56,
     };
-    const parentWidth = 540;
+   // const parentWidth = 540;
+    const parentWidth = 480;
     // 396
     const parentHeight = 508;
     const width = parentWidth - margins.left - margins.right;
@@ -819,35 +870,44 @@ export default class SurveyGraph extends Component {
           onMouseEnter={this.showDownloadButton}
           onMouseLeave={this.hideDownloadButton}
         >
-          {noStateEntry && (
-            <div
-              className="flex flex-center text-warning"
-              style={{
-                position: "absolute",
-                width: "100%",
-                height: "100%",
-                background: "#f4f5f64d",
-              }}
-            >
-              <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-              <div>{`No data for ${this.state.qids.join(
-                ", "
-              )} within this date range`}</div>
+          <div className="flex">
+            {/* {!noStateEntry && (
+              <div className="survey-svg-container">{renderGraph()}</div>
+            )} */}
+            <div style={{ position: "relative", width: "100%", gap: "24px" }}>
+              {noStateEntry && (
+                <div
+                  className="flex flex-center text-warning"
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    background: "#f4f5f64d",
+                    left: "16px"
+                  }}
+                >
+                  <FontAwesomeIcon icon="exclamation-circle" title="notice" />
+                  <div>{`No data for ${this.state.qids.join(
+                    ", "
+                  )} within this date range`}</div>
+                </div>
+              )}
+              <div className="survey-svg-container">{renderGraph()}</div>
+              {this.shouldShowAccessories() && (
+                  this.renderSlider()
+              )}
             </div>
-          )}
-          {/* {!noStateEntry && (
-            <div className="survey-svg-container">{renderGraph()}</div>
-          )} */}
-          <div className="survey-svg-container">{renderGraph()}</div>
+            <div className="flex flex-gap-1">{this.renderLegend()}</div>
+          </div>
           {this.renderPrintOnlyImage()}
           {this.renderDownloadButton()}
         </div>
-        {this.shouldShowAccessories() && (
+        {/* {this.shouldShowAccessories() && (
           <React.Fragment>
             {this.renderSlider()}
-            <div className="flex flex-gap-1">{this.renderLegend()}</div>
+           <div className="flex flex-gap-1">{this.renderLegend()}</div>
           </React.Fragment>
-        )}
+        )} */}
       </React.Fragment>
     );
   }
