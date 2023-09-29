@@ -334,7 +334,7 @@ export default class SurveyGraph extends Component {
                       this.getLineAttributesByQId(item).strokeColor,
                   }}
                 ></span>
-                <span>{item.toUpperCase()}</span>
+                <span className="text">{item.toUpperCase()}</span>
               </div>
               {qids.length > 1 && (
                 <div className="select-icons-container print-hidden">

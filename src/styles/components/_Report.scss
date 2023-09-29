@@ -345,6 +345,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
        // gap: 24px;
         .legend__item--key {
           min-width: 64px;
+          display: flex;
+          flex-wrap: nowrap;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
         }
         .select-icons-container {
           display: flex;
@@ -352,13 +357,17 @@ $selector-box-shadow: 0 2px 2px #383e40;
           align-items: center;
           flex: 1;
         }
+        .text {
+          flex: 1 1;
+        }
         .icon {
-          top: -4px;
+         // top: -4px;
+          top: 0;
           width: 12px;
           height: 12px;
           display: inline-block;
-          margin-right: 8px;
-          border-radius: 100%;
+          border-radius: 100vmax;
+          margin-right: 0;
         }
         .select-icon {
           border: 0;

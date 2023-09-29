@@ -102,7 +102,7 @@ const reportConfig = [
   {
     title: "Mental Health, Quality of Life and Sleep",
     dataKey: "mentalHealthSection",
-    questionnaires: ["phq9", "gad7", "phq-4"],
+    questionnaires: ["phq9", "gad7", "phq-4", "pc-ptsd-5"],
     icon: (props) => (
       <UserIcon
         {...iconProps}
@@ -208,15 +208,42 @@ const reportConfig = [
             <p>
               The PHQ-4 is different - although the total score (which ranges
               from 0-12) can be used, it is really a combination of the PHQ-2
-              depression scale and the GAD-2 anxiety scale
-              (from the parent GAD-7 anxiety scale). Thus, another way to look
-              at it is a 0-6 depression subscale and a 0-6 anxiety scale. It is
-              clearly different than either the PHQ-9 or the PHQ-2.
+              depression scale and the GAD-2 anxiety scale (from the parent
+              GAD-7 anxiety scale). Thus, another way to look at it is a 0-6
+              depression subscale and a 0-6 anxiety scale. It is clearly
+              different than either the PHQ-9 or the PHQ-2.
             </p>
-            <p>Total score is determined by adding together the scores of each of the 4 items.</p>
-            <p>Scores are rated as normal (0-2), mild (3-5), moderate (6-8), and severe (9-12).</p>
+            <p>
+              Total score is determined by adding together the scores of each of
+              the 4 items.
+            </p>
+            <p>
+              Scores are rated as normal (0-2), mild (3-5), moderate (6-8), and
+              severe (9-12).
+            </p>
             <p>Total score ≥ 3 for first 2 questions suggests anxiety.</p>
             <p>Total score ≥ 3 for last 2 questions suggests depression.</p>
+          </div>
+        ),
+        component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
+      },
+      {
+        name: "PC-PTSD-5",
+        dataKey: "pc-ptsd-5",
+        title: "Primary Care PTSD Screen for DSM-5 (PC-PTSD-5)",
+        description: () => (
+          <div>
+            <p>
+              The Primary Care PTSD Screen for DSM-5 (PC-PTSD-5) is a 5-item
+              screen that was designed to identify individuals with probable
+              PTSD in primary care settings. The measure begins with an item
+              which assesses lifetime exposure to traumatic events. If a
+              respondent denies exposure, the PC-PTSD-5 is complete with a score
+              of 0. However, if a respondent indicates that they have had any
+              lifetime exposure to trauma, the respondent is instructed to
+              respond to 5 additional yes/no questions about how that trauma
+              exposure has affected them over the past month.
+            </p>
           </div>
         ),
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
