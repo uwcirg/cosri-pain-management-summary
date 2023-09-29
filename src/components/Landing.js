@@ -372,6 +372,7 @@ export default class Landing extends Component {
   }
 
   initializeTocBot() {
+    const MIN_HEADER_HEIGHT = 100;
     tocbot.init({
       tocSelector: ".active .summary__nav", // where to render the table of contents
       contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
@@ -379,7 +380,9 @@ export default class Landing extends Component {
       positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
       collapseDepth: 0, // how many heading levels should not be collpased
       includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      fixedSidebarOffset: this.shouldShowTabs() ? 140 : "auto",
+      fixedSidebarOffset: this.shouldShowTabs() ? MIN_HEADER_HEIGHT : "auto",
+      headingsOffset: MIN_HEADER_HEIGHT,
+      scrollSmoothOffset: -1 * (MIN_HEADER_HEIGHT),
     });
   }
 

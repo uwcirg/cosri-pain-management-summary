@@ -1030,13 +1030,13 @@
 }
 .has-tabs {
     .summary {
-        &__nav.is-position-fixed {
-            padding: calc(#{$min-header-height-include-tabs} + 64px) 0 20px 0px !important;
-        }
-        &__nav-wrapper {
-            .is-position-fixed ~ .close {
-                top: calc(#{$min-header-height-include-tabs} + 8px);
-            }
-        }
+        // &__nav.is-position-fixed {
+        //     padding: calc(#{$min-header-height-include-tabs} + 64px) 0 20px 0px !important;
+        // }
+        // &__nav-wrapper {
+        //     .is-position-fixed ~ .close {
+        //         top: calc(#{$min-header-height-include-tabs} + 8px);
+        //     }
+        // }
     }
 }
