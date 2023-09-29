@@ -659,15 +659,15 @@ export default class SurveyGraph extends Component {
       left: 56,
     };
    // const parentWidth = 540;
-    const parentWidth = 480;
+    const parentWidth = 460;
     // 396
     const parentHeight = 508;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
-      .rangeRound([0, width]);
-    // .nice();
+      .rangeRound([0, width])
+    .nice();
     const yMaxValue = d3.max(data, (d) => (d.maxScore ? d.maxScore : d.score));
     const yScale = scaleLinear().domain([0, yMaxValue]).range([height, 0]);
     //.nice();
