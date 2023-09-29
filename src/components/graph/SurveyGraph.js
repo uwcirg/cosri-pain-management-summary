@@ -271,14 +271,14 @@ export default class SurveyGraph extends Component {
       const labelUnit = ref.current.getAttribute("dataunit");
       const diff = Math.abs(this.state.selectedDateRange - labelValue);
       const comparisonValue = labelUnit === "year" ? 0.05 : 0.001;
-      console.log(
-        "label value ",
-        labelValue,
-        " selected ",
-        this.state.selectedDateRange,
-        " diff ",
-        diff
-      );
+      // console.log(
+      //   "label value ",
+      //   labelValue,
+      //   " selected ",
+      //   this.state.selectedDateRange,
+      //   " diff ",
+      //   diff
+      // );
       if (diff <= comparisonValue) {
         ref.current.classList.add("active");
       } else {
@@ -555,7 +555,7 @@ export default class SurveyGraph extends Component {
         ? months > 1
           ? `${months} months`
           : `${months} month`
-        : "";
+        : AVG_DAYS_IN_MONTH + " days";
       const daysDisplay =
         days && days < AVG_DAYS_IN_MONTH
           ? days > 1
@@ -626,10 +626,10 @@ export default class SurveyGraph extends Component {
               >
                 {item < 1 || !inYears
                   ? !inYears
-                    ? item * 12 + "mo"
+                    ? (item ? item * 12 + "mo" : item)
                     : // : (item / 0.25) % 1 === 0 ? (item*12)+"mo" : ""
                     item === arrNum[0] || (item / 0.75) % 1 === 0
-                    ? item * 12 + "mo"
+                    ? (item ? item * 12 + "mo" : item)
                     : ""
                   : item % 1 === 0
                   ? item + "yr"
@@ -897,7 +897,7 @@ export default class SurveyGraph extends Component {
                   this.renderSlider()
               )}
             </div>
-            <div className="flex flex-gap-1">{this.renderLegend()}</div>
+            <div className="flex flex-gap-1" style={{marginTop: ((graphHeight/2) * -1) + "px"}}>{this.renderLegend()}</div>
           </div>
           {this.renderPrintOnlyImage()}
           {this.renderDownloadButton()}

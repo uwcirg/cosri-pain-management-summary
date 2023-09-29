@@ -68,8 +68,8 @@ const reportConfig = [
               that.
             </p>
             <p>
-              The sum score, i.e. the CIRG-PEG-SUM item on the questionnaire, is a scoring variant used at UW Medicine's
-              Center for Pain Relief.
+              The sum score, i.e. the CIRG-PEG-SUM item on the questionnaire, is
+              a scoring variant used at UW Medicine's Center for Pain Relief.
             </p>
           </div>
         ),
@@ -102,7 +102,7 @@ const reportConfig = [
   {
     title: "Mental Health, Quality of Life and Sleep",
     dataKey: "mentalHealthSection",
-    questionnaires: ["phq9", "gad7"],
+    questionnaires: ["phq9", "gad7", "phq-4"],
     icon: (props) => (
       <UserIcon
         {...iconProps}
@@ -191,6 +191,32 @@ const reportConfig = [
                 <td>Severe anxiety</td>
               </tr>
             </table>
+          </div>
+        ),
+        component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
+      },
+      {
+        name: "PHQ-4",
+        dataKey: "phq-4",
+        title: "Patient Health Questionnaire 4 item (PHQ-4)",
+        description: () => (
+          <div>
+            <p>
+              PHQ-4 Four-item Patient Health Questionnaire for Anxiety and
+              Depression measures anxiety and depression symptoms.
+            </p>
+            <p>
+              The PHQ-4 is different - although the total score (which ranges
+              from 0-12) can be used, it is really a combination of the PHQ-2
+              depression scale and the GAD-2 anxiety scale
+              (from the parent GAD-7 anxiety scale). Thus, another way to look
+              at it is a 0-6 depression subscale and a 0-6 anxiety scale. It is
+              clearly different than either the PHQ-9 or the PHQ-2.
+            </p>
+            <p>Total score is determined by adding together the scores of each of the 4 items.</p>
+            <p>Scores are rated as normal (0-2), mild (3-5), moderate (6-8), and severe (9-12).</p>
+            <p>Total score ≥ 3 for first 2 questions suggests anxiety.</p>
+            <p>Total score ≥ 3 for last 2 questions suggests depression.</p>
           </div>
         ),
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
