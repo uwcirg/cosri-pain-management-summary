@@ -224,16 +224,33 @@ $selector-box-shadow: 0 2px 2px #383e40;
       flex-direction: column;
       background: $color-white;
       gap: 2;
-      flex: 1 1;
+      flex: 1 1 0;
+      @media (min-width: 900px) {
+        & {
+          flex: 0 0 42%;
+          min-width: 42%;
+        }
+      }
       &.graph {
         display: flex;
-        flex: 1 1;
+        flex: 1 1 100%;
         flex-wrap: wrap;
         flex-direction: column;
         gap: 12px;
         align-items: center;
-        min-width: calc(50% - 48px);
-        max-width: calc(100% - 320px);
+        @media (min-width: 900px) {
+          & {
+            flex: 0 0 calc(55% - 48px);
+            min-width: calc(55% - 48px);
+          }
+        }
+        @media (min-width: 1400px) {
+          & {
+            flex: 1 1 0;
+          }
+        }
+       // min-width: calc(50% - 48px);
+       // max-width: calc(100% - 320px);
         padding-left: 16px;
         padding-right: 16px;
         .date-selector {
@@ -243,9 +260,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
         .survey-graph {
        //   flex: 1 1;
           width: 100%;
-          // @media (min-width: 992px) {
-          //   width: calc(100% - 72px);
-          // }
+          max-width: calc(100% - 120px);
+          @media (min-width: 900px) {
+            max-width: 100%;
+          }
           @media (min-width: 1600px) {
             width: calc(100% - 48px);
           }
@@ -293,6 +311,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
           padding-left: 4px;
           padding-right: 4px;
           border-collapse: collapse;
+          white-space: normal;
+          table-layout: fixed;
           td {
             padding: 6px 4px 0;
             font-size: 0.95em;

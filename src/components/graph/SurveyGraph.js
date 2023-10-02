@@ -555,12 +555,12 @@ export default class SurveyGraph extends Component {
         ? months > 1
           ? `${months} months`
           : `${months} month`
-        : AVG_DAYS_IN_MONTH + " days";
+        : `~${AVG_DAYS_IN_MONTH} days`;
       const daysDisplay =
         days && days < AVG_DAYS_IN_MONTH
           ? days > 1
-            ? `${days} days`
-            : `${days} day`
+            ? `~${days} days`
+            : `~${days} day`
           : "";
 
       return `Last ${monthsDisplay} ${daysDisplay}`;
@@ -572,7 +572,7 @@ export default class SurveyGraph extends Component {
     if (numMonths === 12) years = years + 1;
     const monthsDisplay =
       numMonths && numMonths < 12
-        ? numMonths + "  " + (numMonths > 1 ? "months" : "month")
+        ? "~" + numMonths + "  " + (numMonths > 1 ? "months" : "month")
         : "";
     const yearsDisplay = years + " " + (years > 1 ? "years" : "year");
     return `Last ${yearsDisplay} ${monthsDisplay}`;
