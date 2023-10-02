@@ -286,7 +286,7 @@ export default class BodyDiagram extends Component {
             type="image/svg+xml"
             alt="Body diagram"
             ref={this.BodyDiagramRef}
-            className="print-hidden"
+            className="diagram-container print-hidden"
           >
             Body diagram
           </object>
