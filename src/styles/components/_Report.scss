@@ -265,10 +265,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
             max-width: 100%;
           }
           @media (min-width: 1600px) {
-            width: calc(100% - 48px);
+            width: calc(100% - 64px);
           }
           @media (min-width: 1800px) {
-            width: calc(100% - 120px);
+            width: calc(100% - 160px);
           }
           .circle:hover {
             cursor: pointer;
@@ -316,7 +316,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
           td {
             padding: 6px 4px 0;
             font-size: 0.95em;
-            white-space: nowrap;
+            //white-space: nowrap;
+            vertical-align: top;
+            border-bottom: 1px solid $color-gray-lightest;
             line-height: 1.45;
             &.empty {
               min-width: 40px;
@@ -325,7 +327,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         td:not(:first-of-type) {
           text-align: center;
-          vertical-align: bottom;
+          vertical-align: middle;
         }
       }
     }
