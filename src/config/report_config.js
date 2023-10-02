@@ -35,7 +35,7 @@ const reportConfig = [
         name: "PEG",
         dataKey: "peg",
         title:
-          "Pain intensity, Enjoyment of life, General activity (PEG) 3 item pain scale",
+          "PEG (Pain intensity, Enjoyment of life, General activity 3 item pain scale)",
         description: () => (
           <div>
             <p>
@@ -198,7 +198,7 @@ const reportConfig = [
       {
         name: "PHQ-4",
         dataKey: "phq-4",
-        title: "Patient Health Questionnaire 4 item (PHQ-4)",
+        title: "PHQ-4 (Patient Health Questionnaire 4 item)",
         description: () => (
           <div>
             <p>
@@ -230,7 +230,7 @@ const reportConfig = [
       {
         name: "PC-PTSD-5",
         dataKey: "pc-ptsd-5",
-        title: "Primary Care PTSD Screen for DSM-5 (PC-PTSD-5)",
+        title: "PC-PTSD-5 (Primary Care PTSD Screen for DSM-5)",
         description: () => (
           <div>
             <p>
