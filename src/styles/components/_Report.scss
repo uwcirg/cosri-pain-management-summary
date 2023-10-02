@@ -482,4 +482,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
     width: 100%;
     height: calc(100vh - 152px);
   }
+  .icons-container {
+    svg {
+      color: $link-color;
+      border-color: $link-border-color;
+    }
+  }
 }

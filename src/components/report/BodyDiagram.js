@@ -13,6 +13,8 @@ export default class BodyDiagram extends Component {
     this.state = {
       summaryData: this.getSummaryData(),
       selectedDate: this.getMostRecentDate(),
+      selectedIndex: 0,
+      dates: this.getDates(),
     };
     this.BodyDiagramRef = React.createRef();
     this.downloadButtonRef = React.createRef();
@@ -20,6 +22,8 @@ export default class BodyDiagram extends Component {
     this.showDownloadButton = this.showDownloadButton.bind(this);
     this.hideDownloadButton = this.hideDownloadButton.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handleNextChange = this.handleNextChange.bind(this);
+    this.handlePrevChange = this.handlePrevChange.bind(this);
   }
 
   componentDidMount() {
@@ -34,11 +38,36 @@ export default class BodyDiagram extends Component {
       });
     }
   }
+  handlePrevChange() {
+    const prevIndex = this.state.selectedIndex - 1;
+    // console.log("Prev Index ", prevIndex);
+    if (prevIndex < 0) return;
+    this.setState(
+      {
+        selectedIndex: prevIndex,
+        selectedDate: this.state.dates[prevIndex],
+      },
+      () => this.fillInParts()
+    );
+  }
+  handleNextChange() {
+    const nextIndex = this.state.selectedIndex + 1;
+    // console.log("Next index ", nextIndex);
+    if (nextIndex > this.state.dates.length - 1) return;
+    this.setState(
+      {
+        selectedIndex: nextIndex,
+        selectedDate: this.state.dates[nextIndex],
+      },
+      () => this.fillInParts()
+    );
+  }
 
   handleSelectChange(e) {
     this.setState(
       {
         selectedDate: e.target.value,
+        selectedIndex: this.state.dates.findIndex((d) => d === e.target.value),
       },
       () => this.fillInParts()
     );
@@ -61,6 +90,12 @@ export default class BodyDiagram extends Component {
           : [description];
     });
     return answers;
+  }
+
+  getDates() {
+    const summaryData = this.getSummaryData();
+    if (!summaryData || !summaryData.length) return [];
+    return summaryData.map((item) => item.date);
   }
 
   getSummaryData() {
@@ -157,7 +192,11 @@ export default class BodyDiagram extends Component {
     const summaryData = this.state.summaryData;
     if (!summaryData || !summaryData.length) return null;
     if (summaryData.length === 1)
-      return <div className="text-small">{getDisplayDateFromISOString(summaryData[0].date)}</div>;
+      return (
+        <div className="text-small">
+          {getDisplayDateFromISOString(summaryData[0].date)}
+        </div>
+      );
     const dates = summaryData.map((item) => {
       return {
         key: getDisplayDateFromISOString(item.date),
@@ -250,7 +289,7 @@ export default class BodyDiagram extends Component {
           fontSize: "0.9rem",
           visibility: "hidden",
           color: "#777",
-          minWidth: "64px"
+          minWidth: "64px",
         }}
         title="download body diagram image"
       >
@@ -264,6 +303,17 @@ export default class BodyDiagram extends Component {
   render() {
     if (!this.state.summaryData || !this.state.summaryData.length) return null;
     console.log("body diagram data: ", this.getSummaryData());
+    const iconStyle = {
+      borderWidth: "1px",
+      borderStyle: "solid",
+      padding: "8px",
+      width: "20px",
+      height: "20px",
+      borderRadius: "100vmax",
+      cursor: "pointer",
+      position: "relative",
+      zIndex: 10,
+    };
     return (
       <div
         style={{
@@ -280,7 +330,7 @@ export default class BodyDiagram extends Component {
           {this.renderDateSelector()}
           {this.renderPrintOnlyLabel()}
         </div>
-        <div className="flex flex-center">
+        <div className="flex flex-center flex-column">
           <object
             data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
             type="image/svg+xml"
@@ -290,6 +340,26 @@ export default class BodyDiagram extends Component {
           >
             Body diagram
           </object>
+          <div className="flex flex-gap-1 icons-container">
+            <FontAwesomeIcon
+              icon="chevron-left"
+              title="Previous"
+              style={iconStyle}
+              onClick={this.handlePrevChange}
+              className={this.state.selectedIndex <= 0 ? "disabled" : ""}
+            ></FontAwesomeIcon>
+            <FontAwesomeIcon
+              icon="chevron-right"
+              title="Next"
+              style={iconStyle}
+              onClick={this.handleNextChange}
+              className={
+                this.state.selectedIndex >= this.state.dates.length - 1
+                  ? "disabled"
+                  : ""
+              }
+            ></FontAwesomeIcon>
+          </div>
         </div>
         {this.renderPrintOnlyImage()}
         {this.renderDownloadButton()}
