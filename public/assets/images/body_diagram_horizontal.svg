@@ -48,6 +48,9 @@ path {
 path.transparent {
     fill:rgba(128,128,128,0);
 }
+path.prev_location {
+   fill: #ececec
+}
 path.pain {
     fill:yellow;
 }

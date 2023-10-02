@@ -35,6 +35,7 @@ export default class BodyDiagram extends Component {
           this.printImageRef.current,
           this.getSourceDocument()
         );
+        this.drawAllParts();
       });
     }
   }
@@ -47,7 +48,7 @@ export default class BodyDiagram extends Component {
         selectedIndex: prevIndex,
         selectedDate: this.state.dates[prevIndex],
       },
-      () => this.fillInParts()
+      () => this.drawAllParts()
     );
   }
   handleNextChange() {
@@ -59,7 +60,7 @@ export default class BodyDiagram extends Component {
         selectedIndex: nextIndex,
         selectedDate: this.state.dates[nextIndex],
       },
-      () => this.fillInParts()
+      () => this.drawAllParts()
     );
   }
 
@@ -69,7 +70,7 @@ export default class BodyDiagram extends Component {
         selectedDate: e.target.value,
         selectedIndex: this.state.dates.findIndex((d) => d === e.target.value),
       },
-      () => this.fillInParts()
+      () => this.drawAllParts()
     );
   }
 
@@ -107,7 +108,8 @@ export default class BodyDiagram extends Component {
     });
   }
 
-  getAnswerData() {
+  getAnswerDataByDate(targetDate) {
+    const selectedDate = targetDate ? targetDate : this.state.selectedDate;
     // const testData = [{
     //   back_left_posterior_neck: ["pain"],
     //   back_midline_posterior_neck: ["pain"],
@@ -125,9 +127,9 @@ export default class BodyDiagram extends Component {
         ? this.state.summaryData
         : this.getSummaryData();
     if (!summaryData || !summaryData.length) return null;
-    const responses = this.state.selectedDate
-      ? summaryData.find((item) => item.date === this.state.selectedDate)
-      : summaryData;
+    const responses = selectedDate
+      ? summaryData.find((item) => item.date === selectedDate)
+      : summaryData[0];
     if (!responses) return false;
     const painLocations = responses.painLocations;
     let answers = null;
@@ -165,10 +167,27 @@ export default class BodyDiagram extends Component {
     }
     return sourceDocument;
   }
-  fillInParts() {
+  drawAllParts() {
+    this.fillInHistoryParts();
+    this.fillInParts();
+  }
+  fillInHistoryParts() {
     const doc = this.getSourceDocument();
     if (!doc) return;
-    const answers = this.getAnswerData();
+    if (!this.state.dates.length) return;
+    doc.querySelectorAll("svg path").forEach((node) => {
+      node.classList.remove("prev_location");
+    });
+    const startIndex = this.state.selectedIndex + 1;
+    if (startIndex > this.state.dates.length - 1) return;
+    for (let index = startIndex; index < this.state.dates.length; index++) {
+      this.fillInParts(this.state.dates[index], "prev_location");
+    }
+  }
+  fillInParts(targetDate, className) {
+    const doc = this.getSourceDocument();
+    if (!doc) return;
+    const answers = this.getAnswerDataByDate(targetDate);
     if (!answers) return;
     doc.querySelectorAll("svg path").forEach((node) => {
       node.classList.remove("pain");
@@ -181,7 +200,7 @@ export default class BodyDiagram extends Component {
         if (bodyPath) {
           // Add each class to element
           for (var i = 0; i < answers[body_part_path].length; i++) {
-            let classAdd = answers[body_part_path][i];
+            let classAdd = className ? className : answers[body_part_path][i];
             bodyPath.classList.add(classAdd);
           }
         }
@@ -227,6 +246,7 @@ export default class BodyDiagram extends Component {
     };
     const WORST_PAIN_COLOR = "red";
     const OTHER_LOCATION_COLOR = "yellow";
+    const PREV_LOCATION_COLOR = "#ececec";
     return (
       <div
         style={{
@@ -256,6 +276,18 @@ export default class BodyDiagram extends Component {
           ></div>
           <div>Other Locations</div>
         </div>
+        {
+          this.state.dates.length > 1 &&
+          <div className="flex">
+          <div
+            style={{
+              ...iconStyle,
+              background: PREV_LOCATION_COLOR,
+            }}
+          ></div>
+          <div>Previous Reported Locations</div>
+        </div>
+        }
       </div>
     );
   }
