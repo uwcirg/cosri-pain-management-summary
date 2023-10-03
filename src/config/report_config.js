@@ -102,7 +102,7 @@ const reportConfig = [
   {
     title: "Mental Health, Quality of Life and Sleep",
     dataKey: "mentalHealthSection",
-    questionnaires: ["phq9", "gad7", "phq-4", "pc-ptsd-5"],
+    questionnaires: ["phq9", "gad7", "phq-4", "pc-ptsd-5", "promis-global"],
     icon: (props) => (
       <UserIcon
         {...iconProps}
@@ -243,6 +243,21 @@ const reportConfig = [
               lifetime exposure to trauma, the respondent is instructed to
               respond to 5 additional yes/no questions about how that trauma
               exposure has affected them over the past month.
+            </p>
+          </div>
+        ),
+        component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
+      },
+      {
+        name: "PROMIS-GLOBAL",
+        dataKey: "promis-global",
+        title: "PROMIS short form - global",
+        description: () => (
+          <div>
+            <p>
+              The PROMIS Global Health form is a carefully standardized
+              psychometric instrument which measures the individuals global
+              health.
             </p>
           </div>
         ),

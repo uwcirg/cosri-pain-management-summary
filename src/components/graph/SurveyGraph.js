@@ -38,6 +38,7 @@ export default class SurveyGraph extends Component {
     this.downloadButtonRef = React.createRef();
     this.scaleLabelRefs = [];
     this.switchCheckboxRefs = [];
+    console.log("graph data ", this.state.graphData);
 
     // This binding is necessary to make `this` work in the callback
     this.addQuestionnaireToSurveyGraph =
@@ -289,8 +290,6 @@ export default class SurveyGraph extends Component {
 
   handleSwitchChange(e) {
     const itemValue = e.target.value;
-    console.log("WTF ? ", e.target);
-    console.log("IS it checked? ", e.target.checked);
     if (e.target.checked) {
       this.addQuestionnaireToSurveyGraph(itemValue);
     } else {
@@ -626,10 +625,14 @@ export default class SurveyGraph extends Component {
               >
                 {item < 1 || !inYears
                   ? !inYears
-                    ? (item ? item * 12 + "mo" : item)
+                    ? item
+                      ? item * 12 + "mo"
+                      : item
                     : // : (item / 0.25) % 1 === 0 ? (item*12)+"mo" : ""
                     item === arrNum[0] || (item / 0.75) % 1 === 0
-                    ? (item ? item * 12 + "mo" : item)
+                    ? item
+                      ? item * 12 + "mo"
+                      : item
                     : ""
                   : item % 1 === 0
                   ? item + "yr"
@@ -658,7 +661,7 @@ export default class SurveyGraph extends Component {
       bottom: 72,
       left: 56,
     };
-   // const parentWidth = 540;
+    // const parentWidth = 540;
     const parentWidth = 460;
     // 396
     const parentHeight = 508;
@@ -667,7 +670,7 @@ export default class SurveyGraph extends Component {
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
       .rangeRound([0, width])
-    .nice();
+      .nice();
     const yMaxValue = d3.max(data, (d) => (d.maxScore ? d.maxScore : d.score));
     const yScale = scaleLinear().domain([0, yMaxValue]).range([height, 0]);
     //.nice();
@@ -722,8 +725,14 @@ export default class SurveyGraph extends Component {
       scale: yScale,
       orient: "left",
       transform: "translate(0, 0)",
-      ticks: yMaxValue,
-      className: this.hasOnlyOneGraphLine() ? "show-max-min-labels" : "",
+      ticks: yMaxValue > 50 ? Math.ceil(yMaxValue / 4) : yMaxValue,
+      className: this.hasOnlyOneGraphLine()
+        ? this.state.graphData && this.state.graphData.length
+          ? this.state.graphData[0].comparisonToAlert === "lower"
+            ? "show-max-min-labels-reverse"
+            : "show-max-min-labels"
+          : ""
+        : "",
     };
 
     const graphWidth = width + margins.left + margins.right;
@@ -770,23 +779,35 @@ export default class SurveyGraph extends Component {
     };
 
     const renderMaxYValueLabel = () => {
+      const targetData = this.state.graphData[0];
+      if (!targetData) return null;
+      const labelText =
+        targetData.comparisonToAlert === "lower" ? "Better" : "Worse";
+      const labelFill =
+        targetData.comparisonToAlert === "lower" ? "green" : "red";
       const labelProps = {
         ...valueLabelProps,
         y: 0 - Math.ceil(margins.top / 2) - 10,
         x: 0 - Math.ceil(margins.left / 2) - 12,
-        fill: "red",
+        fill: labelFill,
       };
-      return <text {...labelProps}>Worse</text>;
+      return <text {...labelProps}>{labelText}</text>;
     };
 
     const renderMinYValueLabel = () => {
+      const targetData = this.state.graphData[0];
+      if (!targetData) return null;
+      const labelText =
+        targetData.comparisonToAlert === "lower" ? "Worse" : "Better";
+      const labelFill =
+        targetData.comparisonToAlert === "lower" ? "red" : "green";
       const labelProps = {
         ...valueLabelProps,
         y: 0 - Math.ceil(margins.top / 2) + graphHeight - margins.bottom - 4,
         x: 0 - Math.ceil(margins.left / 2) - 12,
-        fill: "green",
+        fill: labelFill,
       };
-      return <text {...labelProps}>Better</text>;
+      return <text {...labelProps}>{labelText}</text>;
     };
 
     const renderYAxisLabel = () => {
@@ -871,9 +892,6 @@ export default class SurveyGraph extends Component {
           onMouseLeave={this.hideDownloadButton}
         >
           <div className="flex">
-            {/* {!noStateEntry && (
-              <div className="survey-svg-container">{renderGraph()}</div>
-            )} */}
             <div style={{ position: "relative", width: "100%", gap: "24px" }}>
               {noStateEntry && (
                 <div
@@ -883,7 +901,7 @@ export default class SurveyGraph extends Component {
                     width: "100%",
                     height: "100%",
                     background: "#f4f5f64d",
-                    left: "16px"
+                    left: "16px",
                   }}
                 >
                   <FontAwesomeIcon icon="exclamation-circle" title="notice" />
@@ -893,21 +911,18 @@ export default class SurveyGraph extends Component {
                 </div>
               )}
               <div className="survey-svg-container">{renderGraph()}</div>
-              {this.shouldShowAccessories() && (
-                  this.renderSlider()
-              )}
+              {this.shouldShowAccessories() && this.renderSlider()}
             </div>
-            <div className="flex flex-gap-1" style={{marginTop: ((graphHeight/2) * -1) + "px"}}>{this.renderLegend()}</div>
+            <div
+              className="flex flex-gap-1"
+              style={{ marginTop: (graphHeight / 2) * -1 + "px" }}
+            >
+              {this.renderLegend()}
+            </div>
           </div>
           {this.renderPrintOnlyImage()}
           {this.renderDownloadButton()}
         </div>
-        {/* {this.shouldShowAccessories() && (
-          <React.Fragment>
-            {this.renderSlider()}
-           <div className="flex flex-gap-1">{this.renderLegend()}</div>
-          </React.Fragment>
-        )} */}
       </React.Fragment>
     );
   }

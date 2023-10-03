@@ -349,7 +349,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
      // min-width: 100%;
       width: 100%;
     //  height: 80px;
-      padding: 16px;
+      padding: 16px 8px;
       font-size: 0.7rem;
       display: flex;
       flex-direction: column;
@@ -377,6 +377,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           display: flex;
           gap: 6px;
           align-items: center;
+          justify-content: flex-end;
           flex: 1;
         }
         .text {
@@ -446,6 +447,18 @@ $selector-box-shadow: 0 2px 2px #383e40;
           .tick:last-of-type {
             text {
               color: red;
+            }
+          }
+        }
+        &.show-max-min-labels-reverse {
+          .tick:first-of-type {
+            text {
+              color: red;
+            }
+          }
+          .tick:last-of-type {
+            text {
+              color: green;
             }
           }
         }
