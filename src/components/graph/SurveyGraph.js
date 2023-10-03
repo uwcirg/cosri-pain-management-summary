@@ -823,7 +823,7 @@ export default class SurveyGraph extends Component {
         y: 0 - margins.left,
         x: 0 - graphHeight / 2,
         dy: "1em",
-        fontSize: "14px",
+        fontSize: "0.725rem",
         fontWeight: 600,
         fill: "currentcolor",
       };

@@ -55,6 +55,7 @@ export default class ScoringSummary extends Component {
     const comparisonToAlert = currentData && currentData.comparisonToAlert
       ? currentData.comparisonToAlert
       : ""; // TODO get it from response summary data
+    if (!comparisonToAlert) return "--";
     //debug
     //console.log("comparison to alert ", comparisonToAlert);
     if (!isNumber(currentScore) || !isNumber(prevScore)) return "--";
