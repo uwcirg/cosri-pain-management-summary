@@ -38,7 +38,7 @@ export default class SurveyGraph extends Component {
     this.downloadButtonRef = React.createRef();
     this.scaleLabelRefs = [];
     this.switchCheckboxRefs = [];
-    console.log("graph data ", this.state.graphData);
+    //console.log("graph data ", this.state.graphData);
 
     // This binding is necessary to make `this` work in the callback
     this.addQuestionnaireToSurveyGraph =
@@ -295,13 +295,6 @@ export default class SurveyGraph extends Component {
     } else {
       this.removeQuestionnaireToSurveyGraph(itemValue);
     }
-    // if (e.target.checked) {
-    //   this.addQuestionnaireToSurveyGraph(itemValue);
-    //   e.target.checked = false;
-    //   return;
-    // }
-    // e.target.checked = true;
-    // this.removeQuestionnaireToSurveyGraph(itemValue);
   }
 
   handleDateRangeChange(e) {

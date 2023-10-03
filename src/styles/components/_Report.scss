@@ -364,18 +364,18 @@ $selector-box-shadow: 0 2px 2px #383e40;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 4px;
        // gap: 24px;
         .legend__item--key {
-          min-width: 64px;
+         // min-width: 64px;
           display: flex;
           flex-wrap: nowrap;
           align-items: center;
           justify-content: space-between;
-          gap: 8px;
+          gap: 4px;
         }
         .select-icons-container {
           display: flex;
-          gap: 6px;
           align-items: center;
           justify-content: flex-end;
           flex: 1;
