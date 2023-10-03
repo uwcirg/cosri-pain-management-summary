@@ -122,7 +122,7 @@ define ResponsesSummary:
       //   when scoreSeverity = 'mild' then 'mild depression'
       //   else if score > 0 then 'minimal depression' else '' 
       // end,
-      comparisonToAlert: 'lower',
+      // comparisonToAlert: 'lower',
       totalAnsweredItems: Min({Length(
         (responsesOnly) O where 
           (PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)

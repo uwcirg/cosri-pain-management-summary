@@ -676,13 +676,6 @@
                            }
                         }
                      }, {
-                        "name" : "comparisonToAlert",
-                        "value" : {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                           "value" : "higher",
-                           "type" : "Literal"
-                        }
-                     }, {
                         "name" : "totalAnsweredItems",
                         "value" : {
                            "type" : "Min",

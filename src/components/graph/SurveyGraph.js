@@ -720,7 +720,9 @@ export default class SurveyGraph extends Component {
       transform: "translate(0, 0)",
       ticks: yMaxValue > 50 ? Math.ceil(yMaxValue / 4) : yMaxValue,
       className: this.hasOnlyOneGraphLine()
-        ? this.state.graphData && this.state.graphData.length
+        ? this.state.graphData &&
+          this.state.graphData.length &&
+          this.state.graphData[0].comparisonToAlert
           ? this.state.graphData[0].comparisonToAlert === "lower"
             ? "show-max-min-labels-reverse"
             : "show-max-min-labels"
@@ -774,10 +776,16 @@ export default class SurveyGraph extends Component {
     const renderMaxYValueLabel = () => {
       const targetData = this.state.graphData[0];
       if (!targetData) return null;
-      const labelText =
-        targetData.comparisonToAlert === "lower" ? "Better" : "Worse";
-      const labelFill =
-        targetData.comparisonToAlert === "lower" ? "green" : "red";
+      const labelText = targetData.comparisonToAlert
+        ? targetData.comparisonToAlert === "lower"
+          ? "Better"
+          : "Worse"
+        : "";
+      const labelFill = targetData.comparisonToAlert
+        ? targetData.comparisonToAlert === "lower"
+          ? "green"
+          : "red"
+        : "";
       const labelProps = {
         ...valueLabelProps,
         y: 0 - Math.ceil(margins.top / 2) - 10,
@@ -790,10 +798,16 @@ export default class SurveyGraph extends Component {
     const renderMinYValueLabel = () => {
       const targetData = this.state.graphData[0];
       if (!targetData) return null;
-      const labelText =
-        targetData.comparisonToAlert === "lower" ? "Worse" : "Better";
-      const labelFill =
-        targetData.comparisonToAlert === "lower" ? "red" : "green";
+      const labelText = targetData.comparisonToAlert
+        ? targetData.comparisonToAlert === "lower"
+          ? "Worse"
+          : "Better"
+        : "";
+      const labelFill = targetData.comparisonToAlert
+        ? targetData.comparisonToAlert === "lower"
+          ? "red"
+          : "green"
+        : "";
       const labelProps = {
         ...valueLabelProps,
         y: 0 - Math.ceil(margins.top / 2) + graphHeight - margins.bottom - 4,

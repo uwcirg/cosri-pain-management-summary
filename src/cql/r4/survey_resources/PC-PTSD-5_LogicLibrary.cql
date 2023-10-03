@@ -100,7 +100,7 @@ define ResponsesSummary:
       //   when depressionScore >= 3 then 'depression'
       //   else '' 
       // end,
-      comparisonToAlert: 'higher',
+      // comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length(
         (responsesOnly) O where 
           (PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)
