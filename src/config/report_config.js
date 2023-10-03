@@ -12,7 +12,7 @@ const iconProps = {
 };
 const reportConfig = [
   {
-    title: "Scoring Overview",
+    title: "Overview",
     dataKey: "scoringOverview",
     icon: (props) => (
       <ChartIcon {...iconProps} {...props} title="Score Overview" />

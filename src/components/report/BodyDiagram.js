@@ -276,18 +276,17 @@ export default class BodyDiagram extends Component {
           ></div>
           <div>Other Locations</div>
         </div>
-        {
-          this.state.dates.length > 1 &&
+        {this.state.dates.length > 1 && (
           <div className="flex">
-          <div
-            style={{
-              ...iconStyle,
-              background: PREV_LOCATION_COLOR,
-            }}
-          ></div>
-          <div>Previous Reported Locations</div>
-        </div>
-        }
+            <div
+              style={{
+                ...iconStyle,
+                background: PREV_LOCATION_COLOR,
+              }}
+            ></div>
+            <div>Previous Reported Locations</div>
+          </div>
+        )}
       </div>
     );
   }
@@ -332,9 +331,7 @@ export default class BodyDiagram extends Component {
       </button>
     );
   }
-  render() {
-    if (!this.state.summaryData || !this.state.summaryData.length) return null;
-    console.log("body diagram data: ", this.getSummaryData());
+  renderNavButtons() {
     const iconStyle = {
       borderWidth: "1px",
       borderStyle: "solid",
@@ -346,6 +343,33 @@ export default class BodyDiagram extends Component {
       position: "relative",
       zIndex: 10,
     };
+    return (
+      <div className="flex flex-gap-1 icons-container" style={{ gap: "12px" }}>
+        <FontAwesomeIcon
+          icon="chevron-left"
+          title="Previous"
+          style={iconStyle}
+          onClick={this.handlePrevChange}
+          className={this.state.selectedIndex <= 0 ? "disabled" : ""}
+        ></FontAwesomeIcon>
+        <FontAwesomeIcon
+          icon="chevron-right"
+          title="Next"
+          style={iconStyle}
+          onClick={this.handleNextChange}
+          className={
+            this.state.selectedIndex >= this.state.dates.length - 1
+              ? "disabled"
+              : ""
+          }
+        ></FontAwesomeIcon>
+      </div>
+    );
+  }
+  render() {
+    if (!this.state.summaryData || !this.state.summaryData.length) return null;
+    console.log("body diagram data: ", this.getSummaryData());
+
     return (
       <div
         style={{
@@ -372,26 +396,7 @@ export default class BodyDiagram extends Component {
           >
             Body diagram
           </object>
-          <div className="flex flex-gap-1 icons-container">
-            <FontAwesomeIcon
-              icon="chevron-left"
-              title="Previous"
-              style={iconStyle}
-              onClick={this.handlePrevChange}
-              className={this.state.selectedIndex <= 0 ? "disabled" : ""}
-            ></FontAwesomeIcon>
-            <FontAwesomeIcon
-              icon="chevron-right"
-              title="Next"
-              style={iconStyle}
-              onClick={this.handleNextChange}
-              className={
-                this.state.selectedIndex >= this.state.dates.length - 1
-                  ? "disabled"
-                  : ""
-              }
-            ></FontAwesomeIcon>
-          </div>
+          {this.renderNavButtons()}
         </div>
         {this.renderPrintOnlyImage()}
         {this.renderDownloadButton()}
