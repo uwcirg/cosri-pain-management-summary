@@ -246,7 +246,7 @@ export default class BodyDiagram extends Component {
     };
     const WORST_PAIN_COLOR = "red";
     const OTHER_LOCATION_COLOR = "yellow";
-    const PREV_LOCATION_COLOR = "#ececec";
+    const PREV_LOCATION_COLOR = "#e9e7e7";
     return (
       <div
         style={{
