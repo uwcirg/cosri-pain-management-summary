@@ -839,6 +839,7 @@ export default class SurveyGraph extends Component {
             lineID={`dataLine_${o.key}`}
             data={o.values}
             showPrintLabel={true}
+            showDataIdInLabel={true}
             {...props}
             {...{
               ...defaultLineProps,

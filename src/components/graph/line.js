@@ -49,6 +49,7 @@ class Line extends React.Component {
       dataPoints,
       className,
       showPrintLabel,
+      showDataIdInLabel,
     } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
 
@@ -102,6 +103,9 @@ class Line extends React.Component {
           .transition()
           .duration(animationDuration)
           .attr("r", expandedRadiusWidth);
+        if (showDataIdInLabel) {
+          select(`#dataIdText_${dataId}${i}`).style("display", "block");
+        }
         select(`#dataText_${dataId}${i}`).style("display", "block");
         select(`#dataRect_${dataId}${i}`).style("display", "block");
       })
@@ -113,6 +117,9 @@ class Line extends React.Component {
           .transition()
           .duration(animationDuration)
           .attr("r", radiusWidth);
+        if (showDataIdInLabel) {
+          select(`#dataIdText_${dataId}${i}`).style("display", "none");
+        }
         select(`#dataText_${dataId}${i}`).style("display", "none");
         select(`#dataRect_${dataId}${i}`).style("display", "none");
       });
@@ -128,7 +135,7 @@ class Line extends React.Component {
       .attr("x", (d) => xScale(d[xName]) - 44)
       .attr("y", (d) => yScale(d[yName]) + 12)
       .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
-      .attr("height", 26)
+      .attr("height", showDataIdInLabel ? 32 : 26)
       .style("display", "none")
       .style("stroke", "#777")
       .style("stroke-width", "0.5")
@@ -136,14 +143,34 @@ class Line extends React.Component {
       .style("fill", "white");
 
     //tooltip
+    if (showDataIdInLabel) {
+      select(node)
+        .selectAll(".data-id")
+        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .enter()
+        .append("text")
+        .attr("class", "data-id")
+        .attr("id", (d, i) => `dataIdText_${dataId}${i}`)
+        .attr("x", (d) => xScale(d[xName]) - 38)
+        .attr("y", (d) => yScale(d[yName]) + 24)
+        .style("display", "none")
+        .attr("font-size", 10)
+        .attr("text-anchor", "start")
+        .attr("font-weight", 600)
+        .text(function (d) {
+          return String(dataId).toUpperCase();
+        });
+    }
     select(node)
-      .selectAll("text")
+      .selectAll(".data-text")
       .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
       .enter()
       .append("text")
       .attr("id", (d, i) => `dataText_${dataId}${i}`)
-      .attr("x", (d) => xScale(d[xName]) - 36)
-      .attr("y", (d) => yScale(d[yName]) + 28)
+      .attr("class", "data-text")
+      .attr("x", (d) => xScale(d[xName]) - 38)
+      .attr("y", (d) => yScale(d[yName]) + 24)
+      .attr("dy", showDataIdInLabel ? "1.4em" : "0")
       .style("display", "none")
       .attr("font-size", 10)
       .attr("text-anchor", "start")
