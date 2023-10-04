@@ -38,6 +38,9 @@ input[type="range"] {
       color: $color-blue-dark;
       font-weight: 900;
     }
+    &.rotate {
+      transform: rotate(90deg)
+    }
   }
 }
 

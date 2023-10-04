@@ -132,13 +132,8 @@ export default class SurveyGraph extends Component {
 
     data.filter((item) => !isNaN(item[xFieldName]));
 
-    minDate = new Date();
-    minDate = new Date(
-      minDate.setDate(
-        minDate.getDate() -
-          Math.floor(30.44 * 12 * this.state.selectedDateRange)
-      )
-    );
+    const arrDates = data.map((item) => item[xFieldName]);
+    minDate = new Date(Math.min(...arrDates.map((d) => d.getTime())));
     minDate = new Date(minDate.setDate(minDate.getDate() - 30));
     const timeDiff = (maxDate.getTime() - minDate.getTime()) / 1000;
     const monthsDiff = Math.abs(Math.round(timeDiff / (60 * 60 * 24 * 7 * 4)));
@@ -148,14 +143,14 @@ export default class SurveyGraph extends Component {
     let calcMaxDate = new Date(maxDate.valueOf());
     maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
     maxDate = !(maxDate instanceof Date) ? new Date(maxDate) : maxDate;
-    // console.log(
-    //   "min date ",
-    //   minDate,
-    //   " max date ",
-    //   maxDate,
-    //   " baseline ",
-    //   baseLineDate
-    // );
+    console.log(
+      "min date ",
+      minDate,
+      " max date ",
+      maxDate,
+      " baseline ",
+      baseLineDate
+    );
     return {
       data: data,
       baseLineDate: baseLineDate,
@@ -462,6 +457,12 @@ export default class SurveyGraph extends Component {
         value: "5",
       },
     ];
+    if (this.state.selectedDateRange >= 10) {
+      items.push({
+        key: "Last 10 years",
+        value: 10,
+      });
+    }
     return (
       <div className="select print-hidden">
         <select
@@ -696,8 +697,8 @@ export default class SurveyGraph extends Component {
     };
 
     const tickInterval = (() => {
-      if (monthsDiff >= 114) return 24;
-      if (monthsDiff >= 108) return 20;
+      // if (monthsDiff >= 114) return 48;
+      if (monthsDiff >= 108) return 48;
       if (monthsDiff >= 96) return 16;
       if (monthsDiff >= 84) return 12;
       if (monthsDiff >= 72) return 8;
