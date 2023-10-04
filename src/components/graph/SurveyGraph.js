@@ -143,14 +143,14 @@ export default class SurveyGraph extends Component {
     let calcMaxDate = new Date(maxDate.valueOf());
     maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
     maxDate = !(maxDate instanceof Date) ? new Date(maxDate) : maxDate;
-    console.log(
-      "min date ",
-      minDate,
-      " max date ",
-      maxDate,
-      " baseline ",
-      baseLineDate
-    );
+    // console.log(
+    //   "min date ",
+    //   minDate,
+    //   " max date ",
+    //   maxDate,
+    //   " baseline ",
+    //   baseLineDate
+    // );
     return {
       data: data,
       baseLineDate: baseLineDate,
