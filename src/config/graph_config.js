@@ -12,7 +12,7 @@ export const defaultLineAttributes = {
 };
 
 export const COLORS = [
-  "#4a148c",
+  "#78281F",
   "#a387dd",
   "#e65100",
   "#5E9CBC",

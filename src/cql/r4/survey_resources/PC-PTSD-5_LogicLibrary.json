@@ -593,7 +593,7 @@
                   "identifier" : "totalItems",
                   "expression" : {
                      "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                     "value" : "9",
+                     "value" : "6",
                      "type" : "Literal"
                   }
                } ],

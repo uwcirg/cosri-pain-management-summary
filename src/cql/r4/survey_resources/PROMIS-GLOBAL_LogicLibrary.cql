@@ -103,7 +103,7 @@ define ResponsesSummary:
     //       else 'low' 
     //     end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
-    totalItems: 9
+    totalItems: 10
     return Tuple {
       id: I.id.value,
       qid: QuestionnaireName,

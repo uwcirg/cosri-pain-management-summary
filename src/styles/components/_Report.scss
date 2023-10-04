@@ -318,7 +318,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
             font-size: 0.95em;
             //white-space: nowrap;
             vertical-align: top;
-            border-bottom: 1px solid $color-gray-lightest;
+            &:not(:last-of-type) {
+              border-bottom: 1px solid $color-gray-lightest;
+            }
             line-height: 1.45;
             &.empty {
               min-width: 40px;
@@ -356,7 +358,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       justify-content: center;
       align-self: center;
       grid-gap: 8px;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
       align-self: flex-start;
       &__item {
