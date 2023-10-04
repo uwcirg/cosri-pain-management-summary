@@ -399,7 +399,7 @@ export default class BodyDiagram extends Component {
           {this.renderNavButtons()}
         </div>
         {this.renderPrintOnlyImage()}
-        {this.renderDownloadButton()}
+        {this.state.dates.length > 1 && this.renderDownloadButton()}
       </div>
     );
   }
