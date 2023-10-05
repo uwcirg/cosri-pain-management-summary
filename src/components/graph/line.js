@@ -107,6 +107,7 @@ class Line extends React.Component {
           select(`#dataIdText_${dataId}${i}`).style("display", "block");
         }
         select(`#dataText_${dataId}${i}`).style("display", "block");
+        select(`#dataDateText_${dataId}${i}`).style("display", "block");
         select(`#dataRect_${dataId}${i}`).style("display", "block");
       })
       .on("mouseout", (d, i) => {
@@ -121,6 +122,7 @@ class Line extends React.Component {
           select(`#dataIdText_${dataId}${i}`).style("display", "none");
         }
         select(`#dataText_${dataId}${i}`).style("display", "none");
+        select(`#dataDateText_${dataId}${i}`).style("display", "none");
         select(`#dataRect_${dataId}${i}`).style("display", "none");
       });
 
@@ -134,8 +136,8 @@ class Line extends React.Component {
       .attr("id", (d, i) => `dataRect_${dataId}${i}`)
       .attr("x", (d) => xScale(d[xName]) - 44)
       .attr("y", (d) => yScale(d[yName]) + 12)
-      .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
-      .attr("height", showDataIdInLabel ? 32 : 26)
+      .attr("width", (d) =>  Math.max(`${formatDate(d[xName])}`.length, `${d[yName]}`.length,`${dataId}`.length) * 6.2)
+      .attr("height", showDataIdInLabel ? 44 : 32)
       .style("display", "none")
       .style("stroke", "#777")
       .style("stroke-width", "0.5")
@@ -154,6 +156,7 @@ class Line extends React.Component {
         .attr("x", (d) => xScale(d[xName]) - 38)
         .attr("y", (d) => yScale(d[yName]) + 24)
         .style("display", "none")
+        .style("fill", "#777")
         .attr("font-size", 10)
         .attr("text-anchor", "start")
         .attr("font-weight", 600)
@@ -176,8 +179,27 @@ class Line extends React.Component {
       .attr("text-anchor", "start")
       .attr("font-weight", 600)
       .text(function (d) {
-        return `${formatDate(d[xName])}, ${d[yName]}`;
+        return d[yName];
       });
+    
+      select(node)
+      .selectAll(".data-date-text")
+      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+      .enter()
+      .append("text")
+      .attr("id", (d, i) => `dataDateText_${dataId}${i}`)
+      .attr("class", "data-date-text")
+      .attr("x", (d) => xScale(d[xName]) - 38)
+      .attr("y", (d) => yScale(d[yName]) + 24)
+      .attr("dy", showDataIdInLabel ? "2.8em" : "1.4em")
+      .style("display", "none")
+      .attr("font-size", 10)
+      .attr("text-anchor", "start")
+      .attr("font-weight", 600)
+      .text(function (d) {
+        return formatDate(d[xName]);
+      });
+
 
     //print label - PRINT ONLY
     if (showPrintLabel) {

@@ -273,6 +273,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
           .circle:hover {
             cursor: pointer;
           }
+          .rect-tooltip,
+          .data-id,
+          .data-text {
+            position: relative;
+            z-index: 100;
+          }
         }
         .no-entries {
           width: 60%;
