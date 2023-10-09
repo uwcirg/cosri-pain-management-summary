@@ -48,6 +48,9 @@ define QuestionnaireItems:
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PtsdQuestionnaire, 'PC-PTSD-5')
 
+define ReportOnce:
+  true
+  
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let

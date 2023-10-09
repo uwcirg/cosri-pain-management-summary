@@ -266,6 +266,15 @@
                } ]
             }
          }, {
+            "name" : "ReportOnce",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+               "value" : "true",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "ResponsesSummary",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -1104,6 +1113,13 @@
                         "value" : {
                            "name" : "totalItems",
                            "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "reportOnce",
+                        "value" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+                           "value" : "true",
+                           "type" : "Literal"
                         }
                      }, {
                         "name" : "questionnaireItems",

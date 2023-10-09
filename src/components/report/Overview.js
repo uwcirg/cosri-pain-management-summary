@@ -10,6 +10,8 @@ export default class Overview extends Component {
     let data = [];
     summaryData.forEach((item) => {
       if (!item.ResponsesSummary || !item.ResponsesSummary.length) return true;
+      console.log("item ", item)
+      if (item.ReportOnce) return true;
       data = [...data, ...item.ResponsesSummary];
     });
     return data;

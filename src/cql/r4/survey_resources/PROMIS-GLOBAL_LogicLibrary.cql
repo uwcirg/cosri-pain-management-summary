@@ -53,6 +53,9 @@ define QuestionnaireItems:
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PromisQuestionnaire, 'PROMIS-GLOBAL')
 
+define ReportOnce:
+  true
+  
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
@@ -129,6 +132,7 @@ define ResponsesSummary:
           and O.answer is not null
         ), totalItems}),
       totalItems: totalItems,
+      reportOnce: true,
       questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value
