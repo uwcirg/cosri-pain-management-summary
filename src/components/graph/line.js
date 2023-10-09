@@ -107,6 +107,7 @@ class Line extends React.Component {
           return;
         }
         select(`#circle_${dataId}${i}`)
+          .attr("r", radiusWidth * 2)
           .transition()
           .duration(animationDuration)
 
