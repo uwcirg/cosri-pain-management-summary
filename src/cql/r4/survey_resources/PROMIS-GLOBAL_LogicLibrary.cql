@@ -28,8 +28,8 @@ define question10LinkId: '/61583-1'
 define ScoringQuestionId: '/85523-9'
 define extensionAnswerIndex: 0
 define ScoreParams: Tuple {
-  minScore: 20,
-  maxScore: 80
+  minScore: 0,
+  maxScore: 100
 }
 
 // -----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ define QuestionnaireResponses:
 
 define ReportOnce:
   true
-  
+
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
@@ -84,16 +84,7 @@ define ResponsesSummary:
             when Question9Score is null then null
             when Question10Score is null then null
             else
-              Coalesce(Question1Score, 0) * 1 +
-              Coalesce(Question2Score, 0) * 1 +
-              Coalesce(Question3Score, 0) * 1 + 
-              Coalesce(Question4Score, 0) * 1 +
-              Coalesce(Question5Score, 0) * 1 +
-              Coalesce(Question6Score, 0) * 1 +
-              Coalesce(Question7Score, 0) * 1 +
-              Coalesce(Question8Score, 0) * 1 +
-              Coalesce(Question9Score, 0) * 1 +
-              Coalesce(Question10Score, 0) * 1
+              null // logic is complex see here https://docs.google.com/document/d/1HOYjVsiMl41eaU9Ph_q9aHBwcf97VmuoZORpiyihLio/edit#heading=h.86yqk2icwlwn
           end,
     
     score: itemTotalScore,
