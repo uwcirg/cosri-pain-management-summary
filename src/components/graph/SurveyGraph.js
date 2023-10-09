@@ -54,6 +54,7 @@ export default class SurveyGraph extends Component {
   }
   componentDidMount() {
     this.createScaleRefs();
+    this.createTooltipElement();
     setTimeout(
       () =>
         renderImageFromSVG(this.printImageRef.current, this.graphRef.current),
@@ -639,6 +640,14 @@ export default class SurveyGraph extends Component {
       </div>
     );
   }
+
+  createTooltipElement() {
+   //if (d3.select(".tooltip-donut")) return;
+    d3.select(".survey-svg-container")
+      .append("div")
+      .attr("class", "tooltip-donut")
+      .style("opacity", 0);
+  }
   render() {
     const noEntry =
       !this.state.originalGraphData || !this.state.originalGraphData.length;
@@ -661,6 +670,7 @@ export default class SurveyGraph extends Component {
     const parentHeight = 508;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;
+    console.log("width ", width, " height ", height)
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
       .rangeRound([0, width])
@@ -841,6 +851,9 @@ export default class SurveyGraph extends Component {
             data={o.values}
             showPrintLabel={true}
             showDataIdInLabel={true}
+            toolTipElementId=".survey-svg-container .tooltip-donut"
+            toolTipOffsetX={ width / 2 - margins.right}
+            toolTipOffsetY={(parentHeight - margins.bottom) / 2}
             {...props}
             {...{
               ...defaultLineProps,

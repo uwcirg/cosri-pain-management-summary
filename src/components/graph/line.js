@@ -1,4 +1,5 @@
 import React from "react";
+import * as d3 from "d3";
 import { select } from "d3-selection";
 import { timeFormat } from "d3-time-format";
 import { transition } from "d3-transition";
@@ -50,6 +51,9 @@ class Line extends React.Component {
       className,
       showPrintLabel,
       showDataIdInLabel,
+      toolTipElementId,
+      toolTipOffsetX,
+      toolTipOffsetY,
     } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
 
@@ -78,10 +82,13 @@ class Line extends React.Component {
     }
 
     const radiusWidth = dataPoints.radiusWidth ? dataPoints.radiusWidth : 0.55;
-    const expandedRadiusWidth = radiusWidth * 4;
     const animationDuration = 100;
     const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
 
+    let toolTipElement = toolTipElementId
+      ? select(`${toolTipElementId}`)
+      : null;
+  
     select(node)
       .selectAll("circle")
       .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
@@ -102,13 +109,22 @@ class Line extends React.Component {
         select(`#circle_${dataId}${i}`)
           .transition()
           .duration(animationDuration)
-          .attr("r", expandedRadiusWidth);
-        if (showDataIdInLabel) {
-          select(`#dataIdText_${dataId}${i}`).style("display", "block");
+
+        if (toolTipElement) {
+          toolTipElement
+            .html(
+              `${showDataIdInLabel ? dataId.toUpperCase() + "<br/>" : ""}
+              ${d[yName]}<br/>${formatDate(d[xName])}`
+            )
+
+            .style("left", d3.event.pageX - toolTipOffsetX + "px")
+            .style("top", d3.event.pageY - toolTipOffsetY + "px");
+          //Makes the tooltip element appear on hover:
+          toolTipElement.transition().duration(50).style("opacity", 1);
+        } else {
+          select(`#dataRect_${dataId}${i}`).style("display", "block");
+          select(`#dataText_${dataId}${i}`).style("display", "block");
         }
-        select(`#dataText_${dataId}${i}`).style("display", "block");
-        select(`#dataDateText_${dataId}${i}`).style("display", "block");
-        select(`#dataRect_${dataId}${i}`).style("display", "block");
       })
       .on("mouseout", (d, i) => {
         if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
@@ -118,12 +134,14 @@ class Line extends React.Component {
           .transition()
           .duration(animationDuration)
           .attr("r", radiusWidth);
-        if (showDataIdInLabel) {
-          select(`#dataIdText_${dataId}${i}`).style("display", "none");
+
+        //Makes the tooltip element disappear:
+        if (toolTipElement) {
+          toolTipElement.transition().duration("50").style("opacity", 0);
+        } else {
+          select(`#dataRect_${dataId}${i}`).style("display", "none");
+          select(`#dataText_${dataId}${i}`).style("display", "none");
         }
-        select(`#dataText_${dataId}${i}`).style("display", "none");
-        select(`#dataDateText_${dataId}${i}`).style("display", "none");
-        select(`#dataRect_${dataId}${i}`).style("display", "none");
       });
 
     //rect
@@ -134,72 +152,31 @@ class Line extends React.Component {
       .append("rect")
       .attr("class", "rect-tooltip")
       .attr("id", (d, i) => `dataRect_${dataId}${i}`)
-      .attr("x", (d) => xScale(d[xName]) - 44)
+      .attr("x", (d) => xScale(d[xName]) - 52)
       .attr("y", (d) => yScale(d[yName]) + 12)
-      .attr("width", (d) =>  Math.max(`${formatDate(d[xName])}`.length, `${d[yName]}`.length,`${dataId}`.length) * 6.2)
-      .attr("height", showDataIdInLabel ? 44 : 32)
+      .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
+      .attr("height", 20)
       .style("display", "none")
-      .style("stroke", "#777")
-      .style("stroke-width", "0.5")
-      .style("rx", 4)
-      .style("fill", "white");
+      .style("stroke", "black")
+      .style("stroke-width", "0.25")
+      .style("fill", "#FFF");
 
     //tooltip
-    if (showDataIdInLabel) {
-      select(node)
-        .selectAll(".data-id")
-        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-        .enter()
-        .append("text")
-        .attr("class", "data-id")
-        .attr("id", (d, i) => `dataIdText_${dataId}${i}`)
-        .attr("x", (d) => xScale(d[xName]) - 38)
-        .attr("y", (d) => yScale(d[yName]) + 24)
-        .style("display", "none")
-        .style("fill", "#777")
-        .attr("font-size", 10)
-        .attr("text-anchor", "start")
-        .attr("font-weight", 600)
-        .text(function (d) {
-          return String(dataId).toUpperCase();
-        });
-    }
     select(node)
-      .selectAll(".data-text")
+      .selectAll("text")
       .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
       .enter()
       .append("text")
       .attr("id", (d, i) => `dataText_${dataId}${i}`)
-      .attr("class", "data-text")
-      .attr("x", (d) => xScale(d[xName]) - 38)
-      .attr("y", (d) => yScale(d[yName]) + 24)
-      .attr("dy", showDataIdInLabel ? "1.4em" : "0")
+      .attr("x", (d) => xScale(d[xName]) - 48)
+      .attr("y", (d) => yScale(d[yName]) + 26)
       .style("display", "none")
-      .attr("font-size", 10)
+      .attr("font-size", "0.7rem")
       .attr("text-anchor", "start")
       .attr("font-weight", 600)
       .text(function (d) {
-        return d[yName];
+        return `${formatDate(d[xName])}, ${d[yName]}`;
       });
-    
-      select(node)
-      .selectAll(".data-date-text")
-      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append("text")
-      .attr("id", (d, i) => `dataDateText_${dataId}${i}`)
-      .attr("class", "data-date-text")
-      .attr("x", (d) => xScale(d[xName]) - 38)
-      .attr("y", (d) => yScale(d[yName]) + 24)
-      .attr("dy", showDataIdInLabel ? "2.8em" : "1.4em")
-      .style("display", "none")
-      .attr("font-size", 10)
-      .attr("text-anchor", "start")
-      .attr("font-weight", 600)
-      .text(function (d) {
-        return formatDate(d[xName]);
-      });
-
 
     //print label - PRINT ONLY
     if (showPrintLabel) {
@@ -212,7 +189,7 @@ class Line extends React.Component {
         .attr("x", (d) => xScale(d[xName]) - 12)
         .attr("y", (d) => yScale(d[yName]) - 12)
         .attr("class", "print-only print-title")
-        .attr("font-size", 11)
+        .attr("font-size", "0.7rem")
         .attr("text-anchor", "start")
         .attr("font-weight", 600)
         .text(function () {

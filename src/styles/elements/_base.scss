@@ -195,3 +195,17 @@ a {
 .disabled {
   opacity: 0.4;
 }
+
+.tooltip-donut {
+  position: absolute;
+  text-align: left;
+  padding: 8px;
+  background: #ffffff;
+  color: $color-body;
+  border: 1px solid $color-gray-lighter;
+  border-radius: 8px;
+  pointer-events: none;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  font-weight: 600;
+}
