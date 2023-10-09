@@ -852,8 +852,8 @@ export default class SurveyGraph extends Component {
             showPrintLabel={true}
             showDataIdInLabel={true}
             toolTipElementId=".survey-svg-container .tooltip-donut"
-            toolTipOffsetX={ width / 2 - margins.right}
-            toolTipOffsetY={(parentHeight - margins.bottom) / 2}
+            toolTipOffsetX={ width - margins.right }
+            toolTipOffsetY={(parentHeight - margins.top) / 2}
             {...props}
             {...{
               ...defaultLineProps,
