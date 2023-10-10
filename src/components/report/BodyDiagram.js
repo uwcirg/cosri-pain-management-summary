@@ -284,7 +284,7 @@ export default class BodyDiagram extends Component {
                 background: PREV_LOCATION_COLOR,
               }}
             ></div>
-            <div>Previous Reported Locations</div>
+            <div>Previously Reported Locations</div>
           </div>
         )}
       </div>
@@ -343,6 +343,7 @@ export default class BodyDiagram extends Component {
       position: "relative",
       zIndex: 10,
     };
+    if (!this.state.dates.length || !this.state.dates.length) return null;
     return (
       <div className="flex flex-gap-1 icons-container" style={{ gap: "12px" }}>
         <FontAwesomeIcon
