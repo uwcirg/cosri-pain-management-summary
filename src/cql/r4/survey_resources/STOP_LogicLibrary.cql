@@ -47,6 +47,9 @@ define QuestionnaireItems:
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], StopQuestionnaire, 'STOP')
 
+define ReportOnce:
+  true
+
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
