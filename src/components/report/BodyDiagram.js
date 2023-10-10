@@ -343,7 +343,7 @@ export default class BodyDiagram extends Component {
       position: "relative",
       zIndex: 10,
     };
-    if (!this.state.dates.length || !this.state.dates.length) return null;
+    if (!this.state.dates.length || !this.state.dates.length || this.state.dates.length < 2) return null;
     return (
       <div className="flex flex-gap-1 icons-container" style={{ gap: "12px" }}>
         <FontAwesomeIcon
