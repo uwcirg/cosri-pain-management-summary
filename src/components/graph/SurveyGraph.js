@@ -579,6 +579,8 @@ export default class SurveyGraph extends Component {
     console.log("selected value: ", selectedRange);
     console.log("arrNum: ", arrNum);
     const inYears = unit === "year";
+    const min = arrNum[0];
+    const max = arrNum[arrNum.length-1];
     if (arrNum.length <= 1) return null;
     return (
       <div className="slider-parent-container">
@@ -592,13 +594,13 @@ export default class SurveyGraph extends Component {
           <input
             type="range"
             id="slider"
-            min={arrNum[0]}
-            max={arrNum[arrNum.length - 1]}
+            min={min}
+            max={max}
             step={"any"}
             value={
               this.state.selectedDateRange
                 ? this.state.selectedDateRange
-                : arrNum[arrNum.length - 1]
+                : max
             }
             // defaultValue={arrNum[arrNum.length - 1]}
             className="slider"
@@ -614,7 +616,7 @@ export default class SurveyGraph extends Component {
                     ? "active"
                     : ""
                 } ${
-                  inYears && arrNum.length >= 10 && item && item < 1
+                  inYears && max >= 10 && item && item < 1
                     ? "rotate"
                     : ""
                 }`}
@@ -629,8 +631,8 @@ export default class SurveyGraph extends Component {
                       : item
                     : // : (item / 0.25) % 1 === 0 ? (item*12)+"mo" : ""
                     item === arrNum[0] ||
-                      (arrNum.length < 10 && (item / 0.25) % 1 === 0) ||
-                      (item / 0.75) % 1 === 0
+                      (max < 10 && (item / 0.25) % 1 === 0) ||
+                      (max < 10 && (item / 0.75) % 1 === 0)
                     ? item
                       ? item * 12 + "mo"
                       : item
@@ -670,10 +672,10 @@ export default class SurveyGraph extends Component {
       bottom: 72,
       left: 56,
     };
-    // const parentWidth = 540;
-    const parentWidth = 460;
-    // 396
-    const parentHeight = 508;
+    // const parentWidth = 460;
+    // const parentHeight = 508;
+    const parentWidth = 480;
+    const parentHeight = 440;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;
     console.log("width ", width, " height ", height);

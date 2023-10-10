@@ -1,9 +1,10 @@
 .slider-parent-container {
   //width: calc(100% - 88px);
-  width: calc(100% - 56px);
+ // width: calc(100% - 56px);
+ width: 100%;
   margin: 16px auto;
   position: relative;
-  left: 16px;
+ // left: 16px;
   padding-left: 16px;
   padding-right: 16px;
   // @media (min-width: 1200px) {
@@ -40,8 +41,14 @@ input[type="range"] {
       font-weight: 900;
     }
     &.rotate {
+      top: 8px;
+      &:first-of-type {
+        top: 16px;
+      }
       transform: rotate(-90deg);
-      top: 12px;
+      &:not(:first-of-type) {
+        left: 16px;
+      }
     }
   }
 }
