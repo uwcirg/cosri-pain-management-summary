@@ -2,6 +2,7 @@ import React from "react";
 import UserIcon from "../icons/UserIcon";
 import ChartIcon from "../icons/ChartIcon";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
+import PainIcon from "../icons/PainIcon";
 import OverViewComponent from "../components/report/Overview";
 import ResponsesSummary from "../components/report/ResponsesSummary";
 
@@ -24,7 +25,7 @@ const reportConfig = [
     dataKey: "painLimitationSection",
     questionnaires: ["peg", "body diagram"],
     icon: (props) => (
-      <MedicalHistoryIcon
+      <PainIcon
         {...iconProps}
         {...props}
         title="Pain and Limitation"
