@@ -102,7 +102,14 @@ const reportConfig = [
   {
     title: "Mental Health, Quality of Life and Sleep",
     dataKey: "mentalHealthSection",
-    questionnaires: ["phq9", "gad7", "phq-4", "pc-ptsd-5", "promis-global"],
+    questionnaires: [
+      "phq9",
+      "gad7",
+      "phq-4",
+      "pc-ptsd-5",
+      "promis-global",
+      "stop",
+    ],
     icon: (props) => (
       <UserIcon
         {...iconProps}
@@ -258,6 +265,31 @@ const reportConfig = [
               The PROMIS Global Health form is a carefully standardized
               psychometric instrument which measures the individuals global
               health.
+            </p>
+          </div>
+        ),
+        component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
+      },
+      {
+        name: "STOP",
+        dataKey: "stop",
+        title:
+          "STOP Questionnaire: A Tool to Screen Patients for Obstructive Sleep Apnea",
+        description: () => (
+          <div>
+            <p>
+              STOP Questionnaire: A Tool to Screen Patients for Obstructive
+              Sleep Apnea.
+            </p>
+            <p>
+              See{" "}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://pubs.asahq.org/anesthesiology/article/108/5/812/8377/STOP-QuestionnaireA-Tool-to-Screen-Patients-for"
+              >
+                reference
+              </a>
             </p>
           </div>
         ),
