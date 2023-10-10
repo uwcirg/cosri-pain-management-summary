@@ -613,7 +613,11 @@ export default class SurveyGraph extends Component {
                   Math.abs(this.state.selectedDateRange - item) < 0.001
                     ? "active"
                     : ""
-                } ${inYears && item && item < 1 ? "rotate": ""}`}
+                } ${
+                  inYears && arrNum.length >= 10 && item && item < 1
+                    ? "rotate"
+                    : ""
+                }`}
                 ref={this.scaleLabelRefs[index]}
                 datavalue={item}
                 dataunit={item < 1 ? "month" : "year"}
@@ -624,7 +628,9 @@ export default class SurveyGraph extends Component {
                       ? item * 12 + "mo"
                       : item
                     : // : (item / 0.25) % 1 === 0 ? (item*12)+"mo" : ""
-                    item === arrNum[0] || (item / 0.75) % 1 === 0
+                    item === arrNum[0] ||
+                      (arrNum.length < 10 && (item / 0.25) % 1 === 0) ||
+                      (item / 0.75) % 1 === 0
                     ? item
                       ? item * 12 + "mo"
                       : item
@@ -642,7 +648,7 @@ export default class SurveyGraph extends Component {
   }
 
   createTooltipElement() {
-   //if (d3.select(".tooltip-donut")) return;
+    //if (d3.select(".tooltip-donut")) return;
     d3.select(".survey-svg-container")
       .append("div")
       .attr("class", "tooltip-donut")
@@ -670,7 +676,7 @@ export default class SurveyGraph extends Component {
     const parentHeight = 508;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;
-    console.log("width ", width, " height ", height)
+    console.log("width ", width, " height ", height);
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
       .rangeRound([0, width])
@@ -852,7 +858,7 @@ export default class SurveyGraph extends Component {
             showPrintLabel={true}
             showDataIdInLabel={true}
             toolTipElementId=".survey-svg-container .tooltip-donut"
-            toolTipOffsetX={ width - margins.right }
+            toolTipOffsetX={width - margins.right}
             toolTipOffsetY={(parentHeight - margins.bottom) / 2}
             {...props}
             {...{
