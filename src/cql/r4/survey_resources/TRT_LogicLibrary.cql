@@ -16,7 +16,6 @@ codesystem "LOINC": 'http://loinc.org'
 define QuestionnaireName: 'trt'
 define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/trt'
 define ExcludeFromScoring: true
-define ExcludeFromGraph: true
 
 // -----------------------------------------------------------------------------
 // PATIENT INFORMATION

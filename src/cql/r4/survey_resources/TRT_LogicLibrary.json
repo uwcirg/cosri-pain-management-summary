@@ -74,15 +74,6 @@
                "type" : "Literal"
             }
          }, {
-            "name" : "ExcludeFromGraph",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
-               "value" : "true",
-               "type" : "Literal"
-            }
-         }, {
             "name" : "Patient",
             "context" : "Patient",
             "expression" : {
