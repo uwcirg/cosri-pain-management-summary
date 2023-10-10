@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Score from "./Score";
-import {getDisplayDateFromISOString} from "../../helpers/utility";
+import { getDisplayDateFromISOString } from "../../helpers/utility";
 
 export default class ResponsesSummary extends Component {
   constructor() {
@@ -190,10 +190,7 @@ export default class ResponsesSummary extends Component {
           {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
 
           <div className="icon">
-            <FontAwesomeIcon
-              icon="chevron-right"
-              title="expand/collapse"
-            />
+            <FontAwesomeIcon icon="chevron-right" title="expand/collapse" />
           </div>
         </div>
       </td>
@@ -220,6 +217,8 @@ export default class ResponsesSummary extends Component {
                       summary,
                       `score_cell_${index}`
                     );
+                  else if (column.key === "responses_completed")
+                    return this.renderNumResponsesTableCell(summary)
                   else if (column.key === "responses")
                     return this.renderResponsesLinkTableCell(
                       this.getDisplayDate(currentResponses),

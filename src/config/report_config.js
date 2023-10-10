@@ -297,5 +297,44 @@ const reportConfig = [
       },
     ],
   },
+  {
+    title: "Treatment History",
+    dataKey: "treatmentHistorySection",
+    questionnaires: ["trt"],
+    icon: (props) => (
+      <MedicalHistoryIcon {...iconProps} {...props} title="Treatment History" />
+    ),
+    sections: [
+      {
+        name: "TRT",
+        dataKey: "trt",
+        title: "PainTracker TRT questionnaire",
+        description: () => (
+          <div>
+            <p>
+              PainTracker TRT questionnaire surveys, to the best of the patient's recollection,
+              how many different healthcare providers the patient has seen in
+              the <b>LAST 6 MONTHS</b> for pain.
+            </p>
+          </div>
+        ),
+        component: (props) => (
+          <ResponsesSummary
+            columns={[
+              {
+                key: "responses_completed",
+                description: "Responses completed",
+              },
+              {
+                key: "responses",
+                description: "Responses",
+              },
+            ]}
+            {...props}
+          ></ResponsesSummary>
+        ),
+      },
+    ],
+  },
 ];
 export default reportConfig;
