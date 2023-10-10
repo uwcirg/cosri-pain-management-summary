@@ -458,7 +458,7 @@ export default class SurveyGraph extends Component {
         value: "5",
       },
     ];
-    if (this.state.selectedDateRange >= 10) {
+    if (this.getScaleInfoForSlider().max >= 10) {
       items.push({
         key: "Last 10 years",
         value: 10,
@@ -613,7 +613,7 @@ export default class SurveyGraph extends Component {
                   Math.abs(this.state.selectedDateRange - item) < 0.001
                     ? "active"
                     : ""
-                }`}
+                } ${inYears && item && item < 1 ? "rotate": ""}`}
                 ref={this.scaleLabelRefs[index]}
                 datavalue={item}
                 dataunit={item < 1 ? "month" : "year"}

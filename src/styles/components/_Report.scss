@@ -35,6 +35,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
       }
     }
   }
+  .summary__notice {
+    padding: 16px;
+    margin-bottom: 8px;
+    background-color: $color-beige;
+    font-size: 1.1rem;
+    color: darken($color-warning-dark, 5%);
+  }
   .summary__display {
     padding: 8px;
     .sections {
@@ -214,7 +221,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
     width: 100%;
     min-height: 80px;
     gap: 4px;
+   // flex-wrap: wrap;
     flex-wrap: wrap;
+    @media (min-width: 1200px) {
+      flex-wrap: nowrap;
+    }
     justify-content: center;
     .panel {
       border: 2px solid $color-black;
@@ -224,13 +235,14 @@ $selector-box-shadow: 0 2px 2px #383e40;
       flex-direction: column;
       background: $color-white;
       gap: 2;
-      flex: 1 1 0;
-      @media (min-width: 900px) {
-        & {
-          flex: 0 0 42%;
-          min-width: 42%;
-        }
-      }
+   //   flex: 1 1 0;
+      flex: 1 1;
+      // @media (min-width: 900px) {
+      //   & {
+      //     flex: 0 0 42%;
+      //     min-width: 42%;
+      //   }
+      // }
       &.graph {
         display: flex;
         flex: 1 1 100%;
@@ -238,17 +250,17 @@ $selector-box-shadow: 0 2px 2px #383e40;
         flex-direction: column;
         gap: 12px;
         align-items: center;
-        @media (min-width: 900px) {
-          & {
-            flex: 0 0 calc(55% - 48px);
-            min-width: calc(55% - 48px);
-          }
-        }
-        @media (min-width: 1400px) {
-          & {
-            flex: 1 1 0;
-          }
-        }
+        // @media (min-width: 900px) {
+        //   & {
+        //     flex: 0 0 calc(55% - 48px);
+        //     min-width: calc(55% - 48px);
+        //   }
+        // }
+        // @media (min-width: 1400px) {
+        //   & {
+        //     flex: 1 1 0;
+        //   }
+        // }
        // min-width: calc(50% - 48px);
        // max-width: calc(100% - 320px);
         padding-left: 16px;
@@ -259,16 +271,24 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         .survey-graph {
        //   flex: 1 1;
-          width: 100%;
-          max-width: calc(100% - 120px);
-          @media (min-width: 900px) {
+          // width: 100%;
+          // max-width: calc(100% - 120px);
+          width: calc(100% - 12rem);
+          @media (min-width: 992px) {
+            width: calc(100% - 16rem);
+          }
+          @media (min-width: 1200px) {
+            width: 100%;
+          }
+          @media (min-width: 1400px) {
+            width: calc(100% - 2rem);
             max-width: 100%;
           }
           @media (min-width: 1600px) {
-            width: calc(100% - 64px);
+            width: calc(100% - 8rem);
           }
           @media (min-width: 1800px) {
-            width: calc(100% - 120px);
+            width: calc(100% - 24rem);
           }
           .circle:hover {
             cursor: pointer;
@@ -294,6 +314,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       &.no-entries {
         border: 0;
         padding: 0;
+        flex: 1 1;
       }
       &__item {
         align-self: center;

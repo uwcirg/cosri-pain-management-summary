@@ -126,13 +126,28 @@ export default class Report extends Component {
     );
   }
 
+  renderNoDataNotice() {
+    return (
+      <div className="flex flex-start summary__notice">
+        <FontAwesomeIcon icon="exclamation-circle" title="notice" />
+        The system indicates that there is no data for this patient.  If you believe this is an error, please contact us.
+      </div>
+    );
+  }
+
   render() {
     const { summaryData } = this.props;
+    const hasNoData =
+      !summaryData ||
+      !summaryData.length ||
+      !summaryData.find(
+        (item) => item.ResponsesSummary && item.ResponsesSummary.length
+      );
     return (
       <div className="report summary">
         <SideNav id="reportSideNavButton"></SideNav>
         <div className="summary__display">
-          {/* {this.renderTopPanel(summaryData)} */}
+          {hasNoData && this.renderNoDataNotice()}
           <div className="sections">
             {reportSummarySections.map((section, index) => {
               return (

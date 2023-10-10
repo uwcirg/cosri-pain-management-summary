@@ -31,6 +31,7 @@ input[type="range"] {
     font-size: 12px;
     position: relative;
     display: block;
+    min-width: 1px;
     &:first-of-type {
         flex: 0
     }
@@ -39,7 +40,8 @@ input[type="range"] {
       font-weight: 900;
     }
     &.rotate {
-      transform: rotate(90deg)
+      transform: rotate(-90deg);
+      top: 12px;
     }
   }
 }
