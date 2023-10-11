@@ -163,28 +163,42 @@ $selector-box-shadow: 0 2px 2px #383e40;
     thead th {
       position: sticky;
       top: 0;
-      z-index: 1;
+      z-index: 2;
+      background: #FFF;
     }
-    table thead th:first-child,
+    table thead th:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      background-color: #FFF;
+    }    
     table tbody td:first-child {
       position: sticky;
       left: 0;
-      z-index: 2;
+      z-index: 1;
     }
-    .fixed-cell {
+    td.fixed-cell {
       position: sticky;
       left: 0;
-      z-index: 2;
+      z-index: 1;
       background-color: #FFF;
     }
-    th:not(.fixed-cell),
+    th.fixed-cell {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      background: #FFF;
+    }
+  //  th:not(.fixed-cell),
     td:not(.fixed-cell) {
-      z-index: 1;
+      z-index: 0;
       position: relative;
+
     }
   }
   .response-table-wrapper {
     max-width: 1016px;
+    max-height: 480px;
     overflow-y: auto;
     overflow-x: auto;
     margin-left: 24px;
@@ -207,7 +221,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
     th {
       text-align: left;
-      border-bottom: 1px solid $color-gray-lighter;
+      border-bottom: 1px solid $color-blue;
       padding: 8px;
       white-space: nowrap;
       &:not(:last-of-type) {
@@ -223,6 +237,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
       line-height: 1.4;
       &:not(:last-of-type) {
         border-right: 1px solid $color-gray-lighter;
+        &.fixed-cell {
+          border-right: 1px solid $color-blue;
+        }
       }
       &:not(:first-of-type) {
         white-space: nowrap;

@@ -107,12 +107,12 @@ export default class ResponsesSummary extends Component {
       <table className={`response-table ${this.state.open ? "active" : ""}`} ref={this.tableRef}>
         <thead>
           <tr>
-            <th className="fixed-cell">{/* no need for header for question */}</th>
+            <th className="fixed-cell">Questions</th>
             {summaryItems
               .slice(0, endIndex ? endIndex : summaryItems.length)
               .map((item, index) => {
                 return (
-                  <th key={`response_header_${item.id} ${index===0?"fixed-cell": ""}`}>
+                  <th key={`response_header_${item.id}`}>
                     {this.getDisplayDate(item)}
                   </th>
                 );
