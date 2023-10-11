@@ -8,6 +8,10 @@ export default class ResponsesSummary extends Component {
   constructor() {
     super(...arguments);
     this.state = { open: false };
+    this.tableRef = React.createRef();
+  }
+  componentDidMount() {
+    this.adjustTableCellsHeight();
   }
   getMatchedAnswerTextByLinkId(summary, linkId, answerValue) {
     const reportedAnswerValue = answerValue == null ? "--" : answerValue;
@@ -77,20 +81,38 @@ export default class ResponsesSummary extends Component {
     if (!summary || !summary.ResponsesSummary) return 0;
     return summary.ResponsesSummary.length;
   }
+  adjustTableCellsHeight() {
+    const tableRef = this.tableRef.current;
+    console.log("table Ref ", tableRef)
+    if (!tableRef) return;
+    const rows = tableRef.querySelectorAll("tr");
+    rows.forEach((row) => {
+      const tableCells = row.querySelectorAll("td");
+      let cellHeight = 48;
+      tableCells.forEach((tableCell, index) => {
+        if (index === 0) {
+          cellHeight = tableCell.offsetHeight;
+          return true;
+        }
+        console.log("cell height ", tableCell.getBoundingClientRect())
+          tableCell.style.height = cellHeight;
+      })
+    })
+  }
   renderResponses(summaryItems, endIndex) {
     if (!summaryItems || !summaryItems.length) {
       return <div>No recorded responses</div>;
     }
     return (
-      <table className={`response-table ${this.state.open ? "active" : ""}`}>
+      <table className={`response-table ${this.state.open ? "active" : ""}`} ref={this.tableRef}>
         <thead>
           <tr>
-            <th>{/* no need for header for question */}</th>
+            <th className="fixed-cell">{/* no need for header for question */}</th>
             {summaryItems
               .slice(0, endIndex ? endIndex : summaryItems.length)
-              .map((item) => {
+              .map((item, index) => {
                 return (
-                  <th key={`response_header_${item.id}`}>
+                  <th key={`response_header_${item.id} ${index===0?"fixed-cell": ""}`}>
                     {this.getDisplayDate(item)}
                   </th>
                 );
@@ -100,7 +122,7 @@ export default class ResponsesSummary extends Component {
         <tbody>
           {summaryItems[0].responses.map((item, rindex) => (
             <tr key={`response_row_${item.linkId}_${rindex}`}>
-              <td>
+              <td className="fixed-cell">
                 {item.question.includes("score") ? (
                   <b>{item.question}</b>
                 ) : (
@@ -259,8 +281,10 @@ export default class ResponsesSummary extends Component {
           </tbody>
         </table>
         <div className={`accordion-content ${this.state.open ? "active" : ""}`}>
-          <div className="response-table-wrapper print-hidden">
-            {this.renderResponses(summary.ResponsesSummary)}
+          <div className="responses-table-outer-wrapper print-hidden">
+            <div className="response-table-wrapper print-hidden">
+              {this.renderResponses(summary.ResponsesSummary)}
+            </div>
           </div>
           <div className="print-only">
             {this.renderResponses(summary.ResponsesSummary, 3)}

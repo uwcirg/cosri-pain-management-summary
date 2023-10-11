@@ -119,6 +119,9 @@
     }
     .response-table {
       margin: 8px;
+      .fixed-cell {
+        position: relative !important;
+      }
       th:first-of-type {
         width: 42% !important;
       }
