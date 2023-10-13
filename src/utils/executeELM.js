@@ -74,7 +74,7 @@ async function executeELM(collector, oResourceTypes) {
         return Promise.allSettled(requests).then((requestResults) => {
           let resources = [];
           requestResults.forEach((result) => {
-            const {status, value} = result;
+            const { status, value } = result;
             console.log("status ", status, " result ", value);
             if (status === "rejected") return true;
             if (!value || !value.length) return true;
@@ -159,9 +159,9 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
     const qKey = entries[0][0];
     const elm = entries[0][1];
     if (!elm) {
-    //   evalResults.push({
-    //     qKey: null,
-    //   });
+      //   evalResults.push({
+      //     qKey: null,
+      //   });
       return true;
     }
     let surveyLib = new cql.Library(
@@ -180,9 +180,9 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
     let surveyResults;
     try {
       surveyResults = surveyExecutor.exec(surveyPatientSource);
-    } catch(e) {
+    } catch (e) {
       surveyResults = null;
-      console.log(`Error executing CQL for ${qKey} `, e)
+      console.log(`Error executing CQL for ${qKey} `, e);
     }
     let evalSurveyResult;
     if (surveyResults && surveyResults.patientResults) {
@@ -206,7 +206,9 @@ function getLibraryForInstruments() {
     (async () => {
       let elmJson = null;
       elmJson = await import(
-        `../cql/r4/survey_resources/${(libId.replace(/\s/g, "_")).toUpperCase()}_LogicLibrary.json`
+        `../cql/r4/survey_resources/${libId
+          .replace(/\s/g, "_")
+          .toUpperCase()}_LogicLibrary.json`
       )
         .then((module) => module.default)
         .catch((e) => {
@@ -330,7 +332,7 @@ function updateSearchParams(params, release, type) {
     if (release === FHIR_RELEASE_VERSION_4) {
       switch (type) {
         case "Questionnaire":
-          params.set("name:contains", INSTRUMENT_LIST.join(","));
+          params.set("_id", INSTRUMENT_LIST.join(","));
           break;
         case "QuestionnaireResponse":
           params.set("_count", 200);

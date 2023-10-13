@@ -12,7 +12,7 @@ include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
 codesystem "LOINC": 'http://loinc.org'
 
-
+define QuestionnaireID: 'CIRG-PHQ9'
 define QuestionnaireName: 'phq9'
 define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/phq9'
 define question1LinkId: '/44250-9'
@@ -43,7 +43,10 @@ context Patient
 
 // Load Questionnaire
 define Phq9Questionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+
+define Questionnaire:
+  Phq9Questionnaire
 
 define QuestionnaireItems:
   (Phq9Questionnaire) Q 

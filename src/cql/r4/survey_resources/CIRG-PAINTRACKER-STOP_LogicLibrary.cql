@@ -12,7 +12,7 @@ include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
 codesystem "LOINC": 'http://loinc.org'
 
-
+define QuestionnaireID: 'CIRG-PainTracker-STOP'
 define QuestionnaireName: 'stop'
 define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/stop'
 define question1LinkId: 'STOP-0'
@@ -38,7 +38,10 @@ context Patient
 
 // Load Questionnaire
 define StopQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+
+define Questionnaire:
+  StopQuestionnaire
 
 define QuestionnaireItems:
   (StopQuestionnaire) Q 

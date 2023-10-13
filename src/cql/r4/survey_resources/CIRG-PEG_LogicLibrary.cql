@@ -12,7 +12,7 @@ include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
 codesystem "LOINC": 'http://loinc.org'
 
-
+define QuestionnaireID: 'CIRG-PEG'
 define QuestionnaireName: 'peg'
 define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/peg'
 define Question1LinkId: '75893-8'
@@ -38,7 +38,10 @@ context Patient
 
 // Load Questionnaire
 define PegQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+
+define Questionnaire:
+  PegQuestionnaire
 
 define QuestionnaireItems:
   (PegQuestionnaire) Q 

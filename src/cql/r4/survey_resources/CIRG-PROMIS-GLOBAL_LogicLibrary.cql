@@ -12,7 +12,7 @@ include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
 codesystem "LOINC": 'http://loinc.org'
 
-
+define QuestionnaireID: 'CIRG-PROMIS-GLOBAL'
 define QuestionnaireName: 'promis-global'
 define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/promis-global'
 define question1LinkId: '/61577-3'
@@ -41,10 +41,12 @@ context Patient
 //------------------------------------------------------------------------------
 // QUESTIONNAIRE AND QUESTIONNAIRERESPONSE LOGIC
 //------------------------------------------------------------------------------
-
 // Load Questionnaire
 define PromisQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+
+define Questionnaire:
+  PromisQuestionnaire
 
 define QuestionnaireItems:
   (PromisQuestionnaire) Q 

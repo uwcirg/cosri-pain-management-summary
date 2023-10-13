@@ -47,6 +47,15 @@
       },
       "statements" : {
          "def" : [ {
+            "name" : "QuestionnaireID",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "CIRG-PHQ-4",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "QuestionnaireName",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -161,6 +170,9 @@
                   "libraryName" : "LogicHelper",
                   "type" : "FunctionRef",
                   "operand" : [ {
+                     "name" : "QuestionnaireID",
+                     "type" : "ExpressionRef"
+                  }, {
                      "name" : "QuestionnaireName",
                      "type" : "ExpressionRef"
                   }, {
@@ -168,6 +180,14 @@
                      "type" : "ExpressionRef"
                   } ]
                }
+            }
+         }, {
+            "name" : "Questionnaire",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "Phq4Questionnaire",
+               "type" : "ExpressionRef"
             }
          }, {
             "name" : "QuestionnaireItems",

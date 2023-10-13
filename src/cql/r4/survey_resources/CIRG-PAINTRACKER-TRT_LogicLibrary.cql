@@ -12,7 +12,7 @@ include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
 codesystem "LOINC": 'http://loinc.org'
 
-
+define QuestionnaireID: 'CIRG-PainTracker-TRT'
 define QuestionnaireName: 'trt'
 define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/trt'
 define ExcludeFromScoring: true
@@ -29,7 +29,10 @@ context Patient
 
 // Load Questionnaire
 define TrtQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+
+define Questionnaire:
+  TrtQuestionnaire
 
 define QuestionnaireItems:
   (TrtQuestionnaire) Q 

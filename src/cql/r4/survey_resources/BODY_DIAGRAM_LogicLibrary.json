@@ -112,6 +112,12 @@
                   "libraryName" : "LogicHelper",
                   "type" : "FunctionRef",
                   "operand" : [ {
+                     "asType" : "{urn:hl7-org:elm-types:r1}String",
+                     "type" : "As",
+                     "operand" : {
+                        "type" : "Null"
+                     }
+                  }, {
                      "name" : "QuestionnaireName",
                      "type" : "ExpressionRef"
                   }, {

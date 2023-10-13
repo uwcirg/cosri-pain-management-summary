@@ -7,6 +7,7 @@ import InfoModal from "./InfoModal";
 import SideNav from "./SideNav";
 import Version from "../elements/Version";
 import reportSummarySections from "../config/report_config";
+import { getQuestionnaireDescription } from "../helpers/utility";
 
 export default class Report extends Component {
   constructor() {
@@ -63,7 +64,7 @@ export default class Report extends Component {
             summaryData && summaryData.length
               ? summaryData.filter(
                   (o) =>
-                    String(o.dataKey).toLowerCase() ===
+                    String(o.QuestionnaireName).toLowerCase() ===
                     String(item.dataKey).toLowerCase()
                 )[0]
               : null;
@@ -72,7 +73,7 @@ export default class Report extends Component {
               className="sub-section"
               key={`subsection_${item.dataKey}_${index}`}
             >
-              {this.renderSubSectionHeader(item)}
+              {this.renderSubSectionHeader(item, matchedData)}
               {item.component && item.component({ summary: matchedData })}
             </div>
           );
@@ -80,11 +81,11 @@ export default class Report extends Component {
       </div>
     );
   }
-  renderSubSectionHeader(item) {
+  renderSubSectionHeader(item, summaryData) {
     return (
       <h3 id={`${item.dataKey}_title`} className="sub-section__header">
         {this.renderSubSectionTitle(item)}
-        {this.renderSubSectionInfo(item)}
+        {this.renderSubSectionInfo(item, summaryData)}
       </h3>
     );
   }
@@ -101,27 +102,31 @@ export default class Report extends Component {
       </span>
     );
   }
-  renderSubSectionInfo(item) {
+  renderSubSectionInfo(sectionItem, summaryData) {
+    if (!summaryData) return null;
+    let item = sectionItem;
+    item.description = getQuestionnaireDescription(summaryData.Questionnaire);
+
+    if (!item.description) return null;
+
     return (
       <span className="sub-section__header__info">
-        {item.description && (
-          <div
-            onClick={(event) => this.handleOpenModal(item, event)}
-            onKeyDown={(event) => this.handleOpenModal(item, event)}
-            role="button"
-            tabIndex={0}
-            aria-label={item.dataKey}
+        <div
+          onClick={(event) => this.handleOpenModal(item, event)}
+          onKeyDown={(event) => this.handleOpenModal(item, event)}
+          role="button"
+          tabIndex={0}
+          aria-label={item.dataKey}
+        >
+          <span
+            className="info-icon"
+            icon="info-circle"
+            title={`more info: ${item.dataKey}`}
+            role="tooltip"
           >
-            <span
-              className="info-icon"
-              icon="info-circle"
-              title={`more info: ${item.dataKey}`}
-              role="tooltip"
-            >
-              more info
-            </span>
-          </div>
-        )}
+            more info
+          </span>
+        </div>
       </span>
     );
   }
@@ -130,7 +135,8 @@ export default class Report extends Component {
     return (
       <div className="flex flex-start summary__notice">
         <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-        The system indicates that there is no data for this patient.  If you believe this is an error, please contact us.
+        The system indicates that there is no data for this patient. If you
+        believe this is an error, please contact us.
       </div>
     );
   }
@@ -143,6 +149,7 @@ export default class Report extends Component {
       !summaryData.find(
         (item) => item.ResponsesSummary && item.ResponsesSummary.length
       );
+    console.log("summaryData ", summaryData);
     return (
       <div className="report summary">
         <SideNav id="reportSideNavButton"></SideNav>

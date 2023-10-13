@@ -31,7 +31,7 @@ context Patient
 
 // Load Questionnaire
 define BodyDiagramQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(null, QuestionnaireName, QuestionnaireURL))
 
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], BodyDiagramQuestionnaire, 'Body-Diagram')

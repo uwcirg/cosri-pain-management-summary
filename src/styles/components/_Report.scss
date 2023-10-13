@@ -164,14 +164,14 @@ $selector-box-shadow: 0 2px 2px #383e40;
       position: sticky;
       top: 0;
       z-index: 2;
-      background: #FFF;
+      background: #fff;
     }
     table thead th:first-child {
       position: sticky;
       left: 0;
       z-index: 3;
-      background-color: #FFF;
-    }    
+      background-color: #fff;
+    }
     table tbody td:first-child {
       position: sticky;
       left: 0;
@@ -181,23 +181,27 @@ $selector-box-shadow: 0 2px 2px #383e40;
       position: sticky;
       left: 0;
       z-index: 1;
-      background-color: #FFF;
+      background-color: #fff;
     }
     th.fixed-cell {
       position: sticky;
       top: 0;
       z-index: 3;
-      background: #FFF;
+      background: #fff;
     }
-  //  th:not(.fixed-cell),
     td:not(.fixed-cell) {
       z-index: 0;
       position: relative;
-
     }
   }
   .response-table-wrapper {
-    max-width: 1016px;
+    max-width: 699px;
+    @media (min-width: 992px) {
+      max-width: 768px;
+    }
+    @media (min-width: 1200px) {
+      max-width: 1016;
+    }
     max-height: 480px;
     overflow-y: auto;
     overflow-x: auto;
@@ -211,10 +215,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
     border-spacing: 0;
     font-size: 0.9em;
     height: 0;
-  //  overflow: hidden;
     margin: 8px 0 24px;
     border: 1px solid $color-blue;
-  //  border-collapse: collapse;
     transition: height 0.35s cubic-bezier(0.865, 0.14, 0.095, 0.87);
     &.active {
       height: 100%;
@@ -265,7 +267,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
     width: 100%;
     min-height: 80px;
     gap: 4px;
-    // flex-wrap: wrap;
     flex-wrap: wrap;
     @media (min-width: 992px) {
       flex-wrap: nowrap;

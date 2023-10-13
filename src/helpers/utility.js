@@ -1,5 +1,5 @@
 import moment from "moment";
-import {getEnv} from "../utils/envConfig";
+import { getEnv } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
 /*
  * return number of days between two dates
@@ -113,7 +113,7 @@ export function isNumber(target) {
 }
 
 export function getEnvInstrumentList() {
-    const envList = getEnv("REACT_APP_SCORING_INSTRUMENTS");
+  const envList = getEnv("REACT_APP_SCORING_INSTRUMENTS");
   return envList ? String(envList).replace(/_/g, " ") : "";
 }
 
@@ -172,7 +172,12 @@ export function renderImageFromSVG(imageElement, svgElement) {
   };
 }
 
-export function downloadSVGImage(event, svgElement, imageElementId, downloadFileName) {
+export function downloadSVGImage(
+  event,
+  svgElement,
+  imageElementId,
+  downloadFileName
+) {
   if (event) event.stopPropagation();
   if (!svgElement) return;
   const svgData = new XMLSerializer().serializeToString(svgElement);
@@ -180,9 +185,7 @@ export function downloadSVGImage(event, svgElement, imageElementId, downloadFile
   let canvas = document.createElement("canvas");
   let ctx = canvas.getContext("2d");
 
-  let img = document.querySelector(
-    "#" + (imageElementId)
-  );
+  let img = document.querySelector("#" + imageElementId);
   if (!img) {
     img = document.createElement("img");
     img.classList.add("print-image");
@@ -221,4 +224,16 @@ export function getDifferenceInYears(fromDate, toDate) {
   const diffYears = diff / 365.25;
   // console.log("difference in years ", diffYears);
   return diffYears;
+}
+
+export function getQuestionnaireDescription(fhirQuestionnaire) {
+  if (!fhirQuestionnaire) return "";
+  const commonmark = require("commonmark");
+  const reader = new commonmark.Parser();
+  const writer = new commonmark.HtmlRenderer();
+  const description =
+    fhirQuestionnaire.description && fhirQuestionnaire.description.value
+      ? writer.render(reader.parse(fhirQuestionnaire.description.value))
+      : "";
+  return description;
 }

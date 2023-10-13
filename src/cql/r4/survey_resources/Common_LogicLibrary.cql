@@ -37,15 +37,16 @@ define function GetItemLinkIds(questionnaire FHIR.Questionnaire):
   return item.linkId.value
 
 // Get matched questionnaire based on questionnaire name or questionnaire URL
+// @param QuestionnaireID, of type String, id of the questionnaire
 // @param QuestionnaireName, of type String
 // @param QuestionnaireURL, of type String
 // @return {System.List} a list of FHIR.Questionnaire that matches the questionnaire name or URL
-define function GetMatchQuestionnaire(QuestionnaireName String, QuestionnaireURL String):
+define function GetMatchQuestionnaire(QuestionnaireID String, QuestionnaireName String, QuestionnaireURL String):
   ([Questionnaire] Q
     where 
     Q.url.value = QuestionnaireURL or 
     Lower(Q.name) = Lower(QuestionnaireName) or
-    PositionOf(Lower(QuestionnaireName), Lower(Q.id)) != -1 or
+    Lower(Q.id) = Lower(QuestionnaireID) or
     PositionOf(Lower(QuestionnaireName), Lower(Q.name)) != -1 or
     PositionOf(Lower(Q.name), Lower(QuestionnaireName)) != -1
   )

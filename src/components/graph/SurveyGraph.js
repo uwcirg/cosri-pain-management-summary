@@ -577,7 +577,7 @@ export default class SurveyGraph extends Component {
     const selectedRange = parseFloat(this.state.selectedDateRange);
     //console.log("number of years total: ", numYears);
     console.log("selected value: ", selectedRange);
-    console.log("arrNum: ", arrNum);
+    console.log("scale ticks: ", arrNum);
     const inYears = unit === "year";
     const min = arrNum[0];
     const max = arrNum[arrNum.length-1];
@@ -678,7 +678,6 @@ export default class SurveyGraph extends Component {
     const parentHeight = 440;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;
-    console.log("width ", width, " height ", height);
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
       .rangeRound([0, width])

@@ -260,40 +260,26 @@
                               } ]
                            } ]
                         }, {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "Equal",
-                              "operand" : [ {
-                                 "type" : "PositionOf",
-                                 "pattern" : {
-                                    "type" : "Lower",
-                                    "operand" : {
-                                       "name" : "QuestionnaireName",
-                                       "type" : "OperandRef"
-                                    }
-                                 },
-                                 "string" : {
-                                    "type" : "Lower",
-                                    "operand" : {
-                                       "name" : "ToString",
-                                       "libraryName" : "FHIRHelpers",
-                                       "type" : "FunctionRef",
-                                       "operand" : [ {
-                                          "path" : "id",
-                                          "scope" : "Q",
-                                          "type" : "Property"
-                                       } ]
-                                    }
-                                 }
-                              }, {
-                                 "type" : "Negate",
-                                 "operand" : {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "1",
-                                    "type" : "Literal"
-                                 }
-                              } ]
-                           }
+                           "type" : "Equal",
+                           "operand" : [ {
+                              "type" : "Lower",
+                              "operand" : {
+                                 "name" : "ToString",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "id",
+                                    "scope" : "Q",
+                                    "type" : "Property"
+                                 } ]
+                              }
+                           }, {
+                              "type" : "Lower",
+                              "operand" : {
+                                 "name" : "QuestionnaireID",
+                                 "type" : "OperandRef"
+                              }
+                           } ]
                         } ]
                      }, {
                         "type" : "Not",
@@ -370,6 +356,12 @@
                }
             },
             "operand" : [ {
+               "name" : "QuestionnaireID",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}String",
+                  "type" : "NamedTypeSpecifier"
+               }
+            }, {
                "name" : "QuestionnaireName",
                "operandTypeSpecifier" : {
                   "name" : "{urn:hl7-org:elm-types:r1}String",

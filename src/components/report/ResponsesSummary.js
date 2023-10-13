@@ -10,9 +10,6 @@ export default class ResponsesSummary extends Component {
     this.state = { open: false };
     this.tableRef = React.createRef();
   }
-  componentDidMount() {
-    this.adjustTableCellsHeight();
-  }
   getMatchedAnswerTextByLinkId(summary, linkId, answerValue) {
     const reportedAnswerValue = answerValue == null ? "--" : answerValue;
     if (
@@ -81,30 +78,15 @@ export default class ResponsesSummary extends Component {
     if (!summary || !summary.ResponsesSummary) return 0;
     return summary.ResponsesSummary.length;
   }
-  adjustTableCellsHeight() {
-    const tableRef = this.tableRef.current;
-    console.log("table Ref ", tableRef)
-    if (!tableRef) return;
-    const rows = tableRef.querySelectorAll("tr");
-    rows.forEach((row) => {
-      const tableCells = row.querySelectorAll("td");
-      let cellHeight = 48;
-      tableCells.forEach((tableCell, index) => {
-        if (index === 0) {
-          cellHeight = tableCell.offsetHeight;
-          return true;
-        }
-        console.log("cell height ", tableCell.getBoundingClientRect())
-          tableCell.style.height = cellHeight;
-      })
-    })
-  }
   renderResponses(summaryItems, endIndex) {
     if (!summaryItems || !summaryItems.length) {
       return <div>No recorded responses</div>;
     }
     return (
-      <table className={`response-table ${this.state.open ? "active" : ""}`} ref={this.tableRef}>
+      <table
+        className={`response-table ${this.state.open ? "active" : ""}`}
+        ref={this.tableRef}
+      >
         <thead>
           <tr>
             <th className="fixed-cell">Questions</th>
@@ -240,7 +222,7 @@ export default class ResponsesSummary extends Component {
                       `score_cell_${index}`
                     );
                   else if (column.key === "responses_completed")
-                    return this.renderNumResponsesTableCell(summary)
+                    return this.renderNumResponsesTableCell(summary);
                   else if (column.key === "responses")
                     return this.renderResponsesLinkTableCell(
                       this.getDisplayDate(currentResponses),

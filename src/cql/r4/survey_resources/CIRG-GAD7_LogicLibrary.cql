@@ -12,7 +12,7 @@ include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
 codesystem "LOINC": 'http://loinc.org'
 
-
+define QuestionnaireID: 'CIRG-GAD7'
 define QuestionnaireName: 'gad7'
 define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/gad7'
 define question1LinkId: '/69725-0'
@@ -43,7 +43,10 @@ context Patient
 
 // Load Questionnaire
 define Gad7Questionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+
+define Questionnaire:
+  Gad7Questionnaire
 
 define QuestionnaireItems:
   (Gad7Questionnaire) Q 

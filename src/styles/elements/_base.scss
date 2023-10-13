@@ -41,6 +41,7 @@ a {
   font-weight: 600;
   text-decoration: none;
   border-bottom: 1px solid $link-border-color;
+  word-wrap: break-word;
   &:hover {
     color: $link-color-dark;
   }

@@ -10,7 +10,6 @@ export default class Overview extends Component {
     let data = [];
     summaryData.forEach((item) => {
       if (!item.ResponsesSummary || !item.ResponsesSummary.length) return true;
-      console.log("item ", item)
       if (item.ReportOnce) return true;
       data = [...data, ...item.ResponsesSummary];
     });
@@ -19,7 +18,7 @@ export default class Overview extends Component {
   getBodyDiagramDataSummaryData(summaryData) {
     if (!summaryData) return null;
     const matchedData = summaryData
-      .filter((item) => String(item.dataKey).toLowerCase() === "body diagram");
+      .filter((item) => String(item.dataKey).toLowerCase() === "body_diagram");
     if (!matchedData.length) return null;
     if (!matchedData[0].ResponsesSummary || !matchedData[0].ResponsesSummary.length) return null;
     return matchedData[0].ResponsesSummary;
