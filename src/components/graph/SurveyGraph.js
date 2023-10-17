@@ -631,8 +631,9 @@ export default class SurveyGraph extends Component {
                       : item
                     : // : (item / 0.25) % 1 === 0 ? (item*12)+"mo" : ""
                     item === arrNum[0] ||
-                      (max < 10 && (item / 0.25) % 1 === 0) ||
-                      (max < 10 && (item / 0.75) % 1 === 0)
+                      (max < 10 && (item - arrNum[0] > 0.25) && (item / 0.25) % 1 === 0) ||
+                      (max < 10 && (item - arrNum[0] > 0.25) && (item / 0.5) % 1 === 0) ||
+                      (max < 10 && (item - arrNum[0] > 0.25) && (item / 0.75) % 1 === 0)
                     ? item
                       ? item * 12 + "mo"
                       : item
