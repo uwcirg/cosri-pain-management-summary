@@ -14,7 +14,6 @@ codesystem "LOINC": 'http://loinc.org'
 
 define QuestionnaireID: 'CIRG-PC-PTSD-5'
 define QuestionnaireName: 'pc-ptsd-5'
-define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/pc-ptsd-5'
 define question1LinkId: '/102012-2'
 define question2LinkId: '/102013-0'
 define question3LinkId: '/102014-8'
@@ -39,7 +38,7 @@ context Patient
 
 // Load Questionnaire
 define PtsdQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
 define Questionnaire:
   PtsdQuestionnaire
@@ -49,7 +48,7 @@ define QuestionnaireItems:
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PtsdQuestionnaire, 'PC-PTSD-5')
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PtsdQuestionnaire, QuestionnaireName)
 
 define ReportOnce:
   true
@@ -80,13 +79,6 @@ define ResponsesSummary:
           end,
     
     score: itemTotalScore,
-    // scoreSeverity:
-    //     case
-    //       when score between 9 and 12 then 'high'
-    //       when score between 6 and 8 then 'moderate'
-    //       when score between 3 and 5 then 'mild'
-    //       else 'low' 
-    //     end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
     totalItems: 6
     return Tuple {
@@ -99,14 +91,6 @@ define ResponsesSummary:
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
-      // scoreSeverity: scoreSeverity,
-      // scoreMeaning: case
-      //   when anxietyScore >= 3 and depressionScore >=3 then 'anxiety and depression'
-      //   when anxietyScore >= 3 then 'anxiety'
-      //   when depressionScore >= 3 then 'depression'
-      //   else '' 
-      // end,
-      // comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length(
         (responsesOnly) O where 
           (PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)

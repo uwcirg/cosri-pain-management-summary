@@ -14,7 +14,6 @@ codesystem "LOINC": 'http://loinc.org'
 
 define QuestionnaireID: 'CIRG-GAD7'
 define QuestionnaireName: 'gad7'
-define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/gad7'
 define question1LinkId: '/69725-0'
 define question2LinkId: '/68509-9'
 define question3LinkId: '/69733-4'
@@ -43,7 +42,7 @@ context Patient
 
 // Load Questionnaire
 define Gad7Questionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
 define Questionnaire:
   Gad7Questionnaire
@@ -53,7 +52,7 @@ define QuestionnaireItems:
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Gad7Questionnaire, 'GAD7')
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Gad7Questionnaire, QuestionnaireName)
  
 define ResponsesSummary:
   (QuestionnaireResponses) I
@@ -94,9 +93,6 @@ define ResponsesSummary:
       end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
     totalItems: 7
-    // responses: if Gad7Questionnaire is not null then 
-    //     LogicHelper.getResponsesByQuestionnaire(Gad7Questionnaire, I.item, ScoringQuestionId) else 
-    //     responsesOnly
     return Tuple {
       id: I.id.value,
       qid: QuestionnaireName,

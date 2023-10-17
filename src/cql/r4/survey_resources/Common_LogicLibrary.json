@@ -240,23 +240,17 @@
                            }, {
                               "type" : "Equal",
                               "operand" : [ {
-                                 "type" : "Lower",
-                                 "operand" : {
-                                    "name" : "ToString",
-                                    "libraryName" : "FHIRHelpers",
-                                    "type" : "FunctionRef",
-                                    "operand" : [ {
-                                       "path" : "name",
-                                       "scope" : "Q",
-                                       "type" : "Property"
-                                    } ]
-                                 }
+                                 "name" : "ToString",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "id",
+                                    "scope" : "Q",
+                                    "type" : "Property"
+                                 } ]
                               }, {
-                                 "type" : "Lower",
-                                 "operand" : {
-                                    "name" : "QuestionnaireName",
-                                    "type" : "OperandRef"
-                                 }
+                                 "name" : "QuestionnaireID",
+                                 "type" : "OperandRef"
                               } ]
                            } ]
                         }, {
@@ -268,7 +262,7 @@
                                  "libraryName" : "FHIRHelpers",
                                  "type" : "FunctionRef",
                                  "operand" : [ {
-                                    "path" : "id",
+                                    "path" : "name",
                                     "scope" : "Q",
                                     "type" : "Property"
                                  } ]
@@ -276,7 +270,7 @@
                            }, {
                               "type" : "Lower",
                               "operand" : {
-                                 "name" : "QuestionnaireID",
+                                 "name" : "QuestionnaireName",
                                  "type" : "OperandRef"
                               }
                            } ]

@@ -65,15 +65,6 @@
                "type" : "Literal"
             }
          }, {
-            "name" : "QuestionnaireURL",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "http://www.cdc.gov/ncbddd/fasd/gad7",
-               "type" : "Literal"
-            }
-         }, {
             "name" : "question1LinkId",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -203,8 +194,11 @@
                      "name" : "QuestionnaireName",
                      "type" : "ExpressionRef"
                   }, {
-                     "name" : "QuestionnaireURL",
-                     "type" : "ExpressionRef"
+                     "asType" : "{urn:hl7-org:elm-types:r1}String",
+                     "type" : "As",
+                     "operand" : {
+                        "type" : "Null"
+                     }
                   } ]
                }
             }
@@ -253,9 +247,8 @@
                   "name" : "Gad7Questionnaire",
                   "type" : "ExpressionRef"
                }, {
-                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                  "value" : "GAD7",
-                  "type" : "Literal"
+                  "name" : "QuestionnaireName",
+                  "type" : "ExpressionRef"
                } ]
             }
          }, {

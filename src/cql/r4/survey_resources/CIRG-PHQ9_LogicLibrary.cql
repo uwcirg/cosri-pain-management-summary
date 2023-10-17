@@ -14,7 +14,6 @@ codesystem "LOINC": 'http://loinc.org'
 
 define QuestionnaireID: 'CIRG-PHQ9'
 define QuestionnaireName: 'phq9'
-define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/phq9'
 define question1LinkId: '/44250-9'
 define question2LinkId: '/44255-8'
 define question3LinkId: '/44259-0'
@@ -43,7 +42,7 @@ context Patient
 
 // Load Questionnaire
 define Phq9Questionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
 define Questionnaire:
   Phq9Questionnaire
@@ -53,7 +52,7 @@ define QuestionnaireItems:
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Phq9Questionnaire, 'PHQ9')
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Phq9Questionnaire, QuestionnaireName)
 
 define ResponsesSummary:
   (QuestionnaireResponses) I

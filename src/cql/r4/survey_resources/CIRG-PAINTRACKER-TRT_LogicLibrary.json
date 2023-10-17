@@ -65,15 +65,6 @@
                "type" : "Literal"
             }
          }, {
-            "name" : "QuestionnaireURL",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "http://www.cdc.gov/ncbddd/fasd/trt",
-               "type" : "Literal"
-            }
-         }, {
             "name" : "ExcludeFromScoring",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -109,8 +100,11 @@
                      "name" : "QuestionnaireName",
                      "type" : "ExpressionRef"
                   }, {
-                     "name" : "QuestionnaireURL",
-                     "type" : "ExpressionRef"
+                     "asType" : "{urn:hl7-org:elm-types:r1}String",
+                     "type" : "As",
+                     "operand" : {
+                        "type" : "Null"
+                     }
                   } ]
                }
             }
@@ -159,9 +153,8 @@
                   "name" : "TrtQuestionnaire",
                   "type" : "ExpressionRef"
                }, {
-                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                  "value" : "TRT",
-                  "type" : "Literal"
+                  "name" : "QuestionnaireName",
+                  "type" : "ExpressionRef"
                } ]
             }
          }, {

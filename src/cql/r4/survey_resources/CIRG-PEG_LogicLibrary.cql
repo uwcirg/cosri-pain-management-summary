@@ -14,11 +14,10 @@ codesystem "LOINC": 'http://loinc.org'
 
 define QuestionnaireID: 'CIRG-PEG'
 define QuestionnaireName: 'peg'
-define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/peg'
 define Question1LinkId: '75893-8'
 define Question2LinkId: '91145-3'
 define Question3LinkId: '91146-1'
-define ScoringQuestionId: '91147-9' // Mean score
+define ScoringQuestionId: 'CIRG-PEG-SUM' // sum score
 define MeanScoreQuestionId: '91147-9' // Mean score
 define extensionAnswerIndex: 0
 define ScoreParams: Tuple {
@@ -38,7 +37,7 @@ context Patient
 
 // Load Questionnaire
 define PegQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
 define Questionnaire:
   PegQuestionnaire
@@ -48,7 +47,7 @@ define QuestionnaireItems:
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PegQuestionnaire, 'PEG')
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PegQuestionnaire, QuestionnaireName)
 
 define ResponsesCompleted:
     Length(QuestionnaireResponses)
@@ -60,16 +59,8 @@ define ResponsesSummary:
     reportedMeanScore: 
       if meanScoreResponse is null then null
       else ToInteger(meanScoreResponse), // mean score
-    //scoreSeverity:
-        // case
-        //   when score > 15 then 'high'
-        //   when score between 1 and 14 then 'mild'
-        //   else 'low' 
-        // end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
-    // responses: if PegQuestionnaire is not null then 
-    //     LogicHelper.getResponsesByQuestionnaire(PegQuestionnaire, I.item, '') else 
-    //     responsesOnly,
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(PegQuestionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
     Question1Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question1LinkId, I.item)),
     Question2Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item)),
     Question3Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item)),
@@ -78,6 +69,7 @@ define ResponsesSummary:
     Question3Score: Coalesce(ToInteger(Question3Answer), 0),
     sumScore: 
       case
+        when scoreQuestionResponse is not null then scoreQuestionResponse
         when Question1Answer is null then null
         when Question2Answer is null then null
         when Question3Answer is null then null
@@ -87,7 +79,7 @@ define ResponsesSummary:
       end,
     meanScore: 
       if reportedMeanScore is not null and reportedMeanScore > 0 
-      then reportedMeanScore 
+      then reportedMeanScore
       else 
         if sumScore is not null then Round(sumScore / 3) else null,
     totalItems: 3
@@ -96,7 +88,6 @@ define ResponsesSummary:
       qid: QuestionnaireName,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      // TODO remove this when sum score is reported
       responses: responsesOnly union {
         linkId: 'PEG_total_score',
         question: 'PEG score',
@@ -114,11 +105,6 @@ define ResponsesSummary:
       score: sumScore,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
-      //scoreSeverity: scoreSeverity,
-      // scoreMeaning: case
-      //   when scoreSeverity = 'high' then 'high pain'
-      //   else '' 
-      // end,
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length(
         (responsesOnly) O where 

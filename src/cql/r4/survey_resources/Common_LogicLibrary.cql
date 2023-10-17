@@ -44,9 +44,9 @@ define function GetItemLinkIds(questionnaire FHIR.Questionnaire):
 define function GetMatchQuestionnaire(QuestionnaireID String, QuestionnaireName String, QuestionnaireURL String):
   ([Questionnaire] Q
     where 
-    Q.url.value = QuestionnaireURL or 
+    Q.url.value = QuestionnaireURL or
+    Q.id = QuestionnaireID or
     Lower(Q.name) = Lower(QuestionnaireName) or
-    Lower(Q.id) = Lower(QuestionnaireID) or
     PositionOf(Lower(QuestionnaireName), Lower(Q.name)) != -1 or
     PositionOf(Lower(Q.name), Lower(QuestionnaireName)) != -1
   )

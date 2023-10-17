@@ -14,7 +14,6 @@ codesystem "LOINC": 'http://loinc.org'
 
 
 define QuestionnaireName: 'body_diagram'
-define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/body_diagram'
 define PainLocationsQuestionLinkId: 'CIRG-PainTracker-1252'
 define SeverePainLocationQuestionLinkId: 'CIRG-PainTracker-1253'
 define ExcludeFromScoring: true
@@ -31,7 +30,7 @@ context Patient
 
 // Load Questionnaire
 define BodyDiagramQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(null, QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(null, QuestionnaireName, null))
 
 define QuestionnaireResponses:
   LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], BodyDiagramQuestionnaire, 'Body-Diagram')

@@ -14,7 +14,6 @@ codesystem "LOINC": 'http://loinc.org'
 
 define QuestionnaireID: 'CIRG-PainTracker-TRT'
 define QuestionnaireName: 'trt'
-define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/trt'
 define ExcludeFromScoring: true
 
 // -----------------------------------------------------------------------------
@@ -29,7 +28,7 @@ context Patient
 
 // Load Questionnaire
 define TrtQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
 define Questionnaire:
   TrtQuestionnaire
@@ -39,7 +38,7 @@ define QuestionnaireItems:
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], TrtQuestionnaire, 'TRT')
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], TrtQuestionnaire, QuestionnaireName)
 
 define ResponsesSummary:
   (QuestionnaireResponses) I

@@ -14,7 +14,6 @@ codesystem "LOINC": 'http://loinc.org'
 
 define QuestionnaireID: 'CIRG-PainTracker-STOP'
 define QuestionnaireName: 'stop'
-define QuestionnaireURL: 'http://www.cdc.gov/ncbddd/fasd/stop'
 define question1LinkId: 'STOP-0'
 define question2LinkId: 'STOP-1'
 define question3LinkId: 'STOP-2'
@@ -38,7 +37,7 @@ context Patient
 
 // Load Questionnaire
 define StopQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, QuestionnaireURL))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
 define Questionnaire:
   StopQuestionnaire
@@ -48,7 +47,7 @@ define QuestionnaireItems:
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], StopQuestionnaire, 'STOP')
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], StopQuestionnaire, QuestionnaireName)
 
 define ReportOnce:
   true
@@ -76,15 +75,6 @@ define ResponsesSummary:
           end,
     
     score: itemTotalScore,
-    anxietyScore: Coalesce(Question1Score, 0) * 1 + Coalesce(Question2Score, 0) * 1,
-    depressionScore: Coalesce(Question3Score, 0) * 1 + Coalesce(Question4Score, 0) * 1,
-    scoreSeverity:
-        case
-          when score between 9 and 12 then 'high'
-          when score between 6 and 8 then 'moderate'
-          when score between 3 and 5 then 'mild'
-          else 'low' 
-        end,
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
     totalItems: 4
     return Tuple {
@@ -97,13 +87,6 @@ define ResponsesSummary:
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
-      // scoreSeverity: scoreSeverity,
-      // scoreMeaning: case
-      //   when anxietyScore >= 3 and depressionScore >=3 then 'anxiety and depression'
-      //   when anxietyScore >= 3 then 'anxiety'
-      //   when depressionScore >= 3 then 'depression'
-      //   else '' 
-      // end,
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({Length(
         (responsesOnly) O where 
