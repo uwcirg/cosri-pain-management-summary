@@ -168,7 +168,7 @@ define function getAnswerOptionExtensionValue(extList List<FHIR.Extension>):
 //   return if extensionItem is not null then getAnswerOptionExtensionValue(extensionItem) else (0 as Integer)
 // TODO don't use numeric index to determine which extension to use, use matched system URL
 define function getAnswerValueByCode(questionnaire FHIR.Questionnaire, code String, extensionIndex Integer):
-  ((questionnaire.item.answerOption) Q where Q.value.code = code) a
+  ((questionnaire.item.answerOption) Q where Q.value is not null and Q.value.code = code) a
   return a.extension[extensionIndex].value.value as Integer
 
 /*

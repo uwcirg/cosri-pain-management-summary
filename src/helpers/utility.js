@@ -229,11 +229,15 @@ export function getDifferenceInYears(fromDate, toDate) {
 export function getQuestionnaireDescription(fhirQuestionnaire) {
   if (!fhirQuestionnaire) return "";
   const commonmark = require("commonmark");
-  const reader = new commonmark.Parser();
-  const writer = new commonmark.HtmlRenderer();
+  const reader = new commonmark.Parser({ smart: true });
+  const writer = new commonmark.HtmlRenderer({
+    linebreak: "<br />",
+    softbreak: "<br />",
+  });
+  const parsedObj = reader.parse(fhirQuestionnaire.description.value);
   const description =
     fhirQuestionnaire.description && fhirQuestionnaire.description.value
-      ? writer.render(reader.parse(fhirQuestionnaire.description.value))
+      ? writer.render(parsedObj)
       : "";
   return description;
 }

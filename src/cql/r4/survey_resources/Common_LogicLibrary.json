@@ -1552,23 +1552,36 @@
                      } ],
                      "relationship" : [ ],
                      "where" : {
-                        "type" : "Equal",
+                        "type" : "And",
                         "operand" : [ {
-                           "name" : "ToString",
-                           "libraryName" : "FHIRHelpers",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "code",
-                              "type" : "Property",
-                              "source" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
                                  "path" : "value",
                                  "scope" : "Q",
                                  "type" : "Property"
                               }
-                           } ]
+                           }
                         }, {
-                           "name" : "code",
-                           "type" : "OperandRef"
+                           "type" : "Equal",
+                           "operand" : [ {
+                              "name" : "ToString",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "code",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "value",
+                                    "scope" : "Q",
+                                    "type" : "Property"
+                                 }
+                              } ]
+                           }, {
+                              "name" : "code",
+                              "type" : "OperandRef"
+                           } ]
                         } ]
                      }
                   }
