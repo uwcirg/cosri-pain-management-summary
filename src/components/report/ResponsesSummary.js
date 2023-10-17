@@ -189,7 +189,20 @@ export default class ResponsesSummary extends Component {
         <div
           role="presentation"
           className={`link-container ${this.state.open ? "active" : ""}`}
-          onClick={(e) => this.setState({ open: !this.state.open })}
+          onClick={(e) => {
+            this.setState({ open: !this.state.open }, () => {
+              if (this.state.open) {
+                if (this.tableRef.current) {
+                  setTimeout(() => {
+                    this.tableRef.current.scrollIntoView({
+                      behavior: "smooth",
+                      block: "end",
+                    });
+                  }, 250);
+                }
+              }
+            });
+          }}
         >
           {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
 
