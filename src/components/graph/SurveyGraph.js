@@ -350,34 +350,6 @@ export default class SurveyGraph extends Component {
                     />
                     <span className="switch-slider round"></span>
                   </label>
-                  {/* <button
-                    className="select-icon plus"
-                    onClick={() => this.addQuestionnaireToSurveyGraph(item)}
-                    disabled={
-                      this.isInSurveyGraph(item)
-                        ? true
-                        : this.isSurveyInDateRange(item)
-                        ? false
-                        : true
-                    }
-                    title={`Add ${item} to graph`}
-                  >
-                    show
-                  </button>
-                  <button
-                    className="select-icon minus"
-                    onClick={() => this.removeQuestionnaireToSurveyGraph(item)}
-                    disabled={
-                      hasOnlyOneGraphLine
-                        ? true
-                        : this.isInSurveyGraph(item)
-                        ? false
-                        : true
-                    }
-                    title={`Remove ${item} from graph`}
-                  >
-                    hide
-                  </button> */}
                 </div>
               )}
             </div>
@@ -439,25 +411,26 @@ export default class SurveyGraph extends Component {
       },
       {
         key: "Last 6 months",
-        value: "0.5",
+        value: 0.5,
       },
       {
         key: "Last 9 months",
-        value: "0.75",
+        value: 0.75,
       },
       {
         key: "Last 1 year",
-        value: "1",
+        value: 1,
       },
       {
         key: "Last 2 years",
-        value: "2",
+        value: 2,
       },
       {
         key: "Last 5 years",
-        value: "5",
+        value: 5,
       },
     ];
+    
     if (this.getScaleInfoForSlider().max >= 10) {
       items.push({
         key: "Last 10 years",
@@ -580,7 +553,7 @@ export default class SurveyGraph extends Component {
     console.log("scale ticks: ", arrNum);
     const inYears = unit === "year";
     const min = arrNum[0];
-    const max = arrNum[arrNum.length-1];
+    const max = arrNum[arrNum.length - 1];
     if (arrNum.length <= 1) return null;
     return (
       <div className="slider-parent-container">
@@ -598,9 +571,7 @@ export default class SurveyGraph extends Component {
             max={max}
             step={"any"}
             value={
-              this.state.selectedDateRange
-                ? this.state.selectedDateRange
-                : max
+              this.state.selectedDateRange ? this.state.selectedDateRange : max
             }
             // defaultValue={arrNum[arrNum.length - 1]}
             className="slider"
@@ -615,11 +586,7 @@ export default class SurveyGraph extends Component {
                   Math.abs(this.state.selectedDateRange - item) < 0.001
                     ? "active"
                     : ""
-                } ${
-                  inYears && max >= 10 && item && item < 1
-                    ? "rotate"
-                    : ""
-                }`}
+                } ${inYears && max >= 10 && item && item < 1 ? "rotate" : ""}`}
                 ref={this.scaleLabelRefs[index]}
                 datavalue={item}
                 dataunit={item < 1 ? "month" : "year"}
@@ -631,9 +598,15 @@ export default class SurveyGraph extends Component {
                       : item
                     : // : (item / 0.25) % 1 === 0 ? (item*12)+"mo" : ""
                     item === arrNum[0] ||
-                      (max < 10 && (item - arrNum[0] > 0.25) && (item / 0.25) % 1 === 0) ||
-                      (max < 10 && (item - arrNum[0] > 0.25) && (item / 0.5) % 1 === 0) ||
-                      (max < 10 && (item - arrNum[0] > 0.25) && (item / 0.75) % 1 === 0)
+                      (max < 10 &&
+                        item - arrNum[0] > 0.25 &&
+                        (item / 0.25) % 1 === 0) ||
+                      (max < 10 &&
+                        item - arrNum[0] > 0.25 &&
+                        (item / 0.5) % 1 === 0) ||
+                      (max < 10 &&
+                        item - arrNum[0] > 0.25 &&
+                        (item / 0.75) % 1 === 0)
                     ? item
                       ? item * 12 + "mo"
                       : item
@@ -651,7 +624,6 @@ export default class SurveyGraph extends Component {
   }
 
   createTooltipElement() {
-    //if (d3.select(".tooltip-donut")) return;
     d3.select(".survey-svg-container")
       .append("div")
       .attr("class", "tooltip-donut")
@@ -860,8 +832,8 @@ export default class SurveyGraph extends Component {
             showPrintLabel={true}
             showDataIdInLabel={true}
             toolTipElementId=".survey-svg-container .tooltip-donut"
-            toolTipOffsetX={width - margins.right}
-            toolTipOffsetY={(parentHeight) / 2}
+            toolTipOffsetX={width - margins.right - margins.left}
+            toolTipOffsetY={parentHeight / 2}
             {...props}
             {...{
               ...defaultLineProps,
