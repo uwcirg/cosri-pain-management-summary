@@ -599,4 +599,21 @@ $selector-box-shadow: 0 2px 2px #383e40;
       border-color: $link-border-color;
     }
   }
+  .dots-container {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-top: 20px;
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 100vmax;
+      background-color: $color-gray-lighter;
+      &.active {
+        background-color: $link-color;
+      }
+    }
+  }
 }

@@ -343,7 +343,12 @@ export default class BodyDiagram extends Component {
       position: "relative",
       zIndex: 10,
     };
-    if (!this.state.dates.length || !this.state.dates.length || this.state.dates.length < 2) return null;
+    if (
+      !this.state.dates.length ||
+      !this.state.dates.length ||
+      this.state.dates.length < 2
+    )
+      return null;
     return (
       <div className="flex flex-gap-1 icons-container" style={{ gap: "12px" }}>
         <FontAwesomeIcon
@@ -364,6 +369,24 @@ export default class BodyDiagram extends Component {
               : ""
           }
         ></FontAwesomeIcon>
+      </div>
+    );
+  }
+  renderDots() {
+    if (!this.state.summaryData || !this.state.summaryData.length) return null;
+    if (this.state.summaryData.length < 2) return null;
+    return (
+      <div className="dots-container">
+        {this.state.summaryData.map((item, index) => {
+          return (
+            <div
+              className={`dot ${
+                index === this.state.selectedIndex ? "active" : ""
+              }`}
+              key={`dot_${index}`}
+            ></div>
+          );
+        })}
       </div>
     );
   }
@@ -398,6 +421,7 @@ export default class BodyDiagram extends Component {
             Body diagram
           </object>
           {this.renderNavButtons()}
+          {this.renderDots()}
         </div>
         {this.renderPrintOnlyImage()}
         {this.state.dates.length > 1 && this.renderDownloadButton()}
