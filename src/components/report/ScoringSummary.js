@@ -52,9 +52,10 @@ export default class ScoringSummary extends Component {
     //   " prev score is number? ",
     //   isNumber(prevScore)
     // );
-    const comparisonToAlert = currentData && currentData.comparisonToAlert
-      ? currentData.comparisonToAlert
-      : ""; // TODO get it from response summary data
+    const comparisonToAlert =
+      currentData && currentData.comparisonToAlert
+        ? currentData.comparisonToAlert
+        : ""; // TODO get it from response summary data
     if (!comparisonToAlert) return "--";
     //debug
     //console.log("comparison to alert ", comparisonToAlert);
@@ -138,12 +139,12 @@ export default class ScoringSummary extends Component {
   renderQuestionnaireLinkCell(questionnaireObj, showAnchorLinks) {
     if (!questionnaireObj) return <td>--</td>;
     const questionnaireName = questionnaireObj.QuestionnaireName;
-    if (!questionnaireName) return <td>--</td>
+    if (!questionnaireName) return <td>--</td>;
     const anchorId = `#${questionnaireName}_title`;
     return (
       <td className="text-left">
-        <span>
-          {showAnchorLinks && (
+        {showAnchorLinks && (
+          <span>
             <b>
               <a
                 className="anchor"
@@ -154,16 +155,16 @@ export default class ScoringSummary extends Component {
                 {questionnaireName.toUpperCase()}
               </a>
             </b>
-          )}
-          {!showAnchorLinks && <b>{questionnaireName.toUpperCase()}</b>}
-        </span>
+          </span>
+        )}
+        {!showAnchorLinks && <span>{questionnaireName.toUpperCase()}</span>}
       </td>
     );
   }
   renderScoreCell(data) {
     if (!data || !data.ResponsesSummary) return <td>--</td>;
     return (
-      <td style={{whiteSpace: "nowrap"}}>
+      <td style={{ whiteSpace: "nowrap" }}>
         <div className="flex">
           <Score
             score={this.getCurrentDisplayScore(data)}
@@ -176,7 +177,7 @@ export default class ScoringSummary extends Component {
     );
   }
   renderDataRows(summary, showAnchorLinks) {
-    const dataToShow = summary.filter(item => !item.ExcludeFromScoring);
+    const dataToShow = summary.filter((item) => !item.ExcludeFromScoring);
     return dataToShow.map((item, index) => {
       return (
         <tr key={`questionnaire_summary_row_${index}`} className="data-row">
