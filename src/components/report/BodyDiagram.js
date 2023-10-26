@@ -376,7 +376,7 @@ export default class BodyDiagram extends Component {
     if (!this.state.summaryData || !this.state.summaryData.length) return null;
     if (this.state.summaryData.length < 2) return null;
     return (
-      <div className="dots-container">
+      <div className="dots-container print-hidden">
         {this.state.summaryData.map((item, index) => {
           return (
             <div
