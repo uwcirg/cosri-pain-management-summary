@@ -277,7 +277,14 @@ export default class ResponsesSummary extends Component {
         </table>
         <div className={`accordion-content ${this.state.open ? "active" : ""}`}>
           <div className="responses-table-outer-wrapper print-hidden">
-            <div className="response-table-wrapper print-hidden">
+            <div
+              className={`response-table-wrapper print-hidden ${
+                summary.ResponsesSummary &&
+                summary.ResponsesSummary.length === 1
+                  ? "two-columns"
+                  : ""
+              }`}
+            >
               {this.renderResponses(summary.ResponsesSummary)}
             </div>
           </div>

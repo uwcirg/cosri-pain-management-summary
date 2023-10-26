@@ -484,6 +484,11 @@
             .table {
               width: 100%;
               border-collapse: collapse;
+              tr {
+                &:not(:last-of-type) {
+                  border-bottom: 1px solid $color-gray-lightest;
+                }
+              }
               caption {
                 font-weight: 700;
                 margin-bottom: 12px;
@@ -728,7 +733,7 @@
           padding-bottom: 12px;
           td {
             vertical-align: bottom;
-            line-height: 1.5;
+            line-height: 1.6;
           }
           .icon-container {
             position: relative;
