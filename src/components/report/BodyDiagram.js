@@ -24,6 +24,8 @@ export default class BodyDiagram extends Component {
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleNextChange = this.handleNextChange.bind(this);
     this.handlePrevChange = this.handlePrevChange.bind(this);
+    this.handleSetFirst = this.handleSetFirst.bind(this);
+    this.handleSetLast = this.handleSetLast.bind(this);
   }
 
   componentDidMount() {
@@ -38,6 +40,27 @@ export default class BodyDiagram extends Component {
         this.drawAllParts();
       });
     }
+  }
+  handleSetFirst() {
+    if (this.state.selectedIndex === 0) return;
+    this.setState(
+      {
+        selectedIndex: 0,
+        selectedDate: this.state.dates[0],
+      },
+      () => this.drawAllParts()
+    );
+  }
+  handleSetLast() {
+    const lastIndex = this.state.dates.length - 1;
+    if (this.state.selectedIndex === lastIndex) return;
+    this.setState(
+      {
+        selectedIndex: lastIndex,
+        selectedDate: this.state.dates[lastIndex],
+      },
+      () => this.drawAllParts()
+    );
   }
   handlePrevChange() {
     const prevIndex = this.state.selectedIndex - 1;
@@ -344,13 +367,22 @@ export default class BodyDiagram extends Component {
       zIndex: 10,
     };
     if (
-      !this.state.dates.length ||
-      !this.state.dates.length ||
+      !(this.state.dates.length) ||
       this.state.dates.length < 2
     )
       return null;
     return (
-      <div className="flex flex-gap-1 icons-container" style={{ gap: "12px" }}>
+      <div
+        className="flex flex-gap-1 icons-container"
+        style={{ gap: "12px", marginTop: "16px" }}
+      >
+        <FontAwesomeIcon
+          icon="angle-double-left"
+          title="First"
+          style={iconStyle}
+          onClick={this.handleSetFirst}
+          className={this.state.selectedIndex <= 0 ? "disabled" : ""}
+        ></FontAwesomeIcon>
         <FontAwesomeIcon
           icon="chevron-left"
           title="Previous"
@@ -363,6 +395,17 @@ export default class BodyDiagram extends Component {
           title="Next"
           style={iconStyle}
           onClick={this.handleNextChange}
+          className={
+            this.state.selectedIndex >= this.state.dates.length - 1
+              ? "disabled"
+              : ""
+          }
+        ></FontAwesomeIcon>
+        <FontAwesomeIcon
+          icon="angle-double-right"
+          title="Last"
+          style={iconStyle}
+          onClick={this.handleSetLast}
           className={
             this.state.selectedIndex >= this.state.dates.length - 1
               ? "disabled"
