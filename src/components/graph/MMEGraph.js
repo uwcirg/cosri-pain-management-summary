@@ -4,6 +4,7 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { line } from 'd3-shape';
 import XYAxis from './xy-axis';
 import Line from './line';
+import Tooltip from './tooltip';
 import {
   dateFormat
 } from '../../helpers/formatit';
@@ -329,6 +330,7 @@ export default class MMEGraph extends Component {
               <Line lineID="WALine" strokeColor={WA_COLOR} dotted="true" dotSpacing="3, 3" data={WAData} {...defaultProps} />
               <Line lineID="CDCSecondaryLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCSecondaryData} {...defaultProps} />
               <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} />
+              <Tooltip  data={data} {...dataLineProps}></Tooltip>
               <text {...WALegendSettings}>Washington State consultation threshold</text>
               <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>CDC extra precautions threshold</text>
               <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>CDC avoid/justify threshold</text>

@@ -7,6 +7,7 @@ import { line } from "d3-shape";
 import XYAxis from "./xy-axis";
 import Grid from "./grid";
 import Line from "./line";
+import Tooltip from "./tooltip";
 import {
   defaultLineAttributes,
   getLineAttributes,
@@ -54,7 +55,6 @@ export default class SurveyGraph extends Component {
   }
   componentDidMount() {
     this.createScaleRefs();
-    this.createTooltipElement();
     setTimeout(
       () =>
         renderImageFromSVG(this.printImageRef.current, this.graphRef.current),
@@ -622,13 +622,6 @@ export default class SurveyGraph extends Component {
       </div>
     );
   }
-
-  createTooltipElement() {
-    d3.select(".survey-svg-container")
-      .append("div")
-      .attr("class", "tooltip-donut")
-      .style("opacity", 0);
-  }
   render() {
     const noEntry =
       !this.state.originalGraphData || !this.state.originalGraphData.length;
@@ -823,6 +816,7 @@ export default class SurveyGraph extends Component {
 
     const renderLines = (props) => {
       const { data } = this.getDataForGraph(this.state.graphData);
+     // console.log("nav width ", document.querySelector(".summary__nav-wrapper").getBoundingClientRect())
       return getDataNest(data).map((o, index) => {
         return (
           <Line
@@ -830,10 +824,24 @@ export default class SurveyGraph extends Component {
             lineID={`dataLine_${o.key}`}
             data={o.values}
             showPrintLabel={true}
+            {...props}
+            {...{
+              ...defaultLineProps,
+              ...this.getLineAttributesByQId(o.key),
+            }}
+          />
+        );
+      });
+    };
+
+    const renderToolTips = (props) => {
+      const { data } = this.getDataForGraph(this.state.graphData);
+      return getDataNest(data).map((o, index) => {
+        return (
+          <Tooltip
+            key={`tooltip-${o.key}-${index}`}
+            data={o.values}
             showDataIdInLabel={true}
-            toolTipElementId=".survey-svg-container .tooltip-donut"
-            toolTipOffsetX={width - margins.right - margins.left}
-            toolTipOffsetY={parentHeight / 2}
             {...props}
             {...{
               ...defaultLineProps,
@@ -870,6 +878,7 @@ export default class SurveyGraph extends Component {
             {renderLines({
               className: "print-hidden",
             })}
+            {renderToolTips()}
           </g>
         </svg>
       );
@@ -912,7 +921,7 @@ export default class SurveyGraph extends Component {
                   )} within this date range`}</div>
                 </div>
               )}
-              <div className="survey-svg-container">{renderGraph()}</div>
+              <div className="survey-svg-container" style={{position: "relative"}}>{renderGraph()}</div>
               {this.shouldShowAccessories() && this.renderSlider()}
             </div>
             <div

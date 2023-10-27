@@ -1,7 +1,6 @@
 import React from "react";
 import * as d3 from "d3";
 import { select } from "d3-selection";
-import { timeFormat } from "d3-time-format";
 import { transition } from "d3-transition";
 
 class Line extends React.Component {
@@ -35,8 +34,6 @@ class Line extends React.Component {
     let currentNode = select(node);
     currentNode.selectAll("path").remove();
     currentNode.selectAll("circle").remove();
-    currentNode.selectAll("rect").remove();
-    currentNode.selectAll("text").remove();
   }
   updateChart() {
     const node = this.ref.current;
@@ -50,10 +47,6 @@ class Line extends React.Component {
       dataPoints,
       className,
       showPrintLabel,
-      showDataIdInLabel,
-      toolTipElementId,
-      toolTipOffsetX,
-      toolTipOffsetY,
     } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
 
@@ -63,7 +56,7 @@ class Line extends React.Component {
       data: data,
     });
 
-    let formatDate = timeFormat(`%Y-%b-%d`);
+    //  let formatDate = timeFormat(`%Y-%b-%d`);
     let currentNode = select(node)
       .append("path")
       .datum(data)
@@ -85,10 +78,6 @@ class Line extends React.Component {
     const animationDuration = 100;
     const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
 
-    let toolTipElement = toolTipElementId
-      ? select(`${toolTipElementId}`)
-      : null;
-  
     select(node)
       .selectAll("circle")
       .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
@@ -109,23 +98,11 @@ class Line extends React.Component {
         select(`#circle_${dataId}${i}`)
           .attr("r", radiusWidth * 2)
           .transition()
-          .duration(animationDuration)
+          .duration(animationDuration);
 
-        if (toolTipElement) {
-          toolTipElement
-            .html(
-              `${showDataIdInLabel ? dataId.toUpperCase() + "<br/>" : ""}
-              ${d[yName]}<br/>${formatDate(d[xName])}`
-            )
+        //tooltip
+        d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "block");
 
-            .style("left", d3.event.pageX - toolTipOffsetX + "px")
-            .style("top", d3.event.pageY - toolTipOffsetY + "px");
-          //Makes the tooltip element appear on hover:
-          toolTipElement.transition().duration(50).style("opacity", 1);
-        } else {
-          select(`#dataRect_${dataId}${i}`).style("display", "block");
-          select(`#dataText_${dataId}${i}`).style("display", "block");
-        }
       })
       .on("mouseout", (d, i) => {
         if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
@@ -135,54 +112,14 @@ class Line extends React.Component {
           .transition()
           .duration(animationDuration)
           .attr("r", radiusWidth);
-
-        //Makes the tooltip element disappear:
-        if (toolTipElement) {
-          toolTipElement.transition().duration("50").style("opacity", 0);
-        } else {
-          select(`#dataRect_${dataId}${i}`).style("display", "none");
-          select(`#dataText_${dataId}${i}`).style("display", "none");
-        }
-      });
-
-    //rect
-    select(node)
-      .selectAll(".rect-tooltip")
-      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append("rect")
-      .attr("class", "rect-tooltip")
-      .attr("id", (d, i) => `dataRect_${dataId}${i}`)
-      .attr("x", (d) => xScale(d[xName]) - 52)
-      .attr("y", (d) => yScale(d[yName]) + 12)
-      .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
-      .attr("height", 20)
-      .style("display", "none")
-      .style("stroke", "black")
-      .style("stroke-width", "0.25")
-      .style("fill", "#FFF");
-
-    //tooltip
-    select(node)
-      .selectAll("text")
-      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append("text")
-      .attr("id", (d, i) => `dataText_${dataId}${i}`)
-      .attr("x", (d) => xScale(d[xName]) - 48)
-      .attr("y", (d) => yScale(d[yName]) + 26)
-      .style("display", "none")
-      .attr("font-size", "0.7rem")
-      .attr("text-anchor", "start")
-      .attr("font-weight", 600)
-      .text(function (d) {
-        return `${formatDate(d[xName])}, ${d[yName]}`;
+        // tooltip
+        d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "none");
       });
 
     //print label - PRINT ONLY
     if (showPrintLabel) {
       select(node)
-        .selectAll(".text")
+        .selectAll(".print-title")
         .data(data.filter((item, index) => index === data.length - 1))
         .enter()
         .append("text")
