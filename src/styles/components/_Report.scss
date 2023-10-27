@@ -199,15 +199,18 @@ $selector-box-shadow: 0 2px 2px #383e40;
       max-width: 100%;
     }
     @media (min-width: 992px) {
-      max-width: 768px;
+      max-width: 948px;
       &.two-columns {
-        max-width: 56%;
+        width: fit-content;
+        max-width: 45%;
+        block-size: fit-content;
       }
     }
     @media (min-width: 1200px) {
-      max-width: 1032px;
+      max-width: 1120px;
       &.two-columns {
-        max-width: 56%;
+        width: fit-content;
+        block-size: fit-content;
       }
     }
     max-height: 576px;
@@ -248,6 +251,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     td {
       padding: 4px 8px;
       line-height: 1.4;
+      width: auto;
       &:not(:last-of-type) {
         border-right: 1px solid $color-gray-lighter;
         &.fixed-cell {

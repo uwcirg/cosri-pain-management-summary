@@ -31,8 +31,8 @@ class Tooltip extends React.Component {
   removeAll() {
     const node = this.ref.current;
     let currentNode = select(node);
-    currentNode.selectAll(".tooltip_text").remove();
-    currentNode.selectAll(".tooltip_rect").remove();
+    currentNode.selectAll("text").remove();
+    currentNode.selectAll("rect").remove();
   }
   updateChart() {
     const node = this.ref.current;
