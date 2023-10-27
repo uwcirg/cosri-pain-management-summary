@@ -383,8 +383,8 @@ export default class SurveyGraph extends Component {
           position: "absolute",
           color: "#777",
           zIndex: 20,
-          top: "32px",
-          right: "32px",
+          top: "48px",
+          left: "72px",
           minWidth: "48px",
           display: "none",
           backgroundColor: "transparent",
@@ -430,7 +430,7 @@ export default class SurveyGraph extends Component {
         value: 5,
       },
     ];
-    
+
     if (this.getScaleInfoForSlider().max >= 10) {
       items.push({
         key: "Last 10 years",
@@ -816,7 +816,7 @@ export default class SurveyGraph extends Component {
 
     const renderLines = (props) => {
       const { data } = this.getDataForGraph(this.state.graphData);
-     // console.log("nav width ", document.querySelector(".summary__nav-wrapper").getBoundingClientRect())
+      // console.log("nav width ", document.querySelector(".summary__nav-wrapper").getBoundingClientRect())
       return getDataNest(data).map((o, index) => {
         return (
           <Line
@@ -896,12 +896,7 @@ export default class SurveyGraph extends Component {
 
     return (
       <React.Fragment>
-        <div
-          className="survey-graph"
-          style={{ position: "relative" }}
-          onMouseEnter={this.showDownloadButton}
-          onMouseLeave={this.hideDownloadButton}
-        >
+        <div className="survey-graph" style={{ position: "relative" }}>
           <div className="flex">
             <div style={{ position: "relative", width: "100%", gap: "24px" }}>
               {noStateEntry && (
@@ -921,7 +916,14 @@ export default class SurveyGraph extends Component {
                   )} within this date range`}</div>
                 </div>
               )}
-              <div className="survey-svg-container" style={{position: "relative"}}>{renderGraph()}</div>
+              <div
+                className="survey-svg-container"
+                style={{ position: "relative" }}
+                onMouseEnter={this.showDownloadButton}
+                onMouseLeave={this.hideDownloadButton}
+              >
+                {renderGraph()}
+              </div>
               {this.shouldShowAccessories() && this.renderSlider()}
             </div>
             <div

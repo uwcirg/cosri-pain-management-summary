@@ -1022,6 +1022,11 @@
 .summary-tooltip {
   font-size: 1em;
 }
+.tooltip-rect,
+.tooltip-text {
+  position: relative;
+  z-index: 100;
+}
 
 .red {
   .flagged {
