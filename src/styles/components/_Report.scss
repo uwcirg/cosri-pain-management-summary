@@ -194,20 +194,17 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
   }
   .response-table-wrapper {
-    max-width: 680px;
-    &.two-columns {
-      max-width: 100%;
-    }
+    max-width: calc(100% - 180px);
     @media (min-width: 992px) {
-      max-width: 848px;
+      max-width: calc(100% - 32px);
       &.two-columns {
         width: fit-content;
-        max-width: 45%;
+        max-width: 48%;
         block-size: fit-content;
       }
     }
     @media (min-width: 1200px) {
-      max-width: 948px;
+      max-width: calc(100% - 32px);
       &.two-columns {
         width: fit-content;
         block-size: fit-content;
