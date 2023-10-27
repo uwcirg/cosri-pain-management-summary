@@ -4,11 +4,26 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Score from "./Score";
 import { getDisplayDateFromISOString } from "../../helpers/utility";
 
+let resizeTimeoutId = 0;
 export default class ResponsesSummary extends Component {
   constructor() {
     super(...arguments);
     this.state = { open: false };
-    this.tableRef = React.createRef();
+    this.tableWrapperRef = React.createRef();
+    this.setWrapperHeight = this.setWrapperHeight.bind(this);
+  }
+  componentDidMount() {
+    window.addEventListener("resize", this.setWrapperHeight);
+    this.setWrapperHeight();
+  }
+  setWrapperHeight() {
+    clearTimeout(resizeTimeoutId);
+    setTimeout(() => {
+      if (this.tableWrapperRef.current) {
+        this.tableWrapperRef.current.style.maxHeight =
+          window.innerHeight - 168 + "px";
+      }
+    }, 250);
   }
   getMatchedAnswerTextByLinkId(summary, linkId, answerValue) {
     const reportedAnswerValue = answerValue == null ? "--" : answerValue;
@@ -85,7 +100,6 @@ export default class ResponsesSummary extends Component {
     return (
       <table
         className={`response-table ${this.state.open ? "active" : ""}`}
-        ref={this.tableRef}
       >
         <thead>
           <tr>
@@ -192,13 +206,13 @@ export default class ResponsesSummary extends Component {
           onClick={(e) => {
             this.setState({ open: !this.state.open }, () => {
               if (this.state.open) {
-                if (this.tableRef.current) {
-                  setTimeout(() => {
-                    this.tableRef.current.scrollIntoView({
-                      behavior: "smooth",
-                      block: "end",
-                    });
-                  }, 250);
+                if (this.tableWrapperRef.current) {
+                  setTimeout(
+                    () =>
+                      (this.tableWrapperRef.current.scrollTop =
+                        this.tableWrapperRef.scrollHeight + "px"),
+                    500
+                  );
                 }
               }
             });
@@ -284,6 +298,8 @@ export default class ResponsesSummary extends Component {
                   ? "two-columns"
                   : ""
               }`}
+              // style={{ maxHeight: window.innerHeight - 168 }}
+              ref={this.tableWrapperRef}
             >
               {this.renderResponses(summary.ResponsesSummary)}
             </div>
