@@ -210,7 +210,7 @@ export default class ResponsesSummary extends Component {
                     () =>
                       this.tableWrapperRef.current.scrollIntoView({
                         behavior: "smooth",
-                        block: "center",
+                        block: "nearest",
                       }),
                     100
                   );
