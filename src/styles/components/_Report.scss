@@ -196,15 +196,15 @@ $selector-box-shadow: 0 2px 2px #383e40;
   .response-table-wrapper {
     max-width: calc(100% - 180px);
     @media (min-width: 992px) {
-      max-width: calc(100% - 32px);
+      max-width: calc(100% - 120px);
       &.two-columns {
         width: fit-content;
-        max-width: 48%;
+        max-width: 52%;
         block-size: fit-content;
       }
     }
     @media (min-width: 1200px) {
-      max-width: calc(100% - 32px);
+      max-width: calc(100% - 160px);
       &.two-columns {
         width: fit-content;
         block-size: fit-content;
