@@ -99,7 +99,7 @@ define function getResponsesByQuestionnaire(currentQuestionnaire FHIR.Questionna
       linkId: I.linkId.value,
       question: I.text.value,
       answer: answer,
-      answerText: I.answerOption[ToInteger(answer)].value.display.value
+      answerText: if I.answerOption[ToInteger(answer)].value.display is not null then I.answerOption[ToInteger(answer)].value.display.value else null
     }
 
 /*
@@ -109,7 +109,9 @@ define function getResponsesByQuestionnaire(currentQuestionnaire FHIR.Questionna
  * @return {System.String} code value for the answer
  */
 define function getAnswerOptionCodeValue(currentQuestionnaire FHIR.Questionnaire, qIndex Integer):
-  if currentQuestionnaire.item[qIndex] is not null then
+  if currentQuestionnaire.item[qIndex] is not null and 
+    currentQuestionnaire.item[qIndex].answerOption.value.code is not null
+  then
     currentQuestionnaire.item[qIndex].answerOption.value.code.value
   else
     null
@@ -168,7 +170,7 @@ define function getAnswerOptionExtensionValue(extList List<FHIR.Extension>):
 //   return if extensionItem is not null then getAnswerOptionExtensionValue(extensionItem) else (0 as Integer)
 // TODO don't use numeric index to determine which extension to use, use matched system URL
 define function getAnswerValueByCode(questionnaire FHIR.Questionnaire, code String, extensionIndex Integer):
-  ((questionnaire.item.answerOption) Q where Q.value is not null and Q.value.code = code) a
+  ((questionnaire.item.answerOption) Q where Q.value is not null and Q.value.code is not null and Q.value.code = code) a
   return a.extension[extensionIndex].value.value as Integer
 
 /*

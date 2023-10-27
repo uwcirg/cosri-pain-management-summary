@@ -983,28 +983,66 @@
                      }, {
                         "name" : "answerText",
                         "value" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "display",
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "display",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "type" : "Indexer",
+                                          "operand" : [ {
+                                             "path" : "answerOption",
+                                             "scope" : "I",
+                                             "type" : "Property"
+                                          }, {
+                                             "type" : "ToInteger",
+                                             "operand" : {
+                                                "name" : "answer",
+                                                "type" : "QueryLetRef"
+                                             }
+                                          } ]
+                                       }
+                                    }
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "path" : "value",
                               "type" : "Property",
                               "source" : {
-                                 "path" : "value",
+                                 "path" : "display",
                                  "type" : "Property",
                                  "source" : {
-                                    "type" : "Indexer",
-                                    "operand" : [ {
-                                       "path" : "answerOption",
-                                       "scope" : "I",
-                                       "type" : "Property"
-                                    }, {
-                                       "type" : "ToInteger",
-                                       "operand" : {
-                                          "name" : "answer",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    } ]
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "type" : "Indexer",
+                                       "operand" : [ {
+                                          "path" : "answerOption",
+                                          "scope" : "I",
+                                          "type" : "Property"
+                                       }, {
+                                          "type" : "ToInteger",
+                                          "operand" : {
+                                             "name" : "answer",
+                                             "type" : "QueryLetRef"
+                                          }
+                                       } ]
+                                    }
                                  }
+                              }
+                           },
+                           "else" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Null"
                               }
                            }
                         }
@@ -1042,24 +1080,112 @@
             "expression" : {
                "type" : "If",
                "condition" : {
-                  "type" : "Not",
-                  "operand" : {
-                     "type" : "IsNull",
+                  "type" : "And",
+                  "operand" : [ {
+                     "type" : "Not",
                      "operand" : {
-                        "type" : "Indexer",
-                        "operand" : [ {
-                           "path" : "item",
-                           "type" : "Property",
-                           "source" : {
-                              "name" : "currentQuestionnaire",
+                        "type" : "IsNull",
+                        "operand" : {
+                           "type" : "Indexer",
+                           "operand" : [ {
+                              "path" : "item",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "currentQuestionnaire",
+                                 "type" : "OperandRef"
+                              }
+                           }, {
+                              "name" : "qIndex",
                               "type" : "OperandRef"
-                           }
-                        }, {
-                           "name" : "qIndex",
-                           "type" : "OperandRef"
-                        } ]
+                           } ]
+                        }
                      }
-                  }
+                  }, {
+                     "type" : "Not",
+                     "operand" : {
+                        "type" : "IsNull",
+                        "operand" : {
+                           "type" : "Query",
+                           "source" : [ {
+                              "alias" : "$this",
+                              "expression" : {
+                                 "type" : "Query",
+                                 "source" : [ {
+                                    "alias" : "$this",
+                                    "expression" : {
+                                       "path" : "answerOption",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "type" : "Indexer",
+                                          "operand" : [ {
+                                             "path" : "item",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "currentQuestionnaire",
+                                                "type" : "OperandRef"
+                                             }
+                                          }, {
+                                             "name" : "qIndex",
+                                             "type" : "OperandRef"
+                                          } ]
+                                       }
+                                    }
+                                 } ],
+                                 "where" : {
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "IsNull",
+                                       "operand" : {
+                                          "path" : "value",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "$this",
+                                             "type" : "AliasRef"
+                                          }
+                                       }
+                                    }
+                                 },
+                                 "return" : {
+                                    "distinct" : false,
+                                    "expression" : {
+                                       "path" : "value",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "$this",
+                                          "type" : "AliasRef"
+                                       }
+                                    }
+                                 }
+                              }
+                           } ],
+                           "where" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "code",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "$this",
+                                       "type" : "AliasRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "return" : {
+                              "distinct" : false,
+                              "expression" : {
+                                 "path" : "code",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "$this",
+                                    "type" : "AliasRef"
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  } ]
                },
                "then" : {
                   "type" : "Query",
@@ -1548,15 +1674,32 @@
                      "where" : {
                         "type" : "And",
                         "operand" : [ {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "IsNull",
+                           "type" : "And",
+                           "operand" : [ {
+                              "type" : "Not",
                               "operand" : {
-                                 "path" : "value",
-                                 "scope" : "Q",
-                                 "type" : "Property"
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "value",
+                                    "scope" : "Q",
+                                    "type" : "Property"
+                                 }
                               }
-                           }
+                           }, {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "code",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "value",
+                                       "scope" : "Q",
+                                       "type" : "Property"
+                                    }
+                                 }
+                              }
+                           } ]
                         }, {
                            "type" : "Equal",
                            "operand" : [ {

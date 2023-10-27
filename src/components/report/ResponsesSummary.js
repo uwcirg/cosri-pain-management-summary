@@ -91,19 +91,18 @@ export default class ResponsesSummary extends Component {
   }
   getNumResponses(summary) {
     if (!summary || !summary.ResponsesSummary) return 0;
+    console.log("summary ", summary)
     return summary.ResponsesSummary.length;
   }
-  renderResponses(summaryItems, endIndex) {
+  renderResponses(qid, summaryItems, endIndex) {
     if (!summaryItems || !summaryItems.length) {
       return <div>No recorded responses</div>;
     }
     return (
-      <table
-        className={`response-table ${this.state.open ? "active" : ""}`}
-      >
+      <table className={`response-table ${this.state.open ? "active" : ""}`}>
         <thead>
           <tr>
-            <th className="fixed-cell">Questions</th>
+            <th className="fixed-cell">{`${qid ? qid.toUpperCase(): ""} Questions`}</th>
             {summaryItems
               .slice(0, endIndex ? endIndex : summaryItems.length)
               .map((item, index) => {
@@ -209,9 +208,11 @@ export default class ResponsesSummary extends Component {
                 if (this.tableWrapperRef.current) {
                   setTimeout(
                     () =>
-                      (this.tableWrapperRef.current.scrollTop =
-                        this.tableWrapperRef.scrollHeight + "px"),
-                    500
+                      this.tableWrapperRef.current.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      }),
+                    100
                   );
                 }
               }
@@ -301,11 +302,11 @@ export default class ResponsesSummary extends Component {
               // style={{ maxHeight: window.innerHeight - 168 }}
               ref={this.tableWrapperRef}
             >
-              {this.renderResponses(summary.ResponsesSummary)}
+              {this.renderResponses(summary.QuestionnaireName, summary.ResponsesSummary)}
             </div>
           </div>
           <div className="print-only">
-            {this.renderResponses(summary.ResponsesSummary, 3)}
+            {this.renderResponses(summary.QuestionnaireName, summary.ResponsesSummary, 3)}
           </div>
         </div>
       </React.Fragment>
