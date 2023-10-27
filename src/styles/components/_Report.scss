@@ -207,14 +207,21 @@ $selector-box-shadow: 0 2px 2px #383e40;
       max-width: 928px
     }
     @media (min-width: 1200px) {
-      max-width: 952px;
+      max-width: 1048px;
       &.two-columns {
         width: fit-content;
         block-size: fit-content;
       }
     }
     @media (min-width: 1400px) {
-      max-width: 1068px;
+      max-width: 1048px;
+      &.two-columns {
+        width: fit-content;
+        block-size: fit-content;
+      }
+    }
+    @media (min-width: 1600px) {
+      max-width: 1200px;
       &.two-columns {
         width: fit-content;
         block-size: fit-content;

@@ -22,7 +22,7 @@ export default class SideNav extends Component {
 
   handleResize() {
     this.setState({
-      showNav: window.innerWidth <= 1280 ? false : true,
+      showNav: window.innerWidth <= 1360 ? false : true,
     });
   }
 
