@@ -194,12 +194,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
   }
   .response-table-wrapper {
-    max-width: 699px;
+    max-width: 680px;
     &.two-columns {
       max-width: 100%;
     }
     @media (min-width: 992px) {
-      max-width: 948px;
+      max-width: 848px;
       &.two-columns {
         width: fit-content;
         max-width: 45%;
@@ -207,7 +207,14 @@ $selector-box-shadow: 0 2px 2px #383e40;
       }
     }
     @media (min-width: 1200px) {
-      max-width: 1120px;
+      max-width: 948px;
+      &.two-columns {
+        width: fit-content;
+        block-size: fit-content;
+      }
+    }
+    @media (min-width: 1400px) {
+      max-width: 1068px;
       &.two-columns {
         width: fit-content;
         block-size: fit-content;
