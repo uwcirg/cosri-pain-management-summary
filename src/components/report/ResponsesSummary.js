@@ -91,7 +91,6 @@ export default class ResponsesSummary extends Component {
   }
   getNumResponses(summary) {
     if (!summary || !summary.ResponsesSummary) return 0;
-    console.log("summary ", summary)
     return summary.ResponsesSummary.length;
   }
   renderResponses(qid, summaryItems, endIndex) {

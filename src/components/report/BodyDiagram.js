@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { downloadSVGImage } from "../../helpers/utility";
+import { downloadSVGImage, copySVGImage } from "../../helpers/utility";
 import {
   getDisplayDateFromISOString,
   renderImageFromSVG,
@@ -17,10 +17,10 @@ export default class BodyDiagram extends Component {
       dates: this.getDates(),
     };
     this.BodyDiagramRef = React.createRef();
-    this.downloadButtonRef = React.createRef();
+    this.utilButtonsContainerRef = React.createRef();
     this.printImageRef = React.createRef();
-    this.showDownloadButton = this.showDownloadButton.bind(this);
-    this.hideDownloadButton = this.hideDownloadButton.bind(this);
+    this.showUtilButtons = this.showUtilButtons.bind(this);
+    this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleNextChange = this.handleNextChange.bind(this);
     this.handlePrevChange = this.handlePrevChange.bind(this);
@@ -97,11 +97,11 @@ export default class BodyDiagram extends Component {
     );
   }
 
-  showDownloadButton() {
-    this.downloadButtonRef.current.style.visibility = "visible";
+  showUtilButtons() {
+    this.utilButtonsContainerRef.current.style.visibility = "visible";
   }
-  hideDownloadButton() {
-    this.downloadButtonRef.current.style.visibility = "hidden";
+  hideUtilButtons() {
+    this.utilButtonsContainerRef.current.style.visibility = "hidden";
   }
   getAnswersFromFhirObjects(fhirObjects, description = "pain") {
     if (!fhirObjects) return null;
@@ -334,14 +334,13 @@ export default class BodyDiagram extends Component {
   renderDownloadButton() {
     return (
       <button
-        ref={this.downloadButtonRef}
         onClick={(e) =>
           downloadSVGImage(e, this.getSourceDocument(), null, "body_diagram")
         }
         className="print-hidden button-default rounded"
         style={{
           fontSize: "0.9rem",
-          visibility: "hidden",
+          //   visibility: "hidden",
           color: "#777",
           minWidth: "64px",
         }}
@@ -352,6 +351,39 @@ export default class BodyDiagram extends Component {
           title="Download body diagram"
         ></FontAwesomeIcon>{" "}
       </button>
+    );
+  }
+  renderCopyButton() {
+    return (
+      <button
+        onClick={(e) => copySVGImage(this.getSourceDocument(), "body_diagram")}
+        className="print-hidden button-default rounded"
+        style={{
+          fontSize: "0.9rem",
+          //    visibility: "hidden",
+          color: "#777",
+          minWidth: "64px",
+        }}
+        title="copy body diagram image"
+      >
+        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>{" "}
+      </button>
+    );
+  }
+  renderUtilButtons() {
+    return (
+      <div
+        style={{ position: "absolute", bottom: "20px", left: 0 }}
+      >
+        <div
+          className="flex flex-gap-1"
+          style={{ visibility: "hidden", justifyContent: "flex-start" }}
+          ref={this.utilButtonsContainerRef}
+        >
+          {this.renderCopyButton()}
+          {this.renderDownloadButton()}
+        </div>
+      </div>
     );
   }
   renderNavButtons() {
@@ -366,11 +398,7 @@ export default class BodyDiagram extends Component {
       position: "relative",
       zIndex: 10,
     };
-    if (
-      !(this.state.dates.length) ||
-      this.state.dates.length < 2
-    )
-      return null;
+    if (!this.state.dates.length || this.state.dates.length < 2) return null;
     return (
       <div
         className="flex flex-gap-1 icons-container"
@@ -445,15 +473,19 @@ export default class BodyDiagram extends Component {
           paddingLeft: "4px",
           paddingRight: "4px",
         }}
-        onMouseEnter={this.showDownloadButton}
-        onMouseLeave={this.hideDownloadButton}
+        onMouseEnter={this.showUtilButtons}
+        onMouseLeave={this.hideUtilButtons}
       >
         <div className="flex" style={{ marginTop: 8, marginBottom: 24 }}>
           {this.renderLegend()}
           {this.renderDateSelector()}
           {this.renderPrintOnlyLabel()}
         </div>
-        <div className="flex flex-center flex-column">
+        <div
+          className="flex flex-center flex-column"
+          style={{ position: "relative" }}
+        >
+          {this.state.dates.length > 1 && this.renderUtilButtons()}
           <object
             data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
             type="image/svg+xml"
@@ -467,7 +499,6 @@ export default class BodyDiagram extends Component {
           {this.renderDots()}
         </div>
         {this.renderPrintOnlyImage()}
-        {this.state.dates.length > 1 && this.renderDownloadButton()}
       </div>
     );
   }

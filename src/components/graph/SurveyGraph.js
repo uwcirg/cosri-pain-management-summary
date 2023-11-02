@@ -13,6 +13,7 @@ import {
   getLineAttributes,
 } from "../../config/graph_config";
 import {
+  copySVGImage,
   downloadSVGImage,
   getDifferenceInYears,
   renderImageFromSVG,
@@ -36,7 +37,7 @@ export default class SurveyGraph extends Component {
           ? [...new Set(this.props.data.map((item) => item.qid))]
           : [],
     };
-    this.downloadButtonRef = React.createRef();
+    this.utilButtonsContainerRef = React.createRef();
     this.scaleLabelRefs = [];
     this.switchCheckboxRefs = [];
     //console.log("graph data ", this.state.graphData);
@@ -46,18 +47,35 @@ export default class SurveyGraph extends Component {
       this.addQuestionnaireToSurveyGraph.bind(this);
     this.removeQuestionnaireToSurveyGraph =
       this.removeQuestionnaireToSurveyGraph.bind(this);
-    this.showDownloadButton = this.showDownloadButton.bind(this);
-    this.hideDownloadButton = this.hideDownloadButton.bind(this);
+    this.showUtilButtons = this.showUtilButtons.bind(this);
+    this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
     this.handleSwitchChange = this.handleSwitchChange.bind(this);
     this.graphRef = React.createRef();
     this.printImageRef = React.createRef();
+    this.utilButtonStyle = {
+      fontSize: "0.9rem",
+      //   position: "absolute",
+      color: "#777",
+      //    zIndex: 20,
+      //   top: "16px",
+      //    right: "16px",
+      minWidth: "48px",
+      //   display: "none",
+      backgroundColor: "transparent",
+    };
   }
   componentDidMount() {
     this.createScaleRefs();
     setTimeout(
-      () =>
-        renderImageFromSVG(this.printImageRef.current, this.graphRef.current),
+      () => {
+        // if (this.graphRef.current) {
+        //   const currentRef = this.graphRef.current;
+        //   this.graphRef.current.setAttribute("width", currentRef.clientWidth);
+        //   this.graphRef.current.setAttribute("height", currentRef.clientHeight);
+        // }
+        renderImageFromSVG(this.printImageRef.current, this.graphRef.current);
+      },
       1000
     );
   }
@@ -91,11 +109,11 @@ export default class SurveyGraph extends Component {
     }
     return 0;
   }
-  showDownloadButton() {
-    this.downloadButtonRef.current.style.display = "block";
+  showUtilButtons() {
+    this.utilButtonsContainerRef.current.style.display = "flex";
   }
-  hideDownloadButton() {
-    this.downloadButtonRef.current.style.display = "none";
+  hideUtilButtons() {
+    this.utilButtonsContainerRef.current.style.display = "none";
   }
   getDataForGraph(dataSource) {
     let baseLineDate = new Date();
@@ -373,28 +391,28 @@ export default class SurveyGraph extends Component {
   renderDownloadButton() {
     return (
       <button
-        ref={this.downloadButtonRef}
         onClick={(e) =>
           downloadSVGImage(e, this.graphRef.current, null, "survey_graph")
         }
         className="print-hidden button-default rounded"
-        style={{
-          fontSize: "0.9rem",
-          position: "absolute",
-          color: "#777",
-          zIndex: 20,
-          top: "48px",
-          left: "72px",
-          minWidth: "48px",
-          display: "none",
-          backgroundColor: "transparent",
-        }}
+        style={this.utilButtonStyle}
         title="download graph"
       >
-        <FontAwesomeIcon
-          icon="download"
-          title="Download graph"
-        ></FontAwesomeIcon>{" "}
+        <FontAwesomeIcon icon="download"></FontAwesomeIcon>
+      </button>
+    );
+  }
+
+  renderCopyButton() {
+    return (
+      <button
+        //  ref={this.downloadButtonRef}
+        onClick={(e) => copySVGImage(this.graphRef.current, "survey_graph")}
+        className="print-hidden button-default rounded"
+        style={this.utilButtonStyle}
+        title="copy graph"
+      >
+        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
       </button>
     );
   }
@@ -619,6 +637,23 @@ export default class SurveyGraph extends Component {
           </div>
         </div>
         <div className="bottom-info-text">date range</div>
+      </div>
+    );
+  }
+  renderUtilButtons() {
+    return (
+      <div
+        ref={this.utilButtonsContainerRef}
+        className="flex flex-gap-1"
+        style={{
+          position: "absolute",
+          top: "40px",
+          left: "64px",
+          display: "none",
+        }}
+      >
+        {this.renderCopyButton()}
+        {this.renderDownloadButton()}
       </div>
     );
   }
@@ -852,6 +887,26 @@ export default class SurveyGraph extends Component {
       });
     };
 
+    const renderNoStateEntry = () => {
+      return (
+        <div
+          className="flex flex-center text-warning"
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            background: "#f4f5f64d",
+            left: "16px",
+          }}
+        >
+          <FontAwesomeIcon icon="exclamation-circle" title="notice" />
+          <div>{`No data for ${this.state.qids.join(
+            ", "
+          )} within this date range`}</div>
+        </div>
+      );
+    };
+
     const renderGraph = () => {
       return (
         <svg
@@ -896,31 +951,18 @@ export default class SurveyGraph extends Component {
 
     return (
       <React.Fragment>
-        <div className="survey-graph" style={{ position: "relative" }}>
+        <div
+          className="survey-graph"
+          style={{ position: "relative" }}
+          onMouseEnter={this.showUtilButtons}
+          onMouseLeave={this.hideUtilButtons}
+        >
           <div className="flex">
             <div style={{ position: "relative", width: "100%", gap: "24px" }}>
-              {noStateEntry && (
-                <div
-                  className="flex flex-center text-warning"
-                  style={{
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                    background: "#f4f5f64d",
-                    left: "16px",
-                  }}
-                >
-                  <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-                  <div>{`No data for ${this.state.qids.join(
-                    ", "
-                  )} within this date range`}</div>
-                </div>
-              )}
+              {noStateEntry && renderNoStateEntry()}
               <div
                 className="survey-svg-container"
                 style={{ position: "relative" }}
-                onMouseEnter={this.showDownloadButton}
-                onMouseLeave={this.hideDownloadButton}
               >
                 {renderGraph()}
               </div>
@@ -934,7 +976,7 @@ export default class SurveyGraph extends Component {
             </div>
           </div>
           {this.renderPrintOnlyImage()}
-          {this.renderDownloadButton()}
+          {this.renderUtilButtons()}
         </div>
       </React.Fragment>
     );

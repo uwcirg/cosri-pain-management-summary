@@ -175,17 +175,82 @@ export function renderImageFromSVG(imageElement, svgElement) {
 export function downloadSVGImage(
   event,
   svgElement,
-  imageElementId,
+  placeholderImageElementId,
   downloadFileName
 ) {
   if (event) event.stopPropagation();
+  if (!svgElement) return;
+  const setDimensions = () => {
+    if (typeof svgElement.setAttribute === "undefined") return;
+    svgElement.setAttribute("width", svgElement.clientWidth);
+    svgElement.setAttribute("height", svgElement.clientHeight);
+    return true;
+  };
+
+  setDimensions();
+
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+  console.log("SVG Data ", svgData);
+  let canvas = document.createElement("canvas");
+  let ctx = canvas.getContext("2d");
+
+  let img = document.querySelector("#" + placeholderImageElementId);
+  if (!img) {
+    img = document.createElement("img");
+    img.classList.add("print-image");
+    img.style.zIndex = -1;
+    img.style.position = "absolute";
+    img.style.opacity = 0;
+    img.setAttribute("id", placeholderImageElementId);
+    document.body.appendChild(img);
+  }
+
+  img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+  img.onload = function () {
+    const width =
+      typeof svgElement.getAttribute !== "undefined"
+        ? svgElement.getAttribute("width")
+        : img.width; // half the width of the original svg
+    const height =
+      typeof svgElement.getAttribute !== "undefined"
+        ? svgElement.getAttribute("height")
+        : img.height; // half the height of the original svg
+    setTimeout(() => {
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob((blob) => {
+        const URL = window.URL || window.webkitURL || window;
+        const imageURL = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = imageURL;
+        link.download = downloadFileName ? downloadFileName : "image";
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          document.body.removeChild(link);
+          document.body.removeChild(img);
+          if (svgElement.setAttribute) {
+            svgElement.setAttribute("width", "100%");
+            svgElement.setAttribute("height", "100%");
+          }
+        }, 0);
+      }, "image/png");
+      // Now is done
+      // console.log(canvas.toDataURL("image/png"));
+    }, 500);
+  };
+}
+
+export function copySVGImage(svgElement, placeholderImageElementId) {
   if (!svgElement) return;
   const svgData = new XMLSerializer().serializeToString(svgElement);
 
   let canvas = document.createElement("canvas");
   let ctx = canvas.getContext("2d");
 
-  let img = document.querySelector("#" + imageElementId);
+  let img = document.querySelector("#" + placeholderImageElementId);
   if (!img) {
     img = document.createElement("img");
     img.classList.add("print-image");
@@ -201,18 +266,33 @@ export function downloadSVGImage(
     ctx.drawImage(img, 0, 0, img.width, img.height);
 
     canvas.toBlob((blob) => {
-      const imageURL = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = imageURL;
-      link.download = downloadFileName ? downloadFileName : "image";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      document.body.removeChild(img);
+      try {
+        // navigator.clipboard.write([
+        //   new window.ClipboardItem({ "image/png": blob }),
+        // ]);
+        writeBlobToCliboard(blob)
+          .then(() => {
+            alert("Image copied to clipboard.");
+          })
+          .catch((e) => {
+            alert("Error!. Unable to copy image to clipboard.");
+            console.log("Copy image error ", e);
+          });
+        //  alert("Image copied");
+      } catch (e) {
+        alert("Unable to copy image to clipboard.  See console for detail.");
+        console.log("Unable to write image to clipboard ", e);
+      }
     }, "image/png");
     // Now is done
     //console.log(canvas.toDataURL("image/png"));
   };
+}
+
+export async function writeBlobToCliboard(blob) {
+  return await navigator.clipboard.write([
+    new window.ClipboardItem({ "image/png": blob }),
+  ]);
 }
 
 export function getDifferenceInYears(fromDate, toDate) {
