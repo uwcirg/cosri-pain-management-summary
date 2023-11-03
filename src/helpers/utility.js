@@ -145,10 +145,8 @@ export function getDisplayDateFromISOString(isocDateString) {
 export function renderImageFromSVG(imageElement, svgElement) {
   if (!svgElement) return;
   const svgData = new XMLSerializer().serializeToString(svgElement);
-
   let canvas = document.createElement("canvas");
   let ctx = canvas.getContext("2d");
-
   let img = imageElement;
   if (!img) return;
   img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
@@ -180,10 +178,14 @@ export function downloadSVGImage(
 ) {
   if (event) event.stopPropagation();
   if (!svgElement) return;
-  const width = svgElement.clientWidth;
-  const height = svgElement.clientHeight;
+  const width =
+    typeof svgElement.clientWidth !== "undefined" ? svgElement.clientWidth : 0;
+  const height =
+    typeof svgElement.clientHeight !== "undefined"
+      ? svgElement.clientHeight
+      : 0;
   const setDimensions = () => {
-    if (typeof svgElement.setAttribute === "undefined") return;
+    if (typeof svgElement.setAttribute !== "function") return;
     svgElement.setAttribute("width", width);
     svgElement.setAttribute("height", height);
     return true;
@@ -217,10 +219,11 @@ export function downloadSVGImage(
         ? svgElement.getAttribute("height")
         : img.height; // half the height of the original svg
     setTimeout(() => {
-      canvas.width = width;
-      canvas.height = height;
-      ctx.drawImage(img, 0, 0, width, height);
-
+      const canvasWidth = width ? width : img.width;
+      const canvasHeight = height ? height : img.height;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
       canvas.toBlob((blob) => {
         const URL = window.URL || window.webkitURL || window;
         const imageURL = URL.createObjectURL(blob);
@@ -232,7 +235,7 @@ export function downloadSVGImage(
         setTimeout(() => {
           document.body.removeChild(link);
           document.body.removeChild(img);
-          if (svgElement.setAttribute) {
+          if (typeof svgElement.setAttribute === "function") {
             svgElement.setAttribute("width", "100%");
             svgElement.setAttribute("height", "100%");
           }
@@ -244,11 +247,27 @@ export function downloadSVGImage(
   };
 }
 
-export function copySVGImage(event, svgElement, placeholderImageElementId) {
+export function copySVGImage(
+  event,
+  svgElement,
+  placeholderImageElementId,
+  mimeType
+) {
   event.preventDefault();
   if (!svgElement) return;
-  const svgData = new XMLSerializer().serializeToString(svgElement);
+  const width =
+    typeof svgElement.clientWidth !== undefined ? svgElement.clientWidth : 0;
+  const height =
+    typeof svgElement.clientHeight !== undefined ? svgElement.clientHeight : 0;
+  const setDimensions = () => {
+    if (typeof svgElement.setAttribute !== "function") return;
+    if (width) svgElement.setAttribute("width", width);
+    if (height) svgElement.setAttribute("height", height);
+    return true;
+  };
 
+  setDimensions();
+  const svgData = new XMLSerializer().serializeToString(svgElement);
   let canvas = document.createElement("canvas");
   let ctx = canvas.getContext("2d");
 
@@ -262,14 +281,23 @@ export function copySVGImage(event, svgElement, placeholderImageElementId) {
     document.body.appendChild(img);
   }
   img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+  const imageType = mimeType ? mimeType : "image/png";
   const clipboardItem = new window.ClipboardItem({
-    "image/png": new Promise(async (resolve) => {
+    [imageType]: new Promise(async (resolve) => {
       const imgBlob = await fetch(img.src).then((response) => response.blob());
       console.log("image fetched ", imgBlob);
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0, img.width, img.height);
+      const canvasWidth = width ? width : img.width;
+      const canvasHeight = height ? height : img.height;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
       canvas.toBlob((blob) => {
+        if (width && typeof svgElement.setAttribute) {
+          svgElement.setAttribute("width", "100%");
+        }
+        if (height && typeof svgElement.setAttribute) {
+          svgElement.setAttribute("height", "100%");
+        }
         resolve(blob);
       });
     }),
