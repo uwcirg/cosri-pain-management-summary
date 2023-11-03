@@ -13,6 +13,7 @@ import {
   getLineAttributes,
 } from "../../config/graph_config";
 import {
+  allowCopyImage,
   copySVGImage,
   downloadSVGImage,
   getDifferenceInYears,
@@ -404,10 +405,10 @@ export default class SurveyGraph extends Component {
   }
 
   renderCopyButton() {
+    if (!allowCopyImage()) return null;
     return (
       <button
-        //  ref={this.downloadButtonRef}
-        onClick={(e) => copySVGImage(this.graphRef.current, "survey_graph")}
+        onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
         title="copy graph"

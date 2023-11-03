@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { downloadSVGImage, copySVGImage } from "../../helpers/utility";
 import {
+  allowCopyImage,
   getDisplayDateFromISOString,
   renderImageFromSVG,
 } from "../../helpers/utility";
@@ -26,6 +27,12 @@ export default class BodyDiagram extends Component {
     this.handlePrevChange = this.handlePrevChange.bind(this);
     this.handleSetFirst = this.handleSetFirst.bind(this);
     this.handleSetLast = this.handleSetLast.bind(this);
+    this.utilButtonStyle = {
+      fontSize: "0.9rem",
+      color: "#777",
+      minWidth: "56px",
+      background: "transparent",
+    };
   }
 
   componentDidMount() {
@@ -338,43 +345,32 @@ export default class BodyDiagram extends Component {
           downloadSVGImage(e, this.getSourceDocument(), null, "body_diagram")
         }
         className="print-hidden button-default rounded"
-        style={{
-          fontSize: "0.9rem",
-          //   visibility: "hidden",
-          color: "#777",
-          minWidth: "64px",
-        }}
+        style={this.utilButtonStyle}
         title="download body diagram image"
       >
         <FontAwesomeIcon
           icon="download"
           title="Download body diagram"
-        ></FontAwesomeIcon>{" "}
+        ></FontAwesomeIcon>
       </button>
     );
   }
   renderCopyButton() {
+    if (!allowCopyImage()) return null;
     return (
       <button
-        onClick={(e) => copySVGImage(this.getSourceDocument(), "body_diagram")}
+        onClick={(e) => copySVGImage(e, this.getSourceDocument(), "body_diagram")}
         className="print-hidden button-default rounded"
-        style={{
-          fontSize: "0.9rem",
-          //    visibility: "hidden",
-          color: "#777",
-          minWidth: "64px",
-        }}
+        style={this.utilButtonStyle}
         title="copy body diagram image"
       >
-        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>{" "}
+        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
       </button>
     );
   }
   renderUtilButtons() {
     return (
-      <div
-        style={{ position: "absolute", bottom: "20px", left: 0 }}
-      >
+      <div style={{ position: "absolute", right: 0, top: 0 }}>
         <div
           className="flex flex-gap-1"
           style={{ visibility: "hidden", justifyContent: "flex-start" }}

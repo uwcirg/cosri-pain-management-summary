@@ -180,17 +180,18 @@ export function downloadSVGImage(
 ) {
   if (event) event.stopPropagation();
   if (!svgElement) return;
+  const width = svgElement.clientWidth;
+  const height = svgElement.clientHeight;
   const setDimensions = () => {
     if (typeof svgElement.setAttribute === "undefined") return;
-    svgElement.setAttribute("width", svgElement.clientWidth);
-    svgElement.setAttribute("height", svgElement.clientHeight);
+    svgElement.setAttribute("width", width);
+    svgElement.setAttribute("height", height);
     return true;
   };
 
   setDimensions();
 
   const svgData = new XMLSerializer().serializeToString(svgElement);
-  console.log("SVG Data ", svgData);
   let canvas = document.createElement("canvas");
   let ctx = canvas.getContext("2d");
 
@@ -243,7 +244,8 @@ export function downloadSVGImage(
   };
 }
 
-export function copySVGImage(svgElement, placeholderImageElementId) {
+export function copySVGImage(event, svgElement, placeholderImageElementId) {
+  event.preventDefault();
   if (!svgElement) return;
   const svgData = new XMLSerializer().serializeToString(svgElement);
 
@@ -260,39 +262,37 @@ export function copySVGImage(svgElement, placeholderImageElementId) {
     document.body.appendChild(img);
   }
   img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
-  img.onload = function () {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0, img.width, img.height);
-
-    canvas.toBlob((blob) => {
-      try {
-        // navigator.clipboard.write([
-        //   new window.ClipboardItem({ "image/png": blob }),
-        // ]);
-        writeBlobToCliboard(blob)
-          .then(() => {
-            alert("Image copied to clipboard.");
-          })
-          .catch((e) => {
-            alert("Error!. Unable to copy image to clipboard.");
-            console.log("Copy image error ", e);
-          });
-        //  alert("Image copied");
-      } catch (e) {
-        alert("Unable to copy image to clipboard.  See console for detail.");
-        console.log("Unable to write image to clipboard ", e);
-      }
-    }, "image/png");
-    // Now is done
-    //console.log(canvas.toDataURL("image/png"));
-  };
+  const clipboardItem = new window.ClipboardItem({
+    "image/png": new Promise(async (resolve) => {
+      const imgBlob = await fetch(img.src).then((response) => response.blob());
+      console.log("image fetched ", imgBlob);
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0, img.width, img.height);
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      });
+    }),
+  });
+  writeBlobToClipboard(clipboardItem)
+    .then((x) => {
+      alert("Image copied to clipboard ", x);
+    })
+    .catch((e) => {
+      alert("Error! Unable to copy image to clipboard!");
+      console.log(e);
+    });
+  return;
 }
-
-export async function writeBlobToCliboard(blob) {
-  return await navigator.clipboard.write([
-    new window.ClipboardItem({ "image/png": blob }),
-  ]);
+export function allowCopyImage() {
+  if (typeof window.ClipboardItem === "undefined") return false;
+  if (!navigator?.clipboard?.write) return false;
+  return true;
+}
+export async function writeBlobToClipboard(clipboardItem) {
+  if (!allowCopyImage())
+    return Promise.reject("Clipboard API is not supported");
+  return navigator.clipboard.write([clipboardItem]);
 }
 
 export function getDifferenceInYears(fromDate, toDate) {
