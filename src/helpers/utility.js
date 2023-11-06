@@ -298,6 +298,9 @@ export function copySVGImage(
         if (height && typeof svgElement.setAttribute) {
           svgElement.setAttribute("height", "100%");
         }
+        setTimeout(() => {
+          document.body.removeChild(img);
+        }, 0);
         resolve(blob);
       });
     }),
