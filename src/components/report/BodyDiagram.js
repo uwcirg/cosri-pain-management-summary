@@ -342,7 +342,12 @@ export default class BodyDiagram extends Component {
     return (
       <button
         onClick={(e) =>
-          downloadSVGImage(e, this.getSourceDocument(), null, "body_diagram")
+          downloadSVGImage(
+            e,
+            this.getSourceDocument(),
+            null,
+            `body_diagram_${this.state.selectedDate}`
+          )
         }
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
@@ -359,7 +364,9 @@ export default class BodyDiagram extends Component {
     if (!allowCopyImage()) return null;
     return (
       <button
-        onClick={(e) => copySVGImage(e, this.getSourceDocument(), "body_diagram")}
+        onClick={(e) =>
+          copySVGImage(e, this.getSourceDocument(), "body_diagram")
+        }
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
         title="copy body diagram image"

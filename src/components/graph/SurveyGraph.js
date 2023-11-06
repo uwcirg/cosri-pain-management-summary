@@ -68,17 +68,9 @@ export default class SurveyGraph extends Component {
   }
   componentDidMount() {
     this.createScaleRefs();
-    setTimeout(
-      () => {
-        // if (this.graphRef.current) {
-        //   const currentRef = this.graphRef.current;
-        //   this.graphRef.current.setAttribute("width", currentRef.clientWidth);
-        //   this.graphRef.current.setAttribute("height", currentRef.clientHeight);
-        // }
-        renderImageFromSVG(this.printImageRef.current, this.graphRef.current);
-      },
-      1000
-    );
+    setTimeout(() => {
+      renderImageFromSVG(this.printImageRef.current, this.graphRef.current);
+    }, 1000);
   }
   initSwitchCheckboxRefs() {
     // Initialize the array with React.createRef() objects
@@ -393,7 +385,12 @@ export default class SurveyGraph extends Component {
     return (
       <button
         onClick={(e) =>
-          downloadSVGImage(e, this.graphRef.current, null, "survey_graph")
+          downloadSVGImage(
+            e,
+            this.graphRef.current,
+            null,
+            `survey_graph_${this.getDisplayDateRange()}`
+          )
         }
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
