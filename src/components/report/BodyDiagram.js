@@ -269,26 +269,30 @@ export default class BodyDiagram extends Component {
     );
   }
   renderLegend() {
-    const iconStyle = {
-      width: 12,
-      height: 12,
-      border: "1px solid",
-    };
-    const WORST_PAIN_COLOR = "red";
-    const OTHER_LOCATION_COLOR = "yellow";
-    const PREV_LOCATION_COLOR = "#e9e7e7";
+    // const iconStyle = {
+    //   width: 12,
+    //   height: 12,
+    //   border: "1px solid",
+    // };
+    // const WORST_PAIN_COLOR = "red";
+    // const OTHER_LOCATION_COLOR = "yellow";
+    // const PREV_LOCATION_COLOR = "#e9e7e7";
     return (
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
-          gap: 6,
-          fontSize: "0.8rem",
+          // gap: 6,
+          // fontSize: "0.8rem",
         }}
         className="print-hidden"
       >
-        <div className="flex">
+        <img
+          src={process.env.PUBLIC_URL + "/assets/images/body_diagram_legend.png"}
+          alt="body diagram legend"
+        />
+        {/* <div className="flex">
           <div
             style={{
               ...iconStyle,
@@ -316,7 +320,7 @@ export default class BodyDiagram extends Component {
             ></div>
             <div>Previously Reported Locations</div>
           </div>
-        )}
+        )} */}
       </div>
     );
   }
