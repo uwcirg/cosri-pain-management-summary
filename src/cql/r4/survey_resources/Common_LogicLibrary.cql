@@ -82,27 +82,6 @@ define function MatchedReponsesByQuestionnaire(responses List<FHIR.Questionnaire
   )
 
 /*
- * retrieve list of Tuples containing question and its corresponding answer for a matched questionnaire
- * @param currentQuestionnaire, of type FHIR.Questionnaire
- * @param responses, of type FHIR.QuestionnaireResponse.Item
- * @param ScoringQuestionId, question link id for question containing score 
- * @return {System.List<Tuple>}
- */
-define function getResponsesByQuestionnaire(currentQuestionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
-  (currentQuestionnaire.item o 
-    where o.linkId.value != 'introduction' and 
-    (PositionOf(o.linkId.value, scoringQuestionId) = -1 or PositionOf(scoringQuestionId, o.linkId.value) = -1)
-  ) I 
-  let
-   answer: First(GetResponseAnswerByLinkId(I.linkId.value, responses))
-  return {
-      linkId: I.linkId.value,
-      question: I.text.value,
-      answer: answer,
-      answerText: if I.answerOption[ToInteger(answer)].value.display is not null then I.answerOption[ToInteger(answer)].value.display.value else null
-    }
-
-/*
  * retrieve concept code of a selected answer option from a Questionnaire
  * @param currentQuestionnaire, of type FHIR.Questionnaire
  * @param qIndex, question index, of type FHIR.Integer
@@ -225,8 +204,10 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
       linkId: if I.linkId.value is not null then I.linkId.value else 'n/a',
       answer: case
         //answer in FHIR coding format 
-        when I.answer[0].value.display is not null then I.answer[0].value.display.value
-        else I.answer[0].value.value
+        when I.answer[0].value.display is not null and I.answer[0].value.display.value is not null then 
+          I.answer[0].value.display.value
+        else
+          I.answer[0].value.value
       end,
       question: I.text.value
   }
