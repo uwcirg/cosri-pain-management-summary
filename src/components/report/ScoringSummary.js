@@ -201,14 +201,16 @@ export default class ScoringSummary extends Component {
         (item) => item.ResponsesSummary && item.ResponsesSummary.length > 0
       ).length === 0;
     return (
-      <table className="table">
-        <caption>{this.getTitleDisplay()}</caption>
-        {!noSummaryData && this.renderTableHeaders()}
-        <tbody>
-          {noSummaryData && this.renderNoDataRow()}
-          {!noSummaryData && this.renderDataRows(summary, showAnchorLinks)}
-        </tbody>
-      </table>
+      <React.Fragment>
+        <div className="panel-title">{this.getTitleDisplay()}</div>
+        <table className="table">
+          {!noSummaryData && this.renderTableHeaders()}
+          <tbody>
+            {noSummaryData && this.renderNoDataRow()}
+            {!noSummaryData && this.renderDataRows(summary, showAnchorLinks)}
+          </tbody>
+        </table>
+      </React.Fragment>
     );
   }
 }

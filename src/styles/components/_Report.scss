@@ -400,6 +400,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
         padding: 0;
         flex: 1 1;
       }
+      &-title {
+        font-size: 20px;
+        text-align: left;
+      }
       &__item {
         align-self: center;
         width: calc(100% - 16px);
@@ -415,7 +419,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         &.full-width {
           width: calc(100% - 16px);
         }
-        padding: 4px 8px 8px;
+        padding: 8px;
 
         .table {
           width: 100%;
