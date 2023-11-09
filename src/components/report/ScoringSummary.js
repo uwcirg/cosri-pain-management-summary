@@ -85,9 +85,9 @@ export default class ScoringSummary extends Component {
     const minScore = data.ScoreParams.minScore;
     const maxScore = data.ScoreParams.maxScore;
     return (
-      <span className="text-muted sub">
+      <sub className="text-muted sub">
         {"(" + minScore + "-" + maxScore + ")"}
-      </span>
+      </sub>
     );
   }
   getNumAnswered(data) {
@@ -183,9 +183,11 @@ export default class ScoringSummary extends Component {
         <tr key={`questionnaire_summary_row_${index}`} className="data-row">
           {this.renderQuestionnaireLinkCell(item, showAnchorLinks)}
           {this.renderScoreCell(item)}
-          <td>{this.getNumAnswered(item)}</td>
-          <td className="text-capitalize">{this.getScoreMeaning(item)}</td>
-          <td>
+          <td valign="middle">{this.getNumAnswered(item)}</td>
+          <td className="text-capitalize" valign="middle">
+            {this.getScoreMeaning(item)}
+          </td>
+          <td valign="middle">
             <div className="icon-container">{this.getDisplayIcon(item)}</div>
           </td>
         </tr>

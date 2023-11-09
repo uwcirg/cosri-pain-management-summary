@@ -261,6 +261,7 @@ export default class ResponsesSummary extends Component {
                         <td
                           className="text-center"
                           key={`${column.key}_${index}`}
+                          valign="middle"
                         >
                           {currentResponses[column.key]}
                         </td>
@@ -270,6 +271,7 @@ export default class ResponsesSummary extends Component {
                         <td
                           className="text-center"
                           key={`${column.key}_${index}`}
+                          valign="middle"
                         >
                           --
                         </td>

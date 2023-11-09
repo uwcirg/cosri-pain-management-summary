@@ -25,8 +25,12 @@ export default class Score extends Component {
       return (
         <div className={`flex flex-space-between ${cssClass}`}>
           <span className={iconClass}>{score}</span>
-          {(highSeverity && !moderateSeverity) && <AlertIcon />}
-          {moderateSeverity && <WarningIcon />}
+          {highSeverity && !moderateSeverity && (
+              <AlertIcon />
+          )}
+          {moderateSeverity && (
+              <WarningIcon />
+          )}
         </div>
       );
     return <div className={`flex ${cssClass}`}>{score}</div>;
