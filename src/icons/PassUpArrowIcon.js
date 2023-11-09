@@ -5,7 +5,7 @@ export default function PassUpArrowIcon(props) {
     <img
       src={process.env.PUBLIC_URL + "/assets/images/passUpArrow.png"}
       alt="better"
-      width="16"
+      width="15"
       {...props}
     />
   );

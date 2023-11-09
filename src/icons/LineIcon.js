@@ -5,7 +5,7 @@ export default function LineIcon(props) {
     <img
       src={process.env.PUBLIC_URL + "/assets/images/line.png"}
       alt="same"
-      width="16"
+      width="15"
       {...props}
     />
   );

@@ -5,7 +5,7 @@ export default function FailUpArrowIcon(props) {
     <img
       src={process.env.PUBLIC_URL + "/assets/images/failUpArrow.png"}
       alt="worse"
-      width="16"
+      width="15"
       {...props}
     />
   );
