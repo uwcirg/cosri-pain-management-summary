@@ -306,9 +306,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
     width: 100%;
     min-height: 80px;
     gap: 4px;
-    flex-wrap: wrap;
-    @media (min-width: 992px) {
-      flex-wrap: nowrap;
+   // flex-wrap: wrap;
+    flex-direction: column;
+    @media (min-width: 1120px) {
+     // flex-wrap: nowrap;
+      flex-direction: row;
     }
     justify-content: center;
     .panel {
@@ -358,7 +360,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           // width: 100%;
           // max-width: calc(100% - 120px);
           width: calc(100% - 12rem);
-          @media (min-width: 992px) {
+          @media (min-width: 1120px) {
             width: 100%;
           }
           // @media (min-width: 992px) {

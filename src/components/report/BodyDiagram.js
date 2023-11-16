@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactTooltip from "react-tooltip";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { downloadSVGImage, copySVGImage } from "../../helpers/utility";
@@ -365,7 +366,27 @@ export default class BodyDiagram extends Component {
     );
   }
   renderCopyButton() {
-    if (!allowCopyImage()) return null;
+    if (!allowCopyImage())
+      return (
+        <div>
+          <FontAwesomeIcon
+            className="text-warning"
+            icon="exclamation-triangle"
+            data-for={"bdCopyWarningTooltip"}
+            data-tip
+          />
+          <ReactTooltip
+            className="summary-tooltip"
+            id={"bdCopyWarningTooltip"}
+            aria-haspopup="true"
+          >
+            <p>
+              If you want to copy this image, please try a different browser.
+              <br/>This browser does not support copying of this image.
+            </p>
+          </ReactTooltip>
+        </div>
+      );
     return (
       <button
         onClick={(e) =>
@@ -381,10 +402,11 @@ export default class BodyDiagram extends Component {
   }
   renderUtilButtons() {
     return (
-      <div style={{ position: "absolute", right: 0, top: 0 }}>
+      <div style={{ position: "absolute", right: 0, top: "-32px" }}>
         <div
           className="flex flex-gap-1"
-          style={{ visibility: "hidden", justifyContent: "flex-start" }}
+       //   style={{ visibility: "hidden", justifyContent: "flex-start" }}
+          style={{ justifyContent: "flex-start" }}
           ref={this.utilButtonsContainerRef}
         >
           {this.renderCopyButton()}
@@ -480,8 +502,8 @@ export default class BodyDiagram extends Component {
           paddingLeft: "4px",
           paddingRight: "4px",
         }}
-        onMouseEnter={this.showUtilButtons}
-        onMouseLeave={this.hideUtilButtons}
+      //  onMouseEnter={this.showUtilButtons}
+      //  onMouseLeave={this.hideUtilButtons}
       >
         <div className="flex" style={{ marginTop: 8, marginBottom: 24 }}>
           {this.renderLegend()}

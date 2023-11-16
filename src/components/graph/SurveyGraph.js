@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactTooltip from "react-tooltip";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as d3 from "d3";
@@ -402,7 +403,27 @@ export default class SurveyGraph extends Component {
   }
 
   renderCopyButton() {
-    if (!allowCopyImage()) return null;
+    if (!allowCopyImage())
+      return (
+        <div>
+          <FontAwesomeIcon
+            className="text-warning"
+            icon="exclamation-triangle"
+            data-for={"graphWarningTooltip"}
+            data-tip
+          />
+          <ReactTooltip
+            className="summary-tooltip"
+            id={"graphWarningTooltip"}
+            aria-haspopup="true"
+          >
+            <p>
+              If you want to copy this image, please try a different browser.
+              <br/>This browser does not support copying of this image.
+            </p>
+          </ReactTooltip>
+        </div>
+      );
     return (
       <button
         onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
@@ -645,9 +666,10 @@ export default class SurveyGraph extends Component {
         className="flex flex-gap-1"
         style={{
           position: "absolute",
-          top: "40px",
-          left: "64px",
-          display: "none",
+          top: 0,
+          // left: "64px",
+          right: 0,
+          //  display: "none",
         }}
       >
         {this.renderCopyButton()}
@@ -915,7 +937,7 @@ export default class SurveyGraph extends Component {
           viewBox={`0 0 ${graphWidth} ${graphHeight}`}
           style={{
             fontFamily: "Open Sans, Arial, sans-serif",
-            backgroundColor: "#FFF"
+            backgroundColor: "#FFF",
           }}
         >
           <g transform={`translate(${margins.left}, ${margins.top})`}>
@@ -953,8 +975,8 @@ export default class SurveyGraph extends Component {
         <div
           className="survey-graph"
           style={{ position: "relative" }}
-          onMouseEnter={this.showUtilButtons}
-          onMouseLeave={this.hideUtilButtons}
+          //   onMouseEnter={this.showUtilButtons}
+          //   onMouseLeave={this.hideUtilButtons}
         >
           <div className="flex">
             <div style={{ position: "relative", width: "100%", gap: "24px" }}>
@@ -971,11 +993,11 @@ export default class SurveyGraph extends Component {
               className="flex flex-gap-1"
               style={{ marginTop: (graphHeight / 2) * -1 + "px" }}
             >
+              {this.renderUtilButtons()}
               {this.renderLegend()}
             </div>
           </div>
           {this.renderPrintOnlyImage()}
-          {this.renderUtilButtons()}
         </div>
       </React.Fragment>
     );
