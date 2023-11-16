@@ -915,6 +915,7 @@ export default class SurveyGraph extends Component {
           viewBox={`0 0 ${graphWidth} ${graphHeight}`}
           style={{
             fontFamily: "Open Sans, Arial, sans-serif",
+            backgroundColor: "#FFF"
           }}
         >
           <g transform={`translate(${margins.left}, ${margins.top})`}>
