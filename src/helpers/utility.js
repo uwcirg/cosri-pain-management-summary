@@ -1,4 +1,5 @@
 import moment from "moment";
+import { toBlob, toJpeg } from "html-to-image";
 import { getEnv } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
 /*
@@ -170,6 +171,20 @@ export function renderImageFromSVG(imageElement, svgElement) {
   };
 }
 
+export function downloadDomImage(event, element, downloadFileName, options) {
+  if (event) {
+    event.stopPropagation();
+  }
+  toBlob(element, options).then((blob) => {
+    if (window.saveAs) {
+      window.saveAs(blob, downloadFileName);
+    } else {
+      const FileSaver = require("file-saver");
+      FileSaver.saveAs(blob, downloadFileName);
+    }
+  });
+}
+
 export function downloadSVGImage(
   event,
   svgElement,
@@ -251,7 +266,8 @@ export function copySVGImage(
   event,
   svgElement,
   placeholderImageElementId,
-  mimeType
+  mimeType,
+  options
 ) {
   event.preventDefault();
   if (!svgElement) return;
@@ -282,7 +298,7 @@ export function copySVGImage(
   }
   img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
   const imageType = mimeType ? mimeType : "image/png";
-  const clipboardItem = new window.ClipboardItem({
+  let items = {
     [imageType]: new Promise(async (resolve) => {
       const imgBlob = await fetch(img.src).then((response) => response.blob());
       console.log("image fetched ", imgBlob);
@@ -304,7 +320,25 @@ export function copySVGImage(
         resolve(blob);
       });
     }),
-  });
+  };
+  if (options && options.clipboardItems) {
+    options.clipboardItems.forEach((item) => {
+      // let itemToAdd = {
+      //   [item.imageType]: getHTMLImageClipboardItem(item.element, item.options)
+      // };
+      const itemToAdd = getHTMLImageClipboardItem(item.element, item.options);
+      console.log("item ", itemToAdd);
+      items = { ...items, ...itemToAdd };
+      console.log("items? ", items);
+    });
+  }
+
+  const clipboardItem = new window.ClipboardItem(items);
+  // const itemsToCopy = [
+  //   clipboardItem,
+  //   ...(options && options.clipboardItems ? options.clipboardItems : []),
+  // ];
+  console.log("clipboardItem? ", items);
   writeBlobToClipboard(clipboardItem)
     .then((x) => {
       alert("Image copied to clipboard ", x);
@@ -314,6 +348,38 @@ export function copySVGImage(
       console.log(e);
     });
   return;
+}
+export function getHTMLImageClipboardItem(domElement, options) {
+  const imageType =
+    options && options.imageType ? options.imageType : "image/png";
+  return {
+    [imageType]: new Promise(async (resolve) => {
+      if (imageType === "image/png") {
+        const imageBlob = await toBlob(domElement, options);
+        console.log("Blob? ", imageBlob)
+        resolve(imageBlob);
+      } else if (imageType === "image/jpeg") {
+        const imageBlob = await toJpeg(domElement, options);
+        resolve(imageBlob);
+      } else {
+        const imageBlob = await toBlob(domElement, options);
+        resolve(imageBlob);
+      }
+    }),
+  };
+}
+export function copyDomToClipboard(domElement, options) {
+  if (!allowCopyImage()) return null;
+  writeBlobToClipboard(
+    new window.ClipboardItem(getHTMLImageClipboardItem(domElement, options))
+  )
+    .then((x) => {
+      alert("Content copied to clipboard ", x);
+    })
+    .catch((e) => {
+      alert("Error! Unable to copy content to clipboard!");
+      console.log(e);
+    });
 }
 export function allowCopyImage() {
   if (typeof window.ClipboardItem === "undefined") return false;

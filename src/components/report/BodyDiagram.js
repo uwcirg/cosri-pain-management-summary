@@ -2,7 +2,12 @@ import React, { Component } from "react";
 import ReactTooltip from "react-tooltip";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { downloadSVGImage, copySVGImage } from "../../helpers/utility";
+import {
+  // downloadSVGImage,
+  downloadDomImage,
+  // copySVGImage,
+  copyDomToClipboard,
+} from "../../helpers/utility";
 import {
   allowCopyImage,
   getDisplayDateFromISOString,
@@ -18,6 +23,7 @@ export default class BodyDiagram extends Component {
       selectedIndex: 0,
       dates: this.getDates(),
     };
+    this.containerRef = React.createRef();
     this.BodyDiagramRef = React.createRef();
     this.utilButtonsContainerRef = React.createRef();
     this.printImageRef = React.createRef();
@@ -33,6 +39,20 @@ export default class BodyDiagram extends Component {
       color: "#777",
       minWidth: "56px",
       background: "transparent",
+    };
+    this.copyImageOptions = {
+      filter: (node) => {
+        const exclusionClasses = [
+          "dots-container",
+          "diagram-container",
+          "buttons-container",
+          "icons-container",
+          "print-image",
+        ];
+        return !exclusionClasses.some((classname) =>
+          node.classList?.contains(classname)
+        );
+      },
     };
   }
 
@@ -254,7 +274,7 @@ export default class BodyDiagram extends Component {
       };
     });
     return (
-      <div className="select print-hidden">
+      <div className="select print-hidden bd-dates-selector">
         <select
           value={this.state.selectedDate}
           onChange={this.handleSelectChange}
@@ -287,10 +307,12 @@ export default class BodyDiagram extends Component {
           // gap: 6,
           // fontSize: "0.8rem",
         }}
-        className="print-hidden"
+        className="print-hidden legend-wrapper part-of-bd"
       >
         <img
-          src={process.env.PUBLIC_URL + "/assets/images/body_diagram_legend.png"}
+          src={
+            process.env.PUBLIC_URL + "/assets/images/body_diagram_legend.png"
+          }
           alt="body diagram legend"
         />
         {/* <div className="flex">
@@ -346,14 +368,24 @@ export default class BodyDiagram extends Component {
   renderDownloadButton() {
     return (
       <button
-        onClick={(e) =>
-          downloadSVGImage(
+        // onClick={(e) =>
+        //   downloadSVGImage(
+        //     e,
+        //     this.getSourceDocument(),
+        //     null,
+        //     `body_diagram_${this.state.selectedDate}`
+        //   )
+        // }
+        onClick={(e) => {
+          this.beforeCopy();
+          downloadDomImage(
             e,
-            this.getSourceDocument(),
-            null,
-            `body_diagram_${this.state.selectedDate}`
-          )
-        }
+            this.containerRef.current,
+            `body_diagram_${this.state.selectedDate}`,
+            this.copyImageOptions
+          );
+          this.afterCopy();
+        }}
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
         title="download body diagram image"
@@ -364,6 +396,34 @@ export default class BodyDiagram extends Component {
         ></FontAwesomeIcon>
       </button>
     );
+  }
+  beforeCopy() {
+    let cloneSvgElement = this.getSourceDocument()
+      .querySelector("svg")
+      .cloneNode(true);
+    cloneSvgElement.setAttribute("id", "temp_bd");
+    cloneSvgElement.classList.add("part-of-bd");
+    cloneSvgElement.style.position = "absolute";
+    cloneSvgElement.style.top = "100px";
+    cloneSvgElement.style.transform = "translate(-50%,0)";
+    this.containerRef.current.append(cloneSvgElement);
+    this.BodyDiagramRef.current.style.visibility = "hidden";
+    this.containerRef.current
+      .querySelector(".bd-dates-selector")
+      .classList.add("read-only");
+  }
+  afterCopy() {
+    setTimeout(() => {
+      if (document.querySelector("#temp_bd")) {
+        this.containerRef.current.removeChild(
+          document.querySelector("#temp_bd")
+        );
+      }
+      this.BodyDiagramRef.current.style.visibility = "visible";
+      this.containerRef.current
+        .querySelector(".bd-dates-selector")
+        .classList.remove("read-only");
+    }, 500);
   }
   renderCopyButton() {
     if (!allowCopyImage())
@@ -382,16 +442,35 @@ export default class BodyDiagram extends Component {
           >
             <p>
               If you want to copy this image, please try a different browser.
-              <br/>This browser does not support copying of this image.
+              <br />
+              This browser does not support copying of this image.
             </p>
           </ReactTooltip>
         </div>
       );
     return (
       <button
-        onClick={(e) =>
-          copySVGImage(e, this.getSourceDocument(), "body_diagram")
-        }
+        onClick={(e) => {
+          // copySVGImage(
+          //   e,
+          //   this.getSourceDocument(),
+          //   "body_diagram",
+          //   "image/png",
+          //   {
+          //     clipboardItems: [
+          //       {
+          //         element: document.querySelector(".legend-wrapper"),
+          //         options: {
+          //           imageType: "image/png"
+          //         }
+          //       }
+          //     ],
+          //   }
+          // )
+          this.beforeCopy();
+          copyDomToClipboard(this.containerRef.current, this.copyImageOptions);
+          this.afterCopy();
+        }}
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
         title="copy body diagram image"
@@ -402,10 +481,13 @@ export default class BodyDiagram extends Component {
   }
   renderUtilButtons() {
     return (
-      <div style={{ position: "absolute", right: 0, top: "-32px" }}>
+      <div
+        className="buttons-container"
+        style={{ position: "absolute", right: 0, top: "-32px" }}
+      >
         <div
           className="flex flex-gap-1"
-       //   style={{ visibility: "hidden", justifyContent: "flex-start" }}
+          //   style={{ visibility: "hidden", justifyContent: "flex-start" }}
           style={{ justifyContent: "flex-start" }}
           ref={this.utilButtonsContainerRef}
         >
@@ -502,10 +584,14 @@ export default class BodyDiagram extends Component {
           paddingLeft: "4px",
           paddingRight: "4px",
         }}
-      //  onMouseEnter={this.showUtilButtons}
-      //  onMouseLeave={this.hideUtilButtons}
+        //  onMouseEnter={this.showUtilButtons}
+        //  onMouseLeave={this.hideUtilButtons}
+        ref={this.containerRef}
       >
-        <div className="flex" style={{ marginTop: 8, marginBottom: 24 }}>
+        <div
+          className="flex bd-legend-wrapper"
+          style={{ marginTop: 8, marginBottom: 24 }}
+        >
           {this.renderLegend()}
           {this.renderDateSelector()}
           {this.renderPrintOnlyLabel()}

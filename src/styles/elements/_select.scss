@@ -34,6 +34,16 @@ select {
     select {
       font-size: 0.9rem;
     }
+
+    &.read-only {
+      border: 0;
+      select {
+        color: $color-black;
+      }
+      &::after {
+        display: none;
+      }
+    }
   }
   /* Arrow */
   .select::after {

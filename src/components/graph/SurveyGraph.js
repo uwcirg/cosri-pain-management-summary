@@ -15,8 +15,10 @@ import {
 } from "../../config/graph_config";
 import {
   allowCopyImage,
-  copySVGImage,
-  downloadSVGImage,
+  //  copySVGImage,
+  copyDomToClipboard,
+  // downloadSVGImage,
+  downloadDomImage,
   getDifferenceInYears,
   renderImageFromSVG,
 } from "../../helpers/utility";
@@ -39,9 +41,22 @@ export default class SurveyGraph extends Component {
           ? [...new Set(this.props.data.map((item) => item.qid))]
           : [],
     };
+    this.graphContainerRef = React.createRef();
     this.utilButtonsContainerRef = React.createRef();
     this.scaleLabelRefs = [];
     this.switchCheckboxRefs = [];
+    this.imageOptions = {
+      filter: (node) => {
+        const exclusionClasses = [
+          "slider-parent-container",
+          "switch",
+          "buttons-container",
+        ];
+        return !exclusionClasses.some((classname) =>
+          node.classList?.contains(classname)
+        );
+      },
+    };
     //console.log("graph data ", this.state.graphData);
 
     // This binding is necessary to make `this` work in the callback
@@ -385,12 +400,20 @@ export default class SurveyGraph extends Component {
   renderDownloadButton() {
     return (
       <button
+        // onClick={(e) =>
+        //   downloadSVGImage(
+        //     e,
+        //     this.graphRef.current,
+        //     null,
+        //     `survey_graph_${this.getDisplayDateRange()}`
+        //   )
+        // }
         onClick={(e) =>
-          downloadSVGImage(
+          downloadDomImage(
             e,
-            this.graphRef.current,
-            null,
-            `survey_graph_${this.getDisplayDateRange()}`
+            this.graphContainerRef.current,
+            `survey_graph_${this.getDisplayDateRange()}`,
+            this.imageOptions
           )
         }
         className="print-hidden button-default rounded"
@@ -419,14 +442,18 @@ export default class SurveyGraph extends Component {
           >
             <p>
               If you want to copy this image, please try a different browser.
-              <br/>This browser does not support copying of this image.
+              <br />
+              This browser does not support copying of this image.
             </p>
           </ReactTooltip>
         </div>
       );
     return (
       <button
-        onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
+        //   onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
+        onClick={() =>
+          copyDomToClipboard(this.graphContainerRef.current, this.imageOptions)
+        }
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
         title="copy graph"
@@ -663,7 +690,7 @@ export default class SurveyGraph extends Component {
     return (
       <div
         ref={this.utilButtonsContainerRef}
-        className="flex flex-gap-1"
+        className="flex flex-gap-1 buttons-container"
         style={{
           position: "absolute",
           top: 0,
@@ -975,6 +1002,7 @@ export default class SurveyGraph extends Component {
         <div
           className="survey-graph"
           style={{ position: "relative" }}
+          ref={this.graphContainerRef}
           //   onMouseEnter={this.showUtilButtons}
           //   onMouseLeave={this.hideUtilButtons}
         >

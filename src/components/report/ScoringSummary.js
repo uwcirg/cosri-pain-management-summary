@@ -6,9 +6,14 @@ import FailUpArrowIcon from "../../icons/FailUpArrowIcon";
 import FailDownArrowIcon from "../../icons/FailDownArrowIcon";
 import PassDownArrowIcon from "../../icons/PassDownArrowIcon";
 import LineIcon from "../../icons/LineIcon";
-import { isNumber } from "../../helpers/utility";
+import { copyDomToClipboard, isNumber } from "../../helpers/utility";
 
 export default class ScoringSummary extends Component {
+  constructor() {
+    super(...arguments);
+    this.tableRef = React.createRef();
+    this.copyTable = this.copyTable.bind(this);
+  }
   sortData(data) {
     if (!data || !Array.isArray(data)) return [];
     return data.sort(
@@ -194,6 +199,10 @@ export default class ScoringSummary extends Component {
       );
     });
   }
+  copyTable() {
+    if (!copyDomToClipboard()) return null;
+    copyDomToClipboard(this.tableRef.current);
+  }
   render() {
     const { summary, showAnchorLinks } = this.props;
     const noSummaryData =
@@ -205,13 +214,14 @@ export default class ScoringSummary extends Component {
     return (
       <React.Fragment>
         <div className="panel-title">{this.getTitleDisplay()}</div>
-        <table className="table">
+        <table className="table" ref={this.tableRef}>
           {!noSummaryData && this.renderTableHeaders()}
           <tbody>
             {noSummaryData && this.renderNoDataRow()}
             {!noSummaryData && this.renderDataRows(summary, showAnchorLinks)}
           </tbody>
         </table>
+        {/* <button onClick={this.copyTable}>Copy</button> */}
       </React.Fragment>
     );
   }
