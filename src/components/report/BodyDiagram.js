@@ -43,13 +43,7 @@ export default class BodyDiagram extends Component {
     };
     this.copyImageOptions = {
       filter: (node) => {
-        const exclusionClasses = [
-          "dots-container",
-          "diagram-container",
-          "buttons-container",
-          "icons-container",
-          "print-image",
-        ];
+        const exclusionClasses = ["exclude-from-copy"];
         return !exclusionClasses.some((classname) =>
           node.classList?.contains(classname)
         );
@@ -362,7 +356,7 @@ export default class BodyDiagram extends Component {
       <img
         ref={this.printImageRef}
         alt="for print"
-        className="print-image absolute"
+        className="exclude-from-copy print-image absolute"
       ></img>
     );
   }
@@ -484,7 +478,7 @@ export default class BodyDiagram extends Component {
   renderUtilButtons() {
     return (
       <div
-        className="buttons-container"
+        className="exclude-from-copy buttons-container"
         style={{ position: "absolute", right: 0, top: "-32px" }}
       >
         <div
@@ -514,7 +508,7 @@ export default class BodyDiagram extends Component {
     if (!this.state.dates.length || this.state.dates.length < 2) return null;
     return (
       <div
-        className="flex flex-gap-1 icons-container"
+        className="flex flex-gap-1 icons-container exclude-from-copy"
         style={{ gap: "12px", marginTop: "16px" }}
       >
         <FontAwesomeIcon
@@ -560,7 +554,7 @@ export default class BodyDiagram extends Component {
     if (!this.state.summaryData || !this.state.summaryData.length) return null;
     if (this.state.summaryData.length < 2) return null;
     return (
-      <div className="dots-container print-hidden">
+      <div className="exclude-from-copy dots-container print-hidden">
         {this.state.summaryData.map((item, index) => {
           return (
             <div
@@ -608,7 +602,7 @@ export default class BodyDiagram extends Component {
             type="image/svg+xml"
             alt="Body diagram"
             ref={this.BodyDiagramRef}
-            className="diagram-container print-hidden"
+            className="exclude-from-copy diagram-container print-hidden"
           >
             Body diagram
           </object>

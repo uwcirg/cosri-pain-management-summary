@@ -45,17 +45,19 @@ export default class SurveyGraph extends Component {
     this.utilButtonsContainerRef = React.createRef();
     this.scaleLabelRefs = [];
     this.switchCheckboxRefs = [];
-    this.imageOptions = {
+    this.copyImageOptions = {
       filter: (node) => {
         const exclusionClasses = [
-          "slider-parent-container",
-          "switch",
-          "buttons-container",
+          "exclude-from-copy"
         ];
         return !exclusionClasses.some((classname) =>
           node.classList?.contains(classname)
         );
       },
+      beforeCopy: () => this.beforeCopy(),
+      afterCopy: () => this.afterCopy(),
+      beforeDownload: () => this.beforeCopy(),
+      afterDownload: () => this.afterCopy()
     };
     //console.log("graph data ", this.state.graphData);
 
@@ -70,6 +72,7 @@ export default class SurveyGraph extends Component {
     this.handleSwitchChange = this.handleSwitchChange.bind(this);
     this.graphRef = React.createRef();
     this.printImageRef = React.createRef();
+    this.dateRangeSelectorRef = React.createRef();
     this.utilButtonStyle = {
       fontSize: "0.9rem",
       //   position: "absolute",
@@ -333,6 +336,13 @@ export default class SurveyGraph extends Component {
     );
   }
 
+  beforeCopy() {
+    this.dateRangeSelectorRef.current.classList.add("read-only");
+  }
+  afterCopy() {
+    this.dateRangeSelectorRef.current.classList.remove("read-only");
+  }
+
   renderLegend() {
     const qids = this.getQIds();
     // const hasOnlyOneGraphLine = this.hasOnlyOneGraphLine();
@@ -354,7 +364,7 @@ export default class SurveyGraph extends Component {
               {qids.length > 1 && (
                 <div className="select-icons-container print-hidden">
                   <label
-                    className={`switch ${
+                    className={`exclude-from-copy switch ${
                       !this.isSurveyInDateRange(item) ? "disabled" : ""
                     }`}
                     title={
@@ -413,7 +423,7 @@ export default class SurveyGraph extends Component {
             e,
             this.graphContainerRef.current,
             `survey_graph_${this.getDisplayDateRange()}`,
-            this.imageOptions
+            this.copyImageOptions
           )
         }
         className="print-hidden button-default rounded"
@@ -452,7 +462,7 @@ export default class SurveyGraph extends Component {
       <button
         //   onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
         onClick={() =>
-          copyDomToClipboard(this.graphContainerRef.current, this.imageOptions)
+          copyDomToClipboard(this.graphContainerRef.current, this.copyImageOptions)
         }
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
@@ -502,7 +512,7 @@ export default class SurveyGraph extends Component {
       });
     }
     return (
-      <div className="select print-hidden">
+      <div className="select print-hidden" ref={this.dateRangeSelectorRef}>
         <select
           value={this.state.selectedDateRange}
           onChange={this.handleDateRangeChange}
@@ -627,7 +637,7 @@ export default class SurveyGraph extends Component {
         {inYears && (
           <div className="top-info-text">{this.renderDateRangeSelector()}</div>
         )}
-        <div className="slider-container">
+        <div className="slider-container exclude-from-copy">
           <input
             type="range"
             id="slider"
@@ -682,7 +692,7 @@ export default class SurveyGraph extends Component {
             ))}
           </div>
         </div>
-        <div className="bottom-info-text">date range</div>
+        <div className="bottom-info-text exclude-from-copy">date range</div>
       </div>
     );
   }
@@ -690,7 +700,7 @@ export default class SurveyGraph extends Component {
     return (
       <div
         ref={this.utilButtonsContainerRef}
-        className="flex flex-gap-1 buttons-container"
+        className="flex flex-gap-1 buttons-container exclude-from-copy"
         style={{
           position: "absolute",
           top: 0,

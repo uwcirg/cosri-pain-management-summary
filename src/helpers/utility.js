@@ -352,7 +352,6 @@ export function copySVGImage(
   //   clipboardItem,
   //   ...(options && options.clipboardItems ? options.clipboardItems : []),
   // ];
-  console.log("clipboardItem? ", items);
   writeBlobToClipboard(clipboardItem)
     .then((x) => {
       alert("Image copied to clipboard ", x);
