@@ -175,14 +175,28 @@ export function downloadDomImage(event, element, downloadFileName, options) {
   if (event) {
     event.stopPropagation();
   }
-  toBlob(element, options).then((blob) => {
-    if (window.saveAs) {
-      window.saveAs(blob, downloadFileName);
-    } else {
-      const FileSaver = require("file-saver");
-      FileSaver.saveAs(blob, downloadFileName);
-    }
-  });
+  const params = options ? options : {};
+  if (params.beforeDownload) {
+    params.beforeDownload();
+  }
+  toBlob(element, params)
+    .then((blob) => {
+      if (window.saveAs) {
+        window.saveAs(blob, downloadFileName);
+      } else {
+        const FileSaver = require("file-saver");
+        FileSaver.saveAs(blob, downloadFileName);
+      }
+      if (params.afterDownload) {
+        params.afterDownload();
+      }
+    })
+    .catch((e) => {
+      console.log("Error occurred downloading image ", e);
+      if (params.afterDownload) {
+        params.afterDownload(e);
+      }
+    });
 }
 
 export function downloadSVGImage(
@@ -356,7 +370,7 @@ export function getHTMLImageClipboardItem(domElement, options) {
     [imageType]: new Promise(async (resolve) => {
       if (imageType === "image/png") {
         const imageBlob = await toBlob(domElement, options);
-        console.log("Blob? ", imageBlob)
+        console.log("Blob? ", imageBlob);
         resolve(imageBlob);
       } else if (imageType === "image/jpeg") {
         const imageBlob = await toJpeg(domElement, options);
@@ -370,15 +384,25 @@ export function getHTMLImageClipboardItem(domElement, options) {
 }
 export function copyDomToClipboard(domElement, options) {
   if (!allowCopyImage()) return null;
+  const params = options ? options : {};
+  if (params.beforeCopy) {
+    params.beforeCopy();
+  }
   writeBlobToClipboard(
-    new window.ClipboardItem(getHTMLImageClipboardItem(domElement, options))
+    new window.ClipboardItem(getHTMLImageClipboardItem(domElement, params))
   )
     .then((x) => {
       alert("Content copied to clipboard ", x);
+      if (params.afterCopy) {
+        params.afterCopy();
+      }
     })
     .catch((e) => {
       alert("Error! Unable to copy content to clipboard!");
       console.log(e);
+      if (params.afterCopy) {
+        params.afterCopy(e);
+      }
     });
 }
 export function allowCopyImage() {
