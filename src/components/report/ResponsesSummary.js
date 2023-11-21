@@ -101,7 +101,9 @@ export default class ResponsesSummary extends Component {
       <table className={`response-table ${this.state.open ? "active" : ""}`}>
         <thead>
           <tr>
-            <th className="fixed-cell">{`${qid ? qid.toUpperCase(): ""} Questions`}</th>
+            <th className="fixed-cell">{`${
+              qid ? qid.toUpperCase() : ""
+            } Questions`}</th>
             {summaryItems
               .slice(0, endIndex ? endIndex : summaryItems.length)
               .map((item, index) => {
@@ -187,12 +189,19 @@ export default class ResponsesSummary extends Component {
       </td>
     );
   }
-  renderNumResponsesTableCell(summary) {
+  renderNumResponsesTableCell(summary, key) {
     const hasSummary =
       summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
-    if (!hasSummary) return <td className="text-center">--</td>;
+    if (!hasSummary)
+      return (
+        <td className="text-center" key={key}>
+          --
+        </td>
+      );
     return (
-      <td className="text-center">{this.getNumResponses(summary) || "--"}</td>
+      <td className="text-center" key={key}>
+        {this.getNumResponses(summary) || "--"}
+      </td>
     );
   }
   renderResponsesLinkTableCell(lastResponsesDate, key) {
@@ -249,7 +258,10 @@ export default class ResponsesSummary extends Component {
                       `score_cell_${index}`
                     );
                   else if (column.key === "responses_completed")
-                    return this.renderNumResponsesTableCell(summary);
+                    return this.renderNumResponsesTableCell(
+                      summary,
+                      `${column.key}_index`
+                    );
                   else if (column.key === "responses")
                     return this.renderResponsesLinkTableCell(
                       this.getDisplayDate(currentResponses),
@@ -281,7 +293,10 @@ export default class ResponsesSummary extends Component {
               {!columns && (
                 <React.Fragment>
                   {this.renderScoreTableCell(summary, `score_cell`)}
-                  {this.renderNumResponsesTableCell(summary)}
+                  {this.renderNumResponsesTableCell(
+                    summary,
+                    `num_response_cell`
+                  )}
                   {this.renderResponsesLinkTableCell(
                     this.getDisplayDate(currentResponses),
                     "responses_cell"
@@ -303,11 +318,18 @@ export default class ResponsesSummary extends Component {
               // style={{ maxHeight: window.innerHeight - 168 }}
               ref={this.tableWrapperRef}
             >
-              {this.renderResponses(summary.QuestionnaireName, summary.ResponsesSummary)}
+              {this.renderResponses(
+                summary.QuestionnaireName,
+                summary.ResponsesSummary
+              )}
             </div>
           </div>
           <div className="print-only">
-            {this.renderResponses(summary.QuestionnaireName, summary.ResponsesSummary, 3)}
+            {this.renderResponses(
+              summary.QuestionnaireName,
+              summary.ResponsesSummary,
+              3
+            )}
           </div>
         </div>
       </React.Fragment>
