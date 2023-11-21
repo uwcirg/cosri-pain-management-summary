@@ -301,6 +301,9 @@ export default class BodyDiagram extends Component {
           alignItems: "flex-start",
           gap: 6,
           fontSize: "0.8rem",
+          position: "relative",
+          top: "4px",
+          left: "4px",
         }}
         className="print-hidden legend-wrapper part-of-bd"
       >
@@ -399,8 +402,8 @@ export default class BodyDiagram extends Component {
       .cloneNode(true);
     const styles = {
       position: "absolute",
-      top: "90px",
-      transform: "translate(-50%,0)",
+      top: "0",
+      transform: "translate(-50%, 81px)",
     };
     cloneSvgElement.setAttribute("id", "temp_bd");
     cloneSvgElement.classList.add("part-of-bd");
@@ -410,7 +413,7 @@ export default class BodyDiagram extends Component {
     this.datesSelectorRef.current.classList.add("read-only");
   }
   afterCopy() {
-    setTimeout(() => {
+    //setTimeout(() => {
       if (document.querySelector("#temp_bd")) {
         this.containerRef.current.removeChild(
           document.querySelector("#temp_bd")
@@ -418,7 +421,7 @@ export default class BodyDiagram extends Component {
       }
       this.BodyDiagramRef.current.style.visibility = "visible";
       this.datesSelectorRef.current.classList.remove("read-only");
-    }, 500);
+    //}, 500);
   }
   renderCopyButton() {
     if (!allowCopyImage())
@@ -509,7 +512,7 @@ export default class BodyDiagram extends Component {
     return (
       <div
         className="flex flex-gap-1 icons-container exclude-from-copy"
-        style={{ gap: "12px", marginTop: "16px" }}
+        style={{ gap: "12px", marginTop: "8px" }}
       >
         <FontAwesomeIcon
           icon="angle-double-left"
@@ -575,41 +578,51 @@ export default class BodyDiagram extends Component {
     return (
       <div
         style={{
-          position: "relative",
           width: "100%",
           paddingLeft: "4px",
           paddingRight: "4px",
         }}
-        //  onMouseEnter={this.showUtilButtons}
-        //  onMouseLeave={this.hideUtilButtons}
-        ref={this.containerRef}
       >
         <div
-          className="flex bd-legend-wrapper"
-          style={{ marginTop: 8, marginBottom: 24 }}
+          //  onMouseEnter={this.showUtilButtons}
+          //  onMouseLeave={this.hideUtilButtons}
+          ref={this.containerRef}
+          style={{
+            backgroundColor: "#FFF",
+            width: "100%",
+            position: "relative",
+            paddingBottom: "12px"
+          }}
         >
-          {this.renderLegend()}
-          {this.renderDateSelector()}
-          {this.renderPrintOnlyLabel()}
-        </div>
-        <div
-          className="flex flex-center flex-column"
-          style={{ position: "relative" }}
-        >
-          {this.state.dates.length > 1 && this.renderUtilButtons()}
-          <object
-            data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
-            type="image/svg+xml"
-            alt="Body diagram"
-            ref={this.BodyDiagramRef}
-            className="exclude-from-copy diagram-container print-hidden"
+          <div
+            className="flex"
+            style={{ marginTop: 8, marginBottom: 24, alignItems: "flex-start" }}
           >
-            Body diagram
-          </object>
+            {this.renderLegend()}
+            {this.renderDateSelector()}
+            {this.renderPrintOnlyLabel()}
+          </div>
+          <div
+            className="flex flex-center flex-column"
+            style={{ position: "relative" }}
+          >
+            {this.state.dates.length > 1 && this.renderUtilButtons()}
+            <object
+              data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
+              type="image/svg+xml"
+              alt="Body diagram"
+              ref={this.BodyDiagramRef}
+              className="exclude-from-copy diagram-container print-hidden"
+            >
+              Body diagram
+            </object>
+          </div>
+          {this.renderPrintOnlyImage()}
+        </div>
+        <div className="flex flex-center flex-column">
           {this.renderNavButtons()}
           {this.renderDots()}
         </div>
-        {this.renderPrintOnlyImage()}
       </div>
     );
   }

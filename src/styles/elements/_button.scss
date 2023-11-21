@@ -20,6 +20,10 @@
     box-shadow: 1px 1px 2px $color-box-shadow;
     padding: 8px 12px;
     cursor: pointer;
+    &:hover, &:focus {
+        color: darken(#444, 10%);
+        background: #FFF;
+    }
 }
 .rounded {
     border-radius: 100vmax;

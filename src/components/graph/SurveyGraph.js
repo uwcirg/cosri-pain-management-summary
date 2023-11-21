@@ -47,9 +47,7 @@ export default class SurveyGraph extends Component {
     this.switchCheckboxRefs = [];
     this.copyImageOptions = {
       filter: (node) => {
-        const exclusionClasses = [
-          "exclude-from-copy"
-        ];
+        const exclusionClasses = ["exclude-from-copy"];
         return !exclusionClasses.some((classname) =>
           node.classList?.contains(classname)
         );
@@ -57,7 +55,7 @@ export default class SurveyGraph extends Component {
       beforeCopy: () => this.beforeCopy(),
       afterCopy: () => this.afterCopy(),
       beforeDownload: () => this.beforeCopy(),
-      afterDownload: () => this.afterCopy()
+      afterDownload: () => this.afterCopy(),
     };
     //console.log("graph data ", this.state.graphData);
 
@@ -462,7 +460,10 @@ export default class SurveyGraph extends Component {
       <button
         //   onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
         onClick={() =>
-          copyDomToClipboard(this.graphContainerRef.current, this.copyImageOptions)
+          copyDomToClipboard(
+            this.graphContainerRef.current,
+            this.copyImageOptions
+          )
         }
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
@@ -1011,7 +1012,7 @@ export default class SurveyGraph extends Component {
       <React.Fragment>
         <div
           className="survey-graph"
-          style={{ position: "relative" }}
+          style={{ position: "relative", backgroundColor: "#FFF" }}
           ref={this.graphContainerRef}
           //   onMouseEnter={this.showUtilButtons}
           //   onMouseLeave={this.hideUtilButtons}
