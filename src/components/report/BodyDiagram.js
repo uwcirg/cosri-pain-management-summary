@@ -426,7 +426,7 @@ export default class BodyDiagram extends Component {
   renderCopyButton() {
     if (!allowCopyImage())
       return (
-        <div>
+        <div className="print-hidden">
           <FontAwesomeIcon
             className="text-warning"
             icon="exclamation-triangle"

@@ -400,7 +400,7 @@ export default class SurveyGraph extends Component {
         ref={this.printImageRef}
         alt="for print"
         className="print-image"
-        style={{ zIndex: -1, position: "absolute" }}
+        style={{ zIndex: -1, position: "absolute", width: "100%" }}
       ></img>
     );
   }
@@ -436,7 +436,7 @@ export default class SurveyGraph extends Component {
   renderCopyButton() {
     if (!allowCopyImage())
       return (
-        <div>
+        <div className="print-hidden">
           <FontAwesomeIcon
             className="text-warning"
             icon="exclamation-triangle"

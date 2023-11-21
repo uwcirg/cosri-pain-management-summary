@@ -1,5 +1,5 @@
 import moment from "moment";
-import { toBlob, toJpeg } from "html-to-image";
+import { toBlob, toJpeg} from "html-to-image";
 import { getEnv } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
 /*
@@ -155,19 +155,6 @@ export function renderImageFromSVG(imageElement, svgElement) {
     canvas.width = img.width;
     canvas.height = img.height;
     ctx.drawImage(img, 0, 0, img.width, img.height);
-    // if (copyToClipboard) {
-    //   canvas.toBlob((blob) => {
-    //     // try {
-    //     //   navigator.clipboard.write([
-    //     //     new window.ClipboardItem({ "image/png": blob }),
-    //     //   ]);
-    //     // } catch(e) {
-    //     //   alert("Unable to copy image to clipboard.  See console for detail.");
-    //     //   console.log("Unable to write image to clipboard ", e)
-    //     // }
-    // }
-    // Now is done
-    //console.log(canvas.toDataURL("image/png"));
   };
 }
 

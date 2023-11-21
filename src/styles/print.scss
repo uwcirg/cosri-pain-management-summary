@@ -77,11 +77,12 @@
       object {
         border: 0;
       }
-      .panel:not(:first-of-type) {
-        page-break-before: always;
-      }
+      // .panel:not(:first-of-type) {
+      //   page-break-before: always;
+      // }
       .panel__item {
         height: 100%;
+       // page-break-inside: avoid;
       }
       // .panel, 
       // .panel__item{
