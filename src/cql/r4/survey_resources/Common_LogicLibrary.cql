@@ -105,7 +105,8 @@ define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.Que
   return case
       //answer in FHIR coding format 
       when I.answer[0].value.display is not null then I.answer[0].value.display.value
-      else I.answer[0].value.value
+      when I.answer[0].value.value is not null then I.answer[0].value.value
+      else null
     end
 
 // retrieve a list of answer element from a matched questionnaire response item by linkId
@@ -203,11 +204,12 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
   return {
       linkId: if I.linkId.value is not null then I.linkId.value else 'n/a',
       answer: case
-        //answer in FHIR coding format 
+         //answer in FHIR coding format 
         when I.answer[0].value.display is not null and I.answer[0].value.display.value is not null then 
           I.answer[0].value.display.value
+        when I.answer[0].value.value is not null then I.answer[0].value.value
         else
-          I.answer[0].value.value
+          null
       end,
       question: I.text.value
   }

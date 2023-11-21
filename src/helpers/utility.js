@@ -356,7 +356,6 @@ export function getHTMLImageClipboardItem(domElement, options) {
     [imageType]: new Promise(async (resolve) => {
       if (imageType === "image/png") {
         const imageBlob = await toBlob(domElement, options);
-        console.log("Blob? ", imageBlob);
         resolve(imageBlob);
       } else if (imageType === "image/jpeg") {
         const imageBlob = await toJpeg(domElement, options);
@@ -374,6 +373,7 @@ export function copyDomToClipboard(domElement, options) {
   if (params.beforeCopy) {
     params.beforeCopy();
   }
+
   writeBlobToClipboard(
     new window.ClipboardItem(getHTMLImageClipboardItem(domElement, params))
   )

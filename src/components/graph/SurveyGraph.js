@@ -343,7 +343,6 @@ export default class SurveyGraph extends Component {
 
   renderLegend() {
     const qids = this.getQIds();
-    // const hasOnlyOneGraphLine = this.hasOnlyOneGraphLine();
     return (
       <div className="legend-container">
         <div className="legend">
@@ -416,14 +415,20 @@ export default class SurveyGraph extends Component {
         //     `survey_graph_${this.getDisplayDateRange()}`
         //   )
         // }
-        onClick={(e) =>
+        onClick={(e) => {
+          let options = this.copyImageOptions;
+          const containerHeight =
+            this.graphContainerRef.current.offsetHeight - 64;
+          options.style = {
+            height: containerHeight + "px",
+          };
           downloadDomImage(
             e,
             this.graphContainerRef.current,
             `survey_graph_${this.getDisplayDateRange()}`,
-            this.copyImageOptions
-          )
-        }
+            options
+          );
+        }}
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
         title="download graph"
@@ -459,12 +464,15 @@ export default class SurveyGraph extends Component {
     return (
       <button
         //   onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
-        onClick={() =>
-          copyDomToClipboard(
-            this.graphContainerRef.current,
-            this.copyImageOptions
-          )
-        }
+        onClick={() => {
+          let options = this.copyImageOptions;
+          const containerHeight =
+            this.graphContainerRef.current.offsetHeight - 64;
+          options.style = {
+            height: containerHeight + "px",
+          };
+          copyDomToClipboard(this.graphContainerRef.current, options);
+        }}
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
         title="copy graph"
