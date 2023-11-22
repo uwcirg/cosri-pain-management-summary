@@ -418,10 +418,8 @@ export default class SurveyGraph extends Component {
         onClick={(e) => {
           let options = this.copyImageOptions;
           const containerHeight =
-            this.graphContainerRef.current.offsetHeight - 64;
-          options.style = {
-            height: containerHeight + "px",
-          };
+            this.graphContainerRef.current.offsetHeight - 64; // minus the height of the slider
+          options.height = containerHeight;
           downloadDomImage(
             e,
             this.graphContainerRef.current,
@@ -467,10 +465,8 @@ export default class SurveyGraph extends Component {
         onClick={() => {
           let options = this.copyImageOptions;
           const containerHeight =
-            this.graphContainerRef.current.offsetHeight - 64;
-          options.style = {
-            height: containerHeight + "px",
-          };
+            this.graphContainerRef.current.offsetHeight - 64; // minus the height of the slider
+          options.height = containerHeight;
           copyDomToClipboard(this.graphContainerRef.current, options);
         }}
         className="print-hidden button-default rounded"
