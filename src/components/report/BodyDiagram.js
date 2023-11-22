@@ -565,6 +565,7 @@ export default class BodyDiagram extends Component {
                 index === this.state.selectedIndex ? "active" : ""
               }`}
               key={`dot_${index}`}
+              title={`${ getDisplayDateFromISOString(item.date)}`}
             ></div>
           );
         })}

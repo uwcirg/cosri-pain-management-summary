@@ -17,6 +17,11 @@
   .summary__display {
     background-color: #fff !important;
     padding: 0;
+    .sections {
+      .MME-svg-container {
+        width: calc(100% - 56px);
+      }
+    }
   }
   .header {
     position: relative;
@@ -54,6 +59,11 @@
   //     page-break-inside: avoid;
   //   }
   // }
+  .panels {
+    .sub-panels {
+      page-break-before: always;
+    }
+  }
   .report {
     .Collapsible {
         &:not(:first-of-type) {
@@ -72,14 +82,17 @@
       display: block;
       .panel.graph {
         max-width: calc(100% - 180px);
+        .survey-graph {
+          width: 100%;
+        }
       }
       .panel,
       object {
         border: 0;
       }
-      // .panel:not(:first-of-type) {
-      //   page-break-before: always;
-      // }
+      .panel:not(:first-of-type) {
+        page-break-before: always;
+      }
       .panel__item {
         height: 100%;
        // page-break-inside: avoid;

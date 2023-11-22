@@ -13,6 +13,7 @@ select {
     border: 0;
     outline-width: 0;
     outline: none;
+    font-weight: 600;
     &:hover {
       color: $link-color-dark;
     }
@@ -39,6 +40,7 @@ select {
       border-color: transparent;
       select {
         color: $color-black;
+        font-weight: 500;
       }
       &::after {
         display: none;
@@ -49,7 +51,7 @@ select {
   .select::after {
     content: '\25BC';
     position: absolute;
-    top: 0;
+    top: 0.2rem;
     right: 0;
     padding: 0.45em;
     background-color: #FFF;
