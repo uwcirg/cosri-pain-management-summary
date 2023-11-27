@@ -595,7 +595,7 @@ export default class SurveyGraph extends Component {
       const AVG_DAYS_IN_MONTH = 30;
       let months = Math.floor(selectedRange * 12);
       const remainingMonths = selectedRange * 12 - months;
-      const days = Math.ceil(remainingMonths * AVG_DAYS_IN_MONTH);
+      const days = Math.round(remainingMonths * AVG_DAYS_IN_MONTH);
       if (days === AVG_DAYS_IN_MONTH) months = months + 1;
       const monthsDisplay = months
         ? months > 1
