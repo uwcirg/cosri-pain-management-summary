@@ -27,13 +27,14 @@ select {
     position: relative;
     display: flex;
     width: auto;
-    min-width: 11.5rem;
+    min-width: 14rem;
     height: 2rem;
     border-radius: 0.25em;
     overflow: hidden;
     border: 1px solid $link-border-color;
     select {
       font-size: 0.9rem;
+      text-align: center;
     }
 
     &.read-only {
@@ -62,4 +63,20 @@ select {
   /* Transition */
   .select:hover::after {
     color: $link-color-dark;
+  }
+
+  .select-selected {
+    animation: zoom-in-out 1s ease-out;
+  }
+
+  @keyframes zoom-in-out {
+    0% {
+      transform: scale(1, 1);
+    }
+    50% {
+      transform: scale(1.06, 1.06);
+    }
+    100% {
+      transform: scale(1, 1);
+    }
   }

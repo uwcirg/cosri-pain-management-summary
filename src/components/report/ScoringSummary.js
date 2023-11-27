@@ -96,7 +96,7 @@ export default class ScoringSummary extends Component {
     );
   }
   getNumAnswered(data) {
-    if (!this.getCurrentData(data.ResponsesSummary)) return null;
+    if (!this.getCurrentData(data.ResponsesSummary)) return "--";
     const totalItems = data.ResponsesSummary[0].totalItems;
     const totalAnsweredItems = data.ResponsesSummary[0].totalAnsweredItems;
     if (!totalItems || !totalAnsweredItems) return "--";

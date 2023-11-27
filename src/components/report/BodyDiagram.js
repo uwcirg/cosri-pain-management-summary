@@ -49,13 +49,14 @@ export default class BodyDiagram extends Component {
         );
       },
     };
+    this.ANIMATION_DURATION = 1000;
   }
 
   componentDidMount() {
     const svgElement = this.BodyDiagramRef.current;
     if (svgElement) {
       svgElement.addEventListener("load", () => {
-        this.fillInParts();
+        this.fillInAnsweredParts();
         renderImageFromSVG(
           this.printImageRef.current,
           this.getSourceDocument()
@@ -64,49 +65,79 @@ export default class BodyDiagram extends Component {
       });
     }
   }
+  addSelectedClass() {
+    if (!this.datesSelectorRef.current) return;
+    this.datesSelectorRef.current
+      .querySelector("select")
+      .classList.add("select-selected");
+  }
+  removeSelectedClass() {
+    if (!this.datesSelectorRef.current) return;
+    this.datesSelectorRef.current
+      .querySelector("select")
+      .classList.remove("select-selected");
+  }
   handleSetFirst() {
     if (this.state.selectedIndex === 0) return;
+    this.addSelectedClass();
     this.setState(
       {
         selectedIndex: 0,
         selectedDate: this.state.dates[0],
       },
-      () => this.drawAllParts()
+      () => {
+        this.drawAllParts();
+        setTimeout(() => this.removeSelectedClass(), this.ANIMATION_DURATION);
+      }
     );
   }
   handleSetLast() {
     const lastIndex = this.state.dates.length - 1;
     if (this.state.selectedIndex === lastIndex) return;
+    this.addSelectedClass();
     this.setState(
       {
         selectedIndex: lastIndex,
         selectedDate: this.state.dates[lastIndex],
       },
-      () => this.drawAllParts()
+      () => {
+        this.drawAllParts();
+        setTimeout(() => this.removeSelectedClass(), this.ANIMATION_DURATION);
+      }
     );
   }
   handlePrevChange() {
     const prevIndex = this.state.selectedIndex - 1;
     // console.log("Prev Index ", prevIndex);
     if (prevIndex < 0) return;
+    this.addSelectedClass();
     this.setState(
       {
         selectedIndex: prevIndex,
         selectedDate: this.state.dates[prevIndex],
       },
-      () => this.drawAllParts()
+      () => {
+        this.drawAllParts();
+        setTimeout(() => this.removeSelectedClass(), this.ANIMATION_DURATION);
+      }
     );
   }
   handleNextChange() {
     const nextIndex = this.state.selectedIndex + 1;
     // console.log("Next index ", nextIndex);
     if (nextIndex > this.state.dates.length - 1) return;
+    this.addSelectedClass();
     this.setState(
       {
         selectedIndex: nextIndex,
         selectedDate: this.state.dates[nextIndex],
       },
-      () => this.drawAllParts()
+      () => {
+        this.drawAllParts();
+        setTimeout(() => {
+          this.removeSelectedClass();
+        }, this.ANIMATION_DURATION);
+      }
     );
   }
 
@@ -116,7 +147,9 @@ export default class BodyDiagram extends Component {
         selectedDate: e.target.value,
         selectedIndex: this.state.dates.findIndex((d) => d === e.target.value),
       },
-      () => this.drawAllParts()
+      () => {
+        this.drawAllParts();
+      }
     );
   }
 
@@ -215,7 +248,7 @@ export default class BodyDiagram extends Component {
   }
   drawAllParts() {
     this.fillInHistoryParts();
-    this.fillInParts();
+    this.fillInAnsweredParts();
   }
   fillInHistoryParts() {
     const doc = this.getSourceDocument();
@@ -227,10 +260,10 @@ export default class BodyDiagram extends Component {
     const startIndex = this.state.selectedIndex + 1;
     if (startIndex > this.state.dates.length - 1) return;
     for (let index = startIndex; index < this.state.dates.length; index++) {
-      this.fillInParts(this.state.dates[index], "prev_location");
+      this.fillInAnsweredParts(this.state.dates[index], "prev_location");
     }
   }
-  fillInParts(targetDate, className) {
+  fillInAnsweredParts(targetDate, className) {
     const doc = this.getSourceDocument();
     if (!doc) return;
     const answers = this.getAnswerDataByDate(targetDate);
@@ -414,13 +447,11 @@ export default class BodyDiagram extends Component {
   }
   afterCopy() {
     //setTimeout(() => {
-      if (document.querySelector("#temp_bd")) {
-        this.containerRef.current.removeChild(
-          document.querySelector("#temp_bd")
-        );
-      }
-      this.BodyDiagramRef.current.style.visibility = "visible";
-      this.datesSelectorRef.current.classList.remove("read-only");
+    if (document.querySelector("#temp_bd")) {
+      this.containerRef.current.removeChild(document.querySelector("#temp_bd"));
+    }
+    this.BodyDiagramRef.current.style.visibility = "visible";
+    this.datesSelectorRef.current.classList.remove("read-only");
     //}, 500);
   }
   renderCopyButton() {
@@ -565,7 +596,7 @@ export default class BodyDiagram extends Component {
                 index === this.state.selectedIndex ? "active" : ""
               }`}
               key={`dot_${index}`}
-              title={`${ getDisplayDateFromISOString(item.date)}`}
+              title={`${getDisplayDateFromISOString(item.date)}`}
             ></div>
           );
         })}
@@ -592,7 +623,7 @@ export default class BodyDiagram extends Component {
             backgroundColor: "#FFF",
             width: "100%",
             position: "relative",
-            paddingBottom: "12px"
+            paddingBottom: "12px",
           }}
         >
           <div

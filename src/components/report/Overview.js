@@ -17,10 +17,15 @@ export default class Overview extends Component {
   }
   getBodyDiagramDataSummaryData(summaryData) {
     if (!summaryData) return null;
-    const matchedData = summaryData
-      .filter((item) => String(item.dataKey).toLowerCase() === "body_diagram");
+    const matchedData = summaryData.filter(
+      (item) => String(item.dataKey).toLowerCase() === "body_diagram"
+    );
     if (!matchedData.length) return null;
-    if (!matchedData[0].ResponsesSummary || !matchedData[0].ResponsesSummary.length) return null;
+    if (
+      !matchedData[0].ResponsesSummary ||
+      !matchedData[0].ResponsesSummary.length
+    )
+      return null;
     return matchedData[0].ResponsesSummary;
   }
   render() {

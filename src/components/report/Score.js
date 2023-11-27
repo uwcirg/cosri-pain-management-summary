@@ -20,17 +20,13 @@ export default class Score extends Component {
       : moderateSeverity
       ? "text-warning"
       : "";
-    if (!score || !isNumber(score)) return "--";
+    if (score == null || !isNumber(score)) return "--";
     if (arrColoredSeverities.indexOf(scoreSeverity) !== -1)
       return (
         <div className={`flex flex-space-between ${cssClass}`}>
           <span className={iconClass}>{score}</span>
-          {highSeverity && !moderateSeverity && (
-              <AlertIcon />
-          )}
-          {moderateSeverity && (
-              <WarningIcon />
-          )}
+          {highSeverity && !moderateSeverity && <AlertIcon />}
+          {moderateSeverity && <WarningIcon />}
         </div>
       );
     return <div className={`flex ${cssClass}`}>{score}</div>;
