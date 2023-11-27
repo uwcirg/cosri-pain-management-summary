@@ -520,7 +520,7 @@ export default class SurveyGraph extends Component {
       });
     }
     items.push({
-      key: `Last ${maxValue} years`,
+      key: `Last ${maxValue} year${maxValue > 1 ? "s" : ""}`,
       value: maxValue,
     });
 
@@ -530,6 +530,10 @@ export default class SurveyGraph extends Component {
         value: this.state.selectedDateRange,
       });
     }
+
+    const jsonItems = items.map(JSON.stringify);
+    const uniqueSet = new Set(jsonItems);
+    const itemsToDisplay = Array.from(uniqueSet).map(JSON.parse);
 
     return (
       <div className="select print-hidden" ref={this.dateRangeSelectorRef}>
@@ -543,7 +547,7 @@ export default class SurveyGraph extends Component {
           onBlur={this.handleDateRangeChange}
         >
           <option value="">Select</option>
-          {items.map((item, index) => {
+          {itemsToDisplay.map((item, index) => {
             return (
               <option key={`graph_date_option_${index}`} value={item.value}>
                 {item.key}

@@ -609,7 +609,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
   .accordion-content {
     overflow: hidden;
     max-height: 0;
-    transition: all 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+    transition: all 0.35s cubic-bezier(0.45, 0.05, 0.55, 0.95);
     &.active {
       max-height: 2400px;
     }
