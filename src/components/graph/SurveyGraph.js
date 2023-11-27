@@ -230,7 +230,7 @@ export default class SurveyGraph extends Component {
       if (isNaN(itemDate)) return false;
       const today = new Date();
       const diffYears = getDifferenceInYears(itemDate, today);
-      return diffYears.toFixed(1) <= parseFloat(numYears).toFixed(1);
+      return diffYears <= parseFloat(numYears);
     });
   }
 
