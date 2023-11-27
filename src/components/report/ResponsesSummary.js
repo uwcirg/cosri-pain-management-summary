@@ -90,7 +90,12 @@ export default class ResponsesSummary extends Component {
     return getDisplayDateFromISOString(targetObj.date);
   }
   getNumResponses(summary) {
-    if (!summary || !summary.ResponsesSummary || !summary.ResponsesSummary.length) return 0;
+    if (
+      !summary ||
+      !summary.ResponsesSummary ||
+      !summary.ResponsesSummary.length
+    )
+      return 0;
     return summary.ResponsesSummary.length;
   }
   renderResponses(qid, summaryItems, endIndex) {
