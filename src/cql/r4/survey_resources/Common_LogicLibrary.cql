@@ -28,7 +28,7 @@ define function DateTimeText(d FHIR.dateTime):
   ToString(d.value)
 
 
-// Extract of the link IDs of each item in the Questionnaire
+// Extract id from linkId element of each item in the Questionnaire
 // @param questionnaire, of type FHIR.Questionnaire
 // @return {System.List} a list of link id values
 define function GetItemLinkIds(questionnaire FHIR.Questionnaire):
@@ -36,11 +36,11 @@ define function GetItemLinkIds(questionnaire FHIR.Questionnaire):
   let item: Q.item
   return item.linkId.value
 
-// Get matched questionnaire based on questionnaire name or questionnaire URL
+// Get matched questionnaire based on questionnaire ID, questionnaire name or questionnaire URL
 // @param QuestionnaireID, of type String, id of the questionnaire
 // @param QuestionnaireName, of type String
 // @param QuestionnaireURL, of type String
-// @return {System.List} a list of FHIR.Questionnaire that matches the questionnaire name or URL
+// @return {System.List} a list of matched FHIR.Questionnaire
 define function GetMatchQuestionnaire(QuestionnaireID String, QuestionnaireName String, QuestionnaireURL String):
   ([Questionnaire] Q
     where 
@@ -51,9 +51,9 @@ define function GetMatchQuestionnaire(QuestionnaireID String, QuestionnaireName 
     PositionOf(Lower(Q.name), Lower(QuestionnaireName)) != -1
   )
 
-// Extract the answer from each item in the QuestionnaireResponse
+// Extract the id and value from each answer item in the QuestionnaireResponse
 // @param responseItems, of type List<FHIR.QuestionnaireResponse.Item>
-// @return {System.List} of tuples of linkId and answer values
+// @return {System.List} of tuples of id and answer values
 define function GetCurrentResponses(responseItems List<FHIR.QuestionnaireResponse.Item>):
   (responseItems) I
   return Tuple {
@@ -62,7 +62,7 @@ define function GetCurrentResponses(responseItems List<FHIR.QuestionnaireRespons
   }
 
 /*
- * retrieve questionnaire responses matched to the target questionnaire
+ * retrieve questionnaire responses to a questionnaire matched on questionnaire id, questionnaire name or specified keyword
  * @param responses, of type FHIR.QuestionnaireResponse
  * @param questionnaire, of type FHIR.Questionnaire, questionnaire to match against
  * @param keyword, of type String to match in the questionnaire element of the Questionnaire
@@ -82,9 +82,9 @@ define function MatchedReponsesByQuestionnaire(responses List<FHIR.Questionnaire
   )
 
 /*
- * retrieve concept code of a selected answer option from a Questionnaire
+ * retrieve concept code of a specified answer option by numeric index from a questionnaire
  * @param currentQuestionnaire, of type FHIR.Questionnaire
- * @param qIndex, question index, of type FHIR.Integer
+ * @param qIndex, numeric index, of type FHIR.Integer
  * @return {System.String} code value for the answer
  */
 define function getAnswerOptionCodeValue(currentQuestionnaire FHIR.Questionnaire, qIndex Integer):
@@ -95,7 +95,7 @@ define function getAnswerOptionCodeValue(currentQuestionnaire FHIR.Questionnaire
   else
     null
 
-/* retrieve a list of answer values from the QuestionnaireResponse that matches the provided linkId
+/* retrieve answer value from the QuestionnaireResponse that matches the provided id, aka linkId
  * @param linkId, of type String
  * @param responses, list of questionnaireResponse Item, of type List<FHIR.QuestionnaireResponse.Item>
  * @return {List<String|Integer|Float>}
@@ -109,7 +109,7 @@ define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.Que
       else null
     end
 
-// retrieve a list of answer element from a matched questionnaire response item by linkId
+// retrieve answer element from a questionnaire response item matched by id, aka linkId
 /* @param linkId, of type String
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @return {List<QuestionnaireResponse.item.answer>}
@@ -119,7 +119,7 @@ define function GetArrayAnswerByLinkId(linkId String, responses List<FHIR.Questi
   return I.answer
 
 /*
- * retrieve single-valued answer to the question in a QuestionnaireResponse
+ * retrieve answer value, i.e. QuestionnaireResponse.Item.value in a QuestionnaireResponse matched by id, aka linkId
  * @param linkId, of type String
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @return {boolean|decimal|integer|date|dateTime|time|string|uri|Attachment|Coding|SimpleQuantity|Reference(Any)}
@@ -129,7 +129,7 @@ define function GetResponseValueByLinkId(linkId String, responses List<FHIR.Ques
   return I.answer[0].value
 
 /*
- * retrieve the numeric value for the answer from a FHIR extension
+ * retrieve the numeric value for the answer option from a FHIR extension
  * @param extList, a list of elements of type FHIR.Extension
  * @return {System.Integer}
  */
@@ -137,8 +137,8 @@ define function getAnswerOptionExtensionValue(extList List<FHIR.Extension>):
   (extList e where e.url = 'http://hl7.org/fhir/StructureDefinition/ordinalValue')[0].value.value as Integer
 
 /*
- * retrieve the numeric value for the answer based on value code
- * @param questionnaire as FHIR.Questionnaire where code in question is queried
+ * retrieve the numeric value for the answer option based on value code
+ * @param questionnaire as FHIR.Questionnaire against which code is queried
  * @param code as String
  * @param index as Integer, this is extension index
  * @return {System.Integer}
@@ -154,8 +154,8 @@ define function getAnswerValueByCode(questionnaire FHIR.Questionnaire, code Stri
   return a.extension[extensionIndex].value.value as Integer
 
 /*
- * retrieve the numeric value for the score for an questionnaire response item
- * @param questionnaire, of type FHIR.Questionnaire, where answer option code based on link id will be queried
+ * retrieve the numeric value for a scoring answer option item matched by id aka linkId
+ * @param questionnaire, of type FHIR.Questionnaire
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @param linkId, of type String
  * @return {System.Integer}
@@ -165,12 +165,31 @@ define function getScoringByResponseItem(questionnaire FHIR.Questionnaire, respo
   return 
     if I is null then null
     else
+      // if answering is Coding, retrieve the corresponding numeric value by querying the questionnaire
       if I.answer[0].value.code is not null and questionnaire is not null then getAnswerValueByCode(questionnaire, I.answer[0].value.code.value, extensionIndex) 
       else if I.answer[0].value.value is not null then I.answer[0].value.value 
       else null
 
 /* 
- * retrieve questionnaire responses in a list of Tuple of formatted question and answer
+ * retrieve the number of answered responses
+ * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
+ * @param scoringQuestionId as String, id, aka, linkId for the question containing the score, which will be excluded
+ * @return {System.integer}
+ */
+define function getTotalAnsweredItems(responses List<FHIR.QuestionnaireResponse.Item>, scoringQuestionId String):
+   case
+      when scoringQuestionId is not null then
+        Length(
+          (FormattedQuestionnaireResponses(responses)) O where 
+            (PositionOf(O.linkId, scoringQuestionId) = -1 or PositionOf(scoringQuestionId, O.linkId) = -1)
+            and O.answer is not null
+        )
+      else
+        Length(FormattedQuestionnaireResponses(responses))
+    end
+
+/* 
+ * retrieve response for each question in a list of Tuple of formatted question and answer
  * @param questionnaireItems, of type List<FHIR.Questionnaire.Item>
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @param scoringQuestionId as String, linkId for the question containing the score

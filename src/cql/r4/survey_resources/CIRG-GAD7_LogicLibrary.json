@@ -178,7 +178,7 @@
                }
             }
          }, {
-            "name" : "Gad7Questionnaire",
+            "name" : "Questionnaire",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -203,14 +203,6 @@
                }
             }
          }, {
-            "name" : "Questionnaire",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "name" : "Gad7Questionnaire",
-               "type" : "ExpressionRef"
-            }
-         }, {
             "name" : "QuestionnaireItems",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -219,7 +211,7 @@
                "source" : [ {
                   "alias" : "Q",
                   "expression" : {
-                     "name" : "Gad7Questionnaire",
+                     "name" : "Questionnaire",
                      "type" : "ExpressionRef"
                   }
                } ],
@@ -244,7 +236,7 @@
                   "dataType" : "{http://hl7.org/fhir}QuestionnaireResponse",
                   "type" : "Retrieve"
                }, {
-                  "name" : "Gad7Questionnaire",
+                  "name" : "Questionnaire",
                   "type" : "ExpressionRef"
                }, {
                   "name" : "QuestionnaireName",
@@ -273,7 +265,7 @@
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "name" : "Gad7Questionnaire",
+                           "name" : "Questionnaire",
                            "type" : "ExpressionRef"
                         }, {
                            "path" : "item",
@@ -297,7 +289,7 @@
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "name" : "Gad7Questionnaire",
+                           "name" : "Questionnaire",
                            "type" : "ExpressionRef"
                         }, {
                            "path" : "item",
@@ -321,7 +313,7 @@
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "name" : "Gad7Questionnaire",
+                           "name" : "Questionnaire",
                            "type" : "ExpressionRef"
                         }, {
                            "path" : "item",
@@ -345,7 +337,7 @@
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "name" : "Gad7Questionnaire",
+                           "name" : "Questionnaire",
                            "type" : "ExpressionRef"
                         }, {
                            "path" : "item",
@@ -369,7 +361,7 @@
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "name" : "Gad7Questionnaire",
+                           "name" : "Questionnaire",
                            "type" : "ExpressionRef"
                         }, {
                            "path" : "item",
@@ -393,7 +385,7 @@
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "name" : "Gad7Questionnaire",
+                           "name" : "Questionnaire",
                            "type" : "ExpressionRef"
                         }, {
                            "path" : "item",
@@ -417,7 +409,7 @@
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "name" : "Gad7Questionnaire",
+                           "name" : "Questionnaire",
                            "type" : "ExpressionRef"
                         }, {
                            "path" : "item",
@@ -441,7 +433,7 @@
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "name" : "Gad7Questionnaire",
+                           "name" : "Questionnaire",
                            "type" : "ExpressionRef"
                         }, {
                            "path" : "item",
@@ -1013,77 +1005,17 @@
                            "source" : {
                               "type" : "List",
                               "element" : [ {
-                                 "type" : "Length",
-                                 "operand" : {
-                                    "type" : "Query",
-                                    "source" : [ {
-                                       "alias" : "O",
-                                       "expression" : {
-                                          "name" : "responsesOnly",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    } ],
-                                    "relationship" : [ ],
-                                    "where" : {
-                                       "type" : "And",
-                                       "operand" : [ {
-                                          "type" : "Or",
-                                          "operand" : [ {
-                                             "type" : "Equal",
-                                             "operand" : [ {
-                                                "type" : "PositionOf",
-                                                "pattern" : {
-                                                   "path" : "linkId",
-                                                   "scope" : "O",
-                                                   "type" : "Property"
-                                                },
-                                                "string" : {
-                                                   "name" : "ScoringQuestionId",
-                                                   "type" : "ExpressionRef"
-                                                }
-                                             }, {
-                                                "type" : "Negate",
-                                                "operand" : {
-                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                   "value" : "1",
-                                                   "type" : "Literal"
-                                                }
-                                             } ]
-                                          }, {
-                                             "type" : "Equal",
-                                             "operand" : [ {
-                                                "type" : "PositionOf",
-                                                "pattern" : {
-                                                   "name" : "ScoringQuestionId",
-                                                   "type" : "ExpressionRef"
-                                                },
-                                                "string" : {
-                                                   "path" : "linkId",
-                                                   "scope" : "O",
-                                                   "type" : "Property"
-                                                }
-                                             }, {
-                                                "type" : "Negate",
-                                                "operand" : {
-                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                   "value" : "1",
-                                                   "type" : "Literal"
-                                                }
-                                             } ]
-                                          } ]
-                                       }, {
-                                          "type" : "Not",
-                                          "operand" : {
-                                             "type" : "IsNull",
-                                             "operand" : {
-                                                "path" : "answer",
-                                                "scope" : "O",
-                                                "type" : "Property"
-                                             }
-                                          }
-                                       } ]
-                                    }
-                                 }
+                                 "name" : "getTotalAnsweredItems",
+                                 "libraryName" : "LogicHelper",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "item",
+                                    "scope" : "I",
+                                    "type" : "Property"
+                                 }, {
+                                    "name" : "ScoringQuestionId",
+                                    "type" : "ExpressionRef"
+                                 } ]
                               }, {
                                  "name" : "totalItems",
                                  "type" : "QueryLetRef"

@@ -27,18 +27,15 @@ context Patient
 //------------------------------------------------------------------------------
 
 // Load Questionnaire
-define TrtQuestionnaire:
+define Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
-define Questionnaire:
-  TrtQuestionnaire
-
 define QuestionnaireItems:
-  (TrtQuestionnaire) Q 
+  (Questionnaire) Q 
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], TrtQuestionnaire, QuestionnaireName)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire, QuestionnaireName)
 
 define ResponsesSummary:
   (QuestionnaireResponses) I

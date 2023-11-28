@@ -41,30 +41,27 @@ context Patient
 //------------------------------------------------------------------------------
 
 // Load Questionnaire
-define Gad7Questionnaire:
+define Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
-define Questionnaire:
-  Gad7Questionnaire
-
 define QuestionnaireItems:
-  (Gad7Questionnaire) Q 
+  (Questionnaire) Q 
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Gad7Questionnaire, QuestionnaireName)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire, QuestionnaireName)
  
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    q1Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question1LinkId, answerExtensionIndex)),
-    q2Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question2LinkId, answerExtensionIndex)),
-    q3Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question3LinkId, answerExtensionIndex)),
-    q4Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question4LinkId, answerExtensionIndex)),
-    q5Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question5LinkId, answerExtensionIndex)),
-    q6Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
-    q7Score: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Gad7Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
+    q1Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question1LinkId, answerExtensionIndex)),
+    q2Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question2LinkId, answerExtensionIndex)),
+    q3Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question3LinkId, answerExtensionIndex)),
+    q4Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question4LinkId, answerExtensionIndex)),
+    q5Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question5LinkId, answerExtensionIndex)),
+    q6Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
+    q7Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
     itemTotalScore: 
       case
         when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -111,11 +108,10 @@ define ResponsesSummary:
         else if score > 0 then 'minimal anxiety' else '' 
       end,
       comparisonToAlert: 'higher',
-      totalAnsweredItems: Min({Length(
-        (responsesOnly) O where 
-          (PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)
-          and O.answer is not null
-        ), totalItems}),
+      totalAnsweredItems: Min({
+        LogicHelper.getTotalAnsweredItems(I.item, ScoringQuestionId),
+        totalItems
+      }),
       totalItems: totalItems,
       questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,

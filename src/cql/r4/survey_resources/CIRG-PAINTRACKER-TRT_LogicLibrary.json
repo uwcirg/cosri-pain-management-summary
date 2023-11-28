@@ -84,7 +84,7 @@
                }
             }
          }, {
-            "name" : "TrtQuestionnaire",
+            "name" : "Questionnaire",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -109,14 +109,6 @@
                }
             }
          }, {
-            "name" : "Questionnaire",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "name" : "TrtQuestionnaire",
-               "type" : "ExpressionRef"
-            }
-         }, {
             "name" : "QuestionnaireItems",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -125,7 +117,7 @@
                "source" : [ {
                   "alias" : "Q",
                   "expression" : {
-                     "name" : "TrtQuestionnaire",
+                     "name" : "Questionnaire",
                      "type" : "ExpressionRef"
                   }
                } ],
@@ -150,7 +142,7 @@
                   "dataType" : "{http://hl7.org/fhir}QuestionnaireResponse",
                   "type" : "Retrieve"
                }, {
-                  "name" : "TrtQuestionnaire",
+                  "name" : "Questionnaire",
                   "type" : "ExpressionRef"
                }, {
                   "name" : "QuestionnaireName",

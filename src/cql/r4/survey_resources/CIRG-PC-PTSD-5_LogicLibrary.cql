@@ -31,24 +31,20 @@ define ScoreParams: Tuple {
 // -----------------------------------------------------------------------------
 context Patient
 
-
 //------------------------------------------------------------------------------
 // QUESTIONNAIRE AND QUESTIONNAIRERESPONSE LOGIC
 //------------------------------------------------------------------------------
 
 // Load Questionnaire
-define PtsdQuestionnaire:
+define Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
-define Questionnaire:
-  PtsdQuestionnaire
-
 define QuestionnaireItems:
-  (PtsdQuestionnaire) Q 
+  (Questionnaire) Q 
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PtsdQuestionnaire, QuestionnaireName)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire, QuestionnaireName)
 
 define ReportOnce:
   true
@@ -56,12 +52,12 @@ define ReportOnce:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    Question1Score: First(LogicHelper.getScoringByResponseItem(PtsdQuestionnaire, I.item, question1LinkId, extensionAnswerIndex)),
-    Question2Score: First(LogicHelper.getScoringByResponseItem(PtsdQuestionnaire, I.item, question2LinkId, extensionAnswerIndex)),
-    Question3Score: First(LogicHelper.getScoringByResponseItem(PtsdQuestionnaire, I.item, question3LinkId, extensionAnswerIndex)),
-    Question4Score: First(LogicHelper.getScoringByResponseItem(PtsdQuestionnaire, I.item, question4LinkId, extensionAnswerIndex)),
-    Question5Score: First(LogicHelper.getScoringByResponseItem(PtsdQuestionnaire, I.item, question5LinkId, extensionAnswerIndex)),
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(PtsdQuestionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
+    Question1Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
+    Question2Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
+    Question3Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
+    Question4Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
+    Question5Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question5LinkId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
     itemTotalScore:
           case
             when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -91,15 +87,13 @@ define ResponsesSummary:
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
-      totalAnsweredItems: Min({Length(
-        (responsesOnly) O where 
-          (PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)
-          and O.answer is not null
-        ), totalItems}),
+     totalAnsweredItems: Min({
+        LogicHelper.getTotalAnsweredItems(I.item, ScoringQuestionId),
+        totalItems
+      }),
       totalItems: totalItems,
       questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value
     }
     sort by authoredDate desc, lastUpdated desc
-    

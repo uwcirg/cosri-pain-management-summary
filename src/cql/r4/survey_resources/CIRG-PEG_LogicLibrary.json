@@ -151,7 +151,7 @@
                }
             }
          }, {
-            "name" : "PegQuestionnaire",
+            "name" : "Questionnaire",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -176,14 +176,6 @@
                }
             }
          }, {
-            "name" : "Questionnaire",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "name" : "PegQuestionnaire",
-               "type" : "ExpressionRef"
-            }
-         }, {
             "name" : "QuestionnaireItems",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -192,7 +184,7 @@
                "source" : [ {
                   "alias" : "Q",
                   "expression" : {
-                     "name" : "PegQuestionnaire",
+                     "name" : "Questionnaire",
                      "type" : "ExpressionRef"
                   }
                } ],
@@ -217,7 +209,7 @@
                   "dataType" : "{http://hl7.org/fhir}QuestionnaireResponse",
                   "type" : "Retrieve"
                }, {
-                  "name" : "PegQuestionnaire",
+                  "name" : "Questionnaire",
                   "type" : "ExpressionRef"
                }, {
                   "name" : "QuestionnaireName",
@@ -313,7 +305,7 @@
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "name" : "PegQuestionnaire",
+                           "name" : "Questionnaire",
                            "type" : "ExpressionRef"
                         }, {
                            "path" : "item",

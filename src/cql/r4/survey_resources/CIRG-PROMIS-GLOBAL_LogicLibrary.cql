@@ -41,18 +41,15 @@ context Patient
 // QUESTIONNAIRE AND QUESTIONNAIRERESPONSE LOGIC
 //------------------------------------------------------------------------------
 // Load Questionnaire
-define PromisQuestionnaire:
+define Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
-define Questionnaire:
-  PromisQuestionnaire
-
 define QuestionnaireItems:
-  (PromisQuestionnaire) Q 
+  (Questionnaire) Q 
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PromisQuestionnaire, QuestionnaireName)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire, QuestionnaireName)
 
 define ReportOnce:
   true
@@ -60,7 +57,7 @@ define ReportOnce:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(PromisQuestionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
     itemTotalScore:
           case
             when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -81,13 +78,11 @@ define ResponsesSummary:
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
-      totalAnsweredItems: Min({Length(
-        (responsesOnly) O where 
-          (PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)
-          and O.answer is not null
-        ), totalItems}),
+     totalAnsweredItems: Min({
+        LogicHelper.getTotalAnsweredItems(I.item, ScoringQuestionId),
+        totalItems
+      }),
       totalItems: totalItems,
-      reportOnce: true,
       questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,
       lastUpdated: I.meta.lastUpdated.value

@@ -36,18 +36,15 @@ context Patient
 //------------------------------------------------------------------------------
 
 // Load Questionnaire
-define PegQuestionnaire:
+define Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
-define Questionnaire:
-  PegQuestionnaire
-
 define QuestionnaireItems:
-  (PegQuestionnaire) Q 
+  (Questionnaire) Q 
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], PegQuestionnaire, QuestionnaireName)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire, QuestionnaireName)
 
 define ResponsesCompleted:
     Length(QuestionnaireResponses)
@@ -60,7 +57,7 @@ define ResponsesSummary:
       if meanScoreResponse is null then null
       else ToInteger(meanScoreResponse), // mean score
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(PegQuestionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
     Question1Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question1LinkId, I.item)),
     Question2Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item)),
     Question3Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item)),

@@ -36,27 +36,24 @@ context Patient
 //------------------------------------------------------------------------------
 
 // Load Questionnaire
-define Phq4Questionnaire:
+define Questionnaire:
   First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
 
-define Questionnaire:
-  Phq4Questionnaire
-
 define QuestionnaireItems:
-  (Phq4Questionnaire) Q 
+  (Questionnaire) Q 
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Phq4Questionnaire, QuestionnaireName)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire, QuestionnaireName)
 
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    Question1Score: First(LogicHelper.getScoringByResponseItem(Phq4Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
-    Question2Score: First(LogicHelper.getScoringByResponseItem(Phq4Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
-    Question3Score: First(LogicHelper.getScoringByResponseItem(Phq4Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
-    Question4Score: First(LogicHelper.getScoringByResponseItem(Phq4Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Phq4Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
+    Question1Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
+    Question2Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
+    Question3Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
+    Question4Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
     itemTotalScore:
           case
             when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -103,11 +100,10 @@ define ResponsesSummary:
         else '' 
       end,
       comparisonToAlert: 'higher',
-      totalAnsweredItems: Min({Length(
-        (responsesOnly) O where 
-          (PositionOf(O.linkId, ScoringQuestionId) = -1 or PositionOf(ScoringQuestionId, O.linkId) = -1)
-          and O.answer is not null
-        ), totalItems}),
+      totalAnsweredItems: Min({
+        LogicHelper.getTotalAnsweredItems(I.item, ScoringQuestionId),
+        totalItems
+      }),
       totalItems: totalItems,
       questionnaireItems: QuestionnaireItems,
       authoredDate: I.authored.value,
