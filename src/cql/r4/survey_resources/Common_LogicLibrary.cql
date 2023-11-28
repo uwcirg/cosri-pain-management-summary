@@ -180,12 +180,13 @@ define function getTotalAnsweredItems(responses List<FHIR.QuestionnaireResponse.
    case
       when scoringQuestionId is not null then
         Length(
-          (FormattedQuestionnaireResponses(responses)) O where 
-            (PositionOf(O.linkId, scoringQuestionId) = -1 or PositionOf(scoringQuestionId, O.linkId) = -1)
-            and O.answer is not null
+          ((FormattedQuestionnaireResponses(responses)) O where 
+            (PositionOf(O.linkId, scoringQuestionId) = -1 or 
+             PositionOf(scoringQuestionId, O.linkId) = -1)) A
+            where A.answer is not null
         )
       else
-        Length(FormattedQuestionnaireResponses(responses))
+        Length(((FormattedQuestionnaireResponses(responses)) A where A.answer is not null))
     end
 
 /* 

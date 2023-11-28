@@ -2119,75 +2119,80 @@
                      "operand" : {
                         "type" : "Query",
                         "source" : [ {
-                           "alias" : "O",
+                           "alias" : "A",
                            "expression" : {
-                              "name" : "FormattedQuestionnaireResponses",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "name" : "responses",
-                                 "type" : "OperandRef"
-                              } ]
+                              "type" : "Query",
+                              "source" : [ {
+                                 "alias" : "O",
+                                 "expression" : {
+                                    "name" : "FormattedQuestionnaireResponses",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "name" : "responses",
+                                       "type" : "OperandRef"
+                                    } ]
+                                 }
+                              } ],
+                              "relationship" : [ ],
+                              "where" : {
+                                 "type" : "Or",
+                                 "operand" : [ {
+                                    "type" : "Equal",
+                                    "operand" : [ {
+                                       "type" : "PositionOf",
+                                       "pattern" : {
+                                          "path" : "linkId",
+                                          "scope" : "O",
+                                          "type" : "Property"
+                                       },
+                                       "string" : {
+                                          "name" : "scoringQuestionId",
+                                          "type" : "OperandRef"
+                                       }
+                                    }, {
+                                       "type" : "Negate",
+                                       "operand" : {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "1",
+                                          "type" : "Literal"
+                                       }
+                                    } ]
+                                 }, {
+                                    "type" : "Equal",
+                                    "operand" : [ {
+                                       "type" : "PositionOf",
+                                       "pattern" : {
+                                          "name" : "scoringQuestionId",
+                                          "type" : "OperandRef"
+                                       },
+                                       "string" : {
+                                          "path" : "linkId",
+                                          "scope" : "O",
+                                          "type" : "Property"
+                                       }
+                                    }, {
+                                       "type" : "Negate",
+                                       "operand" : {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "1",
+                                          "type" : "Literal"
+                                       }
+                                    } ]
+                                 } ]
+                              }
                            }
                         } ],
                         "relationship" : [ ],
                         "where" : {
-                           "type" : "And",
-                           "operand" : [ {
-                              "type" : "Or",
-                              "operand" : [ {
-                                 "type" : "Equal",
-                                 "operand" : [ {
-                                    "type" : "PositionOf",
-                                    "pattern" : {
-                                       "path" : "linkId",
-                                       "scope" : "O",
-                                       "type" : "Property"
-                                    },
-                                    "string" : {
-                                       "name" : "scoringQuestionId",
-                                       "type" : "OperandRef"
-                                    }
-                                 }, {
-                                    "type" : "Negate",
-                                    "operand" : {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "1",
-                                       "type" : "Literal"
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "Equal",
-                                 "operand" : [ {
-                                    "type" : "PositionOf",
-                                    "pattern" : {
-                                       "name" : "scoringQuestionId",
-                                       "type" : "OperandRef"
-                                    },
-                                    "string" : {
-                                       "path" : "linkId",
-                                       "scope" : "O",
-                                       "type" : "Property"
-                                    }
-                                 }, {
-                                    "type" : "Negate",
-                                    "operand" : {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "1",
-                                       "type" : "Literal"
-                                    }
-                                 } ]
-                              } ]
-                           }, {
-                              "type" : "Not",
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
                               "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "path" : "answer",
-                                    "scope" : "O",
-                                    "type" : "Property"
-                                 }
+                                 "path" : "answer",
+                                 "scope" : "A",
+                                 "type" : "Property"
                               }
-                           } ]
+                           }
                         }
                      }
                   }
@@ -2195,12 +2200,30 @@
                "else" : {
                   "type" : "Length",
                   "operand" : {
-                     "name" : "FormattedQuestionnaireResponses",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "name" : "responses",
-                        "type" : "OperandRef"
-                     } ]
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "A",
+                        "expression" : {
+                           "name" : "FormattedQuestionnaireResponses",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "responses",
+                              "type" : "OperandRef"
+                           } ]
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "where" : {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "path" : "answer",
+                              "scope" : "A",
+                              "type" : "Property"
+                           }
+                        }
+                     }
                   }
                }
             },

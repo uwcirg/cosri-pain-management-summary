@@ -106,7 +106,7 @@
             "accessLevel" : "Public",
             "expression" : {
                "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "/70272-0",
+               "value" : "70272-0",
                "type" : "Literal"
             }
          }, {
