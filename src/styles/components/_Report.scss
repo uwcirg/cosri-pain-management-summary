@@ -406,7 +406,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         flex: 1 1;
       }
       &-title {
-        font-size: 20px;
+        font-size: 1.25em;
         text-align: left;
       }
       &__item {
@@ -625,8 +625,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
     svg {
       color: $link-color;
       border-color: $link-border-color;
-      &:hover {
-        transform: scale(1.1);
+      &:hover:not(.disabled) {
+        transform: scale(1.15);
       }
     }
   }
@@ -636,8 +636,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
     gap: 8px;
     align-items: center;
     justify-content: space-evenly;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 16px;
+    margin-bottom: 16px;
     .dot {
       width: 10px;
       height: 10px;

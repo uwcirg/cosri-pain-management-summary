@@ -777,9 +777,9 @@ export default class Summary extends Component {
             navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
           ></SideNav>
           <div className="summary__display" id="maincontent">
-            <div className="summary__display-title">
+            <h1 className="summary__display-title">
               Clinical Opioid Summary with Rx Integration
-            </div>
+            </h1>
             {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
             {meetsInclusionCriteria && <ExclusionBanner />}
             {!meetsInclusionCriteria && (

@@ -543,7 +543,7 @@ export default class BodyDiagram extends Component {
     return (
       <div
         className="flex flex-gap-1 icons-container exclude-from-copy"
-        style={{ gap: "12px", marginTop: "8px" }}
+        style={{ gap: "12px"}}
       >
         <FontAwesomeIcon
           icon="angle-double-left"

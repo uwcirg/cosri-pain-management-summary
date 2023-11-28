@@ -101,6 +101,9 @@
       // .panel__item{
       //   page-break-inside: avoid;
       // }
+      .responses-table-outer-wrapper thead th {
+        position: relative;
+      }
     }
     .sub-section {
       box-shadow: none;

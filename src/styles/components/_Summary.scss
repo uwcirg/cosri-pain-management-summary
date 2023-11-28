@@ -244,9 +244,11 @@
       //background-color: $color-uw-gray;
       color: $color-white;
       text-align: center;
-      font-size: 1.4em;
-      font-weight: 600;
+      font-size: 1.625em;
+      font-weight: 400;
       padding: 8px;
+      margin-block-start: 0;
+      margin-block-end: 0;
 
       svg, img {
         margin-right: 20px;
@@ -378,7 +380,7 @@
         .title {
           margin-left: 42px;
           font-weight: 700;
-          font-size: 20px;
+          font-size: 1.25em;
 
         }
         .axis-group {
@@ -463,7 +465,7 @@
           .panel-title {
             font-weight: 700;
             margin-bottom: 8px;
-            font-size: 20px;
+            font-size: 1.25em;
             text-align: left;
           }
           .title {
