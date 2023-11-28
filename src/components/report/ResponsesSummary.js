@@ -21,7 +21,7 @@ export default class ResponsesSummary extends Component {
     setTimeout(() => {
       if (this.tableWrapperRef.current) {
         this.tableWrapperRef.current.style.maxHeight =
-          window.innerHeight - 168 + "px";
+          window.innerHeight - 200 + "px";
       }
     }, 250);
   }
