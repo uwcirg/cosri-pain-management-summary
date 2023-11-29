@@ -513,7 +513,7 @@ export default class BodyDiagram extends Component {
     return (
       <div
         className="exclude-from-copy buttons-container"
-        style={{ position: "absolute", right: 0, top: "-32px" }}
+        style={{ position: "absolute", right: 0, top: "-36px" }}
       >
         <div
           className="flex flex-gap-1"
