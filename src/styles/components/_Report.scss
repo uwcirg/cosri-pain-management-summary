@@ -8,7 +8,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
     border-top: 4px solid $color-blue;
   }
   .summary__nav {
-    padding: 72px 0 20px 0px;
+    padding: 64px 0 24px 0px;
+    // &.is-position-fixed {
+    //   padding: 180px 0 20px 0px;
+    // }
     .title-text-container {
       visibility: hidden;
       width: 0;

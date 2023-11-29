@@ -9,14 +9,14 @@
 
   &__nav {
     color: $color-white;
-    padding: 88px 0 20px 0px;
+    padding: 56px 0 32px 0px;
     width: $summary-nav-width;
     z-index: 1;
     transition: opacity 450ms ease 100ms;
 
-    &.is-position-fixed {
-        padding: calc(#{$min-header-height} + 64px) 0 20px 0px;
-    }
+    // &.is-position-fixed {
+    //     padding: calc(#{$min-header-height} + 64px) 0 20px 0px;
+    // }
 
     .toc-list.is-collapsible {
       .toc-list-item {

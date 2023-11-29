@@ -380,8 +380,8 @@ export default class Landing extends Component {
       positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
       collapseDepth: 0, // how many heading levels should not be collpased
       includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      fixedSidebarOffset: this.shouldShowTabs() ? MIN_HEADER_HEIGHT : "auto",
-      headingsOffset: MIN_HEADER_HEIGHT,
+     // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
+      headingsOffset: 1 * MIN_HEADER_HEIGHT,
       scrollSmoothOffset: -1 * (MIN_HEADER_HEIGHT),
     });
   }
