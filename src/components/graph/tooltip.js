@@ -56,22 +56,25 @@ class Tooltip extends React.Component {
     const formatDate = timeFormat(`%Y-%b-%d`);
     const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
 
-    //rect
-    select(node)
-      .selectAll(".tooltip-rect")
-      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append("rect")
-      .attr("class", (d, i) => `tooltip-rect tooltip_${dataId}${i}`)
-      .attr("id", (d, i) => `dataRect_${dataId}${i}`)
-      .attr("x", (d) => xScale(d[xName]) - 68)
-      .attr("y", (d) => yScale(d[yName]) + 12)
-      .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6.3)
-      .attr("height", showDataIdInLabel ? 38 : 20)
-      .style("stroke", "black")
-      .style("stroke-width", "0.1")
-      .style("fill", "#FFF")
-      .style("display", "none");
+    const displayRect = () =>
+      select(node)
+        .selectAll(".tooltip-rect")
+        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .enter()
+        .append("rect")
+        .attr("class", (d, i) => `tooltip-rect tooltip_${dataId}${i}`)
+        .attr("id", (d, i) => `dataRect_${dataId}${i}`)
+        .attr("x", (d) => xScale(d[xName]) - 68)
+        .attr("y", (d) => yScale(d[yName]) + 12)
+        .attr(
+          "width",
+          (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6.3
+        )
+        .attr("height", showDataIdInLabel ? 34 : 20)
+        .style("stroke", "black")
+        .style("stroke-width", "0.1")
+        .style("fill", "#FFF")
+        .style("display", "none");
 
     const displayToolTipText = (xOffset, yOffset) =>
       select(node)
@@ -101,18 +104,22 @@ class Tooltip extends React.Component {
         .attr("x", (d) => xScale(d[xName]) - (xOffset ? xOffset : 62))
         .attr("y", (d) => yScale(d[yName]) + (yOffset ? yOffset : 26))
         .style("display", "none")
-        .attr("font-size", "0.7rem")
+        .style("color", "#777")
+        .attr("font-size", "0.625rem")
         .attr("text-anchor", "start")
         .attr("font-weight", 500)
         .text(function (d) {
           return dataId.toUpperCase();
         });
+    // rect
+    displayRect();
     if (showDataIdInLabel) {
-      //tooltip
+      // tooltip id
       displayToolTipId();
-      displayToolTipText(62, 44);
+      // tooltip text
+      displayToolTipText(62, 40);
     } else {
-      //tooltip
+      // tooltip
       displayToolTipText();
     }
   }
