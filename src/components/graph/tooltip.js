@@ -66,38 +66,55 @@ class Tooltip extends React.Component {
       .attr("id", (d, i) => `dataRect_${dataId}${i}`)
       .attr("x", (d) => xScale(d[xName]) - 68)
       .attr("y", (d) => yScale(d[yName]) + 12)
-      .attr(
-        "width",
-        (d) =>
-          `${showDataIdInLabel ? dataId.toUpperCase() : ""} ${formatDate(
-            d[xName]
-          )}, ${d[yName]}`.length * (showDataIdInLabel ? 6.4 : 6)
-      )
-      .attr("height", 20)
+      .attr("width", (d) => `${formatDate(d[xName])}, ${d[yName]}`.length * 6.3)
+      .attr("height", showDataIdInLabel ? 38 : 20)
       .style("stroke", "black")
       .style("stroke-width", "0.1")
       .style("fill", "#FFF")
       .style("display", "none");
 
-    // //tooltip
-    select(node)
-      .selectAll(".tooltip_text")
-      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append("text")
-      .attr("class", (d, i) => `tooltip_text tooltip_${dataId}${i}`)
-      .attr("id", (d, i) => `dataText_${dataId}${i}`)
-      .attr("x", (d) => xScale(d[xName]) - 62)
-      .attr("y", (d) => yScale(d[yName]) + 26)
-      .style("display", "none")
-      .attr("font-size", "0.7rem")
-      .attr("text-anchor", "start")
-      .attr("font-weight", 500)
-      .text(function (d) {
-        return `${
-          showDataIdInLabel ? dataId.toUpperCase() : ""
-        } ${formatDate(d[xName])}, ${d[yName]}`;
-      });
+    const displayToolTipText = (xOffset, yOffset) =>
+      select(node)
+        .selectAll(".tooltip_text")
+        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .enter()
+        .append("text")
+        .attr("class", (d, i) => `tooltip_text tooltip_${dataId}${i}`)
+        .attr("id", (d, i) => `dataText_${dataId}${i}`)
+        .attr("x", (d) => xScale(d[xName]) - (xOffset ? xOffset : 62))
+        .attr("y", (d) => yScale(d[yName]) + (yOffset ? yOffset : 26))
+        .style("display", "none")
+        .attr("font-size", "0.7rem")
+        .attr("text-anchor", "start")
+        .attr("font-weight", 500)
+        .text(function (d) {
+          return `${formatDate(d[xName])}, ${d[yName]}`;
+        });
+    const displayToolTipId = (xOffset, yOffset) =>
+      select(node)
+        .selectAll(".tooltip_text_id")
+        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .enter()
+        .append("text")
+        .attr("class", (d, i) => `tooltip_text_id tooltip_${dataId}${i}`)
+        .attr("id", (d, i) => `dataText_id_${dataId}${i}`)
+        .attr("x", (d) => xScale(d[xName]) - (xOffset ? xOffset : 62))
+        .attr("y", (d) => yScale(d[yName]) + (yOffset ? yOffset : 26))
+        .style("display", "none")
+        .attr("font-size", "0.7rem")
+        .attr("text-anchor", "start")
+        .attr("font-weight", 500)
+        .text(function (d) {
+          return dataId.toUpperCase();
+        });
+    if (showDataIdInLabel) {
+      //tooltip
+      displayToolTipId();
+      displayToolTipText(62, 44);
+    } else {
+      //tooltip
+      displayToolTipText();
+    }
   }
   render() {
     return <g className={this.props.className} ref={this.ref} />;

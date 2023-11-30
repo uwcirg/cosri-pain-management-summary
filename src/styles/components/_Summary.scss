@@ -55,6 +55,9 @@
       list-style-type: none;
 
       &-item {
+        &:hover {
+          background-color: $color-gray-light;
+        }
         .toc-link {
           display: flex;
           align-items: center;
@@ -78,7 +81,6 @@
           }
           &.is-active-link,
           &:hover {
-            //background-color: $color-uw-light;
             color: #FFF;
             background-color: $color-gray-light;
           }
