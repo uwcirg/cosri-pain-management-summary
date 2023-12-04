@@ -110,7 +110,7 @@ export function range(start, end) {
 export function isNumber(target) {
   if (typeof target === "number") return true;
   if (target == null || target === "") return false;
-  if (isNaN(target)) return false;
+  return !isNaN(target);
 }
 
 export function getEnvInstrumentList() {
@@ -123,7 +123,7 @@ export function getReportInstrumentList() {
     .filter((section) => section.questionnaires)
     .map((section) => section.questionnaires);
   if (!qList.length) return null;
-  return qList.flat();
+  return [...new Set(qList.flat())];
 }
 
 export function getDisplayDateFromISOString(isocDateString) {

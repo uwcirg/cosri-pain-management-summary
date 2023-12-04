@@ -1254,11 +1254,6 @@ export default class Landing extends Component {
               {item === "report" && (
                 <Report summaryData={summary.SurveySummary}></Report>
               )}
-              {/* {item === "detailed_report" && (
-                <DetailedReport
-                  data={summary.Patient.Documents}
-                ></DetailedReport>
-              )} */}
               {/* other tab panel as specified here */}
             </div>
           );

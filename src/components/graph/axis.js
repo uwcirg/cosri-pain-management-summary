@@ -15,13 +15,7 @@ class Axis extends React.Component {
   }
 
   componentDidUpdate() {
-    //  this.removeAll();
     this.renderAxis();
-  }
-  removeAll() {
-    const node = this.ref.current;
-    let currentNode = select(node);
-    currentNode.selectAll(".tick text").remove();
   }
   renderAxis() {
     const node = this.ref.current;

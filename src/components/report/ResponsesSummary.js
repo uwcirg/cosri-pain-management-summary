@@ -13,6 +13,7 @@ export default class ResponsesSummary extends Component {
     this.setWrapperHeight = this.setWrapperHeight.bind(this);
   }
   componentDidMount() {
+    // resize table to be within viewport
     window.addEventListener("resize", this.setWrapperHeight);
     this.setWrapperHeight();
   }
@@ -26,7 +27,8 @@ export default class ResponsesSummary extends Component {
     }, 250);
   }
   getMatchedAnswerTextByLinkId(summary, linkId, answerValue) {
-    const reportedAnswerValue = answerValue == null ? "--" : answerValue;
+    const reportedAnswerValue =
+      answerValue == null || answerValue === "" ? "--" : answerValue;
     if (
       !summary ||
       !summary.questionnaireItems ||
@@ -53,7 +55,7 @@ export default class ResponsesSummary extends Component {
           } else return false;
         })
         .map((item) =>
-          item.value && item.value.display
+          item.value && item.value.display && item.value.display.value
             ? item.value.display.value
             : answerValue
         );
@@ -86,7 +88,7 @@ export default class ResponsesSummary extends Component {
     return summary.ResponsesSummary[0];
   }
   getDisplayDate(targetObj) {
-    if (!targetObj) return "--";
+    if (!targetObj || !targetObj.date) return "--";
     return getDisplayDateFromISOString(targetObj.date);
   }
   getNumResponses(summary) {

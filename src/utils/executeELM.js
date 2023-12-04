@@ -335,7 +335,7 @@ function updateSearchParams(params, release, type) {
           params.set("_id", INSTRUMENT_LIST.join(","));
           break;
         case "QuestionnaireResponse":
-          params.set("_count", 200);
+          params.set("_count", 300);
           params.set("_sort", "_lastUpdated");
           break;
         default:

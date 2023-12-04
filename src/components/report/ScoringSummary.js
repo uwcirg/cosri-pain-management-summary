@@ -15,14 +15,14 @@ export default class ScoringSummary extends Component {
     this.copyTable = this.copyTable.bind(this);
   }
   sortData(data) {
-    if (!data || !Array.isArray(data)) return [];
+    if (!data || !Array.isArray(data) || !data.length) return null;
     return data.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
   }
   getDataByIndex(data, index) {
-    if (!data || data.length === 0) return null;
     const sortedData = this.sortData(data);
+    if (!sortedData) return null;
     return sortedData[index];
   }
   getCurrentData(data) {
@@ -60,7 +60,7 @@ export default class ScoringSummary extends Component {
     const comparisonToAlert =
       currentData && currentData.comparisonToAlert
         ? currentData.comparisonToAlert
-        : ""; // TODO get it from response summary data
+        : "";
     if (!comparisonToAlert) return "--";
     //debug
     //console.log("comparison to alert ", comparisonToAlert);
@@ -82,7 +82,7 @@ export default class ScoringSummary extends Component {
       }
     } else {
       if (isNumber(currentScore)) return <LineIcon></LineIcon>;
-      return null;
+      return "--";
     }
   }
   getRangeDisplay(data) {
@@ -111,7 +111,7 @@ export default class ScoringSummary extends Component {
     return this.getCurrentScore(data.ResponsesSummary);
   }
   getTitleDisplay() {
-    return this.props.title || "Scoring Summary";
+    return this.props.title ? this.props.title : "Scoring Summary";
   }
   handleGoToSection(event, id) {
     event.preventDefault();
