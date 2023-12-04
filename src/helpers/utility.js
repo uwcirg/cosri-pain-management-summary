@@ -109,7 +109,7 @@ export function range(start, end) {
 
 export function isNumber(target) {
   if (typeof target === "number") return true;
-  if (target == null || target === "") return false;
+  if (target == null || String(target).trim() === "") return false;
   return !isNaN(target);
 }
 
