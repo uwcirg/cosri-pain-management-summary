@@ -70,7 +70,7 @@ async function executeELM(collector, oResourceTypes) {
         console.log("collector ", collector);
         console.log("resourceTypes ", resourceTypes);
 
-        // Don't return until all the requests have been resolved
+        // return all the requests have been resolved // rejected
         return Promise.allSettled(requests).then((requestResults) => {
           let resources = [];
           requestResults.forEach((result) => {
