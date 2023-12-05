@@ -294,12 +294,6 @@ export default class BodyDiagram extends Component {
   renderDateSelector() {
     const summaryData = this.state.summaryData;
     if (!summaryData || !summaryData.length) return null;
-    // if (summaryData.length === 1)
-    //   return (
-    //     <div className="text-small">
-    //       {getDisplayDateFromISOString(summaryData[0].date)}
-    //     </div>
-    //   );
     const dates = summaryData.map((item) => {
       return {
         key: getDisplayDateFromISOString(item.date),

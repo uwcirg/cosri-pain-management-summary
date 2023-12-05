@@ -1,8 +1,6 @@
 .switch {
   position: relative;
   display: inline-block;
-  //   width: 60px;
-  //   height: 34px;
   width: 32px;
   height: 16px;
   input {
@@ -24,14 +22,14 @@
   transition: 0.4s;
 }
 .disabled {
-    .switch-slider {
-        background-color: $color-gray-lighter !important;
-        &:before {
-            -webkit-transform: translateX(0) !important;
-            -ms-transform: translateX(0) !important;
-            transform: translateX(0) !important;
-        }
+  .switch-slider {
+    background-color: $color-gray-lighter !important;
+    &:before {
+      -webkit-transform: translateX(0) !important;
+      -ms-transform: translateX(0) !important;
+      transform: translateX(0) !important;
     }
+  }
 }
 
 .switch-slider:before {
