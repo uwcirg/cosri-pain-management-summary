@@ -41,13 +41,10 @@ export default class Overview extends Component {
       ).length === 0;
     return (
       <div className="panel-container">
-        {graphData.length > 0 && (
-          <div className="panel graph">
-            <SurveyGraph data={graphData}></SurveyGraph>
-          </div>
-        )}
+        <div className="panel graph">
+          <SurveyGraph data={graphData}></SurveyGraph>
+        </div>
         <div className={`panel ${noSummaryData ? "no-entries" : ""}`}>
-          {/* <div className="panel__item">Alerts go here</div> */}
           <div className="panel__item bordered full-width">
             <ScoringSummary
               summary={dataToShow}

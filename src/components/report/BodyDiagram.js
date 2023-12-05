@@ -28,6 +28,7 @@ export default class BodyDiagram extends Component {
     this.utilButtonsContainerRef = React.createRef();
     this.printImageRef = React.createRef();
     this.datesSelectorRef = React.createRef();
+    this.toolbarRef = React.createRef();
     this.showUtilButtons = this.showUtilButtons.bind(this);
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
@@ -64,6 +65,10 @@ export default class BodyDiagram extends Component {
         this.drawAllParts();
       });
     }
+  }
+  getToolbarHeight() {
+    if (!this.toolbarRef.current) return 0;
+    return this.toolbarRef.current.offsetHeight;
   }
   addSelectedClass() {
     if (!this.datesSelectorRef.current) return;
@@ -289,12 +294,12 @@ export default class BodyDiagram extends Component {
   renderDateSelector() {
     const summaryData = this.state.summaryData;
     if (!summaryData || !summaryData.length) return null;
-    if (summaryData.length === 1)
-      return (
-        <div className="text-small">
-          {getDisplayDateFromISOString(summaryData[0].date)}
-        </div>
-      );
+    // if (summaryData.length === 1)
+    //   return (
+    //     <div className="text-small">
+    //       {getDisplayDateFromISOString(summaryData[0].date)}
+    //     </div>
+    //   );
     const dates = summaryData.map((item) => {
       return {
         key: getDisplayDateFromISOString(item.date),
@@ -302,7 +307,12 @@ export default class BodyDiagram extends Component {
       };
     });
     return (
-      <div className="select print-hidden" ref={this.datesSelectorRef}>
+      <div
+        className={`select print-hidden ${
+          summaryData.length === 1 ? "disable-select" : ""
+        }`}
+        ref={this.datesSelectorRef}
+      >
         <select
           value={this.state.selectedDate}
           onChange={this.handleSelectChange}
@@ -436,14 +446,16 @@ export default class BodyDiagram extends Component {
     const styles = {
       position: "absolute",
       top: "0",
-      transform: "translate(-50%, 81px)",
+     // transform: "translate(-50%, 81px)",
+     transform: `translate(-50%, ${this.getToolbarHeight()+24}px)`
     };
     cloneSvgElement.setAttribute("id", "temp_bd");
     cloneSvgElement.classList.add("part-of-bd");
     Object.assign(cloneSvgElement.style, styles);
     this.containerRef.current.append(cloneSvgElement);
     this.BodyDiagramRef.current.style.visibility = "hidden";
-    this.datesSelectorRef.current.classList.add("read-only");
+    if (this.datesSelectorRef.current)
+      this.datesSelectorRef.current.classList.add("read-only");
   }
   afterCopy() {
     //setTimeout(() => {
@@ -451,7 +463,8 @@ export default class BodyDiagram extends Component {
       this.containerRef.current.removeChild(document.querySelector("#temp_bd"));
     }
     this.BodyDiagramRef.current.style.visibility = "visible";
-    this.datesSelectorRef.current.classList.remove("read-only");
+    if (this.datesSelectorRef.current)
+      this.datesSelectorRef.current.classList.remove("read-only");
     //}, 500);
   }
   renderCopyButton() {
@@ -513,7 +526,7 @@ export default class BodyDiagram extends Component {
     return (
       <div
         className="exclude-from-copy buttons-container"
-        style={{ position: "absolute", right: 0, top: "-36px" }}
+        style={{ position: "absolute", right: 0, top: "-24px" }}
       >
         <div
           className="flex flex-gap-1"
@@ -543,7 +556,7 @@ export default class BodyDiagram extends Component {
     return (
       <div
         className="flex flex-gap-1 icons-container exclude-from-copy"
-        style={{ gap: "12px"}}
+        style={{ gap: "12px" }}
       >
         <FontAwesomeIcon
           icon="angle-double-left"
@@ -629,6 +642,7 @@ export default class BodyDiagram extends Component {
           <div
             className="flex"
             style={{ marginTop: 8, marginBottom: 24, alignItems: "flex-start" }}
+            ref={this.toolbarRef}
           >
             {this.renderLegend()}
             {this.renderDateSelector()}
@@ -638,7 +652,7 @@ export default class BodyDiagram extends Component {
             className="flex flex-center flex-column"
             style={{ position: "relative" }}
           >
-            {this.state.dates.length > 1 && this.renderUtilButtons()}
+            {this.state.dates.length >= 1 && this.renderUtilButtons()}
             <object
               data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
               type="image/svg+xml"

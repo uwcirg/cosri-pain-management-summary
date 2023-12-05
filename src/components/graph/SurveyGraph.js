@@ -1046,9 +1046,7 @@ export default class SurveyGraph extends Component {
     if (noEntry)
       return (
         <React.Fragment>
-          <div className="no-entries">
-            <b>No graph to show.</b>
-          </div>
+          <div className="no-entries">No graph data to show.</div>
           {this.shouldShowAccessories() && this.renderLegend()}
         </React.Fragment>
       );
