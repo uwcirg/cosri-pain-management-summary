@@ -510,6 +510,7 @@ export default class SurveyGraph extends Component {
     const scaleData = this.getScaleInfoForSlider(dateRangeData);
     const maxValue = scaleData.max;
     const minValue = scaleData.min;
+    const selectedValue = parseFloat(this.state.selectedDateRange);
     let items = [
       {
         key: "Last 6 months",
@@ -544,7 +545,7 @@ export default class SurveyGraph extends Component {
 
     items.unshift({
       key: this.getDisplayDateRange(),
-      value: parseFloat(this.state.selectedDateRange),
+      value: selectedValue,
     });
 
     const jsonItems = items.map(JSON.stringify);
@@ -554,7 +555,11 @@ export default class SurveyGraph extends Component {
     return (
       <div className="select print-hidden" ref={this.dateRangeSelectorRef}>
         <select
-          value={this.state.selectedDateRange}
+          value={
+            selectedValue <= maxValue
+              ? selectedValue
+              : ""
+          }
           onChange={this.handleDateRangeChange}
           onBlur={this.handleDateRangeChange}
         >
@@ -763,7 +768,7 @@ export default class SurveyGraph extends Component {
 
     const noStateEntry = !this.state.graphData || !this.state.graphData.length;
 
-    console.log("state entry? ", noStateEntry)
+    console.log("state entry? ", noStateEntry);
 
     const { data, maxDate, baseLineDate, monthsDiff } = this.getDataForGraph(
       this.state.graphData
@@ -953,7 +958,6 @@ export default class SurveyGraph extends Component {
 
     const renderLines = (props) => {
       const { data } = this.getDataForGraph(this.state.graphData);
-      // console.log("nav width ", document.querySelector(".summary__nav-wrapper").getBoundingClientRect())
       return getDataNest(data).map((o, index) => {
         return (
           <Line
@@ -995,34 +999,57 @@ export default class SurveyGraph extends Component {
           className="flex flex-center text-warning"
           style={{
             position: "absolute",
-            width: "100%",
-            height: "100%",
+            width: "calc(100% - 32px)",
+            height: "70%",
             background: "#f4f5f64d",
-            left: "16px",
-            zIndex: 100
+            left: "0",
+            zIndex: 100,
+            padding: "16px",
           }}
         >
-          <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-          <div>{`No data for ${this.state.qids.join(
-            ", "
-          )} within this date range`}</div>
+          <div
+            style={{
+              padding: "32px 16px",
+              margin: "auto",
+              position: "relative",
+              display: "flex",
+              gap: "4px",
+            }}
+          >
+            <FontAwesomeIcon icon="exclamation-circle" title="notice" />
+            <div>{`No data for ${this.state.qids.join(
+              ", "
+            )} within this date range`}</div>
+          </div>
         </div>
       );
     };
-
     const renderGraph = () => {
+      const svgProps = {
+        className: "surveyChartSvg print-hidden",
+        width: "100%",
+        height: "100%",
+        viewBox: `0 0 ${graphWidth} ${graphHeight}`,
+        style: {
+          fontFamily: "Open Sans, Arial, sans-serif",
+          backgroundColor: "#FFF",
+        },
+      };
+      if (noStateEntry) {
+        // placeholder svg with grid lines if no state survey data
+        return (
+          <svg ref={this.graphRef} {...svgProps}>
+            <g transform={`translate(${margins.left}, ${margins.top})`}>
+              {/* y grid */}
+              {renderYGrid()}
+              {/* x grid */}
+              {renderXGrid()}
+            </g>
+          </svg>
+        );
+      }
       return (
-        <svg
-          ref={this.graphRef}
-          className="surveyChartSvg print-hidden"
-          width="100%"
-          height="100%"
-          viewBox={`0 0 ${graphWidth} ${graphHeight}`}
-          style={{
-            fontFamily: "Open Sans, Arial, sans-serif",
-            backgroundColor: "#FFF",
-          }}
-        >
+        <svg ref={this.graphRef} {...svgProps}>
           <g transform={`translate(${margins.left}, ${margins.top})`}>
             {/* y grid */}
             {renderYGrid()}
