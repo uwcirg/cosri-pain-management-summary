@@ -217,7 +217,7 @@ export default class MMEGraph extends Component {
     let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
 
     const margins = {
-      top: 8,
+      top: 0,
       right: 56,
       bottom: 48,
       left: 56,

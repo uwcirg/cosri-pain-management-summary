@@ -535,14 +535,16 @@ export default class SurveyGraph extends Component {
       return d.value > minValue && d.value < maxValue;
     });
 
-    items.push({
-      key: `Last ${maxValue} year${maxValue > 1 ? "s" : ""}`,
-      value: maxValue,
-    });
+    if (maxValue >= 1) {
+      items.push({
+        key: `Last ${maxValue} year${maxValue > 1 ? "s" : ""}`,
+        value: maxValue,
+      });
+    }
 
     items.unshift({
       key: this.getDisplayDateRange(),
-      value: this.state.selectedDateRange,
+      value: parseFloat(this.state.selectedDateRange),
     });
 
     const jsonItems = items.map(JSON.stringify);
@@ -552,11 +554,7 @@ export default class SurveyGraph extends Component {
     return (
       <div className="select print-hidden" ref={this.dateRangeSelectorRef}>
         <select
-          value={
-            this.state.selectedDateRange > maxValue
-              ? maxValue
-              : this.state.selectedDateRange
-          }
+          value={this.state.selectedDateRange}
           onChange={this.handleDateRangeChange}
           onBlur={this.handleDateRangeChange}
         >
@@ -694,7 +692,6 @@ export default class SurveyGraph extends Component {
             max={max}
             step={"any"}
             value={this.state.selectedDateRange}
-            // defaultValue={arrNum[arrNum.length - 1]}
             className="slider"
             onInput={this.handleDateRangeChange}
             onChange={this.handleDateRangeChange}
@@ -766,12 +763,14 @@ export default class SurveyGraph extends Component {
 
     const noStateEntry = !this.state.graphData || !this.state.graphData.length;
 
+    console.log("state entry? ", noStateEntry)
+
     const { data, maxDate, baseLineDate, monthsDiff } = this.getDataForGraph(
       this.state.graphData
     );
 
     const margins = {
-      top: 32,
+      top: 40,
       right: 24,
       bottom: 72,
       left: 56,
@@ -1000,6 +999,7 @@ export default class SurveyGraph extends Component {
             height: "100%",
             background: "#f4f5f64d",
             left: "16px",
+            zIndex: 100
           }}
         >
           <FontAwesomeIcon icon="exclamation-circle" title="notice" />
