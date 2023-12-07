@@ -30,7 +30,10 @@ export default class Overview extends Component {
   }
   render() {
     const { summary } = this.props;
-    const dataToShow = summary.filter((item) => !item.ExcludeFromScoring);
+    const dataToShow =
+      summary && Array.isArray(summary)
+        ? summary.filter((item) => !item.ExcludeFromScoring)
+        : [];
     const graphData = this.getGraphData(dataToShow);
     const BodyDiagramData = this.getBodyDiagramDataSummaryData(summary);
     const noSummaryData =
@@ -39,6 +42,12 @@ export default class Overview extends Component {
       summary.filter(
         (item) => item.ResponsesSummary && item.ResponsesSummary.length > 0
       ).length === 0;
+    const containerStyle = {
+      height: "100%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    };
     return (
       <div className="panel-container">
         <div className="panel graph">
@@ -54,12 +63,7 @@ export default class Overview extends Component {
           {BodyDiagramData && (
             <div
               className="panel__item bordered"
-              style={{
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              style={containerStyle}
             >
               <BodyDiagram summary={BodyDiagramData}></BodyDiagram>
             </div>

@@ -64,7 +64,7 @@ export default class ResponsesSummary extends Component {
     } else return reportedAnswerValue;
   }
   getMatchedAnswerByItem(summary, targetItem) {
-    if (!targetItem) return null;
+    if (!targetItem) return "--";
     if (!summary || !summary.responses) return "--";
     const matchedItem = summary.responses.filter(
       (item) =>
@@ -322,7 +322,6 @@ export default class ResponsesSummary extends Component {
                   ? "two-columns"
                   : ""
               }`}
-              // style={{ maxHeight: window.innerHeight - 168 }}
               ref={this.tableWrapperRef}
             >
               {this.renderResponses(

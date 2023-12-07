@@ -143,7 +143,9 @@ export default class ScoringSummary extends Component {
   }
   renderQuestionnaireLinkCell(questionnaireObj, showAnchorLinks) {
     if (!questionnaireObj) return <td>--</td>;
-    const questionnaireName = questionnaireObj.QuestionnaireName;
+    const questionnaireName = questionnaireObj.QuestionnaireName
+      ? questionnaireObj.QuestionnaireName
+      : questionnaireObj.QuestionnaireID;
     if (!questionnaireName) return <td>--</td>;
     const anchorId = `#${questionnaireName}_title`;
     return (
@@ -221,7 +223,7 @@ export default class ScoringSummary extends Component {
             {!noSummaryData && this.renderDataRows(summary, showAnchorLinks)}
           </tbody>
         </table>
-        {/* <button onClick={this.copyTable}>Copy</button> */}
+
       </React.Fragment>
     );
   }
