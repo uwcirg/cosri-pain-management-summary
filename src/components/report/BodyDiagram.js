@@ -70,17 +70,20 @@ export default class BodyDiagram extends Component {
     if (!this.toolbarRef.current) return 0;
     return this.toolbarRef.current.offsetHeight;
   }
+  getSelectedClass() {
+    return "select-selected";
+  }
   addSelectedClass() {
     if (!this.datesSelectorRef.current) return;
     this.datesSelectorRef.current
       .querySelector("select")
-      .classList.add("select-selected");
+      .classList.add(this.getSelectedClass());
   }
   removeSelectedClass() {
     if (!this.datesSelectorRef.current) return;
     this.datesSelectorRef.current
       .querySelector("select")
-      .classList.remove("select-selected");
+      .classList.remove(this.getSelectedClass());
   }
   handleSetFirst() {
     if (this.state.selectedIndex === 0) return;

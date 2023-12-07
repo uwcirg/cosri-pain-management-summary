@@ -6,6 +6,8 @@ import { isNumber } from "../../helpers/utility";
 
 export default class Score extends Component {
   render() {
+    if (!isNumber(this.props.score)) return "--";
+    
     const { cssClass, score, scoreParams } = this.props;
     const scoreSeverity = scoreParams && scoreParams.scoreSeverity
       ? String(scoreParams.scoreSeverity).toLowerCase()
@@ -20,7 +22,6 @@ export default class Score extends Component {
       : moderateSeverity
       ? "text-warning"
       : "";
-    if (!isNumber(score)) return "--";
     if (arrColoredSeverities.indexOf(scoreSeverity) !== -1)
       return (
         <div className={`flex flex-space-between ${cssClass}`}>
