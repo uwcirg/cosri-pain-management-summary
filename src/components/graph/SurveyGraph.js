@@ -22,6 +22,7 @@ import {
   getDifferenceInYears,
   isNumber,
   renderImageFromSVG,
+  toDate,
 } from "../../helpers/utility";
 
 const defaultFields = {
@@ -111,15 +112,16 @@ export default class SurveyGraph extends Component {
     if (!dataSource || !Array.isArray(dataSource) || !dataSource.length)
       return 0;
     let arrayDates = dataSource
-      .filter((d) => !isNaN(new Date(d[xFieldName])))
+      .filter((d) => {
+        const itemDate = toDate(d[xFieldName]);
+        return !isNaN(itemDate);
+      })
       .map((d) => {
-        return new Date(d[xFieldName]);
+        return toDate(d[xFieldName]);
       });
     if (arrayDates.length) {
       const minDate = new Date(Math.min.apply(null, arrayDates));
-      if (isNaN(minDate)) return 0;
-      const numYears = getDifferenceInYears(minDate, new Date());
-      return numYears;
+      return getDifferenceInYears(minDate, new Date());
     }
     return 0;
   }
@@ -143,19 +145,19 @@ export default class SurveyGraph extends Component {
             };
           })
         : [];
-    data = data.filter(
-      (d) =>
-        d[xFieldName] &&
-        !isNaN(new Date(d[xFieldName])) &&
-        isNumber(d[yFieldName])
-    );
+    data = data.filter((d) => {
+      const itemDate = toDate(d[xFieldName]);
+      return !isNaN(itemDate) && isNumber(d[yFieldName]);
+    });
 
-    const years = this.getSelectedDateRange(this.state.selectedDateRange);
+    const years = this.getSelectedDateRangeInYears(
+      this.state.selectedDateRange
+    );
     data = this.getFilteredDataByNumYears(data, years);
     data = this.getFilteredDataByQids(data);
 
     data = data.map((d) => {
-      let dObj = new Date(d[xFieldName]);
+      let dObj = toDate(d[xFieldName]);
       let tzOffset = dObj.getTimezoneOffset() * 60000;
       dObj.setTime(dObj.getTime() + tzOffset);
       d[xFieldName] = dObj;
@@ -202,8 +204,7 @@ export default class SurveyGraph extends Component {
       return [];
     let srcData = this.state.originalGraphData.filter(
       (item) =>
-        item[xFieldName] &&
-        !isNaN(new Date(item[xFieldName])) &&
+        !isNaN(toDate(item[xFieldName])) &&
         isNumber(item[yFieldName])
     );
     return [...new Set(srcData.map((item) => item.qid))];
@@ -237,11 +238,11 @@ export default class SurveyGraph extends Component {
       return [];
     if (!isNumber(numYears)) return dataSource;
     return dataSource.filter((item) => {
-      const itemDate = new Date(item[xFieldName]);
+      const itemDate = toDate(item[xFieldName]);
       if (isNaN(itemDate)) return false;
       const today = new Date();
       const diffYears = getDifferenceInYears(itemDate, today);
-      return diffYears <= parseFloat(numYears);
+      return diffYears <= +numYears;
     });
   }
 
@@ -279,35 +280,29 @@ export default class SurveyGraph extends Component {
       qids: [...new Set(updatedData.map((item) => item.qid))],
     });
   }
-
-  compareDate(a, b) {
-    let calcA = new Date(a[xFieldName]).getTime();
-    let calcB = new Date(b[xFieldName]).getTime();
-    if (calcA > calcB) return 1;
-    if (calcB > calcA) return -1;
-    return 0;
-  }
-
+  
   hasOnlyOneGraphLine() {
     const { data } = this.getDataForGraph(this.state.graphData);
     return (
       data &&
-      data.length &&
+      Array.isArray(data) &&
       [...new Set(data.map((item) => item.qid))].length === 1
     );
   }
 
-  getSelectedDateRange(value) {
+  getSelectedDateRangeInYears(value) {
     return parseFloat(value);
   }
 
   updateScale() {
     this.scaleLabelRefs.forEach((ref) => {
       if (!ref.current) return;
-      const labelValue = parseFloat(ref.current.getAttribute("datavalue"));
-      const labelUnit = ref.current.getAttribute("dataunit");
-      const diff = Math.abs(this.state.selectedDateRange - labelValue);
-      const comparisonValue = labelUnit === "year" ? 0.05 : 0.001;
+      const labelValue = +ref.current.getAttribute("datavalue");
+      //const labelUnit = ref.current.getAttribute("dataunit");
+      const diff = Math.abs(this.state.selectedDateRange - labelValue).toFixed(
+        2
+      );
+      const comparisonValue = (1 / 12).toFixed(2);
       // console.log(
       //   "label value ",
       //   labelValue,
@@ -316,7 +311,7 @@ export default class SurveyGraph extends Component {
       //   " diff ",
       //   diff
       // );
-      if (diff <= comparisonValue) {
+      if (diff < comparisonValue) {
         ref.current.classList.add("active");
       } else {
         ref.current.classList.remove("active");
@@ -336,7 +331,7 @@ export default class SurveyGraph extends Component {
   handleDateRangeChange(e) {
     const selectedValue = e.target.value;
     if (!selectedValue) return;
-    const years = this.getSelectedDateRange(selectedValue);
+    const years = this.getSelectedDateRangeInYears(selectedValue);
     const updatedData = this.getFilteredDataByQids(
       this.state.originalGraphData
     );
@@ -347,6 +342,106 @@ export default class SurveyGraph extends Component {
       },
       this.updateScale
     );
+  }
+  getScaleInfoForSlider(dataSource) {
+    const sliderData = dataSource ? dataSource : [];
+    const numYears = this.getNumYearsFromData(sliderData);
+    const defaultMaxValue = numYears && numYears > 0 ? numYears : 0;
+    const createArray = (N) => {
+      return [...Array(N).keys()].map((i) => i + 1);
+    };
+    const arrYears = createArray(Math.ceil(defaultMaxValue));
+    const createArrayInMonths = () => {
+      if (!arrYears || !arrYears.length) return [];
+      let arrNum = [];
+      for (
+        let i = arrYears[0] * 12;
+        i <= arrYears[arrYears.length - 1] * 12;
+        i++
+      ) {
+        if (i % 12 === 0) arrNum.push(i / 12);
+        else {
+          arrNum.push(Math.floor(i / 12) + (i / 12 - Math.floor(i / 12)));
+        }
+      }
+      return arrNum;
+    };
+    const getArrMonths = () => {
+      const arrMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
+        (n) => n / 12
+      );
+      const arrDiffYears = sliderData
+        .filter((item) => {
+          const itemDate = toDate(item[xFieldName]);
+          return !isNaN(itemDate);
+        })
+        .map((item) => {
+          const today = new Date();
+          const itemDate = toDate(item[xFieldName]);
+          return getDifferenceInYears(itemDate, today);
+        });
+      if (!arrDiffYears.length) return arrMonths;
+      return arrMonths.filter((m) => {
+        return m >= arrDiffYears[0];
+      });
+    };
+    const arrAllNum = [
+      ...new Set([...getArrMonths(), ...createArrayInMonths(defaultMaxValue)]),
+    ].sort((a, b) => a - b);
+    const arrNum = numYears > 0 ? arrAllNum : getArrMonths();
+    return {
+      arrNum: arrNum,
+      min: arrNum.length ? arrNum[0] : 0,
+      max: arrNum.length ? arrNum[arrNum.length - 1] : 0,
+      unit: defaultMaxValue > 0 ? "year" : "month",
+    };
+  }
+  getDisplayDateRange() {
+    const selectedRange = parseFloat(this.state.selectedDateRange);
+    if (selectedRange <= 1) {
+      if (selectedRange === 1) {
+        return "Last 1 year";
+      }
+      const AVG_DAYS_IN_MONTH = 30;
+      let months = Math.floor(selectedRange * 12);
+      const remainingMonths = selectedRange * 12 - months;
+      const days = Math.round(remainingMonths * AVG_DAYS_IN_MONTH);
+      if (days >= AVG_DAYS_IN_MONTH) months = months + 1;
+      const monthsDisplay =
+        months === 12
+          ? "1 year"
+          : months
+          ? months > 1
+            ? `${months} months`
+            : `${months} month`
+          : "";
+      const daysDisplay =
+        months === 12
+          ? ""
+          : days === AVG_DAYS_IN_MONTH
+          ? !monthsDisplay
+            ? "~ 1 month"
+            : ""
+          : days && days < AVG_DAYS_IN_MONTH
+          ? days > 1
+            ? `~ ${days} days`
+            : `~ ${days} day`
+          : "";
+      if (!monthsDisplay && !daysDisplay) return "";
+
+      return `Last ${monthsDisplay} ${daysDisplay}`.trim();
+    }
+    const numMonths = Math.round(
+      (selectedRange - Math.floor(selectedRange)) * 12
+    );
+    let years = Math.floor(selectedRange);
+    if (numMonths >= 12) years = years + 1;
+    const monthsDisplay =
+      numMonths && numMonths < 12
+        ? "~ " + numMonths + "  " + (numMonths > 1 ? "months" : "month")
+        : "";
+    const yearsDisplay = years + " " + (years > 1 ? "years" : "year");
+    return `Last ${yearsDisplay} ${monthsDisplay}`.trim();
   }
 
   beforeCopy() {
@@ -510,7 +605,7 @@ export default class SurveyGraph extends Component {
     const scaleData = this.getScaleInfoForSlider(dateRangeData);
     const maxValue = scaleData.max;
     const minValue = scaleData.min;
-    const selectedValue = parseFloat(this.state.selectedDateRange);
+    const selectedValue = +this.state.selectedDateRange;
     let items = [
       {
         key: "Last 6 months",
@@ -555,11 +650,7 @@ export default class SurveyGraph extends Component {
     return (
       <div className="select print-hidden" ref={this.dateRangeSelectorRef}>
         <select
-          value={
-            selectedValue <= maxValue
-              ? selectedValue
-              : ""
-          }
+          value={selectedValue <= maxValue ? selectedValue : ""}
           onChange={this.handleDateRangeChange}
           onBlur={this.handleDateRangeChange}
         >
@@ -574,97 +665,6 @@ export default class SurveyGraph extends Component {
         </select>
       </div>
     );
-  }
-
-  getScaleInfoForSlider(dataSource) {
-    const sliderData = dataSource ? dataSource : [];
-    const numYears = this.getNumYearsFromData(sliderData);
-    const defaultMaxValue = numYears && numYears > 0 ? numYears : 0;
-    const createArray = (N) => {
-      return [...Array(N).keys()].map((i) => i + 1);
-    };
-    const arrYears = createArray(Math.ceil(defaultMaxValue));
-    const createArrayInMonths = () => {
-      if (!arrYears || !arrYears.length) return [];
-      let arrNum = [];
-      for (
-        let i = arrYears[0] * 12;
-        i <= arrYears[arrYears.length - 1] * 12;
-        i++
-      ) {
-        if (i % 12 === 0) arrNum.push(i / 12);
-        else {
-          arrNum.push(Math.floor(i / 12) + (i / 12 - Math.floor(i / 12)));
-        }
-      }
-      return arrNum;
-    };
-    const getArrMonths = () => {
-      const arrMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
-        (n) => n / 12
-      );
-      const arrDiffYears = sliderData
-        .filter((item) => {
-          const itemDate = new Date(item[xFieldName]);
-          return !isNaN(itemDate);
-        })
-        .map((item) => {
-          const today = new Date();
-          const itemDate = new Date(item[xFieldName]);
-          return getDifferenceInYears(itemDate, today);
-        });
-      if (!arrDiffYears.length) return arrMonths;
-      return arrMonths.filter((m) => {
-        return m >= arrDiffYears[0];
-      });
-    };
-    const arrAllNum = [
-      ...new Set([...getArrMonths(), ...createArrayInMonths(defaultMaxValue)]),
-    ].sort((a, b) => a - b);
-    const arrNum = numYears > 0 ? arrAllNum : getArrMonths();
-    return {
-      arrNum: arrNum,
-      min: arrNum.length ? arrNum[0] : 0,
-      max: arrNum.length ? arrNum[arrNum.length - 1] : 0,
-      unit: defaultMaxValue > 0 ? "year" : "month",
-    };
-  }
-  getDisplayDateRange() {
-    const selectedRange = parseFloat(this.state.selectedDateRange);
-    if (selectedRange <= 1) {
-      if (selectedRange === 1) {
-        return "Last 1 year";
-      }
-      const AVG_DAYS_IN_MONTH = 30;
-      let months = Math.floor(selectedRange * 12);
-      const remainingMonths = selectedRange * 12 - months;
-      const days = Math.round(remainingMonths * AVG_DAYS_IN_MONTH);
-      if (days >= AVG_DAYS_IN_MONTH) months = months + 1;
-      const monthsDisplay = months
-        ? months > 1
-          ? `${months} months`
-          : `${months} month`
-        : `~${AVG_DAYS_IN_MONTH} days`;
-      const daysDisplay =
-        days && days < AVG_DAYS_IN_MONTH
-          ? days > 1
-            ? `~ ${days} days`
-            : `~ ${days} day`
-          : "";
-
-      return `Last ${monthsDisplay} ${daysDisplay}`.trim();
-    }
-    const numMonths = Math.round(
-      (selectedRange - Math.floor(selectedRange)) * 12
-    );
-    let years = Math.floor(selectedRange);
-    if (numMonths >= 12) years = years + 1;
-    const monthsDisplay =
-      numMonths && numMonths < 12
-        ? "~ " + numMonths + "  " + (numMonths > 1 ? "months" : "month")
-        : "";
-    const yearsDisplay = years + " " + (years > 1 ? "years" : "year");
-    return `Last ${yearsDisplay} ${monthsDisplay}`.trim();
   }
 
   renderSlider() {
@@ -767,8 +767,6 @@ export default class SurveyGraph extends Component {
       !this.state.originalGraphData || !this.state.originalGraphData.length;
 
     const noStateEntry = !this.state.graphData || !this.state.graphData.length;
-
-    console.log("state entry? ", noStateEntry);
 
     const { data, maxDate, baseLineDate, monthsDiff } = this.getDataForGraph(
       this.state.graphData

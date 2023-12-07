@@ -406,9 +406,10 @@ export function getDifferenceInYears(fromDate, toDate) {
   if (!fromDate || !(fromDate instanceof Date)) return 0;
   if (!toDate || !(toDate instanceof Date)) return 0;
   if (isNaN(fromDate)) return 0;
+  if (isNaN(toDate)) return 0;
   let diff = (toDate.getTime() - fromDate.getTime()) / 1000;
   diff /= 60 * 60 * 24;
-  const diffYears = diff / 365.25;
+  const diffYears = Math.abs(diff / 365.25);
   // console.log("difference in years ", diffYears);
   return diffYears;
 }
@@ -427,4 +428,9 @@ export function getQuestionnaireDescription(fhirQuestionnaire) {
       ? writer.render(parsedObj)
       : "";
   return description;
+}
+
+export function toDate(stringDate) {
+  if (stringDate instanceof Date) return stringDate;
+  return new Date(stringDate);
 }
