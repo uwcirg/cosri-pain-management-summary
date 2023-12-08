@@ -372,7 +372,8 @@ export default class Landing extends Component {
   }
 
   initializeTocBot() {
-    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 156: 100;
+   // const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 156: 100;
+   const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 156: 100;
     tocbot.init({
       tocSelector: ".active .summary__nav", // where to render the table of contents
       contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents

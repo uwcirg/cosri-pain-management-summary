@@ -117,7 +117,11 @@ export default class ScoringSummary extends Component {
     event.preventDefault();
     const targetElement = document.querySelector(id);
     if (!targetElement) return;
-    targetElement.scrollIntoView();
+    targetElement.scrollIntoView({
+      block: "center",
+      inline: "nearest",
+      behavior: "smooth"
+    });
   }
   renderTableHeaders() {
     return (

@@ -49,10 +49,6 @@ export default class SurveyGraph extends Component {
         ? [...new Set(initData.map((item) => item.qid))]
         : [],
     };
-    this.graphContainerRef = React.createRef();
-    this.utilButtonsContainerRef = React.createRef();
-    this.scaleLabelRefs = [];
-    this.switchCheckboxRefs = [];
     this.copyImageOptions = {
       filter: (node) => {
         const exclusionClasses = ["exclude-from-copy"];
@@ -65,6 +61,13 @@ export default class SurveyGraph extends Component {
       beforeDownload: () => this.beforeCopy(),
       afterDownload: () => this.afterCopy(),
     };
+    this.utilButtonStyle = {
+      fontSize: "0.9rem",
+      color: "#777",
+      minWidth: "48px",
+      backgroundColor: "transparent",
+    };
+
     // This binding is necessary to make `this` work in the callback
     this.addQuestionnaireToSurveyGraph =
       this.addQuestionnaireToSurveyGraph.bind(this);
@@ -74,15 +77,16 @@ export default class SurveyGraph extends Component {
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
     this.handleSwitchChange = this.handleSwitchChange.bind(this);
+
+    // refs
+    this.graphContainerRef = React.createRef();
+    this.utilButtonsContainerRef = React.createRef();
+    this.sliderContainerRef = React.createRef();
+    this.scaleLabelRefs = [];
+    this.switchCheckboxRefs = [];
     this.graphRef = React.createRef();
     this.printImageRef = React.createRef();
     this.dateRangeSelectorRef = React.createRef();
-    this.utilButtonStyle = {
-      fontSize: "0.9rem",
-      color: "#777",
-      minWidth: "48px",
-      backgroundColor: "transparent",
-    };
   }
   componentDidMount() {
     this.createScaleRefs();
@@ -203,9 +207,7 @@ export default class SurveyGraph extends Component {
     )
       return [];
     let srcData = this.state.originalGraphData.filter(
-      (item) =>
-        !isNaN(toDate(item[xFieldName])) &&
-        isNumber(item[yFieldName])
+      (item) => !isNaN(toDate(item[xFieldName])) && isNumber(item[yFieldName])
     );
     return [...new Set(srcData.map((item) => item.qid))];
   }
@@ -280,7 +282,7 @@ export default class SurveyGraph extends Component {
       qids: [...new Set(updatedData.map((item) => item.qid))],
     });
   }
-  
+
   hasOnlyOneGraphLine() {
     const { data } = this.getDataForGraph(this.state.graphData);
     return (
@@ -534,7 +536,8 @@ export default class SurveyGraph extends Component {
         onClick={(e) => {
           let options = this.copyImageOptions;
           const containerHeight =
-            this.graphContainerRef.current.offsetHeight - 64; // minus the height of the slider
+            this.graphContainerRef.current.offsetHeight -
+            (this.sliderContainerRef.current ? 64 : 0); // minus the height of the slider
           options.height = containerHeight;
           downloadDomImage(
             e,
@@ -682,7 +685,7 @@ export default class SurveyGraph extends Component {
     const max = arrNum[arrNum.length - 1];
     if (arrNum.length <= 1) return null;
     return (
-      <div className="slider-parent-container">
+      <div className="slider-parent-container" ref={this.sliderContainerRef}>
         {!inYears && (
           <div className="top-info-text">{this.getDisplayDateRange()}</div>
         )}

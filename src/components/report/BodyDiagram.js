@@ -7,6 +7,7 @@ import {
   downloadDomImage,
   // copySVGImage,
   copyDomToClipboard,
+  toDate,
 } from "../../helpers/utility";
 import {
   allowCopyImage,
@@ -23,12 +24,14 @@ export default class BodyDiagram extends Component {
       selectedIndex: 0,
       dates: this.getDates(),
     };
+    // refs
     this.containerRef = React.createRef();
     this.BodyDiagramRef = React.createRef();
     this.utilButtonsContainerRef = React.createRef();
     this.printImageRef = React.createRef();
     this.datesSelectorRef = React.createRef();
     this.toolbarRef = React.createRef();
+
     this.showUtilButtons = this.showUtilButtons.bind(this);
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
@@ -36,6 +39,7 @@ export default class BodyDiagram extends Component {
     this.handlePrevChange = this.handlePrevChange.bind(this);
     this.handleSetFirst = this.handleSetFirst.bind(this);
     this.handleSetLast = this.handleSetLast.bind(this);
+
     this.utilButtonStyle = {
       fontSize: "0.9rem",
       color: "#777",
@@ -54,17 +58,17 @@ export default class BodyDiagram extends Component {
   }
 
   componentDidMount() {
+    this.initLoadEvent();
+  }
+  initLoadEvent() {
     const svgElement = this.BodyDiagramRef.current;
-    if (svgElement) {
-      svgElement.addEventListener("load", () => {
-        this.fillInAnsweredParts();
-        renderImageFromSVG(
-          this.printImageRef.current,
-          this.getSourceDocument()
-        );
-        this.drawAllParts();
-      });
-    }
+    if (!svgElement) return;
+    svgElement.addEventListener("load", () => {
+      this.fillInAnsweredParts();
+      // render image for printing
+      renderImageFromSVG(this.printImageRef.current, this.getSourceDocument());
+      this.drawAllParts();
+    });
   }
   getToolbarHeight() {
     if (!this.toolbarRef.current) return 0;
@@ -189,8 +193,8 @@ export default class BodyDiagram extends Component {
   getSummaryData() {
     if (!this.props.summary || !this.props.summary.length) return null;
     return this.props.summary.sort((a, b) => {
-      const date1 = new Date(a);
-      const date2 = new Date(b);
+      const date1 = toDate(a.date);
+      const date2 = toDate(b.date);
       return date2 - date1;
     });
   }
@@ -333,26 +337,21 @@ export default class BodyDiagram extends Component {
     const WORST_PAIN_COLOR = "red";
     const OTHER_LOCATION_COLOR = "yellow";
     const PREV_LOCATION_COLOR = "#e9e7e7";
+    const legendContainerStyle = {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      gap: 6,
+      fontSize: "0.8rem",
+      position: "relative",
+      top: "4px",
+      left: "4px",
+    };
     return (
       <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          gap: 6,
-          fontSize: "0.8rem",
-          position: "relative",
-          top: "4px",
-          left: "4px",
-        }}
+        style={legendContainerStyle}
         className="print-hidden legend-wrapper part-of-bd"
       >
-        {/* <img
-          src={
-            process.env.PUBLIC_URL + "/assets/images/body_diagram_legend.png"
-          }
-          alt="body diagram legend"
-        /> */}
         <div className="flex">
           <div
             style={{
@@ -443,8 +442,7 @@ export default class BodyDiagram extends Component {
     const styles = {
       position: "absolute",
       top: "0",
-     // transform: "translate(-50%, 81px)",
-     transform: `translate(-50%, ${this.getToolbarHeight()+24}px)`
+      transform: `translate(-50%, ${this.getToolbarHeight() + 24}px)`,
     };
     cloneSvgElement.setAttribute("id", "temp_bd");
     cloneSvgElement.classList.add("part-of-bd");
@@ -455,14 +453,12 @@ export default class BodyDiagram extends Component {
       this.datesSelectorRef.current.classList.add("read-only");
   }
   afterCopy() {
-    //setTimeout(() => {
     if (document.querySelector("#temp_bd")) {
       this.containerRef.current.removeChild(document.querySelector("#temp_bd"));
     }
     this.BodyDiagramRef.current.style.visibility = "visible";
     if (this.datesSelectorRef.current)
       this.datesSelectorRef.current.classList.remove("read-only");
-    //}, 500);
   }
   renderCopyButton() {
     if (!allowCopyImage())
@@ -526,9 +522,7 @@ export default class BodyDiagram extends Component {
         style={{ position: "absolute", right: 0, top: "-24px" }}
       >
         <div
-          className="flex flex-gap-1"
-          //   style={{ visibility: "hidden", justifyContent: "flex-start" }}
-          style={{ justifyContent: "flex-start" }}
+          className="flex flex-gap-1 flex-start"
           ref={this.utilButtonsContainerRef}
         >
           {this.renderCopyButton()}
@@ -553,7 +547,6 @@ export default class BodyDiagram extends Component {
     return (
       <div
         className="flex flex-gap-1 icons-container exclude-from-copy"
-        style={{ gap: "12px" }}
       >
         <FontAwesomeIcon
           icon="angle-double-left"

@@ -19,10 +19,11 @@ export default class ResponsesSummary extends Component {
   }
   setWrapperHeight() {
     clearTimeout(resizeTimeoutId);
+    const GUTTER_TOP_HEIGHT = 200; // include section title and summary at top
     setTimeout(() => {
       if (this.tableWrapperRef.current) {
         this.tableWrapperRef.current.style.maxHeight =
-          window.innerHeight - 200 + "px";
+          window.innerHeight - GUTTER_TOP_HEIGHT + "px";
       }
     }, 250);
   }
