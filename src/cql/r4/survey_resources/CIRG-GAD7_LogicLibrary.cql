@@ -14,6 +14,7 @@ codesystem "LOINC": 'http://loinc.org'
 
 define QuestionnaireID: 'CIRG-GAD7'
 define QuestionnaireName: 'gad7'
+define QuestionnaireShortName: 'GAD-7'
 define question1LinkId: '/69725-0'
 define question2LinkId: '/68509-9'
 define question3LinkId: '/69733-4'

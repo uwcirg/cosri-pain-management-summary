@@ -14,6 +14,7 @@ codesystem "LOINC": 'http://loinc.org'
 
 define QuestionnaireID: 'CIRG-PHQ-4'
 define QuestionnaireName: 'phq-4'
+define QuestionnaireShortName: 'PHQ-4'
 define question1LinkId: '/69725-0'
 define question2LinkId: '/68509-9'
 define question3LinkId: '/44250-9'

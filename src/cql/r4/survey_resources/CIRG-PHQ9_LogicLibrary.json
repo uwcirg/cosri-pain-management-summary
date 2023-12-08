@@ -65,6 +65,15 @@
                "type" : "Literal"
             }
          }, {
+            "name" : "QuestionnaireShortName",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "PHQ-9",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "question1LinkId",
             "context" : "Patient",
             "accessLevel" : "Public",

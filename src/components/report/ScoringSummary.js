@@ -6,7 +6,7 @@ import FailUpArrowIcon from "../../icons/FailUpArrowIcon";
 import FailDownArrowIcon from "../../icons/FailDownArrowIcon";
 import PassDownArrowIcon from "../../icons/PassDownArrowIcon";
 import LineIcon from "../../icons/LineIcon";
-import { copyDomToClipboard, isNumber } from "../../helpers/utility";
+import { copyDomToClipboard, isNumber, toDate } from "../../helpers/utility";
 
 export default class ScoringSummary extends Component {
   constructor() {
@@ -17,7 +17,7 @@ export default class ScoringSummary extends Component {
   sortData(data) {
     if (!data || !Array.isArray(data) || !data.length) return null;
     return data.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      (a, b) => toDate(b.date).getTime() - toDate(a.date).getTime()
     );
   }
   getDataByIndex(data, index) {
@@ -143,7 +143,12 @@ export default class ScoringSummary extends Component {
   }
   renderQuestionnaireLinkCell(questionnaireObj, showAnchorLinks) {
     if (!questionnaireObj) return <td>--</td>;
-    const questionnaireName = questionnaireObj.QuestionnaireName
+    const questionnaireShortName = questionnaireObj.QuestionnaireShortName
+      ? questionnaireObj.QuestionnaireShortName
+      : "";
+    const questionnaireName = questionnaireShortName
+      ? questionnaireShortName
+      : questionnaireObj.QuestionnaireName
       ? questionnaireObj.QuestionnaireName
       : questionnaireObj.QuestionnaireID;
     if (!questionnaireName) return <td>--</td>;
@@ -157,7 +162,7 @@ export default class ScoringSummary extends Component {
                 className="anchor"
                 href={`${anchorId}`}
                 onClick={(e) => this.handleGoToSection(e, anchorId)}
-                title={`Go to see more detail about ${questionnaireName}`}
+                title={`Go to see more for ${questionnaireName.toUpperCase()}`}
               >
                 {questionnaireName.toUpperCase()}
               </a>
@@ -223,7 +228,6 @@ export default class ScoringSummary extends Component {
             {!noSummaryData && this.renderDataRows(summary, showAnchorLinks)}
           </tbody>
         </table>
-
       </React.Fragment>
     );
   }
