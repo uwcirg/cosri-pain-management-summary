@@ -41,7 +41,7 @@ export const COLORS = [
   "#455a64",
   "#c0ca33",
   "#B633CA",
-  "#33AACA"
+  "#33AACA",
 ];
 
 export function getLineAttributes(id, params, colorIndex) {
@@ -58,8 +58,7 @@ export function getLineAttributes(id, params, colorIndex) {
       strokeWidth: lineParams.dataStrokeWidth ? lineParams.dataStrokeWidth : 4,
       strokeFill: color,
       strokeColor: color,
-      radiusWidth: lineParams.radiusWidth ? lineParams.radiusWidth: 2.5,
+      radiusWidth: lineParams.radiusWidth ? lineParams.radiusWidth : 2.5,
     },
   };
 }
-

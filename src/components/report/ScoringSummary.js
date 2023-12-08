@@ -146,13 +146,12 @@ export default class ScoringSummary extends Component {
     const questionnaireShortName = questionnaireObj.QuestionnaireShortName
       ? questionnaireObj.QuestionnaireShortName
       : "";
-    const questionnaireName = questionnaireShortName
-      ? questionnaireShortName
-      : questionnaireObj.QuestionnaireName
+    const questionnaireName = (questionnaireObj.QuestionnaireName
       ? questionnaireObj.QuestionnaireName
-      : questionnaireObj.QuestionnaireID;
+      : questionnaireObj.QuestionnaireID);
     if (!questionnaireName) return <td>--</td>;
     const anchorId = `#${questionnaireName}_title`;
+    const displayText = questionnaireShortName ? questionnaireShortName : questionnaireName;
     return (
       <td className="text-left">
         {showAnchorLinks && (
@@ -164,12 +163,12 @@ export default class ScoringSummary extends Component {
                 onClick={(e) => this.handleGoToSection(e, anchorId)}
                 title={`Go to see more for ${questionnaireName.toUpperCase()}`}
               >
-                {questionnaireName.toUpperCase()}
+                {displayText.toUpperCase()}
               </a>
             </b>
           </span>
         )}
-        {!showAnchorLinks && <span>{questionnaireName.toUpperCase()}</span>}
+        {!showAnchorLinks && <span>{displayText.toUpperCase()}</span>}
       </td>
     );
   }
