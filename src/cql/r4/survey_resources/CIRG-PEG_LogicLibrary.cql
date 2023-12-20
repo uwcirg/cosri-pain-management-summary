@@ -58,9 +58,9 @@ define ResponsesSummary:
       else meanScoreResponse, // mean score
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
     scoreQuestionResponse: First(LogicHelper.geDecimalValueByResponseItem(I.item, ScoringQuestionId)),
-    Question1Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question1LinkId, I.item)),
-    Question2Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item)),
-    Question3Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item)),
+    Question1Answer: First(LogicHelper.GetResponseAnswerValueByLinkId(Question1LinkId, I.item)),
+    Question2Answer: First(LogicHelper.GetResponseAnswerValueByLinkId(Question2LinkId, I.item)),
+    Question3Answer: First(LogicHelper.GetResponseAnswerValueByLinkId(Question3LinkId, I.item)),
     Question1Score: Coalesce(ToInteger(Question1Answer), 0),
     Question2Score: Coalesce(ToInteger(Question2Answer), 0),
     Question3Score: Coalesce(ToInteger(Question3Answer), 0),

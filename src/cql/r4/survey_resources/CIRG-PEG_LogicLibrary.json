@@ -322,7 +322,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "GetResponseAnswerByLinkId",
+                        "name" : "GetResponseAnswerValueByLinkId",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -340,7 +340,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "GetResponseAnswerByLinkId",
+                        "name" : "GetResponseAnswerValueByLinkId",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -358,7 +358,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "GetResponseAnswerByLinkId",
+                        "name" : "GetResponseAnswerValueByLinkId",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
