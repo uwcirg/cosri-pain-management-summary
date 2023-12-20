@@ -95,12 +95,12 @@ define function getAnswerOptionCodeValue(currentQuestionnaire FHIR.Questionnaire
   else
     null
 
-/* retrieve answer value from the QuestionnaireResponse that matches the provided id, aka linkId
+/* retrieve answer value from the QuestionnaireResponse that matches the provided id, aka linkId, i.e. QuestionnaireResponse.item.answer.value[x]
  * @param linkId, of type String
  * @param responses, list of questionnaireResponse Item, of type List<FHIR.QuestionnaireResponse.Item>
- * @return {List<String|Integer|Float>}
+ * @return {List<String|Integer|Decimal>}
  */
-define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
+define function GetResponseAnswerValueByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
   (responses r where PositionOf(r.linkId.value, linkId) != -1 or PositionOf(linkId, r.linkId.value) != -1) I
   return case
       //answer in FHIR coding format 
@@ -109,7 +109,7 @@ define function GetResponseAnswerByLinkId(linkId String, responses List<FHIR.Que
       else null
     end
 
-// retrieve answer element from a questionnaire response item matched by id, aka linkId
+// retrieve a list of answer element from a questionnaire response item matched by id, aka linkId, i.e. QuestionnaireResponse.item.answer
 /* @param linkId, of type String
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @return {List<QuestionnaireResponse.item.answer>}
@@ -119,12 +119,12 @@ define function GetArrayAnswerByLinkId(linkId String, responses List<FHIR.Questi
   return I.answer
 
 /*
- * retrieve answer value, i.e. QuestionnaireResponse.Item.value in a QuestionnaireResponse matched by id, aka linkId
+ * retrieve answer choice element, i.e. QuestionnaireResponse.Item.value in a QuestionnaireResponse matched by id, aka linkId
  * @param linkId, of type String
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @return {boolean|decimal|integer|date|dateTime|time|string|uri|Attachment|Coding|SimpleQuantity|Reference(Any)}
  */
-define function GetResponseValueByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
+define function GetResponseAnswerChoiceByLinkId(linkId String, responses List<FHIR.QuestionnaireResponse.Item>):
   (responses r where PositionOf(r.linkId.value, linkId) != -1 or PositionOf(linkId, r.linkId.value) != -1) I
   return I.answer[0].value
 
@@ -137,7 +137,7 @@ define function getAnswerOptionExtensionValue(extList List<FHIR.Extension>):
   (extList e where e.url = 'http://hl7.org/fhir/StructureDefinition/ordinalValue')[0].value.value as Integer
 
 /*
- * retrieve the numeric value for the answer option based on value code
+ * retrieve the numeric value for the answer extension option based on value Coding, i.e. Questionnaire.item.answerOption.value.code
  * @param questionnaire as FHIR.Questionnaire against which code is queried
  * @param code as String
  * @param index as Integer, this is extension index
@@ -155,7 +155,8 @@ define function getAnswerValueByCode(questionnaire FHIR.Questionnaire, code Stri
 
 /*
  * retrieve the numeric value for an answer option item matched by id aka linkId
- * this will first query an answer items in a FHIR Questionnaire based on ValueCoding for the corresponding numeric value 
+ * this will first query matched answer item in a FHIR Questionnaire for the numeric value of the extension option based on value Coding
+ * if Coding not present, it will return the answer's value, QuestionnaireResponse.item.answer.value[x]
  * @param questionnaire, of type FHIR.Questionnaire
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @param linkId, of type String
@@ -173,7 +174,7 @@ define function getNumericValueByResponseItem(questionnaire FHIR.Questionnaire, 
 
 
 /*
- * retrieve the decimal answer value in a QuestionnaireResponse Item matched by id aka linkId
+ * retrieve the decimal answer value in a QuestionnaireResponse Item matched by id aka linkId, i.e. QuestionnaireResponse.item[linkId = linkId].answer.value[x]
  * @param questionnaire, of type FHIR.Questionnaire
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @param linkId, of type String, to be matched
@@ -222,8 +223,8 @@ define function FormattedResponsesByQuestionnaire(
     )
   ) Q
     let
-      answerText: GetResponseAnswerByLinkId(Q.linkId.value, responses),
-      answerValue: GetResponseValueByLinkId(Q.linkId.value, responses)
+      answerText: GetResponseAnswerValueByLinkId(Q.linkId.value, responses),
+      answerValue: GetResponseAnswerChoiceByLinkId(Q.linkId.value, responses)
     return {
       linkId: if Q.linkId.value is not null then Q.linkId.value else 'n/a',
       answer: if answerText is not null then First(answerText) else null,

@@ -900,7 +900,7 @@
                }
             } ]
          }, {
-            "name" : "GetResponseAnswerByLinkId",
+            "name" : "GetResponseAnswerValueByLinkId",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -1220,7 +1220,7 @@
                }
             } ]
          }, {
-            "name" : "GetResponseValueByLinkId",
+            "name" : "GetResponseAnswerChoiceByLinkId",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -2504,7 +2504,7 @@
                "let" : [ {
                   "identifier" : "answerText",
                   "expression" : {
-                     "name" : "GetResponseAnswerByLinkId",
+                     "name" : "GetResponseAnswerValueByLinkId",
                      "type" : "FunctionRef",
                      "operand" : [ {
                         "path" : "value",
@@ -2522,7 +2522,7 @@
                }, {
                   "identifier" : "answerValue",
                   "expression" : {
-                     "name" : "GetResponseValueByLinkId",
+                     "name" : "GetResponseAnswerChoiceByLinkId",
                      "type" : "FunctionRef",
                      "operand" : [ {
                         "path" : "value",
