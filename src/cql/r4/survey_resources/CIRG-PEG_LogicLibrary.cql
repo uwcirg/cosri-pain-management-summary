@@ -52,12 +52,12 @@ define ResponsesCompleted:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    meanScoreResponse: First(LogicHelper.GetResponseAnswerByLinkId(MeanScoreQuestionId, I.item)),
+    meanScoreResponse: First(LogicHelper.geDecimalValueByResponseItem(I.item, MeanScoreQuestionId)),
     reportedMeanScore: 
       if meanScoreResponse is null then null
-      else ToInteger(meanScoreResponse), // mean score
+      else meanScoreResponse, // mean score
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.geDecimalValueByResponseItem(I.item, ScoringQuestionId)),
     Question1Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question1LinkId, I.item)),
     Question2Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question2LinkId, I.item)),
     Question3Answer: First(LogicHelper.GetResponseAnswerByLinkId(Question3LinkId, I.item)),

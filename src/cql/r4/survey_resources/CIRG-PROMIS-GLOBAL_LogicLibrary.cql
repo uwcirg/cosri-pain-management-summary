@@ -57,7 +57,7 @@ define ReportOnce:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.geDecimalValueByResponseItem(I.item, ScoringQuestionId)),
     itemTotalScore:
           case
             when scoreQuestionResponse is not null then scoreQuestionResponse

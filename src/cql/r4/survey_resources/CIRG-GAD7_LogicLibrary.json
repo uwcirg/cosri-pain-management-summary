@@ -270,7 +270,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -294,7 +294,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -318,7 +318,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -342,7 +342,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -366,7 +366,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -390,7 +390,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -414,7 +414,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -438,7 +438,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -732,6 +732,19 @@
                   "expression" : {
                      "type" : "Case",
                      "caseItem" : [ {
+                        "when" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "name" : "score",
+                              "type" : "QueryLetRef"
+                           }
+                        },
+                        "then" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "",
+                           "type" : "Literal"
+                        }
+                     }, {
                         "when" : {
                            "type" : "Greater",
                            "operand" : [ {

@@ -55,14 +55,14 @@ define QuestionnaireResponses:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    q1Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question1LinkId, answerExtensionIndex)),
-    q2Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question2LinkId, answerExtensionIndex)),
-    q3Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question3LinkId, answerExtensionIndex)),
-    q4Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question4LinkId, answerExtensionIndex)),
-    q5Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question5LinkId, answerExtensionIndex)),
-    q6Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
-    q7Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
+    q1Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question1LinkId, answerExtensionIndex)),
+    q2Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question2LinkId, answerExtensionIndex)),
+    q3Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question3LinkId, answerExtensionIndex)),
+    q4Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question4LinkId, answerExtensionIndex)),
+    q5Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question5LinkId, answerExtensionIndex)),
+    q6Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
+    q7Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
+    scoreQuestionResponse: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
     itemTotalScore: 
       case
         when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -84,6 +84,7 @@ define ResponsesSummary:
       end,
     score: itemTotalScore,
     scoreSeverity: case
+        when score is null then ''
         when score > 14 then 'high'
         when score between 10 and 14 then 'moderate'
         when score between 5 and 9 then 'mild'

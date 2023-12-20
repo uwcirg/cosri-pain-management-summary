@@ -154,20 +154,37 @@ define function getAnswerValueByCode(questionnaire FHIR.Questionnaire, code Stri
   return a.extension[extensionIndex].value.value as Integer
 
 /*
- * retrieve the numeric value for a scoring answer option item matched by id aka linkId
+ * retrieve the numeric value for an answer option item matched by id aka linkId
+ * this will first query an answer items in a FHIR Questionnaire based on ValueCoding for the corresponding numeric value 
  * @param questionnaire, of type FHIR.Questionnaire
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @param linkId, of type String
  * @return {System.Integer}
  */
-define function getScoringByResponseItem(questionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>, linkId String, extensionIndex Integer):
+define function getNumericValueByResponseItem(questionnaire FHIR.Questionnaire, responses List<FHIR.QuestionnaireResponse.Item>, linkId String, extensionIndex Integer):
   (singleton from ((responses) o where PositionOf(linkId, o.linkId.value) != -1 or PositionOf(o.linkId.value, linkId) != -1)) I
   return 
     if I is null then null
     else
       // if answering is Coding, retrieve the corresponding numeric value by querying the questionnaire
       if I.answer[0].value.code is not null and questionnaire is not null then getAnswerValueByCode(questionnaire, I.answer[0].value.code.value, extensionIndex) 
-      else if I.answer[0].value.value is not null then I.answer[0].value.value 
+      else if I.answer[0].value.value is not null then I.answer[0].value.value as Integer
+      else null
+
+
+/*
+ * retrieve the decimal answer value in a QuestionnaireResponse Item matched by id aka linkId
+ * @param questionnaire, of type FHIR.Questionnaire
+ * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
+ * @param linkId, of type String, to be matched
+ * @return {decimal}
+ */
+define function geDecimalValueByResponseItem(responses List<FHIR.QuestionnaireResponse.Item>, linkId String):
+  (singleton from ((responses) o where PositionOf(linkId, o.linkId.value) != -1 or PositionOf(o.linkId.value, linkId) != -1)) I
+  return 
+    if I is null then null
+    else
+      if I.answer[0].value.value is not null then I.answer[0].value.value as Decimal
       else null
 
 /* 

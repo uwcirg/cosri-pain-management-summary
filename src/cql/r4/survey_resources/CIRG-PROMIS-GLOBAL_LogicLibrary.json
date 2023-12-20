@@ -297,23 +297,20 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
-                        "libraryName" : "LogicHelper",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "Questionnaire",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "path" : "item",
-                           "scope" : "I",
-                           "type" : "Property"
-                        }, {
-                           "name" : "ScoringQuestionId",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "name" : "extensionAnswerIndex",
-                           "type" : "ExpressionRef"
-                        } ]
+                        "type" : "ToList",
+                        "operand" : {
+                           "name" : "geDecimalValueByResponseItem",
+                           "libraryName" : "LogicHelper",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "item",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }, {
+                              "name" : "ScoringQuestionId",
+                              "type" : "ExpressionRef"
+                           } ]
+                        }
                      }
                   }
                }, {
@@ -337,7 +334,7 @@
                         }
                      } ],
                      "else" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
                         "type" : "As",
                         "operand" : {
                            "type" : "Null"

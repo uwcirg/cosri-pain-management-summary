@@ -245,17 +245,20 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "GetResponseAnswerByLinkId",
-                        "libraryName" : "LogicHelper",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "MeanScoreQuestionId",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "path" : "item",
-                           "scope" : "I",
-                           "type" : "Property"
-                        } ]
+                        "type" : "ToList",
+                        "operand" : {
+                           "name" : "geDecimalValueByResponseItem",
+                           "libraryName" : "LogicHelper",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "item",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }, {
+                              "name" : "MeanScoreQuestionId",
+                              "type" : "ExpressionRef"
+                           } ]
+                        }
                      }
                   }
                }, {
@@ -270,18 +273,15 @@
                         }
                      },
                      "then" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
                         "type" : "As",
                         "operand" : {
                            "type" : "Null"
                         }
                      },
                      "else" : {
-                        "type" : "ToInteger",
-                        "operand" : {
-                           "name" : "meanScoreResponse",
-                           "type" : "QueryLetRef"
-                        }
+                        "name" : "meanScoreResponse",
+                        "type" : "QueryLetRef"
                      }
                   }
                }, {
@@ -301,23 +301,20 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
-                        "libraryName" : "LogicHelper",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "Questionnaire",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "path" : "item",
-                           "scope" : "I",
-                           "type" : "Property"
-                        }, {
-                           "name" : "ScoringQuestionId",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "name" : "extensionAnswerIndex",
-                           "type" : "ExpressionRef"
-                        } ]
+                        "type" : "ToList",
+                        "operand" : {
+                           "name" : "geDecimalValueByResponseItem",
+                           "libraryName" : "LogicHelper",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "item",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }, {
+                              "name" : "ScoringQuestionId",
+                              "type" : "ExpressionRef"
+                           } ]
+                        }
                      }
                   }
                }, {
@@ -450,7 +447,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -465,7 +462,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -480,7 +477,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -488,20 +485,23 @@
                         }
                      } ],
                      "else" : {
-                        "type" : "Add",
-                        "operand" : [ {
+                        "type" : "ToDecimal",
+                        "operand" : {
                            "type" : "Add",
                            "operand" : [ {
-                              "name" : "Question1Score",
-                              "type" : "QueryLetRef"
+                              "type" : "Add",
+                              "operand" : [ {
+                                 "name" : "Question1Score",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "name" : "Question2Score",
+                                 "type" : "QueryLetRef"
+                              } ]
                            }, {
-                              "name" : "Question2Score",
+                              "name" : "Question3Score",
                               "type" : "QueryLetRef"
                            } ]
-                        }, {
-                           "name" : "Question3Score",
-                           "type" : "QueryLetRef"
-                        } ]
+                        }
                      }
                   }
                }, {
@@ -525,18 +525,18 @@
                               "name" : "reportedMeanScore",
                               "type" : "QueryLetRef"
                            }, {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                              "value" : "0",
-                              "type" : "Literal"
+                              "type" : "ToDecimal",
+                              "operand" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              }
                            } ]
                         } ]
                      },
                      "then" : {
-                        "type" : "ToDecimal",
-                        "operand" : {
-                           "name" : "reportedMeanScore",
-                           "type" : "QueryLetRef"
-                        }
+                        "name" : "reportedMeanScore",
+                        "type" : "QueryLetRef"
                      },
                      "else" : {
                         "type" : "If",
@@ -555,11 +555,8 @@
                            "operand" : {
                               "type" : "Divide",
                               "operand" : [ {
-                                 "type" : "ToDecimal",
-                                 "operand" : {
-                                    "name" : "sumScore",
-                                    "type" : "QueryLetRef"
-                                 }
+                                 "name" : "sumScore",
+                                 "type" : "QueryLetRef"
                               }, {
                                  "type" : "ToDecimal",
                                  "operand" : {

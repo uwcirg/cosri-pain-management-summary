@@ -243,7 +243,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -267,7 +267,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -291,7 +291,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -315,7 +315,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -339,7 +339,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getScoringByResponseItem",
+                        "name" : "getNumericValueByResponseItem",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {

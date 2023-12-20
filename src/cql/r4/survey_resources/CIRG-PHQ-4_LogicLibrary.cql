@@ -50,11 +50,11 @@ define QuestionnaireResponses:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    Question1Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
-    Question2Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
-    Question3Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
-    Question4Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
+    Question1Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
+    Question2Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
+    Question3Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
+    Question4Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.geDecimalValueByResponseItem(I.item, ScoringQuestionId)),
     itemTotalScore:
           case
             when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -74,6 +74,7 @@ define ResponsesSummary:
     depressionScore: Coalesce(Question3Score, 0) * 1 + Coalesce(Question4Score, 0) * 1,
     scoreSeverity:
         case
+          when score is null then null
           when score between 9 and 12 then 'high'
           when score between 6 and 8 then 'moderate'
           when score between 3 and 5 then 'mild'
@@ -92,8 +93,18 @@ define ResponsesSummary:
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
       scoreSeverity: scoreSeverity,
-      anxietyScore: Coalesce(Question1Score, 0) * 1 + Coalesce(Question2Score, 0) * 1,
-      depressionScore: Coalesce(Question3Score, 0) * 1 + Coalesce(Question4Score, 0) * 1,
+      anxietyScore: 
+        case
+          when Question1Score is null then null
+          when Question2Score is null then null
+          else Coalesce(Question1Score, 0) * 1 + Coalesce(Question2Score, 0) * 1
+        end,
+      depressionScore: 
+        case
+          when Question3Score is null then null
+          when Question4Score is null then null
+          else Coalesce(Question3Score, 0) * 1 + Coalesce(Question4Score, 0) * 1
+        end,
       scoreMeaning: case
         when anxietyScore >= 3 and depressionScore >=3 then 'anxiety and depression'
         when anxietyScore >= 3 then 'anxiety'

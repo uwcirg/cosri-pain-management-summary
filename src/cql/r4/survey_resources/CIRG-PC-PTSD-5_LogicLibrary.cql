@@ -52,12 +52,12 @@ define ReportOnce:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    Question1Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
-    Question2Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
-    Question3Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
-    Question4Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
-    Question5Score: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, question5LinkId, extensionAnswerIndex)),
-    scoreQuestionResponse: First(LogicHelper.getScoringByResponseItem(Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
+    Question1Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
+    Question2Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
+    Question3Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
+    Question4Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
+    Question5Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question5LinkId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, ScoringQuestionId, extensionAnswerIndex)),
     itemTotalScore:
           case
             when scoreQuestionResponse is not null then scoreQuestionResponse
