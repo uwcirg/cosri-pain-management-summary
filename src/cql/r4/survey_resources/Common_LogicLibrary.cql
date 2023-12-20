@@ -155,7 +155,24 @@ define function getAnswerValueByCode(questionnaire FHIR.Questionnaire, code Stri
 
 /*
  * retrieve the numeric value for an answer option item matched by id aka linkId
- * this will first query matched answer item in a FHIR Questionnaire for the numeric value of the extension option based on value Coding
+ * this will first query matched answer item in a FHIR Questionnaire for the numeric value of the extension option, i.e. Item.extension[index].value based on value Coding, Item.value.code
+ * example:
+ *  {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/ordinalValue",
+          "valueDecimal": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-optionPrefix",
+          "valueString": "1"
+        }
+      ],
+      "valueCoding": {
+        "code": "LA6569-3",
+        "display": "Several days"
+      }
+    }
  * if Coding not present, it will return the answer's value, QuestionnaireResponse.item.answer.value[x]
  * @param questionnaire, of type FHIR.Questionnaire
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
@@ -174,7 +191,7 @@ define function getNumericValueByResponseItem(questionnaire FHIR.Questionnaire, 
 
 
 /*
- * retrieve the decimal answer value in a QuestionnaireResponse Item matched by id aka linkId, i.e. QuestionnaireResponse.item[linkId = linkId].answer.value[x]
+ * ASSUME response is in number, retrieve the decimal answer value in a QuestionnaireResponse Item matched by id aka linkId, i.e. QuestionnaireResponse.item[linkId = linkId].answer.value[x]
  * @param questionnaire, of type FHIR.Questionnaire
  * @param responses, of type List<FHIR.QuestionnaireResponse.Item>
  * @param linkId, of type String, to be matched
