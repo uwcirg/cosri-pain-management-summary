@@ -52,18 +52,15 @@ define ResponsesCompleted:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    meanScoreResponse: First(LogicHelper.geDecimalValueByResponseItem(I.item, MeanScoreQuestionId)),
+    meanScoreResponse: First(LogicHelper.GetNumericValueByResponseItem(I.item, MeanScoreQuestionId)),
     reportedMeanScore: 
       if meanScoreResponse is null then null
       else meanScoreResponse, // mean score
     responsesOnly: LogicHelper.FormattedQuestionnaireResponses(I.item),
-    scoreQuestionResponse: First(LogicHelper.geDecimalValueByResponseItem(I.item, ScoringQuestionId)),
-    Question1Answer: First(LogicHelper.GetResponseAnswerValueByLinkId(Question1LinkId, I.item)),
-    Question2Answer: First(LogicHelper.GetResponseAnswerValueByLinkId(Question2LinkId, I.item)),
-    Question3Answer: First(LogicHelper.GetResponseAnswerValueByLinkId(Question3LinkId, I.item)),
-    Question1Score: Coalesce(ToInteger(Question1Answer), 0),
-    Question2Score: Coalesce(ToInteger(Question2Answer), 0),
-    Question3Score: Coalesce(ToInteger(Question3Answer), 0),
+    scoreQuestionResponse: First(LogicHelper.GetNumericValueByResponseItem(I.item, ScoringQuestionId)),
+    Question1Answer: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, Question1LinkId, extensionAnswerIndex)),
+    Question2Answer: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, Question2LinkId, extensionAnswerIndex)),
+    Question3Answer: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, Question3LinkId, extensionAnswerIndex)),
     sumScore: 
       case
         when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -72,7 +69,7 @@ define ResponsesSummary:
         when Question3Answer is null then null
         else
           // only get sum score of score from each question is available
-          Question1Score + Question2Score + Question3Score
+          Question1Answer + Question2Answer + Question3Answer
       end,
     meanScore: 
       if reportedMeanScore is not null and reportedMeanScore > 0 
@@ -88,14 +85,11 @@ define ResponsesSummary:
       responses: responsesOnly union {
         linkId: 'PEG_total_score',
         question: 'PEG score',
-        answer: ToString(sumScore)
+        answer: sumScore
       },
       Question1Answer: Question1Answer,
       Question2Answer: Question2Answer,
       Question3Answer: Question3Answer,
-      Question1Score: Question1Score,
-      Question2Score: Question2Score,
-      Question3Score: Question3Score,
       responses_completed: ResponsesCompleted,
       sum_score: sumScore,
       mean_score: meanScore,

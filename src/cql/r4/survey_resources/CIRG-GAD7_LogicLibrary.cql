@@ -55,14 +55,14 @@ define QuestionnaireResponses:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    q1Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question1LinkId, answerExtensionIndex)),
-    q2Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question2LinkId, answerExtensionIndex)),
-    q3Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question3LinkId, answerExtensionIndex)),
-    q4Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question4LinkId, answerExtensionIndex)),
-    q5Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question5LinkId, answerExtensionIndex)),
-    q6Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
-    q7Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
-    scoreQuestionResponse: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, ScoringQuestionId, answerExtensionIndex)),
+    q1Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question1LinkId, answerExtensionIndex)),
+    q2Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question2LinkId, answerExtensionIndex)),
+    q3Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question3LinkId, answerExtensionIndex)),
+    q4Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question4LinkId, answerExtensionIndex)),
+    q5Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question5LinkId, answerExtensionIndex)),
+    q6Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question6LinkId, answerExtensionIndex)),
+    q7Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question7LinkId, answerExtensionIndex)),
+    scoreQuestionResponse: First(LogicHelper.GetNumericValueByResponseItem(I.item, ScoringQuestionId)),
     itemTotalScore: 
       case
         when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -111,7 +111,7 @@ define ResponsesSummary:
       end,
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({
-        LogicHelper.getTotalAnsweredItems(I.item, ScoringQuestionId),
+        LogicHelper.GetTotalAnsweredItems(I.item, ScoringQuestionId),
         totalItems
       }),
       totalItems: totalItems,

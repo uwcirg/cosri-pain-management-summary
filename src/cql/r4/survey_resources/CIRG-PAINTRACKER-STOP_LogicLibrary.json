@@ -243,7 +243,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getNumericValueByResponseItem",
+                        "name" : "GetNumericValueByResponseItemCode",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -267,7 +267,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getNumericValueByResponseItem",
+                        "name" : "GetNumericValueByResponseItemCode",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -291,7 +291,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getNumericValueByResponseItem",
+                        "name" : "GetNumericValueByResponseItemCode",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -315,7 +315,7 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getNumericValueByResponseItem",
+                        "name" : "GetNumericValueByResponseItemCode",
                         "libraryName" : "LogicHelper",
                         "type" : "FunctionRef",
                         "operand" : [ {
@@ -339,23 +339,20 @@
                   "expression" : {
                      "type" : "First",
                      "source" : {
-                        "name" : "getNumericValueByResponseItem",
-                        "libraryName" : "LogicHelper",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "Questionnaire",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "path" : "item",
-                           "scope" : "I",
-                           "type" : "Property"
-                        }, {
-                           "name" : "ScoringQuestionId",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "name" : "extensionAnswerIndex",
-                           "type" : "ExpressionRef"
-                        } ]
+                        "type" : "ToList",
+                        "operand" : {
+                           "name" : "GetNumericValueByResponseItem",
+                           "libraryName" : "LogicHelper",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "item",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }, {
+                              "name" : "ScoringQuestionId",
+                              "type" : "ExpressionRef"
+                           } ]
+                        }
                      }
                   }
                }, {
@@ -386,7 +383,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -401,7 +398,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -416,7 +413,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -431,7 +428,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -439,34 +436,54 @@
                         }
                      } ],
                      "else" : {
-                        "type" : "Add",
-                        "operand" : [ {
+                        "type" : "ToDecimal",
+                        "operand" : {
                            "type" : "Add",
                            "operand" : [ {
                               "type" : "Add",
                               "operand" : [ {
-                                 "type" : "Multiply",
+                                 "type" : "Add",
                                  "operand" : [ {
-                                    "type" : "Coalesce",
+                                    "type" : "Multiply",
                                     "operand" : [ {
-                                       "name" : "Question1Score",
-                                       "type" : "QueryLetRef"
+                                       "type" : "Coalesce",
+                                       "operand" : [ {
+                                          "name" : "Question1Score",
+                                          "type" : "QueryLetRef"
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
+                                       } ]
                                     }, {
                                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "0",
+                                       "value" : "1",
                                        "type" : "Literal"
                                     } ]
                                  }, {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "1",
-                                    "type" : "Literal"
+                                    "type" : "Multiply",
+                                    "operand" : [ {
+                                       "type" : "Coalesce",
+                                       "operand" : [ {
+                                          "name" : "Question2Score",
+                                          "type" : "QueryLetRef"
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
+                                       } ]
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "value" : "1",
+                                       "type" : "Literal"
+                                    } ]
                                  } ]
                               }, {
                                  "type" : "Multiply",
                                  "operand" : [ {
                                     "type" : "Coalesce",
                                     "operand" : [ {
-                                       "name" : "Question2Score",
+                                       "name" : "Question3Score",
                                        "type" : "QueryLetRef"
                                     }, {
                                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
@@ -484,7 +501,7 @@
                               "operand" : [ {
                                  "type" : "Coalesce",
                                  "operand" : [ {
-                                    "name" : "Question3Score",
+                                    "name" : "Question4Score",
                                     "type" : "QueryLetRef"
                                  }, {
                                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
@@ -497,24 +514,7 @@
                                  "type" : "Literal"
                               } ]
                            } ]
-                        }, {
-                           "type" : "Multiply",
-                           "operand" : [ {
-                              "type" : "Coalesce",
-                              "operand" : [ {
-                                 "name" : "Question4Score",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "0",
-                                 "type" : "Literal"
-                              } ]
-                           }, {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                              "value" : "1",
-                              "type" : "Literal"
-                           } ]
-                        } ]
+                        }
                      }
                   }
                }, {
@@ -635,7 +635,7 @@
                            "source" : {
                               "type" : "List",
                               "element" : [ {
-                                 "name" : "getTotalAnsweredItems",
+                                 "name" : "GetTotalAnsweredItems",
                                  "libraryName" : "LogicHelper",
                                  "type" : "FunctionRef",
                                  "operand" : [ {

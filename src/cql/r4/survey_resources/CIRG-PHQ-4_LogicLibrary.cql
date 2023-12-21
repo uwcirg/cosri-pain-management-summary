@@ -50,11 +50,11 @@ define QuestionnaireResponses:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    Question1Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
-    Question2Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
-    Question3Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
-    Question4Score: First(LogicHelper.getNumericValueByResponseItem(Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
-    scoreQuestionResponse: First(LogicHelper.geDecimalValueByResponseItem(I.item, ScoringQuestionId)),
+    Question1Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question1LinkId, extensionAnswerIndex)),
+    Question2Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
+    Question3Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
+    Question4Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
+    scoreQuestionResponse: First(LogicHelper.GetNumericValueByResponseItem(I.item, ScoringQuestionId)),
     itemTotalScore:
           case
             when scoreQuestionResponse is not null then scoreQuestionResponse
@@ -113,7 +113,7 @@ define ResponsesSummary:
       end,
       comparisonToAlert: 'higher',
       totalAnsweredItems: Min({
-        LogicHelper.getTotalAnsweredItems(I.item, ScoringQuestionId),
+        LogicHelper.GetTotalAnsweredItems(I.item, ScoringQuestionId),
         totalItems
       }),
       totalItems: totalItems,

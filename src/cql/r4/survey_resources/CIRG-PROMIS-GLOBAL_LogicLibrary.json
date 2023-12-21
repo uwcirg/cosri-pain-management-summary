@@ -299,7 +299,7 @@
                      "source" : {
                         "type" : "ToList",
                         "operand" : {
-                           "name" : "geDecimalValueByResponseItem",
+                           "name" : "GetNumericValueByResponseItem",
                            "libraryName" : "LogicHelper",
                            "type" : "FunctionRef",
                            "operand" : [ {
@@ -334,7 +334,7 @@
                         }
                      } ],
                      "else" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                        "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                         "type" : "As",
                         "operand" : {
                            "type" : "Null"
@@ -452,7 +452,7 @@
                            "source" : {
                               "type" : "List",
                               "element" : [ {
-                                 "name" : "getTotalAnsweredItems",
+                                 "name" : "GetTotalAnsweredItems",
                                  "libraryName" : "LogicHelper",
                                  "type" : "FunctionRef",
                                  "operand" : [ {

@@ -647,7 +647,7 @@
                }
             } ]
          }, {
-            "name" : "getAnswerOptionCodeValue",
+            "name" : "GetAnswerOptionCodeValue",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -900,7 +900,7 @@
                }
             } ]
          }, {
-            "name" : "GetResponseAnswerValueByLinkId",
+            "name" : "GetResponseAnswerTextByLinkId",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -1220,7 +1220,7 @@
                }
             } ]
          }, {
-            "name" : "GetResponseAnswerChoiceByLinkId",
+            "name" : "GetResponseAnswerValueByLinkId",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -1337,7 +1337,7 @@
                }
             } ]
          }, {
-            "name" : "getAnswerOptionExtensionValue",
+            "name" : "GetAnswerOptionExtensionValue",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -1403,7 +1403,540 @@
                }
             } ]
          }, {
-            "name" : "getAnswerValueByCode",
+            "name" : "GetAnswerValueByCode",
+            "context" : "Unfiltered",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Case",
+               "caseItem" : [ {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA6111-4",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "0",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA6112-2",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "1",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA6113-0",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "2",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA6114-8",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "3",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA6115-5",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "4",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA10137-0",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "5",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA10138-8",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "6",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA10139-6",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "7",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA10140-4",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "8",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA10141-2",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "9",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA13942-0",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "10",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA6568-5",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "0",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA6569-3",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "1",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA6570-1",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "2",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA18938-3",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "2",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA6571-9",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "3",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-0-0",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "1",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-0-1",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "0",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-0-0",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "1",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-0-1",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "0",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-0-0",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "1",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-0-1",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "0",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-1-0",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "1",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-1-1",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "0",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-2-0",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "1",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-2-1",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "0",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-3-0",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "1",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "STOP-3-1",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "0",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA33-6",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "1",
+                     "type" : "Literal"
+                  }
+               }, {
+                  "when" : {
+                     "type" : "Equal",
+                     "operand" : [ {
+                        "name" : "code",
+                        "type" : "OperandRef"
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "LA32-8",
+                        "type" : "Literal"
+                     } ]
+                  },
+                  "then" : {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                     "value" : "0",
+                     "type" : "Literal"
+                  }
+               } ],
+               "else" : {
+                  "asType" : "{urn:hl7-org:elm-types:r1}Integer",
+                  "type" : "As",
+                  "operand" : {
+                     "type" : "Null"
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "code",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}String",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
+            "name" : "GetAnswerValueByQuestionnaireItem",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -1514,30 +2047,72 @@
                "relationship" : [ ],
                "return" : {
                   "expression" : {
-                     "strict" : false,
-                     "type" : "As",
-                     "operand" : {
-                        "path" : "value",
-                        "type" : "Property",
-                        "source" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "type" : "Indexer",
-                              "operand" : [ {
-                                 "path" : "extension",
-                                 "scope" : "a",
-                                 "type" : "Property"
-                              }, {
-                                 "name" : "extensionIndex",
-                                 "type" : "OperandRef"
-                              } ]
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "path" : "extension",
+                                    "scope" : "a",
+                                    "type" : "Property"
+                                 }, {
+                                    "name" : "extensionIndex",
+                                    "type" : "OperandRef"
+                                 } ]
+                              }
                            }
                         }
                      },
-                     "asTypeSpecifier" : {
-                        "name" : "{urn:hl7-org:elm-types:r1}Integer",
-                        "type" : "NamedTypeSpecifier"
+                     "then" : {
+                        "strict" : false,
+                        "type" : "As",
+                        "operand" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "path" : "extension",
+                                    "scope" : "a",
+                                    "type" : "Property"
+                                 }, {
+                                    "name" : "extensionIndex",
+                                    "type" : "OperandRef"
+                                 } ]
+                              }
+                           }
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "type" : "NamedTypeSpecifier"
+                        }
+                     },
+                     "else" : {
+                        "name" : "GetAnswerValueByCode",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "name" : "ToString",
+                           "libraryName" : "FHIRHelpers",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "code",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "value",
+                                 "scope" : "a",
+                                 "type" : "Property"
+                              }
+                           } ]
+                        } ]
                      }
                   }
                }
@@ -1562,7 +2137,7 @@
                }
             } ]
          }, {
-            "name" : "getNumericValueByResponseItem",
+            "name" : "GetNumericValueByResponseItemCode",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -1678,6 +2253,15 @@
                               "operand" : {
                                  "type" : "IsNull",
                                  "operand" : {
+                                    "name" : "questionnaire",
+                                    "type" : "OperandRef"
+                                 }
+                              }
+                           }, {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
                                     "path" : "code",
                                     "type" : "Property",
                                     "source" : {
@@ -1698,19 +2282,10 @@
                                     }
                                  }
                               }
-                           }, {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "name" : "questionnaire",
-                                    "type" : "OperandRef"
-                                 }
-                              }
                            } ]
                         },
                         "then" : {
-                           "name" : "getAnswerValueByCode",
+                           "name" : "GetAnswerValueByQuestionnaireItem",
                            "type" : "FunctionRef",
                            "operand" : [ {
                               "name" : "questionnaire",
@@ -1746,38 +2321,14 @@
                         "else" : {
                            "type" : "ToList",
                            "operand" : {
-                              "type" : "If",
-                              "condition" : {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "path" : "value",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "path" : "value",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "type" : "Indexer",
-                                             "operand" : [ {
-                                                "path" : "answer",
-                                                "scope" : "I",
-                                                "type" : "Property"
-                                             }, {
-                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                "value" : "0",
-                                                "type" : "Literal"
-                                             } ]
-                                          }
-                                       }
-                                    }
-                                 }
-                              },
-                              "then" : {
-                                 "strict" : false,
-                                 "type" : "As",
-                                 "operand" : {
-                                    "path" : "value",
+                              "name" : "GetAnswerValueByCode",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "name" : "ToString",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "code",
                                     "type" : "Property",
                                     "source" : {
                                        "path" : "value",
@@ -1795,19 +2346,8 @@
                                           } ]
                                        }
                                     }
-                                 },
-                                 "asTypeSpecifier" : {
-                                    "name" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "type" : "NamedTypeSpecifier"
-                                 }
-                              },
-                              "else" : {
-                                 "asType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "type" : "As",
-                                 "operand" : {
-                                    "type" : "Null"
-                                 }
-                              }
+                                 } ]
+                              } ]
                            }
                         }
                      }
@@ -1843,7 +2383,7 @@
                }
             } ]
          }, {
-            "name" : "geDecimalValueByResponseItem",
+            "name" : "GetNumericValueByResponseItem",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -1938,7 +2478,7 @@
                         }
                      },
                      "then" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                        "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                         "type" : "As",
                         "operand" : {
                            "type" : "Null"
@@ -1996,12 +2536,12 @@
                               }
                            },
                            "asTypeSpecifier" : {
-                              "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "name" : "{urn:hl7-org:elm-types:r1}Integer",
                               "type" : "NamedTypeSpecifier"
                            }
                         },
                         "else" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -2259,7 +2799,7 @@
                }
             } ]
          }, {
-            "name" : "getTotalAnsweredItems",
+            "name" : "GetTotalAnsweredItems",
             "context" : "Patient",
             "accessLevel" : "Public",
             "type" : "FunctionDef",
@@ -2504,7 +3044,7 @@
                "let" : [ {
                   "identifier" : "answerText",
                   "expression" : {
-                     "name" : "GetResponseAnswerValueByLinkId",
+                     "name" : "GetResponseAnswerTextByLinkId",
                      "type" : "FunctionRef",
                      "operand" : [ {
                         "path" : "value",
@@ -2522,7 +3062,7 @@
                }, {
                   "identifier" : "answerValue",
                   "expression" : {
-                     "name" : "GetResponseAnswerChoiceByLinkId",
+                     "name" : "GetResponseAnswerValueByLinkId",
                      "type" : "FunctionRef",
                      "operand" : [ {
                         "path" : "value",
