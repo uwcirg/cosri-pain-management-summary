@@ -75,11 +75,17 @@ export default class Report extends Component {
             >
               {this.renderSubSectionHeader(item, matchedData)}
               {item.component && item.component({ summary: matchedData })}
+              {this.renderSubSectionAnchor(item)}
             </div>
           );
         })}
       </div>
     );
+  }
+  renderSubSectionAnchor(item) {
+    return (
+      <div id={`${item.dataKey}_anchor`} className="sub-section__anchor"></div>
+    )
   }
   renderSubSectionHeader(item, summaryData) {
     return (

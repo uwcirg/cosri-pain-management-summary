@@ -59,6 +59,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
         &__header {
           padding: 0 20px 12px;
         }
+        &__anchor {
+          width: 2px;
+          height: 2px;
+        }
         &__header__name {
           display: flex;
           align-items: center;

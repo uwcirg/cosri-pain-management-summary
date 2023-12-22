@@ -113,7 +113,7 @@ export default class SurveyGraph extends Component {
     );
   }
   shouldShowSlider() {
-    return this.getDurationInYears() >= 1/12;
+    return this.getDurationInYears() >= 1 / 12;
   }
   getNumYearsFromData(dataSource) {
     if (!dataSource || !Array.isArray(dataSource) || !dataSource.length)
@@ -160,8 +160,8 @@ export default class SurveyGraph extends Component {
     const years = this.getSelectedDateRangeInYears(
       this.state.selectedDateRange
     );
-    data = this.getFilteredDataByNumYears(data, years);
     data = this.getFilteredDataByQids(data);
+    data = this.getFilteredDataByNumYears(data, years);
 
     data = data.map((d) => {
       let dObj = toDate(d[xFieldName]);
@@ -264,7 +264,7 @@ export default class SurveyGraph extends Component {
     );
     return filteredData && filteredData.length > 0;
   }
-  addQuestionnaireLineToSurveyGraph(qid) {
+  addQuestionnaireLineToSurveyGraph(qid, callback) {
     if (this.isInSurveyGraph(qid)) return;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
@@ -274,16 +274,16 @@ export default class SurveyGraph extends Component {
       this.setState({
         graphData: updatedData,
         qids: [...new Set(updatedData.map((item) => item.qid))],
-      });
+      }, callback);
     }
   }
-  removeQuestionnaireLineFromSurveyGraph(qid) {
+  removeQuestionnaireLineFromSurveyGraph(qid, callback) {
     if (!this.isInSurveyGraph(qid)) return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
     this.setState({
       graphData: updatedData,
       qids: [...new Set(updatedData.map((item) => item.qid))],
-    });
+    }, callback);
   }
 
   hasOnlyOneGraphLine() {
@@ -296,26 +296,27 @@ export default class SurveyGraph extends Component {
   }
 
   getSelectedDateRangeInYears(value) {
-    return +(value);
+    return +value;
   }
 
   updateScale() {
     this.scaleLabelRefs.forEach((ref) => {
       if (!ref.current) return;
       const labelValue = +ref.current.getAttribute("datavalue");
-      const labelUnit = ref.current.getAttribute("dataunit");
+      //  const labelUnit = ref.current.getAttribute("dataunit");
       const diff = Math.abs(this.state.selectedDateRange - labelValue).toFixed(
         2
       );
-      const comparisonValue = labelUnit === "month" ? (1 / 30).toFixed(2) :  (1 / 12).toFixed(2);
-      console.log(
-        "label value ",
-        labelValue,
-        " selected ",
-        this.state.selectedDateRange,
-        " diff ",
-        diff
-      );
+      //  const comparisonValue = labelUnit === "month" ? (1 / 30).toFixed(2) :  (1 / 12).toFixed(2);
+      const comparisonValue = 0.01;
+      // console.log(
+      //   "label value ",
+      //   labelValue,
+      //   " selected ",
+      //   this.state.selectedDateRange,
+      //   " diff ",
+      //   diff
+      // );
       if (diff < comparisonValue) {
         ref.current.classList.add("active");
       } else {
@@ -327,14 +328,14 @@ export default class SurveyGraph extends Component {
   handleSwitchChange(e) {
     const itemValue = e.target.value;
     if (e.target.checked) {
-      this.addQuestionnaireLineToSurveyGraph(itemValue);
+      this.addQuestionnaireLineToSurveyGraph(itemValue, this.handleDateRangeChange);
     } else {
-      this.removeQuestionnaireLineFromSurveyGraph(itemValue);
+      this.removeQuestionnaireLineFromSurveyGraph(itemValue, this.handleDateRangeChange);
     }
   }
 
   handleDateRangeChange(e) {
-    const selectedValue = e.target.value;
+    const selectedValue = e && e.target ? e.target.value: this.state.selectedDateRange;
     if (!selectedValue) return;
     const years = this.getSelectedDateRangeInYears(selectedValue);
     const updatedData = this.getFilteredDataByQids(
@@ -373,16 +374,16 @@ export default class SurveyGraph extends Component {
     };
     const getArrDiffYears = () => {
       return sliderData
-      .filter((item) => {
-        const itemDate = toDate(item[xFieldName]);
-        return !isNaN(itemDate);
-      })
-      .map((item) => {
-        const today = new Date();
-        const itemDate = toDate(item[xFieldName]);
-        return getDifferenceInYears(itemDate, today);
-      });
-    }
+        .filter((item) => {
+          const itemDate = toDate(item[xFieldName]);
+          return !isNaN(itemDate);
+        })
+        .map((item) => {
+          const today = new Date();
+          const itemDate = toDate(item[xFieldName]);
+          return getDifferenceInYears(itemDate, today);
+        });
+    };
     const getArrMonths = () => {
       const arrMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
         (n) => n / 12
@@ -409,9 +410,9 @@ export default class SurveyGraph extends Component {
     const scaleData = this.getScaleInfoForSlider(this.state.originalGraphData);
     const min = Math.min(...scaleData.arrDiffYears);
     const max = Math.max(...scaleData.arrDiffYears);
-   // console.log("array ears ", scaleData.arrDiffYears)
-   // console.log("min ", min, " max ", max)
-    return max-min;
+    // console.log("array ears ", scaleData.arrDiffYears)
+    // console.log("min ", min, " max ", max)
+    return max - min;
   }
   getDisplayDateRange() {
     const selectedRange = parseFloat(this.state.selectedDateRange);
@@ -599,7 +600,8 @@ export default class SurveyGraph extends Component {
         onClick={() => {
           let options = this.copyImageOptions;
           const containerHeight =
-            this.graphContainerRef.current.offsetHeight - (this.sliderContainerRef.current ? 64 : 0); // minus the height of the slider
+            this.graphContainerRef.current.offsetHeight -
+            (this.sliderContainerRef.current ? 64 : 0); // minus the height of the slider
           options.height = containerHeight;
           copyDomToClipboard(this.graphContainerRef.current, options);
         }}
@@ -620,10 +622,19 @@ export default class SurveyGraph extends Component {
     const dateRangeData = this.state.originalGraphData.filter(
       (item) => this.state.qids.indexOf(item.qid) !== -1
     );
+   // console.log("date range Data ", dateRangeData)
     const scaleData = this.getScaleInfoForSlider(dateRangeData);
     const maxValue = scaleData.max;
     const minValue = scaleData.min;
     const selectedValue = +this.state.selectedDateRange;
+    // console.log(
+    //   "max val ",
+    //   maxValue,
+    //   " min value ",
+    //   minValue,
+    //   " selected value ",
+    //   selectedValue
+    // );
     let items = [
       {
         key: "Last 6 months",
@@ -714,7 +725,7 @@ export default class SurveyGraph extends Component {
             min={min}
             max={max}
             step={"any"}
-            value={(+this.state.selectedDateRange)}
+            value={+this.state.selectedDateRange}
             className="slider"
             onInput={this.handleDateRangeChange}
             onChange={this.handleDateRangeChange}
@@ -1114,7 +1125,7 @@ export default class SurveyGraph extends Component {
                 {renderGraph()}
               </div>
               {this.shouldShowSlider() && this.renderSlider()}
-              {!this.shouldShowSlider() && <br/>}
+              {!this.shouldShowSlider() && <br />}
             </div>
             <div
               className="flex flex-gap-1"

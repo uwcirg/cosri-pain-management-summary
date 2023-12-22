@@ -119,7 +119,6 @@ export default class ScoringSummary extends Component {
     if (!targetElement) return;
     targetElement.scrollIntoView({
       block: "center",
-      inline: "nearest",
       behavior: "smooth"
     });
   }
@@ -154,7 +153,7 @@ export default class ScoringSummary extends Component {
       ? questionnaireObj.QuestionnaireName
       : questionnaireObj.QuestionnaireID);
     if (!questionnaireName) return <td>--</td>;
-    const anchorId = `#${questionnaireName}_title`;
+    const anchorId = `#${questionnaireName}_anchor`;
     const displayText = questionnaireShortName ? questionnaireShortName : questionnaireName;
     return (
       <td className="text-left">

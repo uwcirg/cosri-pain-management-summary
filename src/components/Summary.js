@@ -474,7 +474,7 @@ export default class Summary extends Component {
               ref={this.elementRef}
               data-ref={`${item.id}_title`}
             >
-              <a href={`#${item.id}_title`}>
+              <a href={`#${item.id}_anchor`}>
                 <FontAwesomeIcon
                   className={`flag ${item.className}`}
                   icon="exclamation-circle"
