@@ -514,7 +514,7 @@ export default class SurveyGraph extends Component {
                         this.isInSurveyGraph(item) && this.hasOnlyOneGraphLine()
                       }
                       ref={this.switchCheckboxRefs[index]}
-                      checked={this.isInSurveyGraph(item)}
+                      checked={!!this.isInSurveyGraph(item)}
                     />
                     <span className="switch-slider round"></span>
                   </label>

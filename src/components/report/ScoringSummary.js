@@ -117,10 +117,15 @@ export default class ScoringSummary extends Component {
     event.preventDefault();
     const targetElement = document.querySelector(id);
     if (!targetElement) return;
+    const listElements = document.querySelectorAll(".toc-link");
     targetElement.scrollIntoView({
       block: "center",
-      behavior: "smooth"
+      behavior: "smooth",
     });
+    setTimeout(
+      () => listElements.forEach((e) => e.classList.remove("is-active-link")),
+      800
+    );
   }
   renderTableHeaders() {
     return (
@@ -149,12 +154,14 @@ export default class ScoringSummary extends Component {
     const questionnaireShortName = questionnaireObj.QuestionnaireShortName
       ? questionnaireObj.QuestionnaireShortName
       : "";
-    const questionnaireName = (questionnaireObj.QuestionnaireName
+    const questionnaireName = questionnaireObj.QuestionnaireName
       ? questionnaireObj.QuestionnaireName
-      : questionnaireObj.QuestionnaireID);
+      : questionnaireObj.QuestionnaireID;
     if (!questionnaireName) return <td>--</td>;
     const anchorId = `#${questionnaireName}_anchor`;
-    const displayText = questionnaireShortName ? questionnaireShortName : questionnaireName;
+    const displayText = questionnaireShortName
+      ? questionnaireShortName
+      : questionnaireName;
     return (
       <td className="text-left">
         {showAnchorLinks && (
