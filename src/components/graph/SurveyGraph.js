@@ -69,10 +69,10 @@ export default class SurveyGraph extends Component {
     };
 
     // This binding is necessary to make `this` work in the callback
-    this.addQuestionnaireToSurveyGraph =
-      this.addQuestionnaireToSurveyGraph.bind(this);
-    this.removeQuestionnaireFromSurveyGraph =
-      this.removeQuestionnaireFromSurveyGraph.bind(this);
+    this.addQuestionnaireLineToSurveyGraph =
+      this.addQuestionnaireLineToSurveyGraph.bind(this);
+    this.removeQuestionnaireLineFromSurveyGraph =
+      this.removeQuestionnaireLineFromSurveyGraph.bind(this);
     this.showUtilButtons = this.showUtilButtons.bind(this);
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
@@ -264,7 +264,7 @@ export default class SurveyGraph extends Component {
     );
     return filteredData && filteredData.length > 0;
   }
-  addQuestionnaireToSurveyGraph(qid) {
+  addQuestionnaireLineToSurveyGraph(qid) {
     if (this.isInSurveyGraph(qid)) return;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
@@ -277,7 +277,7 @@ export default class SurveyGraph extends Component {
       });
     }
   }
-  removeQuestionnaireFromSurveyGraph(qid) {
+  removeQuestionnaireLineFromSurveyGraph(qid) {
     if (!this.isInSurveyGraph(qid)) return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
     this.setState({
@@ -296,26 +296,26 @@ export default class SurveyGraph extends Component {
   }
 
   getSelectedDateRangeInYears(value) {
-    return parseFloat(value);
+    return +(value);
   }
 
   updateScale() {
     this.scaleLabelRefs.forEach((ref) => {
       if (!ref.current) return;
       const labelValue = +ref.current.getAttribute("datavalue");
-      //const labelUnit = ref.current.getAttribute("dataunit");
+      const labelUnit = ref.current.getAttribute("dataunit");
       const diff = Math.abs(this.state.selectedDateRange - labelValue).toFixed(
         2
       );
-      const comparisonValue = (1 / 12).toFixed(2);
-      // console.log(
-      //   "label value ",
-      //   labelValue,
-      //   " selected ",
-      //   this.state.selectedDateRange,
-      //   " diff ",
-      //   diff
-      // );
+      const comparisonValue = labelUnit === "month" ? (1 / 30).toFixed(2) :  (1 / 12).toFixed(2);
+      console.log(
+        "label value ",
+        labelValue,
+        " selected ",
+        this.state.selectedDateRange,
+        " diff ",
+        diff
+      );
       if (diff < comparisonValue) {
         ref.current.classList.add("active");
       } else {
@@ -327,9 +327,9 @@ export default class SurveyGraph extends Component {
   handleSwitchChange(e) {
     const itemValue = e.target.value;
     if (e.target.checked) {
-      this.addQuestionnaireToSurveyGraph(itemValue);
+      this.addQuestionnaireLineToSurveyGraph(itemValue);
     } else {
-      this.removeQuestionnaireFromSurveyGraph(itemValue);
+      this.removeQuestionnaireLineFromSurveyGraph(itemValue);
     }
   }
 
@@ -714,10 +714,11 @@ export default class SurveyGraph extends Component {
             min={min}
             max={max}
             step={"any"}
-            value={this.state.selectedDateRange}
+            value={(+this.state.selectedDateRange)}
             className="slider"
             onInput={this.handleDateRangeChange}
             onChange={this.handleDateRangeChange}
+            noValidate
           />
           <div className="scale">
             {arrNum.map((item, index) => (
@@ -1113,6 +1114,7 @@ export default class SurveyGraph extends Component {
                 {renderGraph()}
               </div>
               {this.shouldShowSlider() && this.renderSlider()}
+              {!this.shouldShowSlider() && <br/>}
             </div>
             <div
               className="flex flex-gap-1"
