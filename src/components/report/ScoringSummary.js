@@ -6,7 +6,7 @@ import FailUpArrowIcon from "../../icons/FailUpArrowIcon";
 import FailDownArrowIcon from "../../icons/FailDownArrowIcon";
 import PassDownArrowIcon from "../../icons/PassDownArrowIcon";
 import LineIcon from "../../icons/LineIcon";
-import { copyDomToClipboard, isNumber, toDate } from "../../helpers/utility";
+import { allowCopyClipboardItem, isNumber, toDate, writeHTMLToClipboard } from "../../helpers/utility";
 
 export default class ScoringSummary extends Component {
   constructor() {
@@ -216,8 +216,10 @@ export default class ScoringSummary extends Component {
     });
   }
   copyTable() {
-    if (!copyDomToClipboard()) return null;
-    copyDomToClipboard(this.tableRef.current);
+    // if (!copyDomToClipboard()) return null;
+    // copyDomToClipboard(this.tableRef.current);
+    if (!allowCopyClipboardItem()) return null;
+    writeHTMLToClipboard(this.tableRef.current.outerHTML);
   }
   render() {
     const { summary, showAnchorLinks } = this.props;
@@ -230,6 +232,7 @@ export default class ScoringSummary extends Component {
     return (
       <React.Fragment>
         <div className="panel-title">{this.getTitleDisplay()}</div>
+        {/* <button onClick={this.copyTable}>Copy</button> */}
         <table className="table" ref={this.tableRef}>
           {!noSummaryData && this.renderTableHeaders()}
           <tbody>

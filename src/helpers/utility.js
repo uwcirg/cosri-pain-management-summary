@@ -1,5 +1,5 @@
 import moment from "moment";
-import { toBlob, toJpeg} from "html-to-image";
+import { toBlob, toJpeg } from "html-to-image";
 import { getEnv } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
 /*
@@ -368,7 +368,7 @@ export function getHTMLImageClipboardItem(domElement, options) {
   };
 }
 export function copyDomToClipboard(domElement, options) {
-  if (!allowCopyImage()) return null;
+  if (!allowCopyClipboardItem()) return null;
   const params = options ? options : {};
   if (params.beforeCopy) {
     params.beforeCopy();
@@ -391,14 +391,22 @@ export function copyDomToClipboard(domElement, options) {
       }
     });
 }
-export function allowCopyImage() {
+export function allowCopyClipboardItem() {
   if (typeof window.ClipboardItem === "undefined") return false;
   if (!navigator?.clipboard?.write) return false;
   return true;
 }
+export async function writeHTMLToClipboard(htmlContent) {
+  if (!allowCopyClipboardItem())
+    return Promise.reject("ClipboardItem API is not supported");
+  const clipboardItem = new window.ClipboardItem({
+    "text/html": new Blob([htmlContent], {type: "text/html"}),
+  });
+  return writeBlobToClipboard(clipboardItem);
+}
 export async function writeBlobToClipboard(clipboardItem) {
-  if (!allowCopyImage())
-    return Promise.reject("Clipboard API is not supported");
+  if (!allowCopyClipboardItem())
+    return Promise.reject("ClipboardItem API is not supported");
   return navigator.clipboard.write([clipboardItem]);
 }
 

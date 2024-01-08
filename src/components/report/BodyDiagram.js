@@ -10,7 +10,7 @@ import {
   toDate,
 } from "../../helpers/utility";
 import {
-  allowCopyImage,
+  allowCopyClipboardItem,
   getDisplayDateFromISOString,
   renderImageFromSVG,
 } from "../../helpers/utility";
@@ -461,7 +461,7 @@ export default class BodyDiagram extends Component {
       this.datesSelectorRef.current.classList.remove("read-only");
   }
   renderCopyButton() {
-    if (!allowCopyImage())
+    if (!allowCopyClipboardItem())
       return (
         <div className="print-hidden">
           <FontAwesomeIcon

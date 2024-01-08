@@ -14,7 +14,7 @@ import {
   getLineAttributes,
 } from "../../config/graph_config";
 import {
-  allowCopyImage,
+  allowCopyClipboardItem,
   //  copySVGImage,
   copyDomToClipboard,
   // downloadSVGImage,
@@ -572,7 +572,7 @@ export default class SurveyGraph extends Component {
   }
 
   renderCopyButton() {
-    if (!allowCopyImage())
+    if (!allowCopyClipboardItem())
       return (
         <div className="print-hidden">
           <FontAwesomeIcon
