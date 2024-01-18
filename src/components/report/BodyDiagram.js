@@ -53,6 +53,7 @@ export default class BodyDiagram extends Component {
           node.classList?.contains(classname)
         );
       },
+      imageType: "image/png"
     };
     this.ANIMATION_DURATION = 1000;
   }

@@ -60,6 +60,7 @@ export default class SurveyGraph extends Component {
       afterCopy: () => this.afterCopy(),
       beforeDownload: () => this.beforeCopy(),
       afterDownload: () => this.afterCopy(),
+      imageType: "image/png",
     };
     this.utilButtonStyle = {
       fontSize: "0.9rem",
@@ -271,19 +272,25 @@ export default class SurveyGraph extends Component {
     );
     if (qData.length) {
       const updatedData = [...this.state.graphData, ...qData];
-      this.setState({
-        graphData: updatedData,
-        qids: [...new Set(updatedData.map((item) => item.qid))],
-      }, callback);
+      this.setState(
+        {
+          graphData: updatedData,
+          qids: [...new Set(updatedData.map((item) => item.qid))],
+        },
+        callback
+      );
     }
   }
   removeQuestionnaireLineFromSurveyGraph(qid, callback) {
     if (!this.isInSurveyGraph(qid)) return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
-    this.setState({
-      graphData: updatedData,
-      qids: [...new Set(updatedData.map((item) => item.qid))],
-    }, callback);
+    this.setState(
+      {
+        graphData: updatedData,
+        qids: [...new Set(updatedData.map((item) => item.qid))],
+      },
+      callback
+    );
   }
 
   hasOnlyOneGraphLine() {
@@ -328,14 +335,21 @@ export default class SurveyGraph extends Component {
   handleSwitchChange(e) {
     const itemValue = e.target.value;
     if (e.target.checked) {
-      this.addQuestionnaireLineToSurveyGraph(itemValue, this.handleDateRangeChange);
+      this.addQuestionnaireLineToSurveyGraph(
+        itemValue,
+        this.handleDateRangeChange
+      );
     } else {
-      this.removeQuestionnaireLineFromSurveyGraph(itemValue, this.handleDateRangeChange);
+      this.removeQuestionnaireLineFromSurveyGraph(
+        itemValue,
+        this.handleDateRangeChange
+      );
     }
   }
 
   handleDateRangeChange(e) {
-    const selectedValue = e && e.target ? e.target.value: this.state.selectedDateRange;
+    const selectedValue =
+      e && e.target ? e.target.value : this.state.selectedDateRange;
     if (!selectedValue) return;
     const years = this.getSelectedDateRangeInYears(selectedValue);
     const updatedData = this.getFilteredDataByQids(
@@ -470,6 +484,12 @@ export default class SurveyGraph extends Component {
     if (!this.dateRangeSelectorRef.current) return;
     this.dateRangeSelectorRef.current.classList.remove("read-only");
   }
+  getImageContainerHeight() {
+    const sliderHeight = this.sliderContainerRef.current
+      ? this.sliderContainerRef.current.offsetHeight - 36
+      : 0;
+    return this.graphContainerRef.current.offsetHeight - sliderHeight; // minus the height of the slider
+  }
 
   renderLegend() {
     const qids = this.getQIds();
@@ -551,10 +571,7 @@ export default class SurveyGraph extends Component {
         // }
         onClick={(e) => {
           let options = this.copyImageOptions;
-          const containerHeight =
-            this.graphContainerRef.current.offsetHeight -
-            (this.sliderContainerRef.current ? 64 : 0); // minus the height of the slider
-          options.height = containerHeight;
+          options.height = this.getImageContainerHeight();
           downloadDomImage(
             e,
             this.graphContainerRef.current,
@@ -599,10 +616,7 @@ export default class SurveyGraph extends Component {
         //   onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
         onClick={() => {
           let options = this.copyImageOptions;
-          const containerHeight =
-            this.graphContainerRef.current.offsetHeight -
-            (this.sliderContainerRef.current ? 64 : 0); // minus the height of the slider
-          options.height = containerHeight;
+          options.height = this.getImageContainerHeight();
           copyDomToClipboard(this.graphContainerRef.current, options);
         }}
         className="print-hidden button-default rounded"
@@ -622,7 +636,7 @@ export default class SurveyGraph extends Component {
     const dateRangeData = this.state.originalGraphData.filter(
       (item) => this.state.qids.indexOf(item.qid) !== -1
     );
-   // console.log("date range Data ", dateRangeData)
+    // console.log("date range Data ", dateRangeData)
     const scaleData = this.getScaleInfoForSlider(dateRangeData);
     const maxValue = scaleData.max;
     const minValue = scaleData.min;

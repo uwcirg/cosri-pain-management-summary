@@ -384,7 +384,7 @@ export function copyDomToClipboard(domElement, options) {
       }
     })
     .catch((e) => {
-      alert("Error! Unable to copy content to clipboard!");
+      alert("Error! Unable to copy content to clipboard! " + e);
       console.log(e);
       if (params.afterCopy) {
         params.afterCopy(e);
