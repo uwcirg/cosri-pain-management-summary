@@ -485,10 +485,20 @@ export default class SurveyGraph extends Component {
     this.dateRangeSelectorRef.current.classList.remove("read-only");
   }
   getImageContainerHeight() {
-    const sliderHeight = this.sliderContainerRef.current
-      ? this.sliderContainerRef.current.offsetHeight - 36
-      : 0;
-    return this.graphContainerRef.current.offsetHeight - sliderHeight; // minus the height of the slider
+    const PADDING_WIDTH = 36;
+    const sliderHeight =
+      this.sliderContainerRef.current &&
+      this.sliderContainerRef.current.offsetHeight > PADDING_WIDTH
+        ? this.sliderContainerRef.current.offsetHeight - PADDING_WIDTH
+        : 0;
+    const parentContainerHeight =
+      this.graphContainerRef.current &&
+      this.graphContainerRef.current.offsetHeight
+        ? this.graphContainerRef.current.offsetHeight
+        : 0;
+    return parentContainerHeight && parentContainerHeight > sliderHeight
+      ? parentContainerHeight - sliderHeight
+      : 0; // minus the height of the slider
   }
 
   renderLegend() {
@@ -571,7 +581,10 @@ export default class SurveyGraph extends Component {
         // }
         onClick={(e) => {
           let options = this.copyImageOptions;
-          options.height = this.getImageContainerHeight();
+          const imageConainerHeight = this.getImageContainerHeight();
+          if (imageConainerHeight) {
+            options.height = imageConainerHeight;
+          }
           downloadDomImage(
             e,
             this.graphContainerRef.current,
@@ -616,7 +629,10 @@ export default class SurveyGraph extends Component {
         //   onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
         onClick={() => {
           let options = this.copyImageOptions;
-          options.height = this.getImageContainerHeight();
+          const imageConainerHeight = this.getImageContainerHeight();
+          if (imageConainerHeight) {
+            options.height = imageConainerHeight;
+          }
           copyDomToClipboard(this.graphContainerRef.current, options);
         }}
         className="print-hidden button-default rounded"
