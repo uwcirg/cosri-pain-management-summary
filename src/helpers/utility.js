@@ -442,3 +442,4 @@ export function toDate(stringDate) {
   if (stringDate instanceof Date) return stringDate;
   return new Date(stringDate);
 }
+

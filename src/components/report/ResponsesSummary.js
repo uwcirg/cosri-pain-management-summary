@@ -11,6 +11,25 @@ export default class ResponsesSummary extends Component {
     this.state = { open: false };
     this.tableWrapperRef = React.createRef();
     this.setWrapperHeight = this.setWrapperHeight.bind(this);
+    const BORDER_COLOR = "#f3f6f9";
+    const HEADER_BORDER_COLOR = "#217684";
+    this.tableStyle = {
+      borderCollapse: "collapse",
+      border: `1px solid ${BORDER_COLOR}`,
+      padding: "4px",
+    };
+    this.cellStyle = {
+      borderRight: `1px solid ${BORDER_COLOR}`,
+      borderLeft: `1px solid ${BORDER_COLOR}`,
+      borderBottom: `1px solid ${BORDER_COLOR}`,
+      padding: "4px",
+    };
+    this.headerCellStyle = {
+      borderTop: `1px solid ${BORDER_COLOR}`,
+      borderRight: `1px solid ${BORDER_COLOR}`,
+      borderLeft: `1px solid ${BORDER_COLOR}`,
+      borderBottom: `2px solid ${HEADER_BORDER_COLOR}`,
+    };
   }
   componentDidMount() {
     // resize table to be within viewport
@@ -105,18 +124,32 @@ export default class ResponsesSummary extends Component {
     if (!summaryItems || !summaryItems.length) {
       return <div>No recorded responses</div>;
     }
+    const headerCellStyle = {
+      border: "1px solid #217684",
+      padding: "4px",
+    };
+    const cellStyle = {
+      border: "1px solid #d8d8d8",
+      padding: "4px",
+    };
     return (
-      <table className={`response-table ${this.state.open ? "active" : ""}`}>
+      <table
+        className={`response-table ${this.state.open ? "active" : ""}`}
+        style={{ borderCollapse: "collapse" }}
+      >
         <thead>
           <tr>
-            <th className="fixed-cell">{`${
+            <th className="fixed-cell" style={headerCellStyle}>{`${
               qid ? qid.toUpperCase() : ""
             } Questions`}</th>
             {summaryItems
               .slice(0, endIndex ? endIndex : summaryItems.length)
               .map((item, index) => {
                 return (
-                  <th key={`response_header_${item.id}`}>
+                  <th
+                    key={`response_header_${item.id}`}
+                    style={headerCellStyle}
+                  >
                     {this.getDisplayDate(item)}
                   </th>
                 );
@@ -126,14 +159,14 @@ export default class ResponsesSummary extends Component {
         <tbody>
           {summaryItems[0].responses.map((item, rindex) => (
             <tr key={`response_row_${item.linkId}_${rindex}`}>
-              <td className="fixed-cell">
+              <td className="fixed-cell" style={cellStyle}>
                 {item.question.includes("score") ? (
                   <b>{item.question}</b>
                 ) : (
                   item.question
                 )}
               </td>
-              <td>
+              <td style={cellStyle}>
                 {this.getMatchedAnswerTextByLinkId(
                   summaryItems[0],
                   item.linkId,
@@ -145,7 +178,10 @@ export default class ResponsesSummary extends Component {
                   .slice(1, endIndex ? endIndex : summaryItems.length)
                   .map((o, index) => {
                     return (
-                      <td key={`${item.id}_response_${index}`}>
+                      <td
+                        key={`${item.id}_response_${index}`}
+                        style={cellStyle}
+                      >
                         {this.getMatchedAnswerByItem(o, item)}
                       </td>
                     );
@@ -162,7 +198,10 @@ export default class ResponsesSummary extends Component {
         <thead>
           <tr>
             {columns.map((column, index) => (
-              <th key={`header_${column.key}_${index}`}>
+              <th
+                key={`header_${column.key}_${index}`}
+                style={this.headerCellStyle}
+              >
                 {column.description}
               </th>
             ))}
@@ -173,9 +212,9 @@ export default class ResponsesSummary extends Component {
     return (
       <thead>
         <tr>
-          <th>Score</th>
-          <th>Responses Completed</th>
-          <th>Responses</th>
+          <th style={this.headerCellStyle}>Score</th>
+          <th style={this.headerCellStyle}>Responses Completed</th>
+          <th style={this.headerCellStyle}>Responses</th>
         </tr>
       </thead>
     );
@@ -183,11 +222,16 @@ export default class ResponsesSummary extends Component {
   renderScoreTableCell(summary, key) {
     const hasSummary =
       summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
-    if (!hasSummary) return <td cssClass="text-center">--</td>;
+    if (!hasSummary)
+      return (
+        <td cssClass="text-center" style={this.cellStyle}>
+          --
+        </td>
+      );
     const score = summary.ResponsesSummary[0].score;
     const scoreParams = summary.ResponsesSummary[0];
     return (
-      <td className="text-center" key={key}>
+      <td className="text-center" key={key} style={this.cellStyle}>
         <Score
           score={score}
           scoreParams={scoreParams}
@@ -202,19 +246,19 @@ export default class ResponsesSummary extends Component {
       summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
     if (!hasSummary)
       return (
-        <td className="text-center" key={key}>
+        <td className="text-center" key={key} style={this.cellStyle}>
           --
         </td>
       );
     return (
-      <td className="text-center" key={key}>
+      <td className="text-center" key={key} style={this.cellStyle}>
         {this.getNumResponses(summary) || "--"}
       </td>
     );
   }
   renderResponsesLinkTableCell(lastResponsesDate, key) {
     return (
-      <td key={key}>
+      <td key={key} style={this.cellStyle}>
         <div
           role="presentation"
           className={`link-container ${this.state.open ? "active" : ""}`}
@@ -251,10 +295,20 @@ export default class ResponsesSummary extends Component {
       ? null
       : this.getCurrentResponses(summary);
     if (noResponses)
-      return <div className="no-entries">No recorded responses</div>;
+      return (
+        <div
+          className="no-entries"
+          style={{ fontStyle: "italic", color: "#58676a" }}
+        >
+          No recorded responses
+        </div>
+      );
     return (
       <React.Fragment>
-        <table className="table">
+        <table
+          className="table responses-summary-table"
+          style={this.tableStyle}
+        >
           {this.renderTableHeader(columns)}
           <tbody>
             <tr>

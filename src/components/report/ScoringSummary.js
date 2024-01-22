@@ -6,13 +6,33 @@ import FailUpArrowIcon from "../../icons/FailUpArrowIcon";
 import FailDownArrowIcon from "../../icons/FailDownArrowIcon";
 import PassDownArrowIcon from "../../icons/PassDownArrowIcon";
 import LineIcon from "../../icons/LineIcon";
-import { allowCopyClipboardItem, isNumber, toDate, writeHTMLToClipboard } from "../../helpers/utility";
-
+import {
+  allowCopyClipboardItem,
+  isNumber,
+  toDate,
+  writeHTMLToClipboard,
+} from "../../helpers/utility";
+const BORDER_COLOR = "#f3f6f9";
 export default class ScoringSummary extends Component {
   constructor() {
     super(...arguments);
     this.tableRef = React.createRef();
     this.copyTable = this.copyTable.bind(this);
+    this.tableStyle = {
+      borderCollapse: "collapse",
+      border: `1px solid ${BORDER_COLOR}`,
+    };
+    this.cellStyle = {
+      borderRight: `1px solid ${BORDER_COLOR}`,
+      borderLeft: `1px solid ${BORDER_COLOR}`,
+      borderBottom: `1px solid ${BORDER_COLOR}`,
+    };
+    this.headerCellStyle = {
+      borderRight: `1px solid ${BORDER_COLOR}`,
+      borderLeft: `1px solid ${BORDER_COLOR}`,
+      borderBottom: `2px solid ${BORDER_COLOR}`,
+    };
+    this.summaryHTML = "";
   }
   sortData(data) {
     if (!data || !Array.isArray(data) || !data.length) return null;
@@ -131,11 +151,13 @@ export default class ScoringSummary extends Component {
     return (
       <thead>
         <tr>
-          <th className="empty"></th>
-          <th>Score</th>
-          <th># Answered</th>
-          <th className="text-center">Meaning</th>
-          <th>Compare to Last</th>
+          <th className="empty" style={this.headerCellStyle}></th>
+          <th style={this.headerCellStyle}>Score</th>
+          <th style={this.headerCellStyle}># Answered</th>
+          <th className="text-center" style={this.headerCellStyle}>
+            Meaning
+          </th>
+          <th style={this.headerCellStyle}>Compare to Last</th>
         </tr>
       </thead>
     );
@@ -163,7 +185,7 @@ export default class ScoringSummary extends Component {
       ? questionnaireShortName
       : questionnaireName;
     return (
-      <td className="text-left">
+      <td className="text-left" style={this.cellStyle}>
         {showAnchorLinks && (
           <span>
             <b>
@@ -185,7 +207,7 @@ export default class ScoringSummary extends Component {
   renderScoreCell(data) {
     if (!data || !data.ResponsesSummary) return <td>--</td>;
     return (
-      <td className="nowrap">
+      <td className="nowrap" style={this.cellStyle}>
         <div className="flex">
           <Score
             score={this.getCurrentDisplayScore(data)}
@@ -204,11 +226,17 @@ export default class ScoringSummary extends Component {
         <tr key={`questionnaire_summary_row_${index}`} className="data-row">
           {this.renderQuestionnaireLinkCell(item, showAnchorLinks)}
           {this.renderScoreCell(item)}
-          <td valign="middle">{this.getNumAnswered(item)}</td>
-          <td className="text-capitalize" valign="middle">
+          <td valign="middle" style={this.cellStyle}>
+            {this.getNumAnswered(item)}
+          </td>
+          <td
+            className="text-capitalize"
+            valign="middle"
+            style={this.cellStyle}
+          >
             {this.getScoreMeaning(item)}
           </td>
-          <td valign="middle">
+          <td valign="middle" style={this.cellStyle}>
             <div className="icon-container">{this.getDisplayIcon(item)}</div>
           </td>
         </tr>
@@ -216,10 +244,18 @@ export default class ScoringSummary extends Component {
     });
   }
   copyTable() {
-    // if (!copyDomToClipboard()) return null;
-    // copyDomToClipboard(this.tableRef.current);
     if (!allowCopyClipboardItem()) return null;
-    writeHTMLToClipboard(this.tableRef.current.outerHTML);
+    writeHTMLToClipboard(
+      "<div style='font-family: Arial, sans-serif'>" +
+        this.tableRef.current.outerHTML +
+        "</div>"
+    )
+      .then(() => {
+        alert("All content copied to clipboard");
+      })
+      .catch((e) => {
+        alert("Error copying content to clipboard " + e);
+      });
   }
   render() {
     const { summary, showAnchorLinks } = this.props;
@@ -231,9 +267,27 @@ export default class ScoringSummary extends Component {
       ).length === 0;
     return (
       <React.Fragment>
-        <div className="panel-title">{this.getTitleDisplay()}</div>
-        {/* <button onClick={this.copyTable}>Copy</button> */}
-        <table className="table" ref={this.tableRef}>
+        {/* JUST to test copy */}
+        {/* <div style={{ marginBottom: "16px", textAlign: "right" }}>
+          {" "}
+          <button onClick={this.copyTable} className="button-primary">
+            Test Copy All
+          </button>
+        </div> */}
+        <h3
+          className="panel-title"
+          style={{
+            marginTop: 0,
+            marginBottom: "8px"
+          }}
+        >
+          {this.getTitleDisplay()}
+        </h3>
+        <table
+          className="table score-summary-table"
+          ref={this.tableRef}
+          style={this.tableStyle}
+        >
           {!noSummaryData && this.renderTableHeaders()}
           <tbody>
             {noSummaryData && this.renderNoDataRow()}

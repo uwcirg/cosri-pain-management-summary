@@ -78,6 +78,7 @@ export default class SurveyGraph extends Component {
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
     this.handleSwitchChange = this.handleSwitchChange.bind(this);
+    this.copyGraphImage = this.copyGraphImage.bind(this);
 
     // refs
     this.graphContainerRef = React.createRef();
@@ -501,6 +502,15 @@ export default class SurveyGraph extends Component {
       : 0; // minus the height of the slider
   }
 
+  copyGraphImage() {
+    let options = this.copyImageOptions;
+    const imageConainerHeight = this.getImageContainerHeight();
+    if (imageConainerHeight) {
+      options.height = imageConainerHeight;
+    }
+    copyDomToClipboard(this.graphContainerRef.current, options);
+  }
+
   renderLegend() {
     const qids = this.getQIds();
     return (
@@ -627,14 +637,7 @@ export default class SurveyGraph extends Component {
     return (
       <button
         //   onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
-        onClick={() => {
-          let options = this.copyImageOptions;
-          const imageConainerHeight = this.getImageContainerHeight();
-          if (imageConainerHeight) {
-            options.height = imageConainerHeight;
-          }
-          copyDomToClipboard(this.graphContainerRef.current, options);
-        }}
+        onClick={this.copyGraphImage}
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
         title="copy graph"

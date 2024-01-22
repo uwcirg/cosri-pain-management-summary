@@ -399,7 +399,7 @@ export default class BodyDiagram extends Component {
       <img
         ref={this.printImageRef}
         alt="for print"
-        className="exclude-from-copy print-image absolute"
+        className="exclude-from-copy body-diagram print-image absolute"
       ></img>
     );
   }
@@ -629,6 +629,7 @@ export default class BodyDiagram extends Component {
             position: "relative",
             paddingBottom: "12px",
           }}
+          className="body-diagram-parent-container"
         >
           <div
             className="flex"

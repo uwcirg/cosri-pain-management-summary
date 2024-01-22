@@ -85,7 +85,7 @@ export default class Report extends Component {
   renderSubSectionAnchor(item) {
     return (
       <div id={`${item.dataKey}_anchor`} className="sub-section__anchor"></div>
-    )
+    );
   }
   renderSubSectionHeader(item, summaryData) {
     return (
@@ -97,7 +97,10 @@ export default class Report extends Component {
   }
   renderSubSectionTitle(item) {
     return (
-      <span className="sub-section__header__name">
+      <span
+        className="sub-section__header__name"
+        style={{ fontWeight: 700, fontSize: "1.1em" }}
+      >
         <FontAwesomeIcon
           className={`flag flag-nav`}
           icon={"circle"}
