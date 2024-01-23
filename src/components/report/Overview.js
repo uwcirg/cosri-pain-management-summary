@@ -21,13 +21,19 @@ export default class Overview extends Component {
 
     const surveyGraphNode = document.querySelector(".survey-graph.print-image");
     if (surveyGraphNode) {
-      console.log("graph html ", surveyGraphNode.outerHTML)
+      console.log("graph html ", surveyGraphNode.outerHTML);
+      surveyGraphNode.style.position = "relative";
+      surveyGraphNode.style.zIndex = 1;
+      surveyGraphNode.style.width = "500px";
+      surveyGraphNode.style.display = "block";
       this.summaryHTML += surveyGraphNode.outerHTML;
     }
 
-    const bodyDiagramGraphNode = document.querySelector(".body-diagram.print-image");
+    const bodyDiagramGraphNode = document.querySelector(
+      ".body-diagram.print-image"
+    );
     if (bodyDiagramGraphNode) {
-      console.log("body diagram html ", bodyDiagramGraphNode.outerHTML)
+      console.log("body diagram html ", bodyDiagramGraphNode.outerHTML);
       this.summaryHTML += bodyDiagramGraphNode.outerHTML;
     }
 
@@ -69,6 +75,9 @@ export default class Overview extends Component {
     sections.forEach((section, index) => {
       const headerElement = section.querySelector(".sub-section__header__name");
       if (headerElement) {
+        headerElement
+          .querySelectorAll(".flag")
+          .forEach((flagElement) => (flagElement.style.display = "none"));
         this.summaryHTML += "<br/><br/>";
         this.summaryHTML += headerElement.outerHTML;
       }
@@ -82,6 +91,9 @@ export default class Overview extends Component {
         });
         summaryElement.querySelectorAll("td, th").forEach((cellElement) => {
           cellElement.style.padding = "8px";
+        });
+        summaryElement.querySelectorAll(".icon").forEach((iconElement) => {
+          iconElement.style.display = "none";
         });
         this.summaryHTML += summaryElement.outerHTML;
       }
@@ -134,7 +146,7 @@ export default class Overview extends Component {
     // //body-diagram print-image
     // console.log("summary HTML ", this.summaryHTML)
     writeHTMLToClipboard(
-      "<div style='font-family: Arial, sans-serif'>" +
+      "<div style='font-family: Arial, sans-serif; padding: 16px;'>" +
         this.summaryHTML +
         "</div>"
     )
