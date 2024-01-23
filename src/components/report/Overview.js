@@ -19,15 +19,27 @@ export default class Overview extends Component {
   async copyAllData() {
     if (!allowCopyClipboardItem()) return null;
 
+    const surveyGraphNode = document.querySelector(".survey-graph.print-image");
+    if (surveyGraphNode) {
+      console.log("graph html ", surveyGraphNode.outerHTML)
+      this.summaryHTML += surveyGraphNode.outerHTML;
+    }
+
+    const bodyDiagramGraphNode = document.querySelector(".body-diagram.print-image");
+    if (bodyDiagramGraphNode) {
+      console.log("body diagram html ", bodyDiagramGraphNode.outerHTML)
+      this.summaryHTML += bodyDiagramGraphNode.outerHTML;
+    }
+
     const summaryNode = document
       .querySelector(".report .summary__display")
       .cloneNode(true);
     summaryNode.querySelectorAll("table").forEach((node) => {
       node.style.fontFamily = "Arial, sans-serif";
-      node.querySelectorAll("td").forEach(cell => {
+      node.querySelectorAll("td").forEach((cell) => {
         cell.style.padding = "8px";
         cell.style.verticalAlign = "middle";
-      })
+      });
     });
     const sections = summaryNode.querySelectorAll(".sub-section");
     const scoreSummaryNode = document
@@ -48,11 +60,18 @@ export default class Overview extends Component {
         span.innerText = ` (${imageElement.getAttribute("alt")}) `;
         imageElement.replaceWith(span);
       });
+      scoreSummaryNode.querySelectorAll("td, th").forEach((cellElement) => {
+        cellElement.style.padding = "8px";
+      });
+      this.summaryHTML += scoreSummaryNode.outerHTML;
     }
 
     sections.forEach((section, index) => {
       const headerElement = section.querySelector(".sub-section__header__name");
-      if (headerElement) this.summaryHTML += headerElement.outerHTML;
+      if (headerElement) {
+        this.summaryHTML += "<br/><br/>";
+        this.summaryHTML += headerElement.outerHTML;
+      }
       const summaryElement = section.querySelector(".responses-summary-table");
       if (summaryElement) {
         this.summaryHTML += "<br/><br/>";
@@ -60,6 +79,9 @@ export default class Overview extends Component {
           const span = document.createElement("span");
           span.innerText = `(${imageElement.getAttribute("alt")})`;
           imageElement.replaceWith(span);
+        });
+        summaryElement.querySelectorAll("td, th").forEach((cellElement) => {
+          cellElement.style.padding = "8px";
         });
         this.summaryHTML += summaryElement.outerHTML;
       }
@@ -79,14 +101,23 @@ export default class Overview extends Component {
         this.summaryHTML += "<br/><hr/><br/>";
       }
     });
-    // const imageBlob = await toBlob(document.querySelector(".survey-svg-container"), {
-    //   filter: (node) => {
-    //     const exclusionClasses = ["exclude-from-copy"];
-    //     return !exclusionClasses.some((classname) =>
-    //       node.classList?.contains(classname)
-    //     );
-    //   },
-    // });
+    // const imageBlob = await toBlob(
+    //   document.querySelector(".survey-svg-container"),
+    //   {
+    //     filter: (node) => {
+    //       const exclusionClasses = ["exclude-from-copy"];
+    //       return !exclusionClasses.some((classname) =>
+    //         node.classList?.contains(classname)
+    //       );
+    //     },
+    //   }
+    // );
+    // const summaryItem = {
+    //   "image/png": imageBlob,
+    //   "text/html": new Blob([this.summaryHTML], {
+    //     type: "text/html"
+    //   })
+    // };
     // console.log("imaging blob ", imageBlob);
     // const imageBlob2 = await toBlob(document.querySelector(".body-diagram.print-image"), {
     //   filter: (node) => {
@@ -97,15 +128,13 @@ export default class Overview extends Component {
     //   },
     // });
     // console.log("imaging blob ", imageBlob2);
-    // navigator.clipboard.write([summaryItem]).then(() => alert("content copied"));
-    //body-diagram print-image
+    // navigator.clipboard
+    //   .write([new window.ClipboardItem(summaryItem)])
+    //   .then(() => alert("content copied"));
+    // //body-diagram print-image
+    // console.log("summary HTML ", this.summaryHTML)
     writeHTMLToClipboard(
       "<div style='font-family: Arial, sans-serif'>" +
-        // document
-        //   .querySelector(".score-panel")
-        //   .outerHTML.replace(/<a.*?>|<\/a>/gi, "") +
-        scoreSummaryNode.outerHTML +
-        "<hr/><br/>" +
         this.summaryHTML +
         "</div>"
     )
@@ -168,7 +197,11 @@ export default class Overview extends Component {
           {/* JUST to test copy */}
           <div style={{ marginBottom: "16px", textAlign: "right" }}>
             {" "}
-            <button onClick={this.copyAllData} className="button-primary" title="text only, can't seem to get images to copy at the same time.  what the hell">
+            <button
+              onClick={this.copyAllData}
+              className="button-primary"
+              title="text only, can't seem to get images to copy at the same time.  what the hell"
+            >
               Test Copy All HTML Text
             </button>
           </div>

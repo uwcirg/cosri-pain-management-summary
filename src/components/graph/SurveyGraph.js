@@ -572,7 +572,7 @@ export default class SurveyGraph extends Component {
       <img
         ref={this.printImageRef}
         alt="for print"
-        className="print-image"
+        className="survey-graph print-image"
         style={{ zIndex: -1, position: "absolute", width: "100%" }}
       ></img>
     );
