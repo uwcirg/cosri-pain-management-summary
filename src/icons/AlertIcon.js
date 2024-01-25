@@ -3,7 +3,7 @@ export default function AlertIcon(props) {
   return (
     <img
       src={process.env.PUBLIC_URL + "/assets/images/alertExclamation.png"}
-      alt="alert"
+      alt={props.alt?props.alt:"alert"}
       {...props}
     />
   );

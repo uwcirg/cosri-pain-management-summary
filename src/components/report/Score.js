@@ -7,11 +7,12 @@ import { isNumber } from "../../helpers/utility";
 export default class Score extends Component {
   render() {
     if (!isNumber(this.props.score)) return "--";
-    
+
     const { cssClass, score, scoreParams } = this.props;
-    const scoreSeverity = scoreParams && scoreParams.scoreSeverity
-      ? String(scoreParams.scoreSeverity).toLowerCase()
-      : null;
+    const scoreSeverity =
+      scoreParams && scoreParams.scoreSeverity
+        ? String(scoreParams.scoreSeverity).toLowerCase()
+        : null;
     const arrColoredSeverities = ["high", "moderately high", "moderate"];
     const arrModerateSeverities = ["moderate", "moderately high"];
     const highSeverity = scoreSeverity === "high";
@@ -26,8 +27,10 @@ export default class Score extends Component {
       return (
         <div className={`flex flex-space-between ${cssClass}`}>
           <span className={iconClass}>{score}</span>
-          {highSeverity && !moderateSeverity && <AlertIcon />}
-          {moderateSeverity && <WarningIcon />}
+          {highSeverity && !moderateSeverity && (
+            <AlertIcon alt="high severity" />
+          )}
+          {moderateSeverity && <WarningIcon alt="moderate severity" />}
         </div>
       );
     return <div className={`flex ${cssClass}`}>{score}</div>;
