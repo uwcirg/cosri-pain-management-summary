@@ -55,6 +55,7 @@ export default class Overview extends Component {
       const tableElement = scoreSummaryNode.querySelector("table");
       if (tableElement) {
         tableElement.style.fontFamily = "Ariel, sans-serif";
+        tableElement.setAttribute("width", "100%")
       }
       scoreSummaryNode.querySelectorAll("a").forEach((anchorElement) => {
         const span = document.createElement("span");
@@ -84,6 +85,7 @@ export default class Overview extends Component {
       const summaryElement = section.querySelector(".responses-summary-table");
       if (summaryElement) {
         this.summaryHTML += "<br/><br/>";
+        summaryElement.setAttribute("width", "100%");
         summaryElement.querySelectorAll("img").forEach((imageElement) => {
           const span = document.createElement("span");
           span.innerText = `(${imageElement.getAttribute("alt")})`;
@@ -102,6 +104,7 @@ export default class Overview extends Component {
       );
       if (responseElement) {
         this.summaryHTML += "<br/><br/>";
+        responseElement.setAttribute("width", "100%");
         this.summaryHTML += responseElement.outerHTML;
       }
       const noEntryElement = section.querySelector(".no-entries");
