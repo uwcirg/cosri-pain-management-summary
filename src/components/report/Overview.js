@@ -210,7 +210,7 @@ export default class Overview extends Component {
         </div>
         <div className={`panel ${noSummaryData ? "no-entries" : ""}`}>
           {/* JUST to test copy */}
-          <div style={{ marginBottom: "16px", textAlign: "right" }}>
+          {/* <div style={{ marginBottom: "16px", textAlign: "right" }}>
             {" "}
             <button
               onClick={this.copyAllData}
@@ -219,7 +219,7 @@ export default class Overview extends Component {
             >
               Test Copy All HTML Text
             </button>
-          </div>
+          </div> */}
           <div className="panel__item bordered full-width score-panel">
             <ScoringSummary
               summary={dataToShow}
