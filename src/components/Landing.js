@@ -22,6 +22,7 @@ import Header from "./Header";
 import Report from "./Report";
 import Summary from "./Summary";
 import Spinner from "../elements/Spinner";
+import CopyPaste from "./report/CopyPaste";
 
 let uuid = 0;
 let processIntervalId = 0;
@@ -186,7 +187,7 @@ export default class Landing extends Component {
   writeToLog(message, level, params) {
     if (!getEnv("REACT_APP_CONF_API_URL")) return;
     if (!message) return;
-    const logLevel = level ? level: "info";
+    const logLevel = level ? level : "info";
     const logParams = params ? params : {};
     if (!logParams.tags) logParams.tags = [];
     logParams.tags.push("cosri-frontend");
@@ -372,8 +373,8 @@ export default class Landing extends Component {
   }
 
   initializeTocBot() {
-   // const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 156: 100;
-   const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 156: 100;
+    // const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 156: 100;
+    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 156 : 100;
     tocbot.init({
       tocSelector: ".active .summary__nav", // where to render the table of contents
       contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
@@ -381,9 +382,9 @@ export default class Landing extends Component {
       positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
       collapseDepth: 0, // how many heading levels should not be collpased
       includeHtml: true, // include the HTML markup from the heading node, not just the text,
-     // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
+      // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
       headingsOffset: 1 * MIN_HEADER_HEIGHT,
-      scrollSmoothOffset: -1 * (MIN_HEADER_HEIGHT),
+      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT
     });
   }
 
@@ -399,7 +400,7 @@ export default class Landing extends Component {
     //page title
     document.title = "COSRI";
     if (this.shouldShowTabs()) {
-        document.querySelector("body").classList.add("has-tabs");
+      document.querySelector("body").classList.add("has-tabs");
     }
     this.handleHeaderPos();
   }
@@ -407,15 +408,18 @@ export default class Landing extends Component {
    * fixed header when scrolling in the event that it is not within viewport
    */
   handleHeaderPos() {
-    document.addEventListener("scroll",  () => {
+    document.addEventListener("scroll", () => {
       clearTimeout(scrollHeaderIntervalId);
-      scrollHeaderIntervalId = setTimeout(function () {
-        if (!isInViewport(this.anchorTopRef.current)) {
-          document.querySelector("body").classList.add("fixed");
-          return;
-        }
-        document.querySelector("body").classList.remove("fixed");
-      }.bind(this), 150);
+      scrollHeaderIntervalId = setTimeout(
+        function () {
+          if (!isInViewport(this.anchorTopRef.current)) {
+            document.querySelector("body").classList.add("fixed");
+            return;
+          }
+          document.querySelector("body").classList.remove("fixed");
+        }.bind(this),
+        150
+      );
     });
   }
   /*
@@ -1235,6 +1239,15 @@ export default class Landing extends Component {
             </div>
           );
         })}
+        {/* TODO: REMOVE, this just to test copy and paste */}
+        <div
+          className={`tab ${this.state.activeTab === 10 ? "active" : ""}`}
+          onClick={() => this.handleSetActiveTab(10)}
+          role="presentation"
+          key={`tab_10`}
+        >
+          COPY & PASTE
+        </div>
       </div>
     );
   }
@@ -1243,22 +1256,33 @@ export default class Landing extends Component {
     const tabs = this.getTabs();
     return (
       <div className="tab-panels">
-        {tabs.map((item, index) => {
-          return (
-            <div
-              className={`tab-panel ${
-                this.state.activeTab === index ? "active" : ""
-              } ${tabs.length > 1 ? "multi-tabs" : ""}`}
-              key={`tab-panel_${item}`}
-            >
-              {item === "overview" && this.renderSummary(summary, sectionFlags)}
-              {item === "report" && (
-                <Report summaryData={summary.SurveySummary}></Report>
-              )}
-              {/* other tab panel as specified here */}
-            </div>
-          );
-        })}
+        <React.Fragment>
+          {tabs.map((item, index) => {
+            return (
+              <div
+                className={`tab-panel ${
+                  this.state.activeTab === index ? "active" : ""
+                } ${tabs.length > 1 ? "multi-tabs" : ""}`}
+                key={`tab-panel_${item}`}
+              >
+                {item === "overview" &&
+                  this.renderSummary(summary, sectionFlags)}
+                {item === "report" && (
+                  <Report summaryData={summary.SurveySummary}></Report>
+                )}
+                {/* other tab panel as specified here */}
+              </div>
+            );
+          })}
+          {/* TODO: remove later, this just to test copy and paste */}
+          <div
+            className={`tab-panel  multi-tabs ${
+              this.state.activeTab === 10 ? "active" : ""
+            }`}
+          >
+            <CopyPaste patientInfo={summary.Patient}></CopyPaste>
+          </div>
+        </React.Fragment>
       </div>
     );
   }

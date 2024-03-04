@@ -9,6 +9,9 @@
     font-size: 0.95rem;
     box-shadow: 1px 1px 2px $color-box-shadow;
     cursor: pointer;
+    &[disabled] {
+        background-color: $color-blue-disabled;
+    }
 }
 .button-default {
     background: #FFF;
