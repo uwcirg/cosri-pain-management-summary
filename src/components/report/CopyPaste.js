@@ -25,6 +25,7 @@ export default class CopyPaste extends Component {
   handleContentChange() {
     this.setState({
       contentHTML: this.contentAreaRef.current.innerHTML,
+      previousContent: ""
     });
   }
 
@@ -38,7 +39,15 @@ export default class CopyPaste extends Component {
           this.importScoreSummaryContent();
           return;
         }
-        this.clear();
+        const tempNode = this.contentAreaRef.current.cloneNode(true);
+        console.log("temp node? ", tempNode);
+        const originalElement = tempNode.querySelector(".original");
+        console.log("original ", originalElement)
+        this.setState({
+          contentHTML: originalElement.innerHTML
+        }, () => {
+          this.contentAreaRef.current.innerHTML = this.state.contentHTML
+        })
       }
     );
   }
@@ -47,6 +56,7 @@ export default class CopyPaste extends Component {
     this.setState(
       {
         contentHTML: this.getDefaultContent(),
+        hasScoreSummary: false
       },
       () => {
         this.contentAreaRef.current.innerHTML = this.state.contentHTML;
@@ -100,9 +110,13 @@ export default class CopyPaste extends Component {
         {
           contentHTML:
             "<div style='font-family: ariel, sans-serif'>" +
-            this.contentAreaRef.current.innerHTML +
-            "<br/><br/>" +
-            scoreSummaryNode.outerHTML +
+            "<div class='original'>" +
+            this.state.contentHTML +
+            "</div>" + 
+            "<div class='score-summary-content'>" +
+              "<br/><br/>" +
+              scoreSummaryNode.outerHTML +
+            "</div>" +
             "</div>",
         },
         () => {
@@ -144,6 +158,9 @@ export default class CopyPaste extends Component {
             type="checkbox"
             onChange={this.handleGetScoreSummary}
             checked={this.state.hasScoreSummary}
+            style={{
+              marginRight: "8px"
+            }}
           ></input>
           Add scoring summary table content to box area
         </label>
