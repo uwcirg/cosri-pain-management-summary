@@ -25,7 +25,7 @@ export default class CopyPaste extends Component {
   handleContentChange() {
     this.setState({
       contentHTML: this.contentAreaRef.current.innerHTML,
-      previousContent: ""
+      previousContent: "",
     });
   }
 
@@ -42,12 +42,15 @@ export default class CopyPaste extends Component {
         const tempNode = this.contentAreaRef.current.cloneNode(true);
         console.log("temp node? ", tempNode);
         const originalElement = tempNode.querySelector(".original");
-        console.log("original ", originalElement)
-        this.setState({
-          contentHTML: originalElement.innerHTML
-        }, () => {
-          this.contentAreaRef.current.innerHTML = this.state.contentHTML
-        })
+        console.log("original ", originalElement);
+        this.setState(
+          {
+            contentHTML: originalElement.innerHTML,
+          },
+          () => {
+            this.contentAreaRef.current.innerHTML = this.state.contentHTML;
+          }
+        );
       }
     );
   }
@@ -56,7 +59,7 @@ export default class CopyPaste extends Component {
     this.setState(
       {
         contentHTML: this.getDefaultContent(),
-        hasScoreSummary: false
+        hasScoreSummary: false,
       },
       () => {
         this.contentAreaRef.current.innerHTML = this.state.contentHTML;
@@ -112,10 +115,10 @@ export default class CopyPaste extends Component {
             "<div style='font-family: ariel, sans-serif'>" +
             "<div class='original'>" +
             this.state.contentHTML +
-            "</div>" + 
+            "</div>" +
             "<div class='score-summary-content'>" +
-              "<br/><br/>" +
-              scoreSummaryNode.outerHTML +
+            "<br/><br/>" +
+            scoreSummaryNode.outerHTML +
             "</div>" +
             "</div>",
         },
@@ -130,16 +133,22 @@ export default class CopyPaste extends Component {
       lineHeight: 1.5,
       "&:marker": {
         color: "#217684",
-        fontSize: "1.5rem"
-      }
-    }
+        fontSize: "1.5rem",
+      },
+    };
     return (
       <div>
-        <ul style={{ marginBlockEnd: "8px" }}>
+        <ul
+          style={{
+            marginBlockEnd: "8px",
+            paddingLeft: "16px",
+            paddingRight: "16px",
+          }}
+        >
           <li style={listItemStyle}>
-            To copy the usual way: Highlight the content you entered in the box area. Right-click the
-            highlighted content and select "Copy" from the popup menu to copy
-            content to clipboard.
+            To copy the usual way: Highlight the content you entered in the box
+            area. Right-click the highlighted content and select "Copy" from the
+            popup menu to copy content to clipboard.
           </li>
           <li style={listItemStyle}>
             OR click the "Copy box area content to clipboard" button below to
@@ -151,14 +160,14 @@ export default class CopyPaste extends Component {
   }
   renderImportScoreSummaryCheckbox() {
     return (
-      <div style={{textAlign: "right"}}>
+      <div style={{ textAlign: "right" }}>
         <label>
           <input
             type="checkbox"
             onChange={this.handleGetScoreSummary}
             checked={this.state.hasScoreSummary}
             style={{
-              marginRight: "8px"
+              marginRight: "8px",
             }}
           ></input>
           Add scoring summary table content to box area
@@ -182,7 +191,7 @@ export default class CopyPaste extends Component {
           gap: "16px",
           flexWrap: "wrap",
           marginTop: "8px",
-          marginBottom: "16px"
+          marginBottom: "16px",
         }}
       >
         <button

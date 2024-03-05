@@ -34,7 +34,7 @@ input[type="range"] {
     &.rotate {
       top: 8px;
       &:first-of-type {
-        top: 16px;
+        top: 24px;
       }
       transform: rotate(-90deg);
       &:not(:first-of-type) {

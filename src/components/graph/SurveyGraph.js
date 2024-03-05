@@ -765,42 +765,51 @@ export default class SurveyGraph extends Component {
             noValidate
           />
           <div className="scale">
-            {arrNum.map((item, index) => (
-              <span
-                key={`scale_${index}`}
-                className={`label ${
-                  Math.abs(this.state.selectedDateRange - item) < 0.001
-                    ? "active"
-                    : ""
-                } ${inYears && max >= 10 && item && item < 1 ? "rotate" : ""}`}
-                ref={this.scaleLabelRefs[index]}
-                datavalue={item}
-                dataunit={item < 1 ? "month" : "year"}
-              >
-                {item < 1 || !inYears
-                  ? !inYears
-                    ? item
-                      ? item * 12 + "mo"
-                      : item
-                    : item === arrNum[0] ||
-                      (max < 10 &&
-                        item - arrNum[0] > 0.25 &&
-                        (item / 0.25) % 1 === 0) ||
-                      (max < 10 &&
-                        item - arrNum[0] > 0.25 &&
-                        (item / 0.5) % 1 === 0) ||
-                      (max < 10 &&
-                        item - arrNum[0] > 0.25 &&
-                        (item / 0.75) % 1 === 0)
-                    ? item
-                      ? item * 12 + "mo"
-                      : item
-                    : ""
-                  : item % 1 === 0
-                  ? item + "yr"
-                  : ""}
-              </span>
-            ))}
+            {arrNum.map((item, index) => {
+              const nextItem = arrNum[index + 1];
+              const rotateLabelFlag = nextItem && nextItem - item < 0.5;
+              return (
+                <span
+                  key={`scale_${index}`}
+                  className={`label ${
+                    Math.abs(this.state.selectedDateRange - item) < 0.001
+                      ? "active"
+                      : ""
+                  } ${
+                    rotateLabelFlag ||
+                    (inYears && max >= 10 && item && item < 1)
+                      ? "rotate"
+                      : ""
+                  }`}
+                  ref={this.scaleLabelRefs[index]}
+                  datavalue={item}
+                  dataunit={item < 1 ? "month" : "year"}
+                >
+                  {item < 1 || !inYears
+                    ? !inYears
+                      ? item
+                        ? item * 12 + "mo"
+                        : item
+                      : item === arrNum[0] ||
+                        (max < 10 &&
+                          item - arrNum[0] > 0.25 &&
+                          (item / 0.25) % 1 === 0) ||
+                        (max < 10 &&
+                          item - arrNum[0] > 0.25 &&
+                          (item / 0.5) % 1 === 0) ||
+                        (max < 10 &&
+                          item - arrNum[0] > 0.25 &&
+                          (item / 0.75) % 1 === 0)
+                      ? item
+                        ? item * 12 + "mo"
+                        : item
+                      : ""
+                    : item % 1 === 0
+                    ? item + "yr"
+                    : ""}
+                </span>
+              );
+            })}
           </div>
         </div>
         <div className="bottom-info-text exclude-from-copy">date range</div>

@@ -351,7 +351,9 @@ export default class Landing extends Component {
             );
             this.processSummaryErrors(result.Summary);
             this.processOverviewStatsData(result["Summary"]);
-            this.processAlerts(result["Summary"], sectionFlags);
+            if (summaryMap[this.getOverviewSectionKey()]) {
+              this.processAlerts(result["Summary"], sectionFlags);
+            }
             this.processGraphData(result["Summary"]);
             this.setState({ result, sectionFlags, flaggedCount });
             this.setState({ loading: false });
@@ -497,10 +499,6 @@ export default class Landing extends Component {
   }
 
   processAlerts(summary, sectionFlags) {
-    let overviewSection = summaryMap[this.getOverviewSectionKey()];
-    if (!overviewSection) {
-      return false;
-    }
     let alerts = [];
     if (!sectionFlags) {
       return alerts;
