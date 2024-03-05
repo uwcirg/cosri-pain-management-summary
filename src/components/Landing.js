@@ -321,10 +321,11 @@ export default class Landing extends Component {
     Timeout();
     this.pingProcessProgress();
     let result = {};
-    Promise.all([executeElm(this.state.collector, this.state.resourceTypes)])
+    executeElm(this.state.collector, this.state.resourceType)
       .then((response) => {
         //set result from data from EPIC
-        let fhirData = response[0];
+        // let fhirData = response[0];
+        let fhirData = response;
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         this.setSectionVis();
         const { sectionFlags, flaggedCount } = this.processSummary(

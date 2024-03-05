@@ -135,10 +135,9 @@ export default class CopyPaste extends Component {
     }
     return (
       <div>
-        <h4>To Copy:</h4>
         <ul style={{ marginBlockEnd: "8px" }}>
           <li style={listItemStyle}>
-            The usual way: Highlight the content you entered in the box area. Right-click the
+            To copy the usual way: Highlight the content you entered in the box area. Right-click the
             highlighted content and select "Copy" from the popup menu to copy
             content to clipboard.
           </li>
