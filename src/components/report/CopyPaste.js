@@ -81,7 +81,7 @@ export default class CopyPaste extends Component {
 
   getDefaultContent() {
     const patientInfo = this.props.patientInfo;
-    return patientInfo ? patientInfo.Name : "Copy content";
+    return patientInfo ? patientInfo.Name : "";
   }
 
   importScoreSummaryContent() {
