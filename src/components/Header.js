@@ -64,7 +64,7 @@ export default class Header extends Component {
               <div className="flex" style={{alignItems: "flex-start"}}>
                 <FontAwesomeIcon className="patient-icon" icon="user-circle" title="patient" />
                 <div>
-                  <h1 className="patient-name">{patientName}</h1>
+                  <h1 className="patient-name">{patientName??"Name not available"}</h1>
                   <div className="patient-demographics">
                     <span className="patient-dob" aria-label="Date of birth">DOB: {patientDOB}</span>
                     <span className="patient-gender">{patientGender}</span>
