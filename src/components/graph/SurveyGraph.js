@@ -766,8 +766,7 @@ export default class SurveyGraph extends Component {
           />
           <div className="scale">
             {arrNum.map((item, index) => {
-              const nextItem = arrNum[index + 1];
-              const rotateLabelFlag = nextItem && nextItem - item < 0.5;
+              const rotateLabelFlag = inYears && item < 1;
               return (
                 <span
                   key={`scale_${index}`}

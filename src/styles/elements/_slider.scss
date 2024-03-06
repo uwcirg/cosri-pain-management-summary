@@ -32,9 +32,9 @@ input[type="range"] {
       font-weight: 900;
     }
     &.rotate {
-      top: 8px;
+      top: 4px;
       &:first-of-type {
-        top: 24px;
+        top: 16px;
       }
       transform: rotate(-90deg);
       &:not(:first-of-type) {

@@ -103,13 +103,29 @@ async function executeELM(collector, oResourceTypes) {
         //debugging
         console.log("bundle loaded? ", bundle);
         patientSource.loadBundles([bundle]);
-        const results = executor.exec(patientSource);
+        let results;
+        try {
+          results = executor.exec(patientSource);
+        } catch (e) {
+          console.log("Error occurred executing CQL ", e);
+          if (collector) {
+            collector.forEach((item) => {
+              if (
+                item.data &&
+                String(item.data.resourceType).toLowerCase() === "bundle"
+              )
+                item.error = "Unable to process data.  Please see console for detail.";
+            });
+          }
+          results = null;
+        }
         //debugging
         console.log("CQL execution results ", results);
 
-        let evalResults = results.patientResults
-          ? results.patientResults[Object.keys(results.patientResults)[0]]
-          : {};
+        let evalResults =
+          results && results.patientResults
+            ? results.patientResults[Object.keys(results.patientResults)[0]]
+            : {};
 
         if (!INSTRUMENT_LIST) return evalResults;
 

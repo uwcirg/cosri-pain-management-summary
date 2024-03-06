@@ -120,17 +120,19 @@ export default class Landing extends Component {
       return item.error;
     });
     collectorErrors.forEach((item) => {
-      this.setError(`[${item.type}] ${item.error}`);
+      const sourceType = item.type??item.url;
+      const sourceTypeText = sourceType ? `[${sourceType}]` : "";
+      this.setError(`${sourceTypeText} ${item.error}`);
     });
   }
   //compile error(s) related to MME calculations
   processSummaryErrors(summary) {
     if (!summary) return false;
+    let errors = [];
     //PDMP medications
     let pdmpMeds = summary["PDMPMedications"];
     if (pdmpMeds && pdmpMeds["PDMPMedications"]) {
       let o = pdmpMeds["PDMPMedications"];
-      let errors = [];
       let errorItems = [];
       o.forEach((item) => {
         //do not report medication that has been reported
@@ -1002,7 +1004,7 @@ export default class Landing extends Component {
   }
 
   getAnalyticsData(endpoint, apikey, summary) {
-    const meetsInclusionCriteria = summary.Patient.MeetsInclusionCriteria;
+    const meetsInclusionCriteria = summary.Patient ? summary.Patient.MeetsInclusionCriteria : false;
     const applicationAnalytics = {
       meetsInclusionCriteria,
     };
@@ -1182,12 +1184,13 @@ export default class Landing extends Component {
   }
 
   renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
+    const summaryPatient = summary.Patient ?? {};
     return (
       <Header
-        patientName={summary.Patient.Name}
+        patientName={summaryPatient.Name}
         patientDOB={datishFormat(this.state.result, patientResource.birthDate)}
-        patientGender={summary.Patient.Gender}
-        meetsInclusionCriteria={summary.Patient.MeetsInclusionCriteria}
+        patientGender={summaryPatient.Gender}
+        meetsInclusionCriteria={summaryPatient.MeetsInclusionCriteria}
         patientSearchURL={PATIENT_SEARCH_URL}
         siteID={getEnv("REACT_APP_SITE_ID")}
       />

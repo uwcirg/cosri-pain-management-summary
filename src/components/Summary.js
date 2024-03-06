@@ -746,7 +746,7 @@ export default class Summary extends Component {
 
   render() {
     const { summary, collector } = this.props;
-    const meetsInclusionCriteria = summary.Patient.MeetsInclusionCriteria;
+    const meetsInclusionCriteria = summary.Patient ? !!summary.Patient.MeetsInclusionCriteria : false;
     const {
       EducationMaterials,
       PatientRiskOverview_graph,

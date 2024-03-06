@@ -11,6 +11,10 @@
     color: $color-white;
     padding: 56px 0 32px 0px;
     width: $summary-nav-width;
+    &:empty {
+      width: 0;
+      overflow: hidden;
+    }
     z-index: 1;
     transition: opacity 450ms ease 100ms;
 
@@ -140,6 +144,12 @@
     min-height: calc(100vh - 100px);
     width: 48px;
     min-width: 48px;
+    &:has(.summary__nav:empty) {
+      width: 0;
+      overflow: hidden;
+      background-color: transparent;
+      min-width: 0;
+    }
     background-color: $color-gray-dark;
     transition: all 350ms ease-in-out;
     position: relative;
