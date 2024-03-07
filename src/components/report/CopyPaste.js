@@ -120,17 +120,17 @@ export default class CopyPaste extends Component {
       if (tableElement) {
         copyText += "\r\n";
         const rows = tableElement.querySelectorAll("tr");
-        const arrLengths = [];
+        const arrHeaderLengths = [];
         rows.forEach((r) => {
           const rCells = r.querySelectorAll("th, td");
           rCells.forEach((cell, cIndex) => {
             if (cIndex === 0) {
-              arrLengths.push(cell.textContent?.length ?? 0);
+              arrHeaderLengths.push(cell.textContent?.length ?? 0);
             }
           });
         });
-        console.log("arr Lengths ", arrLengths);
-        const maxLength = Math.max(...arrLengths);
+        console.log("arr Lengths ", arrHeaderLengths);
+        const maxLength = Math.max(...arrHeaderLengths);
 
         const headerCells = tableElement.querySelectorAll("th");
         headerCells.forEach((cell, index) => {
@@ -155,6 +155,17 @@ export default class CopyPaste extends Component {
           //   console.log("max length ", maxLength);
           let cellText = "";
           cells.forEach((cell, index) => {
+            const arrLengths = [];
+            rows.forEach((r) => {
+              const rCells = r.querySelectorAll("th, td");
+              rCells.forEach((cell, cIndex) => {
+                if (cIndex === index) {
+                  arrLengths.push(cell.textContent?.length ?? 0);
+                }
+              });
+            });
+            console.log("arr Lengths ", arrLengths);
+            const maxLength = Math.max(...arrLengths);
             const delimiter =
               cell.textContent?.length >= maxLength
                 ? " | "
@@ -164,6 +175,7 @@ export default class CopyPaste extends Component {
             //const delimiter = "  |  ";
             cellText +=
               cell.textContent + (index < cells.length - 1 ? delimiter : "");
+            console.log("cell content ", cell.textContent)
           });
           copyText += cellText;
           if (rindex !== 0) {
