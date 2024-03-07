@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {
   allowCopyClipboardItem,
- // writeHTMLToClipboard,
+  // writeHTMLToClipboard,
   writeTextToClipboard,
 } from "../../helpers/utility";
 
@@ -116,26 +116,53 @@ export default class CopyPaste extends Component {
         imageElement.replaceWith(span);
       });
       const tableElement = scoreSummaryNode.querySelector("table");
+     
       if (tableElement) {
-        const headerCells = tableElement.querySelectorAll("th");
-        headerCells.forEach((cell, index) => {
-          const delimiter = "  |  ";
-          copyText +=
-              cell.innerText + (index > 0 && index < headerCells.length-1 ? delimiter : "");
-        });
         copyText += "\r\n";
         const rows = tableElement.querySelectorAll("tr");
+        const arrLengths = [];
+        rows.forEach((r) => {
+          const rCells = r.querySelectorAll("th, td");
+          rCells.forEach((cell, cIndex) => {
+            if (cIndex === 0) {
+              arrLengths.push(cell.textContent?.length ?? 0);
+            }
+          });
+        });
+        console.log("arr Lengths ", arrLengths);
+        const maxLength = Math.max(...arrLengths);
+
+        const headerCells = tableElement.querySelectorAll("th");
+        headerCells.forEach((cell, index) => {
+          const delimiter =
+            cell.textContent?.length >= maxLength
+              ? " | "
+              : [...Array(maxLength - cell.textContent?.length).keys()]
+                  .map((item) => " ")
+                  .join("") + " | ";
+            copyText +=
+            cell.innerText +
+            (index < headerCells.length - 1 ? delimiter : "");
+        });
+
+        copyText += "\r\n" + [...Array(copyText.length)].map(() => "-").join("") + "\r\n";
+       // copyText += ([...headerCells].map(h => h.textContent.length)).map(c => Array(c).keys().map(() => "--").join("")).join("");
         rows.forEach((row, rindex) => {
           const cells = row.querySelectorAll("td");
-       //   const arrCells = [...cells].map(cell=> cell.innerText?.length??0);
-       //  console.log("arrCells ", arrCells)
-      //    const maxLength = Math.max(...arrCells);
-       //   console.log("max length ", maxLength);
+          //   const arrCells = [...cells].map(cell=> cell.innerText?.length??0);
+          //  console.log("arrCells ", arrCells)
+          //    const maxLength = Math.max(...arrCells);
+          //   console.log("max length ", maxLength);
           cells.forEach((cell, index) => {
-            //const delimiter =  cell.innerText?.length >= maxLength ? " | " :   [...Array(maxLength - cell.innerText?.length).keys()].map(item => " ").join("") + "| ";
-            const delimiter = "  |  ";
+            const delimiter =
+              cell.innerText?.length >= maxLength
+                ? " | "
+                : [...Array(maxLength - cell.innerText?.length).keys()]
+                    .map((item) => " ")
+                    .join("") + " | ";
+            //const delimiter = "  |  ";
             copyText +=
-              cell.innerText + (index < cells.length-1 ? delimiter : "");
+              cell.innerText + (index < cells.length - 1 ? delimiter : "");
           });
           if (rindex !== 0) copyText += "\r\n";
         });
@@ -143,7 +170,7 @@ export default class CopyPaste extends Component {
       writeTextToClipboard(copyText).then((text) => {
         this.setState(
           {
-            contentHTML: this.getDefaultContent() + "\r\n\r\n" + copyText,
+            contentHTML: this.getDefaultContent() + "\r\n" + copyText,
           },
           () => {
             this.contentAreaRef.current.value = this.state.contentHTML;
