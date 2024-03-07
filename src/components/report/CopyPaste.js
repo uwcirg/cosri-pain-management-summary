@@ -141,7 +141,7 @@ export default class CopyPaste extends Component {
                   .map((item) => " ")
                   .join("") + " | ";
             copyText +=
-            cell.innerText +
+            cell.textContent +
             (index < headerCells.length - 1 ? delimiter : "");
         });
 
@@ -153,18 +153,23 @@ export default class CopyPaste extends Component {
           //  console.log("arrCells ", arrCells)
           //    const maxLength = Math.max(...arrCells);
           //   console.log("max length ", maxLength);
+          let cellText = "";
           cells.forEach((cell, index) => {
             const delimiter =
-              cell.innerText?.length >= maxLength
+              cell.textContent?.length >= maxLength
                 ? " | "
-                : [...Array(maxLength - cell.innerText?.length).keys()]
+                : [...Array(maxLength - cell.textContent?.length).keys()]
                     .map((item) => " ")
                     .join("") + " | ";
             //const delimiter = "  |  ";
-            copyText +=
-              cell.innerText + (index < cells.length - 1 ? delimiter : "");
+            cellText +=
+              cell.textContent + (index < cells.length - 1 ? delimiter : "");
           });
-          if (rindex !== 0) copyText += "\r\n";
+          copyText += cellText;
+          if (rindex !== 0) {
+           // copyText += "\r\n";
+           copyText += "\r\n" + [...Array(cellText.length)].map(() => "-").join("") + "\r\n";
+          }
         });
       }
       writeTextToClipboard(copyText).then((text) => {
