@@ -350,6 +350,7 @@ export default class CopyPaste extends Component {
             ref={this.contentAreaRef}
             style={boxAreaStyle}
             onBlur={this.handleContentChange}
+            readOnly
           ></textarea>
           <div style={{ marginBottom: "16px" }}>
             <div
