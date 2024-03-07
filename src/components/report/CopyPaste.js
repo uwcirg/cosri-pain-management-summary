@@ -146,9 +146,9 @@ export default class CopyPaste extends Component {
           }}
         >
           <li style={listItemStyle}>
-            To copy the usual way: Highlight the content you entered in the box
-            area. Right-click the highlighted content and select "Copy" from the
-            popup menu to copy content to clipboard.
+            To copy the usual way: Highlight the content in the box area.
+            Right-click the highlighted content and select "Copy" from the popup
+            menu to copy content to clipboard.
           </li>
           <li style={listItemStyle}>
             OR click the "Copy box area content to clipboard" button below to
@@ -160,7 +160,7 @@ export default class CopyPaste extends Component {
   }
   renderImportScoreSummaryCheckbox() {
     return (
-      <div style={{ textAlign: "right" }}>
+      <div style={{ textAlign: "right", flex: 1 }}>
         <label>
           <input
             type="checkbox"
@@ -191,7 +191,8 @@ export default class CopyPaste extends Component {
           gap: "16px",
           flexWrap: "wrap",
           marginTop: "8px",
-          marginBottom: "16px",
+         // marginBottom: "16px",
+          flex: 1
         }}
       >
         <button
@@ -202,6 +203,7 @@ export default class CopyPaste extends Component {
         >
           Copy box area content to clipboard
         </button>
+        {/*** 
         <button
           className="button-default"
           onClick={this.clear}
@@ -209,16 +211,7 @@ export default class CopyPaste extends Component {
         >
           Clear box area content
         </button>
-        {!allowCopyClipboardItem() && (
-          <p style={{ color: "#a81010" }}>
-            HEY, you are using a browser that does not support Copy action via
-            ClipboardItem API here. Please see{" "}
-            <a href="https://developer.mozilla.org/en-US/docs/Web/API/ClipboardItem">
-              here
-            </a>{" "}
-            for more information.
-          </p>
-        )}
+        */}
       </div>
     );
   }
@@ -240,6 +233,15 @@ export default class CopyPaste extends Component {
       backgroundColor: "#FFF",
       width: "98%",
       margin: "auto",
+      position: "relative",
+      "&:before": {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1,
+      },
     };
     return (
       <React.Fragment>
@@ -247,12 +249,30 @@ export default class CopyPaste extends Component {
           {this.renderInstruction()}
           <div
             ref={this.contentAreaRef}
-            contentEditable="true"
+            // contentEditable="true"
             style={boxAreaStyle}
             onBlur={this.handleContentChange}
           ></div>
-          {this.renderImportScoreSummaryCheckbox()}
-          {this.renderButtonsGroup()}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
+          >
+            {this.renderButtonsGroup()}
+            {this.renderImportScoreSummaryCheckbox()}
+          </div>
+          {!allowCopyClipboardItem() && (
+            <p style={{ color: "#a81010" }}>
+              HEY, you are using a browser that does not support Copy action via
+              ClipboardItem API here. Please see{" "}
+              <a href="https://developer.mozilla.org/en-US/docs/Web/API/ClipboardItem">
+                here
+              </a>{" "}
+              for more information.
+            </p>
+          )}
         </div>
       </React.Fragment>
     );

@@ -393,6 +393,12 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
+  
+    if (this.state.activeTab === 10) {
+      tocbot.destroy();
+      this.tocInitialized = false;
+      return;
+    }
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       this.initializeTocBot();
       this.tocInitialized = true;
