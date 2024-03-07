@@ -120,32 +120,33 @@ export default class CopyPaste extends Component {
       if (tableElement) {
         copyText += "\r\n";
         const rows = tableElement.querySelectorAll("tr");
-        const arrHeaderLengths = [];
-        rows.forEach((r) => {
-          const rCells = r.querySelectorAll("th, td");
-          rCells.forEach((cell, cIndex) => {
-            if (cIndex === 0) {
-              arrHeaderLengths.push(cell.textContent?.length ?? 0);
-            }
-          });
-        });
-        console.log("arr Lengths ", arrHeaderLengths);
-        const maxLength = Math.max(...arrHeaderLengths);
 
         const headerCells = tableElement.querySelectorAll("th");
+        let headerText  = "";
         headerCells.forEach((cell, index) => {
+          const arrHeaderLengths = [];
+          rows.forEach((r) => {
+            const rCells = r.querySelectorAll("th, td");
+            rCells.forEach((cell, cIndex) => {
+              if (cIndex === index) {
+                arrHeaderLengths.push(cell.textContent?.length ?? 0);
+              }
+            });
+          });
+          console.log("arr Lengths ", arrHeaderLengths);
+          const maxLength = Math.max(...arrHeaderLengths);
           const delimiter =
             cell.textContent?.length >= maxLength
               ? " | "
               : [...Array(maxLength - cell.textContent?.length).keys()]
                   .map((item) => " ")
                   .join("") + " | ";
-            copyText +=
+            headerText +=
             cell.textContent +
             (index < headerCells.length - 1 ? delimiter : "");
         });
-
-        copyText += "\r\n" + [...Array(copyText.length)].map(() => "-").join("") + "\r\n";
+        copyText += headerText;
+        copyText += "\r\n" + [...Array(headerText.length)].map(() => "-").join("") + "\r\n";
        // copyText += ([...headerCells].map(h => h.textContent.length)).map(c => Array(c).keys().map(() => "--").join("")).join("");
         rows.forEach((row, rindex) => {
           const cells = row.querySelectorAll("td");
@@ -180,7 +181,7 @@ export default class CopyPaste extends Component {
           copyText += cellText;
           if (rindex !== 0) {
            // copyText += "\r\n";
-           copyText += "\r\n" + [...Array(cellText.length)].map(() => "-").join("") + "\r\n";
+           copyText += "\r\n" + [...Array(headerText.length)].map(() => "-").join("") + "\r\n";
           }
         });
       }
