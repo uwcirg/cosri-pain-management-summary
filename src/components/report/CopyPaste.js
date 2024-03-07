@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import {
   allowCopyClipboardItem,
-  writeHTMLToClipboard,
+ // writeHTMLToClipboard,
+  writeTextToClipboard,
 } from "../../helpers/utility";
 
 export default class CopyPaste extends Component {
@@ -39,18 +40,26 @@ export default class CopyPaste extends Component {
           this.importScoreSummaryContent();
           return;
         }
-        const tempNode = this.contentAreaRef.current.cloneNode(true);
-        console.log("temp node? ", tempNode);
-        const originalElement = tempNode.querySelector(".original");
-        console.log("original ", originalElement);
         this.setState(
           {
-            contentHTML: originalElement.innerHTML,
+            contentHTML: this.getDefaultContent(),
           },
           () => {
-            this.contentAreaRef.current.innerHTML = this.state.contentHTML;
+            this.contentAreaRef.current.value = this.state.contentHTML;
           }
         );
+        // const tempNode = this.contentAreaRef.current.cloneNode(true);
+        // console.log("temp node? ", tempNode);
+        // const originalElement = tempNode.querySelector(".original");
+        // console.log("original ", originalElement);
+        // this.setState(
+        //   {
+        //     contentHTML: originalElement.innerHTML,
+        //   },
+        //   () => {
+        //     this.contentAreaRef.current.innerHTML = this.state.contentHTML;
+        //   }
+        // );
       }
     );
   }
@@ -72,11 +81,16 @@ export default class CopyPaste extends Component {
       alert("ClipboardItem API not supported by this browser");
       return false;
     }
-    writeHTMLToClipboard(this.state.contentHTML)
+    writeTextToClipboard(this.state.contentHTML)
       .then(() => {
         alert("Content copied to clipboard");
       })
       .catch((e) => alert("Unable to copy content to clipboard"));
+    // writeHTMLToClipboard(this.state.contentHTML)
+    //   .then(() => {
+    //     alert("Content copied to clipboard");
+    //   })
+    //   .catch((e) => alert("Unable to copy content to clipboard"));
   }
 
   getDefaultContent() {
@@ -85,17 +99,12 @@ export default class CopyPaste extends Component {
   }
 
   importScoreSummaryContent() {
+    let copyText = "";
     const scorePanelElement = document.querySelector(".score-panel");
     const scoreSummaryNode = scorePanelElement
       ? scorePanelElement.cloneNode(true)
       : null;
     if (scoreSummaryNode) {
-      const tableElement = scoreSummaryNode.querySelector("table");
-      if (tableElement) {
-        tableElement.style.fontFamily = "Ariel, sans-serif";
-        tableElement.setAttribute("width", "100%");
-      }
-      scoreSummaryNode.querySelector("h3").style.fontSize = "20px";
       scoreSummaryNode.querySelectorAll("a").forEach((anchorElement) => {
         const span = document.createElement("span");
         span.innerText = anchorElement.innerText;
@@ -106,27 +115,85 @@ export default class CopyPaste extends Component {
         span.innerText = ` (${imageElement.getAttribute("alt")}) `;
         imageElement.replaceWith(span);
       });
-      scoreSummaryNode.querySelectorAll("td, th").forEach((cellElement) => {
-        cellElement.style.padding = "8px";
+      const tableElement = scoreSummaryNode.querySelector("table");
+      if (tableElement) {
+        const headerCells = tableElement.querySelectorAll("th");
+        headerCells.forEach((cell, index) => {
+          const delimiter = "  |  ";
+          copyText +=
+              cell.innerText + (index > 0 && index < headerCells.length-1 ? delimiter : "");
+        });
+        copyText += "\r\n";
+        const rows = tableElement.querySelectorAll("tr");
+        rows.forEach((row, rindex) => {
+          const cells = row.querySelectorAll("td");
+       //   const arrCells = [...cells].map(cell=> cell.innerText?.length??0);
+       //  console.log("arrCells ", arrCells)
+      //    const maxLength = Math.max(...arrCells);
+       //   console.log("max length ", maxLength);
+          cells.forEach((cell, index) => {
+            //const delimiter =  cell.innerText?.length >= maxLength ? " | " :   [...Array(maxLength - cell.innerText?.length).keys()].map(item => " ").join("") + "| ";
+            const delimiter = "  |  ";
+            copyText +=
+              cell.innerText + (index < cells.length-1 ? delimiter : "");
+          });
+          if (rindex !== 0) copyText += "\r\n";
+        });
+      }
+      writeTextToClipboard(copyText).then((text) => {
+        this.setState(
+          {
+            contentHTML: this.getDefaultContent() + "\r\n\r\n" + copyText,
+          },
+          () => {
+            this.contentAreaRef.current.value = this.state.contentHTML;
+          }
+        );
       });
-      this.setState(
-        {
-          contentHTML:
-            "<div style='font-family: ariel, sans-serif'>" +
-            "<div class='original'>" +
-            this.state.contentHTML +
-            "</div>" +
-            "<div class='score-summary-content'>" +
-            "<br/><br/>" +
-            scoreSummaryNode.outerHTML +
-            "</div>" +
-            "</div>",
-        },
-        () => {
-          this.contentAreaRef.current.innerHTML = this.state.contentHTML;
-        }
-      );
     }
+
+    // const scorePanelElement = document.querySelector(".score-panel");
+    // const scoreSummaryNode = scorePanelElement
+    //   ? scorePanelElement.cloneNode(true)
+    //   : null;
+    // if (scoreSummaryNode) {
+    //   const tableElement = scoreSummaryNode.querySelector("table");
+    //   if (tableElement) {
+    //     tableElement.style.fontFamily = "Ariel, sans-serif";
+    //     tableElement.setAttribute("width", "100%");
+    //   }
+    //   scoreSummaryNode.querySelector("h3").style.fontSize = "20px";
+    //   scoreSummaryNode.querySelectorAll("a").forEach((anchorElement) => {
+    //     const span = document.createElement("span");
+    //     span.innerText = anchorElement.innerText;
+    //     anchorElement.replaceWith(span);
+    //   });
+    //   scoreSummaryNode.querySelectorAll("img").forEach((imageElement) => {
+    //     const span = document.createElement("span");
+    //     span.innerText = ` (${imageElement.getAttribute("alt")}) `;
+    //     imageElement.replaceWith(span);
+    //   });
+    //   scoreSummaryNode.querySelectorAll("td, th").forEach((cellElement) => {
+    //     cellElement.style.padding = "8px";
+    //   });
+    //   this.setState(
+    //     {
+    //       contentHTML:
+    //         "<div style='font-family: ariel, sans-serif'>" +
+    //         "<div class='original'>" +
+    //         this.state.contentHTML +
+    //         "</div>" +
+    //         "<div class='score-summary-content'>" +
+    //         "<br/><br/>" +
+    //         scoreSummaryNode.outerHTML +
+    //         "</div>" +
+    //         "</div>",
+    //     },
+    //     () => {
+    //       this.contentAreaRef.current.innerHTML = this.state.contentHTML;
+    //     }
+    //   );
+    // }
   }
   renderInstruction() {
     const listItemStyle = {
@@ -188,11 +255,11 @@ export default class CopyPaste extends Component {
         style={{
           display: "flex",
           flexDirection: "row",
-        //  gap: "16px",
+          //  gap: "16px",
           flexWrap: "wrap",
-         // marginTop: "8px",
-         // marginBottom: "16px",
-          flex: 1
+          // marginTop: "8px",
+          // marginBottom: "16px",
+          flex: 1,
         }}
       >
         <button
@@ -226,7 +293,7 @@ export default class CopyPaste extends Component {
       backgroundColor: "#f4f3f3",
     };
     const boxAreaStyle = {
-     // height: "65%",
+      // height: "65%",
       flex: 1,
       padding: "16px",
       border: "2px solid",
@@ -235,26 +302,24 @@ export default class CopyPaste extends Component {
       width: "98%",
       margin: "auto",
       position: "relative",
-      "&:before": {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 1,
-      },
+      // whiteSpace: "pre",
     };
     return (
       <React.Fragment>
         <div style={containerStyle}>
           {this.renderInstruction()}
-          <div
+          {/* <div
             ref={this.contentAreaRef}
-            // contentEditable="true"
+            contentEditable="true"
             style={boxAreaStyle}
             onBlur={this.handleContentChange}
-          ></div>
-          <div style={{marginBottom: "16px"}}>
+          ></div> */}
+          <textarea
+            ref={this.contentAreaRef}
+            style={boxAreaStyle}
+            onBlur={this.handleContentChange}
+          ></textarea>
+          <div style={{ marginBottom: "16px" }}>
             <div
               style={{
                 display: "flex",
@@ -265,7 +330,7 @@ export default class CopyPaste extends Component {
               {this.renderButtonsGroup()}
               {this.renderImportScoreSummaryCheckbox()}
             </div>
-            {!allowCopyClipboardItem() && (
+            {/* {!allowCopyClipboardItem() && (
               <p style={{ color: "#a81010" }}>
                 HEY, you are using a browser that does not support Copy action via
                 ClipboardItem API here. Please see{" "}
@@ -274,7 +339,7 @@ export default class CopyPaste extends Component {
                 </a>{" "}
                 for more information.
               </p>
-            )}
+            )} */}
           </div>
         </div>
       </React.Fragment>

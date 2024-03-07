@@ -404,6 +404,15 @@ export async function writeHTMLToClipboard(htmlContent) {
   });
   return writeBlobToClipboard(clipboardItem);
 }
+
+export async function writeTextToClipboard(text) {
+  if (!allowCopyClipboardItem())
+  return Promise.reject("ClipboardItem API is not supported");
+  const clipboardItem = new window.ClipboardItem({
+    "text/plain": new Blob([text], {type: "text/plain"}),
+  });
+  return writeBlobToClipboard(clipboardItem);
+  }
 export async function writeBlobToClipboard(clipboardItem) {
   if (!allowCopyClipboardItem())
     return Promise.reject("ClipboardItem API is not supported");
@@ -442,4 +451,3 @@ export function toDate(stringDate) {
   if (stringDate instanceof Date) return stringDate;
   return new Date(stringDate);
 }
-
