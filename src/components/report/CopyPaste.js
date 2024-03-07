@@ -362,7 +362,7 @@ export default class CopyPaste extends Component {
               {this.renderButtonsGroup()}
               {this.renderImportScoreSummaryCheckbox()}
             </div>
-            {/* {!allowCopyClipboardItem() && (
+            {!allowCopyClipboardItem() && (
               <p style={{ color: "#a81010" }}>
                 HEY, you are using a browser that does not support Copy action via
                 ClipboardItem API here. Please see{" "}
@@ -371,7 +371,7 @@ export default class CopyPaste extends Component {
                 </a>{" "}
                 for more information.
               </p>
-            )} */}
+            )}
           </div>
         </div>
       </React.Fragment>
