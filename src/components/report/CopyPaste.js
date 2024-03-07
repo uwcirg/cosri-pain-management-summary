@@ -140,7 +140,7 @@ export default class CopyPaste extends Component {
       <div>
         <ul
           style={{
-            marginBlockEnd: "8px",
+            marginBlockEnd: 0,
             paddingLeft: "16px",
             paddingRight: "16px",
           }}
@@ -188,9 +188,9 @@ export default class CopyPaste extends Component {
         style={{
           display: "flex",
           flexDirection: "row",
-          gap: "16px",
+        //  gap: "16px",
           flexWrap: "wrap",
-          marginTop: "8px",
+         // marginTop: "8px",
          // marginBottom: "16px",
           flex: 1
         }}
@@ -226,7 +226,8 @@ export default class CopyPaste extends Component {
       backgroundColor: "#f4f3f3",
     };
     const boxAreaStyle = {
-      height: "65%",
+     // height: "65%",
+      flex: 1,
       padding: "16px",
       border: "2px solid",
       overflow: "auto",
@@ -253,26 +254,28 @@ export default class CopyPaste extends Component {
             style={boxAreaStyle}
             onBlur={this.handleContentChange}
           ></div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
-          >
-            {this.renderButtonsGroup()}
-            {this.renderImportScoreSummaryCheckbox()}
+          <div style={{marginBottom: "16px"}}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+              }}
+            >
+              {this.renderButtonsGroup()}
+              {this.renderImportScoreSummaryCheckbox()}
+            </div>
+            {!allowCopyClipboardItem() && (
+              <p style={{ color: "#a81010" }}>
+                HEY, you are using a browser that does not support Copy action via
+                ClipboardItem API here. Please see{" "}
+                <a href="https://developer.mozilla.org/en-US/docs/Web/API/ClipboardItem">
+                  here
+                </a>{" "}
+                for more information.
+              </p>
+            )}
           </div>
-          {!allowCopyClipboardItem() && (
-            <p style={{ color: "#a81010" }}>
-              HEY, you are using a browser that does not support Copy action via
-              ClipboardItem API here. Please see{" "}
-              <a href="https://developer.mozilla.org/en-US/docs/Web/API/ClipboardItem">
-                here
-              </a>{" "}
-              for more information.
-            </p>
-          )}
         </div>
       </React.Fragment>
     );
