@@ -356,6 +356,7 @@ export function getHTMLImageClipboardItem(domElement, options) {
     [imageType]: new Promise(async (resolve) => {
       if (imageType === "image/png") {
         const imageBlob = await toBlob(domElement, options);
+        console.log(imageBlob)
         resolve(imageBlob);
       } else if (imageType === "image/jpeg") {
         const imageBlob = await toJpeg(domElement, options);
@@ -386,6 +387,7 @@ export function copyDomToClipboard(domElement, options) {
     .catch((e) => {
       alert("Error! Unable to copy content to clipboard! " + e);
       console.log(e);
+      console.log("params ", params);
       if (params.afterCopy) {
         params.afterCopy(e);
       }

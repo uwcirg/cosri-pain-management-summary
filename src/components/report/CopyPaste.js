@@ -3,6 +3,7 @@ import {
   allowCopyClipboardItem,
   // writeHTMLToClipboard,
   writeTextToClipboard,
+  copyDomToClipboard
 } from "../../helpers/utility";
 
 export default class CopyPaste extends Component {
@@ -10,17 +11,20 @@ export default class CopyPaste extends Component {
     super(...arguments);
     this.state = {
       contentHTML: this.getDefaultContent(),
-      hasScoreSummary: false,
+      hasScoreSummary: true,
     };
     this.contentAreaRef = React.createRef();
+    this.containerRef = React.createRef();
     this.copyContent = this.copyContent.bind(this);
+    this.copyContentImage = this.copyContentImage.bind(this);
     this.importScoreSummaryContent = this.importScoreSummaryContent.bind(this);
     this.handleGetScoreSummary = this.handleGetScoreSummary.bind(this);
     this.handleContentChange = this.handleContentChange.bind(this);
     this.clear = this.clear.bind(this);
   }
   componentDidMount() {
-    this.contentAreaRef.current.innerHTML = this.state.contentHTML;
+    //this.contentAreaRef.current.innerHTML = this.state.contentHTML;
+    this.importScoreSummaryContent();
   }
 
   handleContentChange() {
@@ -76,6 +80,13 @@ export default class CopyPaste extends Component {
     );
   }
 
+  copyContentImage() {
+    copyDomToClipboard(this.contentAreaRef.current, {
+      beforeCopy: () => this.containerRef.current.style.height = "498px",
+      afterCopy: () => this.containerRef.current.style.height = "calc(100vh - 174px)"
+    });
+  }
+
   copyContent() {
     if (!allowCopyClipboardItem()) {
       alert("ClipboardItem API not supported by this browser");
@@ -86,11 +97,6 @@ export default class CopyPaste extends Component {
         alert("Content copied to clipboard");
       })
       .catch((e) => alert("Unable to copy content to clipboard"));
-    // writeHTMLToClipboard(this.state.contentHTML)
-    //   .then(() => {
-    //     alert("Content copied to clipboard");
-    //   })
-    //   .catch((e) => alert("Unable to copy content to clipboard"));
   }
 
   getDefaultContent() {
@@ -133,7 +139,7 @@ export default class CopyPaste extends Component {
               }
             });
           });
-          console.log("arr Lengths ", arrHeaderLengths);
+         // console.log("arr Lengths ", arrHeaderLengths);
           const maxLength = Math.max(...arrHeaderLengths);
           const delimiter =
             cell.textContent?.length >= maxLength
@@ -165,7 +171,7 @@ export default class CopyPaste extends Component {
                 }
               });
             });
-            console.log("arr Lengths ", arrLengths);
+            //console.log("arr Lengths ", arrLengths);
             const maxLength = Math.max(...arrLengths);
             const delimiter =
               cell.textContent?.length >= maxLength
@@ -176,7 +182,7 @@ export default class CopyPaste extends Component {
             //const delimiter = "  |  ";
             cellText +=
               cell.textContent + (index < cells.length - 1 ? delimiter : "");
-            console.log("cell content ", cell.textContent)
+            //console.log("cell content ", cell.textContent)
           });
           copyText += cellText;
           if (rindex !== 0) {
@@ -300,11 +306,11 @@ export default class CopyPaste extends Component {
         style={{
           display: "flex",
           flexDirection: "row",
-          //  gap: "16px",
+          gap: "16px",
           flexWrap: "wrap",
           // marginTop: "8px",
           // marginBottom: "16px",
-          flex: 1,
+          flex: 2,
         }}
       >
         <button
@@ -313,7 +319,15 @@ export default class CopyPaste extends Component {
           onClick={this.copyContent}
           disabled={!allowCopyClipboardItem()}
         >
-          Copy box area content to clipboard
+          Copy content to clipboard as text 
+        </button>
+        <button
+          className="button-primary"
+          style={buttonStyle}
+          onClick={this.copyContentImage}
+          disabled={!allowCopyClipboardItem()}
+        >
+          Copy context to clipboard as image
         </button>
         {/*** 
         <button
@@ -331,6 +345,7 @@ export default class CopyPaste extends Component {
   render() {
     const containerStyle = {
       height: "calc(100vh - 174px)",
+      minHeight: "480px",
       padding: "8px 24px",
       display: "flex",
       flexDirection: "column",
@@ -351,7 +366,7 @@ export default class CopyPaste extends Component {
     };
     return (
       <React.Fragment>
-        <div style={containerStyle}>
+        <div style={containerStyle} ref={this.containerRef}>
           {this.renderInstruction()}
           {/* <div
             ref={this.contentAreaRef}
