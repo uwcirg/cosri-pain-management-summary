@@ -138,12 +138,6 @@ export default class CopyPaste extends Component {
             );
             if (!matchedCell) return true;
             arrHeaderLengths.push(matchedCell.textContent?.length ?? 0);
-            // const rCells = r.querySelectorAll("th, td");
-            // rCells.forEach((cell, cIndex) => {
-            //   if (cIndex === index) {
-            //     arrHeaderLengths.push(cell.textContent?.length ?? 0);
-            //   }
-            // });
           });
           // console.log("arr Lengths ", arrHeaderLengths);
           const maxLength = Math.max(...arrHeaderLengths);
