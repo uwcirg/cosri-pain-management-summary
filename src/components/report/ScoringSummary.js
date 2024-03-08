@@ -10,7 +10,8 @@ import {
   allowCopyClipboardItem,
   isNumber,
   toDate,
-  writeHTMLToClipboard,
+  //writeHTMLToClipboard,
+  copyDomToClipboard
 } from "../../helpers/utility";
 const BORDER_COLOR = "#f3f6f9";
 export default class ScoringSummary extends Component {
@@ -245,17 +246,18 @@ export default class ScoringSummary extends Component {
   }
   copyTable() {
     if (!allowCopyClipboardItem()) return null;
-    writeHTMLToClipboard(
-      "<div style='font-family: Arial, sans-serif'>" +
-        this.tableRef.current.outerHTML +
-        "</div>"
-    )
-      .then(() => {
-        alert("All content copied to clipboard");
-      })
-      .catch((e) => {
-        alert("Error copying content to clipboard " + e);
-      });
+    // writeHTMLToClipboard(
+    //   "<div style='font-family: Arial, sans-serif'>" +
+    //     this.tableRef.current.outerHTML +
+    //     "</div>"
+    // )
+    //   .then(() => {
+    //     alert("All content copied to clipboard");
+    //   })
+    //   .catch((e) => {
+    //     alert("Error copying content to clipboard " + e);
+    //   });
+    copyDomToClipboard(this.tableRef.current);
   }
   render() {
     const { summary, showAnchorLinks } = this.props;
@@ -271,7 +273,7 @@ export default class ScoringSummary extends Component {
         {/* <div style={{ marginBottom: "16px", textAlign: "right" }}>
           {" "}
           <button onClick={this.copyTable} className="button-primary">
-            Test Copy All
+            Test Copy Table
           </button>
         </div> */}
         <h3

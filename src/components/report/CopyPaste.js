@@ -327,7 +327,7 @@ export default class CopyPaste extends Component {
           onClick={this.copyContentImage}
           disabled={!allowCopyClipboardItem()}
         >
-          Copy context to clipboard as image
+          Copy content to clipboard as image
         </button>
         {/*** 
         <button
