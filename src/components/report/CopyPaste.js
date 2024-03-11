@@ -85,9 +85,9 @@ export default class CopyPaste extends Component {
 
   copyContentImage() {
     copyDomToClipboard(this.contentAreaRef.current, {
-      beforeCopy: () => (this.containerRef.current.style.height = "498px"),
-      afterCopy: () =>
-        (this.containerRef.current.style.height = "calc(100vh - 174px)"),
+      // beforeCopy: () => (this.containerRef.current.style.height = "498px"),
+      // afterCopy: () =>
+      //   (this.containerRef.current.style.height = "calc(100vh - 174px)"),
     });
   }
 
