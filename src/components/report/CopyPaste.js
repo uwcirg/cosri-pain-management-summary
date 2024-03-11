@@ -10,7 +10,7 @@ export default class CopyPaste extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      contentHTML: this.getDefaultContent(),
+      contentHTML: "",
       hasScoreSummary: true,
     };
     this.contentAreaRef = React.createRef();
@@ -23,8 +23,11 @@ export default class CopyPaste extends Component {
     this.clear = this.clear.bind(this);
   }
   componentDidMount() {
-    //this.contentAreaRef.current.innerHTML = this.state.contentHTML;
-    this.importScoreSummaryContent();
+    this.setState({
+      contentHTML: this.getDefaultContent() + "\r\n" + this.getScoreSummaryContent(),
+      previousContent: "",
+    }, () => this.containerRef.current.value = this.state.contentHTML);
+    //this.importScoreSummaryContent();
   }
 
   handleContentChange() {
@@ -89,10 +92,10 @@ export default class CopyPaste extends Component {
   }
 
   copyContent() {
-    if (!allowCopyClipboardItem()) {
-      alert("ClipboardItem API not supported by this browser");
-      return false;
-    }
+    // if (!allowCopyClipboardItem()) {
+    //   alert("ClipboardItem API not supported by this browser");
+    //   return false;
+    // }
     writeTextToClipboard(this.state.contentHTML)
       .then(() => {
         alert("Content copied to clipboard");
@@ -105,102 +108,104 @@ export default class CopyPaste extends Component {
     return patientInfo ? patientInfo.Name : "";
   }
 
-  importScoreSummaryContent() {
+  getScoreSummaryContent() {
     let copyText = "";
     const scorePanelElement = document.querySelector(".score-panel");
     const scoreSummaryNode = scorePanelElement
       ? scorePanelElement.cloneNode(true)
       : null;
-    if (scoreSummaryNode) {
-      scoreSummaryNode.querySelectorAll("a").forEach((anchorElement) => {
-        const span = document.createElement("span");
-        span.innerText = anchorElement.innerText;
-        anchorElement.replaceWith(span);
-      });
-      scoreSummaryNode.querySelectorAll("img").forEach((imageElement) => {
-        const span = document.createElement("span");
-        span.innerText = ` (${imageElement.getAttribute("alt")}) `;
-        imageElement.replaceWith(span);
-      });
-      const tableElement = scoreSummaryNode.querySelector("table");
+    if (!scoreSummaryNode) {
+      return "";
+    }
+    scoreSummaryNode.querySelectorAll("a").forEach((anchorElement) => {
+      const span = document.createElement("span");
+      span.innerText = anchorElement.innerText;
+      anchorElement.replaceWith(span);
+    });
+    scoreSummaryNode.querySelectorAll("img").forEach((imageElement) => {
+      const span = document.createElement("span");
+      span.innerText = ` (${imageElement.getAttribute("alt")}) `;
+      imageElement.replaceWith(span);
+    });
+    const tableElement = scoreSummaryNode.querySelector("table");
 
-      if (tableElement) {
-        copyText += "\r\n";
-        const rows = tableElement.querySelectorAll("tr");
-        const headerCells = tableElement.querySelectorAll("th");
-        let headerText = "";
-        headerCells.forEach((cell, index) => {
-          const arrHeaderLengths = [];
-          arrHeaderLengths.push(cell.textContent?.length ?? 0);
+    if (tableElement) {
+      copyText += "\r\n";
+      const rows = tableElement.querySelectorAll("tr");
+      const headerCells = tableElement.querySelectorAll("th");
+      let headerText = "";
+      headerCells.forEach((cell, index) => {
+        const arrHeaderLengths = [];
+        arrHeaderLengths.push(cell.textContent?.length ?? 0);
+        rows.forEach((r) => {
+          const matchedCell = r.querySelector(
+            "td:nth-child(" + (index + 1) + ")"
+          );
+          if (!matchedCell) return true;
+          arrHeaderLengths.push(matchedCell.textContent?.length ?? 0);
+        });
+        // console.log("arr Lengths ", arrHeaderLengths);
+        const maxLength = Math.max(...arrHeaderLengths);
+        const delimiter =
+          cell.textContent?.length >= maxLength
+            ? " | "
+            : [...Array(maxLength - cell.textContent?.length).keys()]
+                .map((item) => " ")
+                .join("") + " | ";
+        headerText +=
+          cell.textContent + (index < headerCells.length - 1 ? delimiter : "");
+      });
+      copyText += headerText;
+      copyText +=
+        "\r\n" + [...Array(headerText.length)].map(() => "-").join("") + "\r\n";
+      rows.forEach((row, rindex) => {
+        const cells = row.querySelectorAll("td");
+        let cellText = "";
+        cells.forEach((cell, index) => {
+          const arrLengths = [];
           rows.forEach((r) => {
-            const matchedCell = r.querySelector(
-              "td:nth-child(" + (index + 1) + ")"
+            const rCells = r.querySelectorAll(
+              `th:nth-child(${index + 1}), td:nth-child(${index + 1}`
             );
-            if (!matchedCell) return true;
-            arrHeaderLengths.push(matchedCell.textContent?.length ?? 0);
+            rCells.forEach((cell, cIndex) => {
+              arrLengths.push(cell.textContent?.length ?? 0);
+            });
           });
-          // console.log("arr Lengths ", arrHeaderLengths);
-          const maxLength = Math.max(...arrHeaderLengths);
+          //console.log("arr Lengths ", arrLengths);
+          const maxLength = Math.max(...arrLengths);
           const delimiter =
             cell.textContent?.length >= maxLength
               ? " | "
               : [...Array(maxLength - cell.textContent?.length).keys()]
                   .map((item) => " ")
                   .join("") + " | ";
-          headerText +=
-            cell.textContent +
-            (index < headerCells.length - 1 ? delimiter : "");
+          cellText +=
+            cell.textContent + (index < cells.length - 1 ? delimiter : "");
         });
-        copyText += headerText;
-        copyText +=
-          "\r\n" +
-          [...Array(headerText.length)].map(() => "-").join("") +
-          "\r\n";
-        rows.forEach((row, rindex) => {
-          const cells = row.querySelectorAll("td");
-          let cellText = "";
-          cells.forEach((cell, index) => {
-            const arrLengths = [];
-            rows.forEach((r) => {
-              const rCells = r.querySelectorAll(
-                `th:nth-child(${index + 1}), td:nth-child(${index + 1}`
-              );
-              rCells.forEach((cell, cIndex) => {
-                arrLengths.push(cell.textContent?.length ?? 0);
-              });
-            });
-            //console.log("arr Lengths ", arrLengths);
-            const maxLength = Math.max(...arrLengths);
-            const delimiter =
-              cell.textContent?.length >= maxLength
-                ? " | "
-                : [...Array(maxLength - cell.textContent?.length).keys()]
-                    .map((item) => " ")
-                    .join("") + " | ";
-            cellText +=
-              cell.textContent + (index < cells.length - 1 ? delimiter : "");
-          });
-          copyText += cellText;
-          if (rindex !== 0) {
-            // copyText += "\r\n";
-            copyText +=
-              "\r\n" +
-              [...Array(headerText.length)].map(() => "-").join("") +
-              "\r\n";
-          }
-        });
-      }
-      writeTextToClipboard(copyText).then((text) => {
-        this.setState(
-          {
-            contentHTML: this.getDefaultContent() + "\r\n" + copyText,
-          },
-          () => {
-            this.contentAreaRef.current.value = this.state.contentHTML;
-          }
-        );
+        copyText += cellText;
+        if (rindex !== 0) {
+          // copyText += "\r\n";
+          copyText +=
+            "\r\n" +
+            [...Array(headerText.length)].map(() => "-").join("") +
+            "\r\n";
+        }
       });
     }
+    return copyText;
+  }
+  importScoreSummaryContent() {
+    const copyText = this.getScoreSummaryContent();
+    writeTextToClipboard(copyText).then((text) => {
+      this.setState(
+        {
+          contentHTML: this.getDefaultContent() + "\r\n" + copyText,
+        },
+        () => {
+          this.contentAreaRef.current.value = this.state.contentHTML;
+        }
+      );
+    });
 
     // const scorePanelElement = document.querySelector(".score-panel");
     // const scoreSummaryNode = scorePanelElement
@@ -316,7 +321,7 @@ export default class CopyPaste extends Component {
           className="button-primary"
           style={buttonStyle}
           onClick={this.copyContent}
-          disabled={!allowCopyClipboardItem()}
+         // disabled={!allowCopyClipboardItem()}
         >
           Copy content to clipboard as text
         </button>
@@ -376,7 +381,8 @@ export default class CopyPaste extends Component {
           <textarea
             ref={this.contentAreaRef}
             style={boxAreaStyle}
-            onBlur={this.handleContentChange}
+           // onBlur={this.handleContentChange}
+            value={this.state.contentHTML}
             readOnly
           ></textarea>
           <div style={{ marginBottom: "16px" }}>
