@@ -771,7 +771,10 @@ export default class SurveyGraph extends Component {
               const prevItem = arrNum[index - 1];
               const nextItem = arrNum[index + 1];
               const rotateLabelFlag =
-                (inYears && item < 1 && (prevItem && (item - prevItem) < 0.2)) ||
+                (inYears &&
+                  item < 1 &&
+                  ((prevItem && item - prevItem < 0.2) ||
+                    (nextItem && nextItem - item < 0.2))) ||
                 (prevItem && prevItem < 1 && item >= 1) ||
                 (nextItem && nextItem >= 1 && item < 1);
               const dataUnit = item < 1 ? "month" : "year";

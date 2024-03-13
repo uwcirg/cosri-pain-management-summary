@@ -33,8 +33,14 @@ input[type="range"] {
     }
     &.rotate {
       top: 12px;
+      &[dataunit=year] {
+        top: 4px;
+      }
       &:first-of-type {
         top: 18px;
+        &[dataunit=month] {
+          top: 22px;
+        }
       }
       transform: rotate(-90deg);
       &:not(:first-of-type) {
