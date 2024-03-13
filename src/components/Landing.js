@@ -384,6 +384,7 @@ export default class Landing extends Component {
       contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
       headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
       positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
+      ignoreSelector: ".panel-title",
       collapseDepth: 0, // how many heading levels should not be collpased
       includeHtml: true, // include the HTML markup from the heading node, not just the text,
       // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
