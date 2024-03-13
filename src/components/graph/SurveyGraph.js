@@ -538,7 +538,9 @@ export default class SurveyGraph extends Component {
                     title={
                       this.isInSurveyGraph(item)
                         ? `Remove ${item} from graph`
-                        : `Add ${item} to graph`
+                        : this.isSurveyInDateRange(item)
+                        ? `Add ${item} to graph`
+                        : "No data in selected date range"
                     }
                   >
                     <input
@@ -837,6 +839,20 @@ export default class SurveyGraph extends Component {
         {this.renderCopyButton()}
         {this.renderDownloadButton()}
       </div>
+    );
+  }
+
+  renderNotInGraphMessage() {
+    if (!this.state.qids || !this.state.qids.length) return null;
+    const noDataQids = this.state.qids
+      .filter((item) => !this.isSurveyInDateRange(item))
+      .map((item) => String(item).toUpperCase());
+    if (!noDataQids.length) return null;
+    return (
+      <div
+        className="text-warning"
+        style={{ margin: "8px" }}
+      >{`No data for ${noDataQids.join(", ")} in selected date range`}</div>
     );
   }
   render() {
@@ -1183,6 +1199,7 @@ export default class SurveyGraph extends Component {
             </div>
           </div>
           {this.renderPrintOnlyImage()}
+          {this.renderNotInGraphMessage()}
         </div>
       </React.Fragment>
     );
