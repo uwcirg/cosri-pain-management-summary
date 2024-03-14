@@ -84,10 +84,17 @@ export default class CopyPaste extends Component {
   }
 
   copyContentImage() {
-    copyDomToClipboard(this.contentAreaRef.current, {
-      // beforeCopy: () => (this.containerRef.current.style.height = "498px"),
-      // afterCopy: () =>
-      //   (this.containerRef.current.style.height = "calc(100vh - 174px)"),
+    const scoreSummaryContent = this.getScoreSummaryContent();
+    const tempNode = document.createElement("textarea");
+    tempNode.setAttribute("readonly", true);
+    tempNode.style.height = "300px";
+    tempNode.style.width = "784px";
+    tempNode.style.borderWidth = 0;
+    tempNode.value = scoreSummaryContent;
+    document.querySelector("body").appendChild(tempNode);
+
+    copyDomToClipboard(tempNode, {
+      afterCopy: () => tempNode.remove()
     });
   }
 
