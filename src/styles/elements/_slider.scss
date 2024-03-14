@@ -16,6 +16,7 @@ input[type="range"] {
 .scale {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   position: relative;
   .label {
     flex: 1;
@@ -42,17 +43,17 @@ input[type="range"] {
       &[displayvalue="7mo"],
       &[displayvalue="8mo"],
       &[displayvalue="9mo"] {
-        top: 20px;
+        top: 10px;
       }
       &[displayvalue="10mo"],
       &[displayvalue="11mo"],
       &[displayvalue="12mo"] {
-        top: 24px;
+        top: 12px;
       }
       &[dataunit="year"] {
-        top: 8px;
+        top: 10px;
         &:last-of-type {
-          top: 22px;
+          top: 24px;
         }
         &[displayvalue="1yr"],
         &[displayvalue="2yr"],

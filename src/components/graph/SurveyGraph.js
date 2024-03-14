@@ -71,8 +71,7 @@ export default class SurveyGraph extends Component {
     };
 
     // This binding is necessary to make `this` work in the callback
-    this.addDataLineToSurveyGraph =
-      this.addDataLineToSurveyGraph.bind(this);
+    this.addDataLineToSurveyGraph = this.addDataLineToSurveyGraph.bind(this);
     this.removeDataLineFromSurveyGraph =
       this.removeDataLineFromSurveyGraph.bind(this);
     this.showUtilButtons = this.showUtilButtons.bind(this);
@@ -215,7 +214,7 @@ export default class SurveyGraph extends Component {
     let srcData = this.state.originalGraphData.filter(
       (item) => !isNaN(toDate(item[xFieldName])) && isNumber(item[yFieldName])
     );
-    return  Array.from(new Set(srcData.map((item) => item.qid)));
+    return Array.from(new Set(srcData.map((item) => item.qid)));
   }
   getFilteredDataByQids(dataSource) {
     if (!dataSource || !Array.isArray(dataSource)) return [];
@@ -337,15 +336,9 @@ export default class SurveyGraph extends Component {
   handleSwitchChange(e) {
     const itemValue = e.target.value;
     if (e.target.checked) {
-      this.addDataLineToSurveyGraph(
-        itemValue,
-        this.handleDateRangeChange
-      );
+      this.addDataLineToSurveyGraph(itemValue, this.handleDateRangeChange);
     } else {
-      this.removeDataLineFromSurveyGraph(
-        itemValue,
-        this.handleDateRangeChange
-      );
+      this.removeDataLineFromSurveyGraph(itemValue, this.handleDateRangeChange);
     }
   }
 
@@ -727,7 +720,33 @@ export default class SurveyGraph extends Component {
     const inYears = unit === "year";
     const min = arrNum[0];
     const max = arrNum[arrNum.length - 1];
-    const mixedBags = arrNum.find(item => item < 1) && arrNum.find(item => item >= 1);
+    const mixedBags =
+      arrNum.find((item) => item < 1) && arrNum.find((item) => item >= 1);
+    const arrDisplayValues = arrNum.map((item) => {
+      const displayValue =
+        item < 1 || !inYears
+          ? !inYears
+            ? item
+              ? item * 12 + "mo"
+              : item
+            : item === arrNum[0] ||
+              (max < 10 &&
+                item - arrNum[0] > 0.25 &&
+                (item / 0.25) % 1 === 0) ||
+              (max < 10 && item - arrNum[0] > 0.25 && (item / 0.5) % 1 === 0) ||
+              (max < 10 && item - arrNum[0] > 0.25 && (item / 0.75) % 1 === 0)
+            ? item
+              ? item * 12 + "mo"
+              : item
+            : ""
+          : item % 1 === 0
+          ? item + "yr"
+          : "";
+      return {
+        value: item,
+        display: displayValue,
+      };
+    });
     if (arrNum.length <= 1) return null;
     return (
       <div className="slider-parent-container" ref={this.sliderContainerRef}>
@@ -752,48 +771,18 @@ export default class SurveyGraph extends Component {
           />
           <div className="scale">
             {arrNum.map((item, index) => {
-              const prevItem = arrNum[index - 1];
-              const nextItem = arrNum[index + 1];
+              const prevItem = arrDisplayValues[index - 1];
+              const nextItem = arrDisplayValues[index + 1];
+              const prevComparedValue = prevItem && prevItem.display ? prevItem.value : 0;
+              const nextComparedValue = nextItem && nextItem.display ? nextItem.value : 0;
               const dataUnit = item < 1 ? "month" : "year";
-              const displayValue =
-                item < 1 || !inYears
-                  ? !inYears
-                    ? item
-                      ? item * 12 + "mo"
-                      : item
-                    : item === arrNum[0] ||
-                      (max < 10 &&
-                        item - arrNum[0] > 0.25 &&
-                        (item / 0.25) % 1 === 0) ||
-                      (max < 10 &&
-                        item - arrNum[0] > 0.25 &&
-                        (item / 0.5) % 1 === 0) ||
-                      (max < 10 &&
-                        item - arrNum[0] > 0.25 &&
-                        (item / 0.75) % 1 === 0)
-                    ? item
-                      ? item * 12 + "mo"
-                      : item
-                    : ""
-                  : item % 1 === 0
-                  ? item + "yr"
-                  : "";
+              const displayValue = arrDisplayValues[index].display;
               const rotateLabelFlag =
-               mixedBags && (
-                (inYears &&
-                  item < 1 &&
-                  ((prevItem && item - prevItem < 0.2) ||
-                    (nextItem && nextItem - item < 0.2))) ||
-                (inYears &&
-                  prevItem &&
-                  prevItem < 1 &&
-                  item >= 1 &&
-                  Math.abs(item - prevItem) <= 0.5) ||
-                (inYears &&
-                  nextItem &&
-                  nextItem >= 1 &&
-                  item < 1 &&
-                  Math.abs(nextItem - item) <= 0.5));
+                mixedBags &&
+                ((prevComparedValue &&
+                  Math.abs(item - prevComparedValue) <= 0.2) ||
+                  (nextComparedValue &&
+                    Math.abs(nextComparedValue - item) <= 0.2));
               return (
                 <span
                   key={`scale_${index}`}
@@ -802,10 +791,7 @@ export default class SurveyGraph extends Component {
                       ? "active"
                       : ""
                   } ${
-                    rotateLabelFlag ||
-                    (inYears && max >= 10)
-                      ? "rotate"
-                      : ""
+                    rotateLabelFlag || (inYears && max >= 10) ? "rotate" : ""
                   }`}
                   ref={this.scaleLabelRefs[index]}
                   datavalue={item}
@@ -849,7 +835,9 @@ export default class SurveyGraph extends Component {
       <div
         className="text-warning"
         style={{ margin: "8px", paddingLeft: "16px", paddingRight: "16px" }}
-      >{`No data for ${noDataQids.join(", ")} in ${this.getDisplayDateRange()}`}</div>
+      >{`No data for ${noDataQids.join(
+        ", "
+      )} in ${this.getDisplayDateRange()}`}</div>
     );
   }
   render() {
