@@ -37,7 +37,7 @@
     "react-scripts": "^3.4.0",
     "react-table": "^6.11.4",
     "react-tooltip": "^3.11.6",
-    "tocbot": "^4.21.1"
+    "tocbot": "^4.25.0"
   },
   "devDependencies": {
     "@rescripts/cli": "^0.0.13",
