@@ -120,7 +120,14 @@ export default class Landing extends Component {
       return item.error;
     });
     collectorErrors.forEach((item) => {
-      const sourceType = item.type??item.url;
+      let itemURL = item?.url;
+      try {
+        itemURL = (new URL(itemURL)).pathname;
+      } catch(e) {
+        console.log("Unable to convert url to URL object ", item.url);
+        itemURL = item?.url;
+      }
+      const sourceType = item?.type??itemURL;
       const sourceTypeText = sourceType ? `[${sourceType}]` : "";
       this.setError(`${sourceTypeText} ${item.error}`);
     });

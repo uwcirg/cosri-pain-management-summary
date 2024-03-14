@@ -46,6 +46,7 @@ export default class BodyDiagram extends Component {
       color: "#777",
       minWidth: "56px",
       background: "transparent",
+      textAlign: "center"
     };
     this.copyImageOptions = {
       filter: (node) => {

@@ -786,7 +786,7 @@ export default class Summary extends Component {
             </h1>
             {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
             {meetsInclusionCriteria && <ExclusionBanner />}
-            {!meetsInclusionCriteria && (
+            {(!hasErrors && !meetsInclusionCriteria) && (
               <InclusionBanner dismissible={meetsInclusionCriteria} />
             )}
             {meetsInclusionCriteria && this.isUnderAge() && (

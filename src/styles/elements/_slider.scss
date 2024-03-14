@@ -33,36 +33,78 @@ input[type="range"] {
     }
     &.rotate {
       top: 12px;
-      &[dataunit=year] {
-        top: 4px;
+      &[displayvalue="1mo"],
+      &[displayvalue="2mo"],
+      &[displayvalue="3mo"],
+      &[displayvalue="4mo"],
+      &[displayvalue="5mo"],
+      &[displayvalue="6mo"],
+      &[displayvalue="7mo"],
+      &[displayvalue="8mo"],
+      &[displayvalue="9mo"] {
+        top: 20px;
+      }
+      &[displayvalue="10mo"],
+      &[displayvalue="11mo"],
+      &[displayvalue="12mo"] {
+        top: 24px;
+      }
+      &[dataunit="year"] {
+        top: 8px;
+        &:last-of-type {
+          top: 22px;
+        }
+        &[displayvalue="1yr"],
+        &[displayvalue="2yr"],
+        &[displayvalue="3yr"],
+        &[displayvalue="4yr"],
+        &[displayvalue="5yr"],
+        &[displayvalue="6yr"],
+        &[displayvalue="7yr"],
+        &[displayvalue="8yr"],
+        &[displayvalue="9yr"] {
+          top: 12px;
+        }
+        &[displayvalue="1yr"]:last-of-type,
+        &[displayvalue="2yr"]:last-of-type,
+        &[displayvalue="3yr"]:last-of-type,
+        &[displayvalue="4yr"]:last-of-type,
+        &[displayvalue="5yr"]:last-of-type,
+        &[displayvalue="6yr"]:last-of-type,
+        &[displayvalue="7yr"]:last-of-type,
+        &[displayvalue="8yr"]:last-of-type,
+        &[displayvalue="9yr"]:last-of-type {
+          top: 22px;
+          left: 16px;
+        }
       }
       &:first-of-type {
         top: 18px;
-        &[displayvalue='1yr'],
-        &[displayvalue='2yr'],
-        &[displayvalue='3yr'],
-        &[displayvalue='4yr'],
-        &[displayvalue='5yr'],
-        &[displayvalue='6yr'],
-        &[displayvalue='7yr'],
-        &[displayvalue='8yr'],
-        &[displayvalue='9yr'] {
+        &[displayvalue="1yr"],
+        &[displayvalue="2yr"],
+        &[displayvalue="3yr"],
+        &[displayvalue="4yr"],
+        &[displayvalue="5yr"],
+        &[displayvalue="6yr"],
+        &[displayvalue="7yr"],
+        &[displayvalue="8yr"],
+        &[displayvalue="9yr"] {
           top: 12px;
         }
-        &[displayvalue='1mo'],
-        &[displayvalue='2mo'],
-        &[displayvalue='3mo'],
-        &[displayvalue='4mo'],
-        &[displayvalue='5mo'],
-        &[displayvalue='6mo'],
-        &[displayvalue='7mo'],
-        &[displayvalue='8mo'],
-        &[displayvalue='9mo'] {
+        &[displayvalue="1mo"],
+        &[displayvalue="2mo"],
+        &[displayvalue="3mo"],
+        &[displayvalue="4mo"],
+        &[displayvalue="5mo"],
+        &[displayvalue="6mo"],
+        &[displayvalue="7mo"],
+        &[displayvalue="8mo"],
+        &[displayvalue="9mo"] {
           top: 16px;
         }
-        &[displayvalue='10mo'],
-        &[displayvalue='11mo'],
-        &[displayvalue='12mo'] {
+        &[displayvalue="10mo"],
+        &[displayvalue="11mo"],
+        &[displayvalue="12mo"] {
           top: 22px;
         }
       }

@@ -71,10 +71,10 @@ export default class SurveyGraph extends Component {
     };
 
     // This binding is necessary to make `this` work in the callback
-    this.addQuestionnaireLineToSurveyGraph =
-      this.addQuestionnaireLineToSurveyGraph.bind(this);
-    this.removeQuestionnaireLineFromSurveyGraph =
-      this.removeQuestionnaireLineFromSurveyGraph.bind(this);
+    this.addDataLineToSurveyGraph =
+      this.addDataLineToSurveyGraph.bind(this);
+    this.removeDataLineFromSurveyGraph =
+      this.removeDataLineFromSurveyGraph.bind(this);
     this.showUtilButtons = this.showUtilButtons.bind(this);
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
@@ -215,7 +215,7 @@ export default class SurveyGraph extends Component {
     let srcData = this.state.originalGraphData.filter(
       (item) => !isNaN(toDate(item[xFieldName])) && isNumber(item[yFieldName])
     );
-    return [...new Set(srcData.map((item) => item.qid))];
+    return  Array.from(new Set(srcData.map((item) => item.qid)));
   }
   getFilteredDataByQids(dataSource) {
     if (!dataSource || !Array.isArray(dataSource)) return [];
@@ -267,7 +267,7 @@ export default class SurveyGraph extends Component {
     );
     return filteredData && filteredData.length > 0;
   }
-  addQuestionnaireLineToSurveyGraph(qid, callback) {
+  addDataLineToSurveyGraph(qid, callback) {
     if (this.isInSurveyGraph(qid)) return;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
@@ -283,7 +283,7 @@ export default class SurveyGraph extends Component {
       );
     }
   }
-  removeQuestionnaireLineFromSurveyGraph(qid, callback) {
+  removeDataLineFromSurveyGraph(qid, callback) {
     if (!this.isInSurveyGraph(qid)) return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
     this.setState(
@@ -337,12 +337,12 @@ export default class SurveyGraph extends Component {
   handleSwitchChange(e) {
     const itemValue = e.target.value;
     if (e.target.checked) {
-      this.addQuestionnaireLineToSurveyGraph(
+      this.addDataLineToSurveyGraph(
         itemValue,
         this.handleDateRangeChange
       );
     } else {
-      this.removeQuestionnaireLineFromSurveyGraph(
+      this.removeDataLineFromSurveyGraph(
         itemValue,
         this.handleDateRangeChange
       );
@@ -727,6 +727,7 @@ export default class SurveyGraph extends Component {
     const inYears = unit === "year";
     const min = arrNum[0];
     const max = arrNum[arrNum.length - 1];
+    const mixedBags = arrNum.find(item => item < 1) && arrNum.find(item => item >= 1);
     if (arrNum.length <= 1) return null;
     return (
       <div className="slider-parent-container" ref={this.sliderContainerRef}>
@@ -778,6 +779,7 @@ export default class SurveyGraph extends Component {
                   ? item + "yr"
                   : "";
               const rotateLabelFlag =
+               mixedBags && (
                 (inYears &&
                   item < 1 &&
                   ((prevItem && item - prevItem < 0.2) ||
@@ -791,7 +793,7 @@ export default class SurveyGraph extends Component {
                   nextItem &&
                   nextItem >= 1 &&
                   item < 1 &&
-                  Math.abs(nextItem - item) <= 0.5);
+                  Math.abs(nextItem - item) <= 0.5));
               return (
                 <span
                   key={`scale_${index}`}
@@ -801,7 +803,7 @@ export default class SurveyGraph extends Component {
                       : ""
                   } ${
                     rotateLabelFlag ||
-                    (inYears && max >= 10 && item && item < 1)
+                    (inYears && max >= 10)
                       ? "rotate"
                       : ""
                   }`}
@@ -847,7 +849,7 @@ export default class SurveyGraph extends Component {
       <div
         className="text-warning"
         style={{ margin: "8px", paddingLeft: "16px", paddingRight: "16px" }}
-      >{`No data for ${noDataQids.join(", ")} in selected date range`}</div>
+      >{`No data for ${noDataQids.join(", ")} in ${this.getDisplayDateRange()}`}</div>
     );
   }
   render() {
