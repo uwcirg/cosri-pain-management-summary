@@ -18,9 +18,9 @@
     z-index: 1;
     transition: opacity 450ms ease 100ms;
 
-    // &.is-position-fixed {
-    //   top: 120px;
-    // }
+    &.is-position-fixed {
+      top: 104px;
+    }
 
     // &.is-position-fixed {
     //     padding: calc(#{$min-header-height} + 64px) 0 20px 0px;
@@ -1063,13 +1063,10 @@
 }
 .has-tabs {
     .summary {
-        // &__nav.is-position-fixed {
-        //     padding: calc(#{$min-header-height-include-tabs} + 64px) 0 20px 0px !important;
-        // }
-        // &__nav-wrapper {
-        //     .is-position-fixed ~ .close {
-        //         top: calc(#{$min-header-height-include-tabs} + 8px);
-        //     }
-        // }
+        &__nav {
+          &.is-position-fixed {
+            top: 0;
+          }
+        }
     }
 }

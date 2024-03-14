@@ -292,6 +292,7 @@ export default class ScoringSummary extends Component {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            marginTop: "4px"
           }}
         >
           <h3
@@ -304,9 +305,9 @@ export default class ScoringSummary extends Component {
             {this.getTitleDisplay()}
           </h3>
           {/* JUST to test copy */}
-          <div style={{ marginBottom: "16px", textAlign: "right" }}>
+          {/* <div style={{ marginBottom: "16px", textAlign: "right" }}>
             {this.renderCopyButton()}
-          </div>
+          </div> */}
         </div>
         <table
           className="table score-summary-table"

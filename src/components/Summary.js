@@ -33,6 +33,8 @@ import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
 import Version from "../elements/Version";
 
+import { getEnv } from "../utils/envConfig";
+
 export default class Summary extends Component {
   constructor() {
     super(...arguments);
@@ -503,6 +505,8 @@ export default class Summary extends Component {
   }
 
   renderSurveySummaryPanel(panel) {
+    const config_tab = getEnv("REACT_APP_TABS");
+    if (!config_tab || !String(config_tab).includes("report")) return null;
     let surveyData = this.props.summary[panel.data.dataSectionRefKey] || null;
     if (!surveyData) return null;
     return (
