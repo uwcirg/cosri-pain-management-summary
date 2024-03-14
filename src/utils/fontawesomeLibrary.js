@@ -7,13 +7,13 @@ import {
   faCircle,
   faClipboard,
   faCopy,
+  faDownload,
+  faExclamationCircle,
+  faExclamationTriangle,
   faInfoCircle,
   faLink,
   faTimes,
-  faExclamationCircle,
   faUserCircle,
-  faDownload,
-  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -25,10 +25,10 @@ library.add(
   faClipboard,
   faCopy,
   faDownload,
+  faExclamationCircle,
+  faExclamationTriangle,
   faInfoCircle,
   faLink,
   faTimes,
-  faExclamationCircle,
-  faExclamationTriangle,
   faUserCircle
 );

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import ReactTooltip from "react-tooltip";
+//import ReactTooltip from "react-tooltip";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ClipboardItemUnsupported from "../../elements/ClipboardItemUnsupportedWarning";
 import {
   // downloadSVGImage,
   downloadDomImage,
@@ -53,7 +54,7 @@ export default class BodyDiagram extends Component {
           node.classList?.contains(classname)
         );
       },
-      imageType: "image/png"
+      imageType: "image/png",
     };
     this.ANIMATION_DURATION = 1000;
   }
@@ -464,25 +465,7 @@ export default class BodyDiagram extends Component {
   renderCopyButton() {
     if (!allowCopyClipboardItem())
       return (
-        <div className="print-hidden">
-          <FontAwesomeIcon
-            className="text-warning"
-            icon="exclamation-triangle"
-            data-for={"bdCopyWarningTooltip"}
-            data-tip
-          />
-          <ReactTooltip
-            className="summary-tooltip"
-            id={"bdCopyWarningTooltip"}
-            aria-haspopup="true"
-          >
-            <p>
-              If you want to copy this image, please try a different browser.
-              <br />
-              This browser does not support copying of this image.
-            </p>
-          </ReactTooltip>
-        </div>
+        <ClipboardItemUnsupported message="Please try a different browser to copy the body diagram image."></ClipboardItemUnsupported>
       );
     let params = this.copyImageOptions;
     params.beforeCopy = () => this.beforeCopy();
@@ -546,9 +529,7 @@ export default class BodyDiagram extends Component {
     };
     if (!this.state.dates.length || this.state.dates.length < 2) return null;
     return (
-      <div
-        className="flex flex-gap-1 icons-container exclude-from-copy"
-      >
+      <div className="flex flex-gap-1 icons-container exclude-from-copy">
         <FontAwesomeIcon
           icon="angle-double-left"
           title="First"

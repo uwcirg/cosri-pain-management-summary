@@ -6,12 +6,13 @@ import FailUpArrowIcon from "../../icons/FailUpArrowIcon";
 import FailDownArrowIcon from "../../icons/FailDownArrowIcon";
 import PassDownArrowIcon from "../../icons/PassDownArrowIcon";
 import LineIcon from "../../icons/LineIcon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   allowCopyClipboardItem,
   isNumber,
   toDate,
   //writeHTMLToClipboard,
-  copyDomToClipboard
+  copyDomToClipboard,
 } from "../../helpers/utility";
 const BORDER_COLOR = "#f3f6f9";
 export default class ScoringSummary extends Component {
@@ -259,6 +260,23 @@ export default class ScoringSummary extends Component {
     //   });
     copyDomToClipboard(this.tableRef.current);
   }
+  renderCopyButton() {
+    if (!allowCopyClipboardItem()) return null;
+    return (
+      <button
+        onClick={this.copyTable}
+        className="button-default rounded"
+        style={{
+          color: "#777",
+          minWidth: "56px",
+          textAlign: "center",
+        }}
+        title="Copy scoring summary table as an image"
+      >
+        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
+      </button>
+    );
+  }
   render() {
     const { summary, showAnchorLinks } = this.props;
     const noSummaryData =
@@ -269,22 +287,27 @@ export default class ScoringSummary extends Component {
       ).length === 0;
     return (
       <React.Fragment>
-        {/* JUST to test copy */}
-        {/* <div style={{ marginBottom: "16px", textAlign: "right" }}>
-          {" "}
-          <button onClick={this.copyTable} className="button-primary">
-            Test Copy Table
-          </button>
-        </div> */}
-        <h3
-          className="panel-title"
+        <div
           style={{
-            marginTop: 0,
-            marginBottom: "8px"
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          {this.getTitleDisplay()}
-        </h3>
+          <h3
+            className="panel-title"
+            style={{
+              marginTop: 0,
+              marginBottom: "8px",
+            }}
+          >
+            {this.getTitleDisplay()}
+          </h3>
+          {/* JUST to test copy */}
+          <div style={{ marginBottom: "16px", textAlign: "right" }}>
+            {this.renderCopyButton()}
+          </div>
+        </div>
         <table
           className="table score-summary-table"
           ref={this.tableRef}

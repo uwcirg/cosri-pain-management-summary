@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import ReactTooltip from "react-tooltip";
+//import ReactTooltip from "react-tooltip";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as d3 from "d3";
@@ -9,6 +9,7 @@ import XYAxis from "./xy-axis";
 import Grid from "./grid";
 import Line from "./line";
 import Tooltip from "./tooltip";
+import ClipboardItemUnsupported from "../../elements/ClipboardItemUnsupportedWarning";
 import {
   defaultLineAttributes,
   getLineAttributes,
@@ -616,25 +617,7 @@ export default class SurveyGraph extends Component {
   renderCopyButton() {
     if (!allowCopyClipboardItem())
       return (
-        <div className="print-hidden">
-          <FontAwesomeIcon
-            className="text-warning"
-            icon="exclamation-triangle"
-            data-for={"graphWarningTooltip"}
-            data-tip
-          />
-          <ReactTooltip
-            className="summary-tooltip"
-            id={"graphWarningTooltip"}
-            aria-haspopup="true"
-          >
-            <p>
-              If you want to copy this image, please try a different browser.
-              <br />
-              This browser does not support copying of this image.
-            </p>
-          </ReactTooltip>
-        </div>
+        <ClipboardItemUnsupported message="Please try a different browser to copy the graph image."></ClipboardItemUnsupported>
       );
     return (
       <button
