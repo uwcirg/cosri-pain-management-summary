@@ -38,13 +38,40 @@ input[type="range"] {
       }
       &:first-of-type {
         top: 18px;
-        &[dataunit=month] {
-          top: 20px;
+        &[displayvalue='1yr'],
+        &[displayvalue='2yr'],
+        &[displayvalue='3yr'],
+        &[displayvalue='4yr'],
+        &[displayvalue='5yr'],
+        &[displayvalue='6yr'],
+        &[displayvalue='7yr'],
+        &[displayvalue='8yr'],
+        &[displayvalue='9yr'] {
+          top: 12px;
+        }
+        &[displayvalue='1mo'],
+        &[displayvalue='2mo'],
+        &[displayvalue='3mo'],
+        &[displayvalue='4mo'],
+        &[displayvalue='5mo'],
+        &[displayvalue='6mo'],
+        &[displayvalue='7mo'],
+        &[displayvalue='8mo'],
+        &[displayvalue='9mo'] {
+          top: 16px;
+        }
+        &[displayvalue='10mo'],
+        &[displayvalue='11mo'],
+        &[displayvalue='12mo'] {
+          top: 22px;
         }
       }
       transform: rotate(-90deg);
       &:not(:first-of-type) {
         left: 16px;
+      }
+      &:last-of-type {
+        left: 4px;
       }
     }
   }

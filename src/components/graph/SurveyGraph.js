@@ -770,14 +770,45 @@ export default class SurveyGraph extends Component {
             {arrNum.map((item, index) => {
               const prevItem = arrNum[index - 1];
               const nextItem = arrNum[index + 1];
+              const dataUnit = item < 1 ? "month" : "year";
+              const displayValue =
+                item < 1 || !inYears
+                  ? !inYears
+                    ? item
+                      ? item * 12 + "mo"
+                      : item
+                    : item === arrNum[0] ||
+                      (max < 10 &&
+                        item - arrNum[0] > 0.25 &&
+                        (item / 0.25) % 1 === 0) ||
+                      (max < 10 &&
+                        item - arrNum[0] > 0.25 &&
+                        (item / 0.5) % 1 === 0) ||
+                      (max < 10 &&
+                        item - arrNum[0] > 0.25 &&
+                        (item / 0.75) % 1 === 0)
+                    ? item
+                      ? item * 12 + "mo"
+                      : item
+                    : ""
+                  : item % 1 === 0
+                  ? item + "yr"
+                  : "";
               const rotateLabelFlag =
                 (inYears &&
                   item < 1 &&
                   ((prevItem && item - prevItem < 0.2) ||
                     (nextItem && nextItem - item < 0.2))) ||
-                (prevItem && prevItem < 1 && item >= 1 && Math.abs(item - prevItem) <= 0.5) ||
-                (nextItem && nextItem >= 1 && item < 1  && Math.abs(nextItem - item) <= 0.5);
-              const dataUnit = item < 1 ? "month" : "year";
+                (inYears &&
+                  prevItem &&
+                  prevItem < 1 &&
+                  item >= 1 &&
+                  Math.abs(item - prevItem) <= 0.5) ||
+                (inYears &&
+                  nextItem &&
+                  nextItem >= 1 &&
+                  item < 1 &&
+                  Math.abs(nextItem - item) <= 0.5);
               return (
                 <span
                   key={`scale_${index}`}
@@ -793,30 +824,10 @@ export default class SurveyGraph extends Component {
                   }`}
                   ref={this.scaleLabelRefs[index]}
                   datavalue={item}
+                  displayvalue={displayValue}
                   dataunit={dataUnit}
                 >
-                  {item < 1 || !inYears
-                    ? !inYears
-                      ? item
-                        ? item * 12 + "mo"
-                        : item
-                      : item === arrNum[0] ||
-                        (max < 10 &&
-                          item - arrNum[0] > 0.25 &&
-                          (item / 0.25) % 1 === 0) ||
-                        (max < 10 &&
-                          item - arrNum[0] > 0.25 &&
-                          (item / 0.5) % 1 === 0) ||
-                        (max < 10 &&
-                          item - arrNum[0] > 0.25 &&
-                          (item / 0.75) % 1 === 0)
-                      ? item
-                        ? item * 12 + "mo"
-                        : item
-                      : ""
-                    : item % 1 === 0
-                    ? item + "yr"
-                    : ""}
+                  {displayValue}
                 </span>
               );
             })}
@@ -834,9 +845,7 @@ export default class SurveyGraph extends Component {
         style={{
           position: "absolute",
           top: 0,
-          // left: "64px",
           right: 0,
-          //  display: "none",
         }}
       >
         {this.renderCopyButton()}
@@ -854,7 +863,7 @@ export default class SurveyGraph extends Component {
     return (
       <div
         className="text-warning"
-        style={{ margin: "8px" }}
+        style={{ margin: "8px", paddingLeft: "16px", paddingRight: "16px" }}
       >{`No data for ${noDataQids.join(", ")} in selected date range`}</div>
     );
   }
