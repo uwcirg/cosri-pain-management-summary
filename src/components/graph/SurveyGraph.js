@@ -775,8 +775,8 @@ export default class SurveyGraph extends Component {
                   item < 1 &&
                   ((prevItem && item - prevItem < 0.2) ||
                     (nextItem && nextItem - item < 0.2))) ||
-                (prevItem && prevItem < 1 && item >= 1) ||
-                (nextItem && nextItem >= 1 && item < 1);
+                (prevItem && prevItem < 1 && item >= 1 && Math.abs(item - prevItem) <= 0.5) ||
+                (nextItem && nextItem >= 1 && item < 1  && Math.abs(nextItem - item) <= 0.5);
               const dataUnit = item < 1 ? "month" : "year";
               return (
                 <span
