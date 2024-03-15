@@ -12,7 +12,7 @@ import {
   extractDateFromGMTDateString,
 } from "../helpers/formatit";
 import { dateCompare } from "../helpers/sortit";
-import { getDiffDays, isInViewport } from "../helpers/utility";
+import { getDiffDays, getPatientNameFromSource, isInViewport } from "../helpers/utility";
 import Timeout from "../helpers/timeout";
 import summaryMap from "../config/summary_config.json";
 
@@ -1199,7 +1199,7 @@ export default class Landing extends Component {
     const summaryPatient = summary.Patient ?? {};
     return (
       <Header
-        patientName={summaryPatient.Name}
+        patientName={getPatientNameFromSource(patientResource)}
         patientDOB={datishFormat(this.state.result, patientResource.birthDate)}
         patientGender={summaryPatient.Gender}
         meetsInclusionCriteria={summaryPatient.MeetsInclusionCriteria}

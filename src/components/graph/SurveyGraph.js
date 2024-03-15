@@ -267,7 +267,7 @@ export default class SurveyGraph extends Component {
     return filteredData && filteredData.length > 0;
   }
   addDataLineToSurveyGraph(qid, callback) {
-   // if (this.isInSurveyGraph(qid)) return;
+    if (this.isInSurveyGraph(qid)) return;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
     );
@@ -720,6 +720,7 @@ export default class SurveyGraph extends Component {
     const inYears = unit === "year";
     const min = arrNum[0];
     const max = arrNum[arrNum.length - 1];
+    // has date ranges in months and years
     const mixedBags =
       arrNum.find((item) => item < 1) && arrNum.find((item) => item >= 1);
     const arrDisplayValues = arrNum.map((item) => {
@@ -772,20 +773,18 @@ export default class SurveyGraph extends Component {
           <div className="scale">
             {arrNum.map((item, index) => {
               const prevItem = arrDisplayValues[index - 1];
-              const nextItem = arrDisplayValues[index + 1];
+              //const nextItem = arrDisplayValues[index + 1];
               const prevComparedValue =
                 prevItem && prevItem.display ? prevItem.value : 0;
-              const nextComparedValue =
-                nextItem && nextItem.display ? nextItem.value : 0;
+              //const nextComparedValue =
+               // nextItem && nextItem.display ? nextItem.value : 0;
               const dataUnit = item < 1 ? "month" : "year";
               const shouldRotateLabel = inYears && max >= 10;
               const tooCloseFlag =
                 index > 0 &&
                 mixedBags &&
-                ((prevComparedValue &&
-                  Math.abs(item - prevComparedValue) <= 0.2) ||
-                  (nextComparedValue &&
-                    Math.abs(nextComparedValue - item) <= 0.2));
+                (prevComparedValue &&
+                  Math.abs(item - prevComparedValue) <= 0.2);
               const displayValue = !shouldRotateLabel && tooCloseFlag
                 ? ""
                 : arrDisplayValues[index].display;

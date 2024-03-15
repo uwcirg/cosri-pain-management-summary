@@ -2,6 +2,7 @@ import moment from "moment";
 import { toBlob, toJpeg } from "html-to-image";
 import { getEnv } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
+
 /*
  * return number of days between two dates
  * @params dateString1 date #1 to be compared
@@ -356,7 +357,7 @@ export function getHTMLImageClipboardItem(domElement, options) {
     [imageType]: new Promise(async (resolve) => {
       if (imageType === "image/png") {
         const imageBlob = await toBlob(domElement, options);
-        console.log(imageBlob)
+        console.log(imageBlob);
         resolve(imageBlob);
       } else if (imageType === "image/jpeg") {
         const imageBlob = await toJpeg(domElement, options);
@@ -402,25 +403,25 @@ export async function writeHTMLToClipboard(htmlContent) {
   if (!allowCopyClipboardItem())
     return Promise.reject("ClipboardItem API is not supported");
   const clipboardItem = new window.ClipboardItem({
-    "text/html": new Blob([htmlContent], {type: "text/html"}),
+    "text/html": new Blob([htmlContent], { type: "text/html" }),
   });
   return writeBlobToClipboard(clipboardItem);
 }
 
 export async function writeTextToClipboard(text) {
-    //if (!allowCopyClipboardItem())
-    // return Promise.reject("ClipboardItem API is not supported");
-    // const clipboardItem = new window.ClipboardItem({
-    //   "text/plain": new Blob([text], {type: "text/plain"}),
-    // });
-    // return writeBlobToClipboard(clipboardItem);
-    // try {
-    //   await navigator.clipboard.writeText(text);
-    // } catch (error) {
-    //   console.error(error.message);
-    // }
-    return await navigator.clipboard.writeText(text);
-  }
+  //if (!allowCopyClipboardItem())
+  // return Promise.reject("ClipboardItem API is not supported");
+  // const clipboardItem = new window.ClipboardItem({
+  //   "text/plain": new Blob([text], {type: "text/plain"}),
+  // });
+  // return writeBlobToClipboard(clipboardItem);
+  // try {
+  //   await navigator.clipboard.writeText(text);
+  // } catch (error) {
+  //   console.error(error.message);
+  // }
+  return await navigator.clipboard.writeText(text);
+}
 export async function writeBlobToClipboard(clipboardItem) {
   if (!allowCopyClipboardItem())
     return Promise.reject("ClipboardItem API is not supported");
@@ -458,4 +459,15 @@ export function getQuestionnaireDescription(fhirQuestionnaire) {
 export function toDate(stringDate) {
   if (stringDate instanceof Date) return stringDate;
   return new Date(stringDate);
+}
+
+export function getPatientNameFromSource(fhirPatientSource) {
+  if (!fhirPatientSource) return "";
+  if (!fhirPatientSource.name || !fhirPatientSource.name.length) return "";
+  const firstName =
+    fhirPatientSource.name[0].given && fhirPatientSource.name[0].given.length
+      ? fhirPatientSource.name[0].given[0]
+      : "";
+  const lastName = fhirPatientSource.name[0].family;
+  return [firstName, lastName].join(" ");
 }
