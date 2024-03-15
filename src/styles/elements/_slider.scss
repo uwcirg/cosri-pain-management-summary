@@ -35,8 +35,21 @@ input[type="range"] {
     &.rotate {
       top: 12px;
       min-height: 12px;
-      &:first-of-type {
-        top: 20px;
+      // &:first-of-type {
+      //   top: 20px;
+      // }
+      &[displayvalue="10yr"],
+      &[displayvalue="11yr"],
+      &[displayvalue="12yr"],
+      &[displayvalue="13yr"],
+      &[displayvalue="14yr"],
+      &[displayvalue="15yr"],
+      &[displayvalue="16yr"],
+      &[displayvalue="17yr"],
+      &[displayvalue="18yr"],
+      &[displayvalue="19yr"],
+      &[displayvalue="20yr"] {
+        top: 16px;
       }
       // &[displayvalue="1mo"],
       // &[displayvalue="2mo"],
@@ -115,7 +128,7 @@ input[type="range"] {
       //}
       transform: rotate(-90deg);
       &:not(:first-of-type) {
-        left: 16px;
+        left: 12px;
       }
       &:last-of-type {
         left: 4px;

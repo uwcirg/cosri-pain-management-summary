@@ -267,7 +267,7 @@ export default class SurveyGraph extends Component {
     return filteredData && filteredData.length > 0;
   }
   addDataLineToSurveyGraph(qid, callback) {
-    if (this.isInSurveyGraph(qid)) return;
+   // if (this.isInSurveyGraph(qid)) return;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
     );
@@ -773,16 +773,23 @@ export default class SurveyGraph extends Component {
             {arrNum.map((item, index) => {
               const prevItem = arrDisplayValues[index - 1];
               const nextItem = arrDisplayValues[index + 1];
-              const prevComparedValue = prevItem && prevItem.display ? prevItem.value : 0;
-              const nextComparedValue = nextItem && nextItem.display ? nextItem.value : 0;
+              const prevComparedValue =
+                prevItem && prevItem.display ? prevItem.value : 0;
+              const nextComparedValue =
+                nextItem && nextItem.display ? nextItem.value : 0;
               const dataUnit = item < 1 ? "month" : "year";
-              const displayValue = arrDisplayValues[index].display;
-              const rotateLabelFlag =
+              const shouldRotateLabel = inYears && max >= 10;
+              const tooCloseFlag =
+                index > 0 &&
                 mixedBags &&
                 ((prevComparedValue &&
                   Math.abs(item - prevComparedValue) <= 0.2) ||
                   (nextComparedValue &&
                     Math.abs(nextComparedValue - item) <= 0.2));
+              const displayValue = !shouldRotateLabel && tooCloseFlag
+                ? ""
+                : arrDisplayValues[index].display;
+
               return (
                 <span
                   key={`scale_${index}`}
@@ -790,9 +797,7 @@ export default class SurveyGraph extends Component {
                     Math.abs(this.state.selectedDateRange - item) < 0.001
                       ? "active"
                       : ""
-                  } ${
-                    rotateLabelFlag || (inYears && max >= 10) ? "rotate" : ""
-                  }`}
+                  } ${inYears && max >= 10 ? "rotate" : ""}`}
                   ref={this.scaleLabelRefs[index]}
                   datavalue={item}
                   displayvalue={displayValue}
