@@ -271,7 +271,7 @@ export default class ScoringSummary extends Component {
           minWidth: "56px",
           textAlign: "center",
         }}
-        title="Copy scoring summary table as an image"
+        title="Copy scoring summary image"
       >
         <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
       </button>
@@ -305,9 +305,9 @@ export default class ScoringSummary extends Component {
             {this.getTitleDisplay()}
           </h3>
           {/* JUST to test copy */}
-          {/* <div style={{ marginBottom: "16px", textAlign: "right" }}>
+          <div style={{ marginBottom: "16px", textAlign: "right" }}>
             {this.renderCopyButton()}
-          </div> */}
+          </div>
         </div>
         <table
           className="table score-summary-table"

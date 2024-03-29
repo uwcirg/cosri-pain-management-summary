@@ -114,7 +114,6 @@ async function executeELM(collector, oResourceTypes) {
                 item.data &&
                 String(item.data.resourceType).toLowerCase() === "bundle"
               )
-                console.log("typeof e? ", typeof e);
               item.error =
                 "Unable to process data. CQL execution error. " +
                 (typeof e?.message === "string" ? e?.message : " Please see console for detail.");
