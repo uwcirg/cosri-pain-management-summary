@@ -302,8 +302,7 @@ export function copySVGImage(
   const imageType = mimeType ? mimeType : "image/png";
   let items = {
     [imageType]: new Promise(async (resolve) => {
-      const imgBlob = await fetch(img.src).then((response) => response.blob());
-      console.log("image fetched ", imgBlob);
+      await fetch(img.src).then((response) => response.blob());
       const canvasWidth = width ? width : img.width;
       const canvasHeight = height ? height : img.height;
       canvas.width = canvasWidth;
@@ -329,9 +328,7 @@ export function copySVGImage(
       //   [item.imageType]: getHTMLImageClipboardItem(item.element, item.options)
       // };
       const itemToAdd = getHTMLImageClipboardItem(item.element, item.options);
-      console.log("item ", itemToAdd);
       items = { ...items, ...itemToAdd };
-      console.log("items? ", items);
     });
   }
 
@@ -356,10 +353,7 @@ export function getHTMLImageClipboardItem(domElement, options) {
   return {
     [imageType]: new Promise(async (resolve) => {
       if (imageType === "image/png") {
-        console.log("dom element ", domElement);
-        console.log("options? ", options)
         const imageBlob = await toBlob(domElement, options);
-        console.log(imageBlob);
         resolve(imageBlob);
       } else if (imageType === "image/jpeg") {
         const imageBlob = await toJpeg(domElement, options);
@@ -390,7 +384,7 @@ export function copyDomToClipboard(domElement, options) {
     .catch((e) => {
       alert("Error! Unable to copy content to clipboard! " + e);
       console.log(e);
-      console.log("params ", params);
+      console.log("passed param ", params);
       if (params.afterCopy) {
         params.afterCopy(e);
       }

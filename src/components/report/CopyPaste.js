@@ -357,13 +357,13 @@ export default class CopyPaste extends Component {
         >
           Copy content to clipboard as image
         </button>
-        <button
+        {/* <button
           className="button-default"
           onClick={this.copyReportContentImage}
           style={buttonStyle}
         >
           Copy entire report to clipboard as image
-        </button>
+        </button> */}
         {/*** 
         <button
           className="button-default"
