@@ -17,6 +17,7 @@ export default class CopyPaste extends Component {
     this.containerRef = React.createRef();
     this.copyContent = this.copyContent.bind(this);
     this.copyContentImage = this.copyContentImage.bind(this);
+    this.copyReportContentImage = this.copyReportContentImage.bind(this);
     this.importScoreSummaryContent = this.importScoreSummaryContent.bind(this);
     this.handleGetScoreSummary = this.handleGetScoreSummary.bind(this);
     this.handleContentChange = this.handleContentChange.bind(this);
@@ -108,6 +109,22 @@ export default class CopyPaste extends Component {
         alert("Content copied to clipboard");
       })
       .catch((e) => alert("Unable to copy content to clipboard"));
+  }
+
+  copyReportContentImage() {
+    //summary__display
+    const reportNode = document.querySelector(".report .summary__display");
+    console.log("report node ? ", reportNode)
+    if (!reportNode) return;
+
+    const filter = (node) => {
+      const exclusionClasses = ['survey-graph', 'body-diagram-parent-container'];
+      return !exclusionClasses.some((classname) => node.classList?.contains(classname));
+    }
+    
+    copyDomToClipboard(reportNode, {
+      filter: filter
+    });
   }
 
   getDefaultContent() {
@@ -339,6 +356,13 @@ export default class CopyPaste extends Component {
           disabled={!allowCopyClipboardItem()}
         >
           Copy content to clipboard as image
+        </button>
+        <button
+          className="button-default"
+          onClick={this.copyReportContentImage}
+          style={buttonStyle}
+        >
+          Copy entire report to clipboard as image
         </button>
         {/*** 
         <button

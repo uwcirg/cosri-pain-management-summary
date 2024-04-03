@@ -144,7 +144,7 @@ export default class Report extends Component {
     return (
       <div className="flex flex-start summary__notice">
         <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-        The system indicates that there is no data for this patient. If you
+        The system indicates that there is no reportable data for this patient. If you
         believe this is an error, please contact us.
       </div>
     );

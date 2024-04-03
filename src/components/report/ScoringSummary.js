@@ -11,15 +11,27 @@ import {
   allowCopyClipboardItem,
   isNumber,
   toDate,
-  //writeHTMLToClipboard,
   copyDomToClipboard,
 } from "../../helpers/utility";
 const BORDER_COLOR = "#f3f6f9";
 export default class ScoringSummary extends Component {
   constructor() {
     super(...arguments);
+    //refs
     this.tableRef = React.createRef();
     this.copyTable = this.copyTable.bind(this);
+
+    //constants
+    this.containerStyle = {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginTop: "4px",
+    };
+    this.panelStyle = {
+      marginTop: 0,
+      marginBottom: "8px",
+    };
     this.tableStyle = {
       borderCollapse: "collapse",
       border: `1px solid ${BORDER_COLOR}`,
@@ -222,8 +234,7 @@ export default class ScoringSummary extends Component {
     );
   }
   renderDataRows(summary, showAnchorLinks) {
-    const dataToShow = summary.filter((item) => !item.ExcludeFromScoring);
-    return dataToShow.map((item, index) => {
+    return summary.map((item, index) => {
       return (
         <tr key={`questionnaire_summary_row_${index}`} className="data-row">
           {this.renderQuestionnaireLinkCell(item, showAnchorLinks)}
@@ -247,17 +258,6 @@ export default class ScoringSummary extends Component {
   }
   copyTable() {
     if (!allowCopyClipboardItem()) return null;
-    // writeHTMLToClipboard(
-    //   "<div style='font-family: Arial, sans-serif'>" +
-    //     this.tableRef.current.outerHTML +
-    //     "</div>"
-    // )
-    //   .then(() => {
-    //     alert("All content copied to clipboard");
-    //   })
-    //   .catch((e) => {
-    //     alert("Error copying content to clipboard " + e);
-    //   });
     copyDomToClipboard(this.tableRef.current);
   }
   renderCopyButton() {
@@ -271,39 +271,35 @@ export default class ScoringSummary extends Component {
           minWidth: "56px",
           textAlign: "center",
         }}
-        title="Copy scoring summary image"
+        title="Copy summary image"
       >
         <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
       </button>
     );
   }
-  render() {
-    const { summary, showAnchorLinks } = this.props;
-    const noSummaryData =
+  hasNoSummaryData(summary) {
+    return (
       !summary ||
       !summary.length ||
       summary.filter(
         (item) => item.ResponsesSummary && item.ResponsesSummary.length > 0
-      ).length === 0;
+      ).length === 0
+    );
+  }
+  renderTitle() {
+    return (
+      <h3 className="panel-title" style={this.panelStyle}>
+        {this.getTitleDisplay()}
+      </h3>
+    );
+  }
+  render() {
+    const { summary, showAnchorLinks } = this.props;
+    const noSummaryData = this.hasNoSummaryData(summary);
     return (
       <React.Fragment>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "4px"
-          }}
-        >
-          <h3
-            className="panel-title"
-            style={{
-              marginTop: 0,
-              marginBottom: "8px",
-            }}
-          >
-            {this.getTitleDisplay()}
-          </h3>
+        <div style={this.containerStyle}>
+          {this.renderTitle()}
           {/* JUST to test copy */}
           <div style={{ marginBottom: "16px", textAlign: "right" }}>
             {this.renderCopyButton()}

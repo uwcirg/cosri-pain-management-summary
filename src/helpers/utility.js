@@ -356,6 +356,8 @@ export function getHTMLImageClipboardItem(domElement, options) {
   return {
     [imageType]: new Promise(async (resolve) => {
       if (imageType === "image/png") {
+        console.log("dom element ", domElement);
+        console.log("options? ", options)
         const imageBlob = await toBlob(domElement, options);
         console.log(imageBlob);
         resolve(imageBlob);

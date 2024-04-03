@@ -20,10 +20,10 @@ export default class BodyDiagram extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      summaryData: this.getSummaryData(),
+      summaryData: this.getPropSummaryData(),
       selectedDate: this.getMostRecentDate(),
       selectedIndex: 0,
-      dates: this.getDates(),
+      dates: this.getPropDates(),
     };
     // refs
     this.containerRef = React.createRef();
@@ -33,21 +33,30 @@ export default class BodyDiagram extends Component {
     this.datesSelectorRef = React.createRef();
     this.toolbarRef = React.createRef();
 
+    // event methods
     this.showUtilButtons = this.showUtilButtons.bind(this);
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
-    this.handleNextChange = this.handleNextChange.bind(this);
-    this.handlePrevChange = this.handlePrevChange.bind(this);
+    this.handleClickNextButton = this.handleClickNextButton.bind(this);
+    this.handleClickPrevButton = this.handleClickPrevButton.bind(this);
     this.handleSetFirst = this.handleSetFirst.bind(this);
     this.handleSetLast = this.handleSetLast.bind(this);
 
+    // constants
+    this.containerStyle = {
+      backgroundColor: "#FFF",
+      width: "100%",
+      position: "relative",
+      paddingBottom: "12px",
+    };
     this.utilButtonStyle = {
       fontSize: "0.9rem",
       color: "#777",
       minWidth: "56px",
       background: "transparent",
-      textAlign: "center"
+      textAlign: "center",
     };
+
     this.copyImageOptions = {
       filter: (node) => {
         const exclusionClasses = ["exclude-from-copy"];
@@ -57,7 +66,7 @@ export default class BodyDiagram extends Component {
       },
       imageType: "image/png",
     };
-    this.ANIMATION_DURATION = 1000;
+    this.SELECTED_ANIMATION_DURATION = 1000; // animation duration for indicating an option has been selected
   }
 
   componentDidMount() {
@@ -102,7 +111,10 @@ export default class BodyDiagram extends Component {
       },
       () => {
         this.drawAllParts();
-        setTimeout(() => this.removeSelectedClass(), this.ANIMATION_DURATION);
+        setTimeout(
+          () => this.removeSelectedClass(),
+          this.SELECTED_ANIMATION_DURATION
+        );
       }
     );
   }
@@ -117,11 +129,14 @@ export default class BodyDiagram extends Component {
       },
       () => {
         this.drawAllParts();
-        setTimeout(() => this.removeSelectedClass(), this.ANIMATION_DURATION);
+        setTimeout(
+          () => this.removeSelectedClass(),
+          this.SELECTED_ANIMATION_DURATION
+        );
       }
     );
   }
-  handlePrevChange() {
+  handleClickPrevButton() {
     const prevIndex = this.state.selectedIndex - 1;
     // console.log("Prev Index ", prevIndex);
     if (prevIndex < 0) return;
@@ -133,11 +148,14 @@ export default class BodyDiagram extends Component {
       },
       () => {
         this.drawAllParts();
-        setTimeout(() => this.removeSelectedClass(), this.ANIMATION_DURATION);
+        setTimeout(
+          () => this.removeSelectedClass(),
+          this.SELECTED_ANIMATION_DURATION
+        );
       }
     );
   }
-  handleNextChange() {
+  handleClickNextButton() {
     const nextIndex = this.state.selectedIndex + 1;
     // console.log("Next index ", nextIndex);
     if (nextIndex > this.state.dates.length - 1) return;
@@ -151,7 +169,7 @@ export default class BodyDiagram extends Component {
         this.drawAllParts();
         setTimeout(() => {
           this.removeSelectedClass();
-        }, this.ANIMATION_DURATION);
+        }, this.SELECTED_ANIMATION_DURATION);
       }
     );
   }
@@ -169,9 +187,11 @@ export default class BodyDiagram extends Component {
   }
 
   showUtilButtons() {
+    if (!this.utilButtonsContainerRef.current) return;
     this.utilButtonsContainerRef.current.style.visibility = "visible";
   }
   hideUtilButtons() {
+    if (!this.utilButtonsContainerRef.current) return;
     this.utilButtonsContainerRef.current.style.visibility = "hidden";
   }
   getAnswersFromFhirObjects(fhirObjects, description = "pain") {
@@ -187,19 +207,33 @@ export default class BodyDiagram extends Component {
     return answers;
   }
 
-  getDates() {
-    const summaryData = this.getSummaryData();
-    if (!summaryData || !summaryData.length) return [];
+  getPropDates() {
+    const summaryData = this.getPropSummaryData();
     return summaryData.map((item) => item.date);
   }
 
-  getSummaryData() {
-    if (!this.props.summary || !this.props.summary.length) return null;
+  getPropSummaryData() {
+    if (
+      !this.props.summary ||
+      !Array.isArray(this.props.summary) ||
+      !this.props.summary.length
+    )
+      return [];
     return this.props.summary.sort((a, b) => {
       const date1 = toDate(a.date);
       const date2 = toDate(b.date);
       return date2 - date1;
     });
+  }
+
+  getStateSummaryData() {
+    if (
+      !this.state.summaryData ||
+      !Array.isArray(this.state.summaryData) ||
+      !this.state.summaryData.length
+    )
+      return null;
+    return this.state.summaryData;
   }
 
   getAnswerDataByDate(targetDate) {
@@ -216,10 +250,7 @@ export default class BodyDiagram extends Component {
     //   front_left_brow: ["severe_pain"],
     // }
     // //{"front_left_cheek":["severe_pain"]}
-    const summaryData =
-      this.state.summaryData && this.state.summaryData.length
-        ? this.state.summaryData
-        : this.getSummaryData();
+    const summaryData = this.getStateSummaryData() || this.getPropSummaryData();
     if (!summaryData || !summaryData.length) return null;
     const responses = selectedDate
       ? summaryData.find((item) => item.date === selectedDate)
@@ -242,8 +273,8 @@ export default class BodyDiagram extends Component {
   }
 
   getMostRecentDate() {
-    const summaryData = this.getSummaryData();
-    if (!summaryData || !summaryData.length) return null;
+    const summaryData = this.getPropSummaryData();
+    if (!summaryData.length) return null;
     return summaryData[0].date;
   }
 
@@ -302,9 +333,9 @@ export default class BodyDiagram extends Component {
     }
   }
   renderDateSelector() {
-    const summaryData = this.state.summaryData;
-    if (!summaryData || !summaryData.length) return null;
-    const dates = summaryData.map((item) => {
+    const summaryData = this.getStateSummaryData();
+    if (!summaryData) return null;
+    const arrObjDates = summaryData.map((item) => {
       return {
         key: getDisplayDateFromISOString(item.date),
         value: item.date,
@@ -322,7 +353,7 @@ export default class BodyDiagram extends Component {
           onChange={this.handleSelectChange}
           onBlur={this.handleSelectChange}
         >
-          {dates.map((date, index) => (
+          {arrObjDates.map((date, index) => (
             <option value={date.value} key={`bd_date_option_${index}`}>
               {date.key}
             </option>
@@ -411,14 +442,6 @@ export default class BodyDiagram extends Component {
     params.afterDownload = () => this.afterCopy();
     return (
       <button
-        // onClick={(e) =>
-        //   downloadSVGImage(
-        //     e,
-        //     this.getSourceDocument(),
-        //     null,
-        //     `body_diagram_${this.state.selectedDate}`
-        //   )
-        // }
         onClick={(e) => {
           downloadDomImage(
             e,
@@ -451,7 +474,9 @@ export default class BodyDiagram extends Component {
     cloneSvgElement.classList.add("part-of-bd");
     Object.assign(cloneSvgElement.style, styles);
     this.containerRef.current.append(cloneSvgElement);
-    this.BodyDiagramRef.current.style.visibility = "hidden";
+    if (this.BodyDiagramRef.current) {
+      this.BodyDiagramRef.current.style.visibility = "hidden";
+    }
     if (this.datesSelectorRef.current)
       this.datesSelectorRef.current.classList.add("read-only");
   }
@@ -459,7 +484,9 @@ export default class BodyDiagram extends Component {
     if (document.querySelector("#temp_bd")) {
       this.containerRef.current.removeChild(document.querySelector("#temp_bd"));
     }
-    this.BodyDiagramRef.current.style.visibility = "visible";
+    if (this.BodyDiagramRef.current) {
+      this.BodyDiagramRef.current.style.visibility = "visible";
+    }
     if (this.datesSelectorRef.current)
       this.datesSelectorRef.current.classList.remove("read-only");
   }
@@ -474,22 +501,6 @@ export default class BodyDiagram extends Component {
     return (
       <button
         onClick={(e) => {
-          // copySVGImage(
-          //   e,
-          //   this.getSourceDocument(),
-          //   "body_diagram",
-          //   "image/png",
-          //   {
-          //     clipboardItems: [
-          //       {
-          //         element: document.querySelector(".legend-wrapper"),
-          //         options: {
-          //           imageType: "image/png"
-          //         }
-          //       }
-          //     ],
-          //   }
-          // )
           copyDomToClipboard(this.containerRef.current, params);
         }}
         className="print-hidden button-default rounded"
@@ -528,7 +539,12 @@ export default class BodyDiagram extends Component {
       position: "relative",
       zIndex: 10,
     };
-    if (!this.state.dates.length || this.state.dates.length < 2) return null;
+    if (
+      !this.state.dates ||
+      !this.state.dates.length ||
+      this.state.dates.length < 2
+    )
+      return null;
     return (
       <div className="flex flex-gap-1 icons-container exclude-from-copy">
         <FontAwesomeIcon
@@ -542,14 +558,14 @@ export default class BodyDiagram extends Component {
           icon="chevron-left"
           title="Previous"
           style={iconStyle}
-          onClick={this.handlePrevChange}
+          onClick={this.handleClickPrevButton}
           className={this.state.selectedIndex <= 0 ? "disabled" : ""}
         ></FontAwesomeIcon>
         <FontAwesomeIcon
           icon="chevron-right"
           title="Next"
           style={iconStyle}
-          onClick={this.handleNextChange}
+          onClick={this.handleClickNextButton}
           className={
             this.state.selectedIndex >= this.state.dates.length - 1
               ? "disabled"
@@ -571,11 +587,12 @@ export default class BodyDiagram extends Component {
     );
   }
   renderDots() {
-    if (!this.state.summaryData || !this.state.summaryData.length) return null;
-    if (this.state.summaryData.length < 2) return null;
+    const stateSummaryData = this.getStateSummaryData();
+    if (!stateSummaryData) return null;
+    if (stateSummaryData.length < 2) return null;
     return (
       <div className="exclude-from-copy dots-container print-hidden">
-        {this.state.summaryData.map((item, index) => {
+        {stateSummaryData.map((item, index) => {
           return (
             <div
               className={`dot ${
@@ -590,9 +607,7 @@ export default class BodyDiagram extends Component {
     );
   }
   render() {
-    if (!this.state.summaryData || !this.state.summaryData.length) return null;
-    console.log("body diagram data: ", this.getSummaryData());
-
+    if (!this.getStateSummaryData()) return null;
     return (
       <div
         style={{
@@ -602,15 +617,8 @@ export default class BodyDiagram extends Component {
         }}
       >
         <div
-          //  onMouseEnter={this.showUtilButtons}
-          //  onMouseLeave={this.hideUtilButtons}
           ref={this.containerRef}
-          style={{
-            backgroundColor: "#FFF",
-            width: "100%",
-            position: "relative",
-            paddingBottom: "12px",
-          }}
+          style={this.containerStyle}
           className="body-diagram-parent-container"
         >
           <div

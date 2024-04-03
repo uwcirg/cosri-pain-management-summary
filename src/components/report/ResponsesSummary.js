@@ -85,7 +85,8 @@ export default class ResponsesSummary extends Component {
   }
   getMatchedAnswerByItem(summary, targetItem) {
     if (!targetItem) return "--";
-    if (!summary || !summary.responses) return "--";
+    if (!summary || !summary.responses || !Array.isArray(summary.responses))
+      return "--";
     const matchedItem = summary.responses.filter(
       (item) =>
         String(item.linkId).includes(targetItem.linkId) ||
@@ -98,13 +99,18 @@ export default class ResponsesSummary extends Component {
       matchedItem[0].answer
     );
   }
-  getCurrentResponses(summary) {
+  hasResponses(summary) {
     if (
       !summary ||
       !summary.ResponsesSummary ||
+      !Array.isArray(summary.ResponsesSummary) ||
       !summary.ResponsesSummary.length
     )
-      return null;
+      return false;
+    return true;
+  }
+  getCurrentResponses(summary) {
+    if (!this.hasResponses(summary)) return null;
     return summary.ResponsesSummary[0];
   }
   getDisplayDate(targetObj) {
@@ -112,16 +118,11 @@ export default class ResponsesSummary extends Component {
     return getDisplayDateFromISOString(targetObj.date);
   }
   getNumResponses(summary) {
-    if (
-      !summary ||
-      !summary.ResponsesSummary ||
-      !summary.ResponsesSummary.length
-    )
-      return 0;
+    if (!this.hasResponses(summary)) return 0;
     return summary.ResponsesSummary.length;
   }
   renderResponses(qid, summaryItems, endIndex) {
-    if (!summaryItems || !summaryItems.length) {
+    if (!summaryItems || !Array.isArray(summaryItems) || !summaryItems.length) {
       return <div>No recorded responses</div>;
     }
     const headerCellStyle = {
@@ -144,7 +145,7 @@ export default class ResponsesSummary extends Component {
             } Questions`}</th>
             {summaryItems
               .slice(0, endIndex ? endIndex : summaryItems.length)
-              .map((item, index) => {
+              .map((item) => {
                 return (
                   <th
                     key={`response_header_${item.id}`}
@@ -219,10 +220,69 @@ export default class ResponsesSummary extends Component {
       </thead>
     );
   }
+  renderTableBody(columns, summary) {
+    const currentResponses = !this.hasResponses(summary)
+      ? null
+      : this.getCurrentResponses(summary);
+    return (
+      <tbody>
+        <tr>
+          {columns &&
+            columns.map((column, index) => {
+              if (column.key === "score")
+                return this.renderScoreTableCell(
+                  summary,
+                  `score_cell_${index}`
+                );
+              else if (column.key === "responses_completed")
+                return this.renderNumResponsesTableCell(
+                  summary,
+                  `${column.key}_index`
+                );
+              else if (column.key === "responses")
+                return this.renderResponsesLinkTableCell(
+                  this.getDisplayDate(currentResponses),
+                  `responses_cell_${index}`
+                );
+              else {
+                if (currentResponses[column.key])
+                  return (
+                    <td
+                      className="text-center"
+                      key={`${column.key}_${index}`}
+                      valign="middle"
+                    >
+                      {currentResponses[column.key]}
+                    </td>
+                  );
+                else
+                  return (
+                    <td
+                      className="text-center"
+                      key={`${column.key}_${index}`}
+                      valign="middle"
+                    >
+                      --
+                    </td>
+                  );
+              }
+            })}
+          {!columns && (
+            <React.Fragment>
+              {this.renderScoreTableCell(summary, `score_cell`)}
+              {this.renderNumResponsesTableCell(summary, `num_response_cell`)}
+              {this.renderResponsesLinkTableCell(
+                this.getDisplayDate(currentResponses),
+                "responses_cell"
+              )}
+            </React.Fragment>
+          )}
+        </tr>
+      </tbody>
+    );
+  }
   renderScoreTableCell(summary, key) {
-    const hasSummary =
-      summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
-    if (!hasSummary)
+    if (!this.hasResponses(summary))
       return (
         <td cssClass="text-center" style={this.cellStyle}>
           --
@@ -242,9 +302,7 @@ export default class ResponsesSummary extends Component {
     );
   }
   renderNumResponsesTableCell(summary, key) {
-    const hasSummary =
-      summary && summary.ResponsesSummary && summary.ResponsesSummary.length;
-    if (!hasSummary)
+    if (!this.hasResponses(summary))
       return (
         <td className="text-center" key={key} style={this.cellStyle}>
           --
@@ -288,21 +346,39 @@ export default class ResponsesSummary extends Component {
       </td>
     );
   }
-  renderSummary(summary, columns) {
-    const noResponses =
-      !summary || !summary.ResponsesSummary || !summary.ResponsesSummary.length;
-    const currentResponses = noResponses
-      ? null
-      : this.getCurrentResponses(summary);
-    if (noResponses)
-      return (
-        <div
-          className="no-entries"
-          style={{ fontStyle: "italic", color: "#58676a" }}
-        >
-          No recorded responses
+  rendeAccordionContent(summary) {
+    if (!this.hasResponses(summary)) return null;
+    const wrapperClass =
+      summary.ResponsesSummary && summary.ResponsesSummary.length === 1
+        ? "two-columns"
+        : "";
+    return (
+      <div className={`accordion-content ${this.state.open ? "active" : ""}`}>
+        <div className="responses-table-outer-wrapper print-hidden">
+          <div
+            className={`response-table-wrapper print-hidden ${wrapperClass}`}
+            ref={this.tableWrapperRef}
+          >
+            {this.renderResponses(
+              summary.QuestionnaireName,
+              summary.ResponsesSummary
+            )}
+          </div>
         </div>
-      );
+        <div className="print-only">
+          {this.renderResponses(
+            summary.QuestionnaireName,
+            summary.ResponsesSummary,
+            3
+          )}
+        </div>
+      </div>
+    );
+  }
+  renderSummary(summary, columns) {
+    const noResponses = !this.hasResponses(summary);
+    if (noResponses)
+      return <div className="no-entries">No recorded responses</div>;
     return (
       <React.Fragment>
         <table
@@ -310,89 +386,8 @@ export default class ResponsesSummary extends Component {
           style={this.tableStyle}
         >
           {this.renderTableHeader(columns)}
-          <tbody>
-            <tr>
-              {columns &&
-                columns.map((column, index) => {
-                  if (column.key === "score")
-                    return this.renderScoreTableCell(
-                      summary,
-                      `score_cell_${index}`
-                    );
-                  else if (column.key === "responses_completed")
-                    return this.renderNumResponsesTableCell(
-                      summary,
-                      `${column.key}_index`
-                    );
-                  else if (column.key === "responses")
-                    return this.renderResponsesLinkTableCell(
-                      this.getDisplayDate(currentResponses),
-                      `responses_cell_${index}`
-                    );
-                  else {
-                    if (currentResponses[column.key])
-                      return (
-                        <td
-                          className="text-center"
-                          key={`${column.key}_${index}`}
-                          valign="middle"
-                        >
-                          {currentResponses[column.key]}
-                        </td>
-                      );
-                    else
-                      return (
-                        <td
-                          className="text-center"
-                          key={`${column.key}_${index}`}
-                          valign="middle"
-                        >
-                          --
-                        </td>
-                      );
-                  }
-                })}
-              {!columns && (
-                <React.Fragment>
-                  {this.renderScoreTableCell(summary, `score_cell`)}
-                  {this.renderNumResponsesTableCell(
-                    summary,
-                    `num_response_cell`
-                  )}
-                  {this.renderResponsesLinkTableCell(
-                    this.getDisplayDate(currentResponses),
-                    "responses_cell"
-                  )}
-                </React.Fragment>
-              )}
-            </tr>
-          </tbody>
+          {this.renderTableBody(columns, summary)}
         </table>
-        <div className={`accordion-content ${this.state.open ? "active" : ""}`}>
-          <div className="responses-table-outer-wrapper print-hidden">
-            <div
-              className={`response-table-wrapper print-hidden ${
-                summary.ResponsesSummary &&
-                summary.ResponsesSummary.length === 1
-                  ? "two-columns"
-                  : ""
-              }`}
-              ref={this.tableWrapperRef}
-            >
-              {this.renderResponses(
-                summary.QuestionnaireName,
-                summary.ResponsesSummary
-              )}
-            </div>
-          </div>
-          <div className="print-only">
-            {this.renderResponses(
-              summary.QuestionnaireName,
-              summary.ResponsesSummary,
-              3
-            )}
-          </div>
-        </div>
       </React.Fragment>
     );
   }

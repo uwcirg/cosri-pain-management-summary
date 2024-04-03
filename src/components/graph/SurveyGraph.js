@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-//import ReactTooltip from "react-tooltip";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as d3 from "d3";
@@ -16,9 +15,7 @@ import {
 } from "../../config/graph_config";
 import {
   allowCopyClipboardItem,
-  //  copySVGImage,
   copyDomToClipboard,
-  // downloadSVGImage,
   downloadDomImage,
   getDifferenceInYears,
   isNumber,
@@ -50,26 +47,6 @@ export default class SurveyGraph extends Component {
         ? [...new Set(initData.map((item) => item.qid))]
         : [],
     };
-    this.copyImageOptions = {
-      filter: (node) => {
-        const exclusionClasses = ["exclude-from-copy"];
-        return !exclusionClasses.some((classname) =>
-          node.classList?.contains(classname)
-        );
-      },
-      beforeCopy: () => this.beforeCopy(),
-      afterCopy: () => this.afterCopy(),
-      beforeDownload: () => this.beforeCopy(),
-      afterDownload: () => this.afterCopy(),
-      imageType: "image/png",
-    };
-    this.utilButtonStyle = {
-      fontSize: "0.9rem",
-      color: "#777",
-      minWidth: "48px",
-      backgroundColor: "transparent",
-    };
-
     // This binding is necessary to make `this` work in the callback
     this.addDataLineToSurveyGraph = this.addDataLineToSurveyGraph.bind(this);
     this.removeDataLineFromSurveyGraph =
@@ -89,6 +66,27 @@ export default class SurveyGraph extends Component {
     this.graphRef = React.createRef();
     this.printImageRef = React.createRef();
     this.dateRangeSelectorRef = React.createRef();
+
+    // constants
+    this.copyImageOptions = {
+      filter: (node) => {
+        const exclusionClasses = ["exclude-from-copy"];
+        return !exclusionClasses.some((classname) =>
+          node.classList?.contains(classname)
+        );
+      },
+      beforeCopy: () => this.beforeCopy(),
+      afterCopy: () => this.afterCopy(),
+      beforeDownload: () => this.beforeCopy(),
+      afterDownload: () => this.afterCopy(),
+      imageType: "image/png",
+    };
+    this.utilButtonStyle = {
+      fontSize: "0.9rem",
+      color: "#777",
+      minWidth: "48px",
+      backgroundColor: "transparent",
+    };
   }
   componentDidMount() {
     this.createScaleRefs();
@@ -577,14 +575,6 @@ export default class SurveyGraph extends Component {
   renderDownloadButton() {
     return (
       <button
-        // onClick={(e) =>
-        //   downloadSVGImage(
-        //     e,
-        //     this.graphRef.current,
-        //     null,
-        //     `survey_graph_${this.getDisplayDateRange()}`
-        //   )
-        // }
         onClick={(e) => {
           let options = this.copyImageOptions;
           const imageConainerHeight = this.getImageContainerHeight();
@@ -614,7 +604,6 @@ export default class SurveyGraph extends Component {
       );
     return (
       <button
-        //   onClick={(e) => copySVGImage(e, this.graphRef.current, "survey_graph")}
         onClick={this.copyGraphImage}
         className="print-hidden button-default rounded"
         style={this.utilButtonStyle}
@@ -773,11 +762,8 @@ export default class SurveyGraph extends Component {
           <div className="scale">
             {arrNum.map((item, index) => {
               const prevItem = arrDisplayValues[index - 1];
-              //const nextItem = arrDisplayValues[index + 1];
               const prevComparedValue =
                 prevItem && prevItem.display ? prevItem.value : 0;
-              //const nextComparedValue =
-               // nextItem && nextItem.display ? nextItem.value : 0;
               const dataUnit = item < 1 ? "month" : "year";
               const shouldRotateLabel = inYears && max >= 10;
               const tooCloseFlag =
