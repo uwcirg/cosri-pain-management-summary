@@ -769,11 +769,12 @@ export default class SurveyGraph extends Component {
               const tooCloseFlag =
                 index > 0 &&
                 mixedBags &&
-                (prevComparedValue &&
-                  Math.abs(item - prevComparedValue) <= 0.2);
-              const displayValue = !shouldRotateLabel && tooCloseFlag
-                ? ""
-                : arrDisplayValues[index].display;
+                prevComparedValue &&
+                Math.abs(item - prevComparedValue) <= 0.2;
+              const displayValue =
+                !shouldRotateLabel && tooCloseFlag
+                  ? ""
+                  : arrDisplayValues[index].display;
 
               return (
                 <span

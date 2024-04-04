@@ -151,7 +151,7 @@
       min-width: 0;
     }
     background-color: $color-gray-dark;
-    transition: all 350ms ease-in-out;
+    transition: all 375ms cubic-bezier(0, .52, 0, 1);
     position: relative;
     overflow-y: scroll;
     scrollbar-width: none;
