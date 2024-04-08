@@ -13,9 +13,16 @@ export default class Score extends Component {
       scoreParams && scoreParams.scoreSeverity
         ? String(scoreParams.scoreSeverity).toLowerCase()
         : null;
-    const arrColoredSeverities = ["high", "moderately high", "moderate"];
-    const arrModerateSeverities = ["moderate", "moderately high"];
-    const highSeverity = scoreSeverity === "high";
+    const HIGH_SEVERITY = "high";
+    const MODERATE_HIGH_SEVERITY = "moderately high";
+    const MODERATE_SEVERITY = "moderate";
+    const arrColoredSeverities = [
+      HIGH_SEVERITY,
+      MODERATE_HIGH_SEVERITY,
+      MODERATE_SEVERITY,
+    ];
+    const arrModerateSeverities = [MODERATE_SEVERITY, MODERATE_HIGH_SEVERITY];
+    const highSeverity = scoreSeverity === HIGH_SEVERITY;
     const moderateSeverity =
       arrModerateSeverities.indexOf(scoreSeverity) !== -1;
     const iconClass = highSeverity

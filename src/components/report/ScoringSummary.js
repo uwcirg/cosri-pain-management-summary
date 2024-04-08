@@ -42,8 +42,7 @@ export default class ScoringSummary extends Component {
       borderBottom: `1px solid ${BORDER_COLOR}`,
     };
     this.headerCellStyle = {
-      borderRight: `1px solid ${BORDER_COLOR}`,
-      borderLeft: `1px solid ${BORDER_COLOR}`,
+      ...this.cellStyle,
       borderBottom: `2px solid ${BORDER_COLOR}`,
     };
     this.summaryHTML = "";
@@ -78,8 +77,6 @@ export default class ScoringSummary extends Component {
   }
   getDisplayIcon(data) {
     const currentData = this.getCurrentData(data.ResponsesSummary);
-    const currentScore = this.getCurrentScore(data.ResponsesSummary);
-    const prevScore = this.getPreviousScore(data.ResponsesSummary);
     //debug
     // console.log(
     //   "current score ",
@@ -96,6 +93,9 @@ export default class ScoringSummary extends Component {
         ? currentData.comparisonToAlert
         : "";
     if (!comparisonToAlert) return "--";
+
+    const currentScore = this.getCurrentScore(data.ResponsesSummary);
+    const prevScore = this.getPreviousScore(data.ResponsesSummary);
     //debug
     //console.log("comparison to alert ", comparisonToAlert);
     if (!isNumber(currentScore) || !isNumber(prevScore)) return "--";
@@ -115,7 +115,6 @@ export default class ScoringSummary extends Component {
         return <LineIcon></LineIcon>;
       }
     } else {
-      if (isNumber(currentScore)) return <LineIcon></LineIcon>;
       return "--";
     }
   }
@@ -123,17 +122,20 @@ export default class ScoringSummary extends Component {
     if (!data || !data.ScoreParams) return null;
     const minScore = data.ScoreParams.minScore;
     const maxScore = data.ScoreParams.maxScore;
-    return (
-      <sub className="text-muted sub">
-        {"(" + minScore + "-" + maxScore + ")"}
-      </sub>
-    );
+    if (isNumber(minScore) && isNumber(maxScore)) {
+      return (
+        <sub className="text-muted sub">
+          {"(" + minScore + "-" + maxScore + ")"}
+        </sub>
+      );
+    }
+    return null;
   }
   getNumAnswered(data) {
     if (!this.getCurrentData(data.ResponsesSummary)) return "--";
     const totalItems = data.ResponsesSummary[0].totalItems;
     const totalAnsweredItems = data.ResponsesSummary[0].totalAnsweredItems;
-    if (!totalItems || !totalAnsweredItems) return "--";
+    if (!isNumber(totalItems) || !isNumber(totalAnsweredItems)) return "--";
     return `${totalAnsweredItems} / ${totalItems}`;
   }
   getScoreMeaning(data) {
@@ -142,7 +144,9 @@ export default class ScoringSummary extends Component {
   }
   getCurrentDisplayScore(data) {
     if (!this.getCurrentData(data.ResponsesSummary)) return "--";
-    return this.getCurrentScore(data.ResponsesSummary);
+    const currentScore = this.getCurrentScore(data.ResponsesSummary);
+    if (currentScore == null) return "--";
+    return currentScore;
   }
   getTitleDisplay() {
     return this.props.title ? this.props.title : "Scoring Summary";

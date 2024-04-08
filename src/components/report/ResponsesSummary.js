@@ -388,6 +388,7 @@ export default class ResponsesSummary extends Component {
           {this.renderTableHeader(columns)}
           {this.renderTableBody(columns, summary)}
         </table>
+        {this.rendeAccordionContent(summary)}
       </React.Fragment>
     );
   }
