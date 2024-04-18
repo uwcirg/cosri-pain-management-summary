@@ -75,6 +75,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-right: 24px;
           margin-bottom: 8px;
           border-collapse: collapse;
+          background-color: #FFF;
           th {
             padding: 4px 24px 2px 0;
           }
@@ -421,6 +422,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           border-collapse: collapse;
           white-space: normal;
           table-layout: fixed;
+          background-color: #FFF;
           tr {
             &:not(:last-of-type) {
               border-bottom: 1px solid $color-gray-lightest;

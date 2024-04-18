@@ -29,6 +29,7 @@ $tab-height: 49px;
   transition: background 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9),
     border 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9);
   &.active {
+    font-size: 1.05rem;
     background: $color-blue;
     color: #fff;
     border-top: 4px solid $color-blue;
