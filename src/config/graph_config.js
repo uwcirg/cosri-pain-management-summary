@@ -44,14 +44,24 @@ export const COLORS = [
   "#33AACA",
 ];
 
-export function getLineAttributes(id, params, colorIndex) {
+export const MARKER_TYPES = [
+  "circle",
+  "square",
+  "hollow-circle",
+  "hollow-square"
+];
+
+export function getLineAttributes(id, params, index) {
   const lineParams = params ? params : {};
   let color = PRIMARY_COLOR;
-  if (!isNaN(colorIndex) && COLORS[colorIndex]) color = COLORS[colorIndex];
+  if (!isNaN(index) && COLORS[index]) color = COLORS[index];
+  let markerType = "circle";
+  if (MARKER_TYPES[index]) markerType = MARKER_TYPES[index];
   return {
     id: `${id}_line`,
     strokeColor: color,
     strokeFill: color,
+    markerType: markerType,
     strokeWidth: lineParams.strokeWidth ? lineParams.strokeWidth : 2.25,
     dataPoints: {
       id: `${id}`,

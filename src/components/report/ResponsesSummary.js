@@ -2,15 +2,22 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Score from "./Score";
-import { getDisplayDateFromISOString } from "../../helpers/utility";
+import {
+  allowCopyClipboardItem,
+  copyDomToClipboard,
+  getDisplayDateFromISOString,
+} from "../../helpers/utility";
 
 let resizeTimeoutId = 0;
 export default class ResponsesSummary extends Component {
   constructor() {
     super(...arguments);
     this.state = { open: false };
+    this.summaryTableRef = React.createRef();
     this.tableWrapperRef = React.createRef();
+    this.accordionElRef = React.createRef();
     this.setWrapperHeight = this.setWrapperHeight.bind(this);
+    this.copySummary = this.copySummary.bind(this);
     const BORDER_COLOR = "#f3f6f9";
     const HEADER_BORDER_COLOR = "#217684";
     this.tableStyle = {
@@ -29,6 +36,19 @@ export default class ResponsesSummary extends Component {
       borderRight: `1px solid ${BORDER_COLOR}`,
       borderLeft: `1px solid ${BORDER_COLOR}`,
       borderBottom: `2px solid ${HEADER_BORDER_COLOR}`,
+    };
+    this.copyButtonStyle = {
+      minWidth: "64px",
+      marginLeft: "24px",
+    };
+    this.copyImageOptions = {
+      filter: (node) => {
+        const exclusionClasses = ["exclude-from-copy", "flag-nav", "info-icon"];
+        return !exclusionClasses.some((classname) =>
+          node.classList?.contains(classname)
+        );
+      },
+      imageType: "image/png",
     };
   }
   componentDidMount() {
@@ -145,11 +165,12 @@ export default class ResponsesSummary extends Component {
             } Questions`}</th>
             {summaryItems
               .slice(0, endIndex ? endIndex : summaryItems.length)
-              .map((item) => {
+              .map((item, index) => {
                 return (
                   <th
                     key={`response_header_${item.id}`}
                     style={headerCellStyle}
+                    className={index > 0 ? "exclude-from-copy" : ""}
                   >
                     {this.getDisplayDate(item)}
                   </th>
@@ -182,6 +203,7 @@ export default class ResponsesSummary extends Component {
                       <td
                         key={`${item.id}_response_${index}`}
                         style={cellStyle}
+                        className="exclude-from-copy"
                       >
                         {this.getMatchedAnswerByItem(o, item)}
                       </td>
@@ -284,7 +306,7 @@ export default class ResponsesSummary extends Component {
   renderScoreTableCell(summary, key) {
     if (!this.hasResponses(summary))
       return (
-        <td cssClass="text-center" style={this.cellStyle}>
+        <td className="text-center" style={this.cellStyle}>
           --
         </td>
       );
@@ -320,27 +342,35 @@ export default class ResponsesSummary extends Component {
         <div
           role="presentation"
           className={`link-container ${this.state.open ? "active" : ""}`}
-          onClick={(e) => {
-            this.setState({ open: !this.state.open }, () => {
-              if (this.state.open) {
-                if (this.tableWrapperRef.current) {
-                  setTimeout(
-                    () =>
-                      this.tableWrapperRef.current.scrollIntoView({
-                        behavior: "smooth",
-                        block: "nearest",
-                      }),
-                    100
-                  );
-                }
-              }
-            });
-          }}
         >
-          {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
-
-          <div className="icon">
-            <FontAwesomeIcon icon="chevron-right" title="expand/collapse" />
+          <div className="flex" style={{ gap: "24px" }}>
+            <div>
+              {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
+            </div>
+            <div className="flex exclude-from-copy">
+              {this.renderCopyButton()}
+              <button
+                className="icon"
+                onClick={(e) => {
+                  this.setState({ open: !this.state.open }, () => {
+                    if (this.state.open) {
+                      if (this.tableWrapperRef.current) {
+                        setTimeout(
+                          () =>
+                            this.tableWrapperRef.current.scrollIntoView({
+                              behavior: "smooth",
+                              block: "nearest",
+                            }),
+                          100
+                        );
+                      }
+                    }
+                  });
+                }}
+              >
+                <FontAwesomeIcon icon="chevron-right" title="expand/collapse" />
+              </button>
+            </div>
           </div>
         </div>
       </td>
@@ -353,7 +383,10 @@ export default class ResponsesSummary extends Component {
         ? "two-columns"
         : "";
     return (
-      <div className={`accordion-content ${this.state.open ? "active" : ""}`}>
+      <div
+        className={`accordion-content ${this.state.open ? "active" : ""}`}
+        ref={this.accordionElRef}
+      >
         <div className="responses-table-outer-wrapper print-hidden">
           <div
             className={`response-table-wrapper print-hidden ${wrapperClass}`}
@@ -375,12 +408,40 @@ export default class ResponsesSummary extends Component {
       </div>
     );
   }
+  copySummary() {
+    const options = this.copyImageOptions;
+    const summaryElement = document.createElement("div");
+    summaryElement.setAttribute("id", "tempSummaryEl");
+    const sectionElement = this.summaryTableRef.current.closest(".sub-section");
+    const sectionHeaderElement = sectionElement ? sectionElement.querySelector(".sub-section__header__name") : null;
+    const headerElement = sectionHeaderElement ? sectionHeaderElement.cloneNode(true) : null;
+    if (headerElement) summaryElement.appendChild(headerElement);
+    const copySummaryEl = this.summaryTableRef.current.cloneNode(true);
+    summaryElement.style.width = "720px";
+    summaryElement.appendChild(copySummaryEl);
+    document.querySelector("body").appendChild(summaryElement);
+    options.afterCopy = () => document.querySelector("#tempSummaryEl").remove();
+    copyDomToClipboard(summaryElement, options);
+  }
+  renderCopyButton(e) {
+    if (!allowCopyClipboardItem()) return null;
+    return (
+      <button
+        onClick={this.copySummary}
+        className="print-hidden icon"
+        style={this.copyButtonStyle}
+        title="copy responses summary"
+      >
+        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
+      </button>
+    );
+  }
   renderSummary(summary, columns) {
     const noResponses = !this.hasResponses(summary);
     if (noResponses)
       return <div className="no-entries">No recorded responses</div>;
     return (
-      <React.Fragment>
+      <div ref={this.summaryTableRef}>
         <table
           className="table responses-summary-table"
           style={this.tableStyle}
@@ -389,7 +450,7 @@ export default class ResponsesSummary extends Component {
           {this.renderTableBody(columns, summary)}
         </table>
         {this.rendeAccordionContent(summary)}
-      </React.Fragment>
+      </div>
     );
   }
   render() {

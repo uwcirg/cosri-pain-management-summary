@@ -77,25 +77,74 @@ class Line extends React.Component {
     const radiusWidth = dataPoints.radiusWidth ? dataPoints.radiusWidth : 0.55;
     const animationDuration = 100;
     const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
+    const markerType = this.props.markerType;
+    if (String(markerType).includes("square")) {
+      const isSquare = markerType === "square";
+      const SQUARE_WIDTH = isSquare ? 3 : 5;
+      const strokeWidth = isSquare ? dataPoints.strokeWidth : 2;
+      const strokeFill = isSquare ? dataPoints.strokeFill : "#FFF";
+      select(node)
+      .selectAll(`.${markerType}`)
+      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+      .enter()
+      .append("rect")
+      .attr("class", markerType)
+      .attr("id", (d, i) => `${markerType}_${dataId}${i}`)
+      .attr("x", (d) => xScale(d[xName]))
+      .attr("y", (d) => yScale(d[yName]))
+      .attr("stroke", dataPoints.strokeColor)
+      .attr("stroke-width", strokeWidth)
+      .attr("fill", strokeFill)
+      .attr("width", SQUARE_WIDTH)
+      .attr("height",  SQUARE_WIDTH)
+      .on("mouseover", (d, i) => {
+        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
+          return;
+        }
+        select(`#${markerType}_${dataId}${i}`)
+          .attr("width",  SQUARE_WIDTH * 1.5)
+          .attr("height",  SQUARE_WIDTH * 1.5)
+          .transition()
+          .duration(animationDuration);
 
-    select(node)
+        //tooltip
+        d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "block");
+
+      })
+      .on("mouseout", (d, i) => {
+        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
+          return;
+        }
+        select(`#${markerType}_${dataId}${i}`)
+          .transition()
+          .duration(animationDuration)
+          .attr("width",  SQUARE_WIDTH)
+          .attr("height",  SQUARE_WIDTH)
+        // tooltip
+        d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "none");
+      });
+
+    } else {
+      const strokeWidth = markerType === "circle" ? dataPoints.strokeWidth : 2;
+      const strokeFill = markerType === "circle" ? dataPoints.strokeFill : "#FFF";
+      select(node)
       .selectAll("circle")
       .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
       .enter()
       .append("circle")
       .attr("class", "circle")
       .attr("stroke", dataPoints.strokeColor)
-      .attr("stroke-width", dataPoints.strokeWidth)
-      .attr("fill", dataPoints.strokeFill)
+      .attr("stroke-width", strokeWidth)
+      .attr("fill", strokeFill)
       .attr("r", radiusWidth)
-      .attr("id", (d, i) => `circle_${dataId}${i}`)
+      .attr("id", (d, i) => `${markerType}_${dataId}${i}`)
       .attr("cx", (d) => xScale(d[xName]))
       .attr("cy", (d) => yScale(d[yName]))
       .on("mouseover", (d, i) => {
         if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
           return;
         }
-        select(`#circle_${dataId}${i}`)
+        select(`#${markerType}_${dataId}${i}`)
           .attr("r", radiusWidth * 2)
           .transition()
           .duration(animationDuration);
@@ -108,7 +157,7 @@ class Line extends React.Component {
         if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
           return;
         }
-        select(`#circle_${dataId}${i}`)
+        select(`#${markerType}_${dataId}${i}`)
           .transition()
           .duration(animationDuration)
           .attr("r", radiusWidth);
@@ -116,6 +165,9 @@ class Line extends React.Component {
         d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "none");
       });
 
+    }
+
+    
     //print label - PRINT ONLY
     if (showPrintLabel) {
       select(node)

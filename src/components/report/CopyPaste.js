@@ -114,7 +114,6 @@ export default class CopyPaste extends Component {
   copyReportContentImage() {
     //summary__display
     const reportNode = document.querySelector(".report .summary__display");
-    console.log("report node ? ", reportNode)
     if (!reportNode) return;
 
     const filter = (node) => {

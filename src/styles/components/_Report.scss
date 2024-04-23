@@ -66,6 +66,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
         &__header__name {
           display: flex;
           align-items: center;
+          margin-block-start: 0;
+          margin-block-end: 8px;
         }
         &:not(.sub-section-notitle):first-of-type {
           margin-top: 0;
@@ -95,14 +97,15 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin: 0;
           margin-right: 8px;
           .icon {
-            margin-left: 24px;
+            margin-left: 8px;
             svg {
               transition: transform 400ms ease;
             }
             color: $link-color;
             border-radius: 100vmax;
             border: 1px solid $link-border-color;
-            padding: 2px 20px 0;
+            padding: 8px 24px;
+            background-color: #FFF;
             text-align: center;
             &:hover {
               background-color: $link-color;
@@ -341,6 +344,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
       background: $color-white;
       gap: 2;
       flex: 1 1;
+      .panel-title {
+        .date-string {
+          font-size: 0.85em;
+        }
+      }
       &.graph {
         display: flex;
         flex-wrap: wrap;
@@ -499,6 +507,15 @@ $selector-box-shadow: 0 2px 2px #383e40;
           display: inline-block;
           border-radius: 100vmax;
           margin-right: 0;
+          &.square,
+          &.hollow-square{
+            border-radius: 0;
+          }
+          &.hollow-circle,
+          &.hollow-square {
+            width: 8px;
+            height: 8px;
+          }
         }
         .select-icon {
           border: 0;

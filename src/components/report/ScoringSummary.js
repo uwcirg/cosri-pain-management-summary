@@ -9,6 +9,7 @@ import LineIcon from "../../icons/LineIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   allowCopyClipboardItem,
+  getDisplayDateFromISOString,
   isNumber,
   toDate,
   copyDomToClipboard,
@@ -60,6 +61,14 @@ export default class ScoringSummary extends Component {
   }
   getCurrentData(data) {
     return this.getDataByIndex(data, 0);
+  }
+  getCurrentDisplayDate(data) {
+    const sortedData = this.getDataByIndex(data, 0);
+    if (!sortedData) return "--";
+    return getDisplayDateFromISOString(sortedData.date, {
+      year: "numeric",
+      month: "short",
+    });
   }
   getPreviousScore(data) {
     const sortedData = this.getDataByIndex(data, 1);
@@ -171,6 +180,7 @@ export default class ScoringSummary extends Component {
         <tr>
           <th className="empty" style={this.headerCellStyle}></th>
           <th style={this.headerCellStyle}>Score</th>
+          <th style={this.headerCellStyle}>Date</th>
           <th style={this.headerCellStyle}># Answered</th>
           <th className="text-center" style={this.headerCellStyle}>
             Meaning
@@ -222,6 +232,14 @@ export default class ScoringSummary extends Component {
       </td>
     );
   }
+  renderDateCell(data) {
+    if (!data || !data.ResponsesSummary) return <td>--</td>;
+    return (
+      <td className="nowrap" style={this.cellStyle}>
+        {this.getCurrentDisplayDate(data.ResponsesSummary)}
+      </td>
+    );
+  }
   renderScoreCell(data) {
     if (!data || !data.ResponsesSummary) return <td>--</td>;
     return (
@@ -237,25 +255,37 @@ export default class ScoringSummary extends Component {
       </td>
     );
   }
+  renderNumAnsweredCell(data) {
+    return (
+      <td valign="middle" style={this.cellStyle}>
+        {this.getNumAnswered(data)}
+      </td>
+    );
+  }
+  renderScoreMeaningCell(data) {
+    return (
+      <td className="text-capitalize" valign="middle" style={this.cellStyle}>
+        {this.getScoreMeaning(data)}
+      </td>
+    );
+  }
+  renderCompareToLastCell(data) {
+    return (
+      <td valign="middle" style={this.cellStyle}>
+        <div className="icon-container">{this.getDisplayIcon(data)}</div>
+      </td>
+    );
+  }
   renderDataRows(summary, showAnchorLinks) {
     return summary.map((item, index) => {
       return (
         <tr key={`questionnaire_summary_row_${index}`} className="data-row">
           {this.renderQuestionnaireLinkCell(item, showAnchorLinks)}
           {this.renderScoreCell(item)}
-          <td valign="middle" style={this.cellStyle}>
-            {this.getNumAnswered(item)}
-          </td>
-          <td
-            className="text-capitalize"
-            valign="middle"
-            style={this.cellStyle}
-          >
-            {this.getScoreMeaning(item)}
-          </td>
-          <td valign="middle" style={this.cellStyle}>
-            <div className="icon-container">{this.getDisplayIcon(item)}</div>
-          </td>
+          {this.renderDateCell(item)}
+          {this.renderNumAnsweredCell(item)}
+          {this.renderScoreMeaningCell(item)}
+          {this.renderCompareToLastCell(item)}
         </tr>
       );
     });

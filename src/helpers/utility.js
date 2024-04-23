@@ -127,7 +127,7 @@ export function getReportInstrumentList() {
   return [...new Set(qList.flat())];
 }
 
-export function getDisplayDateFromISOString(isocDateString) {
+export function getDisplayDateFromISOString(isocDateString, format) {
   if (!isocDateString) return "--";
   const objDate = new Date(isocDateString);
   if (isNaN(objDate)) return "--";
@@ -135,11 +135,16 @@ export function getDisplayDateFromISOString(isocDateString) {
   let tzOffset = objDate.getTimezoneOffset() * 60000;
   objDate.setTime(objDate.getTime() + tzOffset);
   const displayDate = objDate
-    ? objDate.toLocaleString("en-us", {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-      })
+    ? objDate.toLocaleString(
+        "en-us",
+        format
+          ? format
+          : {
+              year: "numeric",
+              month: "short",
+              day: "2-digit",
+            }
+      )
     : "--";
   return displayDate;
 }

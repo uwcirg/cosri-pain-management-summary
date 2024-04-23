@@ -508,54 +508,64 @@ export default class SurveyGraph extends Component {
     return (
       <div className="legend-container">
         <div className="legend">
-          {qids.map((item, index) => (
-            <div className="legend__item" key={`legend_${item}_${index}`}>
-              <div className="legend__item--key">
-                <span
-                  className="icon"
-                  style={{
-                    backgroundColor:
-                      this.getLineAttributesByQId(item).strokeColor,
-                  }}
-                ></span>
-                <span className="text">{item.toUpperCase()}</span>
-              </div>
-              {qids.length > 1 && (
-                <div className="select-icons-container print-hidden">
-                  <label
-                    // className={`exclude-from-copy switch ${
-                    //   !this.isSurveyInDateRange(item) ? "disabled" : ""
-                    // }`}
-                    className={`exclude-from-copy switch`}
-                    title={
-                      this.isInSurveyGraph(item)
-                        ? `Remove ${item} from graph`
-                        : this.isSurveyInDateRange(item)
-                        ? `Add ${item} to graph`
-                        : "No data in selected date range"
-                    }
-                  >
-                    <input
-                      type="checkbox"
-                      value={item}
-                      onChange={this.handleSwitchChange}
-                      // disabled={
-                      //   !this.isSurveyInDateRange(item) ||
-                      //   (this.isInSurveyGraph(item) &&
-                      //     this.hasOnlyOneGraphLine())
-                      // }
-                      disabled={
-                        this.isInSurveyGraph(item) && this.hasOnlyOneGraphLine()
-                      }
-                      ref={this.switchCheckboxRefs[index]}
-                      checked={!!this.isInSurveyGraph(item)}
-                    />
-                    <span className="switch-slider round"></span>
-                  </label>
+          {qids.map((item, index) => {
+            const attributes = this.getLineAttributesByQId(item);
+            const markerType = attributes.markerType;
+            const style = {
+              backgroundColor: String(markerType).includes("hollow")
+                ? "#FFF"
+                : attributes.strokeColor,
+              border: String(markerType).includes("hollow")
+                ? `2px solid ${attributes.strokeColor}`
+                : "none",
+            };
+            return (
+              <div className="legend__item" key={`legend_${item}_${index}`}>
+                <div className="legend__item--key">
+                  <span
+                    className={`icon ${attributes.markerType}`}
+                    style={style}
+                  ></span>
+                  <span className="text">{item.toUpperCase()}</span>
                 </div>
-              )}
-            </div>
-          ))}
+                {qids.length > 1 && (
+                  <div className="select-icons-container print-hidden">
+                    <label
+                      // className={`exclude-from-copy switch ${
+                      //   !this.isSurveyInDateRange(item) ? "disabled" : ""
+                      // }`}
+                      className={`exclude-from-copy switch`}
+                      title={
+                        this.isInSurveyGraph(item)
+                          ? `Remove ${item} from graph`
+                          : this.isSurveyInDateRange(item)
+                          ? `Add ${item} to graph`
+                          : "No data in selected date range"
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        value={item}
+                        onChange={this.handleSwitchChange}
+                        // disabled={
+                        //   !this.isSurveyInDateRange(item) ||
+                        //   (this.isInSurveyGraph(item) &&
+                        //     this.hasOnlyOneGraphLine())
+                        // }
+                        disabled={
+                          this.isInSurveyGraph(item) &&
+                          this.hasOnlyOneGraphLine()
+                        }
+                        ref={this.switchCheckboxRefs[index]}
+                        checked={!!this.isInSurveyGraph(item)}
+                      />
+                      <span className="switch-slider round"></span>
+                    </label>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -806,7 +816,7 @@ export default class SurveyGraph extends Component {
         className="flex flex-gap-1 buttons-container exclude-from-copy"
         style={{
           position: "absolute",
-          top: 0,
+          top: 16,
           right: 0,
         }}
       >
@@ -842,7 +852,7 @@ export default class SurveyGraph extends Component {
     );
 
     const margins = {
-      top: 40,
+      top: 20,
       right: 24,
       bottom: 72,
       left: 56,
@@ -1091,6 +1101,19 @@ export default class SurveyGraph extends Component {
         </div>
       );
     };
+    const renderTitle = () => {
+      const todayDateString = new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+      });
+      return (
+        <h3 className="panel-title">
+          Scoring Overview{" "}
+          <span className="date-string">(as of {todayDateString})</span>
+        </h3>
+      );
+    };
     const renderGraph = () => {
       const svgProps = {
         className: "surveyChartSvg print-hidden",
@@ -1151,9 +1174,8 @@ export default class SurveyGraph extends Component {
           className="survey-graph"
           style={{ position: "relative", backgroundColor: "#FFF" }}
           ref={this.graphContainerRef}
-          //   onMouseEnter={this.showUtilButtons}
-          //   onMouseLeave={this.hideUtilButtons}
         >
+          {renderTitle()}
           <div className="flex">
             <div style={{ position: "relative", width: "100%", gap: "24px" }}>
               {noStateEntry && renderNoStateEntry()}
