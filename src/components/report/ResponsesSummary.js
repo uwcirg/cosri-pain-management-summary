@@ -16,7 +16,7 @@ export default class ResponsesSummary extends Component {
     this.summaryContainerRef = React.createRef();
     this.summaryTableRef = React.createRef();
     this.tableWrapperRef = React.createRef();
-    this.accordionElRef = React.createRef();
+    this.printOnlyContainerRef = React.createRef();
     this.setWrapperHeight = this.setWrapperHeight.bind(this);
     this.copySummary = this.copySummary.bind(this);
     const BORDER_COLOR = "#f3f6f9";
@@ -161,9 +161,9 @@ export default class ResponsesSummary extends Component {
       >
         <thead>
           <tr>
-            <th className="fixed-cell" style={headerCellStyle}>{`${
-              qid ? qid.toUpperCase() : ""
-            } Questions`}</th>
+            <th className="fixed-cell" style={headerCellStyle}>
+              {`${qid?qid.toUpperCase():""}`} Questions
+            </th>
             {summaryItems
               .slice(0, endIndex ? endIndex : summaryItems.length)
               .map((item, index) => {
@@ -351,7 +351,7 @@ export default class ResponsesSummary extends Component {
             <div className="flex exclude-from-copy">
               {this.renderCopyButton()}
               <button
-                className="icon"
+                className="icon arrow"
                 onClick={(e) => {
                   this.setState({ open: !this.state.open }, () => {
                     if (this.state.open) {
@@ -384,10 +384,7 @@ export default class ResponsesSummary extends Component {
         ? "two-columns"
         : "";
     return (
-      <div
-        className={`accordion-content ${this.state.open ? "active" : ""}`}
-        ref={this.accordionElRef}
-      >
+      <div className={`accordion-content ${this.state.open ? "active" : ""}`}>
         <div className="responses-table-outer-wrapper print-hidden">
           <div
             className={`response-table-wrapper print-hidden ${wrapperClass}`}
@@ -399,13 +396,6 @@ export default class ResponsesSummary extends Component {
             )}
           </div>
         </div>
-        <div className="print-only">
-          {this.renderResponses(
-            summary.QuestionnaireName,
-            summary.ResponsesSummary,
-            3
-          )}
-        </div>
       </div>
     );
   }
@@ -414,30 +404,39 @@ export default class ResponsesSummary extends Component {
     const options = this.copyImageOptions;
     const summaryElement = document.createElement("div");
     summaryElement.setAttribute("id", "tempSummaryEl");
-    const sectionElement =
-      this.summaryContainerRef.current.closest(".sub-section");
-    const sectionHeaderElement = sectionElement
-      ? sectionElement.querySelector(".sub-section__header__name")
-      : null;
-    const headerElement = sectionHeaderElement
-      ? sectionHeaderElement.cloneNode(true)
-      : null;
-    if (headerElement) summaryElement.appendChild(headerElement);
-    const copySummaryEl = this.summaryContainerRef.current.cloneNode(true);
-    let accordionElement = copySummaryEl.querySelector(".accordion-content");
-    if (accordionElement) accordionElement.style.overFlow = "auto";
-    let tableContentElement = copySummaryEl.querySelector(
-      ".response-table-wrapper"
-    );
-    if (tableContentElement) tableContentElement.style.maxHeight = "100%";
-    const PADDING_HEIGHT = 56;
-    const totalHeight =
-      this.tableWrapperRef.current.offsetHeight +
-      this.summaryTableRef.current.offsetHeight + PADDING_HEIGHT;
-    console.log("height ", totalHeight);
+    // const sectionElement =
+    //   this.summaryContainerRef.current.closest(".sub-section");
+    // const sectionHeaderElement = sectionElement
+    //   ? sectionElement.querySelector(".sub-section__header__name")
+    //   : null;
+    // const headerElement = sectionHeaderElement
+    //   ? sectionHeaderElement.cloneNode(true)
+    //   : null;
+    // if (headerElement) summaryElement.appendChild(headerElement);
+    const summaryTableElement = this.summaryTableRef.current.cloneNode(true);
+    summaryElement.appendChild(summaryTableElement);
+    const responsesTableElement = this.printOnlyContainerRef.current
+      .querySelector("table")
+      .cloneNode(true);
+    summaryElement.appendChild(responsesTableElement);
+    // const copySummaryEl = this.summaryContainerRef.current.cloneNode(true);
+    // let accordionElement = this.accordionElRef.current.cloneNode(true);
+    // if (accordionElement) accordionElement.style.overFlow = "auto";
+    // let tableContentElement = copySummaryEl.querySelector(
+    //   ".response-table-wrapper"
+    // );
+    // if (tableContentElement) tableContentElement.style.maxHeight = "100%";
+    //const PADDING_HEIGHT = 56;
+    // const totalHeight =
+    //   this.tableWrapperRef.current.offsetHeight +
+    //   this.summaryTableRef.current.offsetHeight +
+    //   PADDING_HEIGHT;
+    //console.log("height ", totalHeight);
     summaryElement.style.width = "1000px";
-    summaryElement.style.height = (totalHeight || 720) + "px";
-    summaryElement.appendChild(copySummaryEl);
+    // console.log("summaryElement height ", summaryElement.clientHeight)
+    //summaryElement.style.height = "100%";
+    // summaryElement.style.height = (totalHeight || 720) + "px";
+    //summaryElement.appendChild(copySummaryEl);
     document.querySelector("body").appendChild(summaryElement);
     options.afterCopy = () => document.querySelector("#tempSummaryEl").remove();
     copyDomToClipboard(summaryElement, options);
@@ -460,16 +459,25 @@ export default class ResponsesSummary extends Component {
     if (noResponses)
       return <div className="no-entries">No recorded responses</div>;
     return (
-      <div ref={this.summaryContainerRef}>
-        <table
-          className="table responses-summary-table"
-          style={this.tableStyle}
-          ref={this.summaryTableRef}
-        >
-          {this.renderTableHeader(columns)}
-          {this.renderTableBody(columns, summary)}
-        </table>
-        {this.rendeAccordionContent(summary)}
+      <div>
+        <div ref={this.summaryContainerRef}>
+          <table
+            className="table responses-summary-table"
+            style={this.tableStyle}
+            ref={this.summaryTableRef}
+          >
+            {this.renderTableHeader(columns)}
+            {this.renderTableBody(columns, summary)}
+          </table>
+          {this.rendeAccordionContent(summary)}
+        </div>
+        <div className="print-only" ref={this.printOnlyContainerRef}>
+          {this.renderResponses(
+            summary.QuestionnaireName,
+            summary.ResponsesSummary,
+            1
+          )}
+        </div>
       </div>
     );
   }
