@@ -404,15 +404,15 @@ export default class ResponsesSummary extends Component {
     const options = this.copyImageOptions;
     const summaryElement = document.createElement("div");
     summaryElement.setAttribute("id", "tempSummaryEl");
-    // const sectionElement =
-    //   this.summaryContainerRef.current.closest(".sub-section");
-    // const sectionHeaderElement = sectionElement
-    //   ? sectionElement.querySelector(".sub-section__header__name")
-    //   : null;
-    // const headerElement = sectionHeaderElement
-    //   ? sectionHeaderElement.cloneNode(true)
-    //   : null;
-    // if (headerElement) summaryElement.appendChild(headerElement);
+    const sectionElement =
+      this.summaryContainerRef.current.closest(".sub-section");
+    const sectionHeaderElement = sectionElement
+      ? sectionElement.querySelector(".sub-section__header__name")
+      : null;
+    const headerElement = sectionHeaderElement
+      ? sectionHeaderElement.cloneNode(true)
+      : null;
+    if (headerElement) summaryElement.appendChild(headerElement);
     const summaryTableElement = this.summaryTableRef.current.cloneNode(true);
     summaryElement.appendChild(summaryTableElement);
     const responsesTableElement = this.printOnlyContainerRef.current

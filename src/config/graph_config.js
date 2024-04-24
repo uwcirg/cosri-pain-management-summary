@@ -48,9 +48,9 @@ export const COLORS = [
 export const MARKER_TYPES = [
   "circle",
   "square",
-  "triangle",
   "diamond",
-  "cross"
+  "cross",
+  "triangle",
 ];
 
 export const MARKER_SHAPES = {
@@ -72,11 +72,11 @@ export function getLineAttributes(id, params, index) {
     strokeColor: color,
     strokeFill: color,
     markerType: markerType,
-    markerSize: lineParams.markerSize ? lineParams.markerSize : 10,
+    markerSize: lineParams.markerSize ? lineParams.markerSize : 56,
     strokeWidth: lineParams.strokeWidth ? lineParams.strokeWidth : 2.25,
     dataPoints: {
       id: `${id}`,
-      strokeWidth: lineParams.dataStrokeWidth ? lineParams.dataStrokeWidth : 4,
+      strokeWidth: lineParams.dataStrokeWidth ? lineParams.dataStrokeWidth : 1,
       strokeFill: color,
       strokeColor: color,
     },

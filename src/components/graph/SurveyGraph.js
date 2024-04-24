@@ -97,7 +97,7 @@ export default class SurveyGraph extends Component {
       this.populateLegendShapes();
       // rendering image for printing
       renderImageFromSVG(this.printImageRef.current, this.graphRef.current);
-    }, 1000);
+    }, 1500);
   }
 
     

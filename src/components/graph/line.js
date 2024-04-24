@@ -98,8 +98,9 @@ class Line extends React.Component {
           return;
         }
         select(`#${markerType}_${dataId}${i}`)
+          .attr("fill", "#444")
           .attr("stroke", "#444")
-          .attr("stroke-width",strokeWidth*1.5)
+          .attr("stroke-width",strokeWidth*2)
           .transition()
           .duration(animationDuration);
         //tooltip
@@ -111,6 +112,7 @@ class Line extends React.Component {
           return;
         }
         select(`#${markerType}_${dataId}${i}`)
+          .attr("fill", dataPoints.strokeColor)
           .attr("stroke", dataPoints.strokeColor)
           .attr("stroke-width", strokeWidth)
           .transition()
