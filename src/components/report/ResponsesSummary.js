@@ -13,6 +13,7 @@ export default class ResponsesSummary extends Component {
   constructor() {
     super(...arguments);
     this.state = { open: false };
+    this.summaryContainerRef = React.createRef();
     this.summaryTableRef = React.createRef();
     this.tableWrapperRef = React.createRef();
     this.accordionElRef = React.createRef();
@@ -413,7 +414,8 @@ export default class ResponsesSummary extends Component {
     const options = this.copyImageOptions;
     const summaryElement = document.createElement("div");
     summaryElement.setAttribute("id", "tempSummaryEl");
-    const sectionElement = this.summaryTableRef.current.closest(".sub-section");
+    const sectionElement =
+      this.summaryContainerRef.current.closest(".sub-section");
     const sectionHeaderElement = sectionElement
       ? sectionElement.querySelector(".sub-section__header__name")
       : null;
@@ -421,17 +423,17 @@ export default class ResponsesSummary extends Component {
       ? sectionHeaderElement.cloneNode(true)
       : null;
     if (headerElement) summaryElement.appendChild(headerElement);
-    const copySummaryEl = this.summaryTableRef.current.cloneNode(true);
+    const copySummaryEl = this.summaryContainerRef.current.cloneNode(true);
     let accordionElement = copySummaryEl.querySelector(".accordion-content");
     if (accordionElement) accordionElement.style.overFlow = "auto";
     let tableContentElement = copySummaryEl.querySelector(
       ".response-table-wrapper"
     );
     if (tableContentElement) tableContentElement.style.maxHeight = "100%";
+    const PADDING_HEIGHT = 56;
     const totalHeight =
-      this.tableWrapperRef.current.clientHeight +
-      this.summaryTableRef.current.clientHeight +
-      (sectionHeaderElement ? sectionHeaderElement.clientHeight : 0);
+      this.tableWrapperRef.current.offsetHeight +
+      this.summaryTableRef.current.offsetHeight + PADDING_HEIGHT;
     console.log("height ", totalHeight);
     summaryElement.style.width = "1000px";
     summaryElement.style.height = (totalHeight || 720) + "px";
@@ -458,10 +460,11 @@ export default class ResponsesSummary extends Component {
     if (noResponses)
       return <div className="no-entries">No recorded responses</div>;
     return (
-      <div ref={this.summaryTableRef}>
+      <div ref={this.summaryContainerRef}>
         <table
           className="table responses-summary-table"
           style={this.tableStyle}
+          ref={this.summaryTableRef}
         >
           {this.renderTableHeader(columns)}
           {this.renderTableBody(columns, summary)}
