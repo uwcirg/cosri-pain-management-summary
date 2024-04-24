@@ -38,10 +38,6 @@ export default class ResponsesSummary extends Component {
       borderLeft: `1px solid ${BORDER_COLOR}`,
       borderBottom: `2px solid ${HEADER_BORDER_COLOR}`,
     };
-    this.copyButtonStyle = {
-      minWidth: "64px",
-      marginLeft: "24px",
-    };
     this.copyImageOptions = {
       filter: (node) => {
         const exclusionClasses = ["exclude-from-copy", "flag-nav", "info-icon"];
@@ -162,7 +158,7 @@ export default class ResponsesSummary extends Component {
         <thead>
           <tr>
             <th className="fixed-cell" style={headerCellStyle}>
-              {`${qid?qid.toUpperCase():""}`} Questions
+              {`${qid ? qid.toUpperCase() : ""}`} Questions
             </th>
             {summaryItems
               .slice(0, endIndex ? endIndex : summaryItems.length)
@@ -350,27 +346,7 @@ export default class ResponsesSummary extends Component {
             </div>
             <div className="flex exclude-from-copy">
               {this.renderCopyButton()}
-              <button
-                className="icon arrow"
-                onClick={(e) => {
-                  this.setState({ open: !this.state.open }, () => {
-                    if (this.state.open) {
-                      if (this.tableWrapperRef.current) {
-                        setTimeout(
-                          () =>
-                            this.tableWrapperRef.current.scrollIntoView({
-                              behavior: "smooth",
-                              block: "nearest",
-                            }),
-                          100
-                        );
-                      }
-                    }
-                  });
-                }}
-              >
-                <FontAwesomeIcon icon="chevron-right" title="expand/collapse" />
-              </button>
+              {this.renderViewButton()}
             </div>
           </div>
         </div>
@@ -419,38 +395,55 @@ export default class ResponsesSummary extends Component {
       .querySelector("table")
       .cloneNode(true);
     summaryElement.appendChild(responsesTableElement);
-    // const copySummaryEl = this.summaryContainerRef.current.cloneNode(true);
-    // let accordionElement = this.accordionElRef.current.cloneNode(true);
-    // if (accordionElement) accordionElement.style.overFlow = "auto";
-    // let tableContentElement = copySummaryEl.querySelector(
-    //   ".response-table-wrapper"
-    // );
-    // if (tableContentElement) tableContentElement.style.maxHeight = "100%";
-    //const PADDING_HEIGHT = 56;
-    // const totalHeight =
-    //   this.tableWrapperRef.current.offsetHeight +
-    //   this.summaryTableRef.current.offsetHeight +
-    //   PADDING_HEIGHT;
-    //console.log("height ", totalHeight);
     summaryElement.style.width = "1000px";
-    // console.log("summaryElement height ", summaryElement.clientHeight)
-    //summaryElement.style.height = "100%";
-    // summaryElement.style.height = (totalHeight || 720) + "px";
-    //summaryElement.appendChild(copySummaryEl);
     document.querySelector("body").appendChild(summaryElement);
     options.afterCopy = () => document.querySelector("#tempSummaryEl").remove();
     copyDomToClipboard(summaryElement, options);
   }
   renderCopyButton(e) {
     if (!allowCopyClipboardItem()) return null;
+    const copyButtonStyle = {
+      minWidth: "72px",
+      marginLeft: "24px",
+    };
     return (
       <button
         onClick={this.copySummary}
         className="print-hidden icon"
-        style={this.copyButtonStyle}
+        style={copyButtonStyle}
         title="copy responses summary"
       >
         <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
+      </button>
+    );
+  }
+  renderViewButton() {
+    return (
+      <button
+        className="icon arrow"
+        onClick={(e) => {
+          this.setState({ open: !this.state.open }, () => {
+            if (this.state.open) {
+              if (this.tableWrapperRef.current) {
+                setTimeout(
+                  () =>
+                    this.tableWrapperRef.current.scrollIntoView({
+                      behavior: "smooth",
+                      block: "nearest",
+                    }),
+                  100
+                );
+              }
+            }
+          });
+        }}
+      >
+        {this.state.open ? "Close" : "View"}
+        <FontAwesomeIcon
+          icon="chevron-right"
+          title="expand/collapse"
+          style={{ marginLeft: "8px" }}
+        />
       </button>
     );
   }

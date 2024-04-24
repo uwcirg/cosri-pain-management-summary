@@ -97,7 +97,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin: 0;
           margin-right: 8px;
           .icon {
-            margin-left: 8px;
+            margin-left: 4px;
+            &.arrow {
+              min-width: 102px;
+            }
             svg {
               transition: transform 400ms ease;
             }
@@ -346,7 +349,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       flex: 1 1;
       .panel-title {
         .date-string {
-          font-size: 0.8em;
+          font-size: 0.75em;
           font-weight: 400;
           color: $color-gray-dark;
         }
