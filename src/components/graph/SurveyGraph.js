@@ -63,6 +63,7 @@ export default class SurveyGraph extends Component {
     this.utilButtonsContainerRef = React.createRef();
     this.sliderContainerRef = React.createRef();
     this.scaleLabelRefs = [];
+    this.lengendMarkerRefs = [];
     this.switchCheckboxRefs = [];
     this.graphRef = React.createRef();
     this.printImageRef = React.createRef();
@@ -91,11 +92,15 @@ export default class SurveyGraph extends Component {
   }
   componentDidMount() {
     this.createScaleRefs();
+    this.createLegendMarkerRefs();
     setTimeout(() => {
+      this.populateLegendShapes();
       // rendering image for printing
       renderImageFromSVG(this.printImageRef.current, this.graphRef.current);
     }, 1000);
   }
+
+    
   initSwitchCheckboxRefs() {
     // Initialize the array with React.createRef() objects
     for (let i = 0; i < this.state.qids.length; i++) {
@@ -106,6 +111,11 @@ export default class SurveyGraph extends Component {
     // Initialize the array with React.createRef() objects
     for (let i = 0; i < this.state.selectedDateRange * 12 * 30; i++) {
       this.scaleLabelRefs.push(React.createRef());
+    }
+  }
+  createLegendMarkerRefs() {
+    for (let i = 0; i < this.state.qids.length; i++) {
+      this.lengendMarkerRefs.push(React.createRef());
     }
   }
   shouldShowAccessories() {
@@ -506,20 +516,18 @@ export default class SurveyGraph extends Component {
 
   populateLegendShapes() {
     const qids = this.getQIds();
-    console.log("QIDS ? ", qids);
     qids.forEach((item, index) => {
       const attributes = this.getLineAttributesByQId(item);
       const markerType = attributes.markerType;
       let markerShape = MARKER_SHAPES[markerType];
-      console.log("marker type? ", markerType);
       if (!markerShape) markerShape = MARKER_SHAPES["circle"];
-      var sym = d3.symbol().type(markerShape).size(8);
-      console.log("WTF ? ", sym);
-      d3.select(`legend_${markerType}_${index}`)
+      var sym = d3.symbol().type(markerShape).size(112);
+      d3.select(this.lengendMarkerRefs[index].current)
         .append("path")
         .attr("d", sym)
         .attr("fill", attributes.dataPoints.strokeColor)
-        .attr("transform", "translate(50, 50)");
+        .attr("stroke-color", attributes.dataPoints.strokeColor)
+        .attr("transform", "translate(10, 10)");
     });
   }
 
@@ -530,23 +538,24 @@ export default class SurveyGraph extends Component {
         <div className="legend">
           {qids.map((item, index) => {
             const attributes = this.getLineAttributesByQId(item);
-            const style = {
-              color: attributes.strokeColor,
-            };
+            const markerType = attributes.markerType;
+            // const style = {
+            //   color: attributes.strokeColor,
+            // };
             return (
               <div className="legend__item" key={`legend_${item}_${index}`}>
                 <div className="legend__item--key">
-                  <span
+                  {/* <span
                     className={`icon ${attributes.markerType}`}
                     style={style}
-                  ></span>
-                  {/* <svg
+                  ></span> */}
+                  <svg
                     id={`legend_${markerType}_${index}`}
                     width="20"
                     height="20"
+                    ref={this.lengendMarkerRefs[index]}
                   >
-                    <path d={sym} fill={attributes.dataPoints.strokeColor} transform="translate(50,50)"></path>
-                  </svg> */}
+                  </svg>
 
                   <span className="text">{item.toUpperCase()}</span>
                 </div>
@@ -709,7 +718,7 @@ export default class SurveyGraph extends Component {
     const itemsToDisplay = Array.from(uniqueSet).map(JSON.parse);
 
     return (
-      <div className="select print-hidden" ref={this.dateRangeSelectorRef}>
+      <div className="select larger print-hidden" ref={this.dateRangeSelectorRef}>
         <select
           value={selectedValue <= maxValue ? selectedValue : ""}
           onChange={this.handleDateRangeChange}

@@ -36,6 +36,11 @@ select::-ms-expand {
     font-size: 0.9rem;
     text-align: center;
   }
+  &.larger {
+    select {
+      font-size: 0.95rem;
+    }
+  }
   &.disable-select,
   &.read-only {
     border-color: transparent;
