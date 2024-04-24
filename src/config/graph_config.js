@@ -49,16 +49,20 @@ export const MARKER_TYPES = [
   "circle",
   "square",
   "diamond",
+  "wye",
   "cross",
+  "star",
   "triangle",
 ];
 
 export const MARKER_SHAPES = {
   "square": d3.symbolSquare,
   "circle": d3.symbolCircle,
-  "cross": d3.symbolCross,
+  "wye": d3.symbolWye,
   "diamond": d3.symbolDiamond,
-  "triangle": d3.symbolTriangle
+  "star": d3.symbolStar,
+  "cross": d3.symbolCross,
+  "triangle": d3.symbolTriangle,
   //others as needed
 }
 export function getLineAttributes(id, params, index) {
