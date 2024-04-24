@@ -38,15 +38,6 @@ export default class ResponsesSummary extends Component {
       borderLeft: `1px solid ${BORDER_COLOR}`,
       borderBottom: `2px solid ${HEADER_BORDER_COLOR}`,
     };
-    this.copyImageOptions = {
-      filter: (node) => {
-        const exclusionClasses = ["exclude-from-copy", "flag-nav", "info-icon"];
-        return !exclusionClasses.some((classname) =>
-          node.classList?.contains(classname)
-        );
-      },
-      imageType: "image/png",
-    };
   }
   componentDidMount() {
     // resize table to be within viewport
@@ -377,7 +368,18 @@ export default class ResponsesSummary extends Component {
   }
   copySummary() {
     if (!this.summaryTableRef.current) return;
-    const options = this.copyImageOptions;
+    let options = {
+      filter: (node) => {
+        const exclusionClasses = ["exclude-from-copy", "flag-nav", "info-icon"];
+        return !exclusionClasses.some((classname) =>
+          node.classList?.contains(classname)
+        );
+      },
+      afterCopy: () => {
+        document.querySelector("#tempSummaryEl").remove()
+      },
+      imageType: "image/png",
+    };
     const summaryElement = document.createElement("div");
     summaryElement.setAttribute("id", "tempSummaryEl");
     const sectionElement =
@@ -390,6 +392,11 @@ export default class ResponsesSummary extends Component {
       : null;
     if (headerElement) summaryElement.appendChild(headerElement);
     const summaryTableElement = this.summaryTableRef.current.cloneNode(true);
+    summaryTableElement.querySelectorAll("img").forEach((imageElement) => {
+      const span = document.createElement("span");
+      span.innerText = ` (${imageElement.getAttribute("alt")}) `;
+      imageElement.replaceWith(span);
+    });
     summaryElement.appendChild(summaryTableElement);
     const responsesTableElement = this.printOnlyContainerRef.current
       .querySelector("table")
@@ -397,7 +404,6 @@ export default class ResponsesSummary extends Component {
     summaryElement.appendChild(responsesTableElement);
     summaryElement.style.width = "1000px";
     document.querySelector("body").appendChild(summaryElement);
-    options.afterCopy = () => document.querySelector("#tempSummaryEl").remove();
     copyDomToClipboard(summaryElement, options);
   }
   renderCopyButton(e) {
