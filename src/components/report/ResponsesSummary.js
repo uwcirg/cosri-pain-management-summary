@@ -417,7 +417,7 @@ export default class ResponsesSummary extends Component {
         onClick={this.copySummary}
         className="print-hidden icon"
         style={copyButtonStyle}
-        title="copy responses summary"
+        title="copy summary of responses"
       >
         <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
       </button>
