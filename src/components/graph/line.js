@@ -2,6 +2,7 @@ import React from "react";
 import * as d3 from "d3";
 import { select } from "d3-selection";
 import { transition } from "d3-transition";
+import {MARKER_SHAPES} from "../../config/graph_config";
 
 class Line extends React.Component {
   constructor() {
@@ -73,40 +74,34 @@ class Line extends React.Component {
     if (!dataPoints) {
       return;
     }
-
-    const radiusWidth = dataPoints.radiusWidth ? dataPoints.radiusWidth : 0.55;
     const animationDuration = 100;
     const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
-    const markerType = this.props.markerType;
-    if (String(markerType).includes("square")) {
-      const isSquare = markerType === "square";
-      const SQUARE_WIDTH = isSquare ? 3 : 5;
-      const strokeWidth = isSquare ? dataPoints.strokeWidth : 2;
-      const strokeFill = isSquare ? dataPoints.strokeFill : "#FFF";
+    const markerType = String(this.props.markerType).toLowerCase();
+    const markerSize = this.props.markerSize ? this.props.markerSize: 10;
+    let markerShape = MARKER_SHAPES[this.props.markerType];
+    if (!markerShape) markerShape = d3.symbolCircle;
+
+    const strokeWidth = dataPoints.strokeWidth || 2;
       select(node)
       .selectAll(`.${markerType}`)
       .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
       .enter()
-      .append("rect")
-      .attr("class", markerType)
+      .append("path")
+      .attr("d", d3.symbol().type(markerShape).size(markerSize))
+      .attr("transform", (d) =>`translate(${xScale(d[xName])}, ${yScale(d[yName])})`)
       .attr("id", (d, i) => `${markerType}_${dataId}${i}`)
-      .attr("x", (d) => xScale(d[xName]))
-      .attr("y", (d) => yScale(d[yName]))
       .attr("stroke", dataPoints.strokeColor)
       .attr("stroke-width", strokeWidth)
-      .attr("fill", strokeFill)
-      .attr("width", SQUARE_WIDTH)
-      .attr("height",  SQUARE_WIDTH)
+      .attr("fill", dataPoints.strokeColor)
       .on("mouseover", (d, i) => {
         if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
           return;
         }
         select(`#${markerType}_${dataId}${i}`)
-          .attr("width",  SQUARE_WIDTH * 1.5)
-          .attr("height",  SQUARE_WIDTH * 1.5)
+          .attr("stroke", "#444")
+          .attr("stroke-width",strokeWidth*1.5)
           .transition()
           .duration(animationDuration);
-
         //tooltip
         d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "block");
 
@@ -116,57 +111,13 @@ class Line extends React.Component {
           return;
         }
         select(`#${markerType}_${dataId}${i}`)
-          .transition()
-          .duration(animationDuration)
-          .attr("width",  SQUARE_WIDTH)
-          .attr("height",  SQUARE_WIDTH)
-        // tooltip
-        d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "none");
-      });
-
-    } else {
-      const strokeWidth = markerType === "circle" ? dataPoints.strokeWidth : 2;
-      const strokeFill = markerType === "circle" ? dataPoints.strokeFill : "#FFF";
-      select(node)
-      .selectAll("circle")
-      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append("circle")
-      .attr("class", "circle")
-      .attr("stroke", dataPoints.strokeColor)
-      .attr("stroke-width", strokeWidth)
-      .attr("fill", strokeFill)
-      .attr("r", radiusWidth)
-      .attr("id", (d, i) => `${markerType}_${dataId}${i}`)
-      .attr("cx", (d) => xScale(d[xName]))
-      .attr("cy", (d) => yScale(d[yName]))
-      .on("mouseover", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-          return;
-        }
-        select(`#${markerType}_${dataId}${i}`)
-          .attr("r", radiusWidth * 2)
+          .attr("stroke", dataPoints.strokeColor)
+          .attr("stroke-width", strokeWidth)
           .transition()
           .duration(animationDuration);
-
-        //tooltip
-        d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "block");
-
-      })
-      .on("mouseout", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-          return;
-        }
-        select(`#${markerType}_${dataId}${i}`)
-          .transition()
-          .duration(animationDuration)
-          .attr("r", radiusWidth);
         // tooltip
         d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "none");
       });
-
-    }
-
     
     //print label - PRINT ONLY
     if (showPrintLabel) {

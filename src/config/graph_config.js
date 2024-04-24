@@ -1,3 +1,4 @@
+import * as d3 from "d3";
 export const PRIMARY_COLOR = "#168698";
 export const defaultLineAttributes = {
   strokeColor: PRIMARY_COLOR,
@@ -47,10 +48,19 @@ export const COLORS = [
 export const MARKER_TYPES = [
   "circle",
   "square",
-  "hollow-circle",
-  "hollow-square"
+  "triangle",
+  "diamond",
+  "cross"
 ];
 
+export const MARKER_SHAPES = {
+  "square": d3.symbolSquare,
+  "circle": d3.symbolCircle,
+  "cross": d3.symbolCross,
+  "diamond": d3.symbolDiamond,
+  "triangle": d3.symbolTriangle
+  //others as needed
+}
 export function getLineAttributes(id, params, index) {
   const lineParams = params ? params : {};
   let color = PRIMARY_COLOR;
@@ -62,13 +72,13 @@ export function getLineAttributes(id, params, index) {
     strokeColor: color,
     strokeFill: color,
     markerType: markerType,
+    markerSize: lineParams.markerSize ? lineParams.markerSize : 10,
     strokeWidth: lineParams.strokeWidth ? lineParams.strokeWidth : 2.25,
     dataPoints: {
       id: `${id}`,
       strokeWidth: lineParams.dataStrokeWidth ? lineParams.dataStrokeWidth : 4,
       strokeFill: color,
       strokeColor: color,
-      radiusWidth: lineParams.radiusWidth ? lineParams.radiusWidth : 2.5,
     },
   };
 }

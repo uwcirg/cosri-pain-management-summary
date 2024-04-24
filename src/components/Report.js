@@ -97,7 +97,7 @@ export default class Report extends Component {
   }
   renderSubSectionTitle(item) {
     return (
-      <div
+      <p
         className="sub-section__header__name"
         style={{ fontWeight: 700, fontSize: "1.1em" }}
       >
@@ -108,7 +108,7 @@ export default class Report extends Component {
           tabIndex={0}
         />
         {item.title}
-      </div>
+      </p>
     );
   }
   renderSubSectionInfo(sectionItem, summaryData) {

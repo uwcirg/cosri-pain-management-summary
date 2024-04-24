@@ -409,15 +409,32 @@ export default class ResponsesSummary extends Component {
     );
   }
   copySummary() {
+    if (!this.summaryTableRef.current) return;
     const options = this.copyImageOptions;
     const summaryElement = document.createElement("div");
     summaryElement.setAttribute("id", "tempSummaryEl");
     const sectionElement = this.summaryTableRef.current.closest(".sub-section");
-    const sectionHeaderElement = sectionElement ? sectionElement.querySelector(".sub-section__header__name") : null;
-    const headerElement = sectionHeaderElement ? sectionHeaderElement.cloneNode(true) : null;
+    const sectionHeaderElement = sectionElement
+      ? sectionElement.querySelector(".sub-section__header__name")
+      : null;
+    const headerElement = sectionHeaderElement
+      ? sectionHeaderElement.cloneNode(true)
+      : null;
     if (headerElement) summaryElement.appendChild(headerElement);
     const copySummaryEl = this.summaryTableRef.current.cloneNode(true);
-    summaryElement.style.width = "720px";
+    let accordionElement = copySummaryEl.querySelector(".accordion-content");
+    if (accordionElement) accordionElement.style.overFlow = "auto";
+    let tableContentElement = copySummaryEl.querySelector(
+      ".response-table-wrapper"
+    );
+    if (tableContentElement) tableContentElement.style.maxHeight = "100%";
+    const totalHeight =
+      this.tableWrapperRef.current.clientHeight +
+      this.summaryTableRef.current.clientHeight +
+      (sectionHeaderElement ? sectionHeaderElement.clientHeight : 0);
+    console.log("height ", totalHeight);
+    summaryElement.style.width = "1000px";
+    summaryElement.style.height = (totalHeight || 720) + "px";
     summaryElement.appendChild(copySummaryEl);
     document.querySelector("body").appendChild(summaryElement);
     options.afterCopy = () => document.querySelector("#tempSummaryEl").remove();

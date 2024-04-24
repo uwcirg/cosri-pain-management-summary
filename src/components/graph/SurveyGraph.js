@@ -12,6 +12,7 @@ import ClipboardItemUnsupported from "../../elements/ClipboardItemUnsupportedWar
 import {
   defaultLineAttributes,
   getLineAttributes,
+  MARKER_SHAPES,
 } from "../../config/graph_config";
 import {
   allowCopyClipboardItem,
@@ -503,6 +504,25 @@ export default class SurveyGraph extends Component {
     copyDomToClipboard(this.graphContainerRef.current, options);
   }
 
+  populateLegendShapes() {
+    const qids = this.getQIds();
+    console.log("QIDS ? ", qids);
+    qids.forEach((item, index) => {
+      const attributes = this.getLineAttributesByQId(item);
+      const markerType = attributes.markerType;
+      let markerShape = MARKER_SHAPES[markerType];
+      console.log("marker type? ", markerType);
+      if (!markerShape) markerShape = MARKER_SHAPES["circle"];
+      var sym = d3.symbol().type(markerShape).size(8);
+      console.log("WTF ? ", sym);
+      d3.select(`legend_${markerType}_${index}`)
+        .append("path")
+        .attr("d", sym)
+        .attr("fill", attributes.dataPoints.strokeColor)
+        .attr("transform", "translate(50, 50)");
+    });
+  }
+
   renderLegend() {
     const qids = this.getQIds();
     return (
@@ -510,14 +530,8 @@ export default class SurveyGraph extends Component {
         <div className="legend">
           {qids.map((item, index) => {
             const attributes = this.getLineAttributesByQId(item);
-            const markerType = attributes.markerType;
             const style = {
-              backgroundColor: String(markerType).includes("hollow")
-                ? "#FFF"
-                : attributes.strokeColor,
-              border: String(markerType).includes("hollow")
-                ? `2px solid ${attributes.strokeColor}`
-                : "none",
+              color: attributes.strokeColor,
             };
             return (
               <div className="legend__item" key={`legend_${item}_${index}`}>
@@ -526,6 +540,14 @@ export default class SurveyGraph extends Component {
                     className={`icon ${attributes.markerType}`}
                     style={style}
                   ></span>
+                  {/* <svg
+                    id={`legend_${markerType}_${index}`}
+                    width="20"
+                    height="20"
+                  >
+                    <path d={sym} fill={attributes.dataPoints.strokeColor} transform="translate(50,50)"></path>
+                  </svg> */}
+
                   <span className="text">{item.toUpperCase()}</span>
                 </div>
                 {qids.length > 1 && (
