@@ -84,7 +84,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         @media (min-width: 992px) {
           .table {
-            width: calc(65% - 48px);
+            width: calc(70% - 48px);
           }
         }
         .no-entries {
@@ -110,6 +110,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
             padding: 8px 24px;
             background-color: #FFF;
             text-align: center;
+            font-weight: 600;
             &:hover {
               background-color: $link-color;
               border-color: $link-color;

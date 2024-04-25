@@ -376,7 +376,7 @@ export default class ResponsesSummary extends Component {
         );
       },
       afterCopy: () => {
-        document.querySelector("#tempSummaryEl").remove()
+        document.querySelector("#tempSummaryEl").remove();
       },
       imageType: "image/png",
     };
@@ -393,15 +393,22 @@ export default class ResponsesSummary extends Component {
     if (headerElement) summaryElement.appendChild(headerElement);
     const summaryTableElement = this.summaryTableRef.current.cloneNode(true);
     summaryTableElement.querySelectorAll("img").forEach((imageElement) => {
+      const altText = imageElement.getAttribute("alt");
+      if (!altText) return true;
       const span = document.createElement("span");
-      span.innerText = ` (${imageElement.getAttribute("alt")}) `;
+      span.innerText = ` (${altText}) `;
       imageElement.replaceWith(span);
     });
     summaryElement.appendChild(summaryTableElement);
-    const responsesTableElement = this.printOnlyContainerRef.current
-      .querySelector("table")
-      .cloneNode(true);
-    summaryElement.appendChild(responsesTableElement);
+    const printOnlyContainerElement = this.printOnlyContainerRef.current;
+    const printOnlyTableElement = printOnlyContainerElement
+      ? printOnlyContainerElement.querySelector("table")
+      : null;
+    const responsesTableElement = printOnlyTableElement
+      ? printOnlyTableElement.cloneNode(true)
+      : null;
+    if (printOnlyTableElement)
+      summaryElement.appendChild(responsesTableElement);
     summaryElement.style.width = "1000px";
     document.querySelector("body").appendChild(summaryElement);
     copyDomToClipboard(summaryElement, options);
