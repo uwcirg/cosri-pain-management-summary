@@ -83,12 +83,6 @@ export default class SurveyGraph extends Component {
       afterDownload: () => this.afterCopy(),
       imageType: "image/png",
     };
-    this.utilButtonStyle = {
-      fontSize: "0.9rem",
-      color: "#777",
-      minWidth: "48px",
-      backgroundColor: "transparent",
-    };
   }
   componentDidMount() {
     this.createScaleRefs();
@@ -539,9 +533,6 @@ export default class SurveyGraph extends Component {
           {qids.map((item, index) => {
             const attributes = this.getLineAttributesByQId(item);
             const markerType = attributes.markerType;
-            // const style = {
-            //   color: attributes.strokeColor,
-            // };
             return (
               <div className="legend__item" key={`legend_${item}_${index}`}>
                 <div className="legend__item--key">
@@ -604,12 +595,14 @@ export default class SurveyGraph extends Component {
 
   renderPrintOnlyImage() {
     return (
-      <img
-        ref={this.printImageRef}
-        alt="for print"
-        className="survey-graph print-image"
-        style={{ zIndex: -1, position: "absolute", width: "100%" }}
-      ></img>
+      <div className="print-only">
+        <img
+          ref={this.printImageRef}
+          alt="for print"
+          className="survey-graph print-image"
+          style={{ zIndex: -1, position: "absolute", width: "100%" }}
+        ></img>
+      </div>
     );
   }
 
@@ -629,8 +622,7 @@ export default class SurveyGraph extends Component {
             options
           );
         }}
-        className="print-hidden button-default rounded"
-        style={this.utilButtonStyle}
+        className="print-hidden button-default button-secondary rounded"
         title="download graph"
       >
         <FontAwesomeIcon icon="download"></FontAwesomeIcon>
@@ -646,8 +638,7 @@ export default class SurveyGraph extends Component {
     return (
       <button
         onClick={this.copyGraphImage}
-        className="print-hidden button-default rounded"
-        style={this.utilButtonStyle}
+        className="print-hidden button-default button-secondary rounded"
         title="copy graph"
       >
         <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
@@ -848,11 +839,11 @@ export default class SurveyGraph extends Component {
         style={{
           position: "absolute",
           top: 16,
-          right: 0,
+          right: 8,
         }}
       >
         {this.renderCopyButton()}
-        {this.renderDownloadButton()}
+        {/* {this.renderDownloadButton()} */}
       </div>
     );
   }
@@ -883,15 +874,15 @@ export default class SurveyGraph extends Component {
     );
 
     const margins = {
-      top: 20,
+      top: 10,
       right: 24,
-      bottom: 72,
-      left: 56,
+      bottom: 68,
+      left: 52,
     };
     // const parentWidth = 460;
     // const parentHeight = 508;
     const parentWidth = 480;
-    const parentHeight = 440;
+    const parentHeight = 420;
     const width = parentWidth - margins.left - margins.right;
     const height = parentHeight - margins.top - margins.bottom;
     const xScale = scaleTime()
@@ -1140,8 +1131,8 @@ export default class SurveyGraph extends Component {
       });
       return (
         <h3 className="panel-title">
-          Scoring Overview{" "}
-          <span className="date-string">(as of {todayDateString})</span>
+          Longitudinal Scoring Overview{" "}
+          <div className="date-string">(as of {todayDateString})</div>
         </h3>
       );
     };
@@ -1227,8 +1218,8 @@ export default class SurveyGraph extends Component {
               {this.renderLegend()}
             </div>
           </div>
-          {this.renderPrintOnlyImage()}
-          {this.renderNotInGraphMessage()}
+          {/* {this.renderNotInGraphMessage()}
+          {this.renderPrintOnlyImage()} */}
         </div>
       </React.Fragment>
     );

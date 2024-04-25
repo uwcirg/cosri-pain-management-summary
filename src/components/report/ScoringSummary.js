@@ -299,13 +299,8 @@ export default class ScoringSummary extends Component {
     return (
       <button
         onClick={this.copyTable}
-        className="button-default rounded"
-        style={{
-          color: "#777",
-          minWidth: "56px",
-          textAlign: "center",
-        }}
-        title="Copy summary image"
+        className="button-default button-secondary rounded"
+        title="Copy scoring summary table"
       >
         <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
       </button>

@@ -49,14 +49,6 @@ export default class BodyDiagram extends Component {
       position: "relative",
       paddingBottom: "12px",
     };
-    this.utilButtonStyle = {
-      fontSize: "0.9rem",
-      color: "#777",
-      minWidth: "56px",
-      background: "transparent",
-      textAlign: "center",
-    };
-
     this.copyImageOptions = {
       filter: (node) => {
         const exclusionClasses = ["exclude-from-copy"];
@@ -450,8 +442,7 @@ export default class BodyDiagram extends Component {
             this.copyImageOptions
           );
         }}
-        className="print-hidden button-default rounded"
-        style={this.utilButtonStyle}
+        className="print-hidden button-default button-secondary rounded"
         title="download body diagram image"
       >
         <FontAwesomeIcon
@@ -479,6 +470,7 @@ export default class BodyDiagram extends Component {
     }
     if (this.datesSelectorRef.current)
       this.datesSelectorRef.current.classList.add("read-only");
+    this.containerRef.current.classList.add("framed-border");
   }
   afterCopy() {
     if (document.querySelector("#temp_bd")) {
@@ -489,6 +481,7 @@ export default class BodyDiagram extends Component {
     }
     if (this.datesSelectorRef.current)
       this.datesSelectorRef.current.classList.remove("read-only");
+      this.containerRef.current.classList.remove("framed-border");
   }
   renderCopyButton() {
     if (!allowCopyClipboardItem())
@@ -503,8 +496,7 @@ export default class BodyDiagram extends Component {
         onClick={(e) => {
           copyDomToClipboard(this.containerRef.current, params);
         }}
-        className="print-hidden button-default rounded"
-        style={this.utilButtonStyle}
+        className="print-hidden button-default button-secondary rounded"
         title="copy body diagram image"
       >
         <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
@@ -522,7 +514,7 @@ export default class BodyDiagram extends Component {
           ref={this.utilButtonsContainerRef}
         >
           {this.renderCopyButton()}
-          {this.renderDownloadButton()}
+          {/* {this.renderDownloadButton()} */}
         </div>
       </div>
     );
@@ -619,7 +611,6 @@ export default class BodyDiagram extends Component {
         <div
           ref={this.containerRef}
           style={this.containerStyle}
-          className="body-diagram-parent-container"
         >
           <div
             className="flex"

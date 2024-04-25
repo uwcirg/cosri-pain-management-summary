@@ -84,6 +84,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         @media (min-width: 992px) {
           .table {
+            width: calc(85% - 48px);
+          }
+        }
+        @media (min-width: 1200px) {
+          .table {
             width: calc(70% - 48px);
           }
         }
@@ -349,8 +354,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
       gap: 2;
       flex: 1 1;
       .panel-title {
+        line-height: 1.525;
+        margin-block-start: 0.5em;
+        padding-left: 8px;
+        padding-right: 8px;
         .date-string {
-          font-size: 0.75em;
+          font-size: 0.7em;
           font-weight: 400;
           color: $color-gray-dark;
         }

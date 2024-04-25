@@ -410,6 +410,9 @@ export default class ResponsesSummary extends Component {
     if (printOnlyTableElement)
       summaryElement.appendChild(responsesTableElement);
     summaryElement.style.width = "1000px";
+    summaryElement.classList.add("framed-border");
+    summaryElement.style.padding = "8px";
+    summaryElement.style.backgroundColor = "#FFF";
     document.querySelector("body").appendChild(summaryElement);
     copyDomToClipboard(summaryElement, options);
   }

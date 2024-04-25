@@ -22,7 +22,7 @@ import Header from "./Header";
 import Report from "./Report";
 import Summary from "./Summary";
 import Spinner from "../elements/Spinner";
-import CopyPaste from "./report/CopyPaste";
+//import CopyPaste from "./report/CopyPaste";
 
 let uuid = 0;
 let processIntervalId = 0;
@@ -401,11 +401,11 @@ export default class Landing extends Component {
 
   componentDidUpdate() {
   
-    if (this.state.activeTab === 10) {
-      tocbot.destroy();
-      this.tocInitialized = false;
-      return;
-    }
+    // if (this.state.activeTab === 10) {
+    //   tocbot.destroy();
+    //   this.tocInitialized = false;
+    //   return;
+    // }
     if (!this.tocInitialized && !this.state.loading && this.state.result) {
       this.initializeTocBot();
       this.tocInitialized = true;
@@ -1253,15 +1253,15 @@ export default class Landing extends Component {
             </div>
           );
         })}
-        {/* TODO: REMOVE, this just to test copy and paste */}
-        <div
+        {/* this just to test copy and paste */}
+        {/* <div
           className={`tab ${this.state.activeTab === 10 ? "active" : ""}`}
           onClick={() => this.handleSetActiveTab(10)}
           role="presentation"
           key={`tab_10`}
         >
           COPY & PASTE
-        </div>
+        </div> */}
       </div>
     );
   }
@@ -1288,14 +1288,14 @@ export default class Landing extends Component {
               </div>
             );
           })}
-          {/* TODO: remove later, this just to test copy and paste */}
-          <div
+          {/* this is to test copy and paste */}
+          {/* <div
             className={`tab-panel  multi-tabs ${
               this.state.activeTab === 10 ? "active" : ""
             }`}
           >
             <CopyPaste patientInfo={summary.Patient}></CopyPaste>
-          </div>
+          </div> */}
         </React.Fragment>
       </div>
     );
