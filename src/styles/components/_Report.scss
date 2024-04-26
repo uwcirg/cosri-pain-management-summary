@@ -378,6 +378,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         .survey-graph {
           width: calc(100% - 12rem);
+          position: relative;
+          background-color: #FFF;
           @media (min-width: 1120px) {
             width: 100%;
           }
@@ -523,23 +525,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           border-radius: 100vmax;
           margin-right: 0;
           background-color: currentColor;
-          &.square, 
-          &.triangle,
-          &.diamond {
-            border-radius: 0;
-          }
-          &.diamond {
-            transform:rotate(45deg);
-          }
-          &.triangle {
-            background-color: transparent;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-bottom: 12px solid currentColor;
-            border-radius: 0;
-            width: auto;
-            height: auto;
-          }
         }
         .select-icon {
           border: 0;

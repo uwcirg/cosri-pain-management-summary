@@ -29,10 +29,6 @@ export default class ScoringSummary extends Component {
       alignItems: "center",
       marginTop: "4px",
     };
-    this.panelStyle = {
-      marginTop: 0,
-      marginBottom: "8px",
-    };
     this.tableStyle = {
       borderCollapse: "collapse",
       border: `1px solid ${BORDER_COLOR}`,
@@ -292,14 +288,22 @@ export default class ScoringSummary extends Component {
   }
   copyTable() {
     if (!allowCopyClipboardItem()) return null;
-    copyDomToClipboard(this.tableRef.current);
+    copyDomToClipboard(this.tableRef.current, {
+      filter: (node) => {
+        const exclusionClasses = ["exclude-from-copy"];
+        return !exclusionClasses.some((classname) =>
+          node.classList?.contains(classname)
+        );
+      },
+      imageType: "image/png",
+    });
   }
   renderCopyButton() {
     if (!allowCopyClipboardItem()) return null;
     return (
       <button
         onClick={this.copyTable}
-        className="button-default button-secondary rounded"
+        className="button-default button-secondary rounded exclude-from-copy"
         title="Copy scoring summary table"
       >
         <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
@@ -317,7 +321,15 @@ export default class ScoringSummary extends Component {
   }
   renderTitle() {
     return (
-      <h3 className="panel-title" style={this.panelStyle}>
+      <h3
+        className="panel-title"
+        style={{
+          marginBottom: 0,
+          fontSize: "1em",
+          marginTop: 0,
+          marginBlockStart: 0,
+        }}
+      >
         {this.getTitleDisplay()}
       </h3>
     );
@@ -327,18 +339,19 @@ export default class ScoringSummary extends Component {
     const noSummaryData = this.hasNoSummaryData(summary);
     return (
       <React.Fragment>
-        <div style={this.containerStyle}>
-          {this.renderTitle()}
-          {/* JUST to test copy */}
-          <div style={{ marginBottom: "16px", textAlign: "right" }}>
-            {this.renderCopyButton()}
-          </div>
-        </div>
         <table
           className="table score-summary-table"
           ref={this.tableRef}
           style={this.tableStyle}
         >
+          <caption>
+            <div style={this.containerStyle}>
+              {this.renderTitle()}
+              <div style={{ textAlign: "right" }}>
+                {this.renderCopyButton()}
+              </div>
+            </div>
+          </caption>
           {!noSummaryData && this.renderTableHeaders()}
           <tbody>
             {noSummaryData && this.renderNoDataRow()}

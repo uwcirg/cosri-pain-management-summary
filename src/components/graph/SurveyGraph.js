@@ -1194,7 +1194,6 @@ export default class SurveyGraph extends Component {
       <React.Fragment>
         <div
           className="survey-graph"
-          style={{ position: "relative", backgroundColor: "#FFF" }}
           ref={this.graphContainerRef}
         >
           {renderTitle()}
