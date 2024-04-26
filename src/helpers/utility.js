@@ -381,7 +381,7 @@ export function copyDomToClipboard(domElement, options) {
     new window.ClipboardItem(getHTMLImageClipboardItem(domElement, params))
   )
     .then((x) => {
-      alert("Content copied to clipboard ", x);
+      //alert("Content copied to clipboard ", x);
       if (params.afterCopy) {
         params.afterCopy();
       }
@@ -471,4 +471,15 @@ export function getPatientNameFromSource(fhirPatientSource) {
       : "";
   const lastName = fhirPatientSource.name[0].family;
   return [firstName, lastName].join(" ");
+}
+
+let buttonTransitionId = 0;
+export function addButtonSuccessStateTransition(buttonRef, transitionDuration) {
+  if (!buttonRef) return;
+  buttonRef.classList.add("button--loaded");
+  clearTimeout(buttonTransitionId);
+  buttonTransitionId = setTimeout(
+    () => buttonRef.classList.remove("button--loaded"),
+    transitionDuration || 1900
+  );
 }

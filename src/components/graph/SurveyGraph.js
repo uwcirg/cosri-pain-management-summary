@@ -8,21 +8,18 @@ import XYAxis from "./xy-axis";
 import Grid from "./grid";
 import Line from "./line";
 import Tooltip from "./tooltip";
-import ClipboardItemUnsupported from "../../elements/ClipboardItemUnsupportedWarning";
 import {
   defaultLineAttributes,
   getLineAttributes,
   MARKER_SHAPES,
 } from "../../config/graph_config";
 import {
-  allowCopyClipboardItem,
-  copyDomToClipboard,
-  downloadDomImage,
   getDifferenceInYears,
   isNumber,
   renderImageFromSVG,
   toDate,
 } from "../../helpers/utility";
+import CopyButton from "../CopyButton";
 
 const defaultFields = {
   x: "date",
@@ -47,6 +44,7 @@ export default class SurveyGraph extends Component {
       qids: initData.length
         ? [...new Set(initData.map((item) => item.qid))]
         : [],
+      copyInProgress: false,
     };
     // This binding is necessary to make `this` work in the callback
     this.addDataLineToSurveyGraph = this.addDataLineToSurveyGraph.bind(this);
@@ -56,7 +54,6 @@ export default class SurveyGraph extends Component {
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
     this.handleSwitchChange = this.handleSwitchChange.bind(this);
-    this.copyGraphImage = this.copyGraphImage.bind(this);
 
     // refs
     this.graphContainerRef = React.createRef();
@@ -68,21 +65,6 @@ export default class SurveyGraph extends Component {
     this.graphRef = React.createRef();
     this.printImageRef = React.createRef();
     this.dateRangeSelectorRef = React.createRef();
-
-    // constants
-    this.copyImageOptions = {
-      filter: (node) => {
-        const exclusionClasses = ["exclude-from-copy"];
-        return !exclusionClasses.some((classname) =>
-          node.classList?.contains(classname)
-        );
-      },
-      beforeCopy: () => this.beforeCopy(),
-      afterCopy: () => this.afterCopy(),
-      beforeDownload: () => this.beforeCopy(),
-      afterDownload: () => this.afterCopy(),
-      imageType: "image/png",
-    };
   }
   componentDidMount() {
     this.createScaleRefs();
@@ -94,7 +76,6 @@ export default class SurveyGraph extends Component {
     }, 1500);
   }
 
-    
   initSwitchCheckboxRefs() {
     // Initialize the array with React.createRef() objects
     for (let i = 0; i < this.state.qids.length; i++) {
@@ -499,15 +480,6 @@ export default class SurveyGraph extends Component {
       : 0; // minus the height of the slider
   }
 
-  copyGraphImage() {
-    let options = this.copyImageOptions;
-    const imageConainerHeight = this.getImageContainerHeight();
-    if (imageConainerHeight) {
-      options.height = imageConainerHeight;
-    }
-    copyDomToClipboard(this.graphContainerRef.current, options);
-  }
-
   populateLegendShapes() {
     const qids = this.getQIds();
     qids.forEach((item, index) => {
@@ -545,8 +517,7 @@ export default class SurveyGraph extends Component {
                     width="20"
                     height="20"
                     ref={this.lengendMarkerRefs[index]}
-                  >
-                  </svg>
+                  ></svg>
 
                   <span className="text">{item.toUpperCase()}</span>
                 </div>
@@ -606,43 +577,15 @@ export default class SurveyGraph extends Component {
     );
   }
 
-  renderDownloadButton() {
-    return (
-      <button
-        onClick={(e) => {
-          let options = this.copyImageOptions;
-          const imageConainerHeight = this.getImageContainerHeight();
-          if (imageConainerHeight) {
-            options.height = imageConainerHeight;
-          }
-          downloadDomImage(
-            e,
-            this.graphContainerRef.current,
-            `survey_graph_${this.getDisplayDateRange()}`,
-            options
-          );
-        }}
-        className="print-hidden button-default button-secondary rounded"
-        title="download graph"
-      >
-        <FontAwesomeIcon icon="download"></FontAwesomeIcon>
-      </button>
-    );
-  }
-
   renderCopyButton() {
-    if (!allowCopyClipboardItem())
-      return (
-        <ClipboardItemUnsupported message="Please try a different browser to copy the graph image."></ClipboardItemUnsupported>
-      );
     return (
-      <button
-        onClick={this.copyGraphImage}
-        className="print-hidden button-default button-secondary rounded"
-        title="copy graph"
-      >
-        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
-      </button>
+      <CopyButton
+        elementToCopy={this.graphContainerRef.current}
+        buttonTitle="Click to copy longitudinal graph"
+        beforeCopy={() => this.beforeCopy()}
+        afterCopy={() => this.afterCopy()}
+        disableFrame={true}
+      ></CopyButton>
     );
   }
 
@@ -709,7 +652,10 @@ export default class SurveyGraph extends Component {
     const itemsToDisplay = Array.from(uniqueSet).map(JSON.parse);
 
     return (
-      <div className="select larger print-hidden" ref={this.dateRangeSelectorRef}>
+      <div
+        className="select larger print-hidden"
+        ref={this.dateRangeSelectorRef}
+      >
         <select
           value={selectedValue <= maxValue ? selectedValue : ""}
           onChange={this.handleDateRangeChange}
@@ -843,7 +789,6 @@ export default class SurveyGraph extends Component {
         }}
       >
         {this.renderCopyButton()}
-        {/* {this.renderDownloadButton()} */}
       </div>
     );
   }
@@ -1192,10 +1137,7 @@ export default class SurveyGraph extends Component {
 
     return (
       <React.Fragment>
-        <div
-          className="survey-graph"
-          ref={this.graphContainerRef}
-        >
+        <div className="survey-graph" ref={this.graphContainerRef}>
           {renderTitle()}
           <div className="flex">
             <div style={{ position: "relative", width: "100%", gap: "24px" }}>
@@ -1217,8 +1159,8 @@ export default class SurveyGraph extends Component {
               {this.renderLegend()}
             </div>
           </div>
-          {/* {this.renderNotInGraphMessage()}
-          {this.renderPrintOnlyImage()} */}
+          {this.renderNotInGraphMessage()}
+          {this.renderPrintOnlyImage()}
         </div>
       </React.Fragment>
     );

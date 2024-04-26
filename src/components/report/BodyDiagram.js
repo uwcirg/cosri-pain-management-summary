@@ -1,17 +1,9 @@
 import React, { Component } from "react";
-//import ReactTooltip from "react-tooltip";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ClipboardItemUnsupported from "../../elements/ClipboardItemUnsupportedWarning";
+import CopyButton from "../CopyButton";
+import { downloadDomImage, toDate } from "../../helpers/utility";
 import {
-  // downloadSVGImage,
-  downloadDomImage,
-  // copySVGImage,
-  copyDomToClipboard,
-  toDate,
-} from "../../helpers/utility";
-import {
-  allowCopyClipboardItem,
   getDisplayDateFromISOString,
   renderImageFromSVG,
 } from "../../helpers/utility";
@@ -47,16 +39,8 @@ export default class BodyDiagram extends Component {
       backgroundColor: "#FFF",
       width: "100%",
       position: "relative",
-      paddingBottom: "12px",
-    };
-    this.copyImageOptions = {
-      filter: (node) => {
-        const exclusionClasses = ["exclude-from-copy"];
-        return !exclusionClasses.some((classname) =>
-          node.classList?.contains(classname)
-        );
-      },
-      imageType: "image/png",
+      padding: "4px 4px 12px",
+      border: "1px solid transparent",
     };
     this.SELECTED_ANIMATION_DURATION = 1000; // animation duration for indicating an option has been selected
   }
@@ -459,7 +443,7 @@ export default class BodyDiagram extends Component {
     const styles = {
       position: "absolute",
       top: "0",
-      transform: `translate(-50%, ${this.getToolbarHeight() + 24}px)`,
+      transform: `translate(-50%, ${this.getToolbarHeight() + 36}px)`,
     };
     cloneSvgElement.setAttribute("id", "temp_bd");
     cloneSvgElement.classList.add("part-of-bd");
@@ -470,7 +454,6 @@ export default class BodyDiagram extends Component {
     }
     if (this.datesSelectorRef.current)
       this.datesSelectorRef.current.classList.add("read-only");
-    this.containerRef.current.classList.add("framed-border");
   }
   afterCopy() {
     if (document.querySelector("#temp_bd")) {
@@ -481,26 +464,15 @@ export default class BodyDiagram extends Component {
     }
     if (this.datesSelectorRef.current)
       this.datesSelectorRef.current.classList.remove("read-only");
-      this.containerRef.current.classList.remove("framed-border");
   }
   renderCopyButton() {
-    if (!allowCopyClipboardItem())
-      return (
-        <ClipboardItemUnsupported message="Please try a different browser to copy the body diagram image."></ClipboardItemUnsupported>
-      );
-    let params = this.copyImageOptions;
-    params.beforeCopy = () => this.beforeCopy();
-    params.afterCopy = () => this.afterCopy();
     return (
-      <button
-        onClick={(e) => {
-          copyDomToClipboard(this.containerRef.current, params);
-        }}
-        className="print-hidden button-default button-secondary rounded"
-        title="copy body diagram image"
-      >
-        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
-      </button>
+      <CopyButton
+        buttonTitle="Click to copy body diagram"
+        elementToCopy={this.containerRef.current}
+        beforeCopy={() => this.beforeCopy()}
+        afterCopy={() => this.afterCopy()}
+      ></CopyButton>
     );
   }
   renderUtilButtons() {
@@ -604,14 +576,9 @@ export default class BodyDiagram extends Component {
       <div
         style={{
           width: "100%",
-          paddingLeft: "4px",
-          paddingRight: "4px",
         }}
       >
-        <div
-          ref={this.containerRef}
-          style={this.containerStyle}
-        >
+        <div ref={this.containerRef} style={this.containerStyle}>
           <div
             className="flex"
             style={{ marginTop: 8, marginBottom: 24, alignItems: "flex-start" }}

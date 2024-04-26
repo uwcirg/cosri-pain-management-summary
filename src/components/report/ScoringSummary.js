@@ -6,31 +6,27 @@ import FailUpArrowIcon from "../../icons/FailUpArrowIcon";
 import FailDownArrowIcon from "../../icons/FailDownArrowIcon";
 import PassDownArrowIcon from "../../icons/PassDownArrowIcon";
 import LineIcon from "../../icons/LineIcon";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import CopyButton from "../CopyButton";
 import {
-  allowCopyClipboardItem,
   getDisplayDateFromISOString,
   isNumber,
   toDate,
-  copyDomToClipboard,
 } from "../../helpers/utility";
 const BORDER_COLOR = "#f3f6f9";
 export default class ScoringSummary extends Component {
   constructor() {
     super(...arguments);
+
     //refs
     this.tableRef = React.createRef();
-    this.copyTable = this.copyTable.bind(this);
 
     //constants
-    this.containerStyle = {
+    this.captionRowStyle = {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      marginTop: "4px",
     };
     this.tableStyle = {
-      borderCollapse: "collapse",
       border: `1px solid ${BORDER_COLOR}`,
     };
     this.cellStyle = {
@@ -286,28 +282,12 @@ export default class ScoringSummary extends Component {
       );
     });
   }
-  copyTable() {
-    if (!allowCopyClipboardItem()) return null;
-    copyDomToClipboard(this.tableRef.current, {
-      filter: (node) => {
-        const exclusionClasses = ["exclude-from-copy"];
-        return !exclusionClasses.some((classname) =>
-          node.classList?.contains(classname)
-        );
-      },
-      imageType: "image/png",
-    });
-  }
   renderCopyButton() {
-    if (!allowCopyClipboardItem()) return null;
     return (
-      <button
-        onClick={this.copyTable}
-        className="button-default button-secondary rounded exclude-from-copy"
-        title="Copy scoring summary table"
-      >
-        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
-      </button>
+      <CopyButton
+        buttonTitle="Click to copy scoring summary table"
+        elementToCopy={this.tableRef.current}
+      ></CopyButton>
     );
   }
   hasNoSummaryData(summary) {
@@ -328,6 +308,7 @@ export default class ScoringSummary extends Component {
           fontSize: "1em",
           marginTop: 0,
           marginBlockStart: 0,
+          marginBlockEnd: 0
         }}
       >
         {this.getTitleDisplay()}
@@ -344,8 +325,8 @@ export default class ScoringSummary extends Component {
           ref={this.tableRef}
           style={this.tableStyle}
         >
-          <caption>
-            <div style={this.containerStyle}>
+          <caption style={{margin: "0 0 4px"}}>
+            <div style={this.captionRowStyle}>
               {this.renderTitle()}
               <div style={{ textAlign: "right" }}>
                 {this.renderCopyButton()}

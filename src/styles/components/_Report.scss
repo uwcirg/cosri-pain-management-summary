@@ -109,6 +109,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
             svg {
               transition: transform 400ms ease;
             }
+            position: relative;
             color: $link-color;
             border-radius: 100vmax;
             border: 1px solid $link-border-color;

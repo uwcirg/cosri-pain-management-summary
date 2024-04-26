@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import CopyButton from "../CopyButton";
 import Score from "./Score";
 import {
-  allowCopyClipboardItem,
-  copyDomToClipboard,
   getDisplayDateFromISOString,
 } from "../../helpers/utility";
 
@@ -12,13 +11,18 @@ let resizeTimeoutId = 0;
 export default class ResponsesSummary extends Component {
   constructor() {
     super(...arguments);
-    this.state = { open: false };
+    this.state = { open: false, copyInProgress: false };
+    this.setWrapperHeight = this.setWrapperHeight.bind(this);
+    this.buildElementForCopy = this.buildElementForCopy.bind(this);
+    this.afterCopy = this.afterCopy.bind(this);
+
+    //refs
     this.summaryContainerRef = React.createRef();
     this.summaryTableRef = React.createRef();
     this.tableWrapperRef = React.createRef();
     this.printOnlyContainerRef = React.createRef();
-    this.setWrapperHeight = this.setWrapperHeight.bind(this);
-    this.copySummary = this.copySummary.bind(this);
+
+    //consts
     const BORDER_COLOR = "#f3f6f9";
     const HEADER_BORDER_COLOR = "#217684";
     this.tableStyle = {
@@ -366,20 +370,8 @@ export default class ResponsesSummary extends Component {
       </div>
     );
   }
-  copySummary() {
+  buildElementForCopy() {
     if (!this.summaryTableRef.current) return;
-    let options = {
-      filter: (node) => {
-        const exclusionClasses = ["exclude-from-copy", "flag-nav", "info-icon"];
-        return !exclusionClasses.some((classname) =>
-          node.classList?.contains(classname)
-        );
-      },
-      afterCopy: () => {
-        document.querySelector("#tempSummaryEl").remove();
-      },
-      imageType: "image/png",
-    };
     const summaryElement = document.createElement("div");
     summaryElement.setAttribute("id", "tempSummaryEl");
     const sectionElement =
@@ -411,26 +403,25 @@ export default class ResponsesSummary extends Component {
       summaryElement.appendChild(responsesTableElement);
     summaryElement.style.width = "1000px";
     summaryElement.classList.add("framed-border");
-    summaryElement.style.padding = "8px";
+    summaryElement.style.padding = "16px";
     summaryElement.style.backgroundColor = "#FFF";
     document.querySelector("body").appendChild(summaryElement);
-    copyDomToClipboard(summaryElement, options);
+    return summaryElement;
+  }
+  afterCopy() {
+    document.querySelector("#tempSummaryEl").remove();
   }
   renderCopyButton(e) {
-    if (!allowCopyClipboardItem()) return null;
-    const copyButtonStyle = {
-      minWidth: "72px",
-      marginLeft: "24px",
-    };
     return (
-      <button
-        onClick={this.copySummary}
-        className="print-hidden icon"
-        style={copyButtonStyle}
-        title="copy summary of responses"
-      >
-        <FontAwesomeIcon icon="copy"></FontAwesomeIcon>
-      </button>
+      <CopyButton
+        buildElementForCopy={() => this.buildElementForCopy()}
+        buttonTitle="Click to copy summary of responses"
+        buttonStyle={{
+          minWidth: "72px",
+          marginLeft: "24px",
+        }}
+        afterCopy={() => this.afterCopy()}
+      ></CopyButton>
     );
   }
   renderViewButton() {
