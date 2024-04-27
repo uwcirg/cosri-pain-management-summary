@@ -25,6 +25,7 @@ export default class ScoringSummary extends Component {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
+      backgroundColor: "#FFF"
     };
     this.tableStyle = {
       border: `1px solid ${BORDER_COLOR}`,
