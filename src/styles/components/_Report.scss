@@ -379,13 +379,17 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         .survey-graph {
           width: calc(100% - 12rem);
+          padding: 0 8px;
+          border: 1px solid transparent;
           position: relative;
           background-color: #FFF;
+          @media (min-width: 768px) {
+            width: calc(100% - 16rem);
+          }
           @media (min-width: 1120px) {
-            width: 100%;
+            width: calc(100% - 16px);
           }
           @media (min-width: 1400px) {
-            width: calc(100% - 2rem);
             max-width: 100%;
           }
           @media (min-width: 1600px) {

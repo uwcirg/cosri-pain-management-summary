@@ -42,12 +42,14 @@ button.disabled {
   color: #777;
   min-width: 64px;
   text-align: center;
+  cursor: pointer;
 }
 
 .button--loading .button__text,
 .button--loaded .button__text  {
   visibility: hidden;
   opacity: 0;
+  cursor: pointer;
 }
 .button--loaded {
     animation-play-state: paused;
@@ -73,7 +75,7 @@ button.disabled {
   border-bottom-color: #FFF;
   border-right-color: #FFF;
   border-radius: 50%;
-  animation: button-loading-spinner 1s ease infinite;
+  animation: button-loading-spinner ease infinite;
 }
 .button--loaded:after {
     content: "";

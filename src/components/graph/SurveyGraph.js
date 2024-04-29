@@ -584,7 +584,7 @@ export default class SurveyGraph extends Component {
         buttonTitle="Click to copy longitudinal graph"
         beforeCopy={() => this.beforeCopy()}
         afterCopy={() => this.afterCopy()}
-        disableFrame={true}
+    //    disableFrame={true}
       ></CopyButton>
     );
   }
