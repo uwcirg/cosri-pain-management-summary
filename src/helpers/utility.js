@@ -480,6 +480,6 @@ export function addButtonSuccessStateTransition(buttonRef, transitionDuration) {
   clearTimeout(buttonTransitionId);
   buttonTransitionId = setTimeout(
     () => buttonRef.classList.remove("button--loaded"),
-    transitionDuration || 1900
+    transitionDuration || 1000
   );
 }
