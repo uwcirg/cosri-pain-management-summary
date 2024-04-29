@@ -17,7 +17,6 @@ export default class CopyButton extends Component {
   handleCopy() {
     if (!allowCopyClipboardItem()) return;
     if (!(this.props.elementToCopy || this.props.buildElementForCopy)) return;
-    console.log("pros options ", this.props.options)
     copyDomToClipboard(
       this.props.buildElementForCopy
         ? this.props.buildElementForCopy()
