@@ -43,6 +43,9 @@ button.disabled {
   min-width: 64px;
   text-align: center;
   cursor: pointer;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .button--loading .button__text,

@@ -330,7 +330,7 @@ export default class ScoringSummary extends Component {
             <div style={this.captionRowStyle}>
               {this.renderTitle()}
               <div style={{ textAlign: "right" }}>
-                {this.renderCopyButton()}
+                {!noSummaryData && this.renderCopyButton()}
               </div>
             </div>
           </caption>
