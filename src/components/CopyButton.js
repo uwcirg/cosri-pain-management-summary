@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  addButtonErrorStateTransition,
   addButtonSuccessStateTransition,
   allowCopyClipboardItem,
   copyDomToClipboard,
@@ -47,8 +48,11 @@ export default class CopyButton extends Component {
               }
               if (!this.props.disableFrame && this.props.elementToCopy)
                 this.props.elementToCopy.classList.remove("framed-border");
-              if (!error)
-                addButtonSuccessStateTransition(this.copyButtonRef.current);
+              if (error) {
+                addButtonErrorStateTransition(this.copyButtonRef.current);
+                return;
+              }
+              addButtonSuccessStateTransition(this.copyButtonRef.current);
             }
           );
         },
@@ -67,6 +71,7 @@ export default class CopyButton extends Component {
           );
         },
         imageType: "image/png",
+        backgroundColor: "#FFF",
         ...this.props.options?this.props.options:{}
       }
     );
@@ -80,7 +85,7 @@ export default class CopyButton extends Component {
       <button
         ref={this.copyButtonRef}
         onClick={this.handleCopy}
-        className={`button-default button-secondary rounded print-hidden exclude-from-copy ${
+        className={`copy button-default button-secondary rounded print-hidden exclude-from-copy ${
           this.state.copyInProgress ? "button--loading" : ""
         }`}
         title={buttonTitle}

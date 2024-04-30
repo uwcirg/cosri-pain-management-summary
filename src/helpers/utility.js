@@ -387,7 +387,7 @@ export function copyDomToClipboard(domElement, options) {
       }
     })
     .catch((e) => {
-      alert("Error! Unable to copy content to clipboard! " + e);
+      //alert("Error! Unable to copy content to clipboard! " + e);
       console.log(e);
       console.log("passed param ", params);
       if (params.afterCopy) {
@@ -471,4 +471,15 @@ export function addButtonSuccessStateTransition(buttonRef, transitionDuration) {
     () => buttonRef.classList.remove("button--loaded"),
     transitionDuration || 1000
   );
+}
+
+export function addButtonErrorStateTransition(buttonRef, transitionDuration) {
+  if (!buttonRef) return;
+  buttonRef.classList.add("button--loaded");
+  buttonRef.classList.add("error");
+  clearTimeout(buttonTransitionId);
+  buttonTransitionId = setTimeout(() => {
+    buttonRef.classList.remove("button--loaded");
+    buttonRef.classList.remove("error");
+  }, transitionDuration || 1000);
 }
