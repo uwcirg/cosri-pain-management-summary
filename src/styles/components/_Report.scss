@@ -105,6 +105,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
             margin-left: 4px;
             &.arrow {
               min-width: 102px;
+              svg {
+                transform: rotate(90deg);
+              }
             }
             svg {
               transition: transform 400ms ease;
@@ -137,7 +140,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           &.active {
             .arrow.icon {
               svg {
-                transform: rotate(90deg);
+                transform: rotate(270deg);
               }
             }
           }
