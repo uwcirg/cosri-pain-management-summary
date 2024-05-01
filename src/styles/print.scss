@@ -65,16 +65,13 @@
     }
   }
   .report {
-    .Collapsible {
-        &:not(:first-of-type) {
-            .section__header {
-                display: none !important;
-              }
-        }
+    .section__header:not(.print-header) {
+      display: none !important;
     }
     .section__header {
       color: #444 !important;
-      background: #f7f7f7 !important;
+      background: #FFF !important;
+      background-color: #FFF !important;
       height: auto !important;
       padding: 8px 0 !important;
     }

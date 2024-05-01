@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   addButtonErrorStateTransition,
@@ -98,3 +99,14 @@ export default class CopyButton extends Component {
     );
   }
 }
+
+CopyButton.propTypes = {
+  elementToCopy: PropTypes.object, // element to be copied
+  buildElementForCopy: PropTypes.func, // function for building element(s) to be copied
+  buttonTitle: PropTypes.string,
+  buttonStyle: PropTypes.object,
+  disableFrame: PropTypes.bool,
+  beforeCopy: PropTypes.func, // function to execute before copy
+  afterCopy: PropTypes.func, // function to execute after copy
+  options: PropTypes.object // copy options
+};

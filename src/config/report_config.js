@@ -3,8 +3,10 @@ import UserIcon from "../icons/UserIcon";
 import ChartIcon from "../icons/ChartIcon";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
 import PainIcon from "../icons/PainIcon";
+//import CheckListIcon from "../icons/CheckListIcon";
 import OverViewComponent from "../components/report/Overview";
 import ResponsesSummary from "../components/report/ResponsesSummary";
+//import RankedResponses from "../components/report/RankedResponses";
 
 const iconProps = {
   width: 35,
@@ -16,20 +18,41 @@ const reportConfig = [
     title: "Overview",
     dataKey: "scoringOverview",
     icon: (props) => (
-      <ChartIcon {...iconProps} {...props} title="Overview" />
+      <ChartIcon
+        {...{
+          width: 38,
+          height: 38,
+          className: "sectionIcon",
+        }}
+        {...props}
+        title="Overview"
+      />
     ),
     component: (props) => <OverViewComponent {...props}></OverViewComponent>,
   },
+  // {
+  //   title: "Patient-reported Treatment Goals",
+  //   dataKey: "treatmentGoals",
+  //   icon: (props) => (
+  //     <CheckListIcon
+  //       {...{
+  //         width: 32,
+  //         height: 32,
+  //         className: "sectionIcon",
+  //       }}
+  //       {...props}
+  //       title="Patient-reported Treatment Goals"
+  //     ></CheckListIcon>
+  //   ),
+  //   component: (props) => <RankedResponses {...props}></RankedResponses>,
+  //   showHeaderInPrint: true
+  // },
   {
     title: "Pain and Limitation",
     dataKey: "painLimitationSection",
     questionnaires: ["CIRG-PEG", "body_diagram"],
     icon: (props) => (
-      <PainIcon
-        {...iconProps}
-        {...props}
-        title="Pain and Limitation"
-      />
+      <PainIcon {...iconProps} {...props} title="Pain and Limitation" />
     ),
     sections: [
       {

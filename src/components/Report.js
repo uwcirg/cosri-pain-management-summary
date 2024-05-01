@@ -34,7 +34,7 @@ export default class Report extends Component {
 
   renderSectionHeader(section) {
     return (
-      <h2 id={`${section.dataKey}_section`} className="section__header">
+      <h2 id={`${section.dataKey}_section`} className={`section__header ${section.showHeaderInPrint?"print-header":""}`}>
         <div className="section__header-title">
           {section.icon && <span title={section.title}>{section.icon()}</span>}
           <span className="title-text-container">

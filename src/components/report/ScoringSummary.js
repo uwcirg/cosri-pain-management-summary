@@ -319,6 +319,7 @@ export default class ScoringSummary extends Component {
   render() {
     const { summary, showAnchorLinks } = this.props;
     const noSummaryData = this.hasNoSummaryData(summary);
+    const readOnly = this.props.readOnly;
     return (
       <React.Fragment>
         <table
@@ -330,7 +331,7 @@ export default class ScoringSummary extends Component {
             <div style={this.captionRowStyle}>
               {this.renderTitle()}
               <div style={{ textAlign: "right" }}>
-                {!noSummaryData && this.renderCopyButton()}
+                {!noSummaryData && !readOnly && this.renderCopyButton()}
               </div>
             </div>
           </caption>
@@ -349,4 +350,5 @@ ScoringSummary.propTypes = {
   title: PropTypes.string,
   summary: PropTypes.array,
   showAnchorLinks: PropTypes.bool,
+  readOnly: PropTypes.bool
 };

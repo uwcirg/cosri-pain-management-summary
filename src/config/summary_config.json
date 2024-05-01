@@ -107,7 +107,7 @@
           },
           {
             "type": "surveysummary",
-            "title": "Questionnaire Summary",
+            "title": "Questionnaire Scoring Summary",
             "data": {
               "dataSectionRefKey": "SurveySummary"
             }

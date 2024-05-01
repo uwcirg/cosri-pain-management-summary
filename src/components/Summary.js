@@ -517,6 +517,7 @@ export default class Summary extends Component {
               <ScoringSummary
                 summary={surveyData}
                 title={panel.title}
+                readOnly={true}
               ></ScoringSummary>
             }
           </div>

@@ -645,8 +645,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
   }
   .icons-container {
     gap: 12px;
+    color: $link-color;
+    button {
+      color: currentColor;
+      border-color: currentColor;
+    }
     svg {
-      color: $link-color;
+      color: currentColor;
       border-color: $link-border-color;
       &:hover:not(.disabled) {
         transform: scale(1.15);

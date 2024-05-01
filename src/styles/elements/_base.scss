@@ -100,6 +100,9 @@ a {
 .flex-gap-1 {
   gap: 8px;
 }
+.flex-gap-2 {
+  gap: 16px;
+}
 .flex-space-between {
   display: flex;
   justify-content: space-between;
@@ -115,6 +118,10 @@ a {
 .flex-end {
   display: flex;
   justify-content: flex-end;
+}
+.flex-align-start {
+  display: flex;
+  align-items: flex-start;
 }
 .framed-border {
   border: 1px solid $color-gray-lighter !important;
