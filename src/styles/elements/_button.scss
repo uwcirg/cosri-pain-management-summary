@@ -99,7 +99,7 @@ button.disabled {
   content: "copied!";
   position: absolute;
   top: 0;
-  left: -36px;
+  left: -40px;
   right: 0;
   bottom: 0;
   margin: auto;
@@ -113,7 +113,7 @@ button.disabled {
 .button--loaded.error:after {
   content: "error!";
   position: absolute;
-  top: 6px;
+  top: 12px;
   left: -36px;
   right: 0;
   bottom: 0;

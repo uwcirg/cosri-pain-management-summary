@@ -340,7 +340,7 @@
         height: 0;
         width: 560px;
         padding: 0;
-        padding-bottom: 100%;
+        padding-bottom: 50%;
         margin-bottom: 8px;
       }
       @media(min-width: 992px) {
@@ -464,7 +464,7 @@
         margin-left: 16px;
         align-self: stretch;
         display: flex;
-        width: calc(100% - 48px);
+        width: 100%;
       }
 
       .sub-section__panel {
