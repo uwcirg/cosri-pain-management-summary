@@ -491,7 +491,17 @@ export default class BodyDiagram extends Component {
       </div>
     );
   }
+  shouldRenderNav() {
+    if (
+      !this.state.dates ||
+      !this.state.dates.length ||
+      this.state.dates.length < 2
+    )
+      return false;
+    return true;
+  }
   renderNavButtons() {
+    if (!this.shouldRenderNav()) return null;
     const iconStyle = {
       borderWidth: "1px",
       borderStyle: "solid",
@@ -503,12 +513,6 @@ export default class BodyDiagram extends Component {
       position: "relative",
       zIndex: 10,
     };
-    if (
-      !this.state.dates ||
-      !this.state.dates.length ||
-      this.state.dates.length < 2
-    )
-      return null;
     return (
       <div className="flex flex-gap-1 icons-container exclude-from-copy">
         <FontAwesomeIcon
@@ -551,9 +555,8 @@ export default class BodyDiagram extends Component {
     );
   }
   renderDots() {
+    if (!this.shouldRenderNav()) return null;
     const stateSummaryData = this.getStateSummaryData();
-    if (!stateSummaryData) return null;
-    if (stateSummaryData.length < 2) return null;
     return (
       <div className="exclude-from-copy dots-container print-hidden">
         {stateSummaryData.map((item, index) => {
@@ -572,16 +575,20 @@ export default class BodyDiagram extends Component {
   }
   render() {
     if (!this.getStateSummaryData()) return null;
+    const parentContainerStyle = {
+      width: "100%",
+    };
+    const toolbarContainerStyle = {
+      marginTop: 8,
+      marginBottom: 24,
+      alignItems: "flex-start",
+    };
     return (
-      <div
-        style={{
-          width: "100%",
-        }}
-      >
+      <div style={parentContainerStyle}>
         <div ref={this.containerRef} style={this.containerStyle}>
           <div
             className="flex"
-            style={{ marginTop: 8, marginBottom: 24, alignItems: "flex-start" }}
+            style={toolbarContainerStyle}
             ref={this.toolbarRef}
           >
             {this.renderLegend()}

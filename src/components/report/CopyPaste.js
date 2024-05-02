@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
   allowCopyClipboardItem,
-  // writeHTMLToClipboard,
   writeTextToClipboard,
   copyDomToClipboard,
 } from "../../helpers/utility";
@@ -28,7 +27,6 @@ export default class CopyPaste extends Component {
       contentHTML: this.getDefaultContent() + "\r\n" + this.getScoreSummaryContent(),
       previousContent: "",
     }, () => this.containerRef.current.value = this.state.contentHTML);
-    //this.importScoreSummaryContent();
   }
 
   handleContentChange() {
@@ -56,18 +54,6 @@ export default class CopyPaste extends Component {
             this.contentAreaRef.current.value = this.state.contentHTML;
           }
         );
-        // const tempNode = this.contentAreaRef.current.cloneNode(true);
-        // console.log("temp node? ", tempNode);
-        // const originalElement = tempNode.querySelector(".original");
-        // console.log("original ", originalElement);
-        // this.setState(
-        //   {
-        //     contentHTML: originalElement.innerHTML,
-        //   },
-        //   () => {
-        //     this.contentAreaRef.current.innerHTML = this.state.contentHTML;
-        //   }
-        // );
       }
     );
   }
@@ -100,10 +86,6 @@ export default class CopyPaste extends Component {
   }
 
   copyContent() {
-    // if (!allowCopyClipboardItem()) {
-    //   alert("ClipboardItem API not supported by this browser");
-    //   return false;
-    // }
     writeTextToClipboard(this.state.contentHTML)
       .then(() => {
         alert("Content copied to clipboard");
@@ -229,49 +211,6 @@ export default class CopyPaste extends Component {
         }
       );
     });
-
-    // const scorePanelElement = document.querySelector(".score-panel");
-    // const scoreSummaryNode = scorePanelElement
-    //   ? scorePanelElement.cloneNode(true)
-    //   : null;
-    // if (scoreSummaryNode) {
-    //   const tableElement = scoreSummaryNode.querySelector("table");
-    //   if (tableElement) {
-    //     tableElement.style.fontFamily = "Ariel, sans-serif";
-    //     tableElement.setAttribute("width", "100%");
-    //   }
-    //   scoreSummaryNode.querySelector("h3").style.fontSize = "20px";
-    //   scoreSummaryNode.querySelectorAll("a").forEach((anchorElement) => {
-    //     const span = document.createElement("span");
-    //     span.innerText = anchorElement.innerText;
-    //     anchorElement.replaceWith(span);
-    //   });
-    //   scoreSummaryNode.querySelectorAll("img").forEach((imageElement) => {
-    //     const span = document.createElement("span");
-    //     span.innerText = ` (${imageElement.getAttribute("alt")}) `;
-    //     imageElement.replaceWith(span);
-    //   });
-    //   scoreSummaryNode.querySelectorAll("td, th").forEach((cellElement) => {
-    //     cellElement.style.padding = "8px";
-    //   });
-    //   this.setState(
-    //     {
-    //       contentHTML:
-    //         "<div style='font-family: ariel, sans-serif'>" +
-    //         "<div class='original'>" +
-    //         this.state.contentHTML +
-    //         "</div>" +
-    //         "<div class='score-summary-content'>" +
-    //         "<br/><br/>" +
-    //         scoreSummaryNode.outerHTML +
-    //         "</div>" +
-    //         "</div>",
-    //     },
-    //     () => {
-    //       this.contentAreaRef.current.innerHTML = this.state.contentHTML;
-    //     }
-    //   );
-    // }
   }
   renderInstruction() {
     const listItemStyle = {
@@ -335,8 +274,6 @@ export default class CopyPaste extends Component {
           flexDirection: "row",
           gap: "16px",
           flexWrap: "wrap",
-          // marginTop: "8px",
-          // marginBottom: "16px",
           flex: 2,
         }}
       >
@@ -344,7 +281,6 @@ export default class CopyPaste extends Component {
           className="button-primary"
           style={buttonStyle}
           onClick={this.copyContent}
-         // disabled={!allowCopyClipboardItem()}
         >
           Copy content to clipboard as text
         </button>
@@ -356,22 +292,6 @@ export default class CopyPaste extends Component {
         >
           Copy content to clipboard as image
         </button>
-        {/* <button
-          className="button-default"
-          onClick={this.copyReportContentImage}
-          style={buttonStyle}
-        >
-          Copy entire report to clipboard as image
-        </button> */}
-        {/*** 
-        <button
-          className="button-default"
-          onClick={this.clear}
-          style={buttonStyle}
-        >
-          Clear box area content
-        </button>
-        */}
       </div>
     );
   }
@@ -387,7 +307,6 @@ export default class CopyPaste extends Component {
       backgroundColor: "#f4f3f3",
     };
     const boxAreaStyle = {
-      // height: "65%",
       flex: 1,
       padding: "16px",
       border: "2px solid",
@@ -396,22 +315,14 @@ export default class CopyPaste extends Component {
       width: "98%",
       margin: "auto",
       position: "relative",
-      // whiteSpace: "pre",
     };
     return (
       <React.Fragment>
         <div style={containerStyle} ref={this.containerRef}>
           {this.renderInstruction()}
-          {/* <div
-            ref={this.contentAreaRef}
-            contentEditable="true"
-            style={boxAreaStyle}
-            onBlur={this.handleContentChange}
-          ></div> */}
           <textarea
             ref={this.contentAreaRef}
             style={boxAreaStyle}
-           // onBlur={this.handleContentChange}
             value={this.state.contentHTML}
             readOnly
           ></textarea>
