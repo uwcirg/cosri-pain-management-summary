@@ -57,7 +57,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
         margin-bottom: 8px;
         margin-top: 8px;
         &__header {
-          padding: 0 20px 12px;
+          padding: 0 20px 4px;
+          margin-block-start: 0.5em;
+          margin-block-end: 0.5em;
         }
         &__anchor {
           width: 2px;
@@ -73,8 +75,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-top: 0;
         }
         .table {
-          margin-left: 24px;
-          margin-right: 24px;
+          margin-left: 20px;
+          margin-right: 20px;
           margin-bottom: 8px;
           border-collapse: collapse;
           background-color: #FFF;
@@ -89,7 +91,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         @media (min-width: 1200px) {
           .table {
-            width: calc(70% - 48px);
+            width: calc(75% - 48px);
           }
         }
         .no-entries {
@@ -683,6 +685,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
 .modal.report-info-modal {
   width: calc(100% - 48px);
   @media (min-width: 699px) {
-    width: 55%;
+    width: 60%;
+  }
+  @media (min-width: 768px) {
+    width: 50%;
   }
 }
