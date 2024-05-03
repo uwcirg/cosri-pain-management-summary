@@ -47,7 +47,7 @@ export default class Landing extends Component {
       loadingMessage: "Resources are being loaded...",
       mmeErrors: false,
       tocInitialized: false,
-      errorCollection: []
+      errorCollection: [],
     };
     // This binding is necessary to make `this` work in the callback
     this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
@@ -158,9 +158,11 @@ export default class Landing extends Component {
   setError(message) {
     if (!message) return;
     this.setState({
-      errorCollection: [...this.state.errorCollection, message]
-    })
-    writeToLog(message, "error", this.getPatientName());
+      errorCollection: [...this.state.errorCollection, message],
+    });
+    writeToLog(message, "error", {
+      patientName: this.getPatientName(),
+    });
   }
 
   //save MME calculations to file for debugging purpose, development environment ONLY
@@ -293,11 +295,15 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    if (!this.state.tocInitialized && !this.state.loading && this.state.result) {
+    if (
+      !this.state.tocInitialized &&
+      !this.state.loading &&
+      this.state.result
+    ) {
       this.initializeTocBot();
       this.setState({
-        tocInitialized: true
-      })
+        tocInitialized: true,
+      });
     } else {
       if (this.state.tocInitialized) {
         tocbot.refresh({ ...tocbot.options, hasInnerContainers: true });
