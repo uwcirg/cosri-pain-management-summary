@@ -326,7 +326,7 @@ export default class Landing extends Component {
       scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
     });
   }
-  
+
   /*
    * fixed header when scrolling in the event that it is not within viewport
    */
