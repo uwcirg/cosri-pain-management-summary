@@ -2,17 +2,23 @@ import React, { Component } from "react";
 import ReactTooltip from "react-tooltip";
 import tocbot from "tocbot";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import executeElm from "../utils/executeELM";
-import flagit from "../helpers/flagit";
 import {
-  datishFormat,
-  dateFormat,
-  dateNumberFormat,
-  extractDateFromGMTDateString,
-} from "../helpers/formatit";
-import { dateCompare } from "../helpers/sortit";
-import { getDiffDays, getPatientNameFromSource, isInViewport } from "../helpers/utility";
+  getMMEErrors,
+  getProcessedAlerts,
+  getProcessedGraphData,
+  getProcessedStatsData,
+  getProcessedSummaryData,
+} from "../helpers/landing.util";
+import { datishFormat } from "../helpers/formatit";
+import {
+  getPatientNameFromSource,
+  isInViewport,
+  isNotProduction,
+  isProduction,
+  saveData,
+  writeToLog,
+} from "../helpers/utility";
 import Timeout from "../helpers/timeout";
 import summaryMap from "../config/summary_config.json";
 
@@ -24,13 +30,8 @@ import Summary from "./Summary";
 import Spinner from "../elements/Spinner";
 //import CopyPaste from "./report/CopyPaste";
 
-let uuid = 0;
 let processIntervalId = 0;
 let scrollHeaderIntervalId = 0;
-
-function generateUuid() {
-  return ++uuid; // eslint-disable-line no-plusplus
-}
 
 export default class Landing extends Component {
   constructor() {
@@ -44,10 +45,10 @@ export default class Landing extends Component {
       patientId: "",
       activeTab: 0,
       loadingMessage: "Resources are being loaded...",
+      mmeErrors: false,
+      tocInitialized: false,
+      errorCollection: []
     };
-    this.errorCollection = [];
-    this.mmeErrors = false;
-    this.tocInitialized = false;
     // This binding is necessary to make `this` work in the callback
     this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
     this.handleHeaderPos = this.handleHeaderPos.bind(this);
@@ -73,6 +74,11 @@ export default class Landing extends Component {
   }
   getPatientId() {
     return this.state.patientId;
+  }
+  getPatientName() {
+    const summary = this.state.result ? this.state.result.Summary : null;
+    const patientName = summary && summary.Patient ? summary.Patient.Name : "";
+    return patientName;
   }
   pingProcessProgress() {
     processIntervalId = setInterval(() => {
@@ -122,12 +128,12 @@ export default class Landing extends Component {
     collectorErrors.forEach((item) => {
       let itemURL = item?.url;
       try {
-        itemURL = (new URL(itemURL)).pathname;
-      } catch(e) {
+        itemURL = new URL(itemURL).pathname;
+      } catch (e) {
         console.log("Unable to convert url to URL object ", item.url);
         itemURL = item?.url;
       }
-      const sourceType = item?.type??itemURL;
+      const sourceType = item?.type ?? itemURL;
       const sourceTypeText = sourceType ? `[${sourceType}]` : "";
       this.setError(`${sourceTypeText} ${item.error}`);
     });
@@ -135,109 +141,34 @@ export default class Landing extends Component {
   //compile error(s) related to MME calculations
   processSummaryErrors(summary) {
     if (!summary) return false;
-    let errors = [];
-    //PDMP medications
-    let pdmpMeds = summary["PDMPMedications"];
-    if (pdmpMeds && pdmpMeds["PDMPMedications"]) {
-      let o = pdmpMeds["PDMPMedications"];
-      let errorItems = [];
-      o.forEach((item) => {
-        //do not report medication that has been reported
-        if (
-          errorItems.filter((errorItem) => errorItem["name"] === item["name"])
-            .length > 0
-        )
-          return true;
-        let isOpioid =
-          item["Class"] &&
-          item["Class"].filter((medClass) => {
-            return String(medClass).toLowerCase() === "opioid";
-          }).length > 0;
-        //IF not an opioid med don't raise error
-        //look for medication that contains NDC code but not RxNorm Code, or contains all necessary information (NDC Code, RxNorm Code and Drug Class) but no MME
-        if (
-          isOpioid &&
-          item["NDC_Code"] &&
-          (!item["RXNorm_Code"] || !item["MME"])
-        ) {
-          errorItems.push(item);
-          errors.push(
-            `Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`
-          );
-          //log failed MME calculation
-          this.writeToLog(
-            `MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} Factor: ${item.factor}`,
-            "error",
-            { tags: ["mme-calc"] }
-          );
-        }
-        if (item.MME) {
-          //log MME calculated if present
-          this.writeToLog(
-            `MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`,
-            "info",
-            { tags: ["mme-calc"] }
-          );
-        }
+    let errors = getMMEErrors(summary, true, {
+      tags: ["mme-calc"],
+      patientName: this.getPatientName(),
+    });
+    if (!errors || !errors.length) return;
+    errors.forEach((message) => {
+      this.setError(message);
+    });
+    //set MME error flag
+    if (errors.length)
+      this.setState({
+        mmeErrors: true,
       });
-      errors.forEach((message) => {
-        this.setError(message);
-      });
-      //set MME error flag
-      if (errors.length) this.mmeErrors = true;
-    }
   }
   setError(message) {
     if (!message) return;
-    this.errorCollection.push(message);
-    this.writeToLog(message, "error");
-  }
-  //write to audit log
-  writeToLog(message, level, params) {
-    if (!getEnv("REACT_APP_CONF_API_URL")) return;
-    if (!message) return;
-    const logLevel = level ? level : "info";
-    const logParams = params ? params : {};
-    if (!logParams.tags) logParams.tags = [];
-    logParams.tags.push("cosri-frontend");
-    const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
-    const summary = this.state.result ? this.state.result.Summary : null;
-    const patientName = summary && summary.Patient ? summary.Patient.Name : "";
-    let messageString = "";
-    if (typeof message === "object") {
-      messageString = message.toString();
-    } else messageString = message;
-    fetch(auditURL, {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...{ patient: patientName, message: messageString, level: logLevel },
-        ...logParams,
-      }),
+    this.setState({
+      errorCollection: [...this.state.errorCollection, message]
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then(function (data) {
-        console.log("audit request succeeded with response ", data);
-      })
-      .catch(function (error) {
-        console.log("Request failed", error);
-      });
+    writeToLog(message, "error", this.getPatientName());
   }
+
   //save MME calculations to file for debugging purpose, development environment ONLY
   saveSummaryData() {
-    if (String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development")
-      return;
+    if (isProduction()) return;
     const summary = this.state.result ? this.state.result.Summary : null;
     if (!summary) return;
-    const patientName = summary && summary.Patient ? summary.Patient.Name : "";
+    const patientName = this.getPatientName();
     //pdmp data
     const pdmpData = summary["PDMPMedications"]
       ? summary["PDMPMedications"]["PDMPMedications"]
@@ -245,7 +176,7 @@ export default class Landing extends Component {
     if (!pdmpData) return;
     const pdmpContext = "CQL PMP MME Result";
     const fileName = patientName.replace(/\s/g, "_") + "_MME_Result";
-    this.saveData({
+    saveData({
       context: pdmpContext,
       data: pdmpData,
       filename: fileName,
@@ -253,32 +184,7 @@ export default class Landing extends Component {
     });
     //can save other data if needed
   }
-  saveData(queryParams) {
-    if (!getEnv("REACT_APP_CONF_API_URL")) return;
-    const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
-    const params = queryParams || {};
-    if (!params.data) return;
-    fetch(saveDataURL, {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then(function (data) {
-        console.log("save data request succeeded with response ", data);
-      })
-      .catch(function (error) {
-        console.log("Request failed to save data: ", error);
-      });
-  }
+
   //hide and show sectioN(s) depending on config
   setSectionVis() {
     for (const key in summaryMap) {
@@ -310,8 +216,9 @@ export default class Landing extends Component {
     //education material links
     document.querySelectorAll(".education").forEach((item) => {
       item.addEventListener("click", (e) => {
-        this.writeToLog(`Education material: ${e.target.title}`, "info", {
+        writeToLog(`Education material: ${e.target.title}`, "info", {
           tags: ["education"],
+          patientName: this.getPatientName(),
         });
       });
     });
@@ -348,7 +255,9 @@ export default class Landing extends Component {
           100
         );
         this.processCollectorErrors();
-        this.writeToLog("application loaded", "info");
+        writeToLog("application loaded", "info", {
+          patientName: this.getPatientName(),
+        });
         //add data from other sources, e.g. PDMP
         Promise.all([this.getExternalData()])
           .then((externalData) => {
@@ -384,7 +293,7 @@ export default class Landing extends Component {
   }
 
   initializeTocBot() {
-    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 162 : 100;
+    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 180 : 100;
     tocbot.init({
       tocSelector: ".active .summary__nav", // where to render the table of contents
       contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
@@ -395,22 +304,23 @@ export default class Landing extends Component {
       includeHtml: true, // include the HTML markup from the heading node, not just the text,
       // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
       headingsOffset: 1 * MIN_HEADER_HEIGHT,
-      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT
+      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
     });
   }
 
   componentDidUpdate() {
-  
     // if (this.state.activeTab === 10) {
     //   tocbot.destroy();
     //   this.tocInitialized = false;
     //   return;
     // }
-    if (!this.tocInitialized && !this.state.loading && this.state.result) {
+    if (!this.state.tocInitialized && !this.state.loading && this.state.result) {
       this.initializeTocBot();
-      this.tocInitialized = true;
+      this.setState({
+        tocInitialized: true
+      })
     } else {
-      if (this.tocInitialized) {
+      if (this.state.tocInitialized) {
         tocbot.refresh({ ...tocbot.options, hasInnerContainers: true });
       }
     }
@@ -512,73 +422,17 @@ export default class Landing extends Component {
     return "PatientRiskOverview";
   }
 
+  processSummary(summary) {
+    return getProcessedSummaryData(summary, summaryMap);
+  }
+
   processAlerts(summary, sectionFlags) {
-    let alerts = [];
-    if (!sectionFlags) {
-      return alerts;
-    }
-    //compile relevant alerts
-    for (let section in sectionFlags) {
-      for (let subsection of Object.entries(sectionFlags[section])) {
-        if (subsection[1]) {
-          if (typeof subsection[1] === "string") {
-            alerts.push(subsection[1]);
-          }
-          if (typeof subsection[1] === "object") {
-            if (Array.isArray(subsection[1])) {
-              subsection[1].forEach((subitem) => {
-                //this prevents addition of duplicate alert text
-                let alertTextExist = alerts.filter(
-                  (item) =>
-                    String(item.flagText).toLowerCase() ===
-                    String(subitem.flagText).toLowerCase()
-                );
-                if (!alertTextExist.length && subitem.flagText) {
-                  let flagDateText = subitem.flagDateText
-                    ? subitem.flagDateText
-                    : "";
-                  alerts.push({
-                    id: subitem.subSection.dataKey,
-                    name: subitem.subSection.name,
-                    flagText: subitem.flagText,
-                    className: subitem.flagClass,
-                    text:
-                      subitem.flagText.indexOf("[DATE]") >= 0
-                        ? subitem.flagText.replace(
-                            "[DATE]",
-                            datishFormat("", flagDateText)
-                          )
-                        : subitem.flagText +
-                          (subitem.flagDateText
-                            ? ` (${datishFormat("", flagDateText)})`
-                            : ""),
-                    priority: subitem.priority || 100,
-                  });
-                  //log alert
-                  this.writeToLog("alert flag: " + subitem.flagText, "warn", {
-                    tags: ["alert"],
-                  });
-                }
-              });
-            } else if (subsection[1].flagText) {
-              alerts.push({
-                id: subsection[1].subSection.dataKey,
-                name: subsection[1].subSection.name,
-                text: subsection[1].flagText,
-                className: subsection[1].flagClass,
-                priority: subsection[1].priority || 100,
-              });
-            }
-          }
-        }
+    summary[this.getOverviewSectionKey() + "_alerts"] = getProcessedAlerts(
+      sectionFlags,
+      {
+        tags: ["alert"],
+        patientName: this.getPatientName(),
       }
-    }
-    alerts.sort(function (a, b) {
-      return a.priority - b.priority;
-    });
-    summary[this.getOverviewSectionKey() + "_alerts"] = alerts.filter(
-      (item, index, thisRef) =>
-        thisRef.findIndex((t) => t.text === item.text) === index
     );
   }
   processGraphData(summary) {
@@ -612,301 +466,26 @@ export default class Landing extends Component {
         ];
       }
     });
-    const [
-      startDateFieldName,
-      endDateFieldName,
-      MMEValueFieldName,
-      graphDateFieldName,
-    ] = [
-      graphConfig.startDateField,
-      graphConfig.endDateField,
-      graphConfig.mmeField,
-      graphConfig.graphDateField,
-    ];
-    const START_DELIMITER_FIELD_NAME = "start_delimiter";
-    const END_DELIMITER_FIELD_NAME = "end_delimiter";
-    const PLACEHOLDER_FIELD_NAME = "placeholder";
-    const FINAL_CALCULATED_FIELD_FLAG = "final";
-
-    //sort data by start date
-    graph_data = graph_data
-      .filter(function (item) {
-        return item[startDateFieldName] && item[endDateFieldName];
-      })
-      .sort(function (a, b) {
-        return dateCompare(a[startDateFieldName], b[startDateFieldName]);
-      });
-    /*
-     * 'NaN' is the value for null when coerced into number, need to make sure that is not included
-     */
-    const getRealNumber = (o) => (o && !isNaN(o) ? o : 0);
-    let dataPoints = [];
-    let prevObj = null,
-      nextObj = null;
-    graph_data.forEach(function (currentMedicationItem, index) {
-      let dataPoint = {};
-      let startDate = extractDateFromGMTDateString(
-        currentMedicationItem[startDateFieldName]
-      );
-      let endDate = extractDateFromGMTDateString(
-        currentMedicationItem[endDateFieldName]
-      );
-      let oStartDate = new Date(startDate);
-      let diffDays = getDiffDays(startDate, endDate);
-      nextObj =
-        index + 1 <= graph_data.length - 1 ? graph_data[index + 1] : null;
-      let currentMMEValue = getRealNumber(
-        currentMedicationItem[MMEValueFieldName]
-      );
-      //add start date data point
-      dataPoint = {};
-      dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
-      dataPoint[MMEValueFieldName] = currentMMEValue;
-      dataPoint[START_DELIMITER_FIELD_NAME] = true;
-      dataPoint = { ...dataPoint, ...currentMedicationItem };
-      dataPoints.push(dataPoint);
-
-      //add intermediate data points between start and end dates
-      if (diffDays >= 2) {
-        for (let index = 2; index <= diffDays; index++) {
-          let dataDate = new Date(oStartDate.valueOf());
-          dataDate.setTime(dataDate.getTime() + index * 24 * 60 * 60 * 1000);
-          dataDate = dateFormat("", dataDate, "YYYY-MM-DD");
-          dataPoint = {};
-          dataPoint[graphDateFieldName] = dataDate;
-          dataPoint[MMEValueFieldName] = currentMMEValue;
-          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-          dataPoint[startDateFieldName] = dataDate;
-          dataPoint = { ...dataPoint, ...currentMedicationItem };
-          dataPoints.push(dataPoint);
-        }
-      }
-
-      //add end Date data point
-      dataPoint = {};
-      dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
-      dataPoint[MMEValueFieldName] = currentMMEValue;
-      dataPoint[END_DELIMITER_FIELD_NAME] = true;
-      dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-      dataPoint = { ...dataPoint, ...currentMedicationItem };
-      dataPoints.push(dataPoint);
-      prevObj = currentMedicationItem;
-    });
-
-    //sort data by date
-    dataPoints = dataPoints.sort(function (a, b) {
-      return dateCompare(a[graphDateFieldName], b[graphDateFieldName]);
-    });
-
-    //get all available dates
-    let arrDates = dataPoints.map((item) => item.date);
-    arrDates = arrDates.filter((d, index) => {
-      return arrDates.indexOf(d) === index;
-    });
-
-    //loop through graph data to ADD MME values for the ones occurring on the same date
-    let cumMMEValue = 0;
-    arrDates.forEach((pointDate) => {
-      cumMMEValue = 0;
-      let matchedItems = dataPoints.filter((d) => {
-        return d.date === pointDate;
-      });
-      if (matchedItems.length <= 1) return true;
-      matchedItems.forEach((o) => {
-        cumMMEValue += getRealNumber(o[MMEValueFieldName]);
-      });
-      dataPoints.forEach((dataPoint) => {
-        if (dataPoint.date === pointDate) {
-          dataPoint[MMEValueFieldName] = cumMMEValue;
-        }
-      });
-    });
-    prevObj = null;
-    let finalDataPoints = [];
-    dataPoints.forEach(function (currentDataPoint, index) {
-      let dataPoint = {};
-      nextObj = dataPoints[index + 1] ? dataPoints[index + 1] : null;
-
-      if (!prevObj) {
-        //add starting graph point
-        dataPoint = {};
-        dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-        dataPoint[MMEValueFieldName] = 0;
-        dataPoint[START_DELIMITER_FIELD_NAME] = true;
-        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        finalDataPoints.push(dataPoint);
-      }
-      //overlapping data points
-      if (
-        prevObj &&
-        prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]
-      ) {
-        //add data point with MME value for the previous med as the connecting data point
-        dataPoint = {};
-        dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-        dataPoint[MMEValueFieldName] = getRealNumber(
-          prevObj[MMEValueFieldName]
-        );
-        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        finalDataPoints.push(dataPoint);
-        finalDataPoints.push(currentDataPoint);
-      } else if (
-        prevObj &&
-        currentDataPoint[START_DELIMITER_FIELD_NAME] &&
-        dateNumberFormat(currentDataPoint[startDateFieldName]) >
-          dateNumberFormat(prevObj[endDateFieldName])
-      ) {
-        //a new data point as med starts after the previous med ends
-        if (
-          getDiffDays(
-            prevObj[endDateFieldName],
-            currentDataPoint[startDateFieldName]
-          ) > 1
-        ) {
-          dataPoint = {};
-          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-          //add 0 value dummy data point to denote start of med where applicable
-          dataPoint[MMEValueFieldName] = 0;
-          //dataPoint[START_DELIMITER_FIELD_NAME] = true;
-          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-          finalDataPoints.push(dataPoint);
-        }
-        //add current data point
-        finalDataPoints.push(currentDataPoint);
-      } else if (
-        nextObj &&
-        currentDataPoint[END_DELIMITER_FIELD_NAME] &&
-        dateNumberFormat(currentDataPoint[endDateFieldName]) <
-          dateNumberFormat(nextObj[startDateFieldName])
-      ) {
-        //add current data point
-        finalDataPoints.push(currentDataPoint);
-        if (
-          getDiffDays(
-            currentDataPoint[endDateFieldName],
-            nextObj[startDateFieldName]
-          ) > 1
-        ) {
-          dataPoint = {};
-          dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-          //add 0 value dummy data point to denote end of med where applicable
-          dataPoint[MMEValueFieldName] = 0;
-          dataPoint[END_DELIMITER_FIELD_NAME] = true;
-          dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-          finalDataPoints.push(dataPoint);
-        }
-      } else {
-        if (!nextObj) currentDataPoint[FINAL_CALCULATED_FIELD_FLAG] = true;
-        finalDataPoints.push(currentDataPoint);
-      }
-
-      if (!nextObj) {
-        //add ending graph point
-        dataPoint = {};
-        dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-        dataPoint[MMEValueFieldName] = 0;
-        dataPoint[END_DELIMITER_FIELD_NAME] = true;
-        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        finalDataPoints.push(dataPoint);
-      }
-      prevObj = finalDataPoints[finalDataPoints.length - 1];
-    });
-    console.log("graph data ", finalDataPoints);
-    let formattedData = JSON.parse(JSON.stringify(finalDataPoints))
-      .map((point) => {
-        let o = {};
-        o[graphDateFieldName] = point[graphDateFieldName];
-        o[MMEValueFieldName] = Math.round(
-          getRealNumber(point[MMEValueFieldName])
-        );
-        if (point[PLACEHOLDER_FIELD_NAME]) {
-          o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
-        }
-        if (point[FINAL_CALCULATED_FIELD_FLAG]) {
-          o[FINAL_CALCULATED_FIELD_FLAG] = true;
-        }
-        return o;
-      })
-      .filter(
-        (item, index, ref) =>
-          ref.findIndex(
-            (target) => JSON.stringify(target) === JSON.stringify(item)
-          ) === index
-      );
-
-    summary[this.getOverviewSectionKey() + "_graph"] = formattedData;
+    summary[this.getOverviewSectionKey() + "_graph"] = getProcessedGraphData(
+      graphConfig,
+      graph_data
+    );
   }
 
   processOverviewStatsData(summary) {
-    let overviewSection = summaryMap[this.getOverviewSectionKey()];
+    const overviewSection = summaryMap[this.getOverviewSectionKey()];
     if (!overviewSection) {
       return false;
     }
-    let stats = {};
-    let config = overviewSection.statsConfig;
+    const config = overviewSection.statsConfig;
     if (!config || !config.data) {
       summary[this.getOverviewSectionKey() + "_stats"] = {};
       return;
     }
-    let dataSource = summary[config.dataKeySource]
+    const dataSource = summary[config.dataKeySource]
       ? summary[config.dataKeySource][config.dataKey]
       : [];
-
-    //compile tally of source identified by a key
-    config.data.forEach((item) => {
-      let dataSet = [],
-        statItem = {};
-      let keyMatch = item.keyMatch,
-        summaryFields = item.summaryFields,
-        matchSet = item.matchSet;
-      if (keyMatch && matchSet) {
-        matchSet.forEach((subitem) => {
-          let matchItem = {};
-          matchItem[keyMatch] = subitem.display_name;
-          matchItem.data = [];
-          /* get matching data for each key */
-          subitem.keys.forEach((key) => {
-            let matchedData = dataSource.filter((d) => {
-              if (Array.isArray(d[keyMatch])) {
-                return d[keyMatch].indexOf(key) !== -1;
-              }
-              return d[keyMatch] === key;
-            });
-            matchItem.data = [...matchItem.data, ...matchedData];
-          });
-          summaryFields.forEach((summaryField) => {
-            if (summaryField.key === "total") {
-              matchItem[summaryField.key] = matchItem.data.length;
-              return true;
-            }
-            if (summaryField.identifier) return true;
-            let matchedDataByKey = matchItem.data.filter(
-              (dItem) => dItem[summaryField.key]
-            );
-            //de-duplicate
-            matchItem[summaryField.key] = Array.from(
-              new Set(matchedDataByKey.map((dItem) => dItem[summaryField.key]))
-            ).length;
-          });
-          dataSet.push(matchItem);
-        });
-        statItem = {
-          fields: summaryFields,
-          data: dataSet,
-        };
-        stats[item.title] = statItem;
-      } //end if keyMatch & matchSet
-      else if (keyMatch) {
-        let filteredStatsSource = dataSource.filter(
-          (element) => element[item.keyMatch]
-        );
-        filteredStatsSource = Array.from(
-          new Set(filteredStatsSource.map((subitem) => subitem[item.keyMatch]))
-        );
-        statItem[item.title] = filteredStatsSource.length;
-        stats.push(statItem);
-      }
-    });
+    const stats = getProcessedStatsData(config.data, dataSource);
     summary[this.getOverviewSectionKey() + "_stats"] = stats;
   }
 
@@ -1016,7 +595,9 @@ export default class Landing extends Component {
   }
 
   getAnalyticsData(endpoint, apikey, summary) {
-    const meetsInclusionCriteria = summary.Patient ? summary.Patient.MeetsInclusionCriteria : false;
+    const meetsInclusionCriteria = summary.Patient
+      ? summary.Patient.MeetsInclusionCriteria
+      : false;
     const applicationAnalytics = {
       meetsInclusionCriteria,
     };
@@ -1071,128 +652,11 @@ export default class Landing extends Component {
     });
   }
 
-  isNonProduction() {
-    let systemType = getEnv("REACT_APP_SYSTEM_TYPE");
-    return systemType && String(systemType).toLowerCase() !== "production";
-  }
-
   handleSetActiveTab(index) {
     this.setState({
       activeTab: index,
     });
     window.scrollTo(0, 0);
-  }
-
-  processSummary(summary) {
-    const sectionFlags = {};
-    const sectionKeys = Object.keys(summaryMap);
-    let flaggedCount = 0;
-
-    sectionKeys.forEach((sectionKey, i) => {
-      // for each section
-      sectionFlags[sectionKey] = {};
-      //don't process flags for section that will be hidden
-      if (summaryMap[sectionKey]["hideSection"]) {
-        summary[sectionKey] = [];
-        return true;
-      }
-      summaryMap[sectionKey]["sections"].forEach((subSection) => {
-        // for each sub section
-        if (!subSection) return true;
-        //don't process flags for sub section that will be hidden
-        if (subSection["hideSection"]) {
-          summary[subSection.dataKeySource][subSection.dataKey] = [];
-          return true;
-        }
-        const keySource = summary[subSection.dataKeySource];
-        if (!keySource) {
-          return true;
-        }
-        const data = keySource[subSection.dataKey];
-        const entries = (Array.isArray(data) ? data : [data]).filter(
-          (r) => r != null
-        );
-        const alertMapping = subSection.alertMapping || {};
-
-        if (entries.length > 0) {
-          sectionFlags[sectionKey][subSection.dataKey] = entries.reduce(
-            (flaggedEntries, entry) => {
-              if (entry._id == null) {
-                entry._id = generateUuid();
-              }
-              const entryFlag = flagit(entry, subSection, summary);
-              if (entryFlag) {
-                flaggedCount += 1;
-                let flagText =
-                  typeof entryFlag === "object" ? entryFlag["text"] : entryFlag;
-                let flagClass =
-                  typeof entryFlag === "object" ? entryFlag["class"] : "";
-                let flagDateField =
-                  typeof entryFlag === "object"
-                    ? entryFlag["date"]
-                    : alertMapping.dateField
-                    ? alertMapping.dateField
-                    : null;
-
-                flaggedEntries.push({
-                  entryId: entry._id,
-                  entry: entry,
-                  subSection: subSection,
-                  flagText: flagText,
-                  flagClass: flagClass,
-                  flagCount: flaggedCount,
-                  flagDateText:
-                    entry && entry[flagDateField]
-                      ? extractDateFromGMTDateString(entry[flagDateField])
-                      : "",
-                  priority: alertMapping.priority ? alertMapping.priority : 0,
-                });
-              }
-
-              return flaggedEntries;
-            },
-            []
-          );
-        } else {
-          const sectionFlagged = flagit(null, subSection, summary);
-          // console.log("subSection? ", subSection, " flagged? ", sectionFlagged)
-          if (sectionFlagged) {
-            flaggedCount += 1;
-            sectionFlags[sectionKey][subSection.dataKey] = [
-              {
-                flagText:
-                  typeof sectionFlagged === "object"
-                    ? sectionFlagged["text"]
-                    : sectionFlagged,
-                flagCount: flaggedCount,
-                subSection: subSection,
-                priority: alertMapping.priority ? alertMapping.priority : 0,
-              },
-            ];
-          }
-        }
-      });
-    });
-
-    //console.log("sectionFlags ", sectionFlags);
-    // Get the configured endpoint to use for POST for app analytics
-    fetch(`${getEnv("PUBLIC_URL")}/config.json`)
-      .then((response) => response.json())
-      .then((config) => {
-        // Only provide analytics if the endpoint has been set
-        if (config.analytics_endpoint) {
-          this.getAnalyticsData(
-            config.analytics_endpoint,
-            config.x_api_key,
-            summary
-          );
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    return { sectionFlags, flaggedCount };
   }
 
   renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
@@ -1216,8 +680,8 @@ export default class Landing extends Component {
         patient={summary.Patient}
         sectionFlags={sectionFlags}
         collector={this.state.collector}
-        errorCollection={this.errorCollection}
-        mmeErrors={this.mmeErrors}
+        errorCollection={this.state.errorCollection}
+        mmeErrors={this.state.mmeErrors}
         result={this.state.result}
       />
     );
@@ -1334,7 +798,7 @@ export default class Landing extends Component {
       <div className="landing">
         <div id="anchorTop" ref={this.anchorTopRef}></div>
         <div id="skiptocontent"></div>
-        {this.isNonProduction() && (
+        {isNotProduction() && (
           <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>
         )}
         {this.renderHeader(summary, patientResource, PATIENT_SEARCH_URL)}

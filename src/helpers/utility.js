@@ -483,3 +483,80 @@ export function addButtonErrorStateTransition(buttonRef, transitionDuration) {
     buttonRef.classList.remove("error");
   }, transitionDuration || 1000);
 }
+
+export function isNotProduction() {
+  let systemType = getEnv("REACT_APP_SYSTEM_TYPE");
+  return systemType && String(systemType).toLowerCase() !== "production";
+}
+
+export function isProduction() {
+  return (
+    String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development"
+  );
+}
+
+// write to audit log
+export function writeToLog(message, level, params) {
+  if (!getEnv("REACT_APP_CONF_API_URL")) return;
+  if (!message) return;
+  const logLevel = level ? level : "info";
+  const logParams = params ? params : {};
+  if (!logParams.tags) logParams.tags = [];
+  logParams.tags.push("cosri-frontend");
+  const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
+  const patientName = params.patientName ? params.patientName : "";
+  let messageString = "";
+  if (typeof message === "object") {
+    messageString = message.toString();
+  } else messageString = message;
+  fetch(auditURL, {
+    method: "post",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      ...{ patient: patientName, message: messageString, level: logLevel },
+      ...logParams,
+    }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw Error(response.statusText);
+      }
+      return response.json();
+    })
+    .then(function (data) {
+      console.log("audit request succeeded with response ", data);
+    })
+    .catch(function (error) {
+      console.log("Request failed", error);
+    });
+}
+
+export function saveData(queryParams) {
+  if (!getEnv("REACT_APP_CONF_API_URL")) return;
+  const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
+  const params = queryParams || {};
+  if (!params.data) return;
+  fetch(saveDataURL, {
+    method: "post",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw Error(response.statusText);
+      }
+      return response.json();
+    })
+    .then(function (data) {
+      console.log("save data request succeeded with response ", data);
+    })
+    .catch(function (error) {
+      console.log("Request failed to save data: ", error);
+    });
+}
