@@ -292,28 +292,7 @@ export default class Landing extends Component {
       });
   }
 
-  initializeTocBot() {
-    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 180 : 100;
-    tocbot.init({
-      tocSelector: ".active .summary__nav", // where to render the table of contents
-      contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
-      headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
-      positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
-      ignoreSelector: "h3.panel-title",
-      collapseDepth: 0, // how many heading levels should not be collpased
-      includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
-      headingsOffset: 1 * MIN_HEADER_HEIGHT,
-      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-    });
-  }
-
   componentDidUpdate() {
-    // if (this.state.activeTab === 10) {
-    //   tocbot.destroy();
-    //   this.tocInitialized = false;
-    //   return;
-    // }
     if (!this.state.tocInitialized && !this.state.loading && this.state.result) {
       this.initializeTocBot();
       this.setState({
@@ -331,6 +310,23 @@ export default class Landing extends Component {
     }
     this.handleHeaderPos();
   }
+
+  initializeTocBot() {
+    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 180 : 100;
+    tocbot.init({
+      tocSelector: ".active .summary__nav", // where to render the table of contents
+      contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
+      headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
+      positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
+      ignoreSelector: "h3.panel-title",
+      collapseDepth: 0, // how many heading levels should not be collpased
+      includeHtml: true, // include the HTML markup from the heading node, not just the text,
+      // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
+      headingsOffset: 1 * MIN_HEADER_HEIGHT,
+      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+    });
+  }
+  
   /*
    * fixed header when scrolling in the event that it is not within viewport
    */
