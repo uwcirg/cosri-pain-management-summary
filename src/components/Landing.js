@@ -55,6 +55,125 @@ export default class Landing extends Component {
     this.anchorTopRef = React.createRef();
   }
 
+  componentDidMount() {
+    /*
+     * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
+     */
+    fetchEnvData();
+
+    // write out environment variables:
+    getEnvs();
+    //start time out countdown on DOM mounted
+    Timeout();
+    this.pingProcessProgress();
+    let result = {};
+    Promise.all([executeElm(this.state.collector, this.state.resourceTypes)])
+      .then((response) => {
+        //set FHIR results
+        let fhirData = response[0];
+        result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
+        this.setSectionVis();
+        const { sectionFlags, flaggedCount } = this.processSummary(
+          result.Summary
+        );
+        this.setState({ result, sectionFlags, flaggedCount });
+        this.setPatientId();
+        setTimeout(
+          function () {
+            this.clearProcessInterval();
+          }.bind(this),
+          100
+        );
+        this.processCollectorErrors();
+        writeToLog("application loaded", "info", {
+          patientName: this.getPatientName(),
+        });
+        //add data from other sources, e.g. PDMP
+        Promise.all([this.getExternalData()])
+          .then((externalData) => {
+            result["Summary"] = { ...result["Summary"], ...externalData[0] };
+            this.saveSummaryData();
+            const { sectionFlags, flaggedCount } = this.processSummary(
+              result.Summary
+            );
+            this.processSummaryErrors(result.Summary);
+            this.processOverviewStatsData(result["Summary"]);
+            if (summaryMap[this.getOverviewSectionKey()]) {
+              this.processAlerts(result["Summary"], sectionFlags);
+            }
+            this.processGraphData(result["Summary"]);
+            this.setState({ result, sectionFlags, flaggedCount });
+            this.setState({ loading: false });
+            console.log("summary ", result);
+            this.initEvents();
+          })
+          .catch((err) => {
+            console.log(err);
+            this.setState({ loading: false });
+            this.clearProcessInterval();
+            this.setError(err);
+          });
+      })
+      .catch((err) => {
+        console.error(err);
+        this.setState({ loading: false });
+        this.clearProcessInterval();
+        this.setError(err);
+      });
+  }
+
+  componentDidUpdate() {
+    if (
+      !this.state.tocInitialized &&
+      !this.state.loading &&
+      this.state.result
+    ) {
+      this.initializeTocBot();
+      this.setState({
+        tocInitialized: true,
+      });
+    } else {
+      if (this.state.tocInitialized) {
+        tocbot.refresh({ ...tocbot.options, hasInnerContainers: true });
+      }
+    }
+    //page title
+    document.title = "COSRI";
+    if (this.shouldShowTabs()) {
+      document.querySelector("body").classList.add("has-tabs");
+    }
+    this.handleHeaderPos();
+  }
+
+  initEvents() {
+    //education material links
+    document.querySelectorAll(".education").forEach((item) => {
+      item.addEventListener("click", (e) => {
+        writeToLog(`Education material: ${e.target.title}`, "info", {
+          tags: ["education"],
+          patientName: this.getPatientName(),
+        });
+      });
+    });
+    //support other events if need to
+  }
+
+  initializeTocBot() {
+    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 180 : 100;
+    tocbot.init({
+      tocSelector: ".active .summary__nav", // where to render the table of contents
+      contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
+      headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
+      positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
+      ignoreSelector: "h3.panel-title",
+      collapseDepth: 0, // how many heading levels should not be collpased
+      includeHtml: true, // include the HTML markup from the heading node, not just the text,
+      // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
+      headingsOffset: 1 * MIN_HEADER_HEIGHT,
+      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+    });
+  }
+
   setPatientId() {
     if (!this.state.collector) return;
     /*
@@ -213,124 +332,6 @@ export default class Landing extends Component {
         summaryMap[key]["hideSection"] = true;
       }
     }
-  }
-  initEvents() {
-    //education material links
-    document.querySelectorAll(".education").forEach((item) => {
-      item.addEventListener("click", (e) => {
-        writeToLog(`Education material: ${e.target.title}`, "info", {
-          tags: ["education"],
-          patientName: this.getPatientName(),
-        });
-      });
-    });
-    //support other events if need to
-  }
-
-  componentDidMount() {
-    /*
-     * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
-     */
-    fetchEnvData();
-
-    // write out environment variables:
-    getEnvs();
-    //start time out countdown on DOM mounted
-    Timeout();
-    this.pingProcessProgress();
-    let result = {};
-    Promise.all([executeElm(this.state.collector, this.state.resourceTypes)])
-      .then((response) => {
-        //set FHIR results
-        let fhirData = response[0];
-        result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
-        this.setSectionVis();
-        const { sectionFlags, flaggedCount } = this.processSummary(
-          result.Summary
-        );
-        this.setState({ result, sectionFlags, flaggedCount });
-        this.setPatientId();
-        setTimeout(
-          function () {
-            this.clearProcessInterval();
-          }.bind(this),
-          100
-        );
-        this.processCollectorErrors();
-        writeToLog("application loaded", "info", {
-          patientName: this.getPatientName(),
-        });
-        //add data from other sources, e.g. PDMP
-        Promise.all([this.getExternalData()])
-          .then((externalData) => {
-            result["Summary"] = { ...result["Summary"], ...externalData[0] };
-            this.saveSummaryData();
-            const { sectionFlags, flaggedCount } = this.processSummary(
-              result.Summary
-            );
-            this.processSummaryErrors(result.Summary);
-            this.processOverviewStatsData(result["Summary"]);
-            if (summaryMap[this.getOverviewSectionKey()]) {
-              this.processAlerts(result["Summary"], sectionFlags);
-            }
-            this.processGraphData(result["Summary"]);
-            this.setState({ result, sectionFlags, flaggedCount });
-            this.setState({ loading: false });
-            console.log("summary ", result);
-            this.initEvents();
-          })
-          .catch((err) => {
-            console.log(err);
-            this.setState({ loading: false });
-            this.clearProcessInterval();
-            this.setError(err);
-          });
-      })
-      .catch((err) => {
-        console.error(err);
-        this.setState({ loading: false });
-        this.clearProcessInterval();
-        this.setError(err);
-      });
-  }
-
-  componentDidUpdate() {
-    if (
-      !this.state.tocInitialized &&
-      !this.state.loading &&
-      this.state.result
-    ) {
-      this.initializeTocBot();
-      this.setState({
-        tocInitialized: true,
-      });
-    } else {
-      if (this.state.tocInitialized) {
-        tocbot.refresh({ ...tocbot.options, hasInnerContainers: true });
-      }
-    }
-    //page title
-    document.title = "COSRI";
-    if (this.shouldShowTabs()) {
-      document.querySelector("body").classList.add("has-tabs");
-    }
-    this.handleHeaderPos();
-  }
-
-  initializeTocBot() {
-    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 180 : 100;
-    tocbot.init({
-      tocSelector: ".active .summary__nav", // where to render the table of contents
-      contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
-      headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
-      positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
-      ignoreSelector: "h3.panel-title",
-      collapseDepth: 0, // how many heading levels should not be collpased
-      includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
-      headingsOffset: 1 * MIN_HEADER_HEIGHT,
-      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-    });
   }
 
   /*
