@@ -1,13 +1,85 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { getDisplayDateFromISOString } from "../../helpers/utility";
 //import PropTypes from "prop-types";
 
+const testData = [
+  {
+    date: "4/28/2024",
+    responses: [
+      {
+        question: "2nd",
+        answer: "Help getting back to important activities",
+      },
+      {
+        question: "3rd",
+        answer: "Help in coping with the pain",
+      },
+      {
+        question: "1st",
+        answer: "A diagnosis (to help find the cause of pain)",
+      },
+    ],
+  },
+  {
+    date: "1/12/2024",
+    responses: [
+      {
+        question: "2nd",
+        answer: "A cure",
+      },
+      {
+        question: "3rd",
+        answer: "Help in coping with the pain",
+      },
+      {
+        question: "1st",
+        answer: "A diagnosis (to help find the cause of pain)",
+      },
+    ],
+  },
+  {
+    date: "4/12/2024",
+    responses: [
+      {
+        question: "1st",
+        answer: "Help in coping with the pain",
+      },
+      {
+        question: "2nd",
+        answer: "A cure",
+      },
+      {
+        question: "3rd",
+        answer: "A diagnosis (to help find the cause of pain)",
+      },
+    ],
+  },
+  {
+    date: "3/24/2024",
+    responses: [
+      {
+        question: "1st",
+        answer: "A cure",
+      },
+      {
+        question: "2nd",
+        answer: "Help in coping with the pain",
+      },
+      {
+        question: "3rd",
+        answer: "A diagnosis (to help find the cause of pain)",
+      },
+    ],
+  },
+];
 export default class RankedResponses extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      dates: ["4/1/2004", "3/1/2004", "2/1/2004"],
-      data: [],
+      dates: [],
+      //data: [],
+      data: testData,
       selectedIndex: 0,
     };
     this.handleClickNextButton = this.handleClickNextButton.bind(this);
@@ -21,12 +93,17 @@ export default class RankedResponses extends Component {
     this.tableStyle = {
       borderCollapse: "collapse",
       border: `1px solid ${BORDER_COLOR}`,
+      tableLayout: "fixed",
+      width: "auto",
+      margin: 0,
     };
     this.cellStyle = {
       borderRight: `1px solid ${BORDER_COLOR}`,
       borderLeft: `1px solid ${BORDER_COLOR}`,
       borderBottom: `1px solid ${BORDER_COLOR}`,
-      padding: "12px 16px",
+      padding: "8px 12px",
+      backgroundColor: "#FFF",
+      whiteSpace: "nowrap",
     };
     this.headerCellStyle = {
       borderTop: `1px solid ${BORDER_COLOR}`,
@@ -34,7 +111,29 @@ export default class RankedResponses extends Component {
       borderLeft: `1px solid ${BORDER_COLOR}`,
       borderBottom: `2px solid ${HEADER_BORDER_COLOR}`,
       padding: "8px 16px",
+      backgroundColor: "#FFF",
     };
+  }
+  componentDidMount() {
+    this.initData(this.props.data);
+  }
+  initData(data) {
+    //TODO use passed in data
+    const sortedData = this.state.data.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    this.setState({
+      dates: sortedData.map((item) => item.date),
+      data: sortedData,
+    });
+  }
+  getRankedDataByIndex(index, rank) {
+    const matchedData = this.state.data[index];
+    if (!matchedData) return null;
+    const matchedItem = matchedData.responses.find(
+      (item) => item.question === rank
+    );
+    return matchedItem ? matchedItem.answer : "--";
   }
   handleSetFirst() {
     if (this.state.selectedIndex === 0) return;
@@ -68,15 +167,25 @@ export default class RankedResponses extends Component {
       selectedDate: this.state.dates[nextIndex],
     });
   }
+  shouldRenderNav() {
+    return (
+      this.state.dates && this.state.dates.length && this.state.dates.length > 1
+    );
+  }
   renderNavTitle() {
+    if (!this.shouldRenderNav()) return null;
     const titleContainerStyle = {
-      color: "#777",
+      //color: "#777",
       fontSize: "0.85em",
       textAlign: "left",
       width: "100%",
-      marginBottom: "8px",
+      marginBottom: "12px",
     };
-    return <div style={titleContainerStyle}>Responses</div>;
+    return (
+      <div style={titleContainerStyle} className="print-hidden">
+        Responses (Last on {getDisplayDateFromISOString(this.state.dates[0])})
+      </div>
+    );
   }
   renderNavButtons() {
     // const iconStyle = {
@@ -90,6 +199,7 @@ export default class RankedResponses extends Component {
     //   position: "relative",
     //   zIndex: 10,
     // };
+    if (!this.shouldRenderNav()) return null;
     const buttonStyle = {
       borderWidth: "2px",
       borderStyle: "solid",
@@ -102,12 +212,6 @@ export default class RankedResponses extends Component {
       backgroundColor: "#FFF",
       backgroundImage: "none",
     };
-    if (
-      !this.state.dates ||
-      !this.state.dates.length ||
-      this.state.dates.length < 2
-    )
-      return null;
     return (
       <div className="flex flex-gap-1 icons-container exclude-from-copy">
         {/* <FontAwesomeIcon
@@ -127,7 +231,7 @@ export default class RankedResponses extends Component {
             title="Less"
             style={{ marginRight: "4px" }}
           ></FontAwesomeIcon>
-          Less
+          Show Less
         </button>
         <button
           style={buttonStyle}
@@ -138,7 +242,7 @@ export default class RankedResponses extends Component {
               : ""
           }
         >
-          More
+          Show More
           <FontAwesomeIcon
             icon="chevron-right"
             title="Next"
@@ -160,8 +264,7 @@ export default class RankedResponses extends Component {
     );
   }
   renderDots() {
-    if (!this.state.dates) return null;
-    if (this.state.dates.length < 2) return null;
+    if (!this.shouldRenderNav()) return null;
     return (
       <div className="exclude-from-copy dots-container print-hidden">
         {this.state.dates.map((item, index) => {
@@ -181,23 +284,35 @@ export default class RankedResponses extends Component {
   renderTableHeader() {
     return (
       <thead>
-        <th style={this.headerCellStyle}>Rank</th>
-        {this.state.dates.map((date, index) => {
-          return (
-            <th
-              style={{
-                ...this.headerCellStyle,
-                ...{
-                  display:
-                    index <= this.state.selectedIndex ? "table-cell" : "none",
-                },
-              }}
-              className={`${index > 0 ? "exclude-from-copy print-hidden" : ""}`}
-            >
-              Goals {date}
-            </th>
-          );
-        })}
+        <tr>
+          <th style={this.headerCellStyle} className="fixed-cell">
+            Rank
+          </th>
+          {this.state.dates.map((date, index) => {
+            return (
+              <th
+                style={{
+                  ...this.headerCellStyle,
+                  ...{
+                    backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
+                  },
+                  ...{
+                    display:
+                      index <= this.state.selectedIndex ? "table-cell" : "none",
+                  },
+                }}
+                className={`${
+                  index > 0 ? "exclude-from-copy print-hidden" : ""
+                }`}
+              >
+                Goals{" "}
+                <span className="small">
+                  ({getDisplayDateFromISOString(date)})
+                </span>
+              </th>
+            );
+          })}
+        </tr>
       </thead>
     );
   }
@@ -205,84 +320,70 @@ export default class RankedResponses extends Component {
     return (
       <tbody>
         <tr>
-          <td style={this.cellStyle}>1st</td>
+          <td style={this.cellStyle} className="fixed-cell">
+            1st
+          </td>
           {this.state.dates.map((date, index) => {
-            return (
-              <td
-                style={{
-                  ...this.cellStyle,
-                  ...{
-                    display:
-                      index <= this.state.selectedIndex ? "table-cell" : "none",
-                  },
-                }}
-                className={`${
-                  index > 0 ? "exclude-from-copy print-hidden" : ""
-                }`}
-              >
-                {/* TODO: display ranked response */}
-                Test
-              </td>
-            );
+            return this.renderRankedCell(index, "1st");
           })}
         </tr>
         <tr>
-          <td style={this.cellStyle}>2nd</td>
+          <td style={this.cellStyle} className="fixed-cell">
+            2nd
+          </td>
           {this.state.dates.map((date, index) => {
-            return (
-              <td
-                style={{
-                  ...this.cellStyle,
-                  ...{
-                    display:
-                      index <= this.state.selectedIndex ? "table-cell" : "none",
-                  },
-                }}
-                className={`${
-                  index > 0 ? "exclude-from-copy print-hidden" : ""
-                }`}
-              >
-                {/* TODO: display ranked response */}
-                Test
-              </td>
-            );
+            return this.renderRankedCell(index, "2nd");
           })}
         </tr>
         <tr>
-          <td style={this.cellStyle}>3rd</td>
+          <td style={this.cellStyle} className="fixed-cell">
+            3rd
+          </td>
           {this.state.dates.map((date, index) => {
-            return (
-              <td
-                style={{
-                  ...this.cellStyle,
-                  ...{
-                    display:
-                      index <= this.state.selectedIndex ? "table-cell" : "none",
-                  },
-                }}
-                className={`${
-                  index > 0 ? "exclude-from-copy print-hidden" : ""
-                }`}
-              >
-                {/* TODO: display ranked response */}
-                Test
-              </td>
-            );
+            return this.renderRankedCell(index, "3rd");
           })}
         </tr>
       </tbody>
     );
   }
+  renderRankedCell(index, rank) {
+    return (
+      <td
+        key={`${index}_${rank}`}
+        style={{
+          ...this.cellStyle,
+          ...{
+            backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
+          },
+          ...{
+            display: index <= this.state.selectedIndex ? "table-cell" : "none",
+          },
+        }}
+        className={`${index > 0 ? "exclude-from-copy print-hidden" : ""}`}
+      >
+        {this.getRankedDataByIndex(index, rank)}
+      </td>
+    );
+  }
   render() {
     return (
       <div
-        class="flex flex-column flex-gap-2 flex-align-start"
-        style={{ padding: "16px 24px" }}
+        className="flex flex-column flex-gap-2 flex-align-start"
+        style={{ padding: "16px 24px", position: "relative" }}
       >
-        <table style={this.tableStyle}>
-          {this.renderTableHeader()}
-          {this.renderTableBody()}
-        </table>
+        <div
+          style={{
+            position: "relative",
+            overflow: "auto",
+            maxWidth: "90%",
+          }}
+          className="responses-table-outer-wrapper"
+        >
+          <table className="table" style={this.tableStyle}>
+            {this.renderTableHeader()}
+            {this.renderTableBody()}
+          </table>
+        </div>
         <div className="flex flex-column">
           {this.renderNavTitle()}
           {this.renderNavButtons()}

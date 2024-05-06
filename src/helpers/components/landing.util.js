@@ -3,15 +3,35 @@ import {
   dateFormat,
   dateNumberFormat,
   extractDateFromGMTDateString,
-} from "./formatit";
-import flagit from "./flagit";
-import { dateCompare } from "./sortit";
-import { getDiffDays, writeToLog } from "./utility";
+} from "../formatit";
+import flagit from "../flagit";
+import { dateCompare } from "../sortit";
+import { getDiffDays, writeToLog } from "../utility";
+import { getEnv } from "../../utils/envConfig";
 
 let uuid = 0;
 
 export function generateUuid() {
   return ++uuid; // eslint-disable-line no-plusplus
+}
+
+export function processEndPoint(endpoint, endpointParams) {
+  if (!endpoint) return "";
+  const params = endpointParams ? endpointParams : {};
+  return endpoint
+    .replace(
+      "{process.env.REACT_APP_CONF_API_URL}",
+      getEnv("REACT_APP_CONF_API_URL")
+    )
+    .replace("{process.env.PUBLIC_URL}", getEnv("PUBLIC_URL"))
+    .replace("{patientId}", params.patientId);
+}
+export function getDemoData(section, params) {
+  if (!section || !section["demoData"]) return null;
+  if (!section["demoData"]["endpoint"]) {
+    return null;
+  }
+  return fetch(processEndPoint(section["demoData"]["endpoint"], params));
 }
 
 export function getProcessedSummaryData(summary, summaryMap) {
@@ -508,15 +528,37 @@ export function getMMEErrors(summary, logError, logParams) {
         );
     }
     if (logError) {
-        if (item.MME) {
+      if (item.MME) {
         //log MME calculated if present
         writeToLog(
-            `MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`,
-            "info",
-            logParams
+          `MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`,
+          "info",
+          logParams
         );
-        }
+      }
     }
   });
   return errors;
+}
+
+export function getExternalDataSources(summaryMap) {
+  const promiseResultSet = [];
+  const systemType = String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase();
+
+  /*
+   * retrieve entries from Summary map, i.e. summary.json that requires fetching data via external API
+   */
+  for (let key in summaryMap) {
+    if (summaryMap[key].dataSource) {
+      summaryMap[key].dataSource.forEach((item) => {
+        if (item.endpoint && typeof item.endpoint === "object") {
+          if (item.endpoint[systemType])
+            item.endpoint = item.endpoint[systemType];
+          else item.endpoint = item.endpoint["default"];
+        }
+        promiseResultSet.push(item);
+      });
+    }
+  }
+  return promiseResultSet;
 }

@@ -6,7 +6,7 @@ import ReactTooltip from "react-tooltip";
 import ReactTable from "react-table";
 import ReactModal from "react-modal";
 
-import summaryMap from "../config/summary_config.json";
+import defaultSummaryMap from "../config/summary_config.json";
 import * as formatit from "../helpers/formatit";
 import * as sortit from "../helpers/sortit";
 
@@ -52,6 +52,10 @@ export default class Summary extends Component {
     ReactModal.setAppElement("body");
   }
 
+  getSummaryMap () {
+    return this.props.summaryMap ?? defaultSummaryMap;
+  }
+
   handleOpenModal = (modalSubSection, event) => {
     //only open modal  on 'enter' or click
     if (event.keyCode === 13 || event.type === "click") {
@@ -66,6 +70,7 @@ export default class Summary extends Component {
   getSectionEntryCounts(section) {
     let summary = this.props.summary;
     let count = 0;
+    const summaryMap = this.getSummaryMap();
     if (summary[section] && summaryMap[section]["sections"]) {
       let sections = summaryMap[section]["sections"];
       for (let subSection in sections) {
@@ -156,19 +161,19 @@ export default class Summary extends Component {
     }
   }
 
-  // if flagged, returns flag text, else returns false
-  isEntryFlagged(section, subSection, entry) {
+  // if flagged, returns flag text, else returns empty text
+  getEntryFlagText(section, subSection, entry) {
     const { sectionFlags } = this.props;
 
-    let flagged = false;
-    if (!sectionFlags[section][subSection]) return false;
+    let flagText = "";
+    if (!sectionFlags[section][subSection]) return "";
     sectionFlags[section][subSection].forEach((flag) => {
       if (flag.entryId === entry._id) {
-        flagged = flag.flagText + (flag.flagClass ? "|" + flag.flagClass : "");
+        flagText = flag.flagText + (flag.flagClass ? "|" + flag.flagClass : "");
       }
     });
 
-    return flagged;
+    return flagText;
   }
 
   renderGuideLine(subSection) {
@@ -261,7 +266,7 @@ export default class Summary extends Component {
         id: "flagged",
         Header: <span aria-label="flag"></span>,
         accessor: (entry) =>
-          this.isEntryFlagged(section, subSection.dataKey, entry),
+          this.getEntryFlagText(section, subSection.dataKey, entry),
         Cell: (props) => {
           let arrDisplay = props.value ? props.value.split("|") : null;
           let displayText = arrDisplay && arrDisplay[0] ? arrDisplay[0] : "";
@@ -396,6 +401,7 @@ export default class Summary extends Component {
   }
 
   getWarningText(section) {
+    const summaryMap = this.getSummaryMap();
     if (!summaryMap[section]) {
       return "";
     }
@@ -548,6 +554,7 @@ export default class Summary extends Component {
   }
 
   renderSection(section) {
+    const summaryMap = this.getSummaryMap();
     const sectionMap = summaryMap[section]["sections"];
     const queryDateTime = summaryMap[section].lastUpdated
       ? summaryMap[section].lastUpdated
@@ -651,6 +658,7 @@ export default class Summary extends Component {
   }
 
   renderSectionHeader(section) {
+    const summaryMap = this.getSummaryMap();
     const flagged = this.isSectionFlagged(section);
     const flagClass = this.getSectionFlagClass(section);
     const flaggedClass = flagged ? `flagged ${flagClass ? flagClass : ""}` : "";
@@ -750,6 +758,8 @@ export default class Summary extends Component {
   }
 
   render() {
+    const summaryMap = this.getSummaryMap();
+    console.log("summary map ", summaryMap);
     const { summary, collector } = this.props;
     const meetsInclusionCriteria = summary.Patient ? !!summary.Patient.MeetsInclusionCriteria : false;
     const {
@@ -843,6 +853,7 @@ export default class Summary extends Component {
 
 Summary.propTypes = {
   summary: PropTypes.object.isRequired,
+  summaryMap: PropTypes.object,
   patient: PropTypes.object,
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
