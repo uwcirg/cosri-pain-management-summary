@@ -9,6 +9,7 @@ import ReactModal from "react-modal";
 import defaultSummaryMap from "../config/summary_config.json";
 import * as formatit from "../helpers/formatit";
 import * as sortit from "../helpers/sortit";
+import { getErrorMessageString } from "../helpers/utility";
 
 import ChartIcon from "../icons/ChartIcon";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
@@ -52,7 +53,7 @@ export default class Summary extends Component {
     ReactModal.setAppElement("body");
   }
 
-  getSummaryMap () {
+  getSummaryMap() {
     return this.props.summaryMap ?? defaultSummaryMap;
   }
 
@@ -562,10 +563,15 @@ export default class Summary extends Component {
     const subSectionsToRender = sectionMap.filter((section) => {
       return !section.hideSection;
     });
+    const sectionError = summaryMap[section].errorMessage;
+    const errorMessage = getErrorMessageString(
+      sectionError,
+      `Error ocurred retrieving data for ${section}`
+    );
     const subSections = subSectionsToRender.map((subSection, index) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
-      const entries = (Array.isArray(data) ? data : [data]).filter(
+      const entries = (Array.isArray(data) ? data : []).filter(
         (r) => r != null
       );
       const panels = subSection.panels;
@@ -647,7 +653,7 @@ export default class Summary extends Component {
         {subSections}
         {!summaryMap[section].skipDataInfo && (
           <DataInfo
-            errorMessage={summaryMap[section].errorMessage}
+            errorMessage={errorMessage}
             contentText={summaryMap[section].provenanceText}
             queryDateTime={queryDateTime}
             warningText={this.getWarningText(section)}
@@ -761,7 +767,9 @@ export default class Summary extends Component {
     const summaryMap = this.getSummaryMap();
     console.log("summary map ", summaryMap);
     const { summary, collector } = this.props;
-    const meetsInclusionCriteria = summary.Patient ? !!summary.Patient.MeetsInclusionCriteria : false;
+    const meetsInclusionCriteria = summary.Patient
+      ? !!summary.Patient.MeetsInclusionCriteria
+      : false;
     const {
       EducationMaterials,
       PatientRiskOverview_graph,
@@ -797,7 +805,7 @@ export default class Summary extends Component {
             </h1>
             {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
             {meetsInclusionCriteria && <ExclusionBanner />}
-            {(!hasErrors && !meetsInclusionCriteria) && (
+            {!hasErrors && !meetsInclusionCriteria && (
               <InclusionBanner dismissible={meetsInclusionCriteria} />
             )}
             {meetsInclusionCriteria && this.isUnderAge() && (

@@ -560,3 +560,13 @@ export function saveData(queryParams) {
       console.log("Request failed to save data: ", error);
     });
 }
+
+export function getErrorMessageString(error, defaultMessage) {
+  return error
+    ? typeof error === "object"
+      ? error.toString()
+      : typeof error === "string"
+      ? error.replace(/<\/?[^>]+(>|$)/g, "")
+      : (defaultMessage??`Error occurred retrieving data`)
+    : "";
+}

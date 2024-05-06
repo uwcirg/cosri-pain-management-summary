@@ -87,7 +87,6 @@ export default class Landing extends Component {
         //add data from other sources, e.g. PDMP
         this.getExternalData()
           .then((externalDataSet) => {
-            console.log("external data ", externalDataSet);
             result["Summary"] = { ...result["Summary"], ...externalDataSet };
             this.saveSummaryData();
             const { sectionFlags, flaggedCount } = this.processSummary(
@@ -265,16 +264,24 @@ export default class Landing extends Component {
   //compile error(s) related to MME calculations
   processSummaryErrors(summary) {
     if (!summary) return false;
-    let errors = landingUtils.getMMEErrors(summary, true, {
+    let errors = [];
+    let mmeErrors = landingUtils.getMMEErrors(summary, true, {
       tags: ["mme-calc"],
       patientName: this.getPatientName(),
     });
-    if (!errors || !errors.length) return;
+    if (mmeErrors && mmeErrors.length) {
+      errors = mmeErrors;
+      this.setState({
+        mmeErrors: true,
+      });
+    }
+    for (let section in summary) {
+      if (summary[section].error) {
+        errors.push(summary[section].error);
+      }
+    }
     errors.forEach((message) => {
       this.setError(message);
-    });
-    this.setState({
-      mmeErrors: true,
     });
   }
   setError(message) {
@@ -381,16 +388,22 @@ export default class Landing extends Component {
       });
       return dataSet;
     });
-
+    let errors = {};
     promiseResultSet.forEach((item, index) => {
       let result = results[index];
       if (result.status === "rejected") {
-        this.setError(`Error retrieving data for ${item.dataKey}: ${result.reason}`);
+        this.setError(
+          `Error retrieving data for ${item.dataKey}: ${result.reason}`
+        );
+        errors[item.dataKey] = result.reason;
         this.setExternalDataFetchError(item.dataKey, result.reason);
-        return true;
       }
       //require additional processing of result data
-      if (item.processFunction && this[item.processFunction]) {
+      if (
+        !errors[item.dataKey] &&
+        item.processFunction &&
+        this[item.processFunction]
+      ) {
         try {
           result = this[item.processFunction](
             result.value ? result.value[item.dataKey] : null,
@@ -404,6 +417,11 @@ export default class Landing extends Component {
       }
       if (!dataSet[item.dataKeySource]) {
         dataSet[item.dataKeySource] = {};
+      }
+      if (errors[item.dataKey]) {
+        dataSet[item.dataKeySource][item.dataKey] = {
+          error: errors[item.dataKey],
+        };
       }
       dataSet[item.dataKeySource][item.dataKey] = result.value
         ? result.value[item.dataKey]
@@ -507,13 +525,13 @@ export default class Landing extends Component {
     }
   }
 
-  setExternalDataFetchError(key, error) {
-    if (!key) return;
+  setExternalDataFetchError(sectionKey, error) {
+    if (!sectionKey) return;
     this.setState({
       summaryMap: {
         ...summaryMap,
-        key: {
-          ...summaryMap[key],
+        [sectionKey]: {
+          ...summaryMap[sectionKey],
           errorMessage: error,
         },
       },
