@@ -562,3 +562,61 @@ export function getExternalDataSources(summaryMap) {
   }
   return promiseResultSet;
 }
+
+export  function getAnalyticsData(endpoint, apikey, summary) {
+  const meetsInclusionCriteria = summary.Patient
+    ? summary.Patient.MeetsInclusionCriteria
+    : false;
+  const applicationAnalytics = {
+    meetsInclusionCriteria,
+  };
+
+  if (meetsInclusionCriteria) {
+    let totalCount = 0;
+    applicationAnalytics.sections = [];
+
+    const cloneSections = JSON.parse(JSON.stringify(summary));
+    delete cloneSections.Patient;
+
+    // Build total number of entries for each subsection of the summary.
+    Object.keys(cloneSections).forEach((sectionKey, i) => {
+      applicationAnalytics.sections.push({
+        section: sectionKey,
+        subSections: [],
+      });
+      Object.keys(cloneSections[sectionKey]).forEach((subSectionKey) => {
+        let SectionElement = cloneSections[sectionKey];
+        if (!SectionElement) return true;
+        const subSection = SectionElement[subSectionKey];
+        if (!subSectionKey) return true;
+        let count;
+        if (subSection instanceof Array) count = subSection.length;
+        else if (subSection instanceof Object) count = 1;
+        else count = 0;
+        totalCount += count;
+        applicationAnalytics.sections[i].subSections.push({
+          subSection: subSectionKey,
+          numEntries: count,
+        });
+      });
+    });
+
+    applicationAnalytics.totalNumEntries = totalCount;
+  }
+
+  let jsonBody = JSON.stringify(applicationAnalytics);
+
+  const requestOptions = {
+    body: jsonBody,
+    headers: {
+      "x-api-key": `${apikey}`,
+      "Content-Type": "application/json",
+      "Content-Length": jsonBody.length,
+    },
+    method: "POST",
+  };
+
+  fetch(`${endpoint}`, requestOptions).catch((err) => {
+    console.log(err);
+  });
+}
