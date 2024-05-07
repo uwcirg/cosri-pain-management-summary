@@ -2,10 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CopyButton from "../CopyButton";
-import { downloadDomImage, toDate } from "../../helpers/utility";
 import {
+  downloadDomImage,
   getDisplayDateFromISOString,
   renderImageFromSVG,
+  toDate
 } from "../../helpers/utility";
 
 export default class BodyDiagram extends Component {
@@ -19,7 +20,7 @@ export default class BodyDiagram extends Component {
     };
     // refs
     this.containerRef = React.createRef();
-    this.BodyDiagramRef = React.createRef();
+    this.bodyDiagramRef = React.createRef();
     this.utilButtonsContainerRef = React.createRef();
     this.printImageRef = React.createRef();
     this.datesSelectorRef = React.createRef();
@@ -49,7 +50,7 @@ export default class BodyDiagram extends Component {
     this.initLoadEvent();
   }
   initLoadEvent() {
-    const svgElement = this.BodyDiagramRef.current;
+    const svgElement = this.bodyDiagramRef.current;
     if (!svgElement) return;
     svgElement.addEventListener("load", () => {
       this.fillInAnsweredParts();
@@ -170,7 +171,7 @@ export default class BodyDiagram extends Component {
     if (!this.utilButtonsContainerRef.current) return;
     this.utilButtonsContainerRef.current.style.visibility = "hidden";
   }
-  getAnswersFromFhirObjects(fhirObjects, description = "pain") {
+  getAnswersFromPainLocationFhirObjects(fhirObjects, description = "pain") {
     if (!fhirObjects) return null;
     let answers = null;
     fhirObjects.forEach((key) => {
@@ -212,8 +213,8 @@ export default class BodyDiagram extends Component {
     return this.state.summaryData;
   }
 
-  getAnswerDataByDate(targetDate) {
-    const selectedDate = targetDate ? targetDate : this.state.selectedDate;
+  getAnswerDataByDate(targetDate = this.state.selectedDate) {
+    const selectedDate = targetDate;
     // const testData = [{
     //   back_left_posterior_neck: ["pain"],
     //   back_midline_posterior_neck: ["pain"],
@@ -235,14 +236,14 @@ export default class BodyDiagram extends Component {
     const painLocations = responses.painLocations;
     let answers = null;
     if (painLocations && painLocations.length) {
-      answers = this.getAnswersFromFhirObjects(painLocations);
+      answers = this.getAnswersFromPainLocationFhirObjects(painLocations);
     }
     const severePainLocation = responses.severePainLocation;
     if (severePainLocation && severePainLocation.length) {
       if (!answers) answers = {};
       answers = {
         ...answers,
-        ...this.getAnswersFromFhirObjects(severePainLocation, "severe_pain"),
+        ...this.getAnswersFromPainLocationFhirObjects(severePainLocation, "severe_pain"),
       };
     }
     return answers;
@@ -255,7 +256,7 @@ export default class BodyDiagram extends Component {
   }
 
   getSourceDocument() {
-    const svgElement = this.BodyDiagramRef.current;
+    const svgElement = this.bodyDiagramRef.current;
     if (!svgElement) return null;
     if (svgElement.contentDocument) {
       return svgElement.contentDocument;
@@ -449,8 +450,8 @@ export default class BodyDiagram extends Component {
     cloneSvgElement.classList.add("part-of-bd");
     Object.assign(cloneSvgElement.style, styles);
     this.containerRef.current.append(cloneSvgElement);
-    if (this.BodyDiagramRef.current) {
-      this.BodyDiagramRef.current.style.visibility = "hidden";
+    if (this.bodyDiagramRef.current) {
+      this.bodyDiagramRef.current.style.visibility = "hidden";
     }
     if (this.datesSelectorRef.current)
       this.datesSelectorRef.current.classList.add("read-only");
@@ -459,8 +460,8 @@ export default class BodyDiagram extends Component {
     if (document.querySelector("#temp_bd")) {
       this.containerRef.current.removeChild(document.querySelector("#temp_bd"));
     }
-    if (this.BodyDiagramRef.current) {
-      this.BodyDiagramRef.current.style.visibility = "visible";
+    if (this.bodyDiagramRef.current) {
+      this.bodyDiagramRef.current.style.visibility = "visible";
     }
     if (this.datesSelectorRef.current)
       this.datesSelectorRef.current.classList.remove("read-only");
@@ -604,7 +605,7 @@ export default class BodyDiagram extends Component {
               data={`${process.env.PUBLIC_URL}/assets/images/body_diagram_horizontal.svg`}
               type="image/svg+xml"
               alt="Body diagram"
-              ref={this.BodyDiagramRef}
+              ref={this.bodyDiagramRef}
               className="exclude-from-copy diagram-container print-hidden"
             >
               Body diagram

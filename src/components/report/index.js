@@ -3,11 +3,12 @@ import ReactModal from "react-modal";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Collapsible from "react-collapsible";
-import InfoModal from "./InfoModal";
-import SideNav from "./SideNav";
-import Version from "../elements/Version";
-import reportSummarySections from "../config/report_config";
-import { getQuestionnaireDescription } from "../helpers/utility";
+import InfoModal from "../InfoModal";
+import SideNav from "../SideNav";
+import Version from "../../elements/Version";
+import reportSummarySections from "../../config/report_config";
+import { getQuestionnaireDescription } from "../../helpers/utility";
+import * as reportUtil from "./utility";
 
 export default class Report extends Component {
   constructor() {
@@ -32,9 +33,24 @@ export default class Report extends Component {
     this.setState({ showModal: false });
   };
 
+  getScoringData(summaryData) {
+    return reportUtil.getScoringData(summaryData);
+  }
+  getGraphData(summaryData) {
+    return reportUtil.getGraphData(summaryData);
+  }
+  getBodyDiagramDataData(summaryData) {
+    return reportUtil.getBodyDiagramDataSummaryData(summaryData);
+  }
+
   renderSectionHeader(section) {
     return (
-      <h2 id={`${section.dataKey}_section`} className={`section__header ${section.showHeaderInPrint?"print-header":""}`}>
+      <h2
+        id={`${section.dataKey}_section`}
+        className={`section__header ${
+          section.showHeaderInPrint ? "print-header" : ""
+        }`}
+      >
         <div className="section__header-title">
           {section.icon && <span title={section.title}>{section.icon()}</span>}
           <span className="title-text-container">
@@ -50,31 +66,49 @@ export default class Report extends Component {
     );
   }
   renderSectionBody(summaryData, section) {
-    if (section.component)
+    const scoringData = this.getScoringData(summaryData);
+    const graphData = this.getGraphData(scoringData);
+    const bodyDiagramData = this.getBodyDiagramDataData(summaryData);
+
+    if (section.component) {
       return (
         <div className="section">
-          {section.component({ summary: summaryData })}
+          {section.component({
+            summary: summaryData,
+            scoringData: scoringData,
+            graphData: graphData,
+            bodyDiagramData: bodyDiagramData,
+          })}
         </div>
       );
+    }
     if (!section.sections || !section.sections.length) return null;
+
     return (
       <div className="section">
         {section.sections.map((item, index) => {
           const matchedData =
             summaryData && summaryData.length
               ? summaryData.filter(
-                  (o) =>
-                    String(o.QuestionnaireName).toLowerCase() ===
+                  (summaryDataItem) =>
+                    String(summaryDataItem.QuestionnaireName).toLowerCase() ===
                     String(item.dataKey).toLowerCase()
                 )[0]
               : null;
+          const scoringData = this.getScoringData(matchedData);
           return (
             <div
               className="sub-section"
               key={`subsection_${item.dataKey}_${index}`}
             >
               {this.renderSubSectionHeader(item, matchedData)}
-              {item.component && item.component({ summary: matchedData })}
+              {item.component &&
+                item.component({
+                  summary: matchedData,
+                  bodyDiagramData: bodyDiagramData,
+                  scoringData: scoringData,
+                  graphData: graphData
+                })}
               {this.renderSubSectionAnchor(item)}
             </div>
           );
@@ -144,8 +178,8 @@ export default class Report extends Component {
     return (
       <div className="flex flex-start summary__notice">
         <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-        The system indicates that there is no reportable data for this patient. If you
-        believe this is an error, please contact us.
+        The system indicates that there is no reportable data for this patient.
+        If you believe this is an error, please contact us.
       </div>
     );
   }
@@ -158,7 +192,6 @@ export default class Report extends Component {
       !summaryData.find(
         (item) => item.ResponsesSummary && item.ResponsesSummary.length
       );
-    console.log("summaryData ", summaryData);
     return (
       <div className="report summary">
         <SideNav id="reportSideNavButton"></SideNav>

@@ -4,9 +4,9 @@ import ChartIcon from "../icons/ChartIcon";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
 import PainIcon from "../icons/PainIcon";
 //import CheckListIcon from "../icons/CheckListIcon";
-import OverViewComponent from "../components/report/Overview";
-import ResponsesSummary from "../components/report/ResponsesSummary";
-//import RankedResponses from "../components/report/RankedResponses";
+import OverViewComponent from "../components/Report/Overview";
+import ResponsesSummary from "../components/Report/ResponsesSummary";
+//import RankedResponses from "../components/Report/RankedResponses";
 
 const iconProps = {
   width: 35,
@@ -31,7 +31,7 @@ const reportConfig = [
     component: (props) => <OverViewComponent {...props}></OverViewComponent>,
   },
   // {
-  //   title: "Patient-reported Treatment Goals",
+  //   title: "Goals and Expectations",
   //   dataKey: "treatmentGoals",
   //   icon: (props) => (
   //     <CheckListIcon
@@ -41,11 +41,17 @@ const reportConfig = [
   //         className: "sectionIcon",
   //       }}
   //       {...props}
-  //       title="Patient-reported Treatment Goals"
+  //       title="Goals and Expectations"
   //     ></CheckListIcon>
   //   ),
-  //   component: (props) => <RankedResponses {...props}></RankedResponses>,
-  //   showHeaderInPrint: true
+  //   sections: [
+  //     {
+  //       name: "patientTreatmentGoals",
+  //       dataKey: "patientTreatmentGoals",
+  //       title: "Patient-reported Treatment Goals",
+  //       component: (props) => <RankedResponses {...props}></RankedResponses>,
+  //     }
+  //   ]
   // },
   {
     title: "Pain and Limitation",

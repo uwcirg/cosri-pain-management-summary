@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import ReactTooltip from "react-tooltip";
 import tocbot from "tocbot";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import executeElm from "../utils/executeELM";
-import * as landingUtils from "../helpers/components/landing.util";
-import { datishFormat } from "../helpers/formatit";
+import executeElm from "../../utils/executeELM";
+import * as landingUtils from "./utility";
+import { datishFormat } from "../../helpers/formatit";
 import {
   getPatientNameFromSource,
   isInViewport,
@@ -12,16 +12,16 @@ import {
   isProduction,
   saveData,
   writeToLog,
-} from "../helpers/utility";
-import Timeout from "../helpers/timeout";
-import summaryMap from "../config/summary_config.json";
+} from "../../helpers/utility";
+import Timeout from "../../helpers/timeout";
+import summaryMap from "../../config/summary_config.json";
 
-import { getEnv, getEnvs, fetchEnvData } from "../utils/envConfig";
-import SystemBanner from "./SystemBanner";
-import Header from "./Header";
-import Report from "./Report";
-import Summary from "./Summary";
-import Spinner from "../elements/Spinner";
+import { getEnv, getEnvs, fetchEnvData } from "../../utils/envConfig";
+import SystemBanner from "../SystemBanner";
+import Header from "../Header";
+import Report from "../Report";
+import Summary from "../Summary";
+import Spinner from "../../elements/Spinner";
 //import CopyPaste from "./report/CopyPaste";
 
 let processIntervalId = 0;
@@ -61,7 +61,7 @@ export default class Landing extends Component {
     getEnvs();
     //start time out countdown on DOM mounted
     Timeout();
-    this.pingProcessProgress();
+    this.getProcessProgressDisplay();
     let result = {};
     Promise.all([executeElm(this.state.collector, this.state.resourceTypes)])
       .then((response) => {
@@ -88,7 +88,7 @@ export default class Landing extends Component {
         this.getExternalData()
           .then((externalDataSet) => {
             result["Summary"] = { ...result["Summary"], ...externalDataSet };
-            this.saveSummaryData();
+            this.savePDMPSummaryData();
             const { sectionFlags, flaggedCount } = this.processSummary(
               result.Summary
             );
@@ -203,41 +203,12 @@ export default class Landing extends Component {
     const patientName = summary && summary.Patient ? summary.Patient.Name : "";
     return patientName;
   }
-  pingProcessProgress() {
+  getProcessProgressDisplay() {
     processIntervalId = setInterval(() => {
-      let resourcesTypes = this.state.resourceTypes;
-      let totalResources = 0;
-      let numResourcesLoaded = 0;
-      let loadedResources = "";
-      const camel2title = (camelCase) =>
-        camelCase
-          .replace(/([A-Z])/g, (match) => ` ${match}`)
-          .replace(/^./, (match) => match.toUpperCase())
-          .trim();
-      for (let key in resourcesTypes) {
-        let title = camel2title(key);
-        if (resourcesTypes[key]) {
-          //data loaded text
-          loadedResources += `<div class='text-success resource-item'>&#10003; ${title} data loaded</div>`;
-          numResourcesLoaded = numResourcesLoaded + 1;
-        } else {
-          //data loading in progress
-          loadedResources += `<div class='text-warning text-bold resource-item'>Loading ${title} data...</div>`;
-        }
-        totalResources = totalResources + 1;
-      }
-      let stillLoading = numResourcesLoaded < totalResources;
-      let textClass = stillLoading ? "text-warning" : "text-success";
       this.setState({
-        loadingMessage: `<div><div class='title-text'>${
-          totalResources === 0
-            ? "Gathering resources..."
-            : totalResources + " resources are to be loaded."
-        }</div><div class='${
-          totalResources === 0 ? "hide" : "title-text"
-        }'><span class='${textClass}'>${
-          stillLoading ? numResourcesLoaded : totalResources
-        } loaded ...</span></div><div class='resources-container'>${loadedResources}</div></div>`,
+        loadingMessage: landingUtils.getProcessProgressDisplay(
+          this.state.resourceTypes
+        ),
       });
     }, 30);
   }
@@ -295,7 +266,7 @@ export default class Landing extends Component {
   }
 
   //save MME calculations to file for debugging purpose, development environment ONLY
-  saveSummaryData() {
+  savePDMPSummaryData() {
     if (isProduction()) return;
     const summary = this.state.result ? this.state.result.Summary : null;
     if (!summary) return;
@@ -318,6 +289,7 @@ export default class Landing extends Component {
 
   //hide and show sectioN(s) depending on config
   setSectionVis() {
+    const summaryMap = this.state.summaryMap;
     for (const key in summaryMap) {
       let sectionsToBeHidden = [];
       if (summaryMap[key]["sections"]) {
@@ -342,6 +314,12 @@ export default class Landing extends Component {
         summaryMap[key]["hideSection"] = true;
       }
     }
+    this.setState({
+      summaryMap: {
+        ...this.state.summaryMap,
+        ...summaryMap,
+      },
+    });
   }
 
   /*

@@ -12,6 +12,9 @@ import {
   isNumber,
   toDate,
 } from "../../helpers/utility";
+import {
+  hasNoSummaryData
+} from "./utility"
 const BORDER_COLOR = "#f3f6f9";
 export default class ScoringSummary extends Component {
   constructor() {
@@ -291,15 +294,6 @@ export default class ScoringSummary extends Component {
       ></CopyButton>
     );
   }
-  hasNoSummaryData(summary) {
-    return (
-      !summary ||
-      !summary.length ||
-      summary.filter(
-        (item) => item.ResponsesSummary && item.ResponsesSummary.length > 0
-      ).length === 0
-    );
-  }
   renderTitle() {
     return (
       <h3
@@ -318,7 +312,7 @@ export default class ScoringSummary extends Component {
   }
   render() {
     const { summary, showAnchorLinks } = this.props;
-    const noSummaryData = this.hasNoSummaryData(summary);
+    const noSummaryData = hasNoSummaryData(summary);
     const readOnly = this.props.readOnly;
     return (
       <React.Fragment>

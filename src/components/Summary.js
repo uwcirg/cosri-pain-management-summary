@@ -28,7 +28,7 @@ import DataInfo from "./DataInfo";
 import Disclaimer from "./Disclaimer";
 import DevTools from "./DevTools";
 import InfoModal from "./InfoModal";
-import ScoringSummary from "./report/ScoringSummary";
+import ScoringSummary from "./Report/ScoringSummary";
 import SideNav from "./SideNav";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
@@ -765,7 +765,6 @@ export default class Summary extends Component {
 
   render() {
     const summaryMap = this.getSummaryMap();
-    console.log("summary map ", summaryMap);
     const { summary, collector } = this.props;
     const meetsInclusionCriteria = summary.Patient
       ? !!summary.Patient.MeetsInclusionCriteria

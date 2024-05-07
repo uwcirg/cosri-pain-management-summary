@@ -3,10 +3,10 @@ import {
   dateFormat,
   dateNumberFormat,
   extractDateFromGMTDateString,
-} from "../formatit";
-import flagit from "../flagit";
-import { dateCompare } from "../sortit";
-import { getDiffDays, writeToLog } from "../utility";
+} from "../../helpers/formatit";
+import flagit from "../../helpers/flagit";
+import { dateCompare } from "../../helpers/sortit";
+import { getDiffDays, writeToLog } from "../../helpers/utility";
 import { getEnv } from "../../utils/envConfig";
 
 let uuid = 0;
@@ -563,7 +563,7 @@ export function getExternalDataSources(summaryMap) {
   return promiseResultSet;
 }
 
-export  function getAnalyticsData(endpoint, apikey, summary) {
+export function getAnalyticsData(endpoint, apikey, summary) {
   const meetsInclusionCriteria = summary.Patient
     ? summary.Patient.MeetsInclusionCriteria
     : false;
@@ -619,4 +619,39 @@ export  function getAnalyticsData(endpoint, apikey, summary) {
   fetch(`${endpoint}`, requestOptions).catch((err) => {
     console.log(err);
   });
+}
+
+export function getProcessProgressDisplay(resourcesTypes) {
+  if (!resourcesTypes) return null;
+  let totalResources = 0;
+  let numResourcesLoaded = 0;
+  let loadedResources = "";
+  const camel2title = (camelCase) =>
+    camelCase
+      .replace(/([A-Z])/g, (match) => ` ${match}`)
+      .replace(/^./, (match) => match.toUpperCase())
+      .trim();
+  for (let key in resourcesTypes) {
+    let title = camel2title(key);
+    if (resourcesTypes[key]) {
+      //data loaded text
+      loadedResources += `<div class='text-success resource-item'>&#10003; ${title} data loaded</div>`;
+      numResourcesLoaded = numResourcesLoaded + 1;
+    } else {
+      //data loading in progress
+      loadedResources += `<div class='text-warning text-bold resource-item'>Loading ${title} data...</div>`;
+    }
+    totalResources = totalResources + 1;
+  }
+  let stillLoading = numResourcesLoaded < totalResources;
+  let textClass = stillLoading ? "text-warning" : "text-success";
+  return `<div><div class='title-text'>${
+    totalResources === 0
+      ? "Gathering resources..."
+      : totalResources + " resources are to be loaded."
+  }</div><div class='${
+    totalResources === 0 ? "hide" : "title-text"
+  }'><span class='${textClass}'>${
+    stillLoading ? numResourcesLoaded : totalResources
+  } loaded ...</span></div><div class='resources-container'>${loadedResources}</div></div>`;
 }
