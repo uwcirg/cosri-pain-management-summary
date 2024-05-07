@@ -19,7 +19,7 @@ import summaryMap from "../../config/summary_config.json";
 import { getEnv, getEnvs, fetchEnvData } from "../../utils/envConfig";
 import SystemBanner from "../SystemBanner";
 import Header from "../Header";
-import Report from "../temp/index.js";
+import Report from "../Report/index.js";
 import Summary from "../Summary";
 import Spinner from "../../elements/Spinner";
 //import CopyPaste from "./report/CopyPaste";

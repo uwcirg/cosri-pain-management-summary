@@ -4,8 +4,8 @@ import ChartIcon from "../icons/ChartIcon";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
 import PainIcon from "../icons/PainIcon";
 //import CheckListIcon from "../icons/CheckListIcon";
-import OverViewComponent from "../components/temp/Overview";
-import ResponsesSummary from "../components/temp/ResponsesSummary";
+import OverViewComponent from "../components/Report/Overview";
+import ResponsesSummary from "../components/Report/ResponsesSummary";
 //import RankedResponses from "../components/Report/RankedResponses";
 
 const iconProps = {
