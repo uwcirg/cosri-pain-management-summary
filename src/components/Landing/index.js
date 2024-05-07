@@ -19,7 +19,7 @@ import summaryMap from "../../config/summary_config.json";
 import { getEnv, getEnvs, fetchEnvData } from "../../utils/envConfig";
 import SystemBanner from "../SystemBanner";
 import Header from "../Header";
-import Report from "../Report/index.js";
+import Report from "../Report";
 import Summary from "../Summary";
 import Spinner from "../../elements/Spinner";
 //import CopyPaste from "./report/CopyPaste";
@@ -113,15 +113,15 @@ export default class Landing extends Component {
           })
           .catch((err) => {
             console.log(err);
-            this.setState({ loading: false });
             this.clearProcessInterval();
+            this.setState({ loading: false });
             this.setError(err);
           });
       })
       .catch((err) => {
         console.error(err);
-        this.setState({ loading: false });
         this.clearProcessInterval();
+        this.setState({ loading: false });
         this.setError(err);
       });
   }
@@ -144,9 +144,9 @@ export default class Landing extends Component {
     //page title
     document.title = "COSRI";
     if (this.shouldShowTabs()) {
+      // for styling purpose
       document.querySelector("body").classList.add("has-tabs");
     }
-    this.handleHeaderPos();
   }
 
   initEvents() {
@@ -160,6 +160,7 @@ export default class Landing extends Component {
       });
     });
     //support other events if need to
+    this.handleHeaderPos();
   }
 
   initializeTocBot() {
@@ -232,37 +233,42 @@ export default class Landing extends Component {
       this.setError(`${sourceTypeText} ${item.error}`);
     });
   }
-  //compile error(s) related to MME calculations
+
   processSummaryErrors(summary) {
     if (!summary) return false;
-    let errors = [];
+    //compile error(s) related to MME calculations
     let mmeErrors = landingUtils.getMMEErrors(summary, true, {
       tags: ["mme-calc"],
       patientName: this.getPatientName(),
     });
     if (mmeErrors && mmeErrors.length) {
-      errors = mmeErrors;
+      mmeErrors.forEach((error) => {
+        this.setError(error, true);
+      });
       this.setState({
         mmeErrors: true,
       });
     }
+    // the rest of the errors
+    let errors = [];
     for (let section in summary) {
       if (summary[section].error) {
         errors.push(summary[section].error);
       }
     }
-    errors.forEach((message) => {
-      this.setError(message);
+    this.setState({
+      errorCollection: [...this.state.errorCollection, ...errors],
     });
   }
-  setError(message) {
+  setError(message, shouldLog) {
     if (!message) return;
     this.setState({
       errorCollection: [...this.state.errorCollection, message],
     });
-    writeToLog(message, "error", {
-      patientName: this.getPatientName(),
-    });
+    if (shouldLog)
+      writeToLog(message, "error", {
+        patientName: this.getPatientName(),
+      });
   }
 
   //save MME calculations to file for debugging purpose, development environment ONLY
