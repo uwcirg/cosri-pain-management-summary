@@ -92,7 +92,7 @@ class Line extends React.Component {
       .attr("id", (d, i) => `${markerType}_${dataId}${i}`)
       .attr("stroke", dataPoints.strokeColor)
       .attr("stroke-width", strokeWidth)
-      .attr("fill", dataPoints.strokeColor)
+      .attr("fill", dataPoints.fillColor)
       .on("mouseover", (d, i) => {
         if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
           return;
@@ -112,7 +112,7 @@ class Line extends React.Component {
           return;
         }
         select(`#${markerType}_${dataId}${i}`)
-          .attr("fill", dataPoints.strokeColor)
+          .attr("fill", dataPoints.fillColor)
           .attr("stroke", dataPoints.strokeColor)
           .attr("stroke-width", strokeWidth)
           .transition()

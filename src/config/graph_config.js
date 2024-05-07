@@ -74,14 +74,13 @@ export function getLineAttributes(id, params, index) {
   return {
     id: `${id}_line`,
     strokeColor: color,
-    strokeFill: color,
     markerType: markerType,
     markerSize: lineParams.markerSize ? lineParams.markerSize : 38,
     strokeWidth: lineParams.strokeWidth ? lineParams.strokeWidth : 2.25,
     dataPoints: {
       id: `${id}`,
       strokeWidth: lineParams.dataStrokeWidth ? lineParams.dataStrokeWidth : 1,
-      strokeFill: color,
+      fillColor: color,
       strokeColor: color,
     },
   };
