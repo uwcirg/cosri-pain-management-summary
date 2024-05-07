@@ -19,7 +19,7 @@ import summaryMap from "../../config/summary_config.json";
 import { getEnv, getEnvs, fetchEnvData } from "../../utils/envConfig";
 import SystemBanner from "../SystemBanner";
 import Header from "../Header";
-import Report from "../Report";
+import Report from "../Report/index.js";
 import Summary from "../Summary";
 import Spinner from "../../elements/Spinner";
 //import CopyPaste from "./report/CopyPaste";
@@ -340,6 +340,73 @@ export default class Landing extends Component {
       );
     });
   }
+  async fetchExternalData(url, datasetKey, rootElement) {
+    let dataSet = {};
+    dataSet[datasetKey] = {};
+    const MAX_WAIT_TIME = 15000;
+    // Create a promise that rejects in maximum wait time in milliseconds
+    let timeoutPromise = new Promise((resolve, reject) => {
+      let id = setTimeout(() => {
+        clearTimeout(id);
+        reject(`Timed out in ${MAX_WAIT_TIME} ms.`);
+      }, MAX_WAIT_TIME);
+    });
+
+    /*
+     * if for some reason fetching the request data doesn't resolve or reject withing the maximum waittime,
+     * then the timeout promise will kick in
+     */
+    let results = await Promise.race([fetch(url), timeoutPromise]).catch(
+      (e) => {
+        return Promise.reject(
+          new Error(`There was error fetching data for ${datasetKey}: ${e}`)
+        );
+      }
+    );
+
+    let json = null;
+    if (results) {
+      try {
+        //read response stream
+        json = await results.json().catch((e) => {
+          throw new Error(e);
+        });
+      } catch (e) {
+        return Promise.reject(
+          new Error(`There was error parsing data for ${datasetKey}: ${e}`)
+        );
+      }
+    }
+
+    if (!json) {
+      let demoResult = await this.getDemoData(summaryMap[datasetKey]).catch(
+        (e) => {
+          return Promise.reject(
+            new Error(`There was error fetching demo data: ${e}`)
+          );
+        }
+      );
+      //if unable to fetch data, set data to demo data if any
+      json = await demoResult.json().catch((e) => {
+        return Promise.reject(
+          new Error(`There was error parsing demo data: ${e}`)
+        );
+      });
+      if (json && json[rootElement]) {
+        this.setDemoDataFlag(datasetKey);
+      }
+    }
+    let responseDataSet = null;
+    try {
+      responseDataSet = json[rootElement];
+    } catch (e) {
+      return Promise.reject(
+        `Data does not contained the required root element ${rootElement} for ${datasetKey}: ${e}`
+      );
+    }
+    dataSet[datasetKey] = responseDataSet;
+    return dataSet;
+  }
   /*
    * function for retrieving data from other sources e.g. PDMP
    */
@@ -514,74 +581,6 @@ export default class Landing extends Component {
         },
       },
     });
-  }
-
-  async fetchExternalData(url, datasetKey, rootElement) {
-    let dataSet = {};
-    dataSet[datasetKey] = {};
-    const MAX_WAIT_TIME = 15000;
-    // Create a promise that rejects in maximum wait time in milliseconds
-    let timeoutPromise = new Promise((resolve, reject) => {
-      let id = setTimeout(() => {
-        clearTimeout(id);
-        reject(`Timed out in ${MAX_WAIT_TIME} ms.`);
-      }, MAX_WAIT_TIME);
-    });
-
-    /*
-     * if for some reason fetching the request data doesn't resolve or reject withing the maximum waittime,
-     * then the timeout promise will kick in
-     */
-    let results = await Promise.race([fetch(url), timeoutPromise]).catch(
-      (e) => {
-        return Promise.reject(
-          new Error(`There was error fetching data for ${datasetKey}: ${e}`)
-        );
-      }
-    );
-
-    let json = null;
-    if (results) {
-      try {
-        //read response stream
-        json = await results.json().catch((e) => {
-          throw new Error(e);
-        });
-      } catch (e) {
-        return Promise.reject(
-          new Error(`There was error parsing data for ${datasetKey}: ${e}`)
-        );
-      }
-    }
-
-    if (!json) {
-      let demoResult = await this.getDemoData(summaryMap[datasetKey]).catch(
-        (e) => {
-          return Promise.reject(
-            new Error(`There was error fetching demo data: ${e}`)
-          );
-        }
-      );
-      //if unable to fetch data, set data to demo data if any
-      json = await demoResult.json().catch((e) => {
-        return Promise.reject(
-          new Error(`There was error parsing demo data: ${e}`)
-        );
-      });
-      if (json && json[rootElement]) {
-        this.setDemoDataFlag(datasetKey);
-      }
-    }
-    let responseDataSet = null;
-    try {
-      responseDataSet = json[rootElement];
-    } catch (e) {
-      return Promise.reject(
-        `Data does not contained the required root element ${rootElement} for ${datasetKey}: ${e}`
-      );
-    }
-    dataSet[datasetKey] = responseDataSet;
-    return dataSet;
   }
 
   handleSetActiveTab(index) {
