@@ -797,6 +797,7 @@ export default class SurveyGraph extends Component {
 
   renderNotInGraphMessage() {
     if (!this.state.qids || !this.state.qids.length) return null;
+    if (!this.state.graphData || !this.state.graphData.length) return null;
     const noDataQids = this.state.qids
       .filter((item) => !this.isSurveyInDateRange(item))
       .map((item) => String(item).toUpperCase());
