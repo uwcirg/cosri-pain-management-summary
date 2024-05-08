@@ -346,7 +346,6 @@ export default class SurveyGraph extends Component {
   getScaleInfoForSlider(dataSource) {
     const sliderData = dataSource ? dataSource : [];
     const numYears = this.getNumYearsFromData(sliderData);
-    console.log("number of years ", numYears);
     const defaultMaxValue = numYears && numYears > 1 ? numYears : 0;
     const createArray = (N) => {
       return [...Array(N).keys()].map((i) => i + 1);
@@ -386,7 +385,6 @@ export default class SurveyGraph extends Component {
         (n) => n / 12
       );
       const arrDiffYears = getArrDiffYears().filter((item) => item > 1);
-      console.log("arrDiffYears ", arrDiffYears);
       if (!arrDiffYears.length) return arrMonths;
       return arrMonths.filter((m) => {
         return m >= arrDiffYears[0];
@@ -685,7 +683,7 @@ export default class SurveyGraph extends Component {
       (item) => this.state.qids.indexOf(item.qid) !== -1
     );
     const { arrNum, unit } = this.getScaleInfoForSlider(sliderData);
-    console.log("arrNum ", arrNum, " unit ", unit);
+    // console.log("arrNum ", arrNum, " unit ", unit);
     // const selectedRange = parseFloat(this.state.selectedDateRange);
     //console.log("number of years total: ", numYears);
     // console.log("selected value: ", selectedRange);
