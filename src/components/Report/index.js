@@ -23,7 +23,7 @@ export default class Report extends Component {
   }
 
   handleOpenModal = (modalSubSection, event) => {
-    //only open modal   on 'enter' or click
+    //only open modal on 'enter' or click
     if (event.keyCode === 13 || event.type === "click") {
       this.setState({ showModal: true, modalSubSection });
     }
@@ -40,7 +40,7 @@ export default class Report extends Component {
     return reportUtil.getGraphData(summaryData);
   }
   getBodyDiagramDataData(summaryData) {
-    return reportUtil.getBodyDiagramDataSummaryData(summaryData);
+    return reportUtil.getBodyDiagramData(summaryData);
   }
 
   renderSectionHeader(section) {
@@ -95,7 +95,6 @@ export default class Report extends Component {
                     String(item.dataKey).toLowerCase()
                 )[0]
               : null;
-          const scoringData = this.getScoringData(matchedData);
           return (
             <div
               className="sub-section"
@@ -105,9 +104,6 @@ export default class Report extends Component {
               {item.component &&
                 item.component({
                   summary: matchedData,
-                  bodyDiagramData: bodyDiagramData,
-                  scoringData: scoringData,
-                  graphData: graphData
                 })}
               {this.renderSubSectionAnchor(item)}
             </div>
@@ -184,46 +180,51 @@ export default class Report extends Component {
     );
   }
 
+  renderSections(summaryData) {
+    return reportSummarySections.map((section, index) => {
+      return (
+        <Collapsible
+          trigger={this.renderSectionHeader(section)}
+          open={true}
+          key={index}
+        >
+          {this.renderSectionBody(summaryData, section)}
+        </Collapsible>
+      );
+    });
+  }
+
+  renderInfoModal() {
+    return (
+      <ReactModal
+        className="modal report-info-modal"
+        overlayClassName="overlay"
+        isOpen={this.state.showModal}
+        onRequestClose={this.handleCloseModal}
+        contentLabel="More Info"
+      >
+        <InfoModal
+          closeModal={this.handleCloseModal}
+          subSection={this.state.modalSubSection}
+        />
+      </ReactModal>
+    );
+  }
+
   render() {
     const { summaryData } = this.props;
-    const hasNoData =
-      !summaryData ||
-      !summaryData.length ||
-      !summaryData.find(
-        (item) => item.ResponsesSummary && item.ResponsesSummary.length
-      );
+    const hasNoData = reportUtil.hasNoSummaryData(summaryData);
     return (
       <div className="report summary">
         <SideNav id="reportSideNavButton"></SideNav>
         <div className="summary__display">
           {hasNoData && this.renderNoDataNotice()}
           <div className="sections">
-            {reportSummarySections.map((section, index) => {
-              return (
-                <Collapsible
-                  trigger={this.renderSectionHeader(section)}
-                  open={true}
-                  key={index}
-                >
-                  {this.renderSectionBody(summaryData, section)}
-                </Collapsible>
-              );
-            })}
+            {this.renderSections(summaryData)}
             <Version />
           </div>
         </div>
-        <ReactModal
-          className="modal report-info-modal"
-          overlayClassName="overlay"
-          isOpen={this.state.showModal}
-          onRequestClose={this.handleCloseModal}
-          contentLabel="More Info"
-        >
-          <InfoModal
-            closeModal={this.handleCloseModal}
-            subSection={this.state.modalSubSection}
-          />
-        </ReactModal>
+        {this.renderInfoModal()}
       </div>
     );
   }

@@ -99,7 +99,7 @@ button.disabled {
   content: "copied!";
   position: absolute;
   top: 0;
-  left: -40px;
+  left: -46px;
   right: 0;
   bottom: 0;
   margin: auto;
@@ -107,6 +107,7 @@ button.disabled {
   height: 20px;
   border: 0;
   color: green;
+  font-weight: 600;
   transform: rotate(0);
 }
 

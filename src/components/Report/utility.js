@@ -22,7 +22,7 @@ export function getGraphData(summaryData) {
   });
   return data;
 }
-export function getBodyDiagramDataSummaryData(summaryData) {
+export function getBodyDiagramData(summaryData) {
   if (!summaryData || !Array.isArray(summaryData)) return null;
   const matchedData = summaryData.filter(
     (item) => String(item.dataKey).toLowerCase() === "body_diagram"

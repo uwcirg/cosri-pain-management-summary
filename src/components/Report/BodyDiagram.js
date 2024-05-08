@@ -6,7 +6,7 @@ import {
   downloadDomImage,
   getDisplayDateFromISOString,
   renderImageFromSVG,
-  toDate
+  toDate,
 } from "../../helpers/utility";
 
 export default class BodyDiagram extends Component {
@@ -35,14 +35,6 @@ export default class BodyDiagram extends Component {
     this.handleSetFirst = this.handleSetFirst.bind(this);
     this.handleSetLast = this.handleSetLast.bind(this);
 
-    // constants
-    this.containerStyle = {
-      backgroundColor: "#FFF",
-      width: "100%",
-      position: "relative",
-      padding: "4px 4px 12px",
-      border: "1px solid transparent",
-    };
     this.SELECTED_ANIMATION_DURATION = 1000; // animation duration for indicating an option has been selected
   }
 
@@ -172,7 +164,8 @@ export default class BodyDiagram extends Component {
     this.utilButtonsContainerRef.current.style.visibility = "hidden";
   }
   getAnswersFromPainLocationFhirObjects(fhirObjects, description = "pain") {
-    if (!fhirObjects) return null;
+    if (!fhirObjects || !Array.isArray(fhirObjects) || !fhirObjects.length)
+      return null;
     let answers = null;
     fhirObjects.forEach((key) => {
       if (!answers) answers = {};
@@ -187,6 +180,10 @@ export default class BodyDiagram extends Component {
   getPropDates() {
     const summaryData = this.getPropSummaryData();
     return summaryData.map((item) => item.date);
+  }
+
+  getSummaryData() {
+    return  this.getStateSummaryData() ?? this.getPropSummaryData();
   }
 
   getPropSummaryData() {
@@ -226,27 +223,22 @@ export default class BodyDiagram extends Component {
     //   back_right_posterior_head: ["pain"],
     //   front_left_brow: ["severe_pain"],
     // }
-    // //{"front_left_cheek":["severe_pain"]}
-    const summaryData = this.getStateSummaryData() || this.getPropSummaryData();
-    if (!summaryData || !summaryData.length) return null;
+    const summaryData = this.getSummaryData();
+    if (!summaryData || !Array.isArray(summaryData) || !summaryData.length)
+      return null;
     const responses = selectedDate
       ? summaryData.find((item) => item.date === selectedDate)
       : summaryData[0];
     if (!responses) return false;
     const painLocations = responses.painLocations;
-    let answers = null;
-    if (painLocations && painLocations.length) {
-      answers = this.getAnswersFromPainLocationFhirObjects(painLocations);
-    }
     const severePainLocation = responses.severePainLocation;
-    if (severePainLocation && severePainLocation.length) {
-      if (!answers) answers = {};
-      answers = {
-        ...answers,
-        ...this.getAnswersFromPainLocationFhirObjects(severePainLocation, "severe_pain"),
-      };
-    }
-    return answers;
+    return {
+      ...(this.getAnswersFromPainLocationFhirObjects(painLocations) || {}),
+      ...(this.getAnswersFromPainLocationFhirObjects(
+        severePainLocation,
+        "severe_pain"
+      ) || {}),
+    };
   }
 
   getMostRecentDate() {
@@ -310,7 +302,7 @@ export default class BodyDiagram extends Component {
     }
   }
   renderDateSelector() {
-    const summaryData = this.getStateSummaryData();
+    const summaryData = this.getSummaryData();
     if (!summaryData) return null;
     const arrObjDates = summaryData.map((item) => {
       return {
@@ -457,8 +449,9 @@ export default class BodyDiagram extends Component {
       this.datesSelectorRef.current.classList.add("read-only");
   }
   afterCopy() {
-    if (document.querySelector("#temp_bd")) {
-      this.containerRef.current.removeChild(document.querySelector("#temp_bd"));
+    let tempBodyDiagramElement = document.querySelector("#temp_bd");
+    if (tempBodyDiagramElement) {
+      this.containerRef.current.removeChild(tempBodyDiagramElement);
     }
     if (this.bodyDiagramRef.current) {
       this.bodyDiagramRef.current.style.visibility = "visible";
@@ -557,7 +550,7 @@ export default class BodyDiagram extends Component {
   }
   renderDots() {
     if (!this.shouldRenderNav()) return null;
-    const stateSummaryData = this.getStateSummaryData();
+    const stateSummaryData = this.getSummaryData();
     return (
       <div className="exclude-from-copy dots-container print-hidden">
         {stateSummaryData.map((item, index) => {
@@ -575,9 +568,16 @@ export default class BodyDiagram extends Component {
     );
   }
   render() {
-    if (!this.getStateSummaryData()) return null;
+    if (!this.getSummaryData()) return null;
     const parentContainerStyle = {
       width: "100%",
+    };
+    const mainContainerStyle = {
+      backgroundColor: "#FFF",
+      width: "100%",
+      position: "relative",
+      padding: "4px 4px 12px",
+      border: "1px solid transparent",
     };
     const toolbarContainerStyle = {
       marginTop: 8,
@@ -586,7 +586,7 @@ export default class BodyDiagram extends Component {
     };
     return (
       <div style={parentContainerStyle}>
-        <div ref={this.containerRef} style={this.containerStyle}>
+        <div ref={this.containerRef} style={mainContainerStyle}>
           <div
             className="flex"
             style={toolbarContainerStyle}

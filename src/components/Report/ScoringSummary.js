@@ -15,13 +15,15 @@ import {
 import {
   hasNoSummaryData
 } from "./utility"
-const BORDER_COLOR = "#f3f6f9";
 export default class ScoringSummary extends Component {
   constructor() {
     super(...arguments);
 
     //refs
     this.tableRef = React.createRef();
+
+    const BORDER_COLOR = "#f3f6f9";
+    const HEADER_BORDER_COLOR = "#217684";
 
     //constants
     this.captionRowStyle = {
@@ -40,7 +42,7 @@ export default class ScoringSummary extends Component {
     };
     this.headerCellStyle = {
       ...this.cellStyle,
-      borderBottom: `2px solid ${BORDER_COLOR}`,
+      borderBottom: `2px solid ${HEADER_BORDER_COLOR}`,
     };
     this.summaryHTML = "";
   }
