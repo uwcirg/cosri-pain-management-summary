@@ -7,6 +7,7 @@ import { line } from "d3-shape";
 import XYAxis from "./xy-axis";
 import Grid from "./grid";
 import Line from "./line";
+import Markers from "./markers";
 import Tooltip from "./tooltip";
 import {
   defaultLineAttributes,
@@ -345,11 +346,14 @@ export default class SurveyGraph extends Component {
   getScaleInfoForSlider(dataSource) {
     const sliderData = dataSource ? dataSource : [];
     const numYears = this.getNumYearsFromData(sliderData);
-    const defaultMaxValue = numYears && numYears > 0 ? numYears : 0;
+    console.log("number of years ", numYears);
+    const defaultMaxValue = numYears && numYears > 1 ? numYears : 0;
     const createArray = (N) => {
       return [...Array(N).keys()].map((i) => i + 1);
     };
-    const arrYears = createArray(Math.ceil(defaultMaxValue));
+    const arrYears = defaultMaxValue
+      ? createArray(Math.ceil(defaultMaxValue))
+      : null;
     const createArrayInMonths = () => {
       if (!arrYears || !arrYears.length) return [];
       let arrNum = [];
@@ -381,7 +385,8 @@ export default class SurveyGraph extends Component {
       const arrMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(
         (n) => n / 12
       );
-      const arrDiffYears = getArrDiffYears();
+      const arrDiffYears = getArrDiffYears().filter((item) => item > 1);
+      console.log("arrDiffYears ", arrDiffYears);
       if (!arrDiffYears.length) return arrMonths;
       return arrMonths.filter((m) => {
         return m >= arrDiffYears[0];
@@ -390,13 +395,13 @@ export default class SurveyGraph extends Component {
     const arrAllNum = [
       ...new Set([...getArrMonths(), ...createArrayInMonths(defaultMaxValue)]),
     ].sort((a, b) => a - b);
-    const arrNum = numYears > 0 ? arrAllNum : getArrMonths();
+    const arrNum = numYears > 1 ? arrAllNum : getArrMonths();
     return {
       arrNum: arrNum,
       arrDiffYears: getArrDiffYears(),
       min: arrNum.length ? arrNum[0] : 0,
       max: arrNum.length ? arrNum[arrNum.length - 1] : 0,
-      unit: defaultMaxValue > 0 ? "year" : "month",
+      unit: numYears > 1 ? "year" : "month",
     };
   }
   getDurationInYears() {
@@ -491,8 +496,8 @@ export default class SurveyGraph extends Component {
       d3.select(this.lengendMarkerRefs[index].current)
         .append("path")
         .attr("d", sym)
-        .attr("fill", attributes.dataPoints.strokeColor)
-        .attr("stroke-color", attributes.dataPoints.strokeColor)
+        .attr("fill", attributes.dataPointsProps.fillColor)
+        .attr("stroke-color", attributes.dataPointsProps.strokeColor)
         .attr("transform", "translate(10, 10)");
     });
   }
@@ -584,7 +589,7 @@ export default class SurveyGraph extends Component {
         buttonTitle="Click to copy longitudinal graph"
         beforeCopy={() => this.beforeCopy()}
         afterCopy={() => this.afterCopy()}
-    //    disableFrame={true}
+        //    disableFrame={true}
       ></CopyButton>
     );
   }
@@ -680,6 +685,7 @@ export default class SurveyGraph extends Component {
       (item) => this.state.qids.indexOf(item.qid) !== -1
     );
     const { arrNum, unit } = this.getScaleInfoForSlider(sliderData);
+    console.log("arrNum ", arrNum, " unit ", unit);
     // const selectedRange = parseFloat(this.state.selectedDateRange);
     //console.log("number of years total: ", numYears);
     // console.log("selected value: ", selectedRange);
@@ -715,12 +721,10 @@ export default class SurveyGraph extends Component {
         display: displayValue,
       };
     });
-    if (arrNum.length <= 1) return null;
+    if (!arrNum.length) return null;
     return (
       <div className="slider-parent-container" ref={this.sliderContainerRef}>
-        {!inYears && (
-          <div className="top-info-text">{this.getDisplayDateRange()}</div>
-        )}
+        {!inYears && <div className="top-info-text">Last Year</div>}
         {inYears && (
           <div className="top-info-text">{this.renderDateRangeSelector()}</div>
         )}
@@ -799,13 +803,13 @@ export default class SurveyGraph extends Component {
       .filter((item) => !this.isSurveyInDateRange(item))
       .map((item) => String(item).toUpperCase());
     if (!noDataQids.length) return null;
+    const dateRange = this.getDisplayDateRange();
+    const dateRangeText = dateRange ? `in ${dateRange}` : "";
     return (
       <div
         className="text-warning"
         style={{ margin: "8px", paddingLeft: "16px", paddingRight: "16px" }}
-      >{`No data for ${noDataQids.join(
-        ", "
-      )} in ${this.getDisplayDateRange()}`}</div>
+      >{`No reportable data for ${noDataQids.join(", ")} ${dateRangeText}`}</div>
     );
   }
   render() {
@@ -819,7 +823,7 @@ export default class SurveyGraph extends Component {
     );
 
     const margins = {
-      top: 10,
+      top: 20,
       right: 24,
       bottom: 68,
       left: 52,
@@ -857,7 +861,7 @@ export default class SurveyGraph extends Component {
       strokeFill: dataStrokeColor,
       strokeWidth: "2.25",
     };
-    additionalProps["dataPoints"] = {
+    additionalProps["dataPointsProps"] = {
       ...additionalProps,
       ...{
         dataStrokeWidth: "4",
@@ -1019,6 +1023,23 @@ export default class SurveyGraph extends Component {
       });
     };
 
+    const renderLineMarkers = (props) => {
+      const { data } = this.getDataForGraph(this.state.graphData);
+      return getDataNest(data).map((o, index) => {
+        return (
+          <Markers
+            key={`markers-${o.key}-${index}`}
+            data={o.values}
+            {...props}
+            {...{
+              ...defaultLineProps,
+              ...this.getLineAttributesByQId(o.key),
+            }}
+          />
+        );
+      });
+    };
+
     const renderToolTips = (props) => {
       const { data } = this.getDataForGraph(this.state.graphData);
       return getDataNest(data).map((o, index) => {
@@ -1121,6 +1142,7 @@ export default class SurveyGraph extends Component {
             {renderLines({
               className: "print-hidden",
             })}
+            {renderLineMarkers()}
             {renderToolTips()}
           </g>
         </svg>

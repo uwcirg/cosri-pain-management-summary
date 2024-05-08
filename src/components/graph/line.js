@@ -1,8 +1,6 @@
 import React from "react";
-import * as d3 from "d3";
 import { select } from "d3-selection";
 import { transition } from "d3-transition";
-import {MARKER_SHAPES} from "../../config/graph_config";
 
 class Line extends React.Component {
   constructor() {
@@ -34,7 +32,6 @@ class Line extends React.Component {
     const node = this.ref.current;
     let currentNode = select(node);
     currentNode.selectAll("path").remove();
-    currentNode.selectAll("circle").remove();
   }
   updateChart() {
     const node = this.ref.current;
@@ -45,11 +42,10 @@ class Line extends React.Component {
       yName,
       xScale,
       yScale,
-      dataPoints,
+      dataPointsProps,
       className,
       showPrintLabel,
     } = this.props;
-    const PLACEHOLDER_IDENTIFIER = "placeholder";
 
     this.setState({
       xName: xName,
@@ -58,6 +54,7 @@ class Line extends React.Component {
     });
 
     //  let formatDate = timeFormat(`%Y-%b-%d`);
+    // line
     let currentNode = select(node)
       .append("path")
       .datum(data)
@@ -70,57 +67,7 @@ class Line extends React.Component {
     if (this.props.dotted) {
       currentNode.style("stroke-dasharray", this.props.dotSpacing || "3, 3"); // <== This line here!!
     }
-
-    if (!dataPoints) {
-      return;
-    }
-    const animationDuration = 100;
-    const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
-    const markerType = String(this.props.markerType).toLowerCase();
-    const markerSize = this.props.markerSize ? this.props.markerSize: 10;
-    let markerShape = MARKER_SHAPES[this.props.markerType];
-    if (!markerShape) markerShape = d3.symbolCircle;
-
-    const strokeWidth = dataPoints.strokeWidth || 2;
-      select(node)
-      .selectAll(`.${markerType}`)
-      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append("path")
-      .attr("d", d3.symbol().type(markerShape).size(markerSize))
-      .attr("transform", (d) =>`translate(${xScale(d[xName])}, ${yScale(d[yName])})`)
-      .attr("id", (d, i) => `${markerType}_${dataId}${i}`)
-      .attr("stroke", dataPoints.strokeColor)
-      .attr("stroke-width", strokeWidth)
-      .attr("fill", dataPoints.fillColor)
-      .on("mouseover", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-          return;
-        }
-        select(`#${markerType}_${dataId}${i}`)
-          .attr("fill", "#444")
-          .attr("stroke", "#444")
-          .attr("stroke-width",strokeWidth*2)
-          .transition()
-          .duration(animationDuration);
-        //tooltip
-        d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "block");
-
-      })
-      .on("mouseout", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-          return;
-        }
-        select(`#${markerType}_${dataId}${i}`)
-          .attr("fill", dataPoints.fillColor)
-          .attr("stroke", dataPoints.strokeColor)
-          .attr("stroke-width", strokeWidth)
-          .transition()
-          .duration(animationDuration);
-        // tooltip
-        d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "none");
-      });
-    
+    const dataId = dataPointsProps && dataPointsProps.id ? String(dataPointsProps.id).toUpperCase() : "data";
     //print label - PRINT ONLY
     if (showPrintLabel) {
       select(node)

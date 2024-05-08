@@ -42,7 +42,7 @@ class Tooltip extends React.Component {
       yName,
       xScale,
       yScale,
-      dataPoints,
+      dataPointsProps,
       showDataIdInLabel,
     } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
@@ -54,7 +54,7 @@ class Tooltip extends React.Component {
     });
 
     const formatDate = timeFormat(`%Y-%b-%d`);
-    const dataId = dataPoints.id ? String(dataPoints.id).toUpperCase() : "data";
+    const dataId = dataPointsProps.id ? String(dataPointsProps.id).toUpperCase() : "data";
 
     const displayRect = () =>
       select(node)

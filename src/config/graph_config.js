@@ -4,7 +4,7 @@ export const defaultLineAttributes = {
   strokeColor: PRIMARY_COLOR,
   strokeFill: PRIMARY_COLOR,
   strokeWidth: 2.25,
-  dataPoints: {
+  dataPointsProps: {
     dataStrokeWidth: 4,
     dataStrokeFill: PRIMARY_COLOR,
     strokeWidth: 4,
@@ -77,7 +77,7 @@ export function getLineAttributes(id, params, index) {
     markerType: markerType,
     markerSize: lineParams.markerSize ? lineParams.markerSize : 38,
     strokeWidth: lineParams.strokeWidth ? lineParams.strokeWidth : 2.25,
-    dataPoints: {
+    dataPointsProps: {
       id: `${id}`,
       strokeWidth: lineParams.dataStrokeWidth ? lineParams.dataStrokeWidth : 1,
       fillColor: color,
