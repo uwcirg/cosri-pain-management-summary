@@ -52,23 +52,21 @@ export default class Landing extends Component {
   }
 
   componentDidMount() {
-    /*
-     * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
-     */
+    // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
     fetchEnvData();
-
     // write out environment variables:
     getEnvs();
-    //start time out countdown on DOM mounted
+    // start time out countdown on DOM mounted
     Timeout();
     this.getProcessProgressDisplay();
+    // hide section(s) per config
+    this.setSectionsVis();
     let result = {};
     Promise.all([executeElm(this.state.collector, this.state.resourceTypes)])
       .then((response) => {
         //set FHIR results
         let fhirData = response[0];
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
-        this.setSectionVis();
         const { sectionFlags, flaggedCount } = this.processSummary(
           result.Summary
         );
@@ -88,10 +86,10 @@ export default class Landing extends Component {
         this.getExternalData()
           .then((externalDataSet) => {
             result["Summary"] = { ...result["Summary"], ...externalDataSet };
-            this.savePDMPSummaryData();
             const { sectionFlags, flaggedCount } = this.processSummary(
               result.Summary
             );
+            this.savePDMPSummaryData();
             this.processSummaryErrors(result.Summary);
             this.processOverviewStatsData(result["Summary"]);
             if (summaryMap[this.getOverviewSectionKey()]) {
@@ -109,7 +107,7 @@ export default class Landing extends Component {
                 this.initEvents();
               }
             );
-            console.log("summary ", result);
+            console.log("Query results ", result);
           })
           .catch((err) => {
             console.log(err);
@@ -150,7 +148,7 @@ export default class Landing extends Component {
   }
 
   initEvents() {
-    //education material links
+    // education material links
     document.querySelectorAll(".education").forEach((item) => {
       item.addEventListener("click", (e) => {
         writeToLog(`Education material: ${e.target.title}`, "info", {
@@ -159,8 +157,25 @@ export default class Landing extends Component {
         });
       });
     });
-    //support other events if need to
     this.handleHeaderPos();
+    // support other events if need to
+  }
+
+  // fixed header when scrolling in the event that it is not within viewport
+  handleHeaderPos() {
+    document.addEventListener("scroll", () => {
+      clearTimeout(scrollHeaderIntervalId);
+      scrollHeaderIntervalId = setTimeout(
+        function () {
+          if (!isInViewport(this.anchorTopRef.current)) {
+            document.querySelector("body").classList.add("fixed");
+            return;
+          }
+          document.querySelector("body").classList.remove("fixed");
+        }.bind(this),
+        250
+      );
+    });
   }
 
   initializeTocBot() {
@@ -181,9 +196,6 @@ export default class Landing extends Component {
 
   setPatientId() {
     if (!this.state.collector) return;
-    /*
-     * passed down via fhir.js
-     */
     let patientBundle = this.state.collector.filter(
       (item) =>
         item.data &&
@@ -230,7 +242,7 @@ export default class Landing extends Component {
       }
       const sourceType = item?.type ?? itemURL;
       const sourceTypeText = sourceType ? `[${sourceType}]` : "";
-      this.setError(`${sourceTypeText} ${item.error}`);
+      this.setError(`${sourceTypeText} ${item.error}`, true);
     });
   }
 
@@ -293,59 +305,16 @@ export default class Landing extends Component {
     //can save other data if needed
   }
 
-  //hide and show sectioN(s) depending on config
-  setSectionVis() {
-    const summaryMap = this.state.summaryMap;
-    for (const key in summaryMap) {
-      let sectionsToBeHidden = [];
-      if (summaryMap[key]["sections"]) {
-        //hide sub section if any
-        summaryMap[key]["sections"].forEach((section) => {
-          if (
-            getEnv(`REACT_APP_SUBSECTION_${section.dataKey.toUpperCase()}`) ===
-            "hidden"
-          ) {
-            section["hideSection"] = true;
-            sectionsToBeHidden.push(section);
-          }
-        });
-        if (
-          sectionsToBeHidden.length !== summaryMap[key]["sections"].length &&
-          sectionsToBeHidden.length > 0
-        )
-          continue;
-      }
-      //hide main section if any
-      if (getEnv(`REACT_APP_SECTION_${key.toUpperCase()}`) === "hidden") {
-        summaryMap[key]["hideSection"] = true;
-      }
-    }
+  // hide and show section(s) depending on config
+  setSectionsVis() {
     this.setState({
       summaryMap: {
         ...this.state.summaryMap,
-        ...summaryMap,
+        ...landingUtils.setSectionsVis(this.state.summaryMap),
       },
     });
   }
 
-  /*
-   * fixed header when scrolling in the event that it is not within viewport
-   */
-  handleHeaderPos() {
-    document.addEventListener("scroll", () => {
-      clearTimeout(scrollHeaderIntervalId);
-      scrollHeaderIntervalId = setTimeout(
-        function () {
-          if (!isInViewport(this.anchorTopRef.current)) {
-            document.querySelector("body").classList.add("fixed");
-            return;
-          }
-          document.querySelector("body").classList.remove("fixed");
-        }.bind(this),
-        250
-      );
-    });
-  }
   async fetchExternalData(url, datasetKey, rootElement) {
     let dataSet = {};
     dataSet[datasetKey] = {};
@@ -414,16 +383,14 @@ export default class Landing extends Component {
     return dataSet;
   }
   /*
-   * function for retrieving data from other sources e.g. PDMP
+   * function for retrieving data from other sources e.g. education materials
    */
   async getExternalData() {
     let dataSet = {};
     const promiseResultSet = landingUtils.getExternalDataSources(summaryMap);
-
     if (!promiseResultSet.length) {
       return dataSet;
     }
-
     let results = await Promise.allSettled(
       promiseResultSet.map((item) => {
         return this.fetchExternalData(
@@ -481,6 +448,19 @@ export default class Landing extends Component {
         : result;
     });
     return dataSet;
+  }
+
+  setExternalDataFetchError(sectionKey, error) {
+    if (!sectionKey) return;
+    this.setState({
+      summaryMap: {
+        ...summaryMap,
+        [sectionKey]: {
+          ...summaryMap[sectionKey],
+          errorMessage: error,
+        },
+      },
+    });
   }
 
   getOverviewSectionKey() {
@@ -574,19 +554,6 @@ export default class Landing extends Component {
         },
       });
     }
-  }
-
-  setExternalDataFetchError(sectionKey, error) {
-    if (!sectionKey) return;
-    this.setState({
-      summaryMap: {
-        ...summaryMap,
-        [sectionKey]: {
-          ...summaryMap[sectionKey],
-          errorMessage: error,
-        },
-      },
-    });
   }
 
   handleSetActiveTab(index) {

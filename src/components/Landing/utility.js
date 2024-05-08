@@ -655,3 +655,32 @@ export function getProcessProgressDisplay(resourcesTypes) {
     stillLoading ? numResourcesLoaded : totalResources
   } loaded ...</span></div><div class='resources-container'>${loadedResources}</div></div>`;
 }
+export function setSectionsVis(summaryMap) {
+  if (!summaryMap) return null;
+  for (const key in summaryMap) {
+    let sectionsToBeHidden = [];
+    if (summaryMap[key]["sections"]) {
+      //hide sub section if any
+      summaryMap[key]["sections"].forEach((section) => {
+        if (
+          getEnv(`REACT_APP_SUBSECTION_${section.dataKey.toUpperCase()}`) ===
+          "hidden"
+        ) {
+          section["hideSection"] = true;
+          sectionsToBeHidden.push(section);
+        }
+      });
+      // only some of the subsections are hidden, so main section remains visible
+      if (
+        sectionsToBeHidden.length > 0 &&
+        sectionsToBeHidden.length < summaryMap[key]["sections"].length
+      )
+        continue;
+    }
+    //hide main section if any
+    if (getEnv(`REACT_APP_SECTION_${key.toUpperCase()}`) === "hidden") {
+      summaryMap[key]["hideSection"] = true;
+    }
+  }
+  return summaryMap;
+}
