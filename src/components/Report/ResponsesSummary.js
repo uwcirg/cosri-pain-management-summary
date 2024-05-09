@@ -62,6 +62,7 @@ export default class ResponsesSummary extends Component {
     if (
       !summary ||
       !summary.questionnaireItems ||
+      !Array.isArray(summary.questionnaireItems) ||
       !summary.questionnaireItems.length
     )
       return reportedAnswerValue;
@@ -394,15 +395,21 @@ export default class ResponsesSummary extends Component {
     const printOnlyTableElement = printOnlyContainerElement
       ? printOnlyContainerElement.querySelector("table")
       : null;
+    // contain only the latest responses
     const responsesTableElement = printOnlyTableElement
       ? printOnlyTableElement.cloneNode(true)
       : null;
     if (printOnlyTableElement)
       summaryElement.appendChild(responsesTableElement);
-    summaryElement.style.width = "1000px";
+    const objStyles = {
+      width: "1000px",
+      padding: "16px",
+      backgroundColor: "#FFF",
+    };
+    for (const prop in objStyles) {
+      summaryElement.style[prop] = objStyles[prop];
+    }
     summaryElement.classList.add("framed-border");
-    summaryElement.style.padding = "16px";
-    summaryElement.style.backgroundColor = "#FFF";
     document.querySelector("body").appendChild(summaryElement);
     return summaryElement;
   }

@@ -16,7 +16,7 @@ export default class BodyDiagram extends Component {
       summaryData: this.getPropSummaryData(),
       selectedDate: this.getMostRecentDate(),
       selectedIndex: 0,
-      dates: this.getPropDates(),
+      dates: this.getPropDates() ?? [],
     };
     // refs
     this.containerRef = React.createRef();
@@ -178,12 +178,17 @@ export default class BodyDiagram extends Component {
   }
 
   getPropDates() {
-    const summaryData = this.getPropSummaryData();
+    const summaryData = this.getPropSummaryData() ?? [];
     return summaryData.map((item) => item.date);
   }
 
+  hasSummaryData() {
+    const summaryData = this.getSummaryData();
+    return summaryData && Array.isArray(summaryData) && summaryData.length > 0;
+  }
+
   getSummaryData() {
-    return  this.getStateSummaryData() ?? this.getPropSummaryData();
+    return this.getStateSummaryData() ?? this.getPropSummaryData();
   }
 
   getPropSummaryData() {
@@ -192,7 +197,7 @@ export default class BodyDiagram extends Component {
       !Array.isArray(this.props.summary) ||
       !this.props.summary.length
     )
-      return [];
+      return null;
     return this.props.summary.sort((a, b) => {
       const date1 = toDate(a.date);
       const date2 = toDate(b.date);
@@ -211,6 +216,7 @@ export default class BodyDiagram extends Component {
   }
 
   getAnswerDataByDate(targetDate = this.state.selectedDate) {
+    if (!this.hasSummaryData()) return null;
     const selectedDate = targetDate;
     // const testData = [{
     //   back_left_posterior_neck: ["pain"],
@@ -224,8 +230,6 @@ export default class BodyDiagram extends Component {
     //   front_left_brow: ["severe_pain"],
     // }
     const summaryData = this.getSummaryData();
-    if (!summaryData || !Array.isArray(summaryData) || !summaryData.length)
-      return null;
     const responses = selectedDate
       ? summaryData.find((item) => item.date === selectedDate)
       : summaryData[0];
@@ -302,8 +306,8 @@ export default class BodyDiagram extends Component {
     }
   }
   renderDateSelector() {
+    if (!this.hasSummaryData()) return null;
     const summaryData = this.getSummaryData();
-    if (!summaryData) return null;
     const arrObjDates = summaryData.map((item) => {
       return {
         key: getDisplayDateFromISOString(item.date),
@@ -550,10 +554,11 @@ export default class BodyDiagram extends Component {
   }
   renderDots() {
     if (!this.shouldRenderNav()) return null;
-    const stateSummaryData = this.getSummaryData();
+    if (!this.hasSummaryData()) return null;
+    const summaryData = this.getSummaryData();
     return (
       <div className="exclude-from-copy dots-container print-hidden">
-        {stateSummaryData.map((item, index) => {
+        {summaryData.map((item, index) => {
           return (
             <div
               className={`dot ${
@@ -568,7 +573,7 @@ export default class BodyDiagram extends Component {
     );
   }
   render() {
-    if (!this.getSummaryData()) return null;
+    if (!this.hasSummaryData()) return null;
     const parentContainerStyle = {
       width: "100%",
     };
