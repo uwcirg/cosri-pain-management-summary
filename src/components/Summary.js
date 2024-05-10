@@ -57,6 +57,11 @@ export default class Summary extends Component {
     return this.props.summaryMap ?? defaultSummaryMap;
   }
 
+  isReportEnabled() {
+    const config_tab = getEnv("REACT_APP_TABS");
+    return config_tab && String(config_tab).includes("report");
+  }
+
   handleOpenModal = (modalSubSection, event) => {
     //only open modal  on 'enter' or click
     if (event.keyCode === 13 || event.type === "click") {
@@ -175,6 +180,20 @@ export default class Summary extends Component {
     });
 
     return flagText;
+  }
+
+  renderSectionAnchor(sectionId) {
+    return (
+      <div
+        id={`${sectionId}__anchor`}
+        key={`${sectionId}__anchor`}
+        style={{
+          position: "relative",
+          top: this.isReportEnabled() ? "-148px" : "-100px",
+          height: "2px",
+        }}
+      ></div>
+    );
   }
 
   renderGuideLine(subSection) {
@@ -512,8 +531,7 @@ export default class Summary extends Component {
   }
 
   renderSurveySummaryPanel(panel) {
-    const config_tab = getEnv("REACT_APP_TABS");
-    if (!config_tab || !String(config_tab).includes("report")) return null;
+    if (!this.isReportEnabled()) return null;
     let surveyData = this.props.summary[panel.data.dataSectionRefKey] || null;
     if (!surveyData) return null;
     return (
@@ -580,72 +598,79 @@ export default class Summary extends Component {
       const flaggedClass = flagged ? "flagged" : "";
       const omitTitleClass = subSection.omitTitle ? "sub-section-notitle" : "";
       return (
-        <div
-          key={`${subSection.dataKey}_${index}`}
-          className={`sub-section h3-wrapper  ${omitTitleClass}`}
-        >
-          {!subSection.omitTitle && (
-            <h3
-              id={`${subSection.dataKey}_title`}
-              className={`sub-section__header`}
-            >
-              {flaggedClass && (
-                <FontAwesomeIcon
-                  className={`flag flag-nav ${flaggedClass}`}
-                  icon={"circle"}
-                  title="flag"
-                  tabIndex={0}
-                />
-              )}
-              <span className="sub-section__header__name">
-                {subSection.name}
-              </span>
-              <span className="sub-section__header__info">
-                {subSection.info && (
-                  <div
-                    onClick={(event) => this.handleOpenModal(subSection, event)}
-                    onKeyDown={(event) =>
-                      this.handleOpenModal(subSection, event)
-                    }
-                    role="button"
+        <React.Fragment key={`subSectionHeader_container_${subSection.dataKey}`}>
+          {this.renderSectionAnchor(subSection.dataKey)}
+          <div
+            key={`${subSection.dataKey}_${index}`}
+            className={`sub-section h3-wrapper  ${omitTitleClass}`}
+          >
+            {!subSection.omitTitle && (
+              <h3
+                id={`${subSection.dataKey}_title`}
+                className={`sub-section__header`}
+              >
+                {flaggedClass && (
+                  <FontAwesomeIcon
+                    className={`flag flag-nav ${flaggedClass}`}
+                    icon={"circle"}
+                    title="flag"
                     tabIndex={0}
-                    aria-label={subSection.name}
-                  >
-                    <span
-                      className="info-icon"
-                      icon="info-circle"
-                      title={`more info: ${subSection.name}`}
-                      role="tooltip"
-                    >
-                      more info
-                    </span>
-                  </div>
+                  />
                 )}
-              </span>
-            </h3>
-          )}
-          {panels && (
-            <div className="panels">
-              {this.renderPanel(section, panels, "graph")}
-              {
-                <div className="sub-panels">
-                  {this.renderPanel(section, panels, "rxsummary")}
-                  {this.renderPanel(section, panels, "alerts")}
-                  {this.renderPanel(section, panels, "surveysummary")}
-                </div>
-              }
-            </div>
-          )}
-
-          {!hasEntries && !panels && this.renderNoEntries(section, subSection)}
-          {hasEntries &&
-            subSection.tables.map((table, index) =>
-              this.renderTable(table, entries, section, subSection, index)
+                <span className="sub-section__header__name" datasectionid={subSection.dataKey}>
+                  {subSection.name}
+                </span>
+                <span className="sub-section__header__info">
+                  {subSection.info && (
+                    <div
+                      onClick={(event) =>
+                        this.handleOpenModal(subSection, event)
+                      }
+                      onKeyDown={(event) =>
+                        this.handleOpenModal(subSection, event)
+                      }
+                      role="button"
+                      tabIndex={0}
+                      aria-label={subSection.name}
+                    >
+                      <span
+                        className="info-icon"
+                        icon="info-circle"
+                        title={`more info: ${subSection.name}`}
+                        role="tooltip"
+                      >
+                        more info
+                      </span>
+                    </div>
+                  )}
+                </span>
+              </h3>
             )}
-          {hasEntries &&
-            this.isSubsectionFlagged(section, subSection.dataKey) &&
-            this.renderGuideLine(subSection)}
-        </div>
+            {panels && (
+              <div className="panels">
+                {this.renderPanel(section, panels, "graph")}
+                {
+                  <div className="sub-panels">
+                    {this.renderPanel(section, panels, "rxsummary")}
+                    {this.renderPanel(section, panels, "alerts")}
+                    {this.renderPanel(section, panels, "surveysummary")}
+                  </div>
+                }
+              </div>
+            )}
+
+            {!hasEntries &&
+              !panels &&
+              this.renderNoEntries(section, subSection)}
+            {hasEntries &&
+              subSection.tables.map((table, index) =>
+                this.renderTable(table, entries, section, subSection, index)
+              )}
+            {hasEntries &&
+              this.isSubsectionFlagged(section, subSection.dataKey) &&
+              this.renderGuideLine(subSection)}
+          </div>
+        </React.Fragment>
       );
     });
     return (
@@ -726,35 +751,40 @@ export default class Summary extends Component {
     }
 
     return (
-      <h2 id={section} className="section__header">
-        <div className="section__header-title">
-          <span title={title}>{icon}</span>
-          <span className="title-text-container">
-            <span className="title-text">{title}</span>
-            <span className="info">
-              <span className="info-count-text">
-                {entryCount && entryCount}
+      <React.Fragment key={`sectionHeader_container_${section}`}>
+        {this.renderSectionAnchor(section)}
+        <h2 id={section} className="section__header" key={`section_${section}`}>
+          <div className="section__header-title">
+            <span title={title}>{icon}</span>
+            <span className="title-text-container">
+              <span className="title-text" datasectionid={section}>
+                {title}
               </span>
-              <FontAwesomeIcon
-                className={`flag flag-header ${flaggedClass}`}
-                icon="exclamation-circle"
-                title={flaggedText}
-                role="tooltip"
-                data-tip={flaggedText}
-                data-place="right"
-                data-type="error"
-                data-for="summaryTooltip"
-              />
+              <span className="info">
+                <span className="info-count-text">
+                  {entryCount && entryCount}
+                </span>
+                <FontAwesomeIcon
+                  className={`flag flag-header ${flaggedClass}`}
+                  icon="exclamation-circle"
+                  title={flaggedText}
+                  role="tooltip"
+                  data-tip={flaggedText}
+                  data-place="right"
+                  data-type="error"
+                  data-for="summaryTooltip"
+                />
+              </span>
             </span>
-          </span>
-        </div>
+          </div>
 
-        <FontAwesomeIcon
-          className="chevron"
-          icon="chevron-right"
-          title="expand/collapse"
-        />
-      </h2>
+          <FontAwesomeIcon
+            className="chevron"
+            icon="chevron-right"
+            title="expand/collapse"
+          />
+        </h2>
+      </React.Fragment>
     );
   }
 

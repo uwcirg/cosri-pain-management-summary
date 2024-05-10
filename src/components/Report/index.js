@@ -43,26 +43,46 @@ export default class Report extends Component {
     return reportUtil.getBodyDiagramData(summaryData);
   }
 
+  renderSectionAnchor(sectionId) {
+    return (
+      <div
+        id={`${sectionId}__anchor`}
+        style={{
+          position: "relative",
+          top: "-148px",
+          height: "2px",
+        }}
+      ></div>
+    );
+  }
+
   renderSectionHeader(section) {
     return (
-      <h2
-        id={`${section.dataKey}_section`}
-        className={`section__header ${
-          section.showHeaderInPrint ? "print-header" : ""
-        }`}
-      >
-        <div className="section__header-title">
-          {section.icon && <span title={section.title}>{section.icon()}</span>}
-          <span className="title-text-container">
-            <span className="title-text">{section.title}</span>
-          </span>
-        </div>
-        <FontAwesomeIcon
-          className="chevron"
-          icon="chevron-right"
-          title="expand/collapse"
-        />
-      </h2>
+      <React.Fragment key={`sectionHeader_container_${section}`}>
+        {this.renderSectionAnchor(section.dataKey)}
+        <h2
+          id={`${section.dataKey}_section`}
+          className={`section__header ${
+            section.showHeaderInPrint ? "print-header" : ""
+          }`}
+        >
+          <div className="section__header-title">
+            {section.icon && (
+              <span title={section.title}>{section.icon()}</span>
+            )}
+            <span className="title-text-container">
+              <span className="title-text" datasectionid={section.dataKey}>
+                {section.title}
+              </span>
+            </span>
+          </div>
+          <FontAwesomeIcon
+            className="chevron"
+            icon="chevron-right"
+            title="expand/collapse"
+          />
+        </h2>
+      </React.Fragment>
     );
   }
   renderSectionBody(summaryData, section) {
@@ -114,15 +134,22 @@ export default class Report extends Component {
   }
   renderSubSectionAnchor(item) {
     return (
-      <div id={`${item.dataKey}_anchor`} className="sub-section__anchor"></div>
+      <div
+        id={`${item.dataKey}_anchor`}
+        className="sub-section__anchor"
+        key={`${item.dataKey}_anchor`}
+      ></div>
     );
   }
   renderSubSectionHeader(item, summaryData) {
     return (
-      <h3 id={`${item.dataKey}_title`} className="sub-section__header">
-        {this.renderSubSectionTitle(item)}
-        {this.renderSubSectionInfo(item, summaryData)}
-      </h3>
+      <React.Fragment key={`sub-section_header_container_${item.dataKey}`}>
+        {this.renderSectionAnchor(item.dataKey)}
+        <h3 id={`${item.dataKey}_title`} className="sub-section__header">
+          {this.renderSubSectionTitle(item)}
+          {this.renderSubSectionInfo(item, summaryData)}
+        </h3>
+      </React.Fragment>
     );
   }
   renderSubSectionTitle(item) {
@@ -130,6 +157,7 @@ export default class Report extends Component {
       <span
         className="sub-section__header__name"
         style={{ fontWeight: 700, fontSize: "1.1em" }}
+        datasectionid={item.dataKey}
       >
         <FontAwesomeIcon
           className={`flag flag-nav`}

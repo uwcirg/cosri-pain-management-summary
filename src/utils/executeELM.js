@@ -13,7 +13,7 @@ import r4OMTKDataELM from "../cql/r4/OMTKData.json";
 import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import r4SurveyCommonELM from "../cql/r4/survey_resources/Common_LogicLibrary.json";
 import valueSetDB from "../cql/valueset-db.json";
-import { getEnv, fetchEnvData } from "./envConfig";
+import { getEnv } from "./envConfig";
 import { getReportInstrumentList } from "../helpers/utility";
 
 const noCacheHeader = {
@@ -23,7 +23,7 @@ const FHIR_RELEASE_VERSION_2 = 2;
 const FHIR_RELEASE_VERSION_4 = 4;
 
 async function executeELM(collector, oResourceTypes) {
-  fetchEnvData();
+  // fetchEnvData();
   let client, release, library;
   const resourceTypes = oResourceTypes || {};
   const INSTRUMENT_LIST = getReportInstrumentList();

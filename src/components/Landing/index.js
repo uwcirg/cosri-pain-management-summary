@@ -105,6 +105,7 @@ export default class Landing extends Component {
               },
               () => {
                 this.initEvents();
+                this.initializeTocBot();
               }
             );
             console.log("Query results ", result);
@@ -130,7 +131,6 @@ export default class Landing extends Component {
       !this.state.loading &&
       this.state.result
     ) {
-      this.initializeTocBot();
       this.setState({
         tocInitialized: true,
       });
@@ -191,6 +191,15 @@ export default class Landing extends Component {
       // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
       headingsOffset: 1 * MIN_HEADER_HEIGHT,
       scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+      onClick: (e) => {
+        e.preventDefault();
+        const anchorElement = document.querySelector(`#${e.target.getAttribute("datasectionid")}__anchor`);
+        if (anchorElement) {
+          setTimeout(() => anchorElement.scrollIntoView(true), 50);
+          return;
+        }
+        setTimeout(() => (e.target).scrollIntoView(true), 50);
+      }
     });
   }
 

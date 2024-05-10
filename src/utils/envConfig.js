@@ -12,13 +12,20 @@ export function fetchEnvData() {
       console.log("Request failed! ");
       return;
     }
-    var envObj = JSON.parse(xhr.responseText);
+    var envObj = null;
+    try {
+      envObj = JSON.parse(xhr.responseText);
+    } catch (e) {
+      console.log("Parsing error ", e);
+    }
     window["appConfig"] = {};
     //assign window process env variables for access by app
     //won't be overridden when Node initializing env variables
-    for (var key in envObj) {
-      if (!window["appConfig"][key]) {
-        window["appConfig"][key] = envObj[key];
+    if (envObj) {
+      for (var key in envObj) {
+        if (!window["appConfig"][key]) {
+          window["appConfig"][key] = envObj[key];
+        }
       }
     }
   };
@@ -34,7 +41,9 @@ export function fetchEnvData() {
     }
   };
   try {
-    xhr.send();
+    if (xhr) {
+      xhr.send();
+    }
   } catch (e) {
     console.log("Request failed to send.  Error: ", e);
   }
@@ -42,6 +51,11 @@ export function fetchEnvData() {
     // XMLHttpRequest timed out.
     console.log("request to fetch env.json file timed out ", e);
   };
+  xhr.onerror = (e) => {
+    console.log(e);
+
+  }
+  return xhr;
 }
 
 export function getEnv(key) {
