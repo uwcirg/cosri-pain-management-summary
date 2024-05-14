@@ -121,6 +121,7 @@ const reportConfig = [
               {
                 key: "responses",
                 description: "Responses",
+                number: 2
               },
             ]}
             {...props}

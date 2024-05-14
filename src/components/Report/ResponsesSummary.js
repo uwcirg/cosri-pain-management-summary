@@ -215,6 +215,7 @@ export default class ResponsesSummary extends Component {
               <th
                 key={`header_${column.key}_${index}`}
                 style={this.headerCellStyle}
+                colSpan={column.number ?? 1}
               >
                 {column.description}
               </th>
@@ -245,17 +246,20 @@ export default class ResponsesSummary extends Component {
               if (column.key === "score")
                 return this.renderScoreTableCell(
                   summary,
-                  `score_cell_${index}`
+                  `score_cell_${index}`,
+                  column
                 );
               else if (column.key === "responses_completed")
                 return this.renderNumResponsesTableCell(
                   summary,
-                  `${column.key}_index`
+                  `${column.key}_index`,
+                  column
                 );
               else if (column.key === "responses")
                 return this.renderResponsesLinkTableCell(
                   this.getDisplayDate(currentResponses),
-                  `responses_cell_${index}`
+                  `responses_cell_${index}`,
+                  column
                 );
               else {
                 if (currentResponses[column.key])
@@ -264,6 +268,7 @@ export default class ResponsesSummary extends Component {
                       className="text-center"
                       key={`${column.key}_${index}`}
                       valign="middle"
+                      colSpan={column.number ?? 1}
                     >
                       {currentResponses[column.key]}
                     </td>
@@ -294,7 +299,7 @@ export default class ResponsesSummary extends Component {
       </tbody>
     );
   }
-  renderScoreTableCell(summary, key) {
+  renderScoreTableCell(summary, key, props) {
     if (!this.hasResponses(summary))
       return (
         <td className="text-center" style={this.cellStyle}>
@@ -304,7 +309,12 @@ export default class ResponsesSummary extends Component {
     const score = summary.ResponsesSummary[0].score;
     const scoreParams = summary.ResponsesSummary[0];
     return (
-      <td className="text-center" key={key} style={this.cellStyle}>
+      <td
+        className="text-center"
+        key={key}
+        style={this.cellStyle}
+        colSpan={props && props.number ? props.number : 1}
+      >
         <Score
           score={score}
           scoreParams={scoreParams}
@@ -314,32 +324,48 @@ export default class ResponsesSummary extends Component {
       </td>
     );
   }
-  renderNumResponsesTableCell(summary, key) {
+  renderNumResponsesTableCell(summary, key, props) {
     if (!this.hasResponses(summary))
       return (
-        <td className="text-center" key={key} style={this.cellStyle}>
+        <td
+          className="text-center"
+          key={key}
+          style={this.cellStyle}
+          colSpan={props && props.number ? props.number : 1}
+        >
           --
         </td>
       );
     return (
-      <td className="text-center" key={key} style={this.cellStyle}>
+      <td
+        className="text-center"
+        key={key}
+        style={this.cellStyle}
+        colSpan={props && props.number ? props.number : 1}
+      >
         {this.getNumResponses(summary) || "--"}
       </td>
     );
   }
-  renderResponsesLinkTableCell(lastResponsesDate, key) {
+  renderResponsesLinkTableCell(lastResponsesDate, key, props) {
     return (
-      <td key={key} style={this.cellStyle}>
+      <td
+        key={key}
+        style={this.cellStyle}
+        colSpan={props && props.number ? props.number : 1}
+      >
         <div
           role="presentation"
           className={`link-container ${this.state.open ? "active" : ""}`}
         >
           <div className="flex" style={{ gap: "24px" }}>
-            <div>
+            <div className="flex">
               {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
+              <div className="exclude-from-copy">
+                {this.renderCopyButton()}
+              </div>
             </div>
             <div className="flex exclude-from-copy">
-              {this.renderCopyButton()}
               {this.renderViewButton()}
             </div>
           </div>
@@ -422,8 +448,8 @@ export default class ResponsesSummary extends Component {
         buildElementForCopy={() => this.buildElementForCopy()}
         buttonTitle="Click to copy summary of responses"
         buttonStyle={{
-          minWidth: "72px",
-          marginLeft: "24px",
+          minWidth: "56px",
+          marginLeft: "8px",
         }}
         afterCopy={() => this.afterCopy()}
       ></CopyButton>
@@ -450,7 +476,7 @@ export default class ResponsesSummary extends Component {
           });
         }}
       >
-        {this.state.open ? "Close" : "View"}
+        {this.state.open ? "Done Viewing" : "View All Responses"}
         <FontAwesomeIcon
           icon="chevron-right"
           title="expand/collapse"

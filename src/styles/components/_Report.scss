@@ -105,8 +105,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-right: 8px;
           .icon {
             margin-left: 4px;
+            cursor: pointer;
             &.arrow {
-              min-width: 102px;
+              min-width: 192px;
               svg {
                 transform: rotate(90deg);
               }
@@ -126,7 +127,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
               background-color: $link-color;
               border-color: $link-color;
               color: #fff;
-              cursor: pointer;
             }
           }
           .info-icon {
@@ -135,9 +135,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           }
           .date {
             margin-left: 4px;
-          }
-          &:hover {
-            cursor: pointer;
           }
           &.active {
             .arrow.icon {
