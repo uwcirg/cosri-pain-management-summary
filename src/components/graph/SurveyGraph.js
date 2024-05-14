@@ -634,6 +634,10 @@ export default class SurveyGraph extends Component {
         key: "Last 5 years",
         value: 5,
       },
+      {
+        key: "Last 10 years",
+        value: 10,
+      },
     ].filter((d) => {
       return d.value > minValue && d.value < maxValue;
     });
@@ -719,6 +723,7 @@ export default class SurveyGraph extends Component {
         display: displayValue,
       };
     });
+    const shouldRotateLabel = inYears && max >= 10;
     if (!arrNum.length) return null;
     return (
       <div className="slider-parent-container" ref={this.sliderContainerRef}>
@@ -745,7 +750,6 @@ export default class SurveyGraph extends Component {
               const prevComparedValue =
                 prevItem && prevItem.display ? prevItem.value : 0;
               const dataUnit = item < 1 ? "month" : "year";
-              const shouldRotateLabel = inYears && max >= 10;
               const tooCloseFlag =
                 index > 0 &&
                 mixedBags &&
@@ -775,7 +779,13 @@ export default class SurveyGraph extends Component {
             })}
           </div>
         </div>
-        <div className="bottom-info-text exclude-from-copy">date range</div>
+        <div
+          className={`bottom-info-text exclude-from-copy ${
+            shouldRotateLabel ? "gutter" : ""
+          }`}
+        >
+          date range
+        </div>
       </div>
     );
   }
@@ -808,7 +818,9 @@ export default class SurveyGraph extends Component {
       <div
         className="text-warning"
         style={{ margin: "8px", paddingLeft: "16px", paddingRight: "16px" }}
-      >{`No reportable data for ${noDataQids.join(", ")} ${dateRangeText}`}</div>
+      >{`No reportable data for ${noDataQids.join(
+        ", "
+      )} ${dateRangeText}`}</div>
     );
   }
   render() {
