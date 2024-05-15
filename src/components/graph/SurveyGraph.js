@@ -385,11 +385,9 @@ export default class SurveyGraph extends Component {
         (n) => n / 12
       );
       const arrDiffYears = getArrDiffYears().filter((item) => item > 1);
-      console.log("arrDiffYears ", arrDiffYears);
       if (!arrDiffYears.length) return arrMonths;
 
       const arrDiffMonths = getArrDiffYears().filter((item) => item < 1);
-      console.log("arrDiffMonths ", arrDiffMonths);
       return arrMonths.filter((m) => {
         return m >= arrDiffMonths[0];
       });
@@ -397,7 +395,6 @@ export default class SurveyGraph extends Component {
     const arrAllNum = [
       ...new Set([...getArrMonths(), ...createArrayInMonths(defaultMaxValue)]),
     ].sort((a, b) => a - b);
-    console.log("allNum ", arrAllNum);
     const arrNum = numYears > 1 ? arrAllNum : getArrMonths();
     return {
       arrNum: arrNum,
@@ -701,23 +698,34 @@ export default class SurveyGraph extends Component {
     const min = arrNum[0];
     const max = arrNum[arrNum.length - 1];
     const arrDisplayValues = arrNum.map((item, index) => {
-      const prevItem = index > 0 ? arrNum[index - 1] : null;
+      const prevItem =
+        index > 0
+          ? arrNum.find(
+              (n, i) =>
+                i < index &&
+                ( i === 0 ||
+                  (n < 1 && n % 0.25 === 0) ||
+                  (n < 1 && n % 0.5 === 0) ||
+                  (n < 1 && n % 0.75 === 0) ||
+                  n % 1 === 0)
+            )
+          : null;
       const shouldDisplay =
-        (max < 13) && (
-        index === 0 ||
-        index === arrNum.length - 1 ||
-        (prevItem > 1 && item > 1 && (item % 1 === 0)) ||
-        (prevItem && item - prevItem > 0.085));
-      // console.log(
-      //   "item ",
-      //   item,
-      //   " prev ",
-      //   prevItem,
-      //   " should display ",
-      //   shouldDisplay,
-      //   " max ",
-      //   max
-      // );
+        max < 13 &&
+        (index === 0 ||
+          index === arrNum.length - 1 ||
+          (prevItem > 1 && item > 1 && item % 1 === 0) ||
+          (prevItem && item - prevItem > 0.085));
+      console.log(
+        "item ",
+        item,
+        " prev ",
+        prevItem,
+        " should display ",
+        shouldDisplay,
+        " max ",
+        max
+      );
       const displayValue =
         item < 1 || !inYears
           ? !inYears
@@ -725,16 +733,16 @@ export default class SurveyGraph extends Component {
               ? item * 12 + "mo"
               : ""
             : item === arrNum[0] ||
-              (shouldDisplay && item - arrNum[0] > 0 && (item / 0.25) % 1 === 0) ||
-              (shouldDisplay && item - arrNum[0] > 0.25 && (item / 0.5) % 1 === 0) ||
-              (shouldDisplay && item - arrNum[0] > 0.25 && (item / 0.75) % 1 === 0)
+              (shouldDisplay && (item / 0.25) % 1 === 0) ||
+              (shouldDisplay && (item / 0.5) % 1 === 0) ||
+              (shouldDisplay && (item / 0.75) % 1 === 0)
             ? item
               ? (item * 12) % 12 === 0
                 ? item + "yr"
                 : item * 12 + "mo"
               : ""
             : ""
-          : shouldDisplay
+          : shouldDisplay & item % 1 === 0
           ? item + "yr"
           : "";
       return {
