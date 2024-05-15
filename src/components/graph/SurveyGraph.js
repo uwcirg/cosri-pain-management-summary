@@ -703,7 +703,7 @@ export default class SurveyGraph extends Component {
           ? arrNum.find(
               (n, i) =>
                 i < index &&
-                ( i === 0 ||
+                (i === 0 ||
                   (n < 1 && n % 0.25 === 0) ||
                   (n < 1 && n % 0.5 === 0) ||
                   (n < 1 && n % 0.75 === 0) ||
@@ -716,16 +716,16 @@ export default class SurveyGraph extends Component {
           index === arrNum.length - 1 ||
           (prevItem > 1 && item > 1 && item % 1 === 0) ||
           (prevItem && item - prevItem > 0.085));
-      console.log(
-        "item ",
-        item,
-        " prev ",
-        prevItem,
-        " should display ",
-        shouldDisplay,
-        " max ",
-        max
-      );
+      // console.log(
+      //   "item ",
+      //   item,
+      //   " prev ",
+      //   prevItem,
+      //   " should display ",
+      //   shouldDisplay,
+      //   " max ",
+      //   max
+      // );
       const displayValue =
         item < 1 || !inYears
           ? !inYears
@@ -742,7 +742,7 @@ export default class SurveyGraph extends Component {
                 : item * 12 + "mo"
               : ""
             : ""
-          : shouldDisplay & item % 1 === 0
+          : shouldDisplay & (item % 1 === 0)
           ? item + "yr"
           : "";
       return {
@@ -775,14 +775,26 @@ export default class SurveyGraph extends Component {
             {arrNum.map((item, index) => {
               const dataUnit = item < 1 ? "month" : "year";
               const displayValue = arrDisplayValues[index].display;
+              const diff = dataUnit === "year" ? 0.1 : 0.001;
+              const comparedVal = Math.abs(this.state.selectedDateRange - item);
+              // console.log(
+              //   "selected ",
+              //   this.state.selectedDateRange,
+              //   " item ",
+              //   item,
+              //   "compared va ",
+              //   comparedVal,
+              //   " diff ",
+              //   diff, 
+              //   "active ? ", 
+              //   comparedVal <= diff
+              // );
               return (
                 <span
                   key={`scale_${index}`}
-                  className={`label ${
-                    Math.abs(this.state.selectedDateRange - item) < 0.001
-                      ? "active"
-                      : ""
-                  } ${inYears && max >= 10 ? "rotate" : ""}`}
+                  className={`label  ${
+                    inYears && max >= 10 ? "rotate" : ""
+                  } ${comparedVal <= diff ? "active" : ""}`}
                   ref={this.scaleLabelRefs[index]}
                   datavalue={item}
                   displayvalue={displayValue}

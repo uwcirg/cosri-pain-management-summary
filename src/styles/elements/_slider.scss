@@ -47,11 +47,14 @@ input[type="range"] {
       &[displayvalue="19yr"],
       &[displayvalue="20yr"] {
         top: 16px;
+        &.active {
+          font-weight: 900;
+        }
       }
       
       transform: rotate(-75deg);
       &:not(:first-of-type) {
-        left: 12px;
+        left: 0px;
       }
       &:last-of-type {
         left: 4px;
