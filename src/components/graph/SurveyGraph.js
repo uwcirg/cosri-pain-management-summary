@@ -1073,30 +1073,27 @@ export default class SurveyGraph extends Component {
     };
 
     const renderNoStateEntry = () => {
+      const containerStyle = {
+        position: "absolute",
+        width: "calc(100% - 32px)",
+        height: "70%",
+        background: "#f4f5f64d",
+        left: "0",
+        zIndex: 100,
+        padding: "16px",
+      };
+      const textContainerStyle = {
+        padding: "32px 16px",
+        margin: "auto",
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        lineHeight: 1.5,
+      };
       return (
-        <div
-          className="flex flex-center text-warning"
-          style={{
-            position: "absolute",
-            width: "calc(100% - 32px)",
-            height: "70%",
-            background: "#f4f5f64d",
-            left: "0",
-            zIndex: 100,
-            padding: "16px",
-          }}
-        >
-          <div
-            style={{
-              padding: "32px 16px",
-              margin: "auto",
-              position: "relative",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              lineHeight: 1.5
-            }}
-          >
+        <div className="flex flex-center text-warning" style={containerStyle}>
+          <div style={textContainerStyle}>
             <FontAwesomeIcon icon="exclamation-circle" title="notice" />
             <div>{this.getNotInGraphMessage()}</div>
           </div>
