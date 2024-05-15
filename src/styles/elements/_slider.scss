@@ -28,6 +28,9 @@ input[type="range"] {
     &:first-of-type {
       flex: 0;
     }
+    &:not(:first-of-type, :last-of-type) {
+      left: 12px;
+    }
     &.active {
       color: $color-blue-dark;
       font-weight: 900;
