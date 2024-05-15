@@ -22,16 +22,15 @@ export default class Overview extends Component {
       justifyContent: "center",
       alignItems: "center",
     };
+    const noEntriesStyleClass = this.hasNoSummaryData(summary)
+      ? "no-entries"
+      : "";
     return (
       <div className="panel-container">
-        <div className="panel graph">
+        <div className={`panel graph ${noEntriesStyleClass}`}>
           <SurveyGraph data={graphData} ref={this.SurveyGraphRef}></SurveyGraph>
         </div>
-        <div
-          className={`panel ${
-            this.hasNoSummaryData(summary) ? "no-entries" : ""
-          }`}
-        >
+        <div className={`panel ${noEntriesStyleClass}`}>
           <div className="panel__item bordered full-width score-panel">
             <ScoringSummary
               summary={scoringData}

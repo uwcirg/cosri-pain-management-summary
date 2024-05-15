@@ -727,7 +727,7 @@ export default class SurveyGraph extends Component {
     if (!arrNum.length) return null;
     return (
       <div className="slider-parent-container" ref={this.sliderContainerRef}>
-        {!inYears && <div className="top-info-text">Last Year</div>}
+        {!inYears && <div className="top-info-text">Last 1 Year</div>}
         {inYears && (
           <div className="top-info-text">{this.renderDateRangeSelector()}</div>
         )}
@@ -805,22 +805,25 @@ export default class SurveyGraph extends Component {
     );
   }
 
-  renderNotInGraphMessage() {
-    if (!this.state.qids || !this.state.qids.length) return null;
-    if (!this.state.graphData || !this.state.graphData.length) return null;
+  getNotInGraphMessage() {
+    if (!this.state.qids || !this.state.qids.length) return "";
     const noDataQids = this.state.qids
       .filter((item) => !this.isSurveyInDateRange(item))
       .map((item) => String(item).toUpperCase());
-    if (!noDataQids.length) return null;
+    if (!noDataQids.length) return "";
     const dateRange = this.getDisplayDateRange();
     const dateRangeText = dateRange ? `in ${dateRange}` : "";
+    return `No reportable data for ${noDataQids.join(", ")} ${dateRangeText}`;
+  }
+
+  renderNotInGraphMessage() {
     return (
       <div
         className="text-warning"
         style={{ margin: "8px", paddingLeft: "16px", paddingRight: "16px" }}
-      >{`No reportable data for ${noDataQids.join(
-        ", "
-      )} ${dateRangeText}`}</div>
+      >
+        {this.getNotInGraphMessage()}
+      </div>
     );
   }
   render() {
@@ -1089,13 +1092,13 @@ export default class SurveyGraph extends Component {
               margin: "auto",
               position: "relative",
               display: "flex",
-              gap: "4px",
+              alignItems: "center",
+              gap: "8px",
+              lineHeight: 1.5
             }}
           >
             <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-            <div>{`No data for ${this.state.qids.join(
-              ", "
-            )} within this date range`}</div>
+            <div>{this.getNotInGraphMessage()}</div>
           </div>
         </div>
       );
@@ -1192,7 +1195,7 @@ export default class SurveyGraph extends Component {
               {this.renderLegend()}
             </div>
           </div>
-          {this.renderNotInGraphMessage()}
+          {!noStateEntry && this.renderNotInGraphMessage()}
           {this.renderPrintOnlyImage()}
         </div>
       </React.Fragment>

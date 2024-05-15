@@ -349,6 +349,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
     justify-content: center;
     .panel {
       border: 2px solid $color-black;
+      &.no-entries {
+        border: 1px solid $color-gray;
+      }
       padding: 8px;
       align-self: stretch;
       display: flex;
