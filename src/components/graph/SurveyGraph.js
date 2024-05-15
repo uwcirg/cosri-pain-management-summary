@@ -31,20 +31,12 @@ const yFieldName = defaultFields.y;
 export default class SurveyGraph extends Component {
   constructor() {
     super(...arguments);
-    const initData =
-      this.props.data && Array.isArray(this.props.data)
-        ? this.props.data.map((d) => {
-            d.qid = d.qid ? String(d.qid).toLowerCase() : "";
-            return d;
-          })
-        : [];
+    const initData = this.getInitData();
     this.state = {
       graphData: initData,
       originalGraphData: initData,
       selectedDateRange: this.getScaleInfoForSlider(initData).max,
-      qids: initData.length
-        ? [...new Set(initData.map((item) => item.qid))]
-        : [],
+      qids: this.getDefaultQIds(initData) ?? [],
       copyInProgress: false,
     };
     // This binding is necessary to make `this` work in the callback
@@ -75,6 +67,15 @@ export default class SurveyGraph extends Component {
       // rendering image for printing
       renderImageFromSVG(this.printImageRef.current, this.graphRef.current);
     }, 1500);
+  }
+
+  getInitData() {
+    return this.props.data && Array.isArray(this.props.data)
+      ? this.props.data.map((d) => {
+          d.qid = d.qid ? String(d.qid).toLowerCase() : "";
+          return d;
+        })
+      : [];
   }
 
   initSwitchCheckboxRefs() {
@@ -141,7 +142,8 @@ export default class SurveyGraph extends Component {
         : [];
     data = data.filter((d) => {
       const itemDate = toDate(d[xFieldName]);
-      return !isNaN(itemDate) && isNumber(d[yFieldName]);
+      const diffYears = getDifferenceInYears(itemDate, new Date());
+      return !isNaN(itemDate) && isNumber(d[yFieldName]) && diffYears < 13;
     });
 
     const years = this.getSelectedDateRangeInYears(
@@ -190,14 +192,12 @@ export default class SurveyGraph extends Component {
       monthsDiff: monthsDiff,
     };
   }
-  getQIds() {
-    if (
-      !this.state.originalGraphData ||
-      !Array.isArray(this.state.originalGraphData)
-    )
-      return [];
-    let srcData = this.state.originalGraphData.filter(
-      (item) => !isNaN(toDate(item[xFieldName])) && isNumber(item[yFieldName])
+  getDefaultQIds() {
+    let srcData = this.getInitData().filter(
+      (item) =>
+        !isNaN(toDate(item[xFieldName])) &&
+        item[yFieldName] !== null &&
+        isNumber(item[yFieldName])
     );
     return Array.from(new Set(srcData.map((item) => item.qid)));
   }
@@ -213,7 +213,7 @@ export default class SurveyGraph extends Component {
     return dataSource;
   }
   getLineAttributesByQId(qid) {
-    const qids = this.getQIds();
+    const qids = this.getDefaultQIds();
     const lineAttributes = qids.map((qid, index) => {
       return {
         id: qid,
@@ -385,14 +385,19 @@ export default class SurveyGraph extends Component {
         (n) => n / 12
       );
       const arrDiffYears = getArrDiffYears().filter((item) => item > 1);
+      console.log("arrDiffYears ", arrDiffYears);
       if (!arrDiffYears.length) return arrMonths;
+
+      const arrDiffMonths = getArrDiffYears().filter((item) => item < 1);
+      console.log("arrDiffMonths ", arrDiffMonths);
       return arrMonths.filter((m) => {
-        return m >= arrDiffYears[0];
+        return m >= arrDiffMonths[0];
       });
     };
     const arrAllNum = [
       ...new Set([...getArrMonths(), ...createArrayInMonths(defaultMaxValue)]),
     ].sort((a, b) => a - b);
+    console.log("allNum ", arrAllNum);
     const arrNum = numYears > 1 ? arrAllNum : getArrMonths();
     return {
       arrNum: arrNum,
@@ -484,7 +489,7 @@ export default class SurveyGraph extends Component {
   }
 
   populateLegendShapes() {
-    const qids = this.getQIds();
+    const qids = this.getDefaultQIds();
     qids.forEach((item, index) => {
       const attributes = this.getLineAttributesByQId(item);
       const markerType = attributes.markerType;
@@ -501,7 +506,7 @@ export default class SurveyGraph extends Component {
   }
 
   renderLegend() {
-    const qids = this.getQIds();
+    const qids = this.getDefaultQIds();
     return (
       <div className="legend-container">
         <div className="legend">
@@ -695,27 +700,41 @@ export default class SurveyGraph extends Component {
     const inYears = unit === "year";
     const min = arrNum[0];
     const max = arrNum[arrNum.length - 1];
-    // has date ranges in months and years
-    const mixedBags =
-      arrNum.find((item) => item < 1) && arrNum.find((item) => item >= 1);
-    const arrDisplayValues = arrNum.map((item) => {
+    const arrDisplayValues = arrNum.map((item, index) => {
+      const prevItem = index > 0 ? arrNum[index - 1] : null;
+      const shouldDisplay =
+        (max < 13) && (
+        index === 0 ||
+        index === arrNum.length - 1 ||
+        (prevItem > 1 && item > 1 && (item % 1 === 0)) ||
+        (prevItem && item - prevItem > 0.085));
+      // console.log(
+      //   "item ",
+      //   item,
+      //   " prev ",
+      //   prevItem,
+      //   " should display ",
+      //   shouldDisplay,
+      //   " max ",
+      //   max
+      // );
       const displayValue =
         item < 1 || !inYears
           ? !inYears
             ? item
               ? item * 12 + "mo"
-              : item
+              : ""
             : item === arrNum[0] ||
-              (max < 10 &&
-                item - arrNum[0] > 0.25 &&
-                (item / 0.25) % 1 === 0) ||
-              (max < 10 && item - arrNum[0] > 0.25 && (item / 0.5) % 1 === 0) ||
-              (max < 10 && item - arrNum[0] > 0.25 && (item / 0.75) % 1 === 0)
+              (shouldDisplay && item - arrNum[0] > 0 && (item / 0.25) % 1 === 0) ||
+              (shouldDisplay && item - arrNum[0] > 0.25 && (item / 0.5) % 1 === 0) ||
+              (shouldDisplay && item - arrNum[0] > 0.25 && (item / 0.75) % 1 === 0)
             ? item
-              ? item * 12 + "mo"
-              : item
+              ? (item * 12) % 12 === 0
+                ? item + "yr"
+                : item * 12 + "mo"
+              : ""
             : ""
-          : item % 1 === 0
+          : shouldDisplay
           ? item + "yr"
           : "";
       return {
@@ -746,20 +765,8 @@ export default class SurveyGraph extends Component {
           />
           <div className="scale">
             {arrNum.map((item, index) => {
-              const prevItem = arrDisplayValues[index - 1];
-              const prevComparedValue =
-                prevItem && prevItem.display ? prevItem.value : 0;
               const dataUnit = item < 1 ? "month" : "year";
-              const tooCloseFlag =
-                index > 0 &&
-                mixedBags &&
-                prevComparedValue &&
-                Math.abs(item - prevComparedValue) <= 0.2;
-              const displayValue =
-                !shouldRotateLabel && tooCloseFlag
-                  ? ""
-                  : arrDisplayValues[index].display;
-
+              const displayValue = arrDisplayValues[index].display;
               return (
                 <span
                   key={`scale_${index}`}
@@ -1083,7 +1090,7 @@ export default class SurveyGraph extends Component {
         padding: "16px",
       };
       const textContainerStyle = {
-        padding: "32px 16px",
+        padding: "32px 0",
         margin: "auto",
         position: "relative",
         display: "flex",
