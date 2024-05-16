@@ -171,6 +171,8 @@ export default class Report extends Component {
   }
   renderSubSectionInfo(sectionItem, summaryData) {
     if (!summaryData) return null;
+    if (!summaryData.Questionnaire) return null;
+    if (!sectionItem) return null;
     let item = sectionItem;
     item.description = getQuestionnaireDescription(summaryData.Questionnaire);
 
@@ -203,7 +205,6 @@ export default class Report extends Component {
       <div className="flex flex-start summary__notice">
         <FontAwesomeIcon icon="exclamation-circle" title="notice" />
         The system indicates that there is no reportable data for this patient.
-        If you believe this is an error, please contact us.
       </div>
     );
   }
