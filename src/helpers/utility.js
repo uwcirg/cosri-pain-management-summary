@@ -432,6 +432,23 @@ export function getDifferenceInYears(fromDate, toDate) {
 
 export function getQuestionnaireDescription(fhirQuestionnaire) {
   if (!fhirQuestionnaire) return "";
+  if (!fhirQuestionnaire.description) {
+    if (fhirQuestionnaire.item && Array.isArray(fhirQuestionnaire.item)) {
+      const introElement = fhirQuestionnaire.item.find(
+        (child) => child.linkId && child.linkId.value === "introduction"
+      );
+      if (introElement) {
+        if (
+          introElement.text &&
+          introElement.text.extension &&
+          introElement.text.extension[0]
+        ) {
+          return introElement.text.extension[0].value.value;
+        }
+      }
+    }
+    return "";
+  }
   const commonmark = require("commonmark");
   const reader = new commonmark.Parser({ smart: true });
   const writer = new commonmark.HtmlRenderer({
@@ -567,6 +584,6 @@ export function getErrorMessageString(error, defaultMessage) {
       ? error.toString()
       : typeof error === "string"
       ? error.replace(/<\/?[^>]+(>|$)/g, "")
-      : (defaultMessage??`Error occurred retrieving data`)
+      : defaultMessage ?? `Error occurred retrieving data`
     : "";
 }
