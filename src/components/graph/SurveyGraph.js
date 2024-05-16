@@ -28,6 +28,7 @@ const defaultFields = {
 };
 const xFieldName = defaultFields.x;
 const yFieldName = defaultFields.y;
+const MAX_ALLOWED_NUM_YEARS = 13;
 export default class SurveyGraph extends Component {
   constructor() {
     super(...arguments);
@@ -143,7 +144,11 @@ export default class SurveyGraph extends Component {
     data = data.filter((d) => {
       const itemDate = toDate(d[xFieldName]);
       const diffYears = getDifferenceInYears(itemDate, new Date());
-      return !isNaN(itemDate) && isNumber(d[yFieldName]) && diffYears < 13;
+      return (
+        !isNaN(itemDate) &&
+        isNumber(d[yFieldName]) &&
+        diffYears < MAX_ALLOWED_NUM_YEARS
+      );
     });
 
     const years = this.getSelectedDateRangeInYears(
@@ -711,11 +716,10 @@ export default class SurveyGraph extends Component {
             )
           : null;
       const shouldDisplay =
-        max < 13 &&
-        (index === 0 ||
-          index === arrNum.length - 1 ||
-          (prevItem > 1 && item > 1 && item % 1 === 0) ||
-          (prevItem && item - prevItem > 0.085));
+        index === 0 ||
+        index === arrNum.length - 1 ||
+        (prevItem > 1 && item > 1 && item % 1 === 0) ||
+        (prevItem && item - prevItem > 0.085);
       // console.log(
       //   "item ",
       //   item,
@@ -785,16 +789,16 @@ export default class SurveyGraph extends Component {
               //   "compared va ",
               //   comparedVal,
               //   " diff ",
-              //   diff, 
-              //   "active ? ", 
+              //   diff,
+              //   "active ? ",
               //   comparedVal <= diff
               // );
               return (
                 <span
                   key={`scale_${index}`}
-                  className={`label  ${
-                    inYears && max >= 10 ? "rotate" : ""
-                  } ${comparedVal <= diff ? "active" : ""}`}
+                  className={`label  ${inYears && max >= 10 ? "rotate" : ""} ${
+                    comparedVal <= diff ? "active" : ""
+                  }`}
                   ref={this.scaleLabelRefs[index]}
                   datavalue={item}
                   displayvalue={displayValue}
