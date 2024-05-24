@@ -13,16 +13,27 @@ export default class SideNav extends Component {
     this.handleResize = this.handleResize.bind(this);
   }
 
+  handleRootClass() {
+    if (this.state.showNav)
+      document.querySelector("#root").classList.remove("collapsed");
+    else
+      document.querySelector("#root").classList.add("collapsed");
+  }
+
   handleNavToggle(e) {
     e.preventDefault();
-    this.setState((state) => ({
-      showNav: !state.showNav,
-    }));
+    this.setState({
+      showNav: !this.state.showNav,
+    }, () => {
+      this.handleRootClass();
+    });
   }
 
   handleResize() {
     this.setState({
       showNav: window.innerWidth <= 1360 ? false : true,
+    }, () => {
+      this.handleRootClass();
     });
   }
 
