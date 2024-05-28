@@ -24,7 +24,8 @@ export default class ResponsesSummary extends Component {
     const BORDER_COLOR = "#f3f6f9";
     const HEADER_BORDER_COLOR = "#217684";
     this.tableStyle = {
-      borderCollapse: "collapse",
+      borderCollapse: "separate",
+      borderSpacing: 0,
       border: `1px solid ${BORDER_COLOR}`,
       padding: "4px",
     };
@@ -147,7 +148,7 @@ export default class ResponsesSummary extends Component {
     return (
       <table
         className={`response-table ${this.state.open ? "active" : ""}`}
-        style={{ borderCollapse: "collapse" }}
+        style={this.tableStyle}
       >
         <thead>
           <tr>

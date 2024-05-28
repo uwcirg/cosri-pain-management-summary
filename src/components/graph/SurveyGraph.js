@@ -421,7 +421,7 @@ export default class SurveyGraph extends Component {
     const selectedRange = parseFloat(this.state.selectedDateRange);
     if (selectedRange <= 1) {
       if (selectedRange === 1) {
-        return "Last 1 year";
+        return "Past 1 year";
       }
       const AVG_DAYS_IN_MONTH = 30;
       let months = Math.floor(selectedRange * 12);
@@ -450,7 +450,7 @@ export default class SurveyGraph extends Component {
           : "";
       if (!monthsDisplay && !daysDisplay) return "";
 
-      return `Last ${monthsDisplay} ${daysDisplay}`.trim();
+      return `Past ${monthsDisplay} ${daysDisplay}`.trim();
     }
     const numMonths = Math.round(
       (selectedRange - Math.floor(selectedRange)) * 12
@@ -462,7 +462,7 @@ export default class SurveyGraph extends Component {
         ? "~ " + numMonths + "  " + (numMonths > 1 ? "months" : "month")
         : "";
     const yearsDisplay = years + " " + (years > 1 ? "years" : "year");
-    return `Last ${yearsDisplay} ${monthsDisplay}`.trim();
+    return `Past ${yearsDisplay} ${monthsDisplay}`.trim();
   }
 
   beforeCopy() {
@@ -600,7 +600,7 @@ export default class SurveyGraph extends Component {
   }
 
   renderPrintOnlyDateRange() {
-    return <h4 className="print-only">Last 2 years</h4>;
+    return <h4 className="print-only">Past 2 years</h4>;
   }
 
   renderDateRangeSelector() {
@@ -622,27 +622,27 @@ export default class SurveyGraph extends Component {
     // );
     let items = [
       {
-        key: "Last 6 months",
+        key: "Past 6 months",
         value: 0.5,
       },
       {
-        key: "Last 9 months",
+        key: "Past 9 months",
         value: 0.75,
       },
       {
-        key: "Last 1 year",
+        key: "Past 1 year",
         value: 1,
       },
       {
-        key: "Last 2 years",
+        key: "Past 2 years",
         value: 2,
       },
       {
-        key: "Last 5 years",
+        key: "Past 5 years",
         value: 5,
       },
       {
-        key: "Last 10 years",
+        key: "Past 10 years",
         value: 10,
       },
     ].filter((d) => {
@@ -651,7 +651,7 @@ export default class SurveyGraph extends Component {
 
     if (maxValue >= 1) {
       items.push({
-        key: `Last ${maxValue} year${maxValue > 1 ? "s" : ""}`,
+        key: `Past ${maxValue} year${maxValue > 1 ? "s" : ""}`,
         value: maxValue,
       });
     }
@@ -758,7 +758,7 @@ export default class SurveyGraph extends Component {
     if (!arrNum.length) return null;
     return (
       <div className="slider-parent-container" ref={this.sliderContainerRef}>
-        {!inYears && <div className="top-info-text">Last 1 Year</div>}
+        {!inYears && <div className="top-info-text">Past 1 Year</div>}
         {inYears && (
           <div className="top-info-text">{this.renderDateRangeSelector()}</div>
         )}
@@ -843,8 +843,8 @@ export default class SurveyGraph extends Component {
       .map((item) => String(item).toUpperCase());
     if (!noDataQids.length) return "";
     const dateRange = this.getDisplayDateRange();
-    const dateRangeText = dateRange ? `in ${dateRange}` : "";
-    return `No reportable data for ${noDataQids.join(", ")} ${dateRangeText}`;
+    const dateRangeText = dateRange ? `in the ${dateRange}` : "";
+    return `No reportable data for ${noDataQids.join(", ")} ${dateRangeText.toLowerCase()}`;
   }
 
   renderNotInGraphMessage() {
