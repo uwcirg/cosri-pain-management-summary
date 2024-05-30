@@ -470,12 +470,19 @@ export function toDate(stringDate) {
 
 export function getPatientNameFromSource(fhirPatientSource) {
   if (!fhirPatientSource) return "";
-  if (!fhirPatientSource.name || !fhirPatientSource.name.length) return "";
+  if (
+    !fhirPatientSource.name ||
+    !Array.isArray(fhirPatientSource.name) ||
+    !fhirPatientSource.name.length
+  )
+    return "";
+  const officialName = fhirPatientSource.name.find(
+    (item) => item.use === "official"
+  );
+  const useName = officialName ? officialName : fhirPatientSource.name[0];
   const firstName =
-    fhirPatientSource.name[0].given && fhirPatientSource.name[0].given.length
-      ? fhirPatientSource.name[0].given[0]
-      : "";
-  const lastName = fhirPatientSource.name[0].family;
+    useName.given && useName.given.length ? useName.given[0] : "";
+  const lastName = useName.family;
   return [firstName, lastName].join(" ");
 }
 
