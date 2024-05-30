@@ -713,7 +713,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
             width: calc(100% - 16rem);
           }
           @media (min-width: 1200px) {
-            width: 100%;
+            width: calc(100% - 24px);
           }
         }
       }
