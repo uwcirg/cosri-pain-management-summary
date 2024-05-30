@@ -575,7 +575,7 @@ export default class BodyDiagram extends Component {
   render() {
     if (!this.hasSummaryData()) return null;
     const parentContainerStyle = {
-      width: "100%",
+      width: "calc(100% - 24px)",
     };
     const mainContainerStyle = {
       backgroundColor: "#FFF",
@@ -618,7 +618,7 @@ export default class BodyDiagram extends Component {
           </div>
           {this.renderPrintOnlyImage()}
         </div>
-        <div className="flex flex-center flex-column">
+        <div className="flex flex-center flex-column" style={{backgroundColor: "#FFF"}}>
           {this.renderNavButtons()}
           {this.renderDots()}
         </div>
