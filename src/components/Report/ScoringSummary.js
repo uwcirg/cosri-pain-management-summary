@@ -12,9 +12,7 @@ import {
   isNumber,
   toDate,
 } from "../../helpers/utility";
-import {
-  hasNoSummaryData
-} from "./utility"
+import { hasNoSummaryData } from "./utility";
 export default class ScoringSummary extends Component {
   constructor() {
     super(...arguments);
@@ -30,7 +28,7 @@ export default class ScoringSummary extends Component {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      backgroundColor: "#FFF"
+      backgroundColor: "#FFF",
     };
     this.tableStyle = {
       border: `1px solid ${BORDER_COLOR}`,
@@ -296,6 +294,18 @@ export default class ScoringSummary extends Component {
       ></CopyButton>
     );
   }
+  renderCaption(shouldShowCopyButton) {
+    return (
+      <caption style={{ margin: "0 0 4px" }}>
+        <div style={this.captionRowStyle}>
+          {this.renderTitle()}
+          <div style={{ textAlign: "right" }}>
+            {shouldShowCopyButton && this.renderCopyButton()}
+          </div>
+        </div>
+      </caption>
+    );
+  }
   renderTitle() {
     return (
       <h3
@@ -305,7 +315,7 @@ export default class ScoringSummary extends Component {
           fontSize: "1em",
           marginTop: 0,
           marginBlockStart: 0,
-          marginBlockEnd: 0
+          marginBlockEnd: 0,
         }}
       >
         {this.getTitleDisplay()}
@@ -323,14 +333,7 @@ export default class ScoringSummary extends Component {
           ref={this.tableRef}
           style={this.tableStyle}
         >
-          <caption style={{margin: "0 0 4px"}}>
-            <div style={this.captionRowStyle}>
-              {this.renderTitle()}
-              <div style={{ textAlign: "right" }}>
-                {!noSummaryData && !readOnly && this.renderCopyButton()}
-              </div>
-            </div>
-          </caption>
+          {this.renderCaption(!noSummaryData && !readOnly)}
           {!noSummaryData && this.renderTableHeaders()}
           <tbody>
             {noSummaryData && this.renderNoDataRow()}
@@ -346,5 +349,5 @@ ScoringSummary.propTypes = {
   title: PropTypes.string,
   summary: PropTypes.array,
   showAnchorLinks: PropTypes.bool,
-  readOnly: PropTypes.bool
+  readOnly: PropTypes.bool,
 };

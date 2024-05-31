@@ -91,8 +91,9 @@ export default class RankedResponses extends Component {
     const BORDER_COLOR = "#777";
     const HEADER_BORDER_COLOR = "#217684";
     this.tableStyle = {
-      borderCollapse: "collapse",
-      border: `1px solid ${BORDER_COLOR}`,
+      borderCollapse: "separate",
+      borderSpacing: 0,
+      border: 0,
       tableLayout: "fixed",
       width: "auto",
       margin: 0,
@@ -104,6 +105,10 @@ export default class RankedResponses extends Component {
       padding: "8px 12px",
       backgroundColor: "#FFF",
       whiteSpace: "nowrap",
+    };
+    this.titleCellStyle = {
+      ...this.cellStyle,
+      fontWeight: 600,
     };
     this.headerCellStyle = {
       borderTop: `1px solid ${BORDER_COLOR}`,
@@ -225,13 +230,9 @@ export default class RankedResponses extends Component {
           style={buttonStyle}
           onClick={this.handleClickPrevButton}
           className={this.state.selectedIndex <= 0 ? "disabled" : ""}
+          title="Less"
         >
-          <FontAwesomeIcon
-            icon="chevron-left"
-            title="Less"
-            style={{ marginRight: "4px" }}
-          ></FontAwesomeIcon>
-          Show Less
+          <FontAwesomeIcon icon="minus"></FontAwesomeIcon>
         </button>
         <button
           style={buttonStyle}
@@ -241,13 +242,9 @@ export default class RankedResponses extends Component {
               ? "disabled"
               : ""
           }
+          title="More"
         >
-          Show More
-          <FontAwesomeIcon
-            icon="chevron-right"
-            title="Next"
-            style={{ marginLeft: "4px" }}
-          ></FontAwesomeIcon>
+          <FontAwesomeIcon icon="plus"></FontAwesomeIcon>
         </button>
         {/* <FontAwesomeIcon
           icon="angle-double-right"
@@ -271,7 +268,7 @@ export default class RankedResponses extends Component {
           return (
             <div
               className={`dot ${
-                index === this.state.selectedIndex ? "active" : ""
+                index <= this.state.selectedIndex ? "active" : ""
               }`}
               key={`dot_${index}`}
               title={`${item}`}
@@ -320,7 +317,7 @@ export default class RankedResponses extends Component {
     return (
       <tbody>
         <tr>
-          <td style={this.cellStyle} className="fixed-cell">
+          <td style={this.titleCellStyle} className="fixed-cell">
             1st
           </td>
           {this.state.dates.map((date, index) => {
@@ -328,7 +325,7 @@ export default class RankedResponses extends Component {
           })}
         </tr>
         <tr>
-          <td style={this.cellStyle} className="fixed-cell">
+          <td style={this.titleCellStyle} className="fixed-cell">
             2nd
           </td>
           {this.state.dates.map((date, index) => {
@@ -336,7 +333,7 @@ export default class RankedResponses extends Component {
           })}
         </tr>
         <tr>
-          <td style={this.cellStyle} className="fixed-cell">
+          <td style={this.titleCellStyle} className="fixed-cell">
             3rd
           </td>
           {this.state.dates.map((date, index) => {
@@ -366,28 +363,38 @@ export default class RankedResponses extends Component {
     );
   }
   render() {
+    const containerStyle = { padding: "16px 24px", position: "relative" };
+    const dotsContainerStyle = {
+      minWidth: "120px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    };
+    const navContainerStyle = {
+      position: "relative",
+      overflow: "auto",
+    };
     return (
       <div
         className="flex flex-column flex-gap-2 flex-align-start"
-        style={{ padding: "16px 24px", position: "relative" }}
+        style={containerStyle}
       >
         <div
-          style={{
-            position: "relative",
-            overflow: "auto",
-            maxWidth: "90%",
-          }}
-          className="responses-table-outer-wrapper"
+          style={navContainerStyle}
+          className="responses-table-outer-wrapper slide-table-container"
         >
           <table className="table" style={this.tableStyle}>
             {this.renderTableHeader()}
             {this.renderTableBody()}
           </table>
         </div>
-        <div className="flex flex-column">
+        <div
+          className="flex flex-column"
+          style={{ justifyContent: "flex-start", alignItems: "flex-start" }}
+        >
           {this.renderNavTitle()}
           {this.renderNavButtons()}
-          <div>{this.renderDots()}</div>
+          <div style={dotsContainerStyle}>{this.renderDots()}</div>
         </div>
       </div>
     );

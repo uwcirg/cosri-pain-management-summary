@@ -25,12 +25,17 @@ export default class Overview extends Component {
     const noEntriesStyleClass = this.hasNoSummaryData(summary)
       ? "no-entries"
       : "";
+    if (this.hasNoSummaryData(summary)) {
+      return (
+        <div class={`overview ${noEntriesStyleClass}`}>No data to show</div>
+      );
+    }
     return (
       <div className="panel-container">
-        <div className={`panel graph ${noEntriesStyleClass}`}>
+        <div className={`panel graph`}>
           <SurveyGraph data={graphData} ref={this.SurveyGraphRef}></SurveyGraph>
         </div>
-        <div className={`panel ${noEntriesStyleClass}`}>
+        <div className={`panel`}>
           <div className="panel__item bordered full-width score-panel">
             <ScoringSummary
               summary={scoringData}

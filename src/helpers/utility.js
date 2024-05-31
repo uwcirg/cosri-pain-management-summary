@@ -469,8 +469,8 @@ export function toDate(stringDate) {
 }
 
 export function getPatientNameFromSource(fhirPatientSource) {
-  if (!fhirPatientSource) return "";
   if (
+    !fhirPatientSource ||
     !fhirPatientSource.name ||
     !Array.isArray(fhirPatientSource.name) ||
     !fhirPatientSource.name.length
@@ -482,7 +482,7 @@ export function getPatientNameFromSource(fhirPatientSource) {
   const useName = officialName ? officialName : fhirPatientSource.name[0];
   const firstName =
     useName.given && useName.given.length ? useName.given[0] : "";
-  const lastName = useName.family;
+  const lastName = useName.family??"";
   return [firstName, lastName].join(" ");
 }
 

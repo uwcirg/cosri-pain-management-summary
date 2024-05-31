@@ -62,10 +62,10 @@ export default class Landing extends Component {
     // hide section(s) per config
     this.setSectionsVis();
     let result = {};
-    Promise.all([executeElm(this.state.collector, this.state.resourceTypes)])
+    executeElm(this.state.collector, this.state.resourceTypes)
       .then((response) => {
         //set FHIR results
-        let fhirData = response[0];
+        let fhirData = response;
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         const { sectionFlags, flaggedCount } = this.processSummary(
           result.Summary
@@ -82,7 +82,7 @@ export default class Landing extends Component {
         writeToLog("application loaded", "info", {
           patientName: this.getPatientName(),
         });
-        //add data from other sources, e.g. PDMP
+        //add data from other sources, e.g. education materials
         this.getExternalData()
           .then((externalDataSet) => {
             result["Summary"] = { ...result["Summary"], ...externalDataSet };
@@ -193,13 +193,15 @@ export default class Landing extends Component {
       scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
       onClick: (e) => {
         e.preventDefault();
-        const anchorElement = document.querySelector(`#${e.target.getAttribute("datasectionid")}__anchor`);
+        const anchorElement = document.querySelector(
+          `#${e.target.getAttribute("datasectionid")}__anchor`
+        );
         if (anchorElement) {
           setTimeout(() => anchorElement.scrollIntoView(true), 50);
           return;
         }
-        setTimeout(() => (e.target).scrollIntoView(true), 50);
-      }
+        setTimeout(() => e.target.scrollIntoView(true), 50);
+      },
     });
   }
 

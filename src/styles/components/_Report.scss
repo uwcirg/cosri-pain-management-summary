@@ -622,6 +622,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
   .no-entries {
     font-style: italic;
     color: #58676a;
+    &.overview {
+      padding: 24px;
+    }
   }
   .accordion-content {
     overflow: hidden;

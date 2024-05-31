@@ -74,7 +74,7 @@ export default class Summary extends Component {
   };
 
   getSectionEntryCounts(section) {
-    let summary = this.props.summary;
+    let summary = this.props.summary ?? {};
     let count = 0;
     const summaryMap = this.getSummaryMap();
     if (summary[section] && summaryMap[section]["sections"]) {
@@ -97,9 +97,10 @@ export default class Summary extends Component {
 
   isSectionFlagged(section) {
     const { sectionFlags } = this.props;
-    const subSections = sectionFlags[section]
-      ? Object.keys(sectionFlags[section])
-      : null;
+    const subSections =
+      sectionFlags && sectionFlags[section]
+        ? Object.keys(sectionFlags[section])
+        : null;
 
     if (!subSections) {
       return false;
@@ -116,6 +117,7 @@ export default class Summary extends Component {
 
   getSectionFlagClass(section) {
     const { sectionFlags } = this.props;
+    if (!sectionFlags) return "";
     const subSections = sectionFlags[section]
       ? Object.keys(sectionFlags[section])
       : null;
@@ -135,12 +137,13 @@ export default class Summary extends Component {
 
   getSectionFlagCount(section) {
     const { sectionFlags } = this.props;
+    if (!sectionFlags) return null;
     const subSections = sectionFlags[section]
       ? Object.keys(sectionFlags[section])
       : null;
 
     if (!subSections) {
-      return false;
+      return null;
     }
 
     let count = 0;
@@ -155,7 +158,11 @@ export default class Summary extends Component {
 
   isSubsectionFlagged(section, subSection) {
     const { sectionFlags } = this.props;
-    if (!sectionFlags[section] || !sectionFlags[section][subSection]) {
+    if (
+      !sectionFlags ||
+      !sectionFlags[section] ||
+      !sectionFlags[section][subSection]
+    ) {
       return false;
     }
     if (sectionFlags[section][subSection] === true) {
@@ -172,7 +179,13 @@ export default class Summary extends Component {
     const { sectionFlags } = this.props;
 
     let flagText = "";
-    if (!sectionFlags[section][subSection]) return "";
+    if (
+      !sectionFlags ||
+      !sectionFlags[section] ||
+      !sectionFlags[section][subSection] ||
+      !entry
+    )
+      return "";
     sectionFlags[section][subSection].forEach((flag) => {
       if (flag.entryId === entry._id) {
         flagText = flag.flagText + (flag.flagClass ? "|" + flag.flagClass : "");
@@ -224,9 +237,10 @@ export default class Summary extends Component {
 
   renderNoEntries(section, subSection) {
     const { sectionFlags } = this.props;
-    let subSectionFlags = sectionFlags[section]
-      ? sectionFlags[section][subSection.dataKey]
-      : null;
+    let subSectionFlags =
+      sectionFlags && sectionFlags[section]
+        ? sectionFlags[section][subSection.dataKey]
+        : null;
     let flagEntries = [];
     let flagContent = "";
     let guidelineContent = this.renderGuideLine(subSection);
@@ -267,7 +281,7 @@ export default class Summary extends Component {
   renderTable(table, entries, section, subSection, index) {
     // If a filter is provided, only render those things that have the filter field (or don't have it when it's negated)
     let filteredEntries = entries;
-    if (table.filter && table.filter.length > 0) {
+    if (table && table.filter && table.filter.length > 0) {
       // A filter starting with '!' is negated (looking for absence of that field)
       const negated = table.filter[0] === "!";
       const filter = negated ? table.filter.substring(1) : table.filter;
@@ -275,7 +289,7 @@ export default class Summary extends Component {
         negated ? e[filter] == null : e[filter] != null
       );
     }
-    if (filteredEntries.length === 0) return null;
+    if (!filteredEntries || filteredEntries.length === 0) return null;
 
     //ReactTable needs an ID for aria-describedby
     let tableID = `${subSection.dataKey}_table`;
@@ -407,7 +421,7 @@ export default class Summary extends Component {
           getTheadThProps={(state, rowInfo, column, instance) => {
             return {
               tabIndex: 0,
-              onKeyPress: (e, handleOriginal) => {
+              onKeyPress: (e) => {
                 if (e.which === 13) {
                   instance.sortColumn(column);
                   e.stopPropagation();
@@ -433,6 +447,7 @@ export default class Summary extends Component {
   }
 
   renderGraph(panel) {
+    if (!panel) return null;
     if (panel.graphType === "MED") {
       let data = this.props.summary[panel.dataSectionRefKey];
       const mmeErrors = this.props.mmeErrors;
@@ -443,31 +458,35 @@ export default class Summary extends Component {
   }
 
   renderRxSummaryPanel(panel) {
-    let panelSet = this.props.summary[panel.statsData.dataSectionRefKey];
-    let rxPanel = panelSet ? panelSet[panel.statsData.objectKey] : null;
-    let rxData = panelSet && rxPanel ? rxPanel : [];
+    let panelSet = this.props.summary[panel?.statsData?.dataSectionRefKey];
+    let rxPanel = panelSet ? panelSet[panel?.statsData?.objectKey] : null;
+    let rxData = panelSet && rxPanel ? rxPanel : {};
     let heading = rxData.fields
       ? rxData.fields.map((item, index) => {
           return <th key={`stats_head_${index}`}>{item.display_name}</th>;
         })
       : "";
-    let bodyContent = rxData.data
-      ? rxData.data.map((item, index) => {
-          return (
-            <tr key={`stats_row_${index}`}>
-              {rxData.fields.map((fd, findex) => {
-                return (
-                  <td key={`stat_cell_${findex}`} className={`${fd.key}_cell`}>
-                    {!item[fd.key] && fd.empty_cell_display
-                      ? fd.empty_cell_display
-                      : item[fd.key]}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })
-      : "";
+    let bodyContent =
+      rxData.data && Array.isArray(rxData.data)
+        ? rxData.data.map((item, index) => {
+            return (
+              <tr key={`stats_row_${index}`}>
+                {rxData.fields.map((fd, findex) => {
+                  return (
+                    <td
+                      key={`stat_cell_${findex}`}
+                      className={`${fd.key}_cell`}
+                    >
+                      {!item[fd.key] && fd.empty_cell_display
+                        ? fd.empty_cell_display
+                        : item[fd.key]}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })
+        : "";
     return (
       <div className="sub-section__infopanel">
         <div className="panel-title">{panel.title}</div>
@@ -491,6 +510,7 @@ export default class Summary extends Component {
   }
 
   renderAlertsPanel(panel) {
+    if (!panel || !panel.alertsData) return null;
     let alertsData =
       this.props.summary[panel.alertsData.dataSectionRefKey] || [];
     let alertsContent = alertsData.length
@@ -532,6 +552,7 @@ export default class Summary extends Component {
 
   renderSurveySummaryPanel(panel) {
     if (!this.isReportEnabled()) return null;
+    if (!panel || !panel.data) return null;
     let surveyData = this.props.summary[panel.data.dataSectionRefKey] || null;
     if (!surveyData) return null;
     return (
@@ -574,13 +595,14 @@ export default class Summary extends Component {
 
   renderSection(section) {
     const summaryMap = this.getSummaryMap();
+    if (!summaryMap[section]) return null;
     const sectionMap = summaryMap[section]["sections"];
     const queryDateTime = summaryMap[section].lastUpdated
       ? summaryMap[section].lastUpdated
       : formatit.currentDateTimeFormat();
-    const subSectionsToRender = sectionMap.filter((section) => {
+    const subSectionsToRender = sectionMap?.filter((section) => {
       return !section.hideSection;
-    });
+    })??[];
     const sectionError = summaryMap[section].errorMessage;
     const errorMessage = getErrorMessageString(
       sectionError,
@@ -598,7 +620,9 @@ export default class Summary extends Component {
       const flaggedClass = flagged ? "flagged" : "";
       const omitTitleClass = subSection.omitTitle ? "sub-section-notitle" : "";
       return (
-        <React.Fragment key={`subSectionHeader_container_${subSection.dataKey}`}>
+        <React.Fragment
+          key={`subSectionHeader_container_${subSection.dataKey}`}
+        >
           {this.renderSectionAnchor(subSection.dataKey)}
           <div
             key={`${subSection.dataKey}_${index}`}
@@ -617,7 +641,10 @@ export default class Summary extends Component {
                     tabIndex={0}
                   />
                 )}
-                <span className="sub-section__header__name" datasectionid={subSection.dataKey}>
+                <span
+                  className="sub-section__header__name"
+                  datasectionid={subSection.dataKey}
+                >
                   {subSection.name}
                 </span>
                 <span className="sub-section__header__info">
@@ -792,6 +819,18 @@ export default class Summary extends Component {
     if (!this.props.patient) return false;
     return parseInt(this.props.patient.Age) < 18;
   }
+  getSectionsToRender(summaryMap) {
+    if (!summaryMap) return null;
+    const sectionsToRender = [];
+    /*
+     * sections to be rendered
+     */
+    Object.keys(summaryMap).forEach((section) => {
+      if (summaryMap[section]["hideSection"]) return true;
+      sectionsToRender.push(section);
+    });
+    return sectionsToRender;
+  }
 
   render() {
     const summaryMap = this.getSummaryMap();
@@ -812,14 +851,7 @@ export default class Summary extends Component {
     const hasErrors =
       this.props.errorCollection && this.props.errorCollection.length > 0;
 
-    const sectionsToRender = [];
-    /*
-     * sections to be rendered
-     */
-    Object.keys(summaryMap).forEach((section) => {
-      if (summaryMap[section]["hideSection"]) return true;
-      sectionsToRender.push(section);
-    });
+    const sectionsToRender = this.getSectionsToRender(summaryMap);
 
     return (
       <React.Fragment>
