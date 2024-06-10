@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Score from "./Score";
-import PassUpArrowIcon from "../../icons/PassUpArrowIcon";
-import FailUpArrowIcon from "../../icons/FailUpArrowIcon";
-import FailDownArrowIcon from "../../icons/FailDownArrowIcon";
-import PassDownArrowIcon from "../../icons/PassDownArrowIcon";
-import LineIcon from "../../icons/LineIcon";
-import CopyButton from "../CopyButton";
+import PassUpArrowIcon from "../../../icons/PassUpArrowIcon";
+import FailUpArrowIcon from "../../../icons/FailUpArrowIcon";
+import FailDownArrowIcon from "../../../icons/FailDownArrowIcon";
+import PassDownArrowIcon from "../../../icons/PassDownArrowIcon";
+import LineIcon from "../../../icons/LineIcon";
+import CopyButton from "../../CopyButton";
 import {
   getDisplayDateFromISOString,
   isNumber,
   toDate,
-} from "../../helpers/utility";
-import { hasNoSummaryData } from "./utility";
+} from "../../../helpers/utility";
+import { hasNoSummaryData } from "../utility";
 export default class ScoringSummary extends Component {
   constructor() {
     super(...arguments);

@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import CopyButton from "../CopyButton";
+import CopyButton from "../../CopyButton";
 import {
   downloadDomImage,
   getDisplayDateFromISOString,
   renderImageFromSVG,
   toDate,
-} from "../../helpers/utility";
+} from "../../../helpers/utility";
 
 export default class BodyDiagram extends Component {
   constructor(props) {

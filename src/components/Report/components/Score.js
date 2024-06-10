@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import AlertIcon from "../../icons/AlertIcon";
-import WarningIcon from "../../icons/WarningIcon";
-import { isNumber } from "../../helpers/utility";
+import AlertIcon from "../../../icons/AlertIcon";
+import WarningIcon from "../../../icons/WarningIcon";
+import { isNumber } from "../../../helpers/utility";
 
 export default class Score extends Component {
   render() {

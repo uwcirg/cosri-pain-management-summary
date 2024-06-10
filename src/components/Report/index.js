@@ -174,7 +174,9 @@ export default class Report extends Component {
     if (!summaryData.Questionnaire) return null;
     if (!sectionItem) return null;
     let item = sectionItem;
-    item.description = getQuestionnaireDescription(summaryData.Questionnaire);
+    item.description =
+      getQuestionnaireDescription(summaryData.Questionnaire) ??
+      sectionItem.description;
 
     if (!item.description) return null;
 
@@ -211,6 +213,7 @@ export default class Report extends Component {
 
   renderSections(summaryData) {
     return reportSummarySections.map((section, index) => {
+      if (section.status === "inactive") return null;
       return (
         <Collapsible
           trigger={this.renderSectionHeader(section)}

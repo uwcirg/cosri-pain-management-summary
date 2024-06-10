@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import CopyButton from "../CopyButton";
+import CopyButton from "../../CopyButton";
 import Score from "./Score";
-import { getDisplayDateFromISOString } from "../../helpers/utility";
+import { getDisplayDateFromISOString } from "../../../helpers/utility";
 
 let resizeTimeoutId = 0;
 export default class ResponsesSummary extends Component {

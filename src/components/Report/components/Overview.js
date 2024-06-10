@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ScoringSummary from "./ScoringSummary";
 import BodyDiagram from "./BodyDiagram";
-import SurveyGraph from "../graph/SurveyGraph";
-import * as reportUtil from "./utility";
+import SurveyGraph from "../../graph/SurveyGraph";
+import * as reportUtil from "../utility";
 
 export default class Overview extends Component {
   constructor() {

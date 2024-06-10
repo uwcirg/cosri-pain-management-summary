@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getDisplayDateFromISOString } from "../../helpers/utility";
+import { getDisplayDateFromISOString } from "../../../helpers/utility";
 //import PropTypes from "prop-types";
 
 const testData = [

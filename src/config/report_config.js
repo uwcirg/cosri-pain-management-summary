@@ -3,10 +3,10 @@ import UserIcon from "../icons/UserIcon";
 import ChartIcon from "../icons/ChartIcon";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
 import PainIcon from "../icons/PainIcon";
-//import CheckListIcon from "../icons/CheckListIcon";
-import OverViewComponent from "../components/Report/Overview";
-import ResponsesSummary from "../components/Report/ResponsesSummary";
-//import RankedResponses from "../components/Report/RankedResponses";
+import CheckListIcon from "../icons/CheckListIcon";
+import OverViewComponent from "../components/Report/components/Overview";
+import ResponsesSummary from "../components/Report/components/ResponsesSummary";
+import RankedResponses from "../components/Report/components/RankedResponses";
 
 const iconProps = {
   width: 35,
@@ -30,29 +30,30 @@ const reportConfig = [
     ),
     component: (props) => <OverViewComponent {...props}></OverViewComponent>,
   },
-  // {
-  //   title: "Goals and Expectations",
-  //   dataKey: "treatmentGoals",
-  //   icon: (props) => (
-  //     <CheckListIcon
-  //       {...{
-  //         width: 32,
-  //         height: 32,
-  //         className: "sectionIcon",
-  //       }}
-  //       {...props}
-  //       title="Goals and Expectations"
-  //     ></CheckListIcon>
-  //   ),
-  //   sections: [
-  //     {
-  //       name: "patientTreatmentGoals",
-  //       dataKey: "patientTreatmentGoals",
-  //       title: "Patient-reported Treatment Goals",
-  //       component: (props) => <RankedResponses {...props}></RankedResponses>,
-  //     }
-  //   ]
-  // },
+  {
+    title: "Goals and Expectations",
+    dataKey: "treatmentGoals",
+    status: "inactive",
+    icon: (props) => (
+      <CheckListIcon
+        {...{
+          width: 32,
+          height: 32,
+          className: "sectionIcon",
+        }}
+        {...props}
+        title="Goals and Expectations"
+      ></CheckListIcon>
+    ),
+    sections: [
+      {
+        name: "patientTreatmentGoals",
+        dataKey: "patientTreatmentGoals",
+        title: "Patient-reported Treatment Goals",
+        component: (props) => <RankedResponses {...props}></RankedResponses>,
+      },
+    ],
+  },
   {
     title: "Pain and Limitation",
     dataKey: "painLimitationSection",
@@ -66,43 +67,44 @@ const reportConfig = [
         dataKey: "peg",
         title:
           "PEG (Pain intensity, Enjoyment of life, General activity 3 item pain scale)",
-        // description: () => (
-        //   <div>
-        //     <p>
-        //       Pain intensity, Enjoyment of life, General activity (PEG) 3 item
-        //       pain scale.
-        //     </p>
-        //     <p>
-        //       Based primarily on{" "}
-        //       <a
-        //         href="https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7"
-        //         target="_blank"
-        //         rel="noopener noreferrer"
-        //       >
-        //         https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7
-        //       </a>{" "}
-        //       and to a lesser extent{" "}
-        //       <a
-        //         href="https://loinc.org/91148-7/"
-        //         target="_blank"
-        //         rel="noopener noreferrer"
-        //       >
-        //         https://loinc.org/91148-7/{" "}
-        //       </a>{" "}
-        //       , using codes from the former.
-        //     </p>
-        //     <p>
-        //       Note that these two references had different codes for the first
-        //       question and that it was implemented at fhir.loinc.org as a
-        //       decimal (not a choice), but academic references did not support
-        //       that.
-        //     </p>
-        //     <p>
-        //       The sum score, i.e. the CIRG-PEG-SUM item on the questionnaire, is
-        //       a scoring variant used at UW Medicine's Center for Pain Relief.
-        //     </p>
-        //   </div>
-        // ),
+        // default description, will be used description from questionnaire is not available
+        description: () => (
+          <div>
+            <p>
+              Pain intensity, Enjoyment of life, General activity (PEG) 3 item
+              pain scale.
+            </p>
+            <p>
+              Based primarily on{" "}
+              <a
+                href="https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                https://fhir.loinc.org/Questionnaire/?url=http://loinc.org/q/91148-7
+              </a>{" "}
+              and to a lesser extent{" "}
+              <a
+                href="https://loinc.org/91148-7/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                https://loinc.org/91148-7/{" "}
+              </a>{" "}
+              , using codes from the former.
+            </p>
+            <p>
+              Note that these two references had different codes for the first
+              question and that it was implemented at fhir.loinc.org as a
+              decimal (not a choice), but academic references did not support
+              that.
+            </p>
+            <p>
+              The sum score, i.e. the CIRG-PEG-SUM item on the questionnaire, is
+              a scoring variant used at UW Medicine's Center for Pain Relief.
+            </p>
+          </div>
+        ),
         component: (props) => (
           <ResponsesSummary
             columns={[
@@ -121,7 +123,7 @@ const reportConfig = [
               {
                 key: "responses",
                 description: "Responses",
-                number: 2
+                number: 2,
               },
             ]}
             {...props}
@@ -153,116 +155,116 @@ const reportConfig = [
         name: "PHQ9",
         dataKey: "phq9",
         title: "PHQ-9 (Patient Health Questionnaire-9)",
-        // description: () => (
-        //   <div>
-        //     <p>
-        //       PHQ-9 measures depression symptoms. A clinical diagnosis of
-        //       depression should be confirmed by a clinician. Any positive
-        //       response to suicidal ideation should be followed up immediately by
-        //       a healthcare professional.
-        //     </p>
-        //     <p>
-        //       Depression is often associated with and can manifest as physical
-        //       pain. Depression can also exacerbate physical pain. Treating
-        //       depression may help to mitigate pain.
-        //     </p>
-        //     <p>PHQ-9 scores and association with levels of depression:</p>
-        //     <table cellSpacing="8">
-        //       <tr>
-        //         <td>0</td>
-        //         <td>No depression</td>
-        //       </tr>
-        //       <tr>
-        //         <td>1-4</td>
-        //         <td>Minimal depression</td>
-        //       </tr>
-        //       <tr>
-        //         <td>5-9</td>
-        //         <td>Mild depression</td>
-        //       </tr>
-        //       <tr>
-        //         <td>10-14</td>
-        //         <td>Moderate depression</td>
-        //       </tr>
-        //       <tr>
-        //         <td>15-19</td>
-        //         <td>Moderately severe depression</td>
-        //       </tr>
-        //       <tr>
-        //         <td>20-27</td>
-        //         <td>Severe depression</td>
-        //       </tr>
-        //     </table>
-        //   </div>
-        // ),
+        description: () => (
+          <div>
+            <p>
+              PHQ-9 measures depression symptoms. A clinical diagnosis of
+              depression should be confirmed by a clinician. Any positive
+              response to suicidal ideation should be followed up immediately by
+              a healthcare professional.
+            </p>
+            <p>
+              Depression is often associated with and can manifest as physical
+              pain. Depression can also exacerbate physical pain. Treating
+              depression may help to mitigate pain.
+            </p>
+            <p>PHQ-9 scores and association with levels of depression:</p>
+            <table cellSpacing="8">
+              <tr>
+                <td>0</td>
+                <td>No depression</td>
+              </tr>
+              <tr>
+                <td>1-4</td>
+                <td>Minimal depression</td>
+              </tr>
+              <tr>
+                <td>5-9</td>
+                <td>Mild depression</td>
+              </tr>
+              <tr>
+                <td>10-14</td>
+                <td>Moderate depression</td>
+              </tr>
+              <tr>
+                <td>15-19</td>
+                <td>Moderately severe depression</td>
+              </tr>
+              <tr>
+                <td>20-27</td>
+                <td>Severe depression</td>
+              </tr>
+            </table>
+          </div>
+        ),
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
       {
         name: "GAD7",
         dataKey: "gad7",
         title: "GAD-7 (General Anxiety Disorder-7)",
-        // description: () => (
-        //   <div>
-        //     <p>
-        //       The <b>Generalized Anxiety Disorder Assessment</b> (GAD-7) is a
-        //       seven-item instrument that is used to measure or assess the
-        //       severity of generalized anxiety disorder (GAD). Each item asks the
-        //       individual to rate the severity of his or her symptoms over the
-        //       past two weeks.
-        //     </p>
-        //     <p>GAD-7 scores and association with levels of anxiety:</p>
-        //     <table cellSpacing="8">
-        //       <tr>
-        //         <td>0-4</td>
-        //         <td>Minimal anxiety</td>
-        //       </tr>
-        //       <tr>
-        //         <td>5-9</td>
-        //         <td>Mild anxiety</td>
-        //       </tr>
-        //       <tr>
-        //         <td>10-14</td>
-        //         <td>Moderate anxiety</td>
-        //       </tr>
-        //       <tr>
-        //         <td>15-21</td>
-        //         <td>Severe anxiety</td>
-        //       </tr>
-        //     </table>
-        //   </div>
-        // ),
+        description: () => (
+          <div>
+            <p>
+              The <b>Generalized Anxiety Disorder Assessment</b> (GAD-7) is a
+              seven-item instrument that is used to measure or assess the
+              severity of generalized anxiety disorder (GAD). Each item asks the
+              individual to rate the severity of his or her symptoms over the
+              past two weeks.
+            </p>
+            <p>GAD-7 scores and association with levels of anxiety:</p>
+            <table cellSpacing="8">
+              <tr>
+                <td>0-4</td>
+                <td>Minimal anxiety</td>
+              </tr>
+              <tr>
+                <td>5-9</td>
+                <td>Mild anxiety</td>
+              </tr>
+              <tr>
+                <td>10-14</td>
+                <td>Moderate anxiety</td>
+              </tr>
+              <tr>
+                <td>15-21</td>
+                <td>Severe anxiety</td>
+              </tr>
+            </table>
+          </div>
+        ),
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
       {
         name: "PHQ-4",
         dataKey: "phq-4",
         title: "PHQ-4 (Patient Health Questionnaire 4 item)",
-        // description: () => (
-        //   <div>
-        //     <p>
-        //       PHQ-4 Four-item Patient Health Questionnaire for Anxiety and
-        //       Depression measures anxiety and depression symptoms.
-        //     </p>
-        //     <p>
-        //       The PHQ-4 is different - although the total score (which ranges
-        //       from 0-12) can be used, it is really a combination of the PHQ-2
-        //       depression scale and the GAD-2 anxiety scale (from the parent
-        //       GAD-7 anxiety scale). Thus, another way to look at it is a 0-6
-        //       depression subscale and a 0-6 anxiety scale. It is clearly
-        //       different than either the PHQ-9 or the PHQ-2.
-        //     </p>
-        //     <p>
-        //       Total score is determined by adding together the scores of each of
-        //       the 4 items.
-        //     </p>
-        //     <p>
-        //       Scores are rated as normal (0-2), mild (3-5), moderate (6-8), and
-        //       severe (9-12).
-        //     </p>
-        //     <p>Total score ≥ 3 for first 2 questions suggests anxiety.</p>
-        //     <p>Total score ≥ 3 for last 2 questions suggests depression.</p>
-        //   </div>
-        // ),
+        description: () => (
+          <div>
+            <p>
+              PHQ-4 Four-item Patient Health Questionnaire for Anxiety and
+              Depression measures anxiety and depression symptoms.
+            </p>
+            <p>
+              The PHQ-4 is different - although the total score (which ranges
+              from 0-12) can be used, it is really a combination of the PHQ-2
+              depression scale and the GAD-2 anxiety scale (from the parent
+              GAD-7 anxiety scale). Thus, another way to look at it is a 0-6
+              depression subscale and a 0-6 anxiety scale. It is clearly
+              different than either the PHQ-9 or the PHQ-2.
+            </p>
+            <p>
+              Total score is determined by adding together the scores of each of
+              the 4 items.
+            </p>
+            <p>
+              Scores are rated as normal (0-2), mild (3-5), moderate (6-8), and
+              severe (9-12).
+            </p>
+            <p>Total score ≥ 3 for first 2 questions suggests anxiety.</p>
+            <p>Total score ≥ 3 for last 2 questions suggests depression.</p>
+          </div>
+        ),
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
       {
@@ -290,15 +292,15 @@ const reportConfig = [
         name: "PROMIS-GLOBAL",
         dataKey: "promis-global",
         title: "PROMIS short form - global",
-        // description: () => (
-        //   <div>
-        //     <p>
-        //       The PROMIS Global Health form is a carefully standardized
-        //       psychometric instrument which measures the individuals global
-        //       health.
-        //     </p>
-        //   </div>
-        // ),
+        description: () => (
+          <div>
+            <p>
+              The PROMIS Global Health form is a carefully standardized
+              psychometric instrument which measures the individuals global
+              health.
+            </p>
+          </div>
+        ),
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
       {
@@ -306,24 +308,24 @@ const reportConfig = [
         dataKey: "stop",
         title:
           "STOP Questionnaire: A Tool to Screen Patients for Obstructive Sleep Apnea",
-        // description: () => (
-        //   <div>
-        //     <p>
-        //       STOP Questionnaire: A Tool to Screen Patients for Obstructive
-        //       Sleep Apnea.
-        //     </p>
-        //     <p>
-        //       See{" "}
-        //       <a
-        //         target="_blank"
-        //         rel="noopener noreferrer"
-        //         href="https://pubs.asahq.org/anesthesiology/article/108/5/812/8377/STOP-QuestionnaireA-Tool-to-Screen-Patients-for"
-        //       >
-        //         reference
-        //       </a>
-        //     </p>
-        //   </div>
-        // ),
+        description: () => (
+          <div>
+            <p>
+              STOP Questionnaire: A Tool to Screen Patients for Obstructive
+              Sleep Apnea.
+            </p>
+            <p>
+              See{" "}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://pubs.asahq.org/anesthesiology/article/108/5/812/8377/STOP-QuestionnaireA-Tool-to-Screen-Patients-for"
+              >
+                reference
+              </a>
+            </p>
+          </div>
+        ),
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
     ],
