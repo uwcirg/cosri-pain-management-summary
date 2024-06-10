@@ -5,6 +5,7 @@ import CopyButton from "../../CopyButton";
 import {
   downloadDomImage,
   getDisplayDateFromISOString,
+  isEmptyArray,
   renderImageFromSVG,
   toDate,
 } from "../../../helpers/utility";
@@ -164,8 +165,7 @@ export default class BodyDiagram extends Component {
     this.utilButtonsContainerRef.current.style.visibility = "hidden";
   }
   getAnswersFromPainLocationFhirObjects(fhirObjects, description = "pain") {
-    if (!fhirObjects || !Array.isArray(fhirObjects) || !fhirObjects.length)
-      return null;
+    if (isEmptyArray(fhirObjects)) return null;
     let answers = null;
     fhirObjects.forEach((key) => {
       if (!answers) answers = {};
@@ -184,7 +184,7 @@ export default class BodyDiagram extends Component {
 
   hasSummaryData() {
     const summaryData = this.getSummaryData();
-    return summaryData && Array.isArray(summaryData) && summaryData.length > 0;
+    return !isEmptyArray(summaryData);
   }
 
   getSummaryData() {
@@ -192,12 +192,7 @@ export default class BodyDiagram extends Component {
   }
 
   getPropSummaryData() {
-    if (
-      !this.props.summary ||
-      !Array.isArray(this.props.summary) ||
-      !this.props.summary.length
-    )
-      return null;
+    if (isEmptyArray(this.props.summary)) return null;
     return this.props.summary.sort((a, b) => {
       const date1 = toDate(a.date);
       const date2 = toDate(b.date);
@@ -206,12 +201,7 @@ export default class BodyDiagram extends Component {
   }
 
   getStateSummaryData() {
-    if (
-      !this.state.summaryData ||
-      !Array.isArray(this.state.summaryData) ||
-      !this.state.summaryData.length
-    )
-      return null;
+    if (isEmptyArray(this.state.summaryData)) return null;
     return this.state.summaryData;
   }
 
@@ -247,7 +237,7 @@ export default class BodyDiagram extends Component {
 
   getMostRecentDate() {
     const summaryData = this.getPropSummaryData();
-    if (!summaryData.length) return null;
+    if (isEmptyArray(summaryData)) return null;
     return summaryData[0].date;
   }
 
@@ -272,7 +262,7 @@ export default class BodyDiagram extends Component {
   fillInHistoryParts() {
     const doc = this.getSourceDocument();
     if (!doc) return;
-    if (!this.state.dates.length) return;
+    if (isEmptyArray(this.state.dates)) return;
     doc.querySelectorAll("svg path").forEach((node) => {
       node.classList.remove("prev_location");
     });
@@ -618,7 +608,10 @@ export default class BodyDiagram extends Component {
           </div>
           {this.renderPrintOnlyImage()}
         </div>
-        <div className="flex flex-center flex-column" style={{backgroundColor: "#FFF"}}>
+        <div
+          className="flex flex-center flex-column"
+          style={{ backgroundColor: "#FFF" }}
+        >
           {this.renderNavButtons()}
           {this.renderDots()}
         </div>

@@ -594,3 +594,9 @@ export function getErrorMessageString(error, defaultMessage) {
       : defaultMessage ?? `Error occurred retrieving data`
     : "";
 }
+
+export function isEmptyArray(object) {
+  if (object == null || !object) return true;
+  if (!Array.isArray(object)) return true;
+  return !object.length;
+}

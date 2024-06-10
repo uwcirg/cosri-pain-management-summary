@@ -6,7 +6,7 @@ import {
 } from "../../helpers/formatit";
 import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
-import { getDiffDays, writeToLog } from "../../helpers/utility";
+import { getDiffDays, isEmptyArray, writeToLog } from "../../helpers/utility";
 import { getEnv } from "../../utils/envConfig";
 
 let uuid = 0;
@@ -146,13 +146,15 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   const FINAL_CALCULATED_FIELD_FLAG = "final";
 
   //sort data by start date
-  let graph_data = graphDataSource
-    .filter(function (item) {
-      return item[startDateFieldName] && item[endDateFieldName];
-    })
-    .sort(function (a, b) {
-      return dateCompare(a[startDateFieldName], b[startDateFieldName]);
-    });
+  let graph_data = !isEmptyArray(graphDataSource)
+    ? graphDataSource
+        .filter(function (item) {
+          return item[startDateFieldName] && item[endDateFieldName];
+        })
+        .sort(function (a, b) {
+          return dateCompare(a[startDateFieldName], b[startDateFieldName]);
+        })
+    : [];
   /*
    * 'NaN' is the value for null when coerced into number, need to make sure that is not included
    */
@@ -425,7 +427,7 @@ export function getProcessedAlerts(sectionFlags, logParams) {
 
 export function getProcessedStatsData(statsFields, dataSource) {
   let stats = {};
-  if (!statsFields) return stats;
+  if (isEmptyArray(statsFields)) return stats;
 
   //compile tally of source identified by a key
   statsFields.forEach((item) => {

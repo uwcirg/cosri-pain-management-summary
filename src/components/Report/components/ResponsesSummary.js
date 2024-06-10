@@ -3,7 +3,10 @@ import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CopyButton from "../../CopyButton";
 import Score from "./Score";
-import { getDisplayDateFromISOString } from "../../../helpers/utility";
+import {
+  getDisplayDateFromISOString,
+  isEmptyArray,
+} from "../../../helpers/utility";
 
 let resizeTimeoutId = 0;
 export default class ResponsesSummary extends Component {
@@ -60,12 +63,7 @@ export default class ResponsesSummary extends Component {
   getMatchedAnswerTextByLinkId(summary, linkId, answerValue) {
     const reportedAnswerValue =
       answerValue == null || answerValue === "" ? "--" : answerValue;
-    if (
-      !summary ||
-      !summary.questionnaireItems ||
-      !Array.isArray(summary.questionnaireItems) ||
-      !summary.questionnaireItems.length
-    )
+    if (!summary || isEmptyArray(summary.questionnaireItems))
       return reportedAnswerValue;
     const matchedItem = summary.questionnaireItems.filter((item) => {
       return (
@@ -73,13 +71,13 @@ export default class ResponsesSummary extends Component {
         String(linkId).includes(item.linkId.value)
       );
     });
-    if (!matchedItem.length) return reportedAnswerValue;
+    if (isEmptyArray(matchedItem)) return reportedAnswerValue;
     const answerOption = matchedItem[0].answerOption;
-    if (answerOption && answerOption.length) {
+    if (!isEmptyArray(answerOption)) {
       const matchedOption = answerOption
         .filter((option) => {
           const extension = option.extension;
-          if (extension && extension.length) {
+          if (!isEmptyArray(extension)) {
             const matchedExtensions = extension.filter(
               (o) => o.value && o.value.value === answerValue
             );
@@ -91,20 +89,20 @@ export default class ResponsesSummary extends Component {
             ? item.value.display.value
             : answerValue
         );
-      if (matchedOption.length && matchedOption[0]) return matchedOption[0];
+      if (isEmptyArray(matchedOption) && matchedOption[0])
+        return matchedOption[0];
       else return reportedAnswerValue;
     } else return reportedAnswerValue;
   }
   getMatchedAnswerByItem(summary, targetItem) {
     if (!targetItem) return "--";
-    if (!summary || !summary.responses || !Array.isArray(summary.responses))
-      return "--";
+    if (!summary || isEmptyArray(summary.responses)) return "--";
     const matchedItem = summary.responses.filter(
       (item) =>
         String(item.linkId).includes(targetItem.linkId) ||
         String(targetItem.linkId).includes(item.linkId)
     );
-    if (!matchedItem.length) return "--";
+    if (isEmptyArray(matchedItem)) return "--";
     return this.getMatchedAnswerTextByLinkId(
       summary,
       targetItem.linkId,
@@ -112,13 +110,7 @@ export default class ResponsesSummary extends Component {
     );
   }
   hasResponses(summary) {
-    if (
-      !summary ||
-      !summary.ResponsesSummary ||
-      !Array.isArray(summary.ResponsesSummary) ||
-      !summary.ResponsesSummary.length
-    )
-      return false;
+    if (!summary || isEmptyArray(summary.ResponsesSummary)) return false;
     return true;
   }
   getCurrentResponses(summary) {
@@ -134,7 +126,7 @@ export default class ResponsesSummary extends Component {
     return summary.ResponsesSummary.length;
   }
   renderResponses(qid, summaryItems, endIndex) {
-    if (!summaryItems || !Array.isArray(summaryItems) || !summaryItems.length) {
+    if (isEmptyArray(summaryItems)) {
       return <div>No recorded responses</div>;
     }
     const headerCellStyle = {
@@ -362,9 +354,7 @@ export default class ResponsesSummary extends Component {
           <div className="flex" style={{ gap: "24px" }}>
             <div className="flex">
               {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
-              <div className="exclude-from-copy">
-                {this.renderCopyButton()}
-              </div>
+              <div className="exclude-from-copy">{this.renderCopyButton()}</div>
             </div>
             <div className="flex exclude-from-copy">
               {this.renderViewButton()}

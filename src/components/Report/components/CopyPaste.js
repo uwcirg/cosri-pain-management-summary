@@ -3,8 +3,9 @@ import {
   allowCopyClipboardItem,
   writeTextToClipboard,
   copyDomToClipboard,
-} from "../../helpers/utility";
+} from "../../../helpers/utility";
 
+// This is used for testing copying/pasting ONLY
 export default class CopyPaste extends Component {
   constructor() {
     super(...arguments);

@@ -16,6 +16,7 @@ import {
 } from "../../config/graph_config";
 import {
   getDifferenceInYears,
+  isEmptyArray,
   isNumber,
   renderImageFromSVG,
   toDate,
@@ -71,7 +72,7 @@ export default class SurveyGraph extends Component {
   }
 
   getInitData() {
-    return this.props.data && Array.isArray(this.props.data)
+    return !isEmptyArray(this.props.data)
       ? this.props.data.map((d) => {
           d.qid = d.qid ? String(d.qid).toLowerCase() : "";
           return d;
@@ -97,16 +98,13 @@ export default class SurveyGraph extends Component {
     }
   }
   shouldShowAccessories() {
-    return (
-      this.state.originalGraphData && this.state.originalGraphData.length > 0
-    );
+    return !isEmptyArray(this.state.originalGraphData);
   }
   shouldShowSlider() {
     return this.getDurationInYears() >= 1 / 12;
   }
   getNumYearsFromData(dataSource) {
-    if (!dataSource || !Array.isArray(dataSource) || !dataSource.length)
-      return 0;
+    if (isEmptyArray(dataSource)) return 0;
     let arrayDates = dataSource
       .filter((d) => {
         const itemDate = toDate(d[xFieldName]);
@@ -115,16 +113,18 @@ export default class SurveyGraph extends Component {
       .map((d) => {
         return toDate(d[xFieldName]);
       });
-    if (arrayDates.length) {
+    if (!isEmptyArray(arrayDates)) {
       const minDate = new Date(Math.min.apply(null, arrayDates));
       return getDifferenceInYears(minDate, new Date());
     }
     return 0;
   }
   showUtilButtons() {
+    if (!this.utilButtonsContainerRef.current) return;
     this.utilButtonsContainerRef.current.style.display = "flex";
   }
   hideUtilButtons() {
+    if (!this.utilButtonsContainerRef.current) return;
     this.utilButtonsContainerRef.current.style.display = "none";
   }
   getDataForGraph(dataSource) {
@@ -133,14 +133,13 @@ export default class SurveyGraph extends Component {
     let minDate = new Date();
     //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
-    let data =
-      dataSource && Array.isArray(dataSource)
-        ? dataSource.map((item) => {
-            return {
-              ...item,
-            };
-          })
-        : [];
+    let data = !isEmptyArray(dataSource)
+      ? dataSource.map((item) => {
+          return {
+            ...item,
+          };
+        })
+      : [];
     data = data.filter((d) => {
       const itemDate = toDate(d[xFieldName]);
       const diffYears = getDifferenceInYears(itemDate, new Date());
@@ -207,9 +206,8 @@ export default class SurveyGraph extends Component {
     return Array.from(new Set(srcData.map((item) => item.qid)));
   }
   getFilteredDataByQids(dataSource) {
-    if (!dataSource || !Array.isArray(dataSource)) return [];
-    const qids =
-      this.state.qids && this.state.qids.length ? this.state.qids : null;
+    if (isEmptyArray(dataSource)) return [];
+    const qids = !isEmptyArray(this.state.qids) ? this.state.qids : null;
     if (qids) {
       return dataSource.filter((item) => {
         return this.state.qids.indexOf(item.qid) !== -1;
@@ -231,8 +229,7 @@ export default class SurveyGraph extends Component {
   }
 
   getFilteredDataByNumYears(dataSource, numYears) {
-    if (!dataSource || !Array.isArray(dataSource) || !dataSource.length)
-      return [];
+    if (isEmptyArray(dataSource)) return [];
     if (!isNumber(numYears)) return dataSource;
     return dataSource.filter((item) => {
       const itemDate = toDate(item[xFieldName]);
@@ -244,9 +241,11 @@ export default class SurveyGraph extends Component {
   }
 
   isInSurveyGraph(qid) {
+    if (isEmptyArray(this.state.graphData)) return false;
     return this.state.graphData.find((item) => item.qid === qid);
   }
   isSurveyInDateRange(qid) {
+    if (isEmptyArray(this.state.originalGraphData)) return false;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
     );
@@ -254,10 +253,11 @@ export default class SurveyGraph extends Component {
       qData,
       this.state.selectedDateRange
     );
-    return filteredData && filteredData.length > 0;
+    return !isEmptyArray(filteredData);
   }
   addDataLineToSurveyGraph(qid, callback) {
     if (this.isInSurveyGraph(qid)) return;
+    if (isEmptyArray(this.state.originalGraphData)) return;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
     );
@@ -273,7 +273,8 @@ export default class SurveyGraph extends Component {
     }
   }
   removeDataLineFromSurveyGraph(qid, callback) {
-    if (!this.isInSurveyGraph(qid)) return;
+    if (!this.isInSurveyGraph(qid) || isEmptyArray(this.state.graphData))
+      return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
     this.setState(
       {
@@ -287,8 +288,7 @@ export default class SurveyGraph extends Component {
   hasOnlyOneGraphLine() {
     const { data } = this.getDataForGraph(this.state.graphData);
     return (
-      data &&
-      Array.isArray(data) &&
+      !isEmptyArray(data) &&
       [...new Set(data.map((item) => item.qid))].length === 1
     );
   }
@@ -604,6 +604,7 @@ export default class SurveyGraph extends Component {
   }
 
   renderDateRangeSelector() {
+    if (isEmptyArray(this.state.originalGraphData)) return null;
     const dateRangeData = this.state.originalGraphData.filter(
       (item) => this.state.qids.indexOf(item.qid) !== -1
     );
@@ -689,6 +690,7 @@ export default class SurveyGraph extends Component {
   }
 
   renderSlider() {
+    if (isEmptyArray(this.state.originalGraphData)) return null;
     //console.log("qids ", this.state.qids);
     const sliderData = this.state.originalGraphData.filter(
       (item) => this.state.qids.indexOf(item.qid) !== -1

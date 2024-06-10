@@ -9,6 +9,7 @@ import LineIcon from "../../../icons/LineIcon";
 import CopyButton from "../../CopyButton";
 import {
   getDisplayDateFromISOString,
+  isEmptyArray,
   isNumber,
   toDate,
 } from "../../../helpers/utility";
@@ -45,7 +46,7 @@ export default class ScoringSummary extends Component {
     this.summaryHTML = "";
   }
   sortData(data) {
-    if (!data || !Array.isArray(data) || !data.length) return null;
+    if (isEmptyArray(data)) return null;
     return data.sort(
       (a, b) => toDate(b.date).getTime() - toDate(a.date).getTime()
     );
