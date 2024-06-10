@@ -844,14 +844,21 @@ export default class SurveyGraph extends Component {
     if (!noDataQids.length) return "";
     const dateRange = this.getDisplayDateRange();
     const dateRangeText = dateRange ? `in the ${dateRange}` : "";
-    return `No reportable data for ${noDataQids.join(", ")} ${dateRangeText.toLowerCase()}`;
+    return `No reportable data for ${noDataQids.join(
+      ", "
+    )} ${dateRangeText.toLowerCase()}`;
   }
 
   renderNotInGraphMessage() {
     return (
       <div
         className="text-warning"
-        style={{ margin: "8px", paddingLeft: "16px", paddingRight: "16px" }}
+        style={{
+          margin: "8px",
+          paddingLeft: "16px",
+          paddingRight: "16px",
+          minHeight: "20px",
+        }}
       >
         {this.getNotInGraphMessage()}
       </div>
