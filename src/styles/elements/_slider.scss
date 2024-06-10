@@ -25,11 +25,13 @@ input[type="range"] {
     position: relative;
     display: block;
     min-width: 1px;
+    left: 12px;
     &:first-of-type {
       flex: 0;
     }
-    &:not(:first-of-type, :last-of-type) {
-      left: 12px;
+    &:first-of-type,
+    &:last-of-type {
+      left: 0;
     }
     &.active {
       color: $color-blue-dark;

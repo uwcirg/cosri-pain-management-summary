@@ -349,7 +349,7 @@ export default class SurveyGraph extends Component {
     );
   }
   getScaleInfoForSlider(dataSource) {
-    const sliderData = dataSource ? dataSource : [];
+    const sliderData = !isEmptyArray(dataSource) ? dataSource : [];
     const numYears = this.getNumYearsFromData(sliderData);
     const defaultMaxValue = numYears && numYears > 1 ? numYears : 0;
     const createArray = (N) => {
@@ -441,16 +441,18 @@ export default class SurveyGraph extends Component {
           ? ""
           : days === AVG_DAYS_IN_MONTH
           ? !monthsDisplay
-            ? "~ 1 month"
+            ? "1 month"
             : ""
           : days && days < AVG_DAYS_IN_MONTH
           ? days > 1
-            ? `~ ${days} days`
-            : `~ ${days} day`
+            ? `${days} days`
+            : `${days} day`
           : "";
       if (!monthsDisplay && !daysDisplay) return "";
 
-      return `Past ${monthsDisplay} ${daysDisplay}`.trim();
+      return `${
+        monthsDisplay && daysDisplay ? "~" : ""
+      } Past ${monthsDisplay} ${daysDisplay}`.trim();
     }
     const numMonths = Math.round(
       (selectedRange - Math.floor(selectedRange)) * 12
@@ -459,10 +461,12 @@ export default class SurveyGraph extends Component {
     if (numMonths >= 12) years = years + 1;
     const monthsDisplay =
       numMonths && numMonths < 12
-        ? "~ " + numMonths + "  " + (numMonths > 1 ? "months" : "month")
+        ? " " + numMonths + "  " + (numMonths > 1 ? "months" : "month")
         : "";
     const yearsDisplay = years + " " + (years > 1 ? "years" : "year");
-    return `Past ${yearsDisplay} ${monthsDisplay}`.trim();
+    return `${
+      yearsDisplay && monthsDisplay ? "~" : ""
+    } Past ${yearsDisplay} ${monthsDisplay}`.trim();
   }
 
   beforeCopy() {
