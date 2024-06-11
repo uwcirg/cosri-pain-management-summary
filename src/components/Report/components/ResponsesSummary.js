@@ -29,7 +29,7 @@ export default class ResponsesSummary extends Component {
     this.tableStyle = {
       borderCollapse: "separate",
       borderSpacing: 0,
-      border: `1px solid ${BORDER_COLOR}`,
+      //  border: `1px solid ${BORDER_COLOR}`,
       padding: "4px",
     };
     this.cellStyle = {
@@ -207,12 +207,17 @@ export default class ResponsesSummary extends Component {
             {columns.map((column, index) => (
               <th
                 key={`header_${column.key}_${index}`}
-                style={this.headerCellStyle}
+                style={{
+                  ...this.headerCellStyle,
+                  ...(index === columns.length - 1 ? { borderRight: 0 } : {}),
+                }}
                 colSpan={column.number ?? 1}
               >
                 {column.description}
               </th>
             ))}
+            {/* view all responses column */}
+            <th style={this.headerCellStyle}></th>
           </tr>
         </thead>
       );
@@ -222,7 +227,8 @@ export default class ResponsesSummary extends Component {
         <tr>
           <th style={this.headerCellStyle}>Score</th>
           <th style={this.headerCellStyle}>Responses Completed</th>
-          <th style={this.headerCellStyle}>Responses</th>
+          <th style={{...this.headerCellStyle, ...{borderRight: 0}}}>Responses</th>
+          <th></th>
         </tr>
       </thead>
     );
@@ -249,7 +255,7 @@ export default class ResponsesSummary extends Component {
                   column
                 );
               else if (column.key === "responses")
-                return this.renderResponsesLinkTableCell(
+                return this.renderResponsesLinkTableCells(
                   this.getDisplayDate(currentResponses),
                   `responses_cell_${index}`,
                   column
@@ -282,7 +288,7 @@ export default class ResponsesSummary extends Component {
             <React.Fragment>
               {this.renderScoreTableCell(summary, `score_cell`)}
               {this.renderNumResponsesTableCell(summary, `num_response_cell`)}
-              {this.renderResponsesLinkTableCell(
+              {this.renderResponsesLinkTableCells(
                 this.getDisplayDate(currentResponses),
                 "responses_cell"
               )}
@@ -340,28 +346,34 @@ export default class ResponsesSummary extends Component {
       </td>
     );
   }
-  renderResponsesLinkTableCell(lastResponsesDate, key, props) {
+  renderResponsesLinkTableCells(lastResponsesDate, key, props) {
     return (
-      <td
-        key={key}
-        style={this.cellStyle}
-        colSpan={props && props.number ? props.number : 1}
-      >
-        <div
-          role="presentation"
-          className={`link-container ${this.state.open ? "active" : ""}`}
+      <React.Fragment>
+        <td
+          key={key}
+          style={this.cellStyle}
+          colSpan={props && props.number ? props.number : 1}
         >
-          <div className="flex" style={{ gap: "24px" }}>
-            <div className="flex">
-              {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
-              <div className="exclude-from-copy">{this.renderCopyButton()}</div>
-            </div>
-            <div className="flex exclude-from-copy">
-              {this.renderViewButton()}
+          <div
+            role="presentation"
+            className={`link-container ${this.state.open ? "active" : ""}`}
+          >
+            <div className="flex" style={{ gap: "24px" }}>
+              <div className="flex">
+                {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
+                <div className="exclude-from-copy">
+                  {this.renderCopyButton()}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </td>
+        </td>
+        <td key={`${key}_viewAll`} style={this.cellStyle}>
+          <div className="link-container exclude-from-copy">
+            {this.renderViewButton()}
+          </div>
+        </td>
+      </React.Fragment>
     );
   }
   rendeAccordionContent(summary) {
