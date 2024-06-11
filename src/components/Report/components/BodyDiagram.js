@@ -41,14 +41,23 @@ export default class BodyDiagram extends Component {
 
   componentDidMount() {
     this.initLoadEvent();
+    // render image for printing
+    if (this.printImageRef.current) {
+      setTimeout(
+        () =>
+          renderImageFromSVG(
+            this.printImageRef.current,
+            this.getSourceDocument()
+          ),
+        1500
+      );
+    }
   }
   initLoadEvent() {
     const svgElement = this.bodyDiagramRef.current;
     if (!svgElement) return;
     svgElement.addEventListener("load", () => {
       this.fillInAnsweredParts();
-      // render image for printing
-      renderImageFromSVG(this.printImageRef.current, this.getSourceDocument());
       this.drawAllParts();
     });
   }

@@ -560,10 +560,7 @@
               color: $color-black;
               border-bottom: 0;
               line-height: 1.4;
-              .text {
-                position: relative;
-                top: 7px;
-              }
+              column-gap: 8px;
               &:hover {
                 color: $color-black-darker;
                 cursor: pointer;
@@ -577,10 +574,8 @@
               &.warning-light {
                 color: $color-warning-light;
               }
-              margin-right: 8px;
               font-size: 28px;
               min-width: 28px;
-              margin-top: 4px;
               &:hover {
                 color: $color-red;
                 cursor: pointer;

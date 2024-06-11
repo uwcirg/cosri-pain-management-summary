@@ -3,7 +3,7 @@ export function fetchEnvData() {
     console.log("Window config variables added. ");
     return;
   }
-  var xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
   const setConfig = function () {
     if (!xhr.readyState === xhr.DONE) {
       return;
@@ -12,7 +12,7 @@ export function fetchEnvData() {
       console.log("Request failed! ");
       return;
     }
-    var envObj = null;
+    let envObj = null;
     try {
       envObj = JSON.parse(xhr.responseText);
     } catch (e) {
