@@ -43,6 +43,8 @@
           .flag-nav {
             font-size: 0.8em;
             margin-right: 10px;
+            position: relative;
+            top: 6px;
 
             &.flagged {
               color: $color-red;
