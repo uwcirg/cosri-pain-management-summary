@@ -30,8 +30,9 @@
       .toc-list-item {
         margin-bottom: 4px;
         .toc-link {
-          font-size: 0.85em;
-          padding: 4px 8px 4px 24px;
+          font-size: 0.8em;
+          padding: 4px 0 4px 24px;
+          margin-left: 8px;
           line-height: 1.55;
           width: 80%;
           max-width: 100%;
@@ -65,12 +66,12 @@
       list-style-type: none;
 
       &-item {
-        &:hover {
-          background-color: $color-gray-light;
-        }
+        // &:hover {
+        //   background-color: $color-gray-light;
+        // }
         .toc-link {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           text-decoration: none;
           padding: 12px;
           font-weight: 600;
@@ -78,6 +79,9 @@
           line-height: 1.45;
           transition: all 300ms ease;
           border-bottom: 0;
+          margin-left: 4px;
+          margin-right: 4px;
+          border-radius: 4px;
 
           .title-text {
             max-width: 220px;
@@ -89,10 +93,13 @@
             font-size: 14px;
             opacity: 0.8;
           }
-          &.is-active-link,
-          &:hover {
+          &.is-active-link {
             color: #FFF;
             background-color: $color-gray-light;
+          }
+          &:hover {
+            color: #FFF;
+            //background-color: $color-gray-light;
           }
 
           .section__header-title {

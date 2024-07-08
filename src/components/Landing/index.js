@@ -26,6 +26,7 @@ import Spinner from "../../elements/Spinner";
 
 let processIntervalId = 0;
 let scrollHeaderIntervalId = 0;
+let tocbotTntervalId = 0;
 
 export default class Landing extends Component {
   constructor() {
@@ -193,14 +194,36 @@ export default class Landing extends Component {
       scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
       onClick: (e) => {
         e.preventDefault();
+        e.stopPropagation();
         const anchorElement = document.querySelector(
           `#${e.target.getAttribute("datasectionid")}__anchor`
         );
+        const listItems = document.querySelectorAll(".toc-list-item");
+        const activeListItem = e.target.closest(".toc-list-item");
+        const tocLinks = document.querySelectorAll(".toc-link");
+        const activeLink = e.target.closest(".toc-link");
         if (anchorElement) {
-          setTimeout(() => anchorElement.scrollIntoView(true), 50);
-          return;
+          anchorElement.scrollIntoView(true);
+        } else {
+          e.target.scrollIntoView(true);
         }
-        setTimeout(() => e.target.scrollIntoView(true), 50);
+        clearTimeout(tocbotTntervalId);
+        tocbotTntervalId = setTimeout(() => {
+          tocLinks.forEach((el) => {
+            if (el.isEqualNode(activeLink)) {
+              el.classList.add("is-active-link");
+              return true;
+            }
+            el.classList.remove("is-active-link");
+          });
+          listItems.forEach((el) => {
+            if (el.isEqualNode(activeListItem)) {
+              el.classList.add("is-active-li");
+              return true;
+            }
+            el.classList.remove("is-active-li");
+          });
+        }, 50);
       },
     });
   }

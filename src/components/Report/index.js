@@ -156,7 +156,7 @@ export default class Report extends Component {
     return (
       <span
         className="sub-section__header__name"
-        style={{ fontWeight: 700, fontSize: "1.1em" }}
+        // style={{ fontWeight: 700, fontSize: "1.1em" }}
         datasectionid={item.dataKey}
       >
         <FontAwesomeIcon
