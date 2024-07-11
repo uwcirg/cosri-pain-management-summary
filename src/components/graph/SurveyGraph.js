@@ -42,9 +42,9 @@ export default class SurveyGraph extends Component {
       copyInProgress: false,
     };
     // This binding is necessary to make `this` work in the callback
-    this.addDataLineToSurveyGraph = this.addDataLineToSurveyGraph.bind(this);
-    this.removeDataLineFromSurveyGraph =
-      this.removeDataLineFromSurveyGraph.bind(this);
+    this.addDataLineToGraph = this.addDataLineToGraph.bind(this);
+    this.removeDataLineFromGraph =
+      this.removeDataLineFromGraph.bind(this);
     this.showUtilButtons = this.showUtilButtons.bind(this);
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
@@ -255,7 +255,7 @@ export default class SurveyGraph extends Component {
     );
     return !isEmptyArray(filteredData);
   }
-  addDataLineToSurveyGraph(qid, callback) {
+  addDataLineToGraph(qid, callback) {
     if (this.isInSurveyGraph(qid)) return;
     if (isEmptyArray(this.state.originalGraphData)) return;
     const qData = this.state.originalGraphData.filter(
@@ -272,7 +272,7 @@ export default class SurveyGraph extends Component {
       );
     }
   }
-  removeDataLineFromSurveyGraph(qid, callback) {
+  removeDataLineFromGraph(qid, callback) {
     if (!this.isInSurveyGraph(qid) || isEmptyArray(this.state.graphData))
       return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
@@ -326,9 +326,9 @@ export default class SurveyGraph extends Component {
   handleSwitchChange(e) {
     const itemValue = e.target.value;
     if (e.target.checked) {
-      this.addDataLineToSurveyGraph(itemValue, this.handleDateRangeChange);
+      this.addDataLineToGraph(itemValue, this.handleDateRangeChange);
     } else {
-      this.removeDataLineFromSurveyGraph(itemValue, this.handleDateRangeChange);
+      this.removeDataLineFromGraph(itemValue, this.handleDateRangeChange);
     }
   }
 

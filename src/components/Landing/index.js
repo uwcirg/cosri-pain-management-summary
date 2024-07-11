@@ -358,9 +358,9 @@ export default class Landing extends Component {
       let id = setTimeout(() => {
         clearTimeout(id);
         reject(`Timed out in ${MAX_WAIT_TIME} ms.`);
+
       }, MAX_WAIT_TIME);
     });
-
     /*
      * if for some reason fetching the request data doesn't resolve or reject withing the maximum waittime,
      * then the timeout promise will kick in
