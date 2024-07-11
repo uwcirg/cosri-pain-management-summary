@@ -2,15 +2,10 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ScoringSummary from "./ScoringSummary";
 import BodyDiagram from "./BodyDiagram";
-import SurveyGraph from "../../graph/SurveyGraph";
+import ReportOverviewGraph from "../../graph/ReportOverviewGraph";
 import * as reportUtil from "../utility";
 
 export default class Overview extends Component {
-  constructor() {
-    super(...arguments);
-    this.summaryHTML = "";
-    this.SurveyGraphRef = React.createRef();
-  }
   hasNoSummaryData(summaryData) {
     return reportUtil.hasNoSummaryData(summaryData);
   }
@@ -33,7 +28,8 @@ export default class Overview extends Component {
     return (
       <div className="panel-container">
         <div className={`panel graph`}>
-          <SurveyGraph data={graphData} ref={this.SurveyGraphRef}></SurveyGraph>
+          <ReportOverviewGraph data={graphData}
+          ></ReportOverviewGraph>
         </div>
         <div className={`panel`}>
           <div className="panel__item bordered full-width score-panel">

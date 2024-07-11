@@ -30,7 +30,7 @@ const defaultFields = {
 const xFieldName = defaultFields.x;
 const yFieldName = defaultFields.y;
 const MAX_ALLOWED_NUM_YEARS = 13;
-export default class SurveyGraph extends Component {
+export default class ReportOverviewGraph extends Component {
   constructor() {
     super(...arguments);
     const initData = this.getInitData();
@@ -240,11 +240,11 @@ export default class SurveyGraph extends Component {
     });
   }
 
-  isInSurveyGraph(qid) {
+  isInGraph(qid) {
     if (isEmptyArray(this.state.graphData)) return false;
     return this.state.graphData.find((item) => item.qid === qid);
   }
-  isSurveyInDateRange(qid) {
+  isInDateRange(qid) {
     if (isEmptyArray(this.state.originalGraphData)) return false;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
@@ -256,7 +256,7 @@ export default class SurveyGraph extends Component {
     return !isEmptyArray(filteredData);
   }
   addDataLineToGraph(qid, callback) {
-    if (this.isInSurveyGraph(qid)) return;
+    if (this.isInGraph(qid)) return;
     if (isEmptyArray(this.state.originalGraphData)) return;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
@@ -273,7 +273,7 @@ export default class SurveyGraph extends Component {
     }
   }
   removeDataLineFromGraph(qid, callback) {
-    if (!this.isInSurveyGraph(qid) || isEmptyArray(this.state.graphData))
+    if (!this.isInGraph(qid) || isEmptyArray(this.state.graphData))
       return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
     this.setState(
@@ -539,13 +539,13 @@ export default class SurveyGraph extends Component {
                   <div className="select-icons-container print-hidden">
                     <label
                       // className={`exclude-from-copy switch ${
-                      //   !this.isSurveyInDateRange(item) ? "disabled" : ""
+                      //   !this.isInDateRange(item) ? "disabled" : ""
                       // }`}
                       className={`exclude-from-copy switch`}
                       title={
-                        this.isInSurveyGraph(item)
+                        this.isInGraph(item)
                           ? `Remove ${item} from graph`
-                          : this.isSurveyInDateRange(item)
+                          : this.isInDateRange(item)
                           ? `Add ${item} to graph`
                           : "No data in selected date range"
                       }
@@ -555,16 +555,16 @@ export default class SurveyGraph extends Component {
                         value={item}
                         onChange={this.handleSwitchChange}
                         // disabled={
-                        //   !this.isSurveyInDateRange(item) ||
-                        //   (this.isInSurveyGraph(item) &&
+                        //   !this.isInDateRange(item) ||
+                        //   (this.isInGraph(item) &&
                         //     this.hasOnlyOneGraphLine())
                         // }
                         disabled={
-                          this.isInSurveyGraph(item) &&
+                          this.isInGraph(item) &&
                           this.hasOnlyOneGraphLine()
                         }
                         ref={this.switchCheckboxRefs[index]}
-                        checked={!!this.isInSurveyGraph(item)}
+                        checked={!!this.isInGraph(item)}
                       />
                       <span className="switch-slider round"></span>
                     </label>
@@ -845,7 +845,7 @@ export default class SurveyGraph extends Component {
   getNotInGraphMessage() {
     if (!this.state.qids || !this.state.qids.length) return "";
     const noDataQids = this.state.qids
-      .filter((item) => !this.isSurveyInDateRange(item))
+      .filter((item) => !this.isInDateRange(item))
       .map((item) => String(item).toUpperCase());
     if (!noDataQids.length) return "";
     const dateRange = this.getDisplayDateRange();
@@ -1081,7 +1081,7 @@ export default class SurveyGraph extends Component {
       });
     };
 
-    const renderLineMarkers = (props) => {
+    const renderDataMarkers = (props) => {
       const { data } = this.getDataForGraph(this.state.graphData);
       return getDataNest(data).map((o, index) => {
         return (
@@ -1197,7 +1197,7 @@ export default class SurveyGraph extends Component {
             {renderLines({
               className: "print-hidden",
             })}
-            {renderLineMarkers()}
+            {renderDataMarkers()}
             {renderToolTips()}
           </g>
         </svg>
@@ -1244,6 +1244,6 @@ export default class SurveyGraph extends Component {
   }
 }
 
-SurveyGraph.propTypes = {
+ReportOverviewGraph.propTypes = {
   data: PropTypes.array,
 };

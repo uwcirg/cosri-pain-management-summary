@@ -348,9 +348,8 @@ export default class ResponsesSummary extends Component {
   }
   renderResponsesLinkTableCells(lastResponsesDate, key, props) {
     return (
-      <React.Fragment>
+      <React.Fragment key={key}>
         <td
-          key={key}
           style={this.cellStyle}
           colSpan={props && props.number ? props.number : 1}
         >
