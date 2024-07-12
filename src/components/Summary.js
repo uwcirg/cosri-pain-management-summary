@@ -600,9 +600,10 @@ export default class Summary extends Component {
     const queryDateTime = summaryMap[section].lastUpdated
       ? summaryMap[section].lastUpdated
       : formatit.currentDateTimeFormat();
-    const subSectionsToRender = sectionMap?.filter((section) => {
-      return !section.hideSection;
-    })??[];
+    const subSectionsToRender =
+      sectionMap?.filter((section) => {
+        return !section.hideSection;
+      }) ?? [];
     const sectionError = summaryMap[section].errorMessage;
     const errorMessage = getErrorMessageString(
       sectionError,
@@ -780,13 +781,15 @@ export default class Summary extends Component {
     return (
       <React.Fragment key={`sectionHeader_container_${section}`}>
         {this.renderSectionAnchor(section)}
-        <h2 id={section} className="section__header" key={`section_${section}`}>
-          <div className="section__header-title">
+        <h2
+          id={section}
+          className="section__header"
+          key={`section_${section}`}
+        >
+          <div datasectionid={section} className="section__header-title">
             <span title={title}>{icon}</span>
             <span className="title-text-container">
-              <span className="title-text" datasectionid={section}>
-                {title}
-              </span>
+              <span className="title-text">{title}</span>
               <span className="info">
                 <span className="info-count-text">
                   {entryCount && entryCount}

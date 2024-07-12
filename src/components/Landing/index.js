@@ -189,15 +189,18 @@ export default class Landing extends Component {
       ignoreSelector: "h3.panel-title",
       collapseDepth: 0, // how many heading levels should not be collpased
       includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
+      //fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
       headingsOffset: 1 * MIN_HEADER_HEIGHT,
       scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
       onClick: (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        const anchorElement = document.querySelector(
-          `#${e.target.getAttribute("datasectionid")}__anchor`
-        );
+        const sectionIdAttr = "datasectionid";
+        const containgElement = e.target.closest(`[${sectionIdAttr}]`);
+        const sectionId = containgElement
+          ? containgElement.getAttribute(sectionIdAttr)
+          : e.target.getAttribute(sectionIdAttr);
+        //e.stopPropagation();
+        const anchorElement = document.querySelector(`#${sectionId}__anchor`);
         const listItems = document.querySelectorAll(".toc-list-item");
         const activeListItem = e.target.closest(".toc-list-item");
         const tocLinks = document.querySelectorAll(".toc-link");
@@ -358,7 +361,6 @@ export default class Landing extends Component {
       let id = setTimeout(() => {
         clearTimeout(id);
         reject(`Timed out in ${MAX_WAIT_TIME} ms.`);
-
       }, MAX_WAIT_TIME);
     });
     /*

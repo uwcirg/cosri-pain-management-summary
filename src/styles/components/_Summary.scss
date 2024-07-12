@@ -80,9 +80,6 @@
           line-height: 1.45;
           transition: all 300ms ease;
           border-bottom: 0;
-          margin-left: 4px;
-          margin-right: 4px;
-          border-radius: 4px;
 
           .title-text {
             max-width: 220px;
@@ -1082,6 +1079,7 @@
         &__nav {
           &.is-position-fixed {
             top: 0;
+            bottom: 0;
           }
         }
     }

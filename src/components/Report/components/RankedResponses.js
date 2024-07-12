@@ -1,85 +1,16 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getDisplayDateFromISOString } from "../../../helpers/utility";
-//import PropTypes from "prop-types";
+import {
+  getDisplayDateFromISOString,
+  isEmptyArray,
+} from "../../../helpers/utility";
+import PropTypes from "prop-types";
 
-const testData = [
-  {
-    date: "4/28/2024",
-    responses: [
-      {
-        question: "2nd",
-        answer: "Help getting back to important activities",
-      },
-      {
-        question: "3rd",
-        answer: "Help in coping with the pain",
-      },
-      {
-        question: "1st",
-        answer: "A diagnosis (to help find the cause of pain)",
-      },
-    ],
-  },
-  {
-    date: "1/12/2024",
-    responses: [
-      {
-        question: "2nd",
-        answer: "A cure",
-      },
-      {
-        question: "3rd",
-        answer: "Help in coping with the pain",
-      },
-      {
-        question: "1st",
-        answer: "A diagnosis (to help find the cause of pain)",
-      },
-    ],
-  },
-  {
-    date: "4/12/2024",
-    responses: [
-      {
-        question: "1st",
-        answer: "Help in coping with the pain",
-      },
-      {
-        question: "2nd",
-        answer: "A cure",
-      },
-      {
-        question: "3rd",
-        answer: "A diagnosis (to help find the cause of pain)",
-      },
-    ],
-  },
-  {
-    date: "3/24/2024",
-    responses: [
-      {
-        question: "1st",
-        answer: "A cure",
-      },
-      {
-        question: "2nd",
-        answer: "Help in coping with the pain",
-      },
-      {
-        question: "3rd",
-        answer: "A diagnosis (to help find the cause of pain)",
-      },
-    ],
-  },
-];
 export default class RankedResponses extends Component {
   constructor() {
     super(...arguments);
     this.state = {
       dates: [],
-      //data: [],
-      data: testData,
       selectedIndex: 0,
     };
     this.handleClickNextButton = this.handleClickNextButton.bind(this);
@@ -120,13 +51,85 @@ export default class RankedResponses extends Component {
     };
   }
   componentDidMount() {
-    this.initData(this.props.data);
+    this.initData(this.props.summary);
   }
-  initData(data) {
-    //TODO use passed in data
-    const sortedData = this.state.data.sort(
+  initData(summary) {
+    if (!summary) return;
+    if (isEmptyArray(summary.ResponsesSummary)) return;
+    // const testData = [
+    //   {
+    //     date: "4/28/2024",
+    //     responses: [
+    //       {
+    //         question: "2nd",
+    //         answer: "Help getting back to important activities",
+    //       },
+    //       {
+    //         question: "3rd",
+    //         answer: "Help in coping with the pain",
+    //       },
+    //       {
+    //         question: "1st",
+    //         answer: "A diagnosis (to help find the cause of pain)",
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     date: "1/12/2024",
+    //     responses: [
+    //       {
+    //         question: "2nd",
+    //         answer: "A cure",
+    //       },
+    //       {
+    //         question: "3rd",
+    //         answer: "Help in coping with the pain",
+    //       },
+    //       {
+    //         question: "1st",
+    //         answer: "A diagnosis (to help find the cause of pain)",
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     date: "4/12/2024",
+    //     responses: [
+    //       {
+    //         question: "1st",
+    //         answer: "Help in coping with the pain",
+    //       },
+    //       {
+    //         question: "2nd",
+    //         answer: "A cure",
+    //       },
+    //       {
+    //         question: "3rd",
+    //         answer: "A diagnosis (to help find the cause of pain)",
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     date: "3/24/2024",
+    //     responses: [
+    //       {
+    //         question: "1st",
+    //         answer: "A cure",
+    //       },
+    //       {
+    //         question: "2nd",
+    //         answer: "Help in coping with the pain",
+    //       },
+    //       {
+    //         question: "3rd",
+    //         answer: "A diagnosis (to help find the cause of pain)",
+    //       },
+    //     ],
+    //   },
+    // ];
+    const sortedData = summary.ResponsesSummary.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
+    console.log("data ", sortedData);
     this.setState({
       dates: sortedData.map((item) => item.date),
       data: sortedData,
@@ -206,9 +209,9 @@ export default class RankedResponses extends Component {
     // };
     if (!this.shouldRenderNav()) return null;
     const buttonStyle = {
-      borderWidth: "2px",
+      borderWidth: "1px",
       borderStyle: "solid",
-      padding: "8px 16px",
+      padding: "6px 20px",
       borderRadius: "100vmax",
       fontWeight: 600,
       cursor: "pointer",
@@ -216,6 +219,7 @@ export default class RankedResponses extends Component {
       zIndex: 10,
       backgroundColor: "#FFF",
       backgroundImage: "none",
+      borderColor: "#bfceda",
     };
     return (
       <div className="flex flex-gap-1 icons-container exclude-from-copy">
@@ -232,7 +236,7 @@ export default class RankedResponses extends Component {
           className={this.state.selectedIndex <= 0 ? "disabled" : ""}
           title="Less"
         >
-          <FontAwesomeIcon icon="minus"></FontAwesomeIcon>
+          <FontAwesomeIcon icon="chevron-left"></FontAwesomeIcon>
         </button>
         <button
           style={buttonStyle}
@@ -244,7 +248,15 @@ export default class RankedResponses extends Component {
           }
           title="More"
         >
-          <FontAwesomeIcon icon="plus"></FontAwesomeIcon>
+          <FontAwesomeIcon icon="chevron-right"></FontAwesomeIcon>
+        </button>
+        <button
+          style={buttonStyle}
+          onClick={this.handleSetFirst}
+          className={this.state.selectedIndex <= 0 ? "disabled" : ""}
+          title="Reset"
+        >
+          <FontAwesomeIcon icon="redo"></FontAwesomeIcon>
         </button>
         {/* <FontAwesomeIcon
           icon="angle-double-right"
@@ -301,6 +313,7 @@ export default class RankedResponses extends Component {
                 className={`${
                   index > 0 ? "exclude-from-copy print-hidden" : ""
                 }`}
+                key={`ranked_responses_header_${index}`}
               >
                 Goals{" "}
                 <span className="small">
@@ -363,7 +376,11 @@ export default class RankedResponses extends Component {
     );
   }
   render() {
-    const containerStyle = { padding: "16px 24px", position: "relative" };
+    const containerStyle = {
+      padding: "16px 24px",
+      position: "relative",
+      maxWidth: "1100px",
+    };
     const dotsContainerStyle = {
       minWidth: "120px",
       display: "flex",
@@ -374,6 +391,9 @@ export default class RankedResponses extends Component {
       position: "relative",
       overflow: "auto",
     };
+    if (isEmptyArray(this.state.dates)) {
+      return <div className="no-entries">No recorded responses</div>;
+    }
     return (
       <div
         className="flex flex-column flex-gap-2 flex-align-start"
@@ -400,3 +420,7 @@ export default class RankedResponses extends Component {
     );
   }
 }
+
+RankedResponses.propTypes = {
+  summary: PropTypes.object,
+};

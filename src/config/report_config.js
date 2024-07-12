@@ -32,7 +32,8 @@ const reportConfig = [
   },
   {
     title: "Goals and Expectations",
-    dataKey: "treatmentGoals",
+    dataKey: "CIRG-PAINTRACKER-GE",
+    questionnaires: ["CIRG-PAINTRACKER-GE"],
     status: "inactive",
     icon: (props) => (
       <CheckListIcon
@@ -48,7 +49,7 @@ const reportConfig = [
     sections: [
       {
         name: "patientTreatmentGoals",
-        dataKey: "patientTreatmentGoals",
+        dataKey: "CIRG-PAINTRACKER-GE",
         title: "Patient-reported Treatment Goals",
         component: (props) => <RankedResponses {...props}></RankedResponses>,
       },

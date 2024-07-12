@@ -58,7 +58,7 @@ export default class Report extends Component {
 
   renderSectionHeader(section) {
     return (
-      <React.Fragment key={`sectionHeader_container_${section}`}>
+      <div key={`sectionHeader_container_${section}`}>
         {this.renderSectionAnchor(section.dataKey)}
         <h2
           id={`${section.dataKey}_section`}
@@ -66,14 +66,12 @@ export default class Report extends Component {
             section.showHeaderInPrint ? "print-header" : ""
           }`}
         >
-          <div className="section__header-title">
+          <div className="section__header-title" datasectionid={section.dataKey}>
             {section.icon && (
               <span title={section.title}>{section.icon()}</span>
             )}
             <span className="title-text-container">
-              <span className="title-text" datasectionid={section.dataKey}>
-                {section.title}
-              </span>
+              <span className="title-text">{section.title}</span>
             </span>
           </div>
           <FontAwesomeIcon
@@ -82,7 +80,7 @@ export default class Report extends Component {
             title="expand/collapse"
           />
         </h2>
-      </React.Fragment>
+      </div>
     );
   }
   renderSectionBody(summaryData, section) {
@@ -112,7 +110,9 @@ export default class Report extends Component {
               ? summaryData.filter(
                   (summaryDataItem) =>
                     String(summaryDataItem.QuestionnaireName).toLowerCase() ===
-                    String(item.dataKey).toLowerCase()
+                      String(item.dataKey).toLowerCase() ||
+                    String(summaryDataItem.QuestionnaireID).toLowerCase() ===
+                      String(item.dataKey).toLowerCase()
                 )[0]
               : null;
           return (
@@ -145,7 +145,11 @@ export default class Report extends Component {
     return (
       <React.Fragment key={`sub-section_header_container_${item.dataKey}`}>
         {this.renderSectionAnchor(item.dataKey)}
-        <h3 id={`${item.dataKey}_title`} className="sub-section__header">
+        <h3
+          datasectionid={item.dataKey}
+          id={`${item.dataKey}_title`}
+          className="sub-section__header"
+        >
           {this.renderSubSectionTitle(item)}
           {this.renderSubSectionInfo(item, summaryData)}
         </h3>

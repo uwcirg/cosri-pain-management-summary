@@ -698,6 +698,15 @@ $selector-box-shadow: 0 2px 2px #383e40;
 }
 
 .collapsed {
+  .summary__nav {
+    .toc-list-item {
+      .toc-link {
+        .section__header-title {
+          align-items: flex-start;
+        }
+      }
+    }
+  }
   .report {
     .panel-container {
       .panel.graph {
