@@ -1,7 +1,7 @@
 import React from "react";
 import UserIcon from "../icons/UserIcon";
 import ChartIcon from "../icons/ChartIcon";
-import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
+import ListIcon from "../icons/ListIcon";
 import PainIcon from "../icons/PainIcon";
 import CheckListIcon from "../icons/CheckListIcon";
 import OverViewComponent from "../components/Report/components/Overview";
@@ -336,7 +336,7 @@ const reportConfig = [
     dataKey: "treatmentHistorySection",
     questionnaires: ["CIRG-PainTracker-TRT"],
     icon: (props) => (
-      <MedicalHistoryIcon {...iconProps} {...props} title="Treatment History" />
+      <ListIcon {...iconProps} {...props} title="Treatment History" />
     ),
     sections: [
       {

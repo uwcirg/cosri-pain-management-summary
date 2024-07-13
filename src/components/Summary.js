@@ -35,7 +35,7 @@ import MMEGraph from "./graph/MMEGraph";
 import Version from "../elements/Version";
 
 import { getEnv } from "../utils/envConfig";
-import AgreementIcon from "../icons/AgreementIcon";
+import AgreementIcon from "../icons/ListIcon";
 
 export default class Summary extends Component {
   constructor() {
