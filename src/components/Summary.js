@@ -35,6 +35,7 @@ import MMEGraph from "./graph/MMEGraph";
 import Version from "../elements/Version";
 
 import { getEnv } from "../utils/envConfig";
+import AgreementIcon from "../icons/AgreementIcon";
 
 export default class Summary extends Component {
   constructor() {
@@ -757,10 +758,7 @@ export default class Summary extends Component {
 
     if (section === "PatientRiskOverview") {
       icon = <ChartIcon {...iconProps} />;
-    } else if (
-      section === "PertinentMedicalHistory" ||
-      section === "CSAgreement"
-    ) {
+    } else if (section === "PertinentMedicalHistory") {
       icon = <MedicalHistoryIcon {...iconProps} />;
     } else if (section === "HistoricalTreatments") {
       icon = <MedicineIcon {...iconProps} />;
@@ -776,16 +774,14 @@ export default class Summary extends Component {
       icon = <ProviderIcon {...iconProps} />;
     } else if (section === "UrineDrugScreens") {
       icon = <FlaskIcon {...iconProps} />;
+    } else if (section === "CSAgreement") {
+      icon = <AgreementIcon {...iconProps} />
     }
 
     return (
       <React.Fragment key={`sectionHeader_container_${section}`}>
         {this.renderSectionAnchor(section)}
-        <h2
-          id={section}
-          className="section__header"
-          key={`section_${section}`}
-        >
+        <h2 id={section} className="section__header" key={`section_${section}`}>
           <div datasectionid={section} className="section__header-title">
             <span title={title}>{icon}</span>
             <span className="title-text-container">
