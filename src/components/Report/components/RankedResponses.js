@@ -126,10 +126,10 @@ export default class RankedResponses extends Component {
     //     ],
     //   },
     // ];
-    const sortedData = summary.ResponsesSummary.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-    console.log("data ", sortedData);
+    const sortedData = summary.ResponsesSummary.filter(
+      (item) => !isEmptyArray(item.responses)
+    ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    if (isEmptyArray(sortedData)) return;
     this.setState({
       dates: sortedData.map((item) => item.date),
       data: sortedData,
@@ -223,13 +223,14 @@ export default class RankedResponses extends Component {
     };
     return (
       <div className="flex flex-gap-1 icons-container exclude-from-copy">
-        {/* <FontAwesomeIcon
-          icon="angle-double-left"
+        <button
           title="First"
-          style={iconStyle}
+          style={buttonStyle}
           onClick={this.handleSetFirst}
           className={this.state.selectedIndex <= 0 ? "disabled" : ""}
-        ></FontAwesomeIcon> */}
+        >
+          <FontAwesomeIcon icon="angle-double-left"></FontAwesomeIcon>
+        </button>
         <button
           style={buttonStyle}
           onClick={this.handleClickPrevButton}
@@ -250,25 +251,26 @@ export default class RankedResponses extends Component {
         >
           <FontAwesomeIcon icon="chevron-right"></FontAwesomeIcon>
         </button>
-        <button
+        {/* <button
           style={buttonStyle}
           onClick={this.handleSetFirst}
           className={this.state.selectedIndex <= 0 ? "disabled" : ""}
           title="Reset"
         >
           <FontAwesomeIcon icon="redo"></FontAwesomeIcon>
-        </button>
-        {/* <FontAwesomeIcon
-          icon="angle-double-right"
+        </button> */}
+        <button
           title="Last"
-          style={iconStyle}
+          style={buttonStyle}
           onClick={this.handleSetLast}
           className={
             this.state.selectedIndex >= this.state.dates.length - 1
               ? "disabled"
               : ""
           }
-        ></FontAwesomeIcon> */}
+        >
+          <FontAwesomeIcon icon="angle-double-right"></FontAwesomeIcon>
+        </button>
       </div>
     );
   }
@@ -311,7 +313,7 @@ export default class RankedResponses extends Component {
                   },
                 }}
                 className={`${
-                  index > 0 ? "exclude-from-copy print-hidden" : ""
+                  index > 0 ? "exclude-from-copy print-hidden active" : ""
                 }`}
                 key={`ranked_responses_header_${index}`}
               >
@@ -382,7 +384,7 @@ export default class RankedResponses extends Component {
       maxWidth: "1100px",
     };
     const dotsContainerStyle = {
-      minWidth: "120px",
+      width: "100%",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",

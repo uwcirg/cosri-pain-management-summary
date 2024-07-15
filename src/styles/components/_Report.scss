@@ -697,6 +697,22 @@ $selector-box-shadow: 0 2px 2px #383e40;
   }
 }
 
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes slide-from-right {
+  from { transform: translateX(30px); }
+}
+
+@keyframes slide-to-left {
+  to { transform: translateX(-30px); }
+}
+
 .collapsed {
   .summary__nav {
     .toc-list-item {
