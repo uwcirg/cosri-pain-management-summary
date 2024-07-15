@@ -81,6 +81,11 @@
           transition: all 300ms ease;
           border-bottom: 0;
 
+          svg {
+            stroke: #FFF;
+            stroke-width: 1px;
+          }
+
           .title-text {
             max-width: 220px;
             line-height: 1.6;
