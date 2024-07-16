@@ -51,16 +51,6 @@ define function GetMatchQuestionnaire(QuestionnaireID String, QuestionnaireName 
     PositionOf(Lower(Q.name), Lower(QuestionnaireName)) != -1
   )
 
-// Extract the id and value from each answer item in the FHIR QuestionnaireResponse, i.e. QuestionnaireResponse.item.answer
-// @param responseItems, of type List<FHIR.QuestionnaireResponse.Item>
-// @return {Tuple}, list of tuples of id and answer value
-define function GetCurrentResponses(responseItems List<FHIR.QuestionnaireResponse.Item>):
-  (responseItems) I
-  return Tuple {
-    linkId: I.linkId.value,
-    answer: I.answer.value[0] // Assuming only one answer per question
-  }
-
 /*
  * retrieve a list of completed FHIR QuestionnaireResponse for a Questionnaire, matched on keyword, e.g. questionnaire id, questionnaire name, in the questionnaire element
  * @param responses, of type FHIR.QuestionnaireResponse
@@ -80,20 +70,6 @@ define function MatchedReponsesByQuestionnaire(responses List<FHIR.Questionnaire
       Q.status.value = 'completed')
     sort by authored desc 
   )
-
-/*
- * retrieve concept code of a specified answer option by numeric index from a questionnaire
- * @param currentQuestionnaire, of type FHIR.Questionnaire
- * @param qIndex, numeric index, of type FHIR.Integer
- * @return {System.String} code value for the answer
- */
-define function GetAnswerOptionCodeValue(currentQuestionnaire FHIR.Questionnaire, qIndex Integer):
-  if currentQuestionnaire.item[qIndex] is not null and 
-    currentQuestionnaire.item[qIndex].answerOption.value.code is not null
-  then
-    currentQuestionnaire.item[qIndex].answerOption.value.code.value
-  else
-    null
 
 /* retrieve answer text from the QuestionnaireResponse answer item that has the provided id, aka linkId, i.e. QuestionnaireResponse.item.answer.value[x]
  * @param linkId, of type String
