@@ -295,11 +295,30 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
       linkId: if I.linkId.value is not null then I.linkId.value else 'n/a',
       answers: I.answer,
       answer: case
+        // GAD7 score item
+        when I.linkId.value = '/70274-6' then I.answer[0].value.value
+        when I.linkId.value = '70274-6' then I.answer[0].value.value
+        // PHQ8 score item
+        when I.linkId.value = '/44261-6' then I.answer[0].value.value
+        when I.linkId.value = '44261-6' then I.answer[0].value.value
+        // PHQ 4 score item
+        when I.linkId.value = '70272-0' then I.answer[0].value.value
+        when I.linkId.value = '/70272-0' then I.answer[0].value.value
+        // PEG score item
+        when I.linkId.value = '91147-9' then I.answer[0].value.value
+        when I.linkId.value = '/91147-9' then I.answer[0].value.value
+        // PROMIS score item 85523-9
+        when I.linkId.value = '85523-9' then I.answer[0].value.value
+        when I.linkId.value = '/85523-9' then I.answer[0].value.value
+        // PC-PTSD score item 102017-1
+        when I.linkId.value = '102017-1' then I.answer[0].value.value
+        when I.linkId.value = '/102017-1' then I.answer[0].value.value
+        // HACK, address GE questionnaire Other answer
         when I.answer[1].value is not null and
              I.answer[1].value.value is not null
              then
           I.answer[1].value.value
-        //answer in FHIR coding format 
+        // answer in FHIR coding format 
         // TODO check data type to see if answer value is of type Coding, i.e. I.answer[0].value is Coding, the version of CQL execution engine lib doesn't support data type check
         when I.answer[0].value is not null and I.answer[0].value.display is not null and I.answer[0].value.display.value is not null then 
           I.answer[0].value.display.value

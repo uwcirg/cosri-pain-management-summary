@@ -75,7 +75,6 @@ async function executeELM(collector, oResourceTypes) {
           let resources = [];
           requestResults.forEach((result) => {
             const { status, value } = result;
-            console.log("status ", status, " result ", value);
             if (status === "rejected") return true;
             if (!value || !value.length) return true;
             value.forEach((item) => {
