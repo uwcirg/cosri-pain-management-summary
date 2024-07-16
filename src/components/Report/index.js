@@ -163,12 +163,12 @@ export default class Report extends Component {
         // style={{ fontWeight: 700, fontSize: "1.1em" }}
         datasectionid={item.dataKey}
       >
-        <FontAwesomeIcon
+        {/* <FontAwesomeIcon
           className={`flag flag-nav`}
           icon={"circle"}
           title="flag"
           tabIndex={0}
-        />
+        /> */}
         {item.title}
       </span>
     );
