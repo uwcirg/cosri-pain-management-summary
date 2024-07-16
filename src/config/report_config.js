@@ -32,9 +32,9 @@ const reportConfig = [
   },
   {
     title: "Goals and Expectations",
-    dataKey: "CIRG-PAINTRACKER-GE",
-    questionnaires: ["CIRG-PAINTRACKER-GE"],
-    status: "inactive",
+    dataKey: "CIRG-PainTracker-GE",
+    questionnaires: ["CIRG-PainTracker-GE"],
+    //status: "inactive",
     icon: (props) => (
       <CheckListIcon
         {...{

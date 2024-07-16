@@ -293,12 +293,17 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
   ((responseItems) Q) I 
   return {
       linkId: if I.linkId.value is not null then I.linkId.value else 'n/a',
+      answers: I.answer,
       answer: case
+        when I.answer[1].value is not null and
+             I.answer[1].value.value is not null
+             then
+          I.answer[1].value.value
         //answer in FHIR coding format 
         // TODO check data type to see if answer value is of type Coding, i.e. I.answer[0].value is Coding, the version of CQL execution engine lib doesn't support data type check
-        when I.answer[0].value.display is not null and I.answer[0].value.display.value is not null then 
+        when I.answer[0].value is not null and I.answer[0].value.display is not null and I.answer[0].value.display.value is not null then 
           I.answer[0].value.display.value
-        when I.answer[0].value.value is not null then I.answer[0].value.value
+        when I.answer[0].value is not null and I.answer[0].value.value is not null then I.answer[0].value.value
         else
           null
       end,
