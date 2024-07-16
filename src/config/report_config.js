@@ -1,9 +1,9 @@
 import React from "react";
 import UserIcon from "../icons/UserIcon";
 import ChartIcon from "../icons/ChartIcon";
+import BarsIcon from "../icons/BarsIcon";
 import ListIcon from "../icons/ListIcon";
 import PainIcon from "../icons/PainIcon";
-import CheckListIcon from "../icons/CheckListIcon";
 import OverViewComponent from "../components/Report/components/Overview";
 import ResponsesSummary from "../components/Report/components/ResponsesSummary";
 import RankedResponses from "../components/Report/components/RankedResponses";
@@ -36,7 +36,7 @@ const reportConfig = [
     questionnaires: ["CIRG-PainTracker-GE"],
     //status: "inactive",
     icon: (props) => (
-      <CheckListIcon
+      <BarsIcon
         {...{
           width: 32,
           height: 32,
@@ -44,7 +44,7 @@ const reportConfig = [
         }}
         {...props}
         title="Goals and Expectations"
-      ></CheckListIcon>
+      ></BarsIcon>
     ),
     sections: [
       {
