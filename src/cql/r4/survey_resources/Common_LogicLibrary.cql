@@ -286,6 +286,7 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
         when I.linkId.value = '/102017-1' then I.answer[0].value.value
         // HACK, address GE questionnaire Other answer
         when 
+             PositionOf('GE', I.linkId.value) != -1 and
              I.answer[1].value is not null and
              I.answer[1].value.value is not null
              then

@@ -2671,26 +2671,58 @@
                               "when" : {
                                  "type" : "And",
                                  "operand" : [ {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
+                                    "type" : "And",
+                                    "operand" : [ {
+                                       "type" : "Not",
                                        "operand" : {
-                                          "path" : "value",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "type" : "Indexer",
-                                             "operand" : [ {
-                                                "path" : "answer",
-                                                "scope" : "I",
-                                                "type" : "Property"
-                                             }, {
+                                          "type" : "Equal",
+                                          "operand" : [ {
+                                             "type" : "PositionOf",
+                                             "pattern" : {
+                                                "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                                "value" : "GE",
+                                                "type" : "Literal"
+                                             },
+                                             "string" : {
+                                                "path" : "value",
+                                                "type" : "Property",
+                                                "source" : {
+                                                   "path" : "linkId",
+                                                   "scope" : "I",
+                                                   "type" : "Property"
+                                                }
+                                             }
+                                          }, {
+                                             "type" : "Negate",
+                                             "operand" : {
                                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                                                 "value" : "1",
                                                 "type" : "Literal"
-                                             } ]
+                                             }
+                                          } ]
+                                       }
+                                    }, {
+                                       "type" : "Not",
+                                       "operand" : {
+                                          "type" : "IsNull",
+                                          "operand" : {
+                                             "path" : "value",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "type" : "Indexer",
+                                                "operand" : [ {
+                                                   "path" : "answer",
+                                                   "scope" : "I",
+                                                   "type" : "Property"
+                                                }, {
+                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                                   "value" : "1",
+                                                   "type" : "Literal"
+                                                } ]
+                                             }
                                           }
                                        }
-                                    }
+                                    } ]
                                  }, {
                                     "type" : "Not",
                                     "operand" : {
