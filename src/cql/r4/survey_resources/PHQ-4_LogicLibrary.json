@@ -39,7 +39,7 @@
             "accessLevel" : "Public",
             "default" : {
                "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "phq4",
+               "value" : "phq-4",
                "type" : "Literal"
             }
          }, {

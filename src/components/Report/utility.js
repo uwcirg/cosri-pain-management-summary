@@ -1,4 +1,5 @@
 import { isEmptyArray } from "../../helpers/utility";
+import { BODY_DIAGRAM_DATA_KEY } from "../../config/report_config";
 export function hasNoSummaryData(summaryData) {
   return (
     isEmptyArray(summaryData) ||
@@ -25,7 +26,7 @@ export function getGraphData(summaryData) {
 export function getBodyDiagramData(summaryData) {
   if (isEmptyArray(summaryData)) return null;
   const matchedData = summaryData.filter(
-    (item) => String(item.dataKey).toLowerCase() === "paintracker-location-body-diagram"
+    (item) => String(item.dataKey).toLowerCase() === BODY_DIAGRAM_DATA_KEY.toLowerCase()
   );
   if (!matchedData.length) return null;
   if (isEmptyArray(matchedData[0].ResponsesSummary)) return null;

@@ -13,7 +13,7 @@ const iconProps = {
   height: 35,
   className: "sectionIcon",
 };
-const BODY_DIAGRAM_DATA_KEY = "paintracker-location-body-diagram";
+export const BODY_DIAGRAM_DATA_KEY = "paintracker-location-body-diagram";
 const GE_DATA_KEY = "paintracker-ge";
 const PEG_DATA_KEY = "PEG";
 const PHQ9_DATA_KEY = "PHQ9";

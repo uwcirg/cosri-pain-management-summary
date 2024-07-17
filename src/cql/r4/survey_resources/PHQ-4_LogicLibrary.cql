@@ -8,7 +8,7 @@ include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 // -----------------------------------------------------------------------------
 codesystem "LOINC": 'http://loinc.org'
 
-parameter dataKey default 'phq4'
+parameter dataKey default 'phq-4'
 parameter id default 'CIRG-PHQ-4'
 
 define QuestionnaireID:
