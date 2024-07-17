@@ -33,11 +33,23 @@
             "version" : "1.0.0"
          } ]
       },
-      "codeSystems" : {
+      "parameters" : {
          "def" : [ {
-            "name" : "LOINC",
-            "id" : "http://loinc.org",
-            "accessLevel" : "Public"
+            "name" : "dataKey",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "paintracker-location-body-diagram",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "id",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "CIRG-PainTracker-Location-Body-Diagram",
+               "type" : "Literal"
+            }
          } ]
       },
       "contexts" : {
@@ -47,13 +59,12 @@
       },
       "statements" : {
          "def" : [ {
-            "name" : "QuestionnaireName",
+            "name" : "QuestionnaireID",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "body_diagram",
-               "type" : "Literal"
+               "name" : "id",
+               "type" : "ParameterRef"
             }
          }, {
             "name" : "PainLocationsQuestionLinkId",
@@ -93,7 +104,24 @@
                }
             }
          }, {
-            "name" : "BodyDiagramQuestionnaire",
+            "name" : "QuestionnaireKey",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "dataKey",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "QuestionnaireShortName",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "body-diagram",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "Questionnaire",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -103,20 +131,12 @@
                   "libraryName" : "LogicHelper",
                   "type" : "FunctionRef",
                   "operand" : [ {
-                     "asType" : "{urn:hl7-org:elm-types:r1}String",
-                     "type" : "As",
-                     "operand" : {
-                        "type" : "Null"
-                     }
-                  }, {
-                     "name" : "QuestionnaireName",
+                     "name" : "QuestionnaireID",
                      "type" : "ExpressionRef"
                   }, {
-                     "asType" : "{urn:hl7-org:elm-types:r1}String",
-                     "type" : "As",
-                     "operand" : {
-                        "type" : "Null"
-                     }
+                     "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                     "value" : "body",
+                     "type" : "Literal"
                   } ]
                }
             }
@@ -132,12 +152,8 @@
                   "dataType" : "{http://hl7.org/fhir}QuestionnaireResponse",
                   "type" : "Retrieve"
                }, {
-                  "name" : "BodyDiagramQuestionnaire",
+                  "name" : "Questionnaire",
                   "type" : "ExpressionRef"
-               }, {
-                  "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                  "value" : "Body-Diagram",
-                  "type" : "Literal"
                } ]
             }
          }, {
@@ -321,7 +337,7 @@
                      }, {
                         "name" : "qid",
                         "value" : {
-                           "name" : "QuestionnaireName",
+                           "name" : "QuestionnaireKey",
                            "type" : "ExpressionRef"
                         }
                      }, {

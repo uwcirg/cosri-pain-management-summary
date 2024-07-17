@@ -1,19 +1,14 @@
 library PegLogicLibrary version '1.0.0'
-
 using FHIR version '4.0.0'
-
 include "FHIRHelpers" version '4.0.0' called FHIRHelpers
-
 include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
-// -----------------------------------------------------------------------------
-// CODESYSTEMS, VALUE SETS, CODES, AND CONCEPTS
-// -----------------------------------------------------------------------------
+parameter dataKey default 'peg'
+parameter id default 'CIRG-PEG'
 
-codesystem "LOINC": 'http://loinc.org'
-
-define QuestionnaireID: 'CIRG-PEG'
-define QuestionnaireName: 'peg'
+define QuestionnaireID:
+  id
+define QuestionnaireShortName: 'peg'
 define Question1LinkId: '75893-8'
 define Question2LinkId: '91145-3'
 define Question3LinkId: '91146-1'
@@ -24,12 +19,13 @@ define ScoreParams: Tuple {
   minScore: 0,
   maxScore: 30
 }
+define QuestionnaireKey:
+  dataKey
 
 // -----------------------------------------------------------------------------
 // PATIENT INFORMATION
 // -----------------------------------------------------------------------------
 context Patient
-
 
 //------------------------------------------------------------------------------
 // QUESTIONNAIRE AND QUESTIONNAIRERESPONSE LOGIC
@@ -37,14 +33,14 @@ context Patient
 
 // Load Questionnaire
 define Questionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireKey))
 
 define QuestionnaireItems:
   (Questionnaire) Q 
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire, QuestionnaireName)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire)
 
 define ResponsesCompleted:
     Length(QuestionnaireResponses)
@@ -79,14 +75,15 @@ define ResponsesSummary:
     totalItems: 3
     return Tuple {
       id: I.id.value,
-      qid: QuestionnaireName,
+      qid: QuestionnaireKey,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
-      responses: responsesOnly union {
-        linkId: 'PEG_total_score',
-        question: 'PEG score',
-        answer: sumScore
-      },
+      // responses: responsesOnly union {
+      //   linkId: 'PEG_total_score',
+      //   question: 'PEG score',
+      //   answer: sumScore
+      // },
+      responses: responsesOnly,
       Question1Answer: Question1Answer,
       Question2Answer: Question2Answer,
       Question3Answer: Question3Answer,

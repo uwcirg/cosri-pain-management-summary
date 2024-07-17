@@ -14,7 +14,10 @@ import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import r4SurveyCommonELM from "../cql/r4/survey_resources/Common_LogicLibrary.json";
 import valueSetDB from "../cql/valueset-db.json";
 import { getEnv } from "./envConfig";
-import { getReportInstrumentList } from "../helpers/utility";
+import {
+  getReportInstrumentList,
+  getReportInstrumentIdByKey,
+} from "../helpers/utility";
 
 const noCacheHeader = {
   "Cache-Control": "no-cache, no-store, max-age=0",
@@ -67,8 +70,8 @@ async function executeELM(collector, oResourceTypes) {
             return resource;
           });
         });
-        console.log("collector ", collector);
-        console.log("resourceTypes ", resourceTypes);
+        //console.log("collector ", collector);
+        //console.log("resourceTypes ", resourceTypes);
 
         // return all the requests have been resolved // rejected
         return Promise.allSettled(requests).then((requestResults) => {
@@ -113,15 +116,17 @@ async function executeELM(collector, oResourceTypes) {
                 item.data &&
                 String(item.data.resourceType).toLowerCase() === "bundle"
               )
-              item.error =
-                "Unable to process data. CQL execution error. " +
-                (typeof e?.message === "string" ? e?.message : " Please see console for detail.");
+                item.error =
+                  "Unable to process data. CQL execution error. " +
+                  (typeof e?.message === "string"
+                    ? e?.message
+                    : " Please see console for detail.");
             });
           }
           results = null;
         }
         //debugging
-        console.log("CQL execution results ", results);
+        console.table("CQL execution results ", results);
 
         let evalResults =
           results && results.patientResults
@@ -190,7 +195,11 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
     );
     const surveyExecutor = new cql.Executor(
       surveyLib,
-      new cql.CodeService(valueSetDB)
+      new cql.CodeService(valueSetDB),
+      {
+        dataKey: qKey,
+        id: getReportInstrumentIdByKey(qKey)
+      }
     );
     const surveyPatientSource = cqlfhir.PatientSource.FHIRv400();
     surveyPatientSource.loadBundles([bundle]);
@@ -219,21 +228,21 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
 function getLibraryForInstruments() {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
-  return INSTRUMENT_LIST.map((libId) =>
+  return INSTRUMENT_LIST.map((item) =>
     (async () => {
       let elmJson = null;
       elmJson = await import(
-        `../cql/r4/survey_resources/${libId
+        `../cql/r4/survey_resources/${item.key
           .replace(/\s/g, "_")
           .toUpperCase()}_LogicLibrary.json`
       )
         .then((module) => module.default)
         .catch((e) => {
-          console.log("Error loading ELM  lib for " + libId);
+          console.log("Error loading ELM  lib for " + item.key);
           elmJson = null;
         });
       return {
-        [libId]: elmJson,
+        [item.key]: elmJson,
       };
     })()
   );
@@ -344,7 +353,7 @@ function processPage(uri, collector, resources) {
 function updateSearchParams(params, release, type) {
   //fetchEnvData();
 
-  const INSTRUMENT_LIST = getReportInstrumentList();
+  const INSTRUMENT_LIST = getReportInstrumentList().map((item) => item.id);
   if (INSTRUMENT_LIST) {
     if (release === FHIR_RELEASE_VERSION_4) {
       switch (type) {

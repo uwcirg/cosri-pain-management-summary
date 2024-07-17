@@ -33,11 +33,23 @@
             "version" : "1.0.0"
          } ]
       },
-      "codeSystems" : {
+      "parameters" : {
          "def" : [ {
-            "name" : "LOINC",
-            "id" : "http://loinc.org",
-            "accessLevel" : "Public"
+            "name" : "dataKey",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "PAINTRACKER-TRT",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "id",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "CIRG-PainTracker-TRT",
+               "type" : "Literal"
+            }
          } ]
       },
       "contexts" : {
@@ -51,12 +63,11 @@
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "CIRG-PainTracker-TRT",
-               "type" : "Literal"
+               "name" : "id",
+               "type" : "ParameterRef"
             }
          }, {
-            "name" : "QuestionnaireName",
+            "name" : "QuestionnaireShortName",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -72,6 +83,14 @@
                "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
                "value" : "true",
                "type" : "Literal"
+            }
+         }, {
+            "name" : "QuestionnaireKey",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "dataKey",
+               "type" : "ParameterRef"
             }
          }, {
             "name" : "Patient",
@@ -97,14 +116,8 @@
                      "name" : "QuestionnaireID",
                      "type" : "ExpressionRef"
                   }, {
-                     "name" : "QuestionnaireName",
+                     "name" : "QuestionnaireKey",
                      "type" : "ExpressionRef"
-                  }, {
-                     "asType" : "{urn:hl7-org:elm-types:r1}String",
-                     "type" : "As",
-                     "operand" : {
-                        "type" : "Null"
-                     }
                   } ]
                }
             }
@@ -144,9 +157,6 @@
                }, {
                   "name" : "Questionnaire",
                   "type" : "ExpressionRef"
-               }, {
-                  "name" : "QuestionnaireName",
-                  "type" : "ExpressionRef"
                } ]
             }
          }, {
@@ -180,7 +190,7 @@
                      }, {
                         "name" : "qid",
                         "value" : {
-                           "name" : "QuestionnaireName",
+                           "name" : "QuestionnaireKey",
                            "type" : "ExpressionRef"
                         }
                      }, {

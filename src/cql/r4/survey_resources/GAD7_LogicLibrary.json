@@ -33,6 +33,25 @@
             "version" : "1.0.0"
          } ]
       },
+      "parameters" : {
+         "def" : [ {
+            "name" : "dataKey",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "gad7",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "id",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "CIRG-GAD7",
+               "type" : "Literal"
+            }
+         } ]
+      },
       "codeSystems" : {
          "def" : [ {
             "name" : "LOINC",
@@ -51,18 +70,8 @@
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "CIRG-GAD7",
-               "type" : "Literal"
-            }
-         }, {
-            "name" : "QuestionnaireName",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "gad7",
-               "type" : "Literal"
+               "name" : "id",
+               "type" : "ParameterRef"
             }
          }, {
             "name" : "QuestionnaireShortName",
@@ -146,6 +155,14 @@
                "type" : "Literal"
             }
          }, {
+            "name" : "QuestionnaireKey",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "dataKey",
+               "type" : "ParameterRef"
+            }
+         }, {
             "name" : "answerExtensionIndex",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -200,14 +217,8 @@
                      "name" : "QuestionnaireID",
                      "type" : "ExpressionRef"
                   }, {
-                     "name" : "QuestionnaireName",
+                     "name" : "QuestionnaireKey",
                      "type" : "ExpressionRef"
-                  }, {
-                     "asType" : "{urn:hl7-org:elm-types:r1}String",
-                     "type" : "As",
-                     "operand" : {
-                        "type" : "Null"
-                     }
                   } ]
                }
             }
@@ -246,9 +257,6 @@
                   "type" : "Retrieve"
                }, {
                   "name" : "Questionnaire",
-                  "type" : "ExpressionRef"
-               }, {
-                  "name" : "QuestionnaireName",
                   "type" : "ExpressionRef"
                } ]
             }
@@ -482,7 +490,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -497,7 +505,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -512,7 +520,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -527,7 +535,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -542,7 +550,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -557,7 +565,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -572,7 +580,7 @@
                            }
                         },
                         "then" : {
-                           "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                           "asType" : "{urn:hl7-org:elm-types:r1}Integer",
                            "type" : "As",
                            "operand" : {
                               "type" : "Null"
@@ -580,8 +588,8 @@
                         }
                      } ],
                      "else" : {
-                        "type" : "ToDecimal",
-                        "operand" : {
+                        "type" : "Add",
+                        "operand" : [ {
                            "type" : "Add",
                            "operand" : [ {
                               "type" : "Add",
@@ -592,48 +600,28 @@
                                     "operand" : [ {
                                        "type" : "Add",
                                        "operand" : [ {
-                                          "type" : "Add",
+                                          "type" : "Multiply",
                                           "operand" : [ {
-                                             "type" : "Multiply",
+                                             "type" : "Coalesce",
                                              "operand" : [ {
-                                                "type" : "Coalesce",
-                                                "operand" : [ {
-                                                   "name" : "q1Score",
-                                                   "type" : "QueryLetRef"
-                                                }, {
-                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                   "value" : "0",
-                                                   "type" : "Literal"
-                                                } ]
+                                                "name" : "q1Score",
+                                                "type" : "QueryLetRef"
                                              }, {
                                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                "value" : "1",
+                                                "value" : "0",
                                                 "type" : "Literal"
                                              } ]
                                           }, {
-                                             "type" : "Multiply",
-                                             "operand" : [ {
-                                                "type" : "Coalesce",
-                                                "operand" : [ {
-                                                   "name" : "q2Score",
-                                                   "type" : "QueryLetRef"
-                                                }, {
-                                                   "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                   "value" : "0",
-                                                   "type" : "Literal"
-                                                } ]
-                                             }, {
-                                                "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                                "value" : "1",
-                                                "type" : "Literal"
-                                             } ]
+                                             "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                             "value" : "1",
+                                             "type" : "Literal"
                                           } ]
                                        }, {
                                           "type" : "Multiply",
                                           "operand" : [ {
                                              "type" : "Coalesce",
                                              "operand" : [ {
-                                                "name" : "q3Score",
+                                                "name" : "q2Score",
                                                 "type" : "QueryLetRef"
                                              }, {
                                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
@@ -651,7 +639,7 @@
                                        "operand" : [ {
                                           "type" : "Coalesce",
                                           "operand" : [ {
-                                             "name" : "q4Score",
+                                             "name" : "q3Score",
                                              "type" : "QueryLetRef"
                                           }, {
                                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
@@ -669,7 +657,7 @@
                                     "operand" : [ {
                                        "type" : "Coalesce",
                                        "operand" : [ {
-                                          "name" : "q5Score",
+                                          "name" : "q4Score",
                                           "type" : "QueryLetRef"
                                        }, {
                                           "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
@@ -687,7 +675,7 @@
                                  "operand" : [ {
                                     "type" : "Coalesce",
                                     "operand" : [ {
-                                       "name" : "q6Score",
+                                       "name" : "q5Score",
                                        "type" : "QueryLetRef"
                                     }, {
                                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
@@ -705,7 +693,7 @@
                               "operand" : [ {
                                  "type" : "Coalesce",
                                  "operand" : [ {
-                                    "name" : "q7Score",
+                                    "name" : "q6Score",
                                     "type" : "QueryLetRef"
                                  }, {
                                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
@@ -718,7 +706,24 @@
                                  "type" : "Literal"
                               } ]
                            } ]
-                        }
+                        }, {
+                           "type" : "Multiply",
+                           "operand" : [ {
+                              "type" : "Coalesce",
+                              "operand" : [ {
+                                 "name" : "q7Score",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "1",
+                              "type" : "Literal"
+                           } ]
+                        } ]
                      }
                   }
                }, {
@@ -751,12 +756,9 @@
                               "name" : "score",
                               "type" : "QueryLetRef"
                            }, {
-                              "type" : "ToDecimal",
-                              "operand" : {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "14",
-                                 "type" : "Literal"
-                              }
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "14",
+                              "type" : "Literal"
                            } ]
                         },
                         "then" : {
@@ -773,12 +775,9 @@
                                  "name" : "score",
                                  "type" : "QueryLetRef"
                               }, {
-                                 "type" : "ToDecimal",
-                                 "operand" : {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "10",
-                                    "type" : "Literal"
-                                 }
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "10",
+                                 "type" : "Literal"
                               } ]
                            }, {
                               "type" : "LessOrEqual",
@@ -786,12 +785,9 @@
                                  "name" : "score",
                                  "type" : "QueryLetRef"
                               }, {
-                                 "type" : "ToDecimal",
-                                 "operand" : {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "14",
-                                    "type" : "Literal"
-                                 }
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "14",
+                                 "type" : "Literal"
                               } ]
                            } ]
                         },
@@ -809,12 +805,9 @@
                                  "name" : "score",
                                  "type" : "QueryLetRef"
                               }, {
-                                 "type" : "ToDecimal",
-                                 "operand" : {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "5",
-                                    "type" : "Literal"
-                                 }
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "5",
+                                 "type" : "Literal"
                               } ]
                            }, {
                               "type" : "LessOrEqual",
@@ -822,12 +815,9 @@
                                  "name" : "score",
                                  "type" : "QueryLetRef"
                               }, {
-                                 "type" : "ToDecimal",
-                                 "operand" : {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "9",
-                                    "type" : "Literal"
-                                 }
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "9",
+                                 "type" : "Literal"
                               } ]
                            } ]
                         },
@@ -881,7 +871,7 @@
                      }, {
                         "name" : "qid",
                         "value" : {
-                           "name" : "QuestionnaireName",
+                           "name" : "QuestionnaireShortName",
                            "type" : "ExpressionRef"
                         }
                      }, {
@@ -1011,12 +1001,9 @@
                                     "name" : "score",
                                     "type" : "QueryLetRef"
                                  }, {
-                                    "type" : "ToDecimal",
-                                    "operand" : {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "0",
-                                       "type" : "Literal"
-                                    }
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
                                  } ]
                               },
                               "then" : {

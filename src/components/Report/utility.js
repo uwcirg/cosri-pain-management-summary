@@ -25,7 +25,7 @@ export function getGraphData(summaryData) {
 export function getBodyDiagramData(summaryData) {
   if (isEmptyArray(summaryData)) return null;
   const matchedData = summaryData.filter(
-    (item) => String(item.dataKey).toLowerCase() === "body_diagram"
+    (item) => String(item.dataKey).toLowerCase() === "paintracker-location-body-diagram"
   );
   if (!matchedData.length) return null;
   if (isEmptyArray(matchedData[0].ResponsesSummary)) return null;

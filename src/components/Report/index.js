@@ -7,7 +7,10 @@ import InfoModal from "../InfoModal";
 import SideNav from "../SideNav";
 import Version from "../../elements/Version";
 import reportSummarySections from "../../config/report_config";
-import { getQuestionnaireDescription } from "../../helpers/utility";
+import {
+  getQuestionnaireDescription,
+  isEmptyArray,
+} from "../../helpers/utility";
 import * as reportUtil from "./utility";
 
 export default class Report extends Component {
@@ -66,7 +69,10 @@ export default class Report extends Component {
             section.showHeaderInPrint ? "print-header" : ""
           }`}
         >
-          <div className="section__header-title" datasectionid={section.dataKey}>
+          <div
+            className="section__header-title"
+            datasectionid={section.dataKey}
+          >
             {section.icon && (
               <span title={section.title}>{section.icon()}</span>
             )}
@@ -101,20 +107,18 @@ export default class Report extends Component {
       );
     }
     if (!section.sections || !section.sections.length) return null;
-
+    console.log("data", summaryData )
     return (
       <div className="section">
         {section.sections.map((item, index) => {
-          const matchedData =
-            summaryData && summaryData.length
-              ? summaryData.filter(
-                  (summaryDataItem) =>
-                    String(summaryDataItem.QuestionnaireName).toLowerCase() ===
-                      String(item.dataKey).toLowerCase() ||
-                    String(summaryDataItem.QuestionnaireID).toLowerCase() ===
-                      String(item.dataKey).toLowerCase()
-                )[0]
-              : null;
+          console.log('data key ', item.dataKey)
+          const matchedData = !isEmptyArray(summaryData)
+            ? summaryData.find(
+                (summaryDataItem) =>
+                  String(summaryDataItem.QuestionnaireKey).toLowerCase() ===
+                  String(item.dataKey).toLowerCase()
+              )
+            : null;
           return (
             <div
               className="sub-section"

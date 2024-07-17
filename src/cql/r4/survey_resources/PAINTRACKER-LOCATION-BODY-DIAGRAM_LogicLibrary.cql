@@ -1,19 +1,12 @@
 library BodyDiagramLogicLibrary version '1.0.0'
-
 using FHIR version '4.0.0'
-
 include "FHIRHelpers" version '4.0.0' called FHIRHelpers
-
 include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
-// -----------------------------------------------------------------------------
-// CODESYSTEMS, VALUE SETS, CODES, AND CONCEPTS
-// -----------------------------------------------------------------------------
-
-codesystem "LOINC": 'http://loinc.org'
-
-
-define QuestionnaireName: 'body_diagram'
+parameter dataKey default 'paintracker-location-body-diagram'
+parameter id default 'CIRG-PainTracker-Location-Body-Diagram'
+define QuestionnaireID:
+  id
 define PainLocationsQuestionLinkId: 'CIRG-PainTracker-1252'
 define SeverePainLocationQuestionLinkId: 'CIRG-PainTracker-1253'
 define ExcludeFromScoring: true
@@ -23,17 +16,22 @@ define ExcludeFromScoring: true
 // -----------------------------------------------------------------------------
 context Patient
 
-
 //------------------------------------------------------------------------------
 // QUESTIONNAIRE AND QUESTIONNAIRERESPONSE LOGIC
 //------------------------------------------------------------------------------
 
+define QuestionnaireKey:
+  dataKey
+
+define QuestionnaireShortName: 
+  'body-diagram'
+
 // Load Questionnaire
-define BodyDiagramQuestionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(null, QuestionnaireName, null))
+define Questionnaire:
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, 'body'))
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], BodyDiagramQuestionnaire, 'Body-Diagram')
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire)
 
 define function painLocationAnswerItem (responseItems List<FHIR.QuestionnaireResponse.Item>):
   First(LogicHelper.GetArrayAnswerByLinkId(PainLocationsQuestionLinkId, responseItems))
@@ -53,7 +51,7 @@ define ResponsesSummary:
   (QuestionnaireResponses) I
     return Tuple {
       id: I.id.value,
-      qid: QuestionnaireName,
+      qid: QuestionnaireKey,
       date: LogicHelper.DateTimeText(I.authored),
       painLocations: painLocations(I.item),
       severePainLocation: severePainLocation(I.item),

@@ -36,36 +36,32 @@ define function GetItemLinkIds(questionnaire FHIR.Questionnaire):
   let item: Q.item
   return item.linkId.value
 
-// Get matched FHIR Questionnaire based on questionnaire ID, questionnaire name or questionnaire URL
+// Get matched FHIR Questionnaire based on questionnaire ID, or supplied keyword to match
 // @param QuestionnaireID, of type String, id of the questionnaire
-// @param QuestionnaireName, of type String
-// @param QuestionnaireURL, of type String
+// @param keyword, of type String
 // @return {FHIR.Questionnaire}, a list of matched FHIR.Questionnaire
-define function GetMatchQuestionnaire(QuestionnaireID String, QuestionnaireName String, QuestionnaireURL String):
+define function GetMatchQuestionnaire(QuestionnaireID String, keyword String):
   ([Questionnaire] Q
     where 
-    Q.url.value = QuestionnaireURL or
     Q.id = QuestionnaireID or
-    Lower(Q.name) = Lower(QuestionnaireName) or
-    PositionOf(Lower(QuestionnaireName), Lower(Q.name)) != -1 or
-    PositionOf(Lower(Q.name), Lower(QuestionnaireName)) != -1
+    Lower(Q.name) = Lower(keyword) or
+    PositionOf(Lower(keyword), Lower(Q.name)) != -1 or
+    PositionOf(Lower(Q.name), Lower(keyword)) != -1 
   )
 
 /*
- * retrieve a list of completed FHIR QuestionnaireResponse for a Questionnaire, matched on keyword, e.g. questionnaire id, questionnaire name, in the questionnaire element
+ * retrieve a list of completed FHIR QuestionnaireResponse for a Questionnaire, matched on questionnaire id or questionnaire name, in the questionnaire element
  * @param responses, of type FHIR.QuestionnaireResponse
  * @param questionnaire, of type FHIR.Questionnaire, questionnaire to match against
- * @param keyword, of type String to match in the questionnaire element of the Questionnaire
  * @return {System.List<FHIR.QuestionnaireResponse>}
  */
-define function MatchedReponsesByQuestionnaire(responses List<FHIR.QuestionnaireResponse>, currentQuestionnaire FHIR.Questionnaire, keyword String):
+define function MatchedReponsesByQuestionnaire(responses List<FHIR.QuestionnaireResponse>, currentQuestionnaire FHIR.Questionnaire):
   ((responses) Q
     where 
     (
       (
         PositionOf(Lower(currentQuestionnaire.name), Lower(Q.questionnaire.value)) != -1 or
-        PositionOf(Lower(currentQuestionnaire.id), Lower(Q.questionnaire.value)) != -1 or 
-        PositionOf(Lower(keyword), Lower(Q.questionnaire.value)) != -1
+        PositionOf(Lower(currentQuestionnaire.id), Lower(Q.questionnaire.value)) != -1
       ) and 
       Q.status.value = 'completed')
     sort by authored desc 
@@ -269,7 +265,6 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
   ((responseItems) Q) I 
   return {
       linkId: if I.linkId.value is not null then I.linkId.value else 'n/a',
-      answers: I.answer,
       answer: case
         // GAD7 score item
         when I.linkId.value = '/70274-6' then I.answer[0].value.value
@@ -290,7 +285,8 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
         when I.linkId.value = '102017-1' then I.answer[0].value.value
         when I.linkId.value = '/102017-1' then I.answer[0].value.value
         // HACK, address GE questionnaire Other answer
-        when I.answer[1].value is not null and
+        when 
+             I.answer[1].value is not null and
              I.answer[1].value.value is not null
              then
           I.answer[1].value.value

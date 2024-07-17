@@ -114,17 +114,28 @@ export function isNumber(target) {
   return !isNaN(target);
 }
 
-export function getEnvInstrumentList() {
-  const envList = getEnv("REACT_APP_SCORING_INSTRUMENTS");
-  return envList ? String(envList).replace(/_/g, " ") : "";
-}
-
 export function getReportInstrumentList() {
+  const envInstrumentList = getEnv("REACT_APP_INSTRUMENT_IDS");
+  if (envInstrumentList)
+    return envInstrumentList
+      .split(",")
+      .map((item) => item.trim())
+      .map((o) => ({
+        id: o,
+        key: o.replace("CIRG-", ""),
+      }));
   const qList = reportSummarySections
     .filter((section) => section.questionnaires)
     .map((section) => section.questionnaires);
   if (!qList.length) return null;
   return [...new Set(qList.flat())];
+}
+
+export function getReportInstrumentIdByKey(key) {
+  const qList = getReportInstrumentList();
+  if (isEmptyArray(qList)) return "";
+  const matchedInstrument = qList.find((o) => o.key === key);
+  return matchedInstrument ? matchedInstrument.id : "";
 }
 
 export function getDisplayDateFromISOString(isocDateString, format) {
@@ -482,7 +493,7 @@ export function getPatientNameFromSource(fhirPatientSource) {
   const useName = officialName ? officialName : fhirPatientSource.name[0];
   const firstName =
     useName.given && useName.given.length ? useName.given[0] : "";
-  const lastName = useName.family??"";
+  const lastName = useName.family ?? "";
   return [firstName, lastName].join(" ");
 }
 

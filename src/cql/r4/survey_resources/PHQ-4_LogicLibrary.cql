@@ -1,19 +1,18 @@
 library Phq4LogicLibrary version '1.0.0'
-
 using FHIR version '4.0.0'
-
 include "FHIRHelpers" version '4.0.0' called FHIRHelpers
-
 include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
 // -----------------------------------------------------------------------------
 // CODESYSTEMS, VALUE SETS, CODES, AND CONCEPTS
 // -----------------------------------------------------------------------------
-
 codesystem "LOINC": 'http://loinc.org'
 
-define QuestionnaireID: 'CIRG-PHQ-4'
-define QuestionnaireName: 'phq-4'
+parameter dataKey default 'phq4'
+parameter id default 'CIRG-PHQ-4'
+
+define QuestionnaireID:
+  id
 define QuestionnaireShortName: 'PHQ-4'
 define question1LinkId: '/69725-0'
 define question2LinkId: '/68509-9'
@@ -25,6 +24,8 @@ define ScoreParams: Tuple {
   minScore: 0,
   maxScore: 12
 }
+define QuestionnaireKey:
+  dataKey
 
 // -----------------------------------------------------------------------------
 // PATIENT INFORMATION
@@ -38,14 +39,14 @@ context Patient
 
 // Load Questionnaire
 define Questionnaire:
-  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireName, null))
+  First(LogicHelper.GetMatchQuestionnaire(QuestionnaireID, QuestionnaireKey))
 
 define QuestionnaireItems:
   (Questionnaire) Q 
   return Q.item
 
 define QuestionnaireResponses:
-  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire, QuestionnaireName)
+  LogicHelper.MatchedReponsesByQuestionnaire([QuestionnaireResponse], Questionnaire)
 
 define ResponsesSummary:
   (QuestionnaireResponses) I
@@ -84,7 +85,7 @@ define ResponsesSummary:
     totalItems: 4
     return Tuple {
       id: I.id.value,
-      qid: QuestionnaireName,
+      qid: QuestionnaireKey,
       date: LogicHelper.DateTimeText(I.authored),
       items: I.item,
       responses: responsesOnly,

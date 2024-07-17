@@ -222,36 +222,19 @@
                      "operand" : [ {
                         "type" : "Or",
                         "operand" : [ {
-                           "type" : "Or",
+                           "type" : "Equal",
                            "operand" : [ {
-                              "type" : "Equal",
+                              "name" : "ToString",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
                               "operand" : [ {
-                                 "path" : "value",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "path" : "url",
-                                    "scope" : "Q",
-                                    "type" : "Property"
-                                 }
-                              }, {
-                                 "name" : "QuestionnaireURL",
-                                 "type" : "OperandRef"
+                                 "path" : "id",
+                                 "scope" : "Q",
+                                 "type" : "Property"
                               } ]
                            }, {
-                              "type" : "Equal",
-                              "operand" : [ {
-                                 "name" : "ToString",
-                                 "libraryName" : "FHIRHelpers",
-                                 "type" : "FunctionRef",
-                                 "operand" : [ {
-                                    "path" : "id",
-                                    "scope" : "Q",
-                                    "type" : "Property"
-                                 } ]
-                              }, {
-                                 "name" : "QuestionnaireID",
-                                 "type" : "OperandRef"
-                              } ]
+                              "name" : "QuestionnaireID",
+                              "type" : "OperandRef"
                            } ]
                         }, {
                            "type" : "Equal",
@@ -270,7 +253,7 @@
                            }, {
                               "type" : "Lower",
                               "operand" : {
-                                 "name" : "QuestionnaireName",
+                                 "name" : "keyword",
                                  "type" : "OperandRef"
                               }
                            } ]
@@ -284,7 +267,7 @@
                               "pattern" : {
                                  "type" : "Lower",
                                  "operand" : {
-                                    "name" : "QuestionnaireName",
+                                    "name" : "keyword",
                                     "type" : "OperandRef"
                                  }
                               },
@@ -333,7 +316,7 @@
                            "string" : {
                               "type" : "Lower",
                               "operand" : {
-                                 "name" : "QuestionnaireName",
+                                 "name" : "keyword",
                                  "type" : "OperandRef"
                               }
                            }
@@ -356,13 +339,7 @@
                   "type" : "NamedTypeSpecifier"
                }
             }, {
-               "name" : "QuestionnaireName",
-               "operandTypeSpecifier" : {
-                  "name" : "{urn:hl7-org:elm-types:r1}String",
-                  "type" : "NamedTypeSpecifier"
-               }
-            }, {
-               "name" : "QuestionnaireURL",
+               "name" : "keyword",
                "operandTypeSpecifier" : {
                   "name" : "{urn:hl7-org:elm-types:r1}String",
                   "type" : "NamedTypeSpecifier"
@@ -388,94 +365,48 @@
                   "operand" : [ {
                      "type" : "Or",
                      "operand" : [ {
-                        "type" : "Or",
-                        "operand" : [ {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "Equal",
-                              "operand" : [ {
-                                 "type" : "PositionOf",
-                                 "pattern" : {
-                                    "type" : "Lower",
-                                    "operand" : {
-                                       "name" : "ToString",
-                                       "libraryName" : "FHIRHelpers",
-                                       "type" : "FunctionRef",
-                                       "operand" : [ {
-                                          "path" : "name",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "currentQuestionnaire",
-                                             "type" : "OperandRef"
-                                          }
-                                       } ]
-                                    }
-                                 },
-                                 "string" : {
-                                    "type" : "Lower",
-                                    "operand" : {
-                                       "path" : "value",
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "Equal",
+                           "operand" : [ {
+                              "type" : "PositionOf",
+                              "pattern" : {
+                                 "type" : "Lower",
+                                 "operand" : {
+                                    "name" : "ToString",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "name",
                                        "type" : "Property",
                                        "source" : {
-                                          "path" : "questionnaire",
-                                          "scope" : "Q",
-                                          "type" : "Property"
+                                          "name" : "currentQuestionnaire",
+                                          "type" : "OperandRef"
                                        }
-                                    }
+                                    } ]
                                  }
-                              }, {
-                                 "type" : "Negate",
+                              },
+                              "string" : {
+                                 "type" : "Lower",
                                  "operand" : {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "1",
-                                    "type" : "Literal"
-                                 }
-                              } ]
-                           }
-                        }, {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "Equal",
-                              "operand" : [ {
-                                 "type" : "PositionOf",
-                                 "pattern" : {
-                                    "type" : "Lower",
-                                    "operand" : {
-                                       "name" : "ToString",
-                                       "libraryName" : "FHIRHelpers",
-                                       "type" : "FunctionRef",
-                                       "operand" : [ {
-                                          "path" : "id",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "currentQuestionnaire",
-                                             "type" : "OperandRef"
-                                          }
-                                       } ]
-                                    }
-                                 },
-                                 "string" : {
-                                    "type" : "Lower",
-                                    "operand" : {
-                                       "path" : "value",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "path" : "questionnaire",
-                                          "scope" : "Q",
-                                          "type" : "Property"
-                                       }
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "questionnaire",
+                                       "scope" : "Q",
+                                       "type" : "Property"
                                     }
                                  }
-                              }, {
-                                 "type" : "Negate",
-                                 "operand" : {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "1",
-                                    "type" : "Literal"
-                                 }
-                              } ]
-                           }
-                        } ]
+                              }
+                           }, {
+                              "type" : "Negate",
+                              "operand" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "1",
+                                 "type" : "Literal"
+                              }
+                           } ]
+                        }
                      }, {
                         "type" : "Not",
                         "operand" : {
@@ -485,8 +416,17 @@
                               "pattern" : {
                                  "type" : "Lower",
                                  "operand" : {
-                                    "name" : "keyword",
-                                    "type" : "OperandRef"
+                                    "name" : "ToString",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "id",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "currentQuestionnaire",
+                                          "type" : "OperandRef"
+                                       }
+                                    } ]
                                  }
                               },
                               "string" : {
@@ -549,12 +489,6 @@
                "name" : "currentQuestionnaire",
                "operandTypeSpecifier" : {
                   "name" : "{http://hl7.org/fhir}Questionnaire",
-                  "type" : "NamedTypeSpecifier"
-               }
-            }, {
-               "name" : "keyword",
-               "operandTypeSpecifier" : {
-                  "name" : "{urn:hl7-org:elm-types:r1}String",
                   "type" : "NamedTypeSpecifier"
                }
             } ]
@@ -2284,13 +2218,6 @@
                               "value" : "n/a",
                               "type" : "Literal"
                            }
-                        }
-                     }, {
-                        "name" : "answers",
-                        "value" : {
-                           "path" : "answer",
-                           "scope" : "I",
-                           "type" : "Property"
                         }
                      }, {
                         "name" : "answer",
