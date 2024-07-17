@@ -13,6 +13,17 @@ const iconProps = {
   height: 35,
   className: "sectionIcon",
 };
+const BODY_DIAGRAM_DATA_KEY = "paintracker-location-body-diagram";
+const GE_DATA_KEY = "paintracker-ge";
+const PEG_DATA_KEY = "PEG";
+const PHQ9_DATA_KEY = "PHQ9";
+const GAD7_DATA_KEY = "GAD7";
+const PHQ4_DATA_KEY = "PHQ-4";
+const PCPTSD5_DATA_KEY = "PC-PTSD-5";
+const PROMISGLOBAL_DATA_KEY = "PROMIS-GLOBAL";
+const STOP_DATA_KEY = "PAINTRACKER-STOP";
+const TRT_DATA_KEY = "PAINTRACKER-TRT";
+
 const reportConfig = [
   {
     title: "Overview",
@@ -20,7 +31,7 @@ const reportConfig = [
     questionnaires: [
       {
         id: "CIRG-PainTracker-Location-Body-Diagram",
-        key: "paintracker-location-body-diagram",
+        key: BODY_DIAGRAM_DATA_KEY,
       },
     ],
     icon: (props) => (
@@ -42,7 +53,7 @@ const reportConfig = [
     questionnaires: [
       {
         id: "CIRG-PainTracker-GE",
-        key: "paintracker-ge",
+        key: GE_DATA_KEY,
       },
     ],
     //status: "inactive",
@@ -59,7 +70,7 @@ const reportConfig = [
     ),
     sections: [
       {
-        dataKey: "paintracker-ge",
+        dataKey: GE_DATA_KEY,
         title: "Patient-reported Treatment Goals",
         component: (props) => <RankedResponses {...props}></RankedResponses>,
       },
@@ -71,7 +82,7 @@ const reportConfig = [
     questionnaires: [
       {
         id: "CIRG-PEG",
-        key: "PEG",
+        key: PEG_DATA_KEY,
       },
     ],
     icon: (props) => (
@@ -79,7 +90,7 @@ const reportConfig = [
     ),
     sections: [
       {
-        dataKey: "peg",
+        dataKey: PEG_DATA_KEY,
         title:
           "PEG (Pain intensity, Enjoyment of life, General activity 3 item pain scale)",
         // default description, will be used description from questionnaire is not available
@@ -153,27 +164,27 @@ const reportConfig = [
     questionnaires: [
       {
         id: "CIRG-PHQ9",
-        key: "PHQ9",
+        key: PHQ9_DATA_KEY,
       },
       {
         id: "CIRG-GAD7",
-        key: "GAD7",
+        key: GAD7_DATA_KEY,
       },
       {
         id: "CIRG-PHQ-4",
-        key: "PHQ-4",
+        key: PHQ4_DATA_KEY,
       },
       {
         id: "CIRG-PC-PTSD-5",
-        key: "PC-PTSD-5",
+        key: PCPTSD5_DATA_KEY,
       },
       {
         id: "CIRG-PROMIS-GLOBAL",
-        key: "PROMIS-GLOBAL",
+        key: PROMISGLOBAL_DATA_KEY,
       },
       {
         id: "CIRG-PainTracker-STOP",
-        key: "PAINTRACKER-STOP",
+        key: STOP_DATA_KEY,
       },
     ],
     icon: (props) => (
@@ -185,7 +196,7 @@ const reportConfig = [
     ),
     sections: [
       {
-        dataKey: "phq9",
+        dataKey: PHQ9_DATA_KEY,
         title: "PHQ-9 (Patient Health Questionnaire-9)",
         description: () => (
           <div>
@@ -232,7 +243,7 @@ const reportConfig = [
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
       {
-        dataKey: "gad7",
+        dataKey: GAD7_DATA_KEY,
         title: "GAD-7 (General Anxiety Disorder-7)",
         description: () => (
           <div>
@@ -267,7 +278,7 @@ const reportConfig = [
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
       {
-        dataKey: "phq-4",
+        dataKey: PHQ4_DATA_KEY,
         title: "PHQ-4 (Patient Health Questionnaire 4 item)",
         description: () => (
           <div>
@@ -298,7 +309,7 @@ const reportConfig = [
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
       {
-        dataKey: "pc-ptsd-5",
+        dataKey: PCPTSD5_DATA_KEY,
         title: "PC-PTSD-5 (Primary Care PTSD Screen for DSM-5)",
         description: () => (
           <div>
@@ -332,9 +343,8 @@ const reportConfig = [
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
       {
-        dataKey: "paintracker-stop",
-        title:
-          "STOP Questionnaire: A Tool to Screen Patients for Obstructive Sleep Apnea",
+        dataKey: STOP_DATA_KEY,
+        title: "STOP Questionnaire: Screen for Obstructive Sleep Apnea",
         description: () => (
           <div>
             <p>
@@ -363,7 +373,7 @@ const reportConfig = [
     questionnaires: [
       {
         id: "CIRG-PainTracker-TRT",
-        key: "PAINTRACKER-TRT",
+        key: TRT_DATA_KEY,
       },
     ],
     icon: (props) => (
@@ -371,14 +381,14 @@ const reportConfig = [
     ),
     sections: [
       {
-        dataKey: "paintracker-trt",
+        dataKey: TRT_DATA_KEY,
         title: "PainTracker TRT questionnaire",
         description: () => (
           <div>
             <p>
-              PainTracker TRT questionnaire surveys, to the best of the patient's recollection,
-              how many different healthcare providers the patient has seen in
-              the <b>LAST 6 MONTHS</b> for pain.
+              PainTracker TRT questionnaire surveys, to the best of the
+              patient's recollection, how many different healthcare providers
+              the patient has seen in the <b>LAST 6 MONTHS</b> for pain.
             </p>
           </div>
         ),
