@@ -43,8 +43,7 @@ export default class ReportOverviewGraph extends Component {
     };
     // This binding is necessary to make `this` work in the callback
     this.addDataLineToGraph = this.addDataLineToGraph.bind(this);
-    this.removeDataLineFromGraph =
-      this.removeDataLineFromGraph.bind(this);
+    this.removeDataLineFromGraph = this.removeDataLineFromGraph.bind(this);
     this.showUtilButtons = this.showUtilButtons.bind(this);
     this.hideUtilButtons = this.hideUtilButtons.bind(this);
     this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
@@ -273,8 +272,7 @@ export default class ReportOverviewGraph extends Component {
     }
   }
   removeDataLineFromGraph(qid, callback) {
-    if (!this.isInGraph(qid) || isEmptyArray(this.state.graphData))
-      return;
+    if (!this.isInGraph(qid) || isEmptyArray(this.state.graphData)) return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
     this.setState(
       {
@@ -333,9 +331,13 @@ export default class ReportOverviewGraph extends Component {
   }
 
   handleDateRangeChange(e) {
-    const selectedValue =
+    let selectedValue =
       e && e.target ? e.target.value : this.state.selectedDateRange;
-    if (!selectedValue) return;
+    if (!selectedValue) {
+      selectedValue = this.getScaleInfoForSlider(
+        this.state.originalGraphData
+      ).max;
+    }
     const years = this.getSelectedDateRangeInYears(selectedValue);
     const updatedData = this.getFilteredDataByQids(
       this.state.originalGraphData
@@ -560,8 +562,7 @@ export default class ReportOverviewGraph extends Component {
                         //     this.hasOnlyOneGraphLine())
                         // }
                         disabled={
-                          this.isInGraph(item) &&
-                          this.hasOnlyOneGraphLine()
+                          this.isInGraph(item) && this.hasOnlyOneGraphLine()
                         }
                         ref={this.switchCheckboxRefs[index]}
                         checked={!!this.isInGraph(item)}
@@ -680,7 +681,6 @@ export default class ReportOverviewGraph extends Component {
           onChange={this.handleDateRangeChange}
           onBlur={this.handleDateRangeChange}
         >
-          <option value="">Select</option>
           {itemsToDisplay.map((item, index) => {
             return (
               <option key={`graph_date_option_${index}`} value={item.value}>

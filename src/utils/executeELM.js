@@ -17,6 +17,7 @@ import { getEnv } from "./envConfig";
 import {
   getReportInstrumentList,
   getReportInstrumentIdByKey,
+  isEmptyArray,
 } from "../helpers/utility";
 
 const noCacheHeader = {
@@ -181,9 +182,6 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
     const qKey = entries[0][0];
     const elm = entries[0][1];
     if (!elm) {
-      //   evalResults.push({
-      //     qKey: null,
-      //   });
       return true;
     }
     let surveyLib = new cql.Library(
@@ -198,7 +196,7 @@ function executeELMForInstruments(arrayElmPromiseResult, bundle) {
       new cql.CodeService(valueSetDB),
       {
         dataKey: qKey,
-        id: getReportInstrumentIdByKey(qKey)
+        id: getReportInstrumentIdByKey(qKey),
       }
     );
     const surveyPatientSource = cqlfhir.PatientSource.FHIRv400();
@@ -232,9 +230,7 @@ function getLibraryForInstruments() {
     (async () => {
       let elmJson = null;
       elmJson = await import(
-        `../cql/r4/survey_resources/${item.key
-          .replace(/\s/g, "_")
-          .toUpperCase()}_LogicLibrary.json`
+        `../cql/r4/survey_resources/${item.key.toUpperCase()}_LogicLibrary.json`
       )
         .then((module) => module.default)
         .catch((e) => {
@@ -351,11 +347,9 @@ function processPage(uri, collector, resources) {
 }
 
 function updateSearchParams(params, release, type) {
-  //fetchEnvData();
-
-  const INSTRUMENT_LIST = getReportInstrumentList().map((item) => item.id);
-  if (INSTRUMENT_LIST) {
-    if (release === FHIR_RELEASE_VERSION_4) {
+  if (release === FHIR_RELEASE_VERSION_4) {
+    const INSTRUMENT_LIST = getReportInstrumentList().map((item) => item.id);
+    if (!isEmptyArray(INSTRUMENT_LIST)) {
       switch (type) {
         case "Questionnaire":
           params.set("_id", INSTRUMENT_LIST.join(","));

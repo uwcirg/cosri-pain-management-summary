@@ -236,36 +236,19 @@
                      } ],
                      "relationship" : [ ],
                      "where" : {
-                        "type" : "Or",
+                        "type" : "In",
                         "operand" : [ {
-                           "type" : "Or",
-                           "operand" : [ {
-                              "type" : "Equal",
-                              "operand" : [ {
-                                 "path" : "linkId",
-                                 "scope" : "a",
-                                 "type" : "Property"
-                              }, {
-                                 "name" : "question1LinkId",
-                                 "type" : "ExpressionRef"
-                              } ]
-                           }, {
-                              "type" : "Equal",
-                              "operand" : [ {
-                                 "path" : "linkId",
-                                 "scope" : "a",
-                                 "type" : "Property"
-                              }, {
-                                 "name" : "question2LinkId",
-                                 "type" : "ExpressionRef"
-                              } ]
-                           } ]
+                           "path" : "linkId",
+                           "scope" : "a",
+                           "type" : "Property"
                         }, {
-                           "type" : "Equal",
-                           "operand" : [ {
-                              "path" : "linkId",
-                              "scope" : "a",
-                              "type" : "Property"
+                           "type" : "List",
+                           "element" : [ {
+                              "name" : "question1LinkId",
+                              "type" : "ExpressionRef"
+                           }, {
+                              "name" : "question2LinkId",
+                              "type" : "ExpressionRef"
                            }, {
                               "name" : "question3LinkId",
                               "type" : "ExpressionRef"

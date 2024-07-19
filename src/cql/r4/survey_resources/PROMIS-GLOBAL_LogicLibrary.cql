@@ -8,7 +8,7 @@ parameter id default 'CIRG-PROMIS-GLOBAL'
 
 define QuestionnaireID:
   id
-define QuestionnaireShortName: 'promis-global'
+define QuestionnaireShortName: 'promis'
 define question1LinkId: '/61577-3'
 define question2LinkId: '/61578-1'
 define question3LinkId: '/61579-9'

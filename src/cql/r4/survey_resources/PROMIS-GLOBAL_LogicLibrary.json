@@ -72,7 +72,7 @@
             "accessLevel" : "Public",
             "expression" : {
                "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "promis-global",
+               "value" : "promis",
                "type" : "Literal"
             }
          }, {

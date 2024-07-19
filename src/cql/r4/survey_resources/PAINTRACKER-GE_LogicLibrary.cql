@@ -46,7 +46,9 @@ define ExcludeFromScoring:
 define ResponsesSummary:
   (QuestionnaireResponses) I
   let
-    responsesOnly: ((LogicHelper.FormattedQuestionnaireResponses(I.item)) a where a.linkId = question1LinkId or a.linkId = question2LinkId or a.linkId = question3LinkId)
+    responsesOnly: ((LogicHelper.FormattedQuestionnaireResponses(I.item)) a 
+      //where a.linkId = question1LinkId or a.linkId = question2LinkId or a.linkId = question3LinkId)
+      where a.linkId in {question1LinkId, question2LinkId, question3LinkId})
     return Tuple {
       id: I.id.value,
       qid: QuestionnaireKey,
