@@ -36,6 +36,7 @@ import Version from "../elements/Version";
 
 import { getEnv } from "../utils/envConfig";
 import AgreementIcon from "../icons/ListIcon";
+import {getScoringData} from "./Report/utility";
 
 export default class Summary extends Component {
   constructor() {
@@ -562,7 +563,7 @@ export default class Summary extends Component {
           <div className="content">
             {
               <ScoringSummary
-                summary={surveyData}
+                summary={getScoringData(surveyData)}
                 title={panel.title}
                 readOnly={true}
               ></ScoringSummary>
