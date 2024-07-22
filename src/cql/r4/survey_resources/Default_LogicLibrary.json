@@ -5,7 +5,7 @@
          "type" : "CqlToElmInfo"
       } ],
       "identifier" : {
-         "id" : "TrtLogicLibrary",
+         "id" : "DefaultLogicLibrary",
          "version" : "1.0.0"
       },
       "schemaIdentifier" : {
@@ -39,7 +39,7 @@
             "accessLevel" : "Public",
             "default" : {
                "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "PAINTRACKER-TRT",
+               "value" : "",
                "type" : "Literal"
             }
          }, {
@@ -47,7 +47,23 @@
             "accessLevel" : "Public",
             "default" : {
                "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "CIRG-PainTracker-TRT",
+               "value" : "",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "excludeFromScoring",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+               "value" : "true",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "reportOnce",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+               "value" : "true",
                "type" : "Literal"
             }
          } ]
@@ -71,18 +87,8 @@
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "trt",
-               "type" : "Literal"
-            }
-         }, {
-            "name" : "ExcludeFromScoring",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
-               "value" : "true",
-               "type" : "Literal"
+               "name" : "dataKey",
+               "type" : "ParameterRef"
             }
          }, {
             "name" : "QuestionnaireKey",
@@ -90,6 +96,22 @@
             "accessLevel" : "Public",
             "expression" : {
                "name" : "dataKey",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "ExcludeFromScoring",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "excludeFromScoring",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "ReportOnce",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "reportOnce",
                "type" : "ParameterRef"
             }
          }, {

@@ -237,6 +237,11 @@ function getLibraryForInstruments() {
           console.log("Error loading ELM  lib for " + item.key);
           elmJson = null;
         });
+      if (!elmJson) {
+        elmJson = await import(
+          `../cql/r4/survey_resources/Default_LogicLibrary.json`
+        ).then((module) => module.default);
+      }
       return {
         [item.key]: elmJson,
       };

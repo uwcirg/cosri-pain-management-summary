@@ -1,18 +1,26 @@
-library TrtLogicLibrary version '1.0.0'
+library DefaultLogicLibrary version '1.0.0'
 using FHIR version '4.0.0'
 include "FHIRHelpers" version '4.0.0' called FHIRHelpers
 include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
-parameter dataKey default 'PAINTRACKER-TRT'
-parameter id default 'CIRG-PainTracker-TRT'
+parameter dataKey default ''
+parameter id default ''
+parameter excludeFromScoring default true
+parameter reportOnce default true
 
 define QuestionnaireID:
   id
-define QuestionnaireShortName: 'trt'
-define ExcludeFromScoring: true
+define QuestionnaireShortName:
+  dataKey
+
 define QuestionnaireKey:
   dataKey
 
+define ExcludeFromScoring:
+  excludeFromScoring
+
+define ReportOnce:
+  reportOnce
 // -----------------------------------------------------------------------------
 // PATIENT INFORMATION
 // -----------------------------------------------------------------------------

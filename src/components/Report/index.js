@@ -107,11 +107,9 @@ export default class Report extends Component {
       );
     }
     if (!section.sections || !section.sections.length) return null;
-    console.log("data", summaryData )
     return (
       <div className="section">
         {section.sections.map((item, index) => {
-          console.log('data key ', item.dataKey)
           const matchedData = !isEmptyArray(summaryData)
             ? summaryData.find(
                 (summaryDataItem) =>
