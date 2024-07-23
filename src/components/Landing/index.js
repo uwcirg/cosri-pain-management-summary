@@ -579,6 +579,18 @@ export default class Landing extends Component {
     window.scrollTo(0, 0);
   }
 
+  shouldShowTabs() {
+    const tabs = this.getTabs();
+    return tabs && tabs.length > 1;
+  }
+
+  getTabs() {
+    let tabs = ["overview"];
+    const config_tab = getEnv("REACT_APP_TABS");
+    if (config_tab) tabs = config_tab.split(",");
+    return tabs;
+  }
+
   renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
     const summaryPatient = summary.Patient ?? {};
     return (
@@ -606,18 +618,6 @@ export default class Landing extends Component {
         result={this.state.result}
       />
     );
-  }
-
-  shouldShowTabs() {
-    const tabs = this.getTabs();
-    return tabs && tabs.length > 1;
-  }
-
-  getTabs() {
-    let tabs = ["overview"];
-    const config_tab = getEnv("REACT_APP_TABS");
-    if (config_tab) tabs = config_tab.split(",");
-    return tabs;
   }
 
   renderTabs() {

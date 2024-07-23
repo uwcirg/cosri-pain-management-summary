@@ -5,7 +5,7 @@ import ReactTooltip from "react-tooltip";
 export default class SideNav extends Component {
   constructor() {
     super(...arguments);
-    this.state = { showNav: true };
+    this.state = { showNav: true};
     this.navRef = React.createRef();
 
     // This binding is necessary to make `this` work in the callback
@@ -46,7 +46,7 @@ export default class SideNav extends Component {
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
   }
-
+  
   render() {
     const navToggleToolTip = this.state.showNav
       ? "collapse side navigation menu"
