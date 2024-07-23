@@ -740,6 +740,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
           @media (min-width: 992px) {
             width: calc(100% - 16rem);
           }
+          @media (min-width: 1120px) {
+            width: calc(100% - 2rem);
+          }
           @media (min-width: 1200px) {
             width: calc(100% - 24px);
           }

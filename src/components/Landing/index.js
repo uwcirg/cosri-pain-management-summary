@@ -68,17 +68,6 @@ export default class Landing extends Component {
         //set FHIR results
         let fhirData = response;
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
-        const { sectionFlags, flaggedCount } = this.processSummary(
-          result.Summary
-        );
-        this.setState({ result, sectionFlags, flaggedCount });
-        this.setPatientId();
-        setTimeout(
-          function () {
-            this.clearProcessInterval();
-          }.bind(this),
-          100
-        );
         this.processCollectorErrors();
         writeToLog("application loaded", "info", {
           patientName: this.getPatientName(),
@@ -103,10 +92,12 @@ export default class Landing extends Component {
                 sectionFlags,
                 flaggedCount,
                 loading: false,
+                patientId: this.getPatientId()
               },
               () => {
                 this.initEvents();
                 this.initializeTocBot();
+                this.clearProcessInterval();
               }
             );
             console.log("Query results ", result);
@@ -127,18 +118,8 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    if (
-      !this.state.tocInitialized &&
-      !this.state.loading &&
-      this.state.result
-    ) {
-      this.setState({
-        tocInitialized: true,
-      });
-    } else {
-      if (this.state.tocInitialized) {
-        tocbot.refresh({ ...tocbot.options, hasInnerContainers: true });
-      }
+    if (this.state.tocInitialized) {
+      tocbot.refresh({ ...tocbot.options, hasInnerContainers: true });
     }
     //page title
     document.title = "COSRI";
@@ -229,10 +210,14 @@ export default class Landing extends Component {
         }, 50);
       },
     });
+    this.setState({
+      tocInitialized: true,
+    });
   }
 
-  setPatientId() {
-    if (!this.state.collector) return;
+  getPatientId() {
+    if (this.state.patientId) return this.state.patientId;
+    if (!this.state.collector) return "";
     let patientBundle = this.state.collector.filter(
       (item) =>
         item.data &&
@@ -240,13 +225,8 @@ export default class Landing extends Component {
         item.data.resourceType.toLowerCase() === "patient"
     );
     if (patientBundle.length) {
-      this.setState({
-        patientId: patientBundle[0].data.id,
-      });
+      return patientBundle[0].data.id
     }
-  }
-  getPatientId() {
-    return this.state.patientId;
   }
   getPatientName() {
     const summary = this.state.result ? this.state.result.Summary : null;
