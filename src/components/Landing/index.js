@@ -75,7 +75,10 @@ export default class Landing extends Component {
         //add data from other sources, e.g. education materials
         this.getExternalData()
           .then((externalDataSet) => {
-            result["Summary"] = { ...result["Summary"], ...externalDataSet };
+            result["Summary"] = {
+              ...result["Summary"],
+              ...(externalDataSet ? externalDataSet["data"] : null),
+            };
             const { sectionFlags, flaggedCount } =
               landingUtils.getProcessedSummaryData(result.Summary, summaryMap);
             this.setSummaryOverviewStatsData(result["Summary"]);
@@ -88,6 +91,10 @@ export default class Landing extends Component {
             const { errors, hasMmeErrors, mmeErrors } = this.getSummaryErrors(
               result.Summary
             );
+            landingUtils.logMMEEntries(result.Summary, {
+              tags: ["mme-calc"],
+              patientName: this.getPatientName(),
+            });
             // console.log(
             //   "errors ",
             //   errors,
@@ -96,6 +103,8 @@ export default class Landing extends Component {
             //   " mmeErrors ",
             //   mmeErrors
             // );
+            const hasExternalDataError =
+              externalDataSet && externalDataSet["errors"];
             this.setState(
               {
                 result,
@@ -109,7 +118,14 @@ export default class Landing extends Component {
                   ...this.state.errorCollection,
                   ...collectorErrors,
                   ...errors,
+                  ...(hasExternalDataError
+                    ? Object.values(externalDataSet["errors"])
+                    : []),
                 ],
+                summaryMap: this.getSummaryMapWithErrors(
+                  summaryMap,
+                  hasExternalDataError ? externalDataSet["error"] : null
+                ),
               },
               () => {
                 this.initEvents();
@@ -295,10 +311,7 @@ export default class Landing extends Component {
         mmeErrors: [],
       };
     //compile error(s) related to MME calculations, add logging
-    let mmeErrors = landingUtils.getMMEErrors(summary, true, {
-      tags: ["mme-calc"],
-      patientName: this.getPatientName(),
-    });
+    let mmeErrors = landingUtils.getMMEErrors(summary);
 
     // the rest of the errors
     let errors = [];
@@ -353,7 +366,9 @@ export default class Landing extends Component {
     this.setState({
       summaryMap: {
         ...this.state.summaryMap,
-        ...landingUtils.setSectionsVis(this.state.summaryMap),
+        ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
+          this.state.summaryMap
+        ),
       },
     });
   }
@@ -382,7 +397,8 @@ export default class Landing extends Component {
     );
 
     let json = null;
-    if (results) {
+    let responseDataSet = null;
+    if (results && results.ok) {
       try {
         //read response stream
         json = await results.json().catch((e) => {
@@ -393,33 +409,13 @@ export default class Landing extends Component {
           new Error(`There was error parsing data for ${datasetKey}: ${e}`)
         );
       }
-    }
-
-    if (!json) {
-      let demoResult = await this.getDemoData(summaryMap[datasetKey]).catch(
-        (e) => {
-          return Promise.reject(
-            new Error(`There was error fetching demo data: ${e}`)
-          );
-        }
-      );
-      //if unable to fetch data, set data to demo data if any
-      json = await demoResult.json().catch((e) => {
+      try {
+        responseDataSet = json[rootElement];
+      } catch (e) {
         return Promise.reject(
-          new Error(`There was error parsing demo data: ${e}`)
+          `Data does not contained the required root element ${rootElement} for ${datasetKey}: ${e}`
         );
-      });
-      if (json && json[rootElement]) {
-        this.setDemoDataFlag(datasetKey);
       }
-    }
-    let responseDataSet = null;
-    try {
-      responseDataSet = json[rootElement];
-    } catch (e) {
-      return Promise.reject(
-        `Data does not contained the required root element ${rootElement} for ${datasetKey}: ${e}`
-      );
     }
     dataSet[datasetKey] = responseDataSet;
     return dataSet;
@@ -428,11 +424,11 @@ export default class Landing extends Component {
    * function for retrieving data from other sources e.g. education materials
    */
   async getExternalData() {
-    let dataSet = {};
     const promiseResultSet = landingUtils.getExternalDataSources(summaryMap);
     if (!promiseResultSet.length) {
-      return dataSet;
+      return null;
     }
+    let dataSet = {};
     let results = await Promise.allSettled(
       promiseResultSet.map((item) => {
         return this.fetchExternalData(
@@ -443,20 +439,13 @@ export default class Landing extends Component {
       })
     ).catch((e) => {
       console.log(`Error parsing external data response json: ${e.message}`);
-      promiseResultSet.forEach((item) => {
-        dataSet[item.dataKeySource] = null;
-      });
-      return dataSet;
+      return null;
     });
     let errors = {};
     promiseResultSet.forEach((item, index) => {
       let result = results[index];
       if (result.status === "rejected") {
-        this.setError(
-          `Error retrieving data for ${item.dataKey}: ${result.reason}`
-        );
         errors[item.dataKey] = result.reason;
-        this.setExternalDataFetchError(item.dataKey, result.reason);
       }
       //require additional processing of result data
       if (
@@ -479,30 +468,34 @@ export default class Landing extends Component {
         dataSet[item.dataKeySource] = {};
       }
       if (errors[item.dataKey]) {
-        dataSet[item.dataKeySource][item.dataKey] = {
-          error: errors[item.dataKey],
-        };
+        dataSet[item.dataKeySource][item.dataKey] = null;
+      } else {
+        dataSet[item.dataKeySource][item.dataKey] = result.value
+          ? result.value[item.dataKey]
+          : result[item.dataKey]
+          ? result[item.dataKey]
+          : result;
       }
-      dataSet[item.dataKeySource][item.dataKey] = result.value
-        ? result.value[item.dataKey]
-        : result[item.dataKey]
-        ? result[item.dataKey]
-        : result;
     });
-    return dataSet;
+    return {
+      data: dataSet,
+      errors: errors,
+    };
   }
 
-  setExternalDataFetchError(sectionKey, error) {
-    if (!sectionKey) return;
-    this.setState({
-      summaryMap: {
-        ...summaryMap,
-        [sectionKey]: {
-          ...summaryMap[sectionKey],
-          errorMessage: error,
-        },
-      },
-    });
+  getSummaryMapWithErrors(summaryMap, oErrors) {
+    if (!oErrors) return summaryMap;
+    let updatedMap = Object.create(summaryMap);
+    for (let key in updatedMap) {
+      updatedMap[key] = {
+        ...updatedMap[key],
+        errorMessage: oErrors[key],
+      };
+    }
+    return {
+      ...summaryMap,
+      ...updatedMap,
+    };
   }
 
   setSummaryAlerts(summary, sectionFlags) {
@@ -568,26 +561,6 @@ export default class Landing extends Component {
     return landingUtils.processEndPoint(endpoint, {
       patientId: this.getPatientId(),
     });
-  }
-
-  async getDemoData(section) {
-    return landingUtils.getDemoData(section, {
-      patientId: this.getPatientId(),
-    });
-  }
-
-  setDemoDataFlag(datasetKey) {
-    if (summaryMap[datasetKey]) {
-      this.setState({
-        summaryMap: {
-          ...summaryMap,
-          [datasetKey]: {
-            ...summaryMap[datasetKey],
-            usedemoflag: true,
-          },
-        },
-      });
-    }
   }
 
   handleSetActiveTab(index) {

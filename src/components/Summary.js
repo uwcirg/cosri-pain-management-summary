@@ -36,7 +36,7 @@ import Version from "../elements/Version";
 
 import { getEnv } from "../utils/envConfig";
 import AgreementIcon from "../icons/ListIcon";
-import {getScoringData} from "./Report/utility";
+import { getScoringData } from "./Report/utility";
 
 export default class Summary extends Component {
   constructor() {
@@ -773,7 +773,7 @@ export default class Summary extends Component {
     } else if (section === "UrineDrugScreens") {
       icon = <FlaskIcon {...iconProps} />;
     } else if (section === "CSAgreement") {
-      icon = <AgreementIcon {...iconProps} />
+      icon = <AgreementIcon {...iconProps} />;
     }
 
     return (

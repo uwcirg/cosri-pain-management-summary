@@ -487,7 +487,7 @@ export function getProcessedStatsData(statsFields, dataSource) {
   return stats;
 }
 
-export function getMMEErrors(summary, enableLogging, logParams) {
+export function getMMEErrors(summary) {
   let errors = [];
   if (!summary) return errors;
   //PDMP medications
@@ -521,26 +521,57 @@ export function getMMEErrors(summary, enableLogging, logParams) {
       errors.push(
         `Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`
       );
-      //log failed MME calculation
-      if (enableLogging)
-        writeToLog(
-          `MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} Factor: ${item.factor}`,
-          "error",
-          logParams
-        );
-    }
-    if (enableLogging) {
-      if (item.MME) {
-        //log MME calculated if present
-        writeToLog(
-          `MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`,
-          "info",
-          logParams
-        );
-      }
     }
   });
   return errors;
+}
+
+export function logMMEEntries(summary, logParams) {
+  if (!summary) return;
+  //PDMP medications
+  let pdmpMeds = summary["PDMPMedications"];
+  if (!pdmpMeds || !pdmpMeds["PDMPMedications"]) {
+    return;
+  }
+
+  let o = pdmpMeds["PDMPMedications"];
+  let errorItems = [];
+  o.forEach((item) => {
+    //do not report medication that has been reported
+    if (
+      errorItems.filter((errorItem) => errorItem["name"] === item["name"])
+        .length > 0
+    )
+      return true;
+    let isOpioid =
+      item["Class"] &&
+      item["Class"].filter((medClass) => {
+        return String(medClass).toLowerCase() === "opioid";
+      }).length > 0;
+    //IF not an opioid med don't raise error
+    //look for medication that contains NDC code but not RxNorm Code, or contains all necessary information (NDC Code, RxNorm Code and Drug Class) but no MME
+    if (
+      isOpioid &&
+      item["NDC_Code"] &&
+      (!item["RXNorm_Code"] || !item["MME"])
+    ) {
+      errorItems.push(item);
+      //log failed MME calculation
+      writeToLog(
+        `MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} Factor: ${item.factor}`,
+        "error",
+        logParams
+      );
+    }
+    if (item.MME) {
+      //log MME calculated if present
+      writeToLog(
+        `MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`,
+        "info",
+        logParams
+      );
+    }
+  });
 }
 
 export function getExternalDataSources(summaryMap) {
@@ -657,13 +688,14 @@ export function getProcessProgressDisplay(resourcesTypes) {
     stillLoading ? numResourcesLoaded : totalResources
   } loaded ...</span></div><div class='resources-container'>${loadedResources}</div></div>`;
 }
-export function setSectionsVis(summaryMap) {
+export function getSummaryMapWithUpdatedSectionsVis(summaryMap) {
   if (!summaryMap) return null;
-  for (const key in summaryMap) {
+  let newMap = Object.create(summaryMap);
+  for (const key in newMap) {
     let sectionsToBeHidden = [];
-    if (summaryMap[key]["sections"]) {
+    if (newMap[key]["sections"]) {
       //hide sub section if any
-      summaryMap[key]["sections"].forEach((section) => {
+      newMap[key]["sections"].forEach((section) => {
         if (
           getEnv(`REACT_APP_SUBSECTION_${section.dataKey.toUpperCase()}`) ===
           "hidden"
@@ -675,14 +707,14 @@ export function setSectionsVis(summaryMap) {
       // only some of the subsections are hidden, so main section remains visible
       if (
         sectionsToBeHidden.length > 0 &&
-        sectionsToBeHidden.length < summaryMap[key]["sections"].length
+        sectionsToBeHidden.length < newMap[key]["sections"].length
       )
         continue;
     }
     //hide main section if any
     if (getEnv(`REACT_APP_SECTION_${key.toUpperCase()}`) === "hidden") {
-      summaryMap[key]["hideSection"] = true;
+      newMap[key]["hideSection"] = true;
     }
   }
-  return summaryMap;
+  return newMap;
 }
