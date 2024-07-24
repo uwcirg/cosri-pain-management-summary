@@ -40,7 +40,8 @@ export default class Landing extends Component {
       patientId: "",
       activeTab: 0,
       loadingMessage: "Resources are being loaded...",
-      mmeErrors: false,
+      hasMmeErrors: false,
+      mmeErrors: [],
       tocInitialized: false,
       errorCollection: [],
       externalDataFetchErrors: {},
@@ -59,45 +60,62 @@ export default class Landing extends Component {
     getEnvs();
     // start time out countdown on DOM mounted
     Timeout();
-    this.getProcessProgressDisplay();
+    this.initProcessProgressDisplay();
     // hide section(s) per config
     this.setSectionsVis();
     let result = {};
     executeElm(this.state.collector, this.state.resourceTypes)
       .then((response) => {
-        //set FHIR results
-        let fhirData = response;
-        result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
-        this.processCollectorErrors();
         writeToLog("application loaded", "info", {
           patientName: this.getPatientName(),
         });
+        //set FHIR results
+        let fhirData = response;
+        result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         //add data from other sources, e.g. education materials
         this.getExternalData()
           .then((externalDataSet) => {
             result["Summary"] = { ...result["Summary"], ...externalDataSet };
-            const { sectionFlags, flaggedCount } = this.processSummary(
+            const { sectionFlags, flaggedCount } =
+              landingUtils.getProcessedSummaryData(result.Summary, summaryMap);
+            this.setSummaryOverviewStatsData(result["Summary"]);
+            if (summaryMap[this.getOverviewSectionKey()]) {
+              this.setSummaryAlerts(result["Summary"], sectionFlags);
+            }
+            this.setSummaryGraphData(result["Summary"]);
+            const collectorErrors = this.getCollectorErrors();
+            collectorErrors.forEach((e) => this.writeError(e));
+            const { errors, hasMmeErrors, mmeErrors } = this.getSummaryErrors(
               result.Summary
             );
-            this.savePDMPSummaryData();
-            this.processSummaryErrors(result.Summary);
-            this.processOverviewStatsData(result["Summary"]);
-            if (summaryMap[this.getOverviewSectionKey()]) {
-              this.processAlerts(result["Summary"], sectionFlags);
-            }
-            this.processGraphData(result["Summary"]);
+            // console.log(
+            //   "errors ",
+            //   errors,
+            //   " hasMmeError ",
+            //   hasMmeErrors,
+            //   " mmeErrors ",
+            //   mmeErrors
+            // );
             this.setState(
               {
                 result,
                 sectionFlags,
                 flaggedCount,
                 loading: false,
-                patientId: this.getPatientId()
+                patientId: this.getPatientId(),
+                hasMmeErrors: hasMmeErrors,
+                mmeErrors: mmeErrors,
+                errorCollection: [
+                  ...this.state.errorCollection,
+                  ...collectorErrors,
+                  ...errors,
+                ],
               },
               () => {
                 this.initEvents();
                 this.initializeTocBot();
                 this.clearProcessInterval();
+                this.savePDMPSummaryData();
               }
             );
             console.log("Query results ", result);
@@ -225,7 +243,7 @@ export default class Landing extends Component {
         item.data.resourceType.toLowerCase() === "patient"
     );
     if (patientBundle.length) {
-      return patientBundle[0].data.id
+      return patientBundle[0].data.id;
     }
   }
   getPatientName() {
@@ -233,7 +251,8 @@ export default class Landing extends Component {
     const patientName = summary && summary.Patient ? summary.Patient.Name : "";
     return patientName;
   }
-  getProcessProgressDisplay() {
+  initProcessProgressDisplay() {
+    this.clearProcessInterval();
     processIntervalId = setInterval(() => {
       this.setState({
         loadingMessage: landingUtils.getProcessProgressDisplay(
@@ -245,10 +264,14 @@ export default class Landing extends Component {
   clearProcessInterval() {
     clearInterval(processIntervalId);
   }
-  processCollectorErrors() {
+  getOverviewSectionKey() {
+    return "PatientRiskOverview";
+  }
+  getCollectorErrors() {
     let collectorErrors = this.state.collector.filter((item) => {
       return item.error;
     });
+    let errors = [];
     collectorErrors.forEach((item) => {
       let itemURL = item?.url;
       try {
@@ -259,25 +282,24 @@ export default class Landing extends Component {
       }
       const sourceType = item?.type ?? itemURL;
       const sourceTypeText = sourceType ? `[${sourceType}]` : "";
-      this.setError(`${sourceTypeText} ${item.error}`, true);
+      errors.push(`${sourceTypeText} ${item.error}`);
     });
+    return errors;
   }
 
-  processSummaryErrors(summary) {
-    if (!summary) return false;
-    //compile error(s) related to MME calculations
+  getSummaryErrors(summary) {
+    if (!summary)
+      return {
+        errors: [],
+        hasMmeErrors: false,
+        mmeErrors: [],
+      };
+    //compile error(s) related to MME calculations, add logging
     let mmeErrors = landingUtils.getMMEErrors(summary, true, {
       tags: ["mme-calc"],
       patientName: this.getPatientName(),
     });
-    if (mmeErrors && mmeErrors.length) {
-      mmeErrors.forEach((error) => {
-        this.setError(error, true);
-      });
-      this.setState({
-        mmeErrors: true,
-      });
-    }
+
     // the rest of the errors
     let errors = [];
     for (let section in summary) {
@@ -285,19 +307,23 @@ export default class Landing extends Component {
         errors.push(summary[section].error);
       }
     }
-    this.setState({
-      errorCollection: [...this.state.errorCollection, ...errors],
-    });
+    return {
+      errors: errors,
+      hasMmeErrors: !!(mmeErrors && mmeErrors.length),
+      mmeErrors: mmeErrors,
+    };
   }
-  setError(message, shouldLog) {
+  setError(message) {
     if (!message) return;
     this.setState({
       errorCollection: [...this.state.errorCollection, message],
     });
-    if (shouldLog)
-      writeToLog(message, "error", {
-        patientName: this.getPatientName(),
-      });
+  }
+  writeError(message) {
+    if (!message) return;
+    writeToLog(message, "error", {
+      patientName: this.getPatientName(),
+    });
   }
 
   //save MME calculations to file for debugging purpose, development environment ONLY
@@ -479,22 +505,14 @@ export default class Landing extends Component {
     });
   }
 
-  getOverviewSectionKey() {
-    return "PatientRiskOverview";
-  }
-
-  processSummary(summary) {
-    return landingUtils.getProcessedSummaryData(summary, summaryMap);
-  }
-
-  processAlerts(summary, sectionFlags) {
+  setSummaryAlerts(summary, sectionFlags) {
     summary[this.getOverviewSectionKey() + "_alerts"] =
       landingUtils.getProcessedAlerts(sectionFlags, {
         tags: ["alert"],
         patientName: this.getPatientName(),
       });
   }
-  processGraphData(summary) {
+  setSummaryGraphData(summary) {
     let overviewSection = summaryMap[this.getOverviewSectionKey()];
     if (!overviewSection) {
       return false;
@@ -529,7 +547,7 @@ export default class Landing extends Component {
       landingUtils.getProcessedGraphData(graphConfig, graph_data);
   }
 
-  processOverviewStatsData(summary) {
+  setSummaryOverviewStatsData(summary) {
     const overviewSection = summaryMap[this.getOverviewSectionKey()];
     if (!overviewSection) {
       return false;
@@ -614,7 +632,7 @@ export default class Landing extends Component {
         sectionFlags={sectionFlags}
         collector={this.state.collector}
         errorCollection={this.state.errorCollection}
-        mmeErrors={this.state.mmeErrors}
+        hasMmeErrors={this.state.hasMmeErrors}
         result={this.state.result}
       />
     );

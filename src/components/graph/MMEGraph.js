@@ -155,7 +155,7 @@ export default class MMEGraph extends Component {
     const CDC_MAX_VALUE = 90;
     const xIntervals = 12;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
-    const hasError = this.props.error;
+    const hasError = this.props.showError;
     //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
     let computedData = this.props.data
@@ -440,5 +440,5 @@ export default class MMEGraph extends Component {
 
 MMEGraph.propTypes = {
   data: PropTypes.array,
-  error: PropTypes.bool,
+  showError: PropTypes.bool,
 };

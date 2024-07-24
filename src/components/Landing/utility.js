@@ -487,13 +487,13 @@ export function getProcessedStatsData(statsFields, dataSource) {
   return stats;
 }
 
-export function getMMEErrors(summary, logError, logParams) {
-  if (!summary) return null;
+export function getMMEErrors(summary, enableLogging, logParams) {
   let errors = [];
+  if (!summary) return errors;
   //PDMP medications
   let pdmpMeds = summary["PDMPMedications"];
   if (!pdmpMeds || !pdmpMeds["PDMPMedications"]) {
-    return null;
+    return errors;
   }
 
   let o = pdmpMeds["PDMPMedications"];
@@ -522,14 +522,14 @@ export function getMMEErrors(summary, logError, logParams) {
         `Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`
       );
       //log failed MME calculation
-      if (logError)
+      if (enableLogging)
         writeToLog(
           `MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} Factor: ${item.factor}`,
           "error",
           logParams
         );
     }
-    if (logError) {
+    if (enableLogging) {
       if (item.MME) {
         //log MME calculated if present
         writeToLog(

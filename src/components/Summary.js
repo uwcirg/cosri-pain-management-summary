@@ -124,7 +124,7 @@ export default class Summary extends Component {
       ? Object.keys(sectionFlags[section])
       : null;
 
-    if (!subSections) {
+    if (!subSections || !subSections.length) {
       return "";
     }
 
@@ -167,13 +167,10 @@ export default class Summary extends Component {
     ) {
       return false;
     }
-    if (sectionFlags[section][subSection] === true) {
-      return true;
-    } else if (sectionFlags[section][subSection] === false) {
-      return false;
-    } else {
+    if (Array.isArray(sectionFlags[section][subSection])) {
       return sectionFlags[section][subSection].length > 0;
     }
+    return !!sectionFlags[section][subSection];
   }
 
   // if flagged, returns flag text, else returns empty text
@@ -452,8 +449,8 @@ export default class Summary extends Component {
     if (!panel) return null;
     if (panel.graphType === "MED") {
       let data = this.props.summary[panel.dataSectionRefKey];
-      const mmeErrors = this.props.mmeErrors;
-      return <MMEGraph data={data} error={mmeErrors}></MMEGraph>;
+      const hasError = this.props.hasMmeErrors;
+      return <MMEGraph data={data} showError={hasError}></MMEGraph>;
     }
     //can return other type of graph depending on the section
     return <div className="graph-placeholder"></div>;
@@ -927,6 +924,6 @@ Summary.propTypes = {
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
   errorCollection: PropTypes.array,
-  mmeErrors: PropTypes.bool,
+  hasMmeErrors: PropTypes.bool,
   result: PropTypes.object.isRequired,
 };
