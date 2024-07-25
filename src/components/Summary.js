@@ -49,6 +49,7 @@ export default class Summary extends Component {
     };
 
     this.elementRef = React.createRef();
+    this.navRef = React.createRef();
 
     this.subsectionTableProps = { id: "react_sub-section__table" };
 
@@ -849,70 +850,67 @@ export default class Summary extends Component {
       this.props.errorCollection && this.props.errorCollection.length > 0;
 
     const sectionsToRender = this.getSectionsToRender(summaryMap);
-
     return (
-      <React.Fragment>
-        <div className="summary">
-          <SideNav
-            id="summarySideNavButton"
-            navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
-          ></SideNav>
-          <div className="summary__display" id="maincontent">
-            <h1 className="summary__display-title">
-              Clinical Opioid Summary with Rx Integration
-            </h1>
-            {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
-            {meetsInclusionCriteria && <ExclusionBanner />}
-            {!hasErrors && !meetsInclusionCriteria && (
-              <InclusionBanner dismissible={meetsInclusionCriteria} />
-            )}
-            {meetsInclusionCriteria && this.isUnderAge() && (
-              <Warning text="This patient is under 18 years of age. Guidance for clinical decision support in COSRI is for patients 18 years and older. Please refer to pediatric clinical guidance when prescribing opioids for people under 18 years of age."></Warning>
-            )}
-            {meetsInclusionCriteria && (
-              <div className="sections">
-                {sectionsToRender.map((section, index) => {
-                  return (
-                    <Collapsible
-                      trigger={this.renderSectionHeader(section)}
-                      open={true}
-                      key={index}
-                    >
-                      {this.renderSection(section)}
-                    </Collapsible>
-                  );
-                })}
-              </div>
-            )}
-            <Disclaimer />
-            <DevTools
-              collector={collector}
-              summary={CQLSummary}
-              //results not coming from CQL
-              other={{
-                EducationMaterials,
-                PatientRiskOverview_graph,
-                PatientRiskOverview_alerts,
-                PatientRiskOverview_stats,
-              }}
+      <div className="summary overview">
+        <SideNav
+          id="summarySideNavButton"
+          navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
+        ></SideNav>
+        <div className="summary__display" id="maincontent">
+          <h1 className="summary__display-title">
+            Clinical Opioid Summary with Rx Integration
+          </h1>
+          {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
+          {meetsInclusionCriteria && <ExclusionBanner />}
+          {!hasErrors && !meetsInclusionCriteria && (
+            <InclusionBanner dismissible={meetsInclusionCriteria} />
+          )}
+          {meetsInclusionCriteria && this.isUnderAge() && (
+            <Warning text="This patient is under 18 years of age. Guidance for clinical decision support in COSRI is for patients 18 years and older. Please refer to pediatric clinical guidance when prescribing opioids for people under 18 years of age."></Warning>
+          )}
+          {meetsInclusionCriteria && (
+            <div className="sections">
+              {sectionsToRender.map((section, index) => {
+                return (
+                  <Collapsible
+                    trigger={this.renderSectionHeader(section)}
+                    open={true}
+                    key={index}
+                  >
+                    {this.renderSection(section)}
+                  </Collapsible>
+                );
+              })}
+            </div>
+          )}
+          <Disclaimer />
+          <DevTools
+            collector={collector}
+            summary={CQLSummary}
+            //results not coming from CQL
+            other={{
+              EducationMaterials,
+              PatientRiskOverview_graph,
+              PatientRiskOverview_alerts,
+              PatientRiskOverview_stats,
+            }}
+          />
+          {/* display released version string */}
+          <Version />
+          <ReactModal
+            className="modal"
+            overlayClassName="overlay"
+            isOpen={this.state.showModal}
+            onRequestClose={this.handleCloseModal}
+            contentLabel="More Info"
+          >
+            <InfoModal
+              closeModal={this.handleCloseModal}
+              subSection={this.state.modalSubSection}
             />
-            {/* display released version string */}
-            <Version />
-            <ReactModal
-              className="modal"
-              overlayClassName="overlay"
-              isOpen={this.state.showModal}
-              onRequestClose={this.handleCloseModal}
-              contentLabel="More Info"
-            >
-              <InfoModal
-                closeModal={this.handleCloseModal}
-                subSection={this.state.modalSubSection}
-              />
-            </ReactModal>
-          </div>
+          </ReactModal>
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }

@@ -26,6 +26,118 @@ export function processEndPoint(endpoint, endpointParams) {
     .replace("{process.env.PUBLIC_URL}", getEnv("PUBLIC_URL"))
     .replace("{patientId}", params.patientId);
 }
+
+export async function fetchExternalData(url, datasetKey, rootElement) {
+  let dataSet = {};
+  dataSet[datasetKey] = {};
+  const MAX_WAIT_TIME = 15000;
+  // Create a promise that rejects in maximum wait time in milliseconds
+  let timeoutPromise = new Promise((resolve, reject) => {
+    let id = setTimeout(() => {
+      clearTimeout(id);
+      reject(`Timed out in ${MAX_WAIT_TIME} ms.`);
+    }, MAX_WAIT_TIME);
+  });
+  /*
+   * if for some reason fetching the request data doesn't resolve or reject withing the maximum waittime,
+   * then the timeout promise will kick in
+   */
+  let results = await Promise.race([fetch(url), timeoutPromise]).catch((e) => {
+    return Promise.reject(
+      new Error(`There was error fetching data for ${datasetKey}: ${e}`)
+    );
+  });
+
+  let json = null;
+  let responseDataSet = null;
+  if (results && results.ok) {
+    try {
+      //read response stream
+      json = await results.json().catch((e) => {
+        throw new Error(e);
+      });
+    } catch (e) {
+      return Promise.reject(
+        new Error(`There was error parsing data for ${datasetKey}: ${e}`)
+      );
+    }
+    try {
+      responseDataSet = json[rootElement];
+    } catch (e) {
+      return Promise.reject(
+        `Data does not contained the required root element ${rootElement} for ${datasetKey}: ${e}`
+      );
+    }
+  }
+  dataSet[datasetKey] = responseDataSet;
+  return dataSet;
+}
+
+/*
+ * function for retrieving data from other sources e.g. education materials
+ */
+export async function getExternalData(summaryMap, patientId) {
+  const promiseResultSet = getExternalDataSources(summaryMap);
+  if (!promiseResultSet.length) {
+    return null;
+  }
+  let dataSet = {};
+  let results = await Promise.allSettled(
+    promiseResultSet.map((item) => {
+      return fetchExternalData(
+        processEndPoint(item.endpoint, {
+          patientId: patientId,
+        }),
+        item.dataKey,
+        item.dataKey
+      );
+    })
+  ).catch((e) => {
+    console.log(`Error parsing external data response json: ${e.message}`);
+    return null;
+  });
+  let errors = {};
+  promiseResultSet.forEach((item, index) => {
+    let result = results[index];
+    if (result.status === "rejected") {
+      errors[item.dataKey] = result.reason;
+    }
+    //require additional processing of result data
+    if (
+      !errors[item.dataKey] &&
+      item.processFunction &&
+      this[item.processFunction]
+    ) {
+      try {
+        result = this[item.processFunction](
+          result.value ? result.value[item.dataKey] : null,
+          item.dataKey
+        );
+      } catch (e) {
+        console.log(
+          `Error processing data result via processing function ${item.processFunction}: ${e}`
+        );
+      }
+    }
+    if (!dataSet[item.dataKeySource]) {
+      dataSet[item.dataKeySource] = {};
+    }
+    if (errors[item.dataKey]) {
+      dataSet[item.dataKeySource][item.dataKey] = null;
+    } else {
+      dataSet[item.dataKeySource][item.dataKey] = result.value
+        ? result.value[item.dataKey]
+        : result[item.dataKey]
+        ? result[item.dataKey]
+        : result;
+    }
+  });
+  return {
+    data: dataSet,
+    errors: errors,
+  };
+}
+
 export function getDemoData(section, params) {
   if (!section || !section["demoData"]) return null;
   if (!section["demoData"]["endpoint"]) {
@@ -576,6 +688,7 @@ export function logMMEEntries(summary, logParams) {
 
 export function getExternalDataSources(summaryMap) {
   const promiseResultSet = [];
+  if (!summaryMap) return promiseResultSet;
   const systemType = String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase();
 
   /*

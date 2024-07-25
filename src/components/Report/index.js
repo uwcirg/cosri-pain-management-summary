@@ -253,7 +253,7 @@ export default class Report extends Component {
     const { summaryData } = this.props;
     const hasNoData = reportUtil.hasNoSummaryData(summaryData);
     return (
-      <div className="report summary">
+      <div className="summary report">
         <SideNav id="reportSideNavButton"></SideNav>
         <div className="summary__display">
           {hasNoData && this.renderNoDataNotice()}
@@ -261,8 +261,8 @@ export default class Report extends Component {
             {this.renderSections(summaryData)}
             <Version />
           </div>
+          {this.renderInfoModal()}
         </div>
-        {this.renderInfoModal()}
       </div>
     );
   }

@@ -38,7 +38,7 @@ export default class Landing extends Component {
       resourceTypes: {},
       externals: {},
       patientId: "",
-      activeTab: 0,
+      activeTab: null,
       loadingMessage: "Resources are being loaded...",
       hasMmeErrors: false,
       mmeErrors: [],
@@ -50,6 +50,7 @@ export default class Landing extends Component {
     // This binding is necessary to make `this` work in the callback
     this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
     this.handleHeaderPos = this.handleHeaderPos.bind(this);
+
     this.anchorTopRef = React.createRef();
   }
 
@@ -73,8 +74,10 @@ export default class Landing extends Component {
         let fhirData = response;
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         //add data from other sources, e.g. education materials
-        this.getExternalData()
+        landingUtils
+          .getExternalData(summaryMap, this.getPatientId())
           .then((externalDataSet) => {
+            console.log("external data ", externalDataSet);
             result["Summary"] = {
               ...result["Summary"],
               ...(externalDataSet ? externalDataSet["data"] : null),
@@ -111,6 +114,7 @@ export default class Landing extends Component {
                 sectionFlags,
                 flaggedCount,
                 loading: false,
+                activeTab: 0,
                 patientId: this.getPatientId(),
                 hasMmeErrors: hasMmeErrors,
                 mmeErrors: mmeErrors,
@@ -122,16 +126,16 @@ export default class Landing extends Component {
                     ? Object.values(externalDataSet["errors"])
                     : []),
                 ],
-                summaryMap: this.getSummaryMapWithErrors(
+                summaryMap: this.getSummaryMapIncludingErrors(
                   summaryMap,
                   hasExternalDataError ? externalDataSet["error"] : null
                 ),
               },
               () => {
                 this.initEvents();
-                this.initializeTocBot();
                 this.clearProcessInterval();
                 this.savePDMPSummaryData();
+                this.handleSetActiveTab(0);
               }
             );
             console.log("Query results ", result);
@@ -152,9 +156,8 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.tocInitialized) {
-      tocbot.refresh({ ...tocbot.options, hasInnerContainers: true });
-    }
+
+    if (!this.state.tocInitialized) this.initTocBot();
     //page title
     document.title = "COSRI";
     if (this.shouldShowTabs()) {
@@ -194,17 +197,19 @@ export default class Landing extends Component {
     });
   }
 
-  initializeTocBot() {
+  getTocBotOptions() {
     const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 180 : 100;
-    tocbot.init({
-      tocSelector: ".active .summary__nav", // where to render the table of contents
-      contentSelector: ".active .summary__display", // where to grab the headings to build the table of contents
+    const selectorClass = this.shouldShowTabs() ? ".active" : "";
+    return {
+      //tocSelector: ".active .summary__nav", // where to render the table of contents
+      tocSelector: `${selectorClass} .summary__nav`.trim(), // where to render the table of contents
+      contentSelector: `${selectorClass} .summary__display`.trim(), // where to grab the headings to build the table of contents
       headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
-      positionFixedSelector: ".active .summary__nav", // element to add the positionFixedClass to
+      positionFixedSelector: `${selectorClass} .summary__nav`.trim(), // element to add the positionFixedClass to
       ignoreSelector: "h3.panel-title",
       collapseDepth: 0, // how many heading levels should not be collpased
       includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      //fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
+      // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
       headingsOffset: 1 * MIN_HEADER_HEIGHT,
       scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
       onClick: (e) => {
@@ -243,7 +248,12 @@ export default class Landing extends Component {
           });
         }, 50);
       },
-    });
+    };
+  }
+
+  initTocBot() {
+    tocbot.destroy();
+    tocbot.init(this.getTocBotOptions());
     this.setState({
       tocInitialized: true,
     });
@@ -310,7 +320,7 @@ export default class Landing extends Component {
         hasMmeErrors: false,
         mmeErrors: [],
       };
-    //compile error(s) related to MME calculations, add logging
+    //compile error(s) related to MME calculations
     let mmeErrors = landingUtils.getMMEErrors(summary);
 
     // the rest of the errors
@@ -373,117 +383,7 @@ export default class Landing extends Component {
     });
   }
 
-  async fetchExternalData(url, datasetKey, rootElement) {
-    let dataSet = {};
-    dataSet[datasetKey] = {};
-    const MAX_WAIT_TIME = 15000;
-    // Create a promise that rejects in maximum wait time in milliseconds
-    let timeoutPromise = new Promise((resolve, reject) => {
-      let id = setTimeout(() => {
-        clearTimeout(id);
-        reject(`Timed out in ${MAX_WAIT_TIME} ms.`);
-      }, MAX_WAIT_TIME);
-    });
-    /*
-     * if for some reason fetching the request data doesn't resolve or reject withing the maximum waittime,
-     * then the timeout promise will kick in
-     */
-    let results = await Promise.race([fetch(url), timeoutPromise]).catch(
-      (e) => {
-        return Promise.reject(
-          new Error(`There was error fetching data for ${datasetKey}: ${e}`)
-        );
-      }
-    );
-
-    let json = null;
-    let responseDataSet = null;
-    if (results && results.ok) {
-      try {
-        //read response stream
-        json = await results.json().catch((e) => {
-          throw new Error(e);
-        });
-      } catch (e) {
-        return Promise.reject(
-          new Error(`There was error parsing data for ${datasetKey}: ${e}`)
-        );
-      }
-      try {
-        responseDataSet = json[rootElement];
-      } catch (e) {
-        return Promise.reject(
-          `Data does not contained the required root element ${rootElement} for ${datasetKey}: ${e}`
-        );
-      }
-    }
-    dataSet[datasetKey] = responseDataSet;
-    return dataSet;
-  }
-  /*
-   * function for retrieving data from other sources e.g. education materials
-   */
-  async getExternalData() {
-    const promiseResultSet = landingUtils.getExternalDataSources(summaryMap);
-    if (!promiseResultSet.length) {
-      return null;
-    }
-    let dataSet = {};
-    let results = await Promise.allSettled(
-      promiseResultSet.map((item) => {
-        return this.fetchExternalData(
-          this.processEndPoint(item.endpoint),
-          item.dataKey,
-          item.dataKey
-        );
-      })
-    ).catch((e) => {
-      console.log(`Error parsing external data response json: ${e.message}`);
-      return null;
-    });
-    let errors = {};
-    promiseResultSet.forEach((item, index) => {
-      let result = results[index];
-      if (result.status === "rejected") {
-        errors[item.dataKey] = result.reason;
-      }
-      //require additional processing of result data
-      if (
-        !errors[item.dataKey] &&
-        item.processFunction &&
-        this[item.processFunction]
-      ) {
-        try {
-          result = this[item.processFunction](
-            result.value ? result.value[item.dataKey] : null,
-            item.dataKey
-          );
-        } catch (e) {
-          console.log(
-            `Error processing data result via processing function ${item.processFunction}: ${e}`
-          );
-        }
-      }
-      if (!dataSet[item.dataKeySource]) {
-        dataSet[item.dataKeySource] = {};
-      }
-      if (errors[item.dataKey]) {
-        dataSet[item.dataKeySource][item.dataKey] = null;
-      } else {
-        dataSet[item.dataKeySource][item.dataKey] = result.value
-          ? result.value[item.dataKey]
-          : result[item.dataKey]
-          ? result[item.dataKey]
-          : result;
-      }
-    });
-    return {
-      data: dataSet,
-      errors: errors,
-    };
-  }
-
-  getSummaryMapWithErrors(summaryMap, oErrors) {
+  getSummaryMapIncludingErrors(summaryMap, oErrors) {
     if (!oErrors) return summaryMap;
     let updatedMap = Object.create(summaryMap);
     for (let key in updatedMap) {
@@ -557,17 +457,16 @@ export default class Landing extends Component {
     summary[this.getOverviewSectionKey() + "_stats"] = stats;
   }
 
-  processEndPoint(endpoint) {
-    return landingUtils.processEndPoint(endpoint, {
-      patientId: this.getPatientId(),
-    });
-  }
-
   handleSetActiveTab(index) {
-    this.setState({
-      activeTab: index,
-    });
-    window.scrollTo(0, 0);
+    this.setState(
+      {
+        activeTab: index,
+      },
+      () => {
+        this.initTocBot();
+        window.scrollTo(0, 10)
+      }
+    );
   }
 
   shouldShowTabs() {
@@ -580,6 +479,36 @@ export default class Landing extends Component {
     const config_tab = getEnv("REACT_APP_TABS");
     if (config_tab) tabs = config_tab.split(",");
     return tabs;
+  }
+
+  renderNav(id) {
+    const navToggleToolTip = this.state.showNav
+      ? "collapse side navigation menu"
+      : "expand side navigation menu";
+    //const navId = this.props.id ? this.props.id : "sideNavButton";
+    const navId = `${id}SideNavButton`;
+    return (
+      <div
+        className={`${this.state.showNav ? "open" : ""} summary__nav-wrapper`}
+      >
+        <nav className={`summary__nav`}></nav>
+        <div
+          role="presentation"
+          ref={(ref) => (this.navRef = ref)}
+          data-for={navId}
+          data-tip={navToggleToolTip}
+          data-place="right"
+          className={`${this.props.navClassName} summary__nav-button close`}
+          title="toggle side navigation menu"
+          onClick={(e) => {
+            ReactTooltip.hide(this.navRef);
+            this.handleNavToggle(e);
+            //if (this.props.onClick) this.props.onClick();
+          }}
+        ></div>
+        <ReactTooltip className="summary-tooltip" id={navId} />
+      </div>
+    );
   }
 
   renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
