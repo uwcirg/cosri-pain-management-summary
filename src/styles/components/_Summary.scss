@@ -1091,14 +1091,19 @@
       top: 0;
       bottom: 0;
       overflow-y: auto;
-      // &.is-position-fixed {
-      //   top: 0;
-      //   bottom: 0;
-      //   overflow-y: auto;
-      // }
     }
   }
 //}
+.has-tabs {
+  .summary__nav-wrapper .is-position-fixed ~ .close {
+    top: calc(#{$min-header-height} + 48px);
+  }
+  .collapsed {
+    .summary__nav-wrapper .is-position-fixed ~ .close {
+      top: calc(#{$min-header-height} + 8px);
+    }
+  }
+}
 .active {
   .summary__nav-wrapper {
     display: block;

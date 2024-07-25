@@ -156,7 +156,6 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-
     if (!this.state.tocInitialized) this.initTocBot();
     //page title
     document.title = "COSRI";
@@ -355,9 +354,10 @@ export default class Landing extends Component {
     const summary = this.state.result ? this.state.result.Summary : null;
     if (!summary) return;
     const patientName = this.getPatientName();
+    const PDMP_DATAKEY = "PDMPMedications";
     //pdmp data
-    const pdmpData = summary["PDMPMedications"]
-      ? summary["PDMPMedications"]["PDMPMedications"]
+    const pdmpData = summary[PDMP_DATAKEY]
+      ? summary[PDMP_DATAKEY][PDMP_DATAKEY]
       : null;
     if (!pdmpData) return;
     const pdmpContext = "CQL PMP MME Result";
@@ -464,7 +464,7 @@ export default class Landing extends Component {
       },
       () => {
         this.initTocBot();
-        window.scrollTo(0, 10)
+        window.scrollTo(0, 10);
       }
     );
   }
@@ -479,36 +479,6 @@ export default class Landing extends Component {
     const config_tab = getEnv("REACT_APP_TABS");
     if (config_tab) tabs = config_tab.split(",");
     return tabs;
-  }
-
-  renderNav(id) {
-    const navToggleToolTip = this.state.showNav
-      ? "collapse side navigation menu"
-      : "expand side navigation menu";
-    //const navId = this.props.id ? this.props.id : "sideNavButton";
-    const navId = `${id}SideNavButton`;
-    return (
-      <div
-        className={`${this.state.showNav ? "open" : ""} summary__nav-wrapper`}
-      >
-        <nav className={`summary__nav`}></nav>
-        <div
-          role="presentation"
-          ref={(ref) => (this.navRef = ref)}
-          data-for={navId}
-          data-tip={navToggleToolTip}
-          data-place="right"
-          className={`${this.props.navClassName} summary__nav-button close`}
-          title="toggle side navigation menu"
-          onClick={(e) => {
-            ReactTooltip.hide(this.navRef);
-            this.handleNavToggle(e);
-            //if (this.props.onClick) this.props.onClick();
-          }}
-        ></div>
-        <ReactTooltip className="summary-tooltip" id={navId} />
-      </div>
-    );
   }
 
   renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {

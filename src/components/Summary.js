@@ -49,8 +49,6 @@ export default class Summary extends Component {
     };
 
     this.elementRef = React.createRef();
-    this.navRef = React.createRef();
-
     this.subsectionTableProps = { id: "react_sub-section__table" };
 
     ReactModal.setAppElement("body");
@@ -855,6 +853,7 @@ export default class Summary extends Component {
         <SideNav
           id="summarySideNavButton"
           navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
+          parentContainerSelector={`.summary.overview`}
         ></SideNav>
         <div className="summary__display" id="maincontent">
           <h1 className="summary__display-title">

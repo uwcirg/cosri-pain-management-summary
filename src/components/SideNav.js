@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import ReactTooltip from "react-tooltip";
+import { isElementOverflown } from "../helpers/utility";
 
 export default class SideNav extends Component {
   constructor() {
@@ -32,9 +33,14 @@ export default class SideNav extends Component {
   }
 
   handleResize() {
+    const isSmallerScreen = window.innerWidth && window.innerWidth <= 1360;
     this.setState(
       {
-        showNav: window.innerWidth && window.innerWidth <= 1360 ? false : true,
+        showNav: this.props.parentContainerSelector
+          ? !isElementOverflown(
+              document.querySelector(this.props.parentContainerSelector)
+            ) || !isSmallerScreen
+          : !isSmallerScreen,
       },
       () => {
         this.handleRootClass();
@@ -44,7 +50,7 @@ export default class SideNav extends Component {
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
-    this.handleResize();
+    setTimeout(() => this.handleResize(), 0);
   }
 
   render() {
@@ -82,4 +88,5 @@ SideNav.propTypes = {
   id: PropTypes.string,
   navClassName: PropTypes.string,
   onClick: PropTypes.func,
+  parentContainerSelector: PropTypes.string,
 };

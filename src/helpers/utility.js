@@ -611,3 +611,13 @@ export function isEmptyArray(object) {
   if (!Array.isArray(object)) return true;
   return !object.length;
 }
+
+export function isElementOverflown(element, dimension) {
+  if (!element) return false;
+  const isWidthOverflown = element.scrollWidth > element.clientWidth;
+  var isHeightOverflown = element.scrollHeight > element.clientHeight;
+  if (!dimension) return isWidthOverflown || isHeightOverflown;
+  if (dimension === "width") return isWidthOverflown;
+  if (dimension === "height") return isHeightOverflown;
+  return isWidthOverflown || isHeightOverflown;
+}
