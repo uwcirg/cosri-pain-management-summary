@@ -401,7 +401,7 @@ export default class Landing extends Component {
       },
       () => {
         this.initTocBot();
-        window.scrollTo(0, 10);
+        window.scrollTo(0, 5);
       }
     );
   }

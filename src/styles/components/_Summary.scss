@@ -1103,6 +1103,9 @@
       top: calc(#{$min-header-height} + 8px);
     }
   }
+  .summary__nav.is-position-fixed {
+    top: 148px;
+  }
 }
 .active {
   .summary__nav-wrapper {
