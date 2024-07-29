@@ -58,9 +58,9 @@ export default class Landing extends Component {
     getEnvs();
     // start time out countdown on DOM mounted
     Timeout();
+    // display resources loading statuses
     this.initProcessProgressDisplay();
-    // hide section(s) per config
-    this.setSectionsVis();
+
     let result = {};
     Promise.allSettled([
       executeElm(this.state.collector, this.state.resourceTypes),
@@ -104,12 +104,18 @@ export default class Landing extends Component {
         // );
         const hasExternalDataError =
           externalDataSet && externalDataSet["errors"];
+        // hide and show section(s) depending on config
+        const currentSummaryMap = {
+          ...this.state.summaryMap,
+          ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
+            this.state.summaryMap
+          ),
+        };
         this.setState(
           {
             result,
             sectionFlags,
             flaggedCount,
-            loading: false,
             activeTab: 0,
             patientId: this.getPatientId(),
             hasMmeErrors: hasMmeErrors,
@@ -124,9 +130,10 @@ export default class Landing extends Component {
                 : []),
             ],
             summaryMap: this.getSummaryMapIncludingErrors(
-              summaryMap,
+              currentSummaryMap,
               hasExternalDataError ? externalDataSet["error"] : null
             ),
+            loading: false,
           },
           () => {
             this.initEvents();
@@ -310,18 +317,6 @@ export default class Landing extends Component {
     const patientName = this.getPatientName();
     const fileName = patientName.replace(/\s/g, "_") + "_MME_Result";
     landingUtils.savePDMPSummaryData(summary, fileName);
-  }
-
-  // hide and show section(s) depending on config
-  setSectionsVis() {
-    this.setState({
-      summaryMap: {
-        ...this.state.summaryMap,
-        ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
-          this.state.summaryMap
-        ),
-      },
-    });
   }
 
   getSummaryMapIncludingErrors(summaryMap, oErrors) {
