@@ -6,7 +6,12 @@ import {
 } from "../../helpers/formatit";
 import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
-import { getDiffDays, isEmptyArray, writeToLog } from "../../helpers/utility";
+import {
+  getDiffDays,
+  isEmptyArray,
+  saveData,
+  writeToLog,
+} from "../../helpers/utility";
 import { getEnv } from "../../utils/envConfig";
 
 let uuid = 0;
@@ -686,6 +691,24 @@ export function logMMEEntries(summary, logParams) {
   });
 }
 
+export function savePDMPSummaryData(summary, fileName) {
+  if (!summary) return;
+  const PDMP_DATAKEY = "PDMPMedications";
+  //pdmp data
+  const pdmpData = summary[PDMP_DATAKEY]
+    ? summary[PDMP_DATAKEY][PDMP_DATAKEY]
+    : null;
+  if (!pdmpData) return;
+  const pdmpContext = "CQL PMP MME Result";
+  saveData({
+    context: pdmpContext,
+    data: pdmpData,
+    filename: fileName,
+    timestamp: new Date(),
+  });
+  //can save other data if needed
+}
+
 export function getExternalDataSources(summaryMap) {
   const promiseResultSet = [];
   if (!summaryMap) return promiseResultSet;
@@ -830,4 +853,60 @@ export function getSummaryMapWithUpdatedSectionsVis(summaryMap) {
     }
   }
   return newMap;
+}
+
+export function getSummaryErrors(summary) {
+  if (!summary)
+    return {
+      errors: [],
+      hasMmeErrors: false,
+      mmeErrors: [],
+    };
+  //compile error(s) related to MME calculations
+  let mmeErrors = getMMEErrors(summary);
+
+  // the rest of the errors
+  let errors = [];
+  for (let section in summary) {
+    if (summary[section].error) {
+      errors.push(summary[section].error);
+    }
+  }
+  return {
+    errors: errors,
+    hasMmeErrors: !!(mmeErrors && mmeErrors.length),
+    mmeErrors: mmeErrors,
+  };
+}
+
+export function getCollectorErrors(arrCollection) {
+  if (isEmptyArray(arrCollection)) return [];
+  let collectorErrors = arrCollection.filter((item) => {
+    return item.error;
+  });
+  let errors = [];
+  collectorErrors.forEach((item) => {
+    let itemURL = item?.url;
+    try {
+      itemURL = new URL(itemURL).pathname;
+    } catch (e) {
+      console.log("Unable to convert url to URL object ", item.url);
+      itemURL = item?.url;
+    }
+    const sourceType = item?.type ?? itemURL;
+    const sourceTypeText = sourceType ? `[${sourceType}]` : "";
+    errors.push(`${sourceTypeText} ${item.error}`);
+  });
+  return errors;
+}
+
+export function getResponseErrors(responses) {
+  if (isEmptyArray(responses)) return [];
+  let errors = [];
+  responses.forEach((response) => {
+    if (response.status === "rejected" && response.reason) {
+      errors.push(response.reason);
+    }
+  });
+  return errors;
 }

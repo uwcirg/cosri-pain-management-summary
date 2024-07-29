@@ -10,7 +10,6 @@ import {
   isInViewport,
   isNotProduction,
   isProduction,
-  saveData,
   writeToLog,
 } from "../../helpers/utility";
 import Timeout from "../../helpers/timeout";
@@ -36,15 +35,13 @@ export default class Landing extends Component {
       loading: true,
       collector: [],
       resourceTypes: {},
-      externals: {},
       patientId: "",
       activeTab: null,
       loadingMessage: "Resources are being loaded...",
       hasMmeErrors: false,
       mmeErrors: [],
-      tocInitialized: false,
       errorCollection: [],
-      externalDataFetchErrors: {},
+      tocInitialized: false,
       summaryMap: summaryMap,
     };
     // This binding is necessary to make `this` work in the callback
@@ -65,87 +62,80 @@ export default class Landing extends Component {
     // hide section(s) per config
     this.setSectionsVis();
     let result = {};
-    executeElm(this.state.collector, this.state.resourceTypes)
-      .then((response) => {
+    Promise.allSettled([
+      executeElm(this.state.collector, this.state.resourceTypes),
+      landingUtils.getExternalData(summaryMap, this.getPatientId()),
+    ])
+      .then((responses) => {
         writeToLog("application loaded", "info", {
           patientName: this.getPatientName(),
         });
         //set FHIR results
-        let fhirData = response;
+        let fhirData = responses[0].value;
+        let externalDataSet = responses[1].value;
+        console.log("external data ", externalDataSet);
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
-        //add data from other sources, e.g. education materials
-        landingUtils
-          .getExternalData(summaryMap, this.getPatientId())
-          .then((externalDataSet) => {
-            console.log("external data ", externalDataSet);
-            result["Summary"] = {
-              ...result["Summary"],
-              ...(externalDataSet ? externalDataSet["data"] : null),
-            };
-            const { sectionFlags, flaggedCount } =
-              landingUtils.getProcessedSummaryData(result.Summary, summaryMap);
-            this.setSummaryOverviewStatsData(result["Summary"]);
-            if (summaryMap[this.getOverviewSectionKey()]) {
-              this.setSummaryAlerts(result["Summary"], sectionFlags);
-            }
-            this.setSummaryGraphData(result["Summary"]);
-            const collectorErrors = this.getCollectorErrors();
-            collectorErrors.forEach((e) => this.writeError(e));
-            const { errors, hasMmeErrors, mmeErrors } = this.getSummaryErrors(
-              result.Summary
-            );
-            landingUtils.logMMEEntries(result.Summary, {
-              tags: ["mme-calc"],
-              patientName: this.getPatientName(),
-            });
-            // console.log(
-            //   "errors ",
-            //   errors,
-            //   " hasMmeError ",
-            //   hasMmeErrors,
-            //   " mmeErrors ",
-            //   mmeErrors
-            // );
-            const hasExternalDataError =
-              externalDataSet && externalDataSet["errors"];
-            this.setState(
-              {
-                result,
-                sectionFlags,
-                flaggedCount,
-                loading: false,
-                activeTab: 0,
-                patientId: this.getPatientId(),
-                hasMmeErrors: hasMmeErrors,
-                mmeErrors: mmeErrors,
-                errorCollection: [
-                  ...this.state.errorCollection,
-                  ...collectorErrors,
-                  ...errors,
-                  ...(hasExternalDataError
-                    ? Object.values(externalDataSet["errors"])
-                    : []),
-                ],
-                summaryMap: this.getSummaryMapIncludingErrors(
-                  summaryMap,
-                  hasExternalDataError ? externalDataSet["error"] : null
-                ),
-              },
-              () => {
-                this.initEvents();
-                this.clearProcessInterval();
-                this.savePDMPSummaryData();
-                this.handleSetActiveTab(0);
-              }
-            );
-            console.log("Query results ", result);
-          })
-          .catch((err) => {
-            console.log(err);
+        result["Summary"] = {
+          ...result["Summary"],
+          ...(externalDataSet ? externalDataSet["data"] : null),
+        };
+        const { sectionFlags, flaggedCount } =
+          landingUtils.getProcessedSummaryData(result.Summary, summaryMap);
+        this.setSummaryOverviewStatsData(result["Summary"]);
+        this.setSummaryAlerts(result["Summary"], sectionFlags);
+        this.setSummaryGraphData(result["Summary"]);
+        const collectorErrors = landingUtils.getCollectorErrors(
+          this.state.collector
+        );
+        collectorErrors.forEach((e) => this.logError(e));
+        const { errors, hasMmeErrors, mmeErrors } =
+          landingUtils.getSummaryErrors(result.Summary);
+        landingUtils.logMMEEntries(result.Summary, {
+          tags: ["mme-calc"],
+          patientName: this.getPatientName(),
+        });
+        // console.log(
+        //   "errors ",
+        //   errors,
+        //   " hasMmeError ",
+        //   hasMmeErrors,
+        //   " mmeErrors ",
+        //   mmeErrors
+        // );
+        const hasExternalDataError =
+          externalDataSet && externalDataSet["errors"];
+        this.setState(
+          {
+            result,
+            sectionFlags,
+            flaggedCount,
+            loading: false,
+            activeTab: 0,
+            patientId: this.getPatientId(),
+            hasMmeErrors: hasMmeErrors,
+            mmeErrors: mmeErrors,
+            errorCollection: [
+              ...this.state.errorCollection,
+              ...collectorErrors,
+              ...landingUtils.getResponseErrors(responses),
+              ...errors,
+              ...(hasExternalDataError
+                ? Object.values(externalDataSet["errors"])
+                : []),
+            ],
+            summaryMap: this.getSummaryMapIncludingErrors(
+              summaryMap,
+              hasExternalDataError ? externalDataSet["error"] : null
+            ),
+          },
+          () => {
+            this.initEvents();
             this.clearProcessInterval();
-            this.setState({ loading: false });
-            this.setError(err);
-          });
+            this.savePDMPSummaryData();
+            this.handleSetActiveTab(0);
+          }
+        );
+        console.log("Query results ", result);
       })
       .catch((err) => {
         console.error(err);
@@ -258,23 +248,30 @@ export default class Landing extends Component {
     });
   }
 
-  getPatientId() {
-    if (this.state.patientId) return this.state.patientId;
-    if (!this.state.collector) return "";
-    let patientBundle = this.state.collector.filter(
+  getPatientResource() {
+    if (!this.state.collector) return null;
+    const patientResource = this.state.collector.find(
       (item) =>
         item.data &&
         item.data.resourceType &&
         item.data.resourceType.toLowerCase() === "patient"
     );
-    if (patientBundle.length) {
-      return patientBundle[0].data.id;
-    }
+    if (patientResource) return patientResource.data;
+    return null;
+  }
+
+  getPatientId() {
+    if (this.state.patientId) return this.state.patientId;
+    if (!this.state.collector) return "";
+    const patientResource = this.getPatientResource();
+    if (patientResource) return patientResource.id;
+    return "";
   }
   getPatientName() {
     const summary = this.state.result ? this.state.result.Summary : null;
     const patientName = summary && summary.Patient ? summary.Patient.Name : "";
-    return patientName;
+    if (patientName) return patientName;
+    return getPatientNameFromSource(this.getPatientResource());
   }
   initProcessProgressDisplay() {
     this.clearProcessInterval();
@@ -292,56 +289,13 @@ export default class Landing extends Component {
   getOverviewSectionKey() {
     return "PatientRiskOverview";
   }
-  getCollectorErrors() {
-    let collectorErrors = this.state.collector.filter((item) => {
-      return item.error;
-    });
-    let errors = [];
-    collectorErrors.forEach((item) => {
-      let itemURL = item?.url;
-      try {
-        itemURL = new URL(itemURL).pathname;
-      } catch (e) {
-        console.log("Unable to convert url to URL object ", item.url);
-        itemURL = item?.url;
-      }
-      const sourceType = item?.type ?? itemURL;
-      const sourceTypeText = sourceType ? `[${sourceType}]` : "";
-      errors.push(`${sourceTypeText} ${item.error}`);
-    });
-    return errors;
-  }
-
-  getSummaryErrors(summary) {
-    if (!summary)
-      return {
-        errors: [],
-        hasMmeErrors: false,
-        mmeErrors: [],
-      };
-    //compile error(s) related to MME calculations
-    let mmeErrors = landingUtils.getMMEErrors(summary);
-
-    // the rest of the errors
-    let errors = [];
-    for (let section in summary) {
-      if (summary[section].error) {
-        errors.push(summary[section].error);
-      }
-    }
-    return {
-      errors: errors,
-      hasMmeErrors: !!(mmeErrors && mmeErrors.length),
-      mmeErrors: mmeErrors,
-    };
-  }
   setError(message) {
     if (!message) return;
     this.setState({
       errorCollection: [...this.state.errorCollection, message],
     });
   }
-  writeError(message) {
+  logError(message) {
     if (!message) return;
     writeToLog(message, "error", {
       patientName: this.getPatientName(),
@@ -354,21 +308,8 @@ export default class Landing extends Component {
     const summary = this.state.result ? this.state.result.Summary : null;
     if (!summary) return;
     const patientName = this.getPatientName();
-    const PDMP_DATAKEY = "PDMPMedications";
-    //pdmp data
-    const pdmpData = summary[PDMP_DATAKEY]
-      ? summary[PDMP_DATAKEY][PDMP_DATAKEY]
-      : null;
-    if (!pdmpData) return;
-    const pdmpContext = "CQL PMP MME Result";
     const fileName = patientName.replace(/\s/g, "_") + "_MME_Result";
-    saveData({
-      context: pdmpContext,
-      data: pdmpData,
-      filename: fileName,
-      timestamp: new Date(),
-    });
-    //can save other data if needed
+    landingUtils.savePDMPSummaryData(summary, fileName);
   }
 
   // hide and show section(s) depending on config
@@ -399,6 +340,7 @@ export default class Landing extends Component {
   }
 
   setSummaryAlerts(summary, sectionFlags) {
+    if (!summaryMap[this.getOverviewSectionKey()]) return;
     summary[this.getOverviewSectionKey() + "_alerts"] =
       landingUtils.getProcessedAlerts(sectionFlags, {
         tags: ["alert"],
@@ -485,8 +427,8 @@ export default class Landing extends Component {
     const summaryPatient = summary.Patient ?? {};
     return (
       <Header
-        patientName={getPatientNameFromSource(patientResource)}
-        patientDOB={datishFormat(this.state.result, patientResource.birthDate)}
+        patientName={this.getPatientName()}
+        patientDOB={datishFormat(this.state.result, patientResource?.birthDate)}
         patientGender={summaryPatient.Gender}
         meetsInclusionCriteria={summaryPatient.MeetsInclusionCriteria}
         patientSearchURL={PATIENT_SEARCH_URL}
@@ -596,12 +538,14 @@ export default class Landing extends Component {
     }
 
     const PATIENT_SEARCH_ROOT_URL = getEnv("REACT_APP_DASHBOARD_URL");
-    const PATIENT_SEARCH_URL = PATIENT_SEARCH_ROOT_URL + "/clear_session";
+    const PATIENT_SEARCH_URL = PATIENT_SEARCH_ROOT_URL
+      ? PATIENT_SEARCH_ROOT_URL + "/clear_session"
+      : "/";
 
     if (this.state.result == null) {
       return this.renderError(PATIENT_SEARCH_ROOT_URL);
     }
-    const patientResource = this.state.collector[0]["data"];
+    const patientResource = this.getPatientResource();
     const summary = this.state.result.Summary;
     const { sectionFlags } = this.state;
 
@@ -617,7 +561,6 @@ export default class Landing extends Component {
           {this.renderTabs()}
           {this.renderTabPanels(summary, sectionFlags)}
         </div>
-
         <ReactTooltip className="summary-tooltip" id="summaryTooltip" />
       </div>
     );

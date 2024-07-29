@@ -22,7 +22,7 @@ export default class Overview extends Component {
       : "";
     if (this.hasNoSummaryData(summary)) {
       return (
-        <div class={`overview ${noEntriesStyleClass}`}>No data to show</div>
+        <div className={`overview ${noEntriesStyleClass}`}>No data to show</div>
       );
     }
     return (
