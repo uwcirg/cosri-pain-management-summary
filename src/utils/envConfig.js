@@ -1,7 +1,7 @@
 export function fetchEnvData() {
   if (window["appConfig"] && Object.keys(window["appConfig"]).length) {
     console.log("Window config variables added. ");
-    return;
+    return window["appConfig"];
   }
   let xhr = new XMLHttpRequest();
   const setConfig = function () {

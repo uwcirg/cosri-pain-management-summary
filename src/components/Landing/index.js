@@ -44,6 +44,7 @@ export default class Landing extends Component {
       tocInitialized: false,
       summaryMap: summaryMap,
     };
+
     // This binding is necessary to make `this` work in the callback
     this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
     this.handleHeaderPos = this.handleHeaderPos.bind(this);
@@ -52,6 +53,7 @@ export default class Landing extends Component {
   }
 
   componentDidMount() {
+    if (!this.state.loading) return;
     // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
     fetchEnvData();
     // write out environment variables:
@@ -401,7 +403,7 @@ export default class Landing extends Component {
       },
       () => {
         this.initTocBot();
-        window.scrollTo(0, 5);
+        window.scrollTo(0, 1);
       }
     );
   }
