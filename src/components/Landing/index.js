@@ -53,7 +53,7 @@ export default class Landing extends Component {
   }
 
   componentDidMount() {
-    if (!this.state.loading) return;
+    if (this.state.result) return;
     // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
     fetchEnvData();
     // write out environment variables:
@@ -421,13 +421,13 @@ export default class Landing extends Component {
   }
 
   renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
-    const summaryPatient = summary.Patient ?? {};
+    const summaryPatient = summary.Patient;
     return (
       <Header
         patientName={this.getPatientName()}
         patientDOB={datishFormat(this.state.result, patientResource?.birthDate)}
-        patientGender={summaryPatient.Gender}
-        meetsInclusionCriteria={summaryPatient.MeetsInclusionCriteria}
+        patientGender={summaryPatient?.Gender}
+        meetsInclusionCriteria={summaryPatient?.MeetsInclusionCriteria}
         patientSearchURL={PATIENT_SEARCH_URL}
         siteID={getEnv("REACT_APP_SITE_ID")}
       />
