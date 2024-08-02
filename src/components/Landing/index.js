@@ -53,7 +53,7 @@ export default class Landing extends Component {
   }
 
   componentDidMount() {
-    if (this.state.result) return;
+    if (!this.state.loading) return;
     // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
     fetchEnvData();
     // write out environment variables:
@@ -63,19 +63,26 @@ export default class Landing extends Component {
     // display resources loading statuses
     this.initProcessProgressDisplay();
 
-    let result = {};
     Promise.allSettled([
       executeElm(this.state.collector, this.state.resourceTypes),
       landingUtils.getExternalData(summaryMap, this.getPatientId()),
     ])
       .then((responses) => {
+        if (responses[0].status === "rejected") {
+          this.clearProcessInterval();
+          this.setState({
+            loading: false,
+            errorCollection: [responses[0].reason],
+          });
+          return;
+        }
         writeToLog("application loaded", "info", {
           patientName: this.getPatientName(),
         });
         //set FHIR results
+        let result = {};
         let fhirData = responses[0].value;
         let externalDataSet = responses[1].value;
-        console.log("external data ", externalDataSet);
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         result["Summary"] = {
           ...result["Summary"],
@@ -89,7 +96,6 @@ export default class Landing extends Component {
         const collectorErrors = landingUtils.getCollectorErrors(
           this.state.collector
         );
-        collectorErrors.forEach((e) => this.logError(e));
         const { errors, hasMmeErrors, mmeErrors } =
           landingUtils.getSummaryErrors(result.Summary);
         landingUtils.logMMEEntries(result.Summary, {
@@ -106,6 +112,11 @@ export default class Landing extends Component {
         // );
         const hasExternalDataError =
           externalDataSet && externalDataSet["errors"];
+        const externalDataErrors = hasExternalDataError
+          ? Object.values(externalDataSet["errors"])
+          : [];
+        // log errors
+        [...collectorErrors, externalDataErrors].forEach(e => this.logError(e));
         // hide and show section(s) depending on config
         const currentSummaryMap = {
           ...this.state.summaryMap,
@@ -125,13 +136,11 @@ export default class Landing extends Component {
             errorCollection: [
               ...this.state.errorCollection,
               ...collectorErrors,
+              ...externalDataErrors,
               ...landingUtils.getResponseErrors(responses),
               ...errors,
-              ...(hasExternalDataError
-                ? Object.values(externalDataSet["errors"])
-                : []),
             ],
-            summaryMap: this.getSummaryMapIncludingErrors(
+            summaryMap: landingUtils.getUpdatedSummaryMapWithErrors(
               currentSummaryMap,
               hasExternalDataError ? externalDataSet["error"] : null
             ),
@@ -319,21 +328,6 @@ export default class Landing extends Component {
     const patientName = this.getPatientName();
     const fileName = patientName.replace(/\s/g, "_") + "_MME_Result";
     landingUtils.savePDMPSummaryData(summary, fileName);
-  }
-
-  getSummaryMapIncludingErrors(summaryMap, oErrors) {
-    if (!oErrors) return summaryMap;
-    let updatedMap = Object.create(summaryMap);
-    for (let key in updatedMap) {
-      updatedMap[key] = {
-        ...updatedMap[key],
-        errorMessage: oErrors[key],
-      };
-    }
-    return {
-      ...summaryMap,
-      ...updatedMap,
-    };
   }
 
   setSummaryAlerts(summary, sectionFlags) {
@@ -539,7 +533,7 @@ export default class Landing extends Component {
       ? PATIENT_SEARCH_ROOT_URL + "/clear_session"
       : "/";
 
-    if (this.state.result == null) {
+    if (!this.state || this.state.result == null) {
       return this.renderError(PATIENT_SEARCH_ROOT_URL);
     }
     const patientResource = this.getPatientResource();

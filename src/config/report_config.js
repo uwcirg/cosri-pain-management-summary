@@ -30,7 +30,7 @@ const reportConfig = [
     dataKey: "scoringOverview",
     questionnaires: [
       {
-        id: "CIRG-PainTracker-Location-Body-Diagram",
+        id: "CIRG-PAINTRACKER-LOCATION-BODY-DIAGRAM",
         key: BODY_DIAGRAM_DATA_KEY,
       },
     ],

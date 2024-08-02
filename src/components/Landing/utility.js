@@ -855,6 +855,21 @@ export function getSummaryMapWithUpdatedSectionsVis(summaryMap) {
   return newMap;
 }
 
+export function getUpdatedSummaryMapWithErrors(summaryMap, sectionErrors) {
+  if (!sectionErrors) return summaryMap;
+  let updatedMap = Object.create(summaryMap);
+  for (let key in updatedMap) {
+    updatedMap[key] = {
+      ...updatedMap[key],
+      errorMessage: sectionErrors[key],
+    };
+  }
+  return {
+    ...summaryMap,
+    ...updatedMap,
+  };
+}
+
 export function getSummaryErrors(summary) {
   if (!summary)
     return {

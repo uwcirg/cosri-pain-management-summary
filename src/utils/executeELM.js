@@ -118,6 +118,7 @@ async function executeELM(collector, oResourceTypes) {
                 String(item.data.resourceType).toLowerCase() === "bundle"
               )
                 item.error =
+                  (item.error ? item.error + " " : "") +
                   "Unable to process data. CQL execution error. " +
                   (typeof e?.message === "string"
                     ? e?.message
@@ -234,7 +235,7 @@ function getLibraryForInstruments() {
       )
         .then((module) => module.default)
         .catch((e) => {
-          console.log("Error loading ELM  lib for " + item.key);
+          console.log("Issue occurred loading ELM  lib for " + item.key, e);
           elmJson = null;
         });
       if (!elmJson) {
