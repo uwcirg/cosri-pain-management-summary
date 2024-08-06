@@ -14,15 +14,15 @@ const iconProps = {
   className: "sectionIcon",
 };
 export const BODY_DIAGRAM_DATA_KEY = "paintracker-location-body-diagram";
-const GE_DATA_KEY = "paintracker-ge";
-const PEG_DATA_KEY = "PEG";
-const PHQ9_DATA_KEY = "PHQ9";
-const GAD7_DATA_KEY = "GAD7";
-const PHQ4_DATA_KEY = "PHQ-4";
-const PCPTSD5_DATA_KEY = "PC-PTSD-5";
-const PROMISGLOBAL_DATA_KEY = "PROMIS-GLOBAL";
-const STOP_DATA_KEY = "PAINTRACKER-STOP";
-const TRT_DATA_KEY = "PAINTRACKER-TRT";
+export const GE_DATA_KEY = "paintracker-ge";
+export const PEG_DATA_KEY = "PEG";
+export const PHQ9_DATA_KEY = "PHQ9";
+export const GAD7_DATA_KEY = "GAD7";
+export const PHQ4_DATA_KEY = "PHQ-4";
+export const PCPTSD5_DATA_KEY = "PC-PTSD-5";
+export const PROMISGLOBAL_DATA_KEY = "PROMIS-GLOBAL";
+export const STOP_DATA_KEY = "PAINTRACKER-STOP";
+export const TRT_DATA_KEY = "PAINTRACKER-TRT";
 
 const reportConfig = [
   {

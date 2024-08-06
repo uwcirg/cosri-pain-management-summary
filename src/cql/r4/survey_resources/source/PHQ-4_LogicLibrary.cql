@@ -55,6 +55,18 @@ define ResponsesSummary:
     Question2Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question2LinkId, extensionAnswerIndex)),
     Question3Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question3LinkId, extensionAnswerIndex)),
     Question4Score: First(LogicHelper.GetNumericValueByResponseItemCode(Questionnaire, I.item, question4LinkId, extensionAnswerIndex)),
+    anxietyScore: 
+      case
+        when Question1Score is null then null
+        when Question2Score is null then null
+        else Coalesce(Question1Score, 0) * 1 + Coalesce(Question2Score, 0) * 1
+      end,
+    depressionScore: 
+      case
+        when Question3Score is null then null
+        when Question4Score is null then null
+        else Coalesce(Question3Score, 0) * 1 + Coalesce(Question4Score, 0) * 1
+      end,
     scoreQuestionResponse: First(LogicHelper.GetNumericValueByResponseItem(I.item, ScoringQuestionId)),
     itemTotalScore:
           case
@@ -71,8 +83,6 @@ define ResponsesSummary:
           end,
     
     score: itemTotalScore,
-    anxietyScore: Coalesce(Question1Score, 0) * 1 + Coalesce(Question2Score, 0) * 1,
-    depressionScore: Coalesce(Question3Score, 0) * 1 + Coalesce(Question4Score, 0) * 1,
     scoreSeverity:
         case
           when score is null then null
@@ -94,18 +104,8 @@ define ResponsesSummary:
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
       scoreSeverity: scoreSeverity,
-      anxietyScore: 
-        case
-          when Question1Score is null then null
-          when Question2Score is null then null
-          else Coalesce(Question1Score, 0) * 1 + Coalesce(Question2Score, 0) * 1
-        end,
-      depressionScore: 
-        case
-          when Question3Score is null then null
-          when Question4Score is null then null
-          else Coalesce(Question3Score, 0) * 1 + Coalesce(Question4Score, 0) * 1
-        end,
+      anxietyScore: anxietyScore,
+      depressionScore: depressionScore,
       scoreMeaning: case
         when anxietyScore >= 3 and depressionScore >=3 then 'anxiety and depression'
         when anxietyScore >= 3 then 'anxiety'

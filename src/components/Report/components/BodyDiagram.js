@@ -503,7 +503,7 @@ export default class BodyDiagram extends Component {
       borderWidth: "1px",
       borderStyle: "solid",
       padding: "8px",
-      width: "20px",
+      width: "24px",
       height: "20px",
       borderRadius: "100vmax",
       cursor: "pointer",
