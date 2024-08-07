@@ -20,30 +20,6 @@ export default class ScoringSummary extends Component {
 
     //refs
     this.tableRef = React.createRef();
-
-    const BORDER_COLOR = "#f3f6f9";
-    const HEADER_BORDER_COLOR = "#217684";
-
-    //constants
-    this.captionRowStyle = {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      backgroundColor: "#FFF",
-    };
-    this.tableStyle = {
-      border: `1px solid ${BORDER_COLOR}`,
-    };
-    this.cellStyle = {
-      borderRight: `1px solid ${BORDER_COLOR}`,
-      borderLeft: `1px solid ${BORDER_COLOR}`,
-      borderBottom: `1px solid ${BORDER_COLOR}`,
-    };
-    this.headerCellStyle = {
-      ...this.cellStyle,
-      borderBottom: `2px solid ${HEADER_BORDER_COLOR}`,
-    };
-    this.summaryHTML = "";
   }
   sortData(data) {
     if (isEmptyArray(data)) return null;
@@ -175,14 +151,12 @@ export default class ScoringSummary extends Component {
     return (
       <thead>
         <tr>
-          <th className="empty" style={this.headerCellStyle}></th>
-          <th style={this.headerCellStyle}>Score</th>
-          <th style={this.headerCellStyle}>Date</th>
-          <th style={this.headerCellStyle}># Answered</th>
-          <th className="text-center" style={this.headerCellStyle}>
-            Meaning
-          </th>
-          <th style={this.headerCellStyle}>Compare to Last</th>
+          <th className="empty accent"></th>
+          <th className="accent">Score</th>
+          <th className="accent">Date</th>
+          <th className="accent"># Answered</th>
+          <th className="text-center accent">Meaning</th>
+          <th className="accent">Compare to Last</th>
         </tr>
       </thead>
     );
@@ -210,7 +184,7 @@ export default class ScoringSummary extends Component {
       ? questionnaireShortName
       : questionnaireName;
     return (
-      <td className="text-left" style={this.cellStyle}>
+      <td className="text-left">
         {showAnchorLinks && (
           <span>
             <b>
@@ -232,7 +206,7 @@ export default class ScoringSummary extends Component {
   renderDateCell(data) {
     if (!data || !data.ResponsesSummary) return <td>--</td>;
     return (
-      <td className="nowrap" style={this.cellStyle}>
+      <td className="nowrap">
         {this.getCurrentDisplayDate(data.ResponsesSummary)}
       </td>
     );
@@ -240,7 +214,7 @@ export default class ScoringSummary extends Component {
   renderScoreCell(data) {
     if (!data || !data.ResponsesSummary) return <td>--</td>;
     return (
-      <td className="nowrap" style={this.cellStyle}>
+      <td className="nowrap">
         <div className="flex">
           <Score
             score={this.getCurrentDisplayScore(data)}
@@ -253,22 +227,18 @@ export default class ScoringSummary extends Component {
     );
   }
   renderNumAnsweredCell(data) {
-    return (
-      <td valign="middle" style={this.cellStyle}>
-        {this.getNumAnswered(data)}
-      </td>
-    );
+    return <td valign="middle">{this.getNumAnswered(data)}</td>;
   }
   renderScoreMeaningCell(data) {
     return (
-      <td className="text-capitalize" valign="middle" style={this.cellStyle}>
+      <td className="text-capitalize" valign="middle">
         {this.getScoreMeaning(data)}
       </td>
     );
   }
   renderCompareToLastCell(data) {
     return (
-      <td valign="middle" style={this.cellStyle}>
+      <td valign="middle">
         <div className="icon-container">{this.getDisplayIcon(data)}</div>
       </td>
     );
@@ -296,9 +266,15 @@ export default class ScoringSummary extends Component {
     );
   }
   renderCaption(shouldShowCopyButton) {
+    const captionRowStyle = {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: "#FFF",
+    };
     return (
       <caption style={{ margin: "0 0 4px" }}>
-        <div style={this.captionRowStyle}>
+        <div style={captionRowStyle}>
           {this.renderTitle()}
           <div style={{ textAlign: "right" }}>
             {shouldShowCopyButton && this.renderCopyButton()}
@@ -332,7 +308,7 @@ export default class ScoringSummary extends Component {
         <table
           className="table score-summary-table"
           ref={this.tableRef}
-          style={this.tableStyle}
+          //style={this.tableStyle}
         >
           {this.renderCaption(!noSummaryData && !readOnly)}
           {!noSummaryData && this.renderTableHeaders()}

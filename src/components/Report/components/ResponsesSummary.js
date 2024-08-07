@@ -22,28 +22,6 @@ export default class ResponsesSummary extends Component {
     this.summaryTableRef = React.createRef();
     this.tableWrapperRef = React.createRef();
     this.printOnlyContainerRef = React.createRef();
-
-    //consts
-    const BORDER_COLOR = "#f3f6f9";
-    const HEADER_BORDER_COLOR = "#217684";
-    this.tableStyle = {
-      borderCollapse: "separate",
-      borderSpacing: 0,
-      //  border: `1px solid ${BORDER_COLOR}`,
-      padding: "4px",
-    };
-    this.cellStyle = {
-      borderRight: `1px solid ${BORDER_COLOR}`,
-      borderLeft: `1px solid ${BORDER_COLOR}`,
-      borderBottom: `1px solid ${BORDER_COLOR}`,
-      padding: "4px",
-    };
-    this.headerCellStyle = {
-      borderTop: `1px solid ${BORDER_COLOR}`,
-      borderRight: `1px solid ${BORDER_COLOR}`,
-      borderLeft: `1px solid ${BORDER_COLOR}`,
-      borderBottom: `2px solid ${HEADER_BORDER_COLOR}`,
-    };
   }
   componentDidMount() {
     // resize table to be within viewport
@@ -129,22 +107,14 @@ export default class ResponsesSummary extends Component {
     if (isEmptyArray(summaryItems)) {
       return <div>No recorded responses</div>;
     }
-    const headerCellStyle = {
-      border: "1px solid #217684",
-      padding: "4px",
-    };
-    const cellStyle = {
-      border: "1px solid #d8d8d8",
-      padding: "4px",
-    };
     return (
       <table
-        className={`response-table ${this.state.open ? "active" : ""}`}
+        className={`table response-table ${this.state.open ? "active" : ""}`}
         style={this.tableStyle}
       >
         <thead>
           <tr>
-            <th className="fixed-cell" style={headerCellStyle}>
+            <th className="fixed-cell">
               {`${qid ? qid.toUpperCase() : ""}`} Questions
             </th>
             {summaryItems
@@ -153,7 +123,6 @@ export default class ResponsesSummary extends Component {
                 return (
                   <th
                     key={`response_header_${item.id}`}
-                    style={headerCellStyle}
                     className={index > 0 ? "exclude-from-copy" : ""}
                   >
                     {this.getDisplayDate(item)}
@@ -165,14 +134,14 @@ export default class ResponsesSummary extends Component {
         <tbody>
           {summaryItems[0].responses.map((item, rindex) => (
             <tr key={`response_row_${item.linkId}_${rindex}`}>
-              <td className="fixed-cell" style={cellStyle}>
+              <td className="fixed-cell">
                 {item.question.includes("score") ? (
                   <b>{item.question}</b>
                 ) : (
                   item.question
                 )}
               </td>
-              <td style={cellStyle}>
+              <td>
                 {this.getMatchedAnswerTextByLinkId(
                   summaryItems[0],
                   item.linkId,
@@ -186,7 +155,6 @@ export default class ResponsesSummary extends Component {
                     return (
                       <td
                         key={`${item.id}_response_${index}`}
-                        style={cellStyle}
                         className="exclude-from-copy"
                       >
                         {this.getMatchedAnswerByItem(o, item)}
@@ -208,7 +176,6 @@ export default class ResponsesSummary extends Component {
               <th
                 key={`header_${column.key}_${index}`}
                 style={{
-                  ...this.headerCellStyle,
                   ...(index === columns.length - 1 ? { borderRight: 0 } : {}),
                 }}
                 colSpan={column.number ?? 1}
@@ -217,7 +184,7 @@ export default class ResponsesSummary extends Component {
               </th>
             ))}
             {/* view all responses column */}
-            <th style={this.headerCellStyle}></th>
+            <th className="accent"></th>
           </tr>
         </thead>
       );
@@ -225,9 +192,11 @@ export default class ResponsesSummary extends Component {
     return (
       <thead>
         <tr>
-          <th style={this.headerCellStyle}>Score</th>
-          <th style={this.headerCellStyle}>Responses Completed</th>
-          <th style={{...this.headerCellStyle, ...{borderRight: 0}}}>Responses</th>
+          <th className="accent">Score</th>
+          <th className="accent">Responses Completed</th>
+          <th className="accent" style={{ borderRight: 0 }}>
+            Responses
+          </th>
           <th></th>
         </tr>
       </thead>
@@ -299,19 +268,13 @@ export default class ResponsesSummary extends Component {
     );
   }
   renderScoreTableCell(summary, key, props) {
-    if (!this.hasResponses(summary))
-      return (
-        <td className="text-center" style={this.cellStyle}>
-          --
-        </td>
-      );
+    if (!this.hasResponses(summary)) return <td className="text-center">--</td>;
     const score = summary.ResponsesSummary[0].score;
     const scoreParams = summary.ResponsesSummary[0];
     return (
       <td
         className="text-center"
         key={key}
-        style={this.cellStyle}
         colSpan={props && props.number ? props.number : 1}
       >
         <Score
@@ -329,7 +292,6 @@ export default class ResponsesSummary extends Component {
         <td
           className="text-center"
           key={key}
-          style={this.cellStyle}
           colSpan={props && props.number ? props.number : 1}
         >
           --
@@ -339,7 +301,6 @@ export default class ResponsesSummary extends Component {
       <td
         className="text-center"
         key={key}
-        style={this.cellStyle}
         colSpan={props && props.number ? props.number : 1}
       >
         {this.getNumResponses(summary) || "--"}
@@ -349,10 +310,7 @@ export default class ResponsesSummary extends Component {
   renderResponsesLinkTableCells(lastResponsesDate, key, props) {
     return (
       <React.Fragment key={key}>
-        <td
-          style={this.cellStyle}
-          colSpan={props && props.number ? props.number : 1}
-        >
+        <td colSpan={props && props.number ? props.number : 1}>
           <div
             role="presentation"
             className={`link-container ${this.state.open ? "active" : ""}`}
@@ -367,7 +325,7 @@ export default class ResponsesSummary extends Component {
             </div>
           </div>
         </td>
-        <td key={`${key}_viewAll`} style={this.cellStyle}>
+        <td key={`${key}_viewAll`}>
           <div className="link-container exclude-from-copy">
             {this.renderViewButton()}
           </div>
@@ -496,7 +454,6 @@ export default class ResponsesSummary extends Component {
         <div ref={this.summaryContainerRef}>
           <table
             className="table responses-summary-table"
-            style={this.tableStyle}
             ref={this.summaryTableRef}
           >
             {this.renderTableHeader(columns)}

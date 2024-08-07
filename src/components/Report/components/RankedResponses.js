@@ -17,38 +17,6 @@ export default class RankedResponses extends Component {
     this.handleClickPrevButton = this.handleClickPrevButton.bind(this);
     this.handleSetFirst = this.handleSetFirst.bind(this);
     this.handleSetLast = this.handleSetLast.bind(this);
-
-    //consts
-    const BORDER_COLOR = "#777";
-    const HEADER_BORDER_COLOR = "#217684";
-    this.tableStyle = {
-      borderCollapse: "separate",
-      borderSpacing: 0,
-      border: 0,
-      tableLayout: "fixed",
-      width: "auto",
-      margin: 0,
-    };
-    this.cellStyle = {
-      borderRight: `1px solid ${BORDER_COLOR}`,
-      borderLeft: `1px solid ${BORDER_COLOR}`,
-      borderBottom: `1px solid ${BORDER_COLOR}`,
-      padding: "8px 12px",
-      backgroundColor: "#FFF",
-      whiteSpace: "nowrap",
-    };
-    this.titleCellStyle = {
-      ...this.cellStyle,
-      fontWeight: 600,
-    };
-    this.headerCellStyle = {
-      borderTop: `1px solid ${BORDER_COLOR}`,
-      borderRight: `1px solid ${BORDER_COLOR}`,
-      borderLeft: `1px solid ${BORDER_COLOR}`,
-      borderBottom: `2px solid ${HEADER_BORDER_COLOR}`,
-      padding: "8px 16px",
-      backgroundColor: "#FFF",
-    };
   }
   componentDidMount() {
     this.initData(this.props.summary);
@@ -296,25 +264,18 @@ export default class RankedResponses extends Component {
     return (
       <thead>
         <tr>
-          <th style={this.headerCellStyle} className="fixed-cell">
-            Rank
-          </th>
+          <th className="fixed-cell accent dark-border fat">Rank</th>
           {this.state.dates.map((date, index) => {
             return (
               <th
                 style={{
-                  ...this.headerCellStyle,
-                  ...{
-                    backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
-                  },
-                  ...{
-                    display:
-                      index <= this.state.selectedIndex ? "table-cell" : "none",
-                  },
+                  backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
+                  display:
+                    index <= this.state.selectedIndex ? "table-cell" : "none",
                 }}
                 className={`${
                   index > 0 ? "exclude-from-copy print-hidden active" : ""
-                }`}
+                }  accent dark-border fat`}
                 key={`ranked_responses_header_${index}`}
               >
                 Goals{" "}
@@ -331,31 +292,20 @@ export default class RankedResponses extends Component {
   renderTableBody() {
     return (
       <tbody>
-        <tr>
-          <td style={this.titleCellStyle} className="fixed-cell">
-            1st
-          </td>
-          {this.state.dates.map((date, index) => {
-            return this.renderRankedCell(index, "1st");
-          })}
-        </tr>
-        <tr>
-          <td style={this.titleCellStyle} className="fixed-cell">
-            2nd
-          </td>
-          {this.state.dates.map((date, index) => {
-            return this.renderRankedCell(index, "2nd");
-          })}
-        </tr>
-        <tr>
-          <td style={this.titleCellStyle} className="fixed-cell">
-            3rd
-          </td>
-          {this.state.dates.map((date, index) => {
-            return this.renderRankedCell(index, "3rd");
-          })}
-        </tr>
+        {this.renderTableRow("1st")}
+        {this.renderTableRow("2nd")}
+        {this.renderTableRow("3rd")}
       </tbody>
+    );
+  }
+  renderTableRow(rank) {
+    return (
+      <tr>
+        <td className="fixed-cell text-bold dark-border text-center">{rank}</td>
+        {this.state.dates.map((date, index) => {
+          return this.renderRankedCell(index, rank);
+        })}
+      </tr>
     );
   }
   renderRankedCell(index, rank) {
@@ -363,21 +313,27 @@ export default class RankedResponses extends Component {
       <td
         key={`${index}_${rank}`}
         style={{
-          ...this.cellStyle,
-          ...{
-            backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
-          },
-          ...{
-            display: index <= this.state.selectedIndex ? "table-cell" : "none",
-          },
+          backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
+          display: index <= this.state.selectedIndex ? "table-cell" : "none",
         }}
-        className={`${index > 0 ? "exclude-from-copy print-hidden" : ""}`}
+        className={`${
+          index > 0 ? "exclude-from-copy print-hidden" : ""
+        } dark-border fat nowrap`}
       >
         {this.getRankedDataByIndex(index, rank)}
       </td>
     );
   }
   render() {
+    //consts
+    const tableStyle = {
+      borderCollapse: "separate",
+      borderSpacing: 0,
+      border: 0,
+      tableLayout: "fixed",
+      width: "auto",
+      margin: 0,
+    };
     const containerStyle = {
       padding: "16px 24px",
       position: "relative",
@@ -405,7 +361,7 @@ export default class RankedResponses extends Component {
           style={navContainerStyle}
           className="responses-table-outer-wrapper slide-table-container"
         >
-          <table className="table" style={this.tableStyle}>
+          <table className="table" style={tableStyle}>
             {this.renderTableHeader()}
             {this.renderTableBody()}
           </table>
