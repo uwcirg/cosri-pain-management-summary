@@ -43,14 +43,14 @@ export default class ResponsesSummary extends Component {
       answerValue == null || answerValue === "" ? "--" : answerValue;
     if (!summary || isEmptyArray(summary.questionnaireItems))
       return reportedAnswerValue;
-    const matchedItem = summary.questionnaireItems.filter((item) => {
+    const matchedItem = summary.questionnaireItems.find((item) => {
       return (
         String(item.linkId.value).includes(linkId) ||
         String(linkId).includes(item.linkId.value)
       );
     });
-    if (isEmptyArray(matchedItem)) return reportedAnswerValue;
-    const answerOption = matchedItem[0].answerOption;
+    if (!matchedItem) return reportedAnswerValue;
+    const answerOption = matchedItem.answerOption;
     if (!isEmptyArray(answerOption)) {
       const matchedOption = answerOption
         .filter((option) => {
@@ -67,7 +67,7 @@ export default class ResponsesSummary extends Component {
             ? item.value.display.value
             : answerValue
         );
-      if (isEmptyArray(matchedOption) && matchedOption[0])
+      if (!isEmptyArray(matchedOption))
         return matchedOption[0];
       else return reportedAnswerValue;
     } else return reportedAnswerValue;
@@ -110,11 +110,10 @@ export default class ResponsesSummary extends Component {
     return (
       <table
         className={`table response-table ${this.state.open ? "active" : ""}`}
-        style={this.tableStyle}
       >
         <thead>
           <tr>
-            <th className="fixed-cell">
+            <th className="fixed-cell text-center">
               {`${qid ? qid.toUpperCase() : ""}`} Questions
             </th>
             {summaryItems
@@ -123,7 +122,7 @@ export default class ResponsesSummary extends Component {
                 return (
                   <th
                     key={`response_header_${item.id}`}
-                    className={index > 0 ? "exclude-from-copy" : ""}
+                    className={index > 0 ? "exclude-from-copy text-center" : "text-center"}
                   >
                     {this.getDisplayDate(item)}
                   </th>

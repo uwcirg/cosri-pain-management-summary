@@ -196,6 +196,12 @@
   .ReactTable .rt-thead .rt-th.-cursor-pointer span {
     background-image: none !important;
   }
+  .table {
+    th.fixed-cell,
+    td.fixed-cell {
+      position: relative;
+    }
+  }
   .header__search,
   .header__summary-dashboard,
   .data-provenance button,
