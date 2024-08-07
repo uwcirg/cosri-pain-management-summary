@@ -168,7 +168,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
     td {
       padding-top: 8px;
-      vertical-align: bottom;
+      vertical-align: top;
     }
   }
   .responses-table-outer-wrapper {
@@ -298,9 +298,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
           border-right: 1px solid $color-blue;
         }
       }
-      &:not(:first-of-type) {
-        white-space: nowrap;
-      }
+      // &:not(:first-of-type) {
+      //   white-space: nowrap;
+      // }
     }
     tbody tr {
       background-color: #fff;
