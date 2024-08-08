@@ -18,18 +18,21 @@ const xFieldName = defaultFields.x;
 const yFieldName = defaultFields.y;
 export default class MMEGraph extends Component {
   getDefaultDataValueSet(
-    value,
-    minDate,
-    maxDate,
-    total,
-    xFieldName,
-    yFieldName
+    paramValue,
+    paramMinDate,
+    paramMaxDate,
+    paramTotal,
+    paramXFieldName,
+    paramYFieldName
   ) {
     let data = [];
-    value = value || 0;
-    total = total || 8;
-    xFieldName = xFieldName || defaultFields.x;
-    yFieldName = yFieldName || defaultFields.y;
+    const value = paramValue || 0;
+    const total = paramTotal || 8;
+    const xFieldName = paramXFieldName || defaultFields.x;
+    const yFieldName = paramYFieldName || defaultFields.y;
+
+    let maxDate = paramMaxDate,
+      minDate = paramMinDate;
 
     if (!maxDate) {
       maxDate = new Date();
@@ -47,7 +50,7 @@ export default class MMEGraph extends Component {
       item[xFieldName] = new Date(addTime);
       item[yFieldName] = value;
       data.push(item);
-      index++;
+      index = index + 1;
     }
     return data;
   }
@@ -239,8 +242,18 @@ export default class MMEGraph extends Component {
     const diffTime = Math.abs(maxDate - minDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
-    let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
+    let WAData = this.getDefaultDataValueSet(
+      WA_MAX_VALUE,
+      baseLineDate,
+      maxDate,
+      ...lineParamsSet
+    );
+    let CDCSecondaryData = this.getDefaultDataValueSet(
+      CDC_SECONDARY_MAX_VALUE,
+      baseLineDate,
+      maxDate,
+      ...lineParamsSet
+    );
     //let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
 
     const margins = {
