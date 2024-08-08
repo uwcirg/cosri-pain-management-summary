@@ -621,3 +621,8 @@ export function isElementOverflown(element, dimension) {
   if (dimension === "height") return isHeightOverflown;
   return isWidthOverflown || isHeightOverflown;
 }
+
+export function isReportEnabled() {
+  const config_tab = getEnv("REACT_APP_TABS");
+  return config_tab && String(config_tab).includes("report");
+}

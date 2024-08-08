@@ -9,7 +9,7 @@ import ReactModal from "react-modal";
 import defaultSummaryMap from "../config/summary_config.json";
 import * as formatit from "../helpers/formatit";
 import * as sortit from "../helpers/sortit";
-import { getErrorMessageString } from "../helpers/utility";
+import { getErrorMessageString, isReportEnabled } from "../helpers/utility";
 
 import ChartIcon from "../icons/ChartIcon";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
@@ -33,8 +33,6 @@ import SideNav from "./SideNav";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
 import Version from "../elements/Version";
-
-import { getEnv } from "../utils/envConfig";
 import AgreementIcon from "../icons/ListIcon";
 import { getScoringData } from "./Report/utility";
 
@@ -56,11 +54,6 @@ export default class Summary extends Component {
 
   getSummaryMap() {
     return this.props.summaryMap ?? defaultSummaryMap;
-  }
-
-  isReportEnabled() {
-    const config_tab = getEnv("REACT_APP_TABS");
-    return config_tab && String(config_tab).includes("report");
   }
 
   handleOpenModal = (modalSubSection, event) => {
@@ -200,7 +193,7 @@ export default class Summary extends Component {
         key={`${sectionId}__anchor`}
         style={{
           position: "relative",
-          top: this.isReportEnabled() ? "-148px" : "-100px",
+          top: isReportEnabled() ? "-148px" : "-100px",
           height: "2px",
         }}
       ></div>
@@ -549,7 +542,7 @@ export default class Summary extends Component {
   }
 
   renderSurveySummaryPanel(panel) {
-    if (!this.isReportEnabled()) return null;
+    if (!isReportEnabled()) return null;
     if (!panel || !panel.data) return null;
     let surveyData = this.props.summary[panel.data.dataSectionRefKey] || null;
     if (!surveyData) return null;

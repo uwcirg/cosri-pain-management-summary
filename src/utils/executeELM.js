@@ -18,6 +18,7 @@ import {
   getReportInstrumentList,
   getReportInstrumentIdByKey,
   isEmptyArray,
+  isReportEnabled
 } from "../helpers/utility";
 
 const noCacheHeader = {
@@ -30,7 +31,7 @@ async function executeELM(collector, oResourceTypes) {
   // fetchEnvData();
   let client, release, library;
   const resourceTypes = oResourceTypes || {};
-  const INSTRUMENT_LIST = getReportInstrumentList();
+  const INSTRUMENT_LIST = isReportEnabled() ? getReportInstrumentList() : null;
   const SURVEY_FHIR_RESOURCES = ["QuestionnaireResponse", "Questionnaire"];
   console.log("instrument list to be loaded for report: ", INSTRUMENT_LIST);
   return new Promise((resolve) => {
