@@ -83,10 +83,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
           th {
             padding: 4px 24px 2px 0;
           }
+          th, td {
+            text-wrap: balance;
+          }
         }
         @media (min-width: 992px) {
           .table {
-            width: calc(85% - 48px);
+            width: calc(95% - 48px);
           }
         }
         .no-entries {
@@ -450,7 +453,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           width: 100%;
           padding-left: 4px;
           padding-right: 4px;
-          border-collapse: collapse;
+          border-collapse: separate;
           white-space: normal;
           table-layout: fixed;
           background-color: #FFF;
