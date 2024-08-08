@@ -23,6 +23,11 @@
     text-align: left;
     background-color: $color-beige;
     position: relative;
+    .info-icon {
+      color: $color-blue;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
     &.warning {
       background-color: $color-red-darker;
     }
@@ -61,6 +66,9 @@
     }
     .content {
       display: inline;
+      strong {
+        color: #444;
+      }
     }
     &.close {
       .close-button {

@@ -152,7 +152,7 @@ export default class MMEGraph extends Component {
     const parentHeight = 344;
     const WA_MAX_VALUE = 120;
     const CDC_SECONDARY_MAX_VALUE = 50;
-    const CDC_MAX_VALUE = 90;
+    //const CDC_MAX_VALUE = 90;
     const xIntervals = 12;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
     const hasError = this.props.showError;
@@ -239,24 +239,9 @@ export default class MMEGraph extends Component {
     const diffTime = Math.abs(maxDate - minDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    let WAData = this.getDefaultDataValueSet(
-      WA_MAX_VALUE,
-      baseLineDate,
-      maxDate,
-      ...lineParamsSet
-    );
-    let CDCSecondaryData = this.getDefaultDataValueSet(
-      CDC_SECONDARY_MAX_VALUE,
-      baseLineDate,
-      maxDate,
-      ...lineParamsSet
-    );
-    let CDCData = this.getDefaultDataValueSet(
-      CDC_MAX_VALUE,
-      baseLineDate,
-      maxDate,
-      ...lineParamsSet
-    );
+    let WAData = this.getDefaultDataValueSet(WA_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
+    let CDCSecondaryData = this.getDefaultDataValueSet(CDC_SECONDARY_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
+    //let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
 
     const margins = {
       top: 0,
@@ -401,24 +386,17 @@ export default class MMEGraph extends Component {
                   data={CDCSecondaryData}
                   {...defaultProps}
                 />
-                <Line
-                  lineID="CDCLine"
-                  strokeColor={CDC_COLOR}
-                  dotted="true"
-                  dotSpacing="3, 3"
-                  data={CDCData}
-                  {...defaultProps}
-                />
+                {/* <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} /> */}
                 <Tooltip data={data} {...dataLineProps}></Tooltip>
                 <text {...WALegendSettings}>
-                  Washington State consultation threshold
+                  WA State: Consultation threshold
                 </text>
                 <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>
-                  CDC extra precautions threshold
+                  CDC: Consider offering naloxone
                 </text>
-                <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>
+                {/* <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>
                   CDC avoid/justify threshold
-                </text>
+                </text> */}
               </g>
             </svg>
           </div>

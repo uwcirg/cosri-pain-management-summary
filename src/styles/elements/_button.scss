@@ -135,3 +135,8 @@ button.disabled {
     transform: rotate(1turn);
   }
 }
+button.plain {
+    background-color: transparent;
+    border:0;
+    background-image: none;
+}
