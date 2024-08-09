@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import ChevronDownIcon from "../icons/ChevronDownIcon";
 
 export default class ExclusionBanner extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      displayed: true,
+      displayed: false,
     };
     this.handleCloseToggle = this.handleCloseToggle.bind(this);
   }
 
-  handleClose = () => {
+  handleClose = (e) => {
+    e.stopPropagation();
     this.setState({ displayed: false });
   };
 
@@ -28,10 +28,9 @@ export default class ExclusionBanner extends Component {
     return (
       <div
         className={`exclusion-banner banner ${conditionalClass}`}
-        role="link"
+        role="presentation"
         onClick={this.handleCloseToggle}
-        onKeyUp={this.handleCloseToggle}
-        tabIndex={0}
+        onKeyDown={this.handleCloseToggle}
       >
         <ChevronDownIcon
           className="close-button"
@@ -43,13 +42,39 @@ export default class ExclusionBanner extends Component {
 
         <div className="exclusion-banner__description">
           <strong className="title">
-            <FontAwesomeIcon icon={faExclamationCircle} title="notice" />{" "}
+            <FontAwesomeIcon icon="exclamation-circle" title="notice" />{" "}
             LIMITATIONS
           </strong>{" "}
-          <span className="content">
-            Guidance <b>not intended</b> for <b>palliative</b>, <b>inpatient</b>
-            , or <b>active cancer care</b>.
+          Guidance for adult pain except...{" "}
+          <span className="info-icon" role="button">
+            (click here)
           </span>
+          .
+          <div className="content">
+            <p>
+              CDC's 2022 Clinical Practice Guideline <strong>applies</strong> to
+              outpatients aged 18 years and older with:
+            </p>
+            <ul>
+              <li>Acute pain (duration less than 1 month)</li>
+              <li>Subacute pain (duration of 1-3 months)</li>
+              <li>Chronic pain (duration of 3 months or more)</li>
+            </ul>
+            <p>
+              It does <strong>not</strong> apply to management of patients
+            </p>
+            <ul>
+              <li>with Sickle cell disease</li>
+              <li>with Cancer-related pain</li>
+              <li>receiving Palliative care</li>
+              <li>receiving End-of-life care</li>
+            </ul>
+            <div class="text-right">
+              <button className="plain info-icon" onClick={this.handleClose}>
+                Click to hide info
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );

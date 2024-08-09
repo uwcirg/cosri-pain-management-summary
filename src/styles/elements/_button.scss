@@ -23,3 +23,8 @@
 button.disabled {
     opacity: 0.5
 }
+button.plain {
+    background-color: transparent;
+    border:0;
+    background-image: none;
+}
