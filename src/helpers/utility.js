@@ -544,6 +544,7 @@ export function writeToLog(message, level, params) {
   if (typeof message === "object") {
     messageString = message.toString();
   } else messageString = message;
+  if (!messageString) return;
   fetch(auditURL, {
     method: "post",
     headers: {
