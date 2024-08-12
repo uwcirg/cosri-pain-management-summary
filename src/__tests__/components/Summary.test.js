@@ -17,9 +17,6 @@ it('renders the summary display', () => {
   expect(component.find('.summary__display')).toExist();
 });
 
-// it('renders all subsection headers', () => {
-//   expect(component.find('.sub-section__header')).toHaveLength(17);
-// });
 
 // TODO: Fix this test (it broke when React-Table was introduced)
 it.skip('renders conditions and encounter diagnoses in separate tables', () => {
