@@ -1,5 +1,5 @@
 {
-  "name": "pain-management-factors",
+  "name": "cosri-pain-management-summary",
   "version": "0.6.0",
   "description": "Pain Management Factors SMART-on-FHIR App",
   "license": "Apache-2.0",
@@ -93,7 +93,7 @@
     "build": "craco build",
     "test": "craco test",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -r https://github.com/uwcirg/cosri-pain-management-summary.git -d build",
     "upload-test-patients": "node ./src/utils/uploadTestPatients",
     "update-test-patients": "node ./src/utils/updateTestPatients",
     "lint": "eslint ."

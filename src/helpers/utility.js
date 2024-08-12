@@ -1,17 +1,19 @@
-import moment from 'moment';
+import moment from "moment";
+import { getEnv } from "../utils/envConfig";
 /*
  * return number of days between two dates
  * @params dateString1 date #1 to be compared
  *         dateString2 date #2 to be compared
  */
 export function getDiffDays(dateString1, dateString2) {
-    if (!dateString1 || ! dateString2) return 0;
-    //set two date variables
-    let date1 = new Date(dateString1), date2 = new Date(dateString2);
-    // To calculate the time difference of two dates
-    var diffInTime = date2.getTime() - date1.getTime();
-    // To calculate the no. of days between two dates
-    return Math.ceil(diffInTime / (1000 * 3600 * 24));
+  if (!dateString1 || !dateString2) return 0;
+  //set two date variables
+  let date1 = new Date(dateString1),
+    date2 = new Date(dateString2);
+  // To calculate the time difference of two dates
+  var diffInTime = date2.getTime() - date1.getTime();
+  // To calculate the no. of days between two dates
+  return Math.ceil(diffInTime / (1000 * 3600 * 24));
 }
 
 /*
@@ -19,9 +21,9 @@ export function getDiffDays(dateString1, dateString2) {
  * @params startDate, endDate of type Date
  */
 export function getDiffMonths(startDate, endDate) {
-    let dtEndDate = endDate? endDate : new Date();
-    let dtStartDate = startDate? startDate : new Date();
-    return moment(dtEndDate).diff(dtStartDate, 'months', true);
+  let dtEndDate = endDate ? endDate : new Date();
+  let dtStartDate = startDate ? startDate : new Date();
+  return moment(dtEndDate).diff(dtStartDate, "months", true);
 }
 
 /*
@@ -29,51 +31,53 @@ export function getDiffMonths(startDate, endDate) {
  * @params firstDate, secondDate of type Date object
  */
 export function isDateInPast(firstDate, secondDate) {
-    if (firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)) {
-      return true;
-    }
-    return false;
+  if (firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)) {
+    return true;
+  }
+  return false;
 }
 /*
  * check if an image has completed loading
  */
 export function imageOK(img) {
-    if (!img) {
-        return false;
-    }
-    if (!img.getAttribute("src")) {
-        return false;
-    }
-    if (!img.complete) {
-        return false;
-    }
-    if (typeof img.naturalWidth !== "undefined" && img.naturalWidth === 0) {
-        return false;
-    }
-    return true;
+  if (!img) {
+    return false;
+  }
+  if (!img.getAttribute("src")) {
+    return false;
+  }
+  if (!img.complete) {
+    return false;
+  }
+  if (typeof img.naturalWidth !== "undefined" && img.naturalWidth === 0) {
+    return false;
+  }
+  return true;
 }
 
 /*
  * check whether element is within browser viewport
  */
-export function isInViewport (elem) {
-    if (!elem) return false;
-    var bounding = elem.getBoundingClientRect();
-    return (
-        bounding.top >= 0 &&
-        bounding.left >= 0 &&
-        bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-};
+export function isInViewport(elem) {
+  if (!elem) return false;
+  var bounding = elem.getBoundingClientRect();
+  return (
+    bounding.top >= 0 &&
+    bounding.left >= 0 &&
+    bounding.bottom <=
+      (window.innerHeight || document.documentElement.clientHeight) &&
+    bounding.right <=
+      (window.innerWidth || document.documentElement.clientWidth)
+  );
+}
 
 /*
  * @param array of numbers
  * @return the sum of numbers in the array
  */
-export function sumArray (array) {
-    if (!array || !Array.isArray(array) || !array.length) return 0;
-    return array.reduce((a, b) => (isNaN(a)?0:a) + (isNaN(b)?0:b));
+export function sumArray(array) {
+  if (!array || !Array.isArray(array) || !array.length) return 0;
+  return array.reduce((a, b) => (isNaN(a) ? 0 : a) + (isNaN(b) ? 0 : b));
 }
 
 /*
@@ -81,16 +85,84 @@ export function sumArray (array) {
  * @param todayInput, optional today's date string or object
  * @return return number of days difference of date input from today
  */
-export function daysFromToday (dateInput, todayInput) {
-    let today = (new Date());
-    if (todayInput) today = todayInput instanceof Date ? todayInput : new Date(todayInput);
-    let originalDate = (dateInput instanceof Date ? dateInput : new Date(dateInput));
-    let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
-    let tzOffset = dObj.getTimezoneOffset() * 60000;
-    dObj.setTime(dObj.getTime() + tzOffset);
-    let oneDay = (1000 * 60 * 60 * 24);
-    let diff = (today.setHours(0,0,0,0) - dObj.setHours(0,0,0,0)) / oneDay;
-    //console.log("date " , dateInput, " dif ", diff)
-    if (isNaN(diff)) return 0;
-    return diff;
+export function daysFromToday(dateInput, todayInput) {
+  let today = new Date();
+  if (todayInput)
+    today = todayInput instanceof Date ? todayInput : new Date(todayInput);
+  let originalDate =
+    dateInput instanceof Date ? dateInput : new Date(dateInput);
+  let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
+  let tzOffset = dObj.getTimezoneOffset() * 60000;
+  dObj.setTime(dObj.getTime() + tzOffset);
+  let oneDay = 1000 * 60 * 60 * 24;
+  let diff = (today.setHours(0, 0, 0, 0) - dObj.setHours(0, 0, 0, 0)) / oneDay;
+  //console.log("date " , dateInput, " dif ", diff)
+  if (isNaN(diff)) return 0;
+  return diff;
+}
+
+//write to audit log
+export function writeToLog(message, paramLevel, paramOptions) {
+  if (!getEnv("REACT_APP_CONF_API_URL")) return;
+  if (!message) return;
+  const level = paramLevel ? paramLevel : "info";
+  const params = paramOptions ? paramOptions : {};
+  if (!params.tags) params.tags = [];
+  params.tags.push("cosri-frontend");
+  const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
+  const summary = this.state.result ? this.state.result.Summary : null;
+  const patientName = summary && summary.Patient ? summary.Patient.Name : "";
+  let messageString = "";
+  if (typeof message === "object") {
+    messageString = message.toString();
+  } else messageString = message;
+  fetch(auditURL, {
+    method: "post",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      ...{ patient: patientName, message: messageString, level: level },
+      ...params,
+    }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw Error(response.statusText);
+      }
+      return response.json();
+    })
+    .then(function (data) {
+      console.log("audit request succeeded with response ", data);
+    })
+    .catch(function (error) {
+      console.log("Request failed", error);
+    });
+}
+
+export function postData(url, paramOptions) {
+  if (!url) return;
+  const params = paramOptions ? paramOptions : {};
+  if (!params.data) return;
+  return fetch(url, {
+    method: "post",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw Error(response.statusText);
+      }
+      return response.json();
+    })
+    .then(function (data) {
+      console.log("save data request succeeded with response ", data);
+    })
+    .catch(function (error) {
+      console.log("Request failed to save data: ", error);
+    });
 }
