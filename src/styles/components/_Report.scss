@@ -104,6 +104,14 @@ $selector-box-shadow: 0 2px 2px #383e40;
           .icon {
             margin-left: 4px;
             cursor: pointer;
+            position: relative;
+            color: $link-color;
+            border-radius: 100vmax;
+            border: 1px solid $link-border-color;
+            padding: 8px 24px;
+            background-color: #FFF;
+            text-align: center;
+            font-weight: 600;
             &.arrow {
               min-width: 192px;
               svg {
@@ -113,14 +121,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
             svg {
               transition: transform 400ms ease;
             }
-            position: relative;
-            color: $link-color;
-            border-radius: 100vmax;
-            border: 1px solid $link-border-color;
-            padding: 8px 24px;
-            background-color: #FFF;
-            text-align: center;
-            font-weight: 600;
             &:hover {
               background-color: $link-color;
               border-color: $link-color;
@@ -211,6 +211,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
   }
   .response-table-wrapper {
     max-width: calc(100% - 180px);
+    max-height: 576px;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-left: 24px;
+    margin-right: 24px;
+    margin-bottom: 24px;
     @media (min-width: 992px) {
       max-width: 872px;
       &.two-columns {
@@ -243,12 +249,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
         block-size: fit-content;
       }
     }
-    max-height: 576px;
-    overflow-y: auto;
-    overflow-x: auto;
-    margin-left: 24px;
-    margin-right: 24px;
-    margin-bottom: 24px;
   }
   .response-table {
     table-layout: fixed;
@@ -341,16 +341,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
     min-height: 80px;
     gap: 4px;
     flex-direction: column;
+    justify-content: center;
     @media (min-width: 1120px) {
       flex-direction: row;
     }
-    justify-content: center;
     .panel {
       border: 2px solid $color-black;
       background: #FFF;
-      &.no-entries {
-        border: 1px solid $color-gray;
-      }
       padding: 8px;
       align-self: stretch;
       display: flex;
@@ -358,6 +355,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
       background: $color-white;
       gap: 2;
       flex: 1 1;
+      &.no-entries {
+        border: 1px solid $color-gray;
+      }
       .panel-title {
         line-height: 1.525;
         margin-block-start: 0.5em;
@@ -438,6 +438,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         text-align: center;
         flex: 1 1;
         box-shadow: 1px 2px 2px $color-gray-lightest;
+        padding: 8px;
         &:not(:last-of-type) {
           margin-bottom: 8px;
         }
@@ -447,7 +448,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
         &.full-width {
           width: calc(100% - 16px);
         }
-        padding: 8px;
 
         .table {
           width: 100%;

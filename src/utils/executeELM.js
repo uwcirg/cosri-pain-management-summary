@@ -13,12 +13,12 @@ import r4OMTKDataELM from "../cql/r4/OMTKData.json";
 import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import r4SurveyCommonELM from "../cql/r4/survey_resources/Common_LogicLibrary.json";
 import valueSetDB from "../cql/valueset-db.json";
-import { getEnv } from "./envConfig";
+import { getEnv, fetchEnvData } from "./envConfig";
 import {
   getReportInstrumentList,
   getReportInstrumentIdByKey,
   isEmptyArray,
-  isReportEnabled
+  isReportEnabled,
 } from "../helpers/utility";
 
 const noCacheHeader = {
@@ -28,15 +28,15 @@ const FHIR_RELEASE_VERSION_2 = 2;
 const FHIR_RELEASE_VERSION_4 = 4;
 
 async function executeELM(collector, oResourceTypes) {
-  // fetchEnvData();
-  let client, release, library;
+  fetchEnvData();
+  let client, release, library, patientBundle;
   const resourceTypes = oResourceTypes || {};
   const INSTRUMENT_LIST = isReportEnabled() ? getReportInstrumentList() : null;
   const SURVEY_FHIR_RESOURCES = ["QuestionnaireResponse", "Questionnaire"];
   console.log("instrument list to be loaded for report: ", INSTRUMENT_LIST);
   return new Promise((resolve) => {
     // First get our authorized client and send the FHIR release to the next step
-    const results = FHIR.oauth2
+    const finalResults = FHIR.oauth2
       .ready()
       .then((clientArg) => {
         client = clientArg;
@@ -107,9 +107,10 @@ async function executeELM(collector, oResourceTypes) {
         //debugging
         console.log("bundle loaded? ", bundle);
         patientSource.loadBundles([bundle]);
-        let results;
+        patientBundle = bundle;
+        let execResults;
         try {
-          results = executor.exec(patientSource);
+          execResults = executor.exec(patientSource);
         } catch (e) {
           console.log("Error occurred executing CQL ", e);
           if (collector) {
@@ -126,15 +127,20 @@ async function executeELM(collector, oResourceTypes) {
                     : " Please see console for detail.");
             });
           }
-          results = null;
+          execResults = null;
         }
-        //debugging
-        console.table("CQL execution results ", results);
 
         let evalResults =
-          results && results.patientResults
-            ? results.patientResults[Object.keys(results.patientResults)[0]]
+          execResults && execResults.patientResults
+            ? execResults.patientResults[
+                Object.keys(execResults.patientResults)[0]
+              ]
             : {};
+        return evalResults;
+      })
+      .then((evalResults) => {
+        //debugging
+        console.table("CQL execution results ", evalResults);
 
         if (!INSTRUMENT_LIST) return evalResults;
 
@@ -145,7 +151,7 @@ async function executeELM(collector, oResourceTypes) {
             (elmResults) => {
               const evaluatedSurveyResults = executeELMForInstruments(
                 elmResults,
-                bundle
+                patientBundle
               );
               const PATIENT_SUMMARY_KEY = "Summary";
               const SURVEY_SUMMARY_KEY = "SurveySummary";
@@ -171,7 +177,7 @@ async function executeELM(collector, oResourceTypes) {
           );
         });
       });
-    resolve(results);
+    resolve(finalResults);
   });
 }
 

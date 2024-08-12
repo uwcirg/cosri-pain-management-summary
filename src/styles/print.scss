@@ -107,10 +107,10 @@
       border: 0;
       background-color: #FFF;
       page-break-inside: avoid;
+      margin-top: 0;
       &:not(:last-of-type) {
         page-break-after: always;
       }
-      margin-top: 0;
       .sub-section__header {
         padding-left: 8px !important;
         padding-right: 8px !important;
