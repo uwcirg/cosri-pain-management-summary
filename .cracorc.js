@@ -1,5 +1,6 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
+const webpack = require("webpack");
 
 // This is a CRACO configuration file.  Together with the `craco` CLI, it allows the default
 // Create React App (CRA) configurations to be modified.  In the case of the Pain Management
@@ -63,7 +64,7 @@ const editHtmlWebpackPluginForIndex = (config) => {
     console.error("Cannot modify HtmlWebpackPlugin for index.html: not found.");
     return;
   }
-  indexPlugin.filename = 'index.html';
+  indexPlugin.filename = "index.html";
   indexPlugin.userOptions.chunks = ["main"];
 };
 
@@ -83,6 +84,14 @@ const addHtmlWebpackPluginForLaunch = (config) => {
   config.plugins.push(new HtmlWebpackPlugin(launchOptions));
 };
 
+const addEnvProcess = (config) => {
+  config.plugins.push(
+    new webpack.ProvidePlugin({
+      process: "process/browser.js",
+    })
+  );
+};
+
 // Configures fallbacks for modules that aren't available to webpack. In our case, we don't need
 // the polyfills, so just set fallback to false.
 const configureFallbacks = (config) => {
@@ -91,9 +100,9 @@ const configureFallbacks = (config) => {
     config.resolve.fallback = {};
   }
   const fallback = config.resolve.fallback;
-  fallback['fs'] = false;
-  fallback['buffer'] = false;
-  fallback['timers'] = false;
+  fallback["fs"] = false;
+  fallback["buffer"] = false;
+  fallback["timers"] = false;
 };
 
 // Stubs out files that are not needed but take up lots of space in webpacked source. This includes:
@@ -133,16 +142,20 @@ const stubUnneededFiles = (config) => {
 // Gets the HtmlWebpackPlugin for index.html
 const getIndexHtmlWebpackPlugin = (config) => {
   const htmlWebpackPlugins = config.plugins.filter((plugin) => {
-    return plugin.constructor.name === 'HtmlWebpackPlugin' && plugin.userOptions.template.endsWith("index.html");
+    return (
+      plugin.constructor.name === "HtmlWebpackPlugin" &&
+      plugin.userOptions.template.endsWith("index.html")
+    );
   });
   if (htmlWebpackPlugins.length === 1) {
     return htmlWebpackPlugins[0];
   }
-}
+};
 
 module.exports = {
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
+      addEnvProcess(webpackConfig);
       addLaunch(webpackConfig);
       changeOutputFilenameForDev(webpackConfig, env);
       editHtmlWebpackPluginForIndex(webpackConfig);
@@ -150,6 +163,6 @@ module.exports = {
       configureFallbacks(webpackConfig);
       stubUnneededFiles(webpackConfig);
       return webpackConfig;
-    }
+    },
   },
 };

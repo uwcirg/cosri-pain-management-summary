@@ -1,0 +1,302 @@
+{
+   "library" : {
+      "annotation" : [ {
+         "translatorOptions" : "",
+         "type" : "CqlToElmInfo"
+      } ],
+      "identifier" : {
+         "id" : "DefaultLogicLibrary",
+         "version" : "1.0.0"
+      },
+      "schemaIdentifier" : {
+         "id" : "urn:hl7-org:elm",
+         "version" : "r1"
+      },
+      "usings" : {
+         "def" : [ {
+            "localIdentifier" : "System",
+            "uri" : "urn:hl7-org:elm-types:r1"
+         }, {
+            "localIdentifier" : "FHIR",
+            "uri" : "http://hl7.org/fhir",
+            "version" : "4.0.1"
+         } ]
+      },
+      "includes" : {
+         "def" : [ {
+            "localIdentifier" : "FHIRHelpers",
+            "path" : "FHIRHelpers",
+            "version" : "4.0.1"
+         }, {
+            "localIdentifier" : "LogicHelper",
+            "path" : "Common_LogicLibrary",
+            "version" : "1.0.0"
+         } ]
+      },
+      "parameters" : {
+         "def" : [ {
+            "name" : "dataKey",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "id",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "excludeFromScoring",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+               "value" : "true",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "reportOnce",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+               "value" : "true",
+               "type" : "Literal"
+            }
+         } ]
+      },
+      "contexts" : {
+         "def" : [ {
+            "name" : "Patient"
+         } ]
+      },
+      "statements" : {
+         "def" : [ {
+            "name" : "QuestionnaireID",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "id",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "QuestionnaireShortName",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "dataKey",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "QuestionnaireKey",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "dataKey",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "ExcludeFromScoring",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "excludeFromScoring",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "ReportOnce",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "reportOnce",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "Patient",
+            "context" : "Patient",
+            "expression" : {
+               "type" : "SingletonFrom",
+               "operand" : {
+                  "dataType" : "{http://hl7.org/fhir}Patient",
+                  "templateId" : "http://hl7.org/fhir/StructureDefinition/Patient",
+                  "type" : "Retrieve"
+               }
+            }
+         }, {
+            "name" : "Questionnaire",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "First",
+               "source" : {
+                  "name" : "GetMatchQuestionnaire",
+                  "libraryName" : "LogicHelper",
+                  "type" : "FunctionRef",
+                  "operand" : [ {
+                     "name" : "QuestionnaireID",
+                     "type" : "ExpressionRef"
+                  }, {
+                     "name" : "QuestionnaireKey",
+                     "type" : "ExpressionRef"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "QuestionnaireItems",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "Q",
+                  "expression" : {
+                     "name" : "Questionnaire",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "path" : "item",
+                     "scope" : "Q",
+                     "type" : "Property"
+                  }
+               }
+            }
+         }, {
+            "name" : "QuestionnaireResponses",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "MatchedReponsesByQuestionnaire",
+               "libraryName" : "LogicHelper",
+               "type" : "FunctionRef",
+               "operand" : [ {
+                  "dataType" : "{http://hl7.org/fhir}QuestionnaireResponse",
+                  "templateId" : "http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse",
+                  "type" : "Retrieve"
+               }, {
+                  "name" : "Questionnaire",
+                  "type" : "ExpressionRef"
+               } ]
+            }
+         }, {
+            "name" : "ResponsesSummary",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "I",
+                  "expression" : {
+                     "name" : "QuestionnaireResponses",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "id",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "id",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "qid",
+                        "value" : {
+                           "name" : "QuestionnaireKey",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "date",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "libraryName" : "LogicHelper",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authored",
+                              "scope" : "I",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "items",
+                        "value" : {
+                           "path" : "item",
+                           "scope" : "I",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "responses",
+                        "value" : {
+                           "name" : "FormattedQuestionnaireResponses",
+                           "libraryName" : "LogicHelper",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "item",
+                              "scope" : "I",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "questionnaireItems",
+                        "value" : {
+                           "name" : "QuestionnaireItems",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "authoredDate",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "authored",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "lastUpdated",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "lastUpdated",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "meta",
+                                 "scope" : "I",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "authoredDate",
+                     "type" : "ByColumn"
+                  }, {
+                     "direction" : "desc",
+                     "path" : "lastUpdated",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         } ]
+      }
+   }
+}
+

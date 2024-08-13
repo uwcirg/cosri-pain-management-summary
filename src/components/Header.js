@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser} from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { imageOK } from "../helpers/utility";
 
 export default class Header extends Component {
@@ -63,18 +63,35 @@ export default class Header extends Component {
         </div>
         <div className="header__summary">
           <div className="header__summary-patient">
-          <div className="patient-info">
-              <div className="flex" style={{alignItems: "flex-start"}}>
-                <FontAwesomeIcon className="patient-icon" icon={faUser} title="patient" />
-                <div>
-                  <h1 className="patient-name">{patientName}</h1>
-                  <div className="patient-demographics">
-                    <span className="patient-dob" aria-label="Date of birth">DOB: {patientDOB}</span>
-                    <span className="patient-gender">{patientGender}</span>
+            {(patientName || patientDOB) && (
+              <div className="patient-info">
+                <div className="flex" style={{ alignItems: "flex-start" }}>
+                  {patientName && (
+                    <FontAwesomeIcon
+                      className="patient-icon"
+                      icon={faUser}
+                      title="patient"
+                    />
+                  )}
+                  <div>
+                    <h1 className="patient-name">
+                      {patientName ?? "Name not available"}
+                    </h1>
+                    <div className="patient-demographics">
+                      {patientDOB && (
+                        <span
+                          className="patient-dob"
+                          aria-label="Date of birth"
+                        >
+                          DOB: {patientDOB}
+                        </span>
+                      )}
+                      <span className="patient-gender">{patientGender}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
             <div className="header__search">
               <button
                 className={`button-primary ${

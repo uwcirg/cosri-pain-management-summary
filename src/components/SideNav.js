@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
+import { isElementOverflown } from "../helpers/utility";
 
 export default class SideNav extends Component {
   constructor() {
@@ -14,22 +15,43 @@ export default class SideNav extends Component {
     this.handleResize = this.handleResize.bind(this);
   }
 
+  handleRootClass() {
+    if (this.state.showNav)
+      document.querySelector("#root").classList.remove("collapsed");
+    else document.querySelector("#root").classList.add("collapsed");
+  }
+
   handleNavToggle(e) {
     e.preventDefault();
-    this.setState((state) => ({
-      showNav: !state.showNav,
-    }));
+    this.setState(
+      {
+        showNav: !this.state.showNav,
+      },
+      () => {
+        this.handleRootClass();
+      }
+    );
   }
 
   handleResize() {
-    this.setState({
-      showNav: window.innerWidth < 1200 ? false : true,
-    });
+    const isSmallerScreen = window.innerWidth && window.innerWidth <= 1360;
+    this.setState(
+      {
+        showNav: this.props.parentContainerSelector
+          ? !isElementOverflown(
+              document.querySelector(this.props.parentContainerSelector)
+            ) || !isSmallerScreen
+          : !isSmallerScreen,
+      },
+      () => {
+        this.handleRootClass();
+      }
+    );
   }
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
-    this.handleResize();
+    setTimeout(() => this.handleResize(), 0);
   }
 
   render() {
@@ -43,6 +65,7 @@ export default class SideNav extends Component {
           className={`${this.state.showNav ? "open" : ""} summary__nav-wrapper`}
         >
           <nav className="summary__nav"></nav>
+          {this.props.children}
           <div
             role="button"
             ref={(ref) => (this.navRef = ref)}

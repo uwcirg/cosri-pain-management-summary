@@ -1,0 +1,424 @@
+{
+   "library" : {
+      "annotation" : [ {
+         "translatorOptions" : "",
+         "type" : "CqlToElmInfo"
+      } ],
+      "identifier" : {
+         "id" : "BodyDiagramLogicLibrary",
+         "version" : "1.0.0"
+      },
+      "schemaIdentifier" : {
+         "id" : "urn:hl7-org:elm",
+         "version" : "r1"
+      },
+      "usings" : {
+         "def" : [ {
+            "localIdentifier" : "System",
+            "uri" : "urn:hl7-org:elm-types:r1"
+         }, {
+            "localIdentifier" : "FHIR",
+            "uri" : "http://hl7.org/fhir",
+            "version" : "4.0.1"
+         } ]
+      },
+      "includes" : {
+         "def" : [ {
+            "localIdentifier" : "FHIRHelpers",
+            "path" : "FHIRHelpers",
+            "version" : "4.0.1"
+         }, {
+            "localIdentifier" : "LogicHelper",
+            "path" : "Common_LogicLibrary",
+            "version" : "1.0.0"
+         } ]
+      },
+      "parameters" : {
+         "def" : [ {
+            "name" : "dataKey",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "paintracker-location-body-diagram",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "id",
+            "accessLevel" : "Public",
+            "default" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "CIRG-PainTracker-Location-Body-Diagram",
+               "type" : "Literal"
+            }
+         } ]
+      },
+      "contexts" : {
+         "def" : [ {
+            "name" : "Patient"
+         } ]
+      },
+      "statements" : {
+         "def" : [ {
+            "name" : "QuestionnaireID",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "id",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "PainLocationsQuestionLinkId",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "CIRG-PainTracker-1252",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "SeverePainLocationQuestionLinkId",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "CIRG-PainTracker-1253",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "ExcludeFromScoring",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}Boolean",
+               "value" : "true",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "Patient",
+            "context" : "Patient",
+            "expression" : {
+               "type" : "SingletonFrom",
+               "operand" : {
+                  "dataType" : "{http://hl7.org/fhir}Patient",
+                  "templateId" : "http://hl7.org/fhir/StructureDefinition/Patient",
+                  "type" : "Retrieve"
+               }
+            }
+         }, {
+            "name" : "QuestionnaireKey",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "dataKey",
+               "type" : "ParameterRef"
+            }
+         }, {
+            "name" : "QuestionnaireShortName",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "body-diagram",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "Questionnaire",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "First",
+               "source" : {
+                  "name" : "GetMatchQuestionnaire",
+                  "libraryName" : "LogicHelper",
+                  "type" : "FunctionRef",
+                  "operand" : [ {
+                     "name" : "QuestionnaireID",
+                     "type" : "ExpressionRef"
+                  }, {
+                     "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                     "value" : "body",
+                     "type" : "Literal"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "QuestionnaireResponses",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "MatchedReponsesByQuestionnaire",
+               "libraryName" : "LogicHelper",
+               "type" : "FunctionRef",
+               "operand" : [ {
+                  "dataType" : "{http://hl7.org/fhir}QuestionnaireResponse",
+                  "templateId" : "http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse",
+                  "type" : "Retrieve"
+               }, {
+                  "name" : "Questionnaire",
+                  "type" : "ExpressionRef"
+               } ]
+            }
+         }, {
+            "name" : "painLocationAnswerItem",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "First",
+               "source" : {
+                  "name" : "GetArrayAnswerByLinkId",
+                  "libraryName" : "LogicHelper",
+                  "type" : "FunctionRef",
+                  "operand" : [ {
+                     "name" : "PainLocationsQuestionLinkId",
+                     "type" : "ExpressionRef"
+                  }, {
+                     "name" : "responseItems",
+                     "type" : "OperandRef"
+                  } ]
+               }
+            },
+            "operand" : [ {
+               "name" : "responseItems",
+               "operandTypeSpecifier" : {
+                  "type" : "ListTypeSpecifier",
+                  "elementType" : {
+                     "name" : "{http://hl7.org/fhir}QuestionnaireResponse.Item",
+                     "type" : "NamedTypeSpecifier"
+                  }
+               }
+            } ]
+         }, {
+            "name" : "severePainLocationAnswerItem",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "First",
+               "source" : {
+                  "name" : "GetArrayAnswerByLinkId",
+                  "libraryName" : "LogicHelper",
+                  "type" : "FunctionRef",
+                  "operand" : [ {
+                     "name" : "SeverePainLocationQuestionLinkId",
+                     "type" : "ExpressionRef"
+                  }, {
+                     "name" : "responseItems",
+                     "type" : "OperandRef"
+                  } ]
+               }
+            },
+            "operand" : [ {
+               "name" : "responseItems",
+               "operandTypeSpecifier" : {
+                  "type" : "ListTypeSpecifier",
+                  "elementType" : {
+                     "name" : "{http://hl7.org/fhir}QuestionnaireResponse.Item",
+                     "type" : "NamedTypeSpecifier"
+                  }
+               }
+            } ]
+         }, {
+            "name" : "painLocations",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "I",
+                  "expression" : {
+                     "name" : "painLocationAnswerItem",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "responseItems",
+                        "type" : "OperandRef"
+                     } ]
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "path" : "value",
+                     "type" : "Property",
+                     "source" : {
+                        "path" : "display",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "value",
+                           "scope" : "I",
+                           "type" : "Property"
+                        }
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "responseItems",
+               "operandTypeSpecifier" : {
+                  "type" : "ListTypeSpecifier",
+                  "elementType" : {
+                     "name" : "{http://hl7.org/fhir}QuestionnaireResponse.Item",
+                     "type" : "NamedTypeSpecifier"
+                  }
+               }
+            } ]
+         }, {
+            "name" : "severePainLocation",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "I",
+                  "expression" : {
+                     "name" : "severePainLocationAnswerItem",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "responseItems",
+                        "type" : "OperandRef"
+                     } ]
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "path" : "value",
+                     "type" : "Property",
+                     "source" : {
+                        "path" : "display",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "value",
+                           "scope" : "I",
+                           "type" : "Property"
+                        }
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "responseItems",
+               "operandTypeSpecifier" : {
+                  "type" : "ListTypeSpecifier",
+                  "elementType" : {
+                     "name" : "{http://hl7.org/fhir}QuestionnaireResponse.Item",
+                     "type" : "NamedTypeSpecifier"
+                  }
+               }
+            } ]
+         }, {
+            "name" : "ResponsesSummary",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "I",
+                  "expression" : {
+                     "name" : "QuestionnaireResponses",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "id",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "id",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "qid",
+                        "value" : {
+                           "name" : "QuestionnaireKey",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "date",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "libraryName" : "LogicHelper",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authored",
+                              "scope" : "I",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "painLocations",
+                        "value" : {
+                           "name" : "painLocations",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "item",
+                              "scope" : "I",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "severePainLocation",
+                        "value" : {
+                           "name" : "severePainLocation",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "item",
+                              "scope" : "I",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "authoredDate",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "authored",
+                              "scope" : "I",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "lastUpdated",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "lastUpdated",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "meta",
+                                 "scope" : "I",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "authoredDate",
+                     "type" : "ByColumn"
+                  }, {
+                     "direction" : "desc",
+                     "path" : "lastUpdated",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         } ]
+      }
+   }
+}
+

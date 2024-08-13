@@ -1,5 +1,8 @@
 import moment from "moment";
+import { toBlob, toJpeg } from "html-to-image";
 import { getEnv } from "../utils/envConfig";
+import reportSummarySections from "../config/report_config";
+
 /*
  * return number of days between two dates
  * @params dateString1 date #1 to be compared
@@ -101,17 +104,442 @@ export function daysFromToday(dateInput, todayInput) {
   return diff;
 }
 
-//write to audit log
-export function writeToLog(message, paramLevel, paramOptions) {
+export function range(start, end) {
+  return new Array(end - start + 1).fill(undefined).map((_, i) => i + start);
+}
+
+export function isNumber(target) {
+  if (target == null || String(target).trim() === "") return false;
+  if (typeof target === "number") return true;
+  return !isNaN(target);
+}
+
+export function getReportInstrumentList() {
+  const envInstrumentList = getEnv("REACT_APP_INSTRUMENT_IDS");
+  if (envInstrumentList)
+    return envInstrumentList
+      .split(",")
+      .map((item) => item.trim())
+      .map((o) => ({
+        id: o,
+        key: o.replace("CIRG-", ""),
+      }));
+  const qList = reportSummarySections
+    .filter((section) => section.questionnaires)
+    .map((section) => section.questionnaires);
+  if (!qList.length) return null;
+  return [...new Set(qList.flat())];
+}
+
+export function getReportInstrumentIdByKey(key) {
+  const qList = getReportInstrumentList();
+  if (isEmptyArray(qList)) return "";
+  const matchedInstrument = qList.find((o) => o.key === key);
+  return matchedInstrument ? matchedInstrument.id : "";
+}
+
+export function getDisplayDateFromISOString(isocDateString, format) {
+  if (!isocDateString) return "--";
+  const objDate = new Date(isocDateString);
+  if (isNaN(objDate)) return "--";
+  // need to account for timezone offset for a UTC date/time
+  let tzOffset = objDate.getTimezoneOffset() * 60000;
+  objDate.setTime(objDate.getTime() + tzOffset);
+  const displayDate = objDate
+    ? objDate.toLocaleString(
+        "en-us",
+        format
+          ? format
+          : {
+              year: "numeric",
+              month: "short",
+              day: "2-digit",
+            }
+      )
+    : "--";
+  return displayDate;
+}
+
+export function renderImageFromSVG(imageElement, svgElement) {
+  if (!svgElement) return;
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+  let canvas = document.createElement("canvas");
+  let ctx = canvas.getContext("2d");
+  let img = imageElement;
+  if (!img) return;
+  img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+  img.onload = function () {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+  };
+}
+
+export function downloadDomImage(event, element, downloadFileName, options) {
+  if (event) {
+    event.stopPropagation();
+  }
+  const params = options ? options : {};
+  if (params.beforeDownload) {
+    params.beforeDownload();
+  }
+  toBlob(element, params)
+    .then((blob) => {
+      if (window.saveAs) {
+        window.saveAs(blob, downloadFileName);
+      } else {
+        const FileSaver = require("file-saver");
+        FileSaver.saveAs(blob, downloadFileName);
+      }
+      if (params.afterDownload) {
+        params.afterDownload();
+      }
+    })
+    .catch((e) => {
+      console.log("Error occurred downloading image ", e);
+      if (params.afterDownload) {
+        params.afterDownload(e);
+      }
+    });
+}
+
+export function downloadSVGImage(
+  event,
+  svgElement,
+  placeholderImageElementId,
+  downloadFileName
+) {
+  if (event) event.stopPropagation();
+  if (!svgElement) return;
+  const width =
+    typeof svgElement.clientWidth !== "undefined" ? svgElement.clientWidth : 0;
+  const height =
+    typeof svgElement.clientHeight !== "undefined"
+      ? svgElement.clientHeight
+      : 0;
+  const setDimensions = () => {
+    if (typeof svgElement.setAttribute !== "function") return;
+    svgElement.setAttribute("width", width);
+    svgElement.setAttribute("height", height);
+    return true;
+  };
+
+  setDimensions();
+
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+  let canvas = document.createElement("canvas");
+  let ctx = canvas.getContext("2d");
+
+  let img = document.querySelector("#" + placeholderImageElementId);
+  if (!img) {
+    img = document.createElement("img");
+    img.classList.add("print-image");
+    img.style.zIndex = -1;
+    img.style.position = "absolute";
+    img.style.opacity = 0;
+    img.setAttribute("id", placeholderImageElementId);
+    document.body.appendChild(img);
+  }
+
+  img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+  img.onload = function () {
+    const width =
+      typeof svgElement.getAttribute !== "undefined"
+        ? svgElement.getAttribute("width")
+        : img.width; // half the width of the original svg
+    const height =
+      typeof svgElement.getAttribute !== "undefined"
+        ? svgElement.getAttribute("height")
+        : img.height; // half the height of the original svg
+    setTimeout(() => {
+      const canvasWidth = width ? width : img.width;
+      const canvasHeight = height ? height : img.height;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+      canvas.toBlob((blob) => {
+        const URL = window.URL || window.webkitURL || window;
+        const imageURL = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = imageURL;
+        link.download = downloadFileName ? downloadFileName : "image";
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          document.body.removeChild(link);
+          document.body.removeChild(img);
+          if (typeof svgElement.setAttribute === "function") {
+            svgElement.setAttribute("width", "100%");
+            svgElement.setAttribute("height", "100%");
+          }
+        }, 0);
+      }, "image/png");
+      // Now is done
+      // console.log(canvas.toDataURL("image/png"));
+    }, 500);
+  };
+}
+
+export function copySVGImage(
+  event,
+  svgElement,
+  placeholderImageElementId,
+  mimeType,
+  options
+) {
+  event.preventDefault();
+  if (!svgElement) return;
+  const width =
+    typeof svgElement.clientWidth !== "undefined" ? svgElement.clientWidth : 0;
+  const height =
+    typeof svgElement.clientHeight !== "undefined" ? svgElement.clientHeight : 0;
+  const setDimensions = () => {
+    if (typeof svgElement.setAttribute !== "function") return;
+    if (width) svgElement.setAttribute("width", width);
+    if (height) svgElement.setAttribute("height", height);
+    return true;
+  };
+
+  setDimensions();
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+  let canvas = document.createElement("canvas");
+  let ctx = canvas.getContext("2d");
+
+  let img = document.querySelector("#" + placeholderImageElementId);
+  if (!img) {
+    img = document.createElement("img");
+    img.classList.add("print-image");
+    img.style.zIndex = -1;
+    img.style.position = "absolute";
+    img.style.opacity = 0;
+    document.body.appendChild(img);
+  }
+  img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+  const imageType = mimeType ? mimeType : "image/png";
+  let items = {
+    [imageType]: new Promise(async (resolve) => {
+      await fetch(img.src).then((response) => response.blob());
+      const canvasWidth = width ? width : img.width;
+      const canvasHeight = height ? height : img.height;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+      canvas.toBlob((blob) => {
+        if (width && typeof svgElement.setAttribute) {
+          svgElement.setAttribute("width", "100%");
+        }
+        if (height && typeof svgElement.setAttribute) {
+          svgElement.setAttribute("height", "100%");
+        }
+        setTimeout(() => {
+          document.body.removeChild(img);
+        }, 0);
+        resolve(blob);
+      });
+    }),
+  };
+  if (options && options.clipboardItems) {
+    options.clipboardItems.forEach((item) => {
+      // let itemToAdd = {
+      //   [item.imageType]: getHTMLImageClipboardItem(item.element, item.options)
+      // };
+      const itemToAdd = getHTMLImageClipboardItem(item.element, item.options);
+      items = { ...items, ...itemToAdd };
+    });
+  }
+
+  const clipboardItem = new window.ClipboardItem(items);
+  // const itemsToCopy = [
+  //   clipboardItem,
+  //   ...(options && options.clipboardItems ? options.clipboardItems : []),
+  // ];
+  writeBlobToClipboard(clipboardItem)
+    .then((x) => {
+      alert("Image copied to clipboard ", x);
+    })
+    .catch((e) => {
+      alert("Error! Unable to copy image to clipboard!");
+      console.log(e);
+    });
+  return;
+}
+export function getHTMLImageClipboardItem(domElement, options) {
+  const imageType =
+    options && options.imageType ? options.imageType : "image/png";
+  return {
+    [imageType]: new Promise(async (resolve) => {
+      if (imageType === "image/png") {
+        const imageBlob = await toBlob(domElement, options);
+        resolve(imageBlob);
+      } else if (imageType === "image/jpeg") {
+        const imageBlob = await toJpeg(domElement, options);
+        resolve(imageBlob);
+      } else {
+        const imageBlob = await toBlob(domElement, options);
+        resolve(imageBlob);
+      }
+    }),
+  };
+}
+export function copyDomToClipboard(domElement, options) {
+  if (!allowCopyClipboardItem()) return null;
+  const params = options ? options : {};
+  if (params.beforeCopy) {
+    params.beforeCopy();
+  }
+
+  writeBlobToClipboard(
+    new window.ClipboardItem(getHTMLImageClipboardItem(domElement, params))
+  )
+    .then((x) => {
+      //alert("Content copied to clipboard ", x);
+      if (params.afterCopy) {
+        params.afterCopy();
+      }
+    })
+    .catch((e) => {
+      //alert("Error! Unable to copy content to clipboard! " + e);
+      console.log(e);
+      console.log("passed param ", params);
+      if (params.afterCopy) {
+        params.afterCopy(e);
+      }
+    });
+}
+export function allowCopyClipboardItem() {
+  if (typeof window.ClipboardItem === "undefined") return false;
+  if (!navigator?.clipboard?.write) return false;
+  return true;
+}
+export async function writeHTMLToClipboard(htmlContent) {
+  if (!allowCopyClipboardItem())
+    return Promise.reject("ClipboardItem API is not supported");
+  const clipboardItem = new window.ClipboardItem({
+    "text/html": new Blob([htmlContent], { type: "text/html" }),
+  });
+  return writeBlobToClipboard(clipboardItem);
+}
+
+export async function writeTextToClipboard(text) {
+  return await navigator.clipboard.writeText(text);
+}
+export async function writeBlobToClipboard(clipboardItem) {
+  if (!allowCopyClipboardItem())
+    return Promise.reject("ClipboardItem API is not supported");
+  return navigator.clipboard.write([clipboardItem]);
+}
+
+export function getDifferenceInYears(fromDate, toDate) {
+  if (!fromDate || !(fromDate instanceof Date)) return 0;
+  if (!toDate || !(toDate instanceof Date)) return 0;
+  if (isNaN(fromDate)) return 0;
+  if (isNaN(toDate)) return 0;
+  let diff = (toDate.getTime() - fromDate.getTime()) / 1000;
+  diff /= 60 * 60 * 24;
+  const diffYears = Math.abs(diff / 365.25);
+  // console.log("difference in years ", diffYears);
+  return diffYears;
+}
+
+export function getQuestionnaireDescription(fhirQuestionnaire) {
+  if (!fhirQuestionnaire) return "";
+  if (!fhirQuestionnaire.description) {
+    if (fhirQuestionnaire.item && Array.isArray(fhirQuestionnaire.item)) {
+      const introElement = fhirQuestionnaire.item.find(
+        (child) => child.linkId && child.linkId.value === "introduction"
+      );
+      if (introElement) {
+        if (
+          introElement.text &&
+          introElement.text.extension &&
+          introElement.text.extension[0]
+        ) {
+          return introElement.text.extension[0].value.value;
+        }
+      }
+    }
+    return "";
+  }
+  const commonmark = require("commonmark");
+  const reader = new commonmark.Parser({ smart: true });
+  const writer = new commonmark.HtmlRenderer({
+    linebreak: "<br />",
+    softbreak: "<br />",
+  });
+  const parsedObj = reader.parse(fhirQuestionnaire.description.value);
+  const description =
+    fhirQuestionnaire.description && fhirQuestionnaire.description.value
+      ? writer.render(parsedObj)
+      : "";
+  return description;
+}
+
+export function toDate(stringDate) {
+  if (stringDate instanceof Date) return stringDate;
+  return new Date(stringDate);
+}
+
+export function getPatientNameFromSource(fhirPatientSource) {
+  if (
+    !fhirPatientSource ||
+    !fhirPatientSource.name ||
+    !Array.isArray(fhirPatientSource.name) ||
+    !fhirPatientSource.name.length
+  )
+    return "";
+  const officialName = fhirPatientSource.name.find(
+    (item) => item.use === "official"
+  );
+  const useName = officialName ? officialName : fhirPatientSource.name[0];
+  const firstName =
+    useName.given && useName.given.length ? useName.given[0] : "";
+  const lastName = useName.family ?? "";
+  return [firstName, lastName].join(" ");
+}
+
+let buttonTransitionId = 0;
+export function addButtonSuccessStateTransition(buttonRef, transitionDuration) {
+  if (!buttonRef) return;
+  buttonRef.classList.add("button--loaded");
+  clearTimeout(buttonTransitionId);
+  buttonTransitionId = setTimeout(
+    () => buttonRef.classList.remove("button--loaded"),
+    transitionDuration || 1000
+  );
+}
+
+export function addButtonErrorStateTransition(buttonRef, transitionDuration) {
+  if (!buttonRef) return;
+  buttonRef.classList.add("button--loaded");
+  buttonRef.classList.add("error");
+  clearTimeout(buttonTransitionId);
+  buttonTransitionId = setTimeout(() => {
+    buttonRef.classList.remove("button--loaded");
+    buttonRef.classList.remove("error");
+  }, transitionDuration || 1000);
+}
+
+export function isNotProduction() {
+  let systemType = getEnv("REACT_APP_SYSTEM_TYPE");
+  return systemType && String(systemType).toLowerCase() !== "production";
+}
+
+export function isProduction() {
+  return (
+    String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development"
+  );
+}
+
+// write to audit log
+export function writeToLog(message, level, params) {
   if (!getEnv("REACT_APP_CONF_API_URL")) return;
   if (!message) return;
-  const level = paramLevel ? paramLevel : "info";
-  const params = paramOptions ? paramOptions : {};
-  if (!params.tags) params.tags = [];
-  params.tags.push("cosri-frontend");
+  const logLevel = level ? level : "info";
+  const logParams = params ? params : {};
+  if (!logParams.tags) logParams.tags = [];
+  logParams.tags.push("cosri-frontend");
   const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
-  const summary = this.state.result ? this.state.result.Summary : null;
-  const patientName = summary && summary.Patient ? summary.Patient.Name : "";
+  const patientName = params.patientName ? params.patientName : "";
   let messageString = "";
   if (typeof message === "object") {
     messageString = message.toString();
@@ -123,8 +551,8 @@ export function writeToLog(message, paramLevel, paramOptions) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      ...{ patient: patientName, message: messageString, level: level },
-      ...params,
+      ...{ patient: patientName, message: messageString, level: logLevel },
+      ...logParams,
     }),
   })
     .then((response) => {
@@ -141,11 +569,12 @@ export function writeToLog(message, paramLevel, paramOptions) {
     });
 }
 
-export function postData(url, paramOptions) {
-  if (!url) return;
-  const params = paramOptions ? paramOptions : {};
+export function saveData(queryParams) {
+  if (!getEnv("REACT_APP_CONF_API_URL")) return;
+  const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
+  const params = queryParams || {};
   if (!params.data) return;
-  return fetch(url, {
+  fetch(saveDataURL, {
     method: "post",
     headers: {
       Accept: "application/json",
@@ -165,4 +594,35 @@ export function postData(url, paramOptions) {
     .catch(function (error) {
       console.log("Request failed to save data: ", error);
     });
+}
+
+export function getErrorMessageString(error, defaultMessage) {
+  return error
+    ? typeof error === "object"
+      ? error.toString()
+      : typeof error === "string"
+      ? error.replace(/<\/?[^>]+(>|$)/g, "")
+      : defaultMessage ?? `Error occurred retrieving data`
+    : "";
+}
+
+export function isEmptyArray(object) {
+  if (object == null || !object) return true;
+  if (!Array.isArray(object)) return true;
+  return !object.length;
+}
+
+export function isElementOverflown(element, dimension) {
+  if (!element) return false;
+  const isWidthOverflown = element.scrollWidth > element.clientWidth;
+  var isHeightOverflown = element.scrollHeight > element.clientHeight;
+  if (!dimension) return isWidthOverflown || isHeightOverflown;
+  if (dimension === "width") return isWidthOverflown;
+  if (dimension === "height") return isHeightOverflown;
+  return isWidthOverflown || isHeightOverflown;
+}
+
+export function isReportEnabled() {
+  const config_tab = getEnv("REACT_APP_TABS");
+  return config_tab && String(config_tab).includes("report");
 }

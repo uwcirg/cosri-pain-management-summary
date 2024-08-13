@@ -11,10 +11,10 @@ import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import ReactModal from "react-modal";
 
-import summaryMap from "../config/summary_config.json";
+import defaultSummaryMap from "../config/summary_config.json";
 import * as formatit from "../helpers/formatit";
 import * as sortit from "../helpers/sortit";
-
+import AgreementIcon from "../icons/ListIcon";
 import ChartIcon from "../icons/ChartIcon";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
 import MedicineIcon from "../icons/MedicineIcon";
@@ -24,7 +24,6 @@ import TreatmentsIcon from "../icons/TreatmentsIcon";
 import ProviderIcon from "../icons/ProviderIcon";
 import UserIcon from "../icons/UserIcon";
 import FlaskIcon from "../icons/FlaskIcon";
-
 import ErrorBanner from "./ErrorBanner";
 import InclusionBanner from "./InclusionBanner";
 import ExclusionBanner from "./ExclusionBanner";
@@ -32,11 +31,18 @@ import DataInfo from "./DataInfo";
 import Disclaimer from "./Disclaimer";
 import DevTools from "./DevTools";
 import InfoModal from "./InfoModal";
-import Table from "./Table";
+import ScoringSummary from "./Report/components/ScoringSummary";
 import SideNav from "./SideNav";
+import Table from "./Table";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
 import Version from "../elements/Version";
+import {
+  getErrorMessageString,
+  isEmptyArray,
+  isReportEnabled,
+} from "../helpers/utility";
+import { getScoringData } from "./Report/utility";
 
 export default class Summary extends Component {
   constructor() {
@@ -55,13 +61,6 @@ export default class Summary extends Component {
     ReactModal.setAppElement("body");
   }
 
-  handleNavToggle(e) {
-    e.preventDefault();
-    this.setState((state) => ({
-      showNav: !state.showNav,
-    }));
-  }
-
   handleOpenModal = (modalSubSection, event) => {
     //only open modal   on 'enter' or click
     if (event.keyCode === 13 || event.type === "click") {
@@ -73,9 +72,14 @@ export default class Summary extends Component {
     this.setState({ showModal: false });
   };
 
+  getSummaryMap() {
+    return this.props.summaryMap ?? defaultSummaryMap;
+  }
+
   getSectionEntryCounts(section) {
     let summary = this.props.summary;
     let count = 0;
+    const summaryMap = this.getSummaryMap();
     if (summary[section] && summaryMap[section]["sections"]) {
       let sections = summaryMap[section]["sections"];
       for (let subSection in sections) {
@@ -96,9 +100,10 @@ export default class Summary extends Component {
 
   isSectionFlagged(section) {
     const { sectionFlags } = this.props;
-    const subSections = sectionFlags[section]
-      ? Object.keys(sectionFlags[section])
-      : null;
+    const subSections =
+      sectionFlags && sectionFlags[section]
+        ? Object.keys(sectionFlags[section])
+        : null;
 
     if (!subSections) {
       return false;
@@ -115,11 +120,12 @@ export default class Summary extends Component {
 
   getSectionFlagClass(section) {
     const { sectionFlags } = this.props;
+    if (!sectionFlags) return "";
     const subSections = sectionFlags[section]
       ? Object.keys(sectionFlags[section])
       : null;
 
-    if (!subSections) {
+    if (isEmptyArray(subSections)) {
       return "";
     }
 
@@ -139,7 +145,7 @@ export default class Summary extends Component {
       : null;
 
     if (!subSections) {
-      return false;
+      return null;
     }
 
     let count = 0;
@@ -155,34 +161,51 @@ export default class Summary extends Component {
   isSubsectionFlagged(section, subSection) {
     const { sectionFlags } = this.props;
     if (
+      !sectionFlags ||
       sectionFlags[section] == null ||
       sectionFlags[section][subSection] == null
     ) {
       return false;
     }
-    if (sectionFlags[section][subSection] === true) {
-      return true;
-    } else if (sectionFlags[section][subSection] === false) {
-      return false;
-    } else {
+    if (Array.isArray(sectionFlags[section][subSection])) {
       return sectionFlags[section][subSection].length > 0;
     }
+    return !!sectionFlags[section][subSection];
   }
 
-  // if flagged, returns flag text, else returns false
-  isEntryFlagged(section, subSection, entry) {
+  // if flagged, returns flag text, else returns empty text
+  getEntryFlagText(section, subSection, entry) {
     const { sectionFlags } = this.props;
 
-    let flagged = false;
-    if (!sectionFlags[section] || !sectionFlags[section][subSection])
-      return false;
+    let flagText = "";
+    if (
+      !sectionFlags ||
+      !sectionFlags[section] ||
+      !sectionFlags[section][subSection] ||
+      !entry
+    )
+      return "";
     sectionFlags[section][subSection].forEach((flag) => {
       if (flag.entryId === entry._id) {
-        flagged = flag.flagText + (flag.flagClass ? "|" + flag.flagClass : "");
+        flagText = flag.flagText + (flag.flagClass ? "|" + flag.flagClass : "");
       }
     });
 
-    return flagged;
+    return flagText;
+  }
+
+  renderSectionAnchor(sectionId) {
+    return (
+      <div
+        id={`${sectionId}__anchor`}
+        key={`${sectionId}__anchor`}
+        style={{
+          position: "relative",
+          top: isReportEnabled() ? "-148px" : "-100px",
+          height: "2px",
+        }}
+      ></div>
+    );
   }
 
   renderGuideLine(subSection) {
@@ -213,9 +236,10 @@ export default class Summary extends Component {
 
   renderNoEntries(section, subSection) {
     const { sectionFlags } = this.props;
-    let subSectionFlags = sectionFlags[section]
-      ? sectionFlags[section][subSection.dataKey]
-      : null;
+    let subSectionFlags =
+      sectionFlags && sectionFlags[section]
+        ? sectionFlags[section][subSection.dataKey]
+        : null;
     let flagEntries = [];
     let flagContent = "";
     let guidelineContent = this.renderGuideLine(subSection);
@@ -232,7 +256,7 @@ export default class Summary extends Component {
               className="flag"
               icon={faExclamationCircle}
               tabIndex={0}
-              style={{marginRight: 8}}
+              style={{ marginRight: 8 }}
             />
             <span className="text">{item}</span>
           </div>
@@ -265,25 +289,26 @@ export default class Summary extends Component {
         negated ? e[filter] == null : e[filter] != null
       );
     }
-    if (filteredEntries.length === 0) return null;
+    if (isEmptyArray(filteredEntries)) return null;
 
     //ReactTable needs an ID for aria-describedby
     let tableID = `${subSection.dataKey}_table`;
 
     const headers = Object.keys(table.headers);
     const hasFlaggedEntries = filteredEntries.some((entry) =>
-      this.isEntryFlagged(section, subSection.dataKey, entry)
+      !!this.getEntryFlagText(section, subSection.dataKey, entry)
     );
     let columns = [];
     columns.push({
       id: "flagged",
       Header: <span aria-label="flag"></span>,
       accessor: (entry) =>
-        this.isEntryFlagged(section, subSection.dataKey, entry),
+        this.getEntryFlagText(section, subSection.dataKey, entry),
       Cell: (props) => {
         let arrDisplay = props.value ? props.value.split("|") : null;
         let displayText = arrDisplay && arrDisplay[0] ? arrDisplay[0] : "";
         let displayClass = arrDisplay && arrDisplay[1] ? arrDisplay[1] : "";
+        if (!arrDisplay) return null;
         return (
           <FontAwesomeIcon
             className={`flag flag-entry ${
@@ -296,9 +321,9 @@ export default class Summary extends Component {
         );
       },
       disableSortBy: true,
-      width: hasFlaggedEntries ? 32 : 16,
-      minWidth: hasFlaggedEntries ? 32 : 16,
-      className: hasFlaggedEntries ? "flag-cell": "",
+      width: 35,
+      minWidth: 35,
+      className: hasFlaggedEntries ? "flag-cell" : "",
     });
 
     headers.forEach((header) => {
@@ -383,16 +408,19 @@ export default class Summary extends Component {
         role="table"
         aria-label={subSection.name}
         aria-describedby={customProps.id}
-        className={`table sub-section__table`}
+        className={`table`}
       >
         <Table
+          className={`${
+            columns.length <= 2 ? "single-column sub-section__table" : "sub-section__table"
+          }`}
           columns={columns}
           data={filteredEntries}
           tableParams={{
             defaultSorted: defaultSorted,
             pageSize: 10,
             showPagination: filteredEntries.length > 10,
-            tableProps: customProps
+            tableProps: customProps,
           }}
         ></Table>
       </div>
@@ -400,6 +428,7 @@ export default class Summary extends Component {
   }
 
   getWarningText(section) {
+    const summaryMap = this.getSummaryMap();
     if (!summaryMap[section]) {
       return "";
     }
@@ -413,8 +442,8 @@ export default class Summary extends Component {
   renderGraph(panel) {
     if (panel.graphType === "MED") {
       let data = this.props.summary[panel.dataSectionRefKey];
-      const mmeErrors = this.props.mmeErrors;
-      return <MMEGraph data={data} error={mmeErrors}></MMEGraph>;
+      const hasError = this.props.hasMmeErrors;
+      return <MMEGraph data={data} showError={hasError}></MMEGraph>;
     }
     //can return other type of graph depending on the section
     return <div className="graph-placeholder"></div>;
@@ -468,6 +497,7 @@ export default class Summary extends Component {
   }
 
   renderAlertsPanel(panel) {
+    if (!panel || !panel.alertsData) return null;
     let alertsData =
       this.props.summary[panel.alertsData.dataSectionRefKey] || [];
     let alertsContent = alertsData.length
@@ -504,6 +534,28 @@ export default class Summary extends Component {
     );
   }
 
+  renderSurveySummaryPanel(panel) {
+    if (!isReportEnabled()) return null;
+    if (!panel || !panel.data) return null;
+    let surveyData = this.props.summary[panel.data.dataSectionRefKey] || null;
+    if (!surveyData) return null;
+    return (
+      <div className="sub-section__infopanel">
+        <div className="stats-container">
+          <div className="content">
+            {
+              <ScoringSummary
+                summary={getScoringData(surveyData)}
+                title={panel.title}
+                readOnly={true}
+              ></ScoringSummary>
+            }
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   renderPanel(section, panels, type) {
     let content = panels
       .filter((panel) => panel.type === type)
@@ -524,17 +576,24 @@ export default class Summary extends Component {
   }
 
   renderSection(section) {
-    const sectionMap = summaryMap[section]["sections"];
+    const summaryMap = this.getSummaryMap();
+    if (!summaryMap[section]) return null;
     const queryDateTime = summaryMap[section].lastUpdated
       ? summaryMap[section].lastUpdated
       : formatit.currentDateTimeFormat();
+    const sectionMap = summaryMap[section]["sections"];
+    const sectionError = summaryMap[section].errorMessage;
+    const errorMessage = getErrorMessageString(
+      sectionError,
+      `Error ocurred retrieving data for ${section}`
+    );
     const subSectionsToRender = sectionMap.filter((section) => {
       return !section.hideSection;
     });
     const subSections = subSectionsToRender.map((subSection, index) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
-      const entries = (Array.isArray(data) ? data : [data]).filter(
+      const entries = (!isEmptyArray(data) ? data : []).filter(
         (r) => r != null
       );
       const panels = subSection.panels;
@@ -543,69 +602,84 @@ export default class Summary extends Component {
       const flaggedClass = flagged ? "flagged" : "";
       const omitTitleClass = subSection.omitTitle ? "sub-section-notitle" : "";
       return (
-        <div
-          key={`${subSection.dataKey}_${index}`}
-          className={`sub-section h3-wrapper  ${omitTitleClass}`}
+        <React.Fragment
+          key={`subSectionHeader_container_${subSection.dataKey}`}
         >
+          {this.renderSectionAnchor(subSection.dataKey)}
           <div
-            id={`${subSection.dataKey}_anchor`}
-            style={{ position: "relative", height: 1, top: -1 * 100 - 60 }}
+            key={`${subSection.dataKey}_${index}`}
+            className={`sub-section h3-wrapper  ${omitTitleClass}`}
           >
-            &nbsp;
-          </div>
-          <h3
-            className={`sub-section__header`}
-            id={`${subSection.dataKey}_title`}
-          >
-            <FontAwesomeIcon
-              className={`flag flag-nav ${flaggedClass}`}
-              icon={faCircle}
-              title="flag"
-              tabIndex={0}
-            />
-            <span className="sub-section__header__name">{subSection.name}</span>
-            <span className="sub-section__header__info">
-              {subSection.info && (
-                <div
-                  onClick={(event) => this.handleOpenModal(subSection, event)}
-                  onKeyDown={(event) => this.handleOpenModal(subSection, event)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={subSection.name}
+            {!subSection.omitTitle && (
+              <h3
+                id={`${subSection.dataKey}_title`}
+                className={`sub-section__header`}
+              >
+                {flaggedClass && (
+                  <FontAwesomeIcon
+                    className={`flag flag-nav ${flaggedClass}`}
+                    icon={faCircle}
+                    title="flag"
+                    tabIndex={0}
+                  />
+                )}
+                <span
+                  className="sub-section__header__name"
+                  datasectionid={subSection.dataKey}
                 >
-                  <span
-                    className="info-icon"
-                    icon="info-circle"
-                    title={`more info: ${subSection.name}`}
-                    role="tooltip"
-                  >
-                    more info
-                  </span>
-                </div>
-              )}
-            </span>
-          </h3>
-          {panels && (
-            <div className="panels">
-              {this.renderPanel(section, panels, "graph")}
-              {
-                <div className="sub-panels">
-                  {this.renderPanel(section, panels, "rxsummary")}
-                  {this.renderPanel(section, panels, "alerts")}
-                </div>
-              }
-            </div>
-          )}
-
-          {!hasEntries && !panels && this.renderNoEntries(section, subSection)}
-          {hasEntries &&
-            subSection.tables.map((table, index) =>
-              this.renderTable(table, entries, section, subSection, index)
+                  {subSection.name}
+                </span>
+                <span className="sub-section__header__info">
+                  {subSection.info && (
+                    <div
+                      onClick={(event) =>
+                        this.handleOpenModal(subSection, event)
+                      }
+                      onKeyDown={(event) =>
+                        this.handleOpenModal(subSection, event)
+                      }
+                      role="button"
+                      tabIndex={0}
+                      aria-label={subSection.name}
+                    >
+                      <span
+                        className="info-icon"
+                        icon="info-circle"
+                        title={`more info: ${subSection.name}`}
+                        role="tooltip"
+                      >
+                        more info
+                      </span>
+                    </div>
+                  )}
+                </span>
+              </h3>
             )}
-          {hasEntries &&
-            this.isSubsectionFlagged(section, subSection.dataKey) &&
-            this.renderGuideLine(subSection)}
-        </div>
+            {panels && (
+              <div className="panels">
+                {this.renderPanel(section, panels, "graph")}
+                {
+                  <div className="sub-panels">
+                    {this.renderPanel(section, panels, "rxsummary")}
+                    {this.renderPanel(section, panels, "alerts")}
+                    {this.renderPanel(section, panels, "surveysummary")}
+                  </div>
+                }
+              </div>
+            )}
+
+            {!hasEntries &&
+              !panels &&
+              this.renderNoEntries(section, subSection)}
+            {hasEntries &&
+              subSection.tables.map((table, index) =>
+                this.renderTable(table, entries, section, subSection, index)
+              )}
+            {hasEntries &&
+              this.isSubsectionFlagged(section, subSection.dataKey) &&
+              this.renderGuideLine(subSection)}
+          </div>
+        </React.Fragment>
       );
     });
     return (
@@ -613,7 +687,7 @@ export default class Summary extends Component {
         {subSections}
         {!summaryMap[section].skipDataInfo && (
           <DataInfo
-            errorMessage={summaryMap[section].errorMessage}
+            errorMessage={errorMessage}
             contentText={summaryMap[section].provenanceText}
             queryDateTime={queryDateTime}
             warningText={this.getWarningText(section)}
@@ -624,6 +698,7 @@ export default class Summary extends Component {
   }
 
   renderSectionHeader(section) {
+    const summaryMap = this.getSummaryMap();
     const flagged = this.isSectionFlagged(section);
     const flagClass = this.getSectionFlagClass(section);
     const flaggedClass = flagged ? `flagged ${flagClass ? flagClass : ""}` : "";
@@ -663,10 +738,7 @@ export default class Summary extends Component {
 
     if (section === "PatientRiskOverview") {
       icon = <ChartIcon {...iconProps} />;
-    } else if (
-      section === "PertinentMedicalHistory" ||
-      section === "CSAgreement"
-    ) {
+    } else if (section === "PertinentMedicalHistory") {
       icon = <MedicalHistoryIcon {...iconProps} />;
     } else if (section === "HistoricalTreatments") {
       icon = <MedicineIcon {...iconProps} />;
@@ -682,40 +754,45 @@ export default class Summary extends Component {
       icon = <ProviderIcon {...iconProps} />;
     } else if (section === "UrineDrugScreens") {
       icon = <FlaskIcon {...iconProps} />;
+    } else if (section === "CSAgreement") {
+      icon = <AgreementIcon {...iconProps} />;
     }
 
     return (
-      <h2 id={section} className="section__header">
-        <div className="section__header-title">
-          <span title={title}>{icon}</span>
-          <span className="title-text-container">
-            <span className="title-text">{title}</span>
-            <span className="info">
-              <span className="info-count-text">
-                {entryCount && entryCount}
+      <React.Fragment key={`sectionHeader_container_${section}`}>
+        {this.renderSectionAnchor(section)}
+        <h2 id={section} className="section__header" key={`section_${section}`}>
+          <div datasectionid={section} className="section__header-title">
+            <span title={title}>{icon}</span>
+            <span className="title-text-container">
+              <span className="title-text">{title}</span>
+              <span className="info">
+                <span className="info-count-text">
+                  {entryCount && entryCount}
+                </span>
+                <FontAwesomeIcon
+                  className={`flag flag-header ${flaggedClass}`}
+                  icon={faExclamationCircle}
+                  id={`${section}_tooltipicon`}
+                  data-tooltip-id={`${section}_tooltip_alert_content`}
+                  data-tooltip-content={flaggedText}
+                />
+                <Tooltip
+                  id={`${section}_tooltip_alert_content`}
+                  place="top"
+                  className="summary-tooltip"
+                ></Tooltip>
               </span>
-              <FontAwesomeIcon
-                className={`flag flag-header ${flaggedClass}`}
-                icon={faExclamationCircle}
-                id={`${section}_tooltipicon`}
-                data-tooltip-id={`${section}_tooltip_alert_content`}
-                data-tooltip-content={flaggedText}
-              />
-              <Tooltip
-                id={`${section}_tooltip_alert_content`}
-                place="top"
-                className="summary-tooltip"
-              ></Tooltip>
             </span>
-          </span>
-        </div>
+          </div>
 
-        <FontAwesomeIcon
-          className="chevron"
-          icon={faChevronRight}
-          title="expand/collapse"
-        />
-      </h2>
+          <FontAwesomeIcon
+            className="chevron"
+            icon={faChevronRight}
+            title="expand/collapse"
+          />
+        </h2>
+      </React.Fragment>
     );
   }
 
@@ -724,9 +801,25 @@ export default class Summary extends Component {
     return parseInt(this.props.patient.Age) < 18;
   }
 
+  getSectionsToRender(summaryMap) {
+    if (!summaryMap) return null;
+    const sectionsToRender = [];
+    /*
+     * sections to be rendered
+     */
+    Object.keys(summaryMap).forEach((section) => {
+      if (summaryMap[section]["hideSection"]) return true;
+      sectionsToRender.push(section);
+    });
+    return sectionsToRender;
+  }
+
   render() {
+    const summaryMap = this.getSummaryMap();
     const { summary, collector } = this.props;
-    const meetsInclusionCriteria = summary.Patient.MeetsInclusionCriteria;
+    const meetsInclusionCriteria = summary.Patient
+      ? !!summary.Patient.MeetsInclusionCriteria
+      : false;
     const {
       EducationMaterials,
       PatientRiskOverview_graph,
@@ -740,41 +833,26 @@ export default class Summary extends Component {
     const hasErrors =
       this.props.errorCollection && this.props.errorCollection.length > 0;
 
-    const sectionsToRender = [];
-    /*
-     * sections to be rendered
-     */
-    Object.keys(summaryMap).forEach((section) => {
-      if (summaryMap[section]["hideSection"]) return true;
-      sectionsToRender.push(section);
-    });
+    const sectionsToRender = this.getSectionsToRender(summaryMap);
     return (
-      <div className="summary">
+      <div className="summary overview">
         <SideNav
           id="summarySideNavButton"
           navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
+          parentContainerSelector={`.summary.overview`}
         ></SideNav>
         <div className="summary__display" id="maincontent">
-          <div className="summary__display-title">
+          <h1 className="summary__display-title">
             Clinical Opioid Summary with Rx Integration
-          </div>
-
+          </h1>
           {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
-
           {meetsInclusionCriteria && <ExclusionBanner />}
-
-          {!meetsInclusionCriteria && (
+          {!hasErrors && !meetsInclusionCriteria && (
             <InclusionBanner dismissible={meetsInclusionCriteria} />
           )}
           {meetsInclusionCriteria && this.isUnderAge() && (
-            <Warning
-              text={`This patient is under 18 years of age. 
-            Guidance for clinical decision support in COSRI is for patients 18 years and older. 
-            Please refer to pediatric clinical guidance when prescribing opioids 
-            for people under 18 years of age.`}
-            ></Warning>
+            <Warning text="This patient is under 18 years of age. Guidance for clinical decision support in COSRI is for patients 18 years and older. Please refer to pediatric clinical guidance when prescribing opioids for people under 18 years of age."></Warning>
           )}
-
           {meetsInclusionCriteria && (
             <div className="sections">
               {sectionsToRender.map((section, index) => {
@@ -790,9 +868,7 @@ export default class Summary extends Component {
               })}
             </div>
           )}
-
           <Disclaimer />
-
           <DevTools
             collector={collector}
             summary={CQLSummary}
@@ -806,7 +882,6 @@ export default class Summary extends Component {
           />
           {/* display released version string */}
           <Version />
-
           <ReactModal
             className="modal"
             overlayClassName="overlay"
@@ -827,10 +902,11 @@ export default class Summary extends Component {
 
 Summary.propTypes = {
   summary: PropTypes.object.isRequired,
+  summaryMap: PropTypes.object.isRequired,
   patient: PropTypes.object,
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,
   errorCollection: PropTypes.array,
-  mmeErrors: PropTypes.bool,
+  hasMmeErrors: PropTypes.bool,
   result: PropTypes.object.isRequired,
 };

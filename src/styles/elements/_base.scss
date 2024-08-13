@@ -26,12 +26,18 @@ h3 {
 h3:focus {
   outline: none;
 }
-
 a {
   color: $link-color;
   font-weight: 600;
   text-decoration: none;
   border-bottom: 1px solid $link-border-color;
+  word-wrap: break-word;
+  &:hover {
+    color: $link-color-dark;
+  }
+}
+.text-small {
+  font-size: 0.85rem;
 }
 .text-center {
   text-align: center;
@@ -64,7 +70,7 @@ a {
   text-transform: capitalize;
 }
 .sub {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 .text-right {
   text-align: right;
@@ -79,23 +85,49 @@ a {
 .hide {
   display: none;
 }
+.nowrap {
+  white-space: nowrap;
+}
 .flex {
   display: flex;
   justify-content: space-between;
   align-items: center;
   column-gap: 4px;
 }
+.flex-column {
+  flex-direction: column;
+}
 .flex-1 {
-    flex: 1;
+  flex: 1;
+}
+.flex-gap-1 {
+  gap: 8px;
+}
+.flex-gap-2 {
+  gap: 16px;
 }
 .flex-space-between {
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 .flex-start {
+  display: flex;
   justify-content: flex-start;
 }
 .flex-center {
+  display: flex;
   justify-content: center;
+}
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+.flex-align-start {
+  display: flex;
+  align-items: flex-start;
+}
+.framed-border {
+  border: 1px solid $color-gray-lighter !important;
 }
 .lds-ellipsis {
   display: inline-block;
@@ -160,4 +192,26 @@ a {
 }
 .print-only {
   display: none;
+}
+.print-image {
+  &.absolute {
+    z-index: -1;
+    position: absolute;
+  }
+}
+.disabled {
+  opacity: 0.4;
+}
+
+.tooltip-donut {
+  position: absolute;
+  text-align: left;
+  padding: 8px;
+  background: #ffffff;
+  color: $color-body;
+  border: 1px solid $color-gray-lighter;
+  pointer-events: none;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  font-weight: 600;
 }

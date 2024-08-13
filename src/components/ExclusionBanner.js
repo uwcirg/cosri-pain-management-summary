@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ChevronDownIcon from "../icons/ChevronDownIcon";
+import {
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default class ExclusionBanner extends Component {
   constructor() {
@@ -42,7 +45,7 @@ export default class ExclusionBanner extends Component {
 
         <div className="exclusion-banner__description">
           <strong className="title">
-            <FontAwesomeIcon icon="exclamation-circle" title="notice" />{" "}
+            <FontAwesomeIcon icon={faExclamationCircle} title="notice" />{" "}
             LIMITATIONS
           </strong>{" "}
           Guidance for adult pain except...{" "}
@@ -69,7 +72,7 @@ export default class ExclusionBanner extends Component {
               <li>receiving Palliative care</li>
               <li>receiving End-of-life care</li>
             </ul>
-            <div class="text-right">
+            <div className="text-right">
               <button className="plain info-icon" onClick={this.handleClose}>
                 Click to hide info
               </button>

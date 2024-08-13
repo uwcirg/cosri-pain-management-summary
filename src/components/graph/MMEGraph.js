@@ -4,6 +4,8 @@ import { scaleLinear, scaleTime } from "d3-scale";
 import { line } from "d3-shape";
 import XYAxis from "./xy-axis";
 import Line from "./line";
+import Markers from "./markers";
+import Tooltip from "./tooltip";
 import { dateFormat } from "../../helpers/formatit";
 import { dateCompare } from "../../helpers/sortit";
 import { sumArray, daysFromToday } from "../../helpers/utility";
@@ -24,12 +26,13 @@ export default class MMEGraph extends Component {
     paramYFieldName
   ) {
     let data = [];
-    const value = !isNaN(paramValue) ? paramValue : 0;
-    const total = !isNaN(paramTotal) ? paramTotal : 8;
-    const xFieldName = paramXFieldName ? paramXFieldName : defaultFields.x;
-    const yFieldName = paramYFieldName ? paramYFieldName : defaultFields.y;
-    const maxDate = paramMaxDate ? paramMaxDate : new Date();
-    let minDate = paramMinDate ? paramMinDate : null;
+    const value = paramValue || 0;
+    const total = paramTotal || 8;
+    const xFieldName = paramXFieldName || defaultFields.x;
+    const yFieldName = paramYFieldName || defaultFields.y;
+
+    let maxDate = paramMaxDate,
+      minDate = paramMinDate;
 
     if (!minDate) {
       minDate = new Date();
@@ -153,7 +156,7 @@ export default class MMEGraph extends Component {
     //const CDC_MAX_VALUE = 90;
     const xIntervals = 12;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
-    const hasError = this.props.error;
+    const hasError = this.props.showError;
     //make a copy of the data so as not to accidentally mutate it
     //need to make sure the dates are sorted for line to draw correctly
     let computedData = this.props.data
@@ -249,15 +252,10 @@ export default class MMEGraph extends Component {
       maxDate,
       ...lineParamsSet
     );
-    // let CDCData = this.getDefaultDataValueSet(
-    //   CDC_MAX_VALUE,
-    //   baseLineDate,
-    //   maxDate,
-    //   ...lineParamsSet
-    // );
+    //let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
 
     const margins = {
-      top: 8,
+      top: 0,
       right: 56,
       bottom: 48,
       left: 56,
@@ -291,13 +289,14 @@ export default class MMEGraph extends Component {
     const additionalProps = {
       strokeColor: dataStrokeColor,
       strokeFill: dataStrokeColor,
-      strokeWidth: "2.25",
+      strokeWidth: 2.25,
+      markerSize: 4,
     };
-    additionalProps["dataPoints"] = {
+    additionalProps["dataPointsProps"] = {
       ...additionalProps,
       ...{
-        dataStrokeWidth: "2.5",
-        dataStrokeFill: dataStrokeColor,
+        strokeWidth: 2.5,
+        strokeFill: dataStrokeColor,
       },
     };
     const tickInterval = Math.ceil(diffDays / 30 / xIntervals);
@@ -381,6 +380,7 @@ export default class MMEGraph extends Component {
               <g transform={`translate(${margins.left}, ${margins.top})`}>
                 <XYAxis {...{ xSettings, ySettings }} />
                 <Line lineID="dataLine" data={data} {...dataLineProps} />
+                <Markers data={data} {...dataLineProps} />
                 <Line
                   lineID="WALine"
                   strokeColor={WA_COLOR}
@@ -397,19 +397,13 @@ export default class MMEGraph extends Component {
                   data={CDCSecondaryData}
                   {...defaultProps}
                 />
-                {/* <Line
-                  lineID="CDCLine"
-                  strokeColor={CDC_COLOR}
-                  dotted="true"
-                  dotSpacing="3, 3"
-                 // data={CDCData}
-                  {...defaultProps}
-                /> */}
+                {/* <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} /> */}
+                <Tooltip data={data} {...dataLineProps}></Tooltip>
                 <text {...WALegendSettings}>
-                  Washington State consultation threshold
+                  WA State: Consultation threshold
                 </text>
                 <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>
-                  CDC extra precautions threshold
+                  CDC: Consider offering naloxone
                 </text>
                 {/* <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>
                   CDC avoid/justify threshold
@@ -435,5 +429,5 @@ export default class MMEGraph extends Component {
 
 MMEGraph.propTypes = {
   data: PropTypes.array,
-  error: PropTypes.bool,
+  showError: PropTypes.bool,
 };

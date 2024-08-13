@@ -1,27 +1,139 @@
 .button-primary {
-    padding: 12px 16px;
-    background: $color-blue;
-    color: #FFF;
-    border-radius: 24px;
-    border: 0;
-    letter-spacing: 0.02rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    box-shadow: 1px 1px 2px $color-box-shadow;
+  position: relative;
+  padding: 12px 16px;
+  background: $color-blue;
+  color: #fff;
+  border-radius: 24px;
+  border: 0;
+  letter-spacing: 0.02rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 1px 1px 2px $color-box-shadow;
+  cursor: pointer;
+  &[disabled] {
+    background-color: $color-blue-disabled;
+  }
 }
 .button-default {
-    background: #FFF;
-    color: #444;
-    border: 1px solid #bbb6b6;
-    border-radius: 4px;
-    letter-spacing: 0.02rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    box-shadow: 1px 1px 2px $color-box-shadow;
-    padding: 8px 12px;
+  position: relative;
+  background: #fff;
+  color: #444;
+  border: 1px solid $color-gray-lightest;
+  border-radius: 4px;
+  letter-spacing: 0.02rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  box-shadow: 1px 1px 2px $color-box-shadow;
+  padding: 8px 16px;
+  cursor: pointer;
+  &:hover {
+    background: darken(#444, 10%);
+    color: #fff;
+  }
+}
+.rounded {
+  border-radius: 100vmax;
 }
 button.disabled {
-    opacity: 0.5
+  opacity: 0.5;
+}
+.button-secondary {
+  position: relative;
+  color: #777;
+  min-width: 64px;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.button--loading .button__text,
+.button--loaded .button__text  {
+  visibility: hidden;
+  opacity: 0;
+  cursor: pointer;
+}
+.button--loaded {
+    animation-play-state: paused;
+    background-color: #FFF !important;
+    &:hover {
+        background-color: #FFF !important;
+    }
+    border: 1px solid #FFF !important;
+}
+
+.button--loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  border: 2px solid transparent;
+  border-top-color: #FFF;
+  border-bottom-color: #FFF;
+  border-right-color: #FFF;
+  border-radius: 50%;
+  animation: button-loading-spinner ease infinite;
+}
+.button--loaded:after {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 8px;
+    height: 20px;
+    border-bottom: 2px solid green;
+    border-right: 2px solid green;
+    transform: rotate(45deg);
+}
+
+.button--loaded.copy:after {
+  content: "copied!";
+  position: absolute;
+  top: 0;
+  left: -46px;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 8px;
+  height: 20px;
+  border: 0;
+  color: green;
+  font-weight: 600;
+  transform: rotate(0);
+}
+
+.button--loaded.error:after {
+  content: "error!";
+  position: absolute;
+  top: 0px;
+  left: -36px;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 8px;
+  height: 20px;
+  border: 0;
+  color: $color-alert;
+  transform: rotate(0);
+}
+
+@keyframes button-loading-spinner {
+  from {
+    transform: rotate(0turn);
+  }
+
+  to {
+    transform: rotate(1turn);
+  }
 }
 button.plain {
     background-color: transparent;

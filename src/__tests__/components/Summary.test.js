@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react"
 import { mockSummaryA, mockSectionFlags } from '../../utils/testFixtures';
 import Summary from '../../components/Summary';
+import summaryMap from '../../config/summary_config.json';
 
 it('renders Summary without crashing', () => {
   const { container } = render(
@@ -10,6 +11,7 @@ it('renders Summary without crashing', () => {
         sectionFlags: mockSectionFlags,
         collector: [],
         result: {},
+        summaryMap: summaryMap
       }}
     ></Summary>
   );
@@ -25,6 +27,7 @@ it('renders the scrolling nav', () => {
         sectionFlags: mockSectionFlags,
         collector: [],
         result: {},
+        summaryMap: summaryMap
       }}
     ></Summary>
   );
@@ -39,6 +42,7 @@ it('renders the summary display', () => {
         sectionFlags: mockSectionFlags,
         collector: [],
         result: {},
+        summaryMap: summaryMap
       }}
     ></Summary>
   );
@@ -53,6 +57,7 @@ it.skip('renders all subsection headers', () => {
         sectionFlags: mockSectionFlags,
         collector: [],
         result: {},
+        summaryMap: summaryMap
       }}
     ></Summary>
   );
@@ -70,6 +75,7 @@ it.skip('renders conditions and encounter diagnoses in separate tables', () => {
         sectionFlags: mockSectionFlags,
         collector: [],
         result: {},
+        summaryMap: summaryMap
       }}
     ></Summary>
   );

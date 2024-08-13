@@ -24,7 +24,7 @@ it("closes the banner when the button is clicked", () => {
     ></ExclusionBanner>
   );
   const bannerElement = container.querySelector(".exclusion-banner");
-  expect(bannerElement.classList.contains("close")).toBe(false);
-  act(() => bannerElement.click());
   expect(bannerElement.classList.contains("close")).toBe(true);
+  act(() => bannerElement.click());
+  expect(bannerElement.classList.contains("close")).toBe(false);
 });
