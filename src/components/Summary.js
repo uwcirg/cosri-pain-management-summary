@@ -77,7 +77,7 @@ export default class Summary extends Component {
   }
 
   getSectionEntryCounts(section) {
-    let summary = this.props.summary;
+    let summary = this.props.summary ?? {};
     let count = 0;
     const summaryMap = this.getSummaryMap();
     if (summary[section] && summaryMap[section]["sections"]) {
@@ -162,8 +162,8 @@ export default class Summary extends Component {
     const { sectionFlags } = this.props;
     if (
       !sectionFlags ||
-      sectionFlags[section] == null ||
-      sectionFlags[section][subSection] == null
+      !sectionFlags[section] ||
+      !sectionFlags[section][subSection]
     ) {
       return false;
     }
@@ -256,8 +256,7 @@ export default class Summary extends Component {
               className="flag"
               icon={faExclamationCircle}
               tabIndex={0}
-              style={{ marginRight: 8 }}
-            />
+            />{" "}
             <span className="text">{item}</span>
           </div>
         );
@@ -281,7 +280,7 @@ export default class Summary extends Component {
   renderTable(table, entries, section, subSection, index) {
     // If a filter is provided, only render those things that have the filter field (or don't have it when it's negated)
     let filteredEntries = entries;
-    if (table.filter && table.filter.length > 0) {
+    if (table && table.filter && table.filter.length > 0) {
       // A filter starting with '!' is negated (looking for absence of that field)
       const negated = table.filter[0] === "!";
       const filter = negated ? table.filter.substring(1) : table.filter;
@@ -440,6 +439,7 @@ export default class Summary extends Component {
   }
 
   renderGraph(panel) {
+    if (!panel) return null;
     if (panel.graphType === "MED") {
       let data = this.props.summary[panel.dataSectionRefKey];
       const hasError = this.props.hasMmeErrors;
@@ -563,6 +563,8 @@ export default class Summary extends Component {
         return (
           <div key={`panel_${index}`} className={`panel ${panel.type}`}>
             {panel.type === "graph" && this.renderGraph(panel)}
+            {panel.type === "surveysummary" &&
+              this.renderSurveySummaryPanel(panel)}
             {panel.type === "rxsummary" && this.renderRxSummaryPanel(panel)}
             {panel.type === "alerts" && this.renderAlertsPanel(panel)}
           </div>
@@ -578,22 +580,23 @@ export default class Summary extends Component {
   renderSection(section) {
     const summaryMap = this.getSummaryMap();
     if (!summaryMap[section]) return null;
+    const sectionMap = summaryMap[section]["sections"];
     const queryDateTime = summaryMap[section].lastUpdated
       ? summaryMap[section].lastUpdated
       : formatit.currentDateTimeFormat();
-    const sectionMap = summaryMap[section]["sections"];
+    const subSectionsToRender =
+      sectionMap?.filter((section) => {
+        return !section.hideSection;
+      }) ?? [];
     const sectionError = summaryMap[section].errorMessage;
     const errorMessage = getErrorMessageString(
       sectionError,
       `Error ocurred retrieving data for ${section}`
     );
-    const subSectionsToRender = sectionMap.filter((section) => {
-      return !section.hideSection;
-    });
     const subSections = subSectionsToRender.map((subSection, index) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
-      const entries = (!isEmptyArray(data) ? data : []).filter(
+      const entries = (Array.isArray(data) ? data : []).filter(
         (r) => r != null
       );
       const panels = subSection.panels;
@@ -800,7 +803,6 @@ export default class Summary extends Component {
     if (!this.props.patient) return false;
     return parseInt(this.props.patient.Age) < 18;
   }
-
   getSectionsToRender(summaryMap) {
     if (!summaryMap) return null;
     const sectionsToRender = [];

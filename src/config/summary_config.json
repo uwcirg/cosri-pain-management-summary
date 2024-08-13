@@ -1,195 +1,746 @@
 {
-    "PatientRiskOverview": {
-      "title": "Patient Risk Overview",
-      "type": "overview",
-      "skipDataInfo": true,
-      "statsConfig": {
-        "dataKey": "PDMPMedications",
-        "dataKeySource":"PDMPMedications",
-        "data": [
-          {
-            "title": "rxsummary",
-            "keyMatch": "Class",
-            "summaryFields": [
-              {
-                "key": "Class",
-                "display_name": "Class",
-                "identifier": true
-              },
-              {
-                "key": "total",
-                "display_name": "# Rx",
-                "empty_cell_display": "0"
-              },
-              {
-                "key": "Prescriber",
-                "display_name": "# Prescribers",
-                "empty_cell_display": " "
-              },
-              {
-                "key": "Pharmacy",
-                "display_name": "# Pharmacies",
-                "empty_cell_display": " "
-              }
-            ],
-            "matchSet": [
-              {
-                "keys": ["opioid"],
-                "display_name": "Opioids"
-              },
-              {
-                "keys": ["benzodiazepine"],
-                "display_name": "Benzodiazepines"
-              },
-              {
-                "keys": ["sedative", "barbiturate"],
-                "display_name": "Non-benzo Sedatives/Hypnotics"
-              },
-              {
-                "keys": ["muscle relaxant"],
-                "display_name": "Muscle Relaxants"
-              },
-              {
-                "keys": ["stimulant"],
-                "display_name": "Stimulants"
-              },
-              {
-                "keys": ["antiepileptic"],
-                "display_name": "Anti-Convulsants"
-              },
-              {
-                "keys": ["steroid"],
-                "display_name": "Steroids"
-              }
-            ]
-          }
-        ]
-      },
-      "graphConfig": {
-        "demoConfigKey": "USE_DEMO",
-        "graphDateField": "date",
-        "mmeField": "MMEValue",
-        "startDateField": "Start",
-        "endDateField": "End",
-        "demoData":
-        [
-          {"date": "2020-09-30","MMEValue": 0, "placeholder": true},
-          {"date": "2020-10-01","MMEValue": 22.5},
-          {"date": "2020-10-09", "MMEValue": 22.5},
-          {"date": "2020-10-10", "MMEValue": 0},
-          {"date": "2020-11-02", "MMEValue": 0},
-          {"date": "2020-11-03", "MMEValue": 22.5},
-          {"date": "2020-11-06", "MMEValue": 22.5},
-          {"date": "2020-11-07", "MMEValue": 45},
-          {"date": "2020-11-11", "MMEValue": 45},
-          {"date": "2020-11-12", "MMEValue": 22.5},
-          {"date": "2020-12-07", "MMEValue": 22.5},
-          {"date": "2020-12-08", "MMEValue": 0, "placeholder": true}
-  
-        ],
-        "summaryDataSource": [
-          {
-            "section_key": "RiskConsiderations",
-            "subSection_key": "ReportMMEByDates"
-          }
-        ]
-      },
-      "sections": [
+  "PatientRiskOverview": {
+    "title": "Patient Risk Overview",
+    "type": "overview",
+    "skipDataInfo": true,
+    "statsConfig": {
+      "dataKey": "PDMPMedications",
+      "dataKeySource":"PDMPMedications",
+      "data": [
         {
-          "name": "Patient Risk Overview",
-          "omitTitle": true,
-          "dataKey": "PatientRiskOverview",
-          "panels": [
+          "title": "rxsummary",
+          "keyMatch": "Class",
+          "summaryFields": [
             {
-              "type": "graph",
-              "graphType": "MED",
-              "dataSectionRefKey": "PatientRiskOverview_graph"
+              "key": "Class",
+              "display_name": "Class",
+              "identifier": true
             },
             {
-              "type": "alerts",
-              "title": "Patient Risk Assessment",
-              "alertsData": {
-                "type": "alerts",
-                "dataSectionRefKey": "PatientRiskOverview_alerts"
-              }
+              "key": "total",
+              "display_name": "# Rx",
+              "empty_cell_display": "0"
             },
             {
-              "type": "rxsummary",
-              "title": "Prescription Summary",
-              "statsData": {
-                "type": "stats",
-                "dataSectionRefKey": "PatientRiskOverview_stats",
-                "objectKey": "rxsummary"
-              }
+              "key": "Prescriber",
+              "display_name": "# Prescribers",
+              "empty_cell_display": " "
+            },
+            {
+              "key": "Pharmacy",
+              "display_name": "# Pharmacies",
+              "empty_cell_display": " "
+            }
+          ],
+          "matchSet": [
+            {
+              "keys": ["opioid"],
+              "display_name": "Opioids"
+            },
+            {
+              "keys": ["benzodiazepine"],
+              "display_name": "Benzodiazepines"
+            },
+            {
+              "keys": ["sedative", "barbiturate"],
+              "display_name": "Non-benzo Sedatives/Hypnotics"
+            },
+            {
+              "keys": ["muscle relaxant"],
+              "display_name": "Muscle Relaxants"
+            },
+            {
+              "keys": ["stimulant"],
+              "display_name": "Stimulants"
+            },
+            {
+              "keys": ["antiepileptic"],
+              "display_name": "Anti-Convulsants"
+            },
+            {
+              "keys": ["steroid"],
+              "display_name": "Steroids"
             }
           ]
         }
       ]
     },
-    "PDMPMedications": {
-      "title":"State PMP Prescriptions",
-      "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
-      "demoData": {
-        "advisoryText": "Demo data is used here.",
-        "endpoint": "{process.env.PUBLIC_URL}/assets/data/PDMPDemoData.json",
-        "dataKey": "PDMPMedications",
-        "dataKeySource": "PDMPMedications"
-      },
-      "sections": [
+    "graphConfig": {
+      "demoConfigKey": "USE_DEMO",
+      "graphDateField": "date",
+      "mmeField": "MMEValue",
+      "startDateField": "Start",
+      "endDateField": "End",
+      "demoData":
+      [
+        {"date": "2020-09-30","MMEValue": 0, "placeholder": true},
+        {"date": "2020-10-01","MMEValue": 22.5},
+        {"date": "2020-10-09", "MMEValue": 22.5},
+        {"date": "2020-10-10", "MMEValue": 0},
+        {"date": "2020-11-02", "MMEValue": 0},
+        {"date": "2020-11-03", "MMEValue": 22.5},
+        {"date": "2020-11-06", "MMEValue": 22.5},
+        {"date": "2020-11-07", "MMEValue": 45},
+        {"date": "2020-11-11", "MMEValue": 45},
+        {"date": "2020-11-12", "MMEValue": 22.5},
+        {"date": "2020-12-07", "MMEValue": 22.5},
+        {"date": "2020-12-08", "MMEValue": 0, "placeholder": true}
+
+      ],
+      "summaryDataSource": [
         {
-          "name": "PMP Prescriptions",
-          "dataKey": "PDMPMedications",
-          "dataKeySource": "PDMPMedications",
-          "omitTitle": true,
-          "info": [
-            {
-              "type": "elements",
-              "description": "The medication order queries the following elements:",
-              "elements": [
-                {
-                  "name": "MedicationOrder",
-                  "status": "any",
-                  "lookback": "1 year"
-                }
-              ]
-            }
-          ],
-          "guideline": [
-            {
-              "type": "WA",
-              "title": "WA AMDG Guideline",
-              "text": "Avoid opioids if there is any FDA or clinical contraindications."
-            }
-          ],
-          "alertMapping": {
-            "priority": 1,
-            "dateField": "DispensedDate"
+          "section_key": "RiskConsiderations",
+          "subSection_key": "ReportMMEByDates"
+        }
+      ]
+    },
+    "sections": [
+      {
+        "name": "Patient Risk Overview",
+        "omitTitle": true,
+        "dataKey": "PatientRiskOverview",
+        "panels": [
+          {
+            "type": "graph",
+            "graphType": "MED",
+            "dataSectionRefKey": "PatientRiskOverview_graph"
           },
-          "tables": [
-            {
-              "defaultSorted": {
-                "id": "Dispensed",
-                "desc": true
+          {
+            "type": "surveysummary",
+            "title": "Questionnaire Scoring Summary",
+            "data": {
+              "dataSectionRefKey": "SurveySummary"
+            }
+          },
+          {
+            "type": "alerts",
+            "title": "Patient Risk Assessment",
+            "alertsData": {
+              "type": "alerts",
+              "dataSectionRefKey": "PatientRiskOverview_alerts"
+            }
+          },
+          {
+            "type": "rxsummary",
+            "title": "Prescription Summary",
+            "statsData": {
+              "type": "stats",
+              "dataSectionRefKey": "PatientRiskOverview_stats",
+              "objectKey": "rxsummary"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "PDMPMedications": {
+    "title":"State PMP Prescriptions",
+    "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
+    "demoData": {
+      "advisoryText": "Demo data is used here.",
+      "endpoint": "{process.env.PUBLIC_URL}/assets/data/PDMPDemoData.json",
+      "dataKey": "PDMPMedications",
+      "dataKeySource": "PDMPMedications"
+    },
+    "sections": [
+      {
+        "name": "PMP Prescriptions",
+        "dataKey": "PDMPMedications",
+        "dataKeySource": "PDMPMedications",
+        "omitTitle": true,
+        "info": [
+          {
+            "type": "elements",
+            "description": "The medication order queries the following elements:",
+            "elements": [
+              {
+                "name": "MedicationOrder",
+                "status": "any",
+                "lookback": "1 year"
+              }
+            ]
+          }
+        ],
+        "guideline": [
+          {
+            "type": "WA",
+            "title": "WA AMDG Guideline",
+            "text": "Avoid opioids if there is any FDA or clinical contraindications."
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "DispensedDate"
+        },
+        "tables": [
+          {
+            "defaultSorted": {
+              "id": "Dispensed",
+              "desc": true
+            },
+            "headers": {
+              "Drug Description": "Name",
+              "Class": {"key": "Class", "formatter": "listToStringFormat", "sortable": true, "minWidth": 120},
+              "Quantity": "Quantity",
+              "Duration": "Duration",
+              "MME": {"key": "MME", "formatter": "numberFormat", "default": "Not returned", "sortable": true},
+              "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateCompare", "sortable": true },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat", "sorter": "dateCompare", "sortable": true},
+              "Prescriber": "Prescriber",
+              "Pharmacy": "Pharmacy"
+            },
+            "flags": [
+              {
+                "flag": {
+                    "ifAnd": [
+                      {
+                        "ifEqualTo": {
+                          "header": "Class",
+                          "targetValue": "sedative"
+                        }
+                      },
+                      {
+                        "ifContains": {
+                          "table": "PDMPMedications",
+                          "source": "PDMPMedications",
+                          "header": "Class",
+                          "targetValue": "opioid"
+                        }
+                      }
+                    ]
+                },
+                "flagText": "Possible co-prescribing of sedatives with opioids."
               },
-              "headers": {
-                "Drug Description": "Name",
-                "Class": {"key": "Class", "formatter": "listToStringFormat", "sortable": true, "minWidth": 120},
-                "Quantity": "Quantity",
-                "Duration": "Duration",
-                "MME": {"key": "MME", "formatter": "numberFormat", "default": "Not returned", "sortable": true},
-                "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateCompare", "sortable": true },
-                "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat", "sorter": "dateCompare", "sortable": true},
-                "Prescriber": "Prescriber",
-                "Pharmacy": "Pharmacy"
+              {
+                "flag": {
+                  "ifAnd": [
+                    {
+                      "ifEqualTo": {
+                        "header": "Class",
+                        "targetValue": "barbiturate"
+                      }
+                    },
+                    {
+                      "ifContains": {
+                        "table": "PDMPMedications",
+                        "source": "PDMPMedications",
+                        "header": "Class",
+                        "targetValue": "opioid"
+                      }
+                    }
+                  ]
               },
-              "flags": [
-                {
-                  "flag": {
-                      "ifAnd": [
+                "flagText": "Possible co-prescribing of barbiturates with opioids."
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    {
+                      "ifEqualTo": {
+                        "header": "Class",
+                        "targetValue": "benzodiazepine"
+                      }
+                    },
+                    {
+                      "ifContains": {
+                        "table": "PDMPMedications",
+                        "source": "PDMPMedications",
+                        "header": "Class",
+                        "targetValue": "opioid"
+                      }
+                    }
+                  ]
+              },
+                "flagText": "Possible co-prescribing of Benzodiazepine with opioids."
+              },
+              {
+                "flag": {
+                    "ifEqualTo": {
+                    "header": "Class",
+                    "targetValue": "sedative"
+                  }
+                },
+                "flagText": "Caution for opioid prescribing, patient has been prescribed sedatives."
+              },
+              {
+                "flag": {
+                    "ifEqualTo": {
+                    "header": "Class",
+                    "targetValue": "barbiturate"
+                  }
+                },
+                "flagText": "Caution for opioid prescribing, patient has been prescribed barbiturates."
+              },
+              {
+                "flag": {
+                    "ifEqualTo": {
+                    "header": "Class",
+                    "targetValue": "benzodiazepine"
+                  }
+                },
+                "flagText": "Caution for opioid prescribing, patient has been prescribed Benzodiazepine medication."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "HistoricalTreatments": {
+    "title": "EHR Opioid and Related Medications",
+    "skipDataInfo": true,
+    "sections": [
+       {
+         "name": "Opioid Medications",
+         "dataKey": "OpioidMedications",
+         "dataKeySource": "HistoricalTreatments",
+         "info": [
+           {
+             "type": "elements",
+             "description": "Opioid Medications queries the following elements:",
+             "elements": [
+               {
+                 "name": "Opioid medication statements and orders",
+                 "status": "any",
+                 "lookback": "2 years"
+               }
+             ]
+           }
+         ],
+         "tables": [
+           {
+             "headers": {
+               "Drug Description": "Name",
+               "Quantity": { "key": "Quantity", "sortable": true},
+               "Written Date": { "key": "Start", "formatter": "datishFormat" },
+               "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+               "Prescriber": { "key": "Prescriber", "sortable": true},
+               "Pharmacy": { "key": "Pharmacy", "sortable": true}
+             }
+           }
+         ]
+       },
+       {
+         "name": "Non-Opioid Pain Medications",
+         "dataKey": "NonOpioidMedications",
+         "dataKeySource": "HistoricalTreatments",
+         "guideline": [
+           {
+             "type": "CDC",
+             "title": "CDC Guideline #1",
+             "text":"Opioids are not first-line therapy."
+           }
+          ],
+         "info": [
+           {
+             "type": "elements",
+             "description": "Non-Opioid Medications queries the following elements:",
+             "elements": [
+               {
+                 "name": "Non-opioid medication statements and orders",
+                 "status": "any",
+                 "lookback": "2 years"
+               }
+             ]
+           }
+         ],
+         "tables": [
+           {
+             "headers": {
+               "Drug Description": "Name",
+               "Quantity": { "key": "Quantity", "sortable": true},
+               "Written Date": { "key": "Start", "formatter": "datishFormat" },
+               "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+               "Prescriber": { "key": "Prescriber", "sortable": true},
+               "Pharmacy": { "key": "Pharmacy", "sortable": true}
+             },
+             "flags": [
+               {
+                 "flag": "ifNone",
+                 "flagText": "Absence of non-opioid medications."
+               }
+             ]
+           }
+         ]
+       },
+       {
+         "name": "Stool Softeners and Laxatives",
+         "dataKey": "StoolSoftenersAndLaxatives",
+         "dataKeySource": "HistoricalTreatments",
+         "guideline": [
+           {
+             "type": "CDC",
+             "title": "CDC Guideline #3",
+             "text": "To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
+           }
+         ],
+         "info": [
+           {
+             "type": "elements",
+             "description": "Stool Softeners and Laxatives queries the following elements:",
+             "elements": [
+               {
+                 "name": "Stool softeners / laxatives medication statements and orders",
+                 "status": "any",
+                 "lookback": "6 months"
+               }
+             ]
+           }
+         ],
+         "tables": [
+           {
+             "headers": {
+               "Drug Description": "Name",
+               "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+               "Written Date": { "key": "Start", "formatter": "datishFormat" },
+               "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+               "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+               "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+             },
+             "flags": [
+               {
+                 "flag": {
+                   "ifAnd": [
+                     "ifNone",
+                     {
+                       "ifOneOrMore": {
+                         "table": "OpioidMedications",
+                         "source": "HistoricalTreatments"
+                       }
+                     }
+                   ]
+                 },
+                 "flagText": "Absence of stool softeners/laxative with presence of at least one opioid medication."
+               }
+             ]
+           }
+         ]
+       }
+     ]
+  },
+  "PertinentMedicalHistory": {
+    "title": "Pertinent Medical History",
+    "skipDataInfo": true,
+    "sections": [
+      {
+        "name": "Conditions Associated with Chronic Pain",
+        "dataKey": "ConditionsAssociatedWithChronicPain",
+        "dataKeySource": "PertinentMedicalHistory",
+        "info": [
+          {
+            "type": "elements",
+            "description": "Conditions Associated with Chronic Pain queries the following elements:",
+            "elements": [
+              {
+                "name": "Conditions associated with chronic pain",
+                "status": "active or recurring",
+                "lookback": "n/a"
+              }
+            ]
+          }
+        ],
+        "tables": [
+          {
+            "headers": {
+              "Name": "Name",
+              "Status": "Status",
+              "Start": {
+                "key": "Onset",
+                "formatter": "datishFormat",
+                "minWidth": 150
+              },
+              "End": {
+                "key": "Abatement",
+                "formatter": "datishFormat",
+                "minWidth": 150
+              },
+              "Recorded": {
+                "key": "DateRecorded",
+                "formatter": "datishFormat"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Risk Factors for Opioid-related Harms",
+        "dataKey": "RiskFactorsForOpioidRelatedHarms",
+        "dataKeySource": "PertinentMedicalHistory",
+        "guideline": [
+          {
+            "type": "CDC",
+            "title": "CDC Guideline #8",
+            "text":  "Mitigate risk"
+          },
+          {
+            "type": "WA",
+            "title": "WA AMDG Guideline",
+            "text": "Avoid opioids if there is any FDA or clinical contraindications."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Risk Factors for Opioid-related Harms queries the following elements:",
+            "elements": [
+              {
+                "name": "Depression",
+                "status": "active or recurring",
+                "lookback": "n/a"
+              },
+              {
+                "name": "Anxiety",
+                "status": "active or recurring",
+                "lookback": "n/a"
+              },
+              {
+                "name": "Substance use disorder",
+                "status": "any",
+                "lookback": "n/a"
+              },
+              {
+                "name": "Opioid overdose and poisoning",
+                "status": "any",
+                "lookback": "n/a"
+              },
+              {
+                "name": "Suicide attempt",
+                "status": "any",
+                "lookback": "n/a"
+              },
+              {
+                "name": "Sleep-disordered breathing",
+                "status": "active or recurring",
+                "lookback": "n/a"
+              },
+              {
+                "name": "Renal dysfunction",
+                "status": "active or recurring",
+                "lookback": "n/a"
+              },
+              {
+                "name": "Hepatic dysfunction",
+                "status": "active or recurring",
+                "lookback": "n/a"
+              },
+              {
+                "name": "Pregnancy",
+                "status": "active or recurring",
+                "lookback": "42 weeks"
+              },
+              {
+                "name": "Age >= 65 YRS",
+                "status": "n/a",
+                "lookback": "n/a"
+              }
+            ]
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "Onset"
+        },
+        "tables": [
+          {
+            "headers": {
+              "Name": "Name",
+              "Status": "Status",
+              "Start": {
+                "key": "Onset",
+                "formatter": "datishFormat",
+                "minWidth": 150
+              },
+              "End": {
+                "key": "Abatement",
+                "formatter": "datishFormat",
+                "minWidth": 150
+              },
+              "Recorded": {
+                "key": "DateRecorded",
+                "formatter": "datishFormat"
+              }
+            },
+            "filter": "!Visit",
+            "flags": [
+              {
+                "flag": "always",
+                "flagText": "Factor that may place the patient at risk for an opioid-related harm {name}.",
+                "flagTextMapping": [
+                  {
+                    "pattern": "epression",
+                    "name": "Depression"
+                  },
+                  {
+                    "pattern": "verdose",
+                    "name": "Opioid related overdose"
+                  },
+                  {
+                    "pattern": "poisoning by other opioids",
+                    "name": "Opioid related overdose"
+                  },
+                  {
+                    "pattern": "nxiety",
+                    "name": "Anxiety"
+                  },
+                  {
+                    "pattern": "ubstance use",
+                    "name": "Substance use disorder"
+                  },
+                  {
+                    "pattern": "uicide",
+                    "name": "Suicide attempt"
+                  },
+                  {
+                    "pattern": "sleep",
+                    "name": "Sleep-disordered breathing"
+                  },
+                  {
+                    "pattern": "renal",
+                    "name": "Renal dysfunction"
+                  },
+                  {
+                    "pattern": "hepatic",
+                    "name": "Hepatic dysfunction"
+                  },
+                  {
+                    "pattern": "pregnan",
+                    "name": "Pregnancy"
+                  },
+                  {
+                    "pattern": "65",
+                    "name": "Age >= 65"
+                  }
+                ],
+                "key": "Name"
+              }
+            ]
+          },
+          {
+            "headers": {
+              "Name": "Name",
+              "Visit": {
+                "key": "Visit",
+                "formatter": "datishAgeFormat",
+                "minWidth": 150
+              }
+            },
+            "filter": "Visit",
+            "flags": [
+              {
+                "flag": "always",
+                "flagText": "Factor that may place the patient at risk for an opioid-related harm."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "NonPharmacologicTreatments": {
+    "title":"Non-Pharmacologic Treatments",
+    "skipDataInfo": true,
+    "sections": [
+      {
+        "name": "Non-Pharmacologic Treatments",
+        "dataKey": "NonPharmacologicTreatments",
+        "dataKeySource": "HistoricalTreatments",
+        "guideline": [
+          {
+            "type": "CDC",
+            "title": "CDC Guideline #1",
+            "text": "Opioids are not first-line therapy."
+          }
+        ],
+        "omitTitle": true,
+        "info": [
+          {
+            "type": "elements",
+            "description": "Non-Pharmacologic Treatments queries the following elements:",
+            "elements": [
+              {
+                "name": "Non-pharmacologic procedures",
+                "status": "any",
+                "lookback": "2 years"
+              }
+            ]
+          }
+        ],
+        "tables": [
+          {
+            "headers": {
+              "Name": "Name",
+              "Date": { "key": "Date", "formatter": "datishFormat" },
+              "Type": "Type"
+            },
+            "flags": [
+              {
+                "flag": "ifNone",
+                "flagText": "Absence of non-pharmacologic treatments."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "RiskConsiderations": {
+    "title": "Risk Considerations",
+    "skipDataInfo": true,
+    "sections":[
+      {
+        "name": "Benzodiazepine Medications",
+        "dataKey": "BenzodiazepineMedications",
+        "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "CDC",
+            "title": "CDC Guideline #11",
+            "text": "Avoid concurrent opioid and benzodiazepine prescribing."
+          },
+          {
+            "type": "WA",
+            "title": "WA AMDG Guideline",
+            "text": "Washington State rules require that co-prescribing of opioids and benzodiazepine medications requires documentation, discussion of risks, and consideration of tapering medications."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Benzodiazepine Medications queries the following elements:",
+            "elements": [
+              {
+                "name": "Benzodiazepine medication statements and orders",
+                "status": "any",
+                "lookback": "100 years"
+              }
+            ]
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "DispensedDate"
+        },
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": "Name",
+              "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+            },
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifOneOrMore",
+                    {
+                      "ifOr": [
                         {
-                          "ifEqualTo": {
-                            "header": "Class",
-                            "targetValue": "sedative"
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
                           }
                         },
                         {
@@ -197,1146 +748,602 @@
                             "table": "PDMPMedications",
                             "source": "PDMPMedications",
                             "header": "Class",
-                            "targetValue": "opioid"
+                            "targetValue":"opioid"
                           }
                         }
                       ]
-                  },
-                  "flagText": "Possible co-prescribing of sedatives with opioids."
-                },
-                {
-                  "flag": {
-                    "ifAnd": [
-                      {
-                        "ifEqualTo": {
-                          "header": "Class",
-                          "targetValue": "barbiturate"
-                        }
-                      },
-                      {
-                        "ifContains": {
-                          "table": "PDMPMedications",
-                          "source": "PDMPMedications",
-                          "header": "Class",
-                          "targetValue": "opioid"
-                        }
-                      }
-                    ]
-                },
-                  "flagText": "Possible co-prescribing of barbiturates with opioids."
-                },
-                {
-                  "flag": {
-                    "ifAnd": [
-                      {
-                        "ifEqualTo": {
-                          "header": "Class",
-                          "targetValue": "benzodiazepine"
-                        }
-                      },
-                      {
-                        "ifContains": {
-                          "table": "PDMPMedications",
-                          "source": "PDMPMedications",
-                          "header": "Class",
-                          "targetValue": "opioid"
-                        }
-                      }
-                    ]
-                },
-                  "flagText": "Possible co-prescribing of Benzodiazepine with opioids."
-                },
-                {
-                  "flag": {
-                      "ifEqualTo": {
-                      "header": "Class",
-                      "targetValue": "sedative"
                     }
-                  },
-                  "flagText": "Caution for opioid prescribing, patient has been prescribed sedatives."
+                  ]
                 },
-                {
-                  "flag": {
-                      "ifEqualTo": {
-                      "header": "Class",
-                      "targetValue": "barbiturate"
-                    }
-                  },
-                  "flagText": "Caution for opioid prescribing, patient has been prescribed barbiturates."
-                },
-                {
-                  "flag": {
-                      "ifEqualTo": {
-                      "header": "Class",
-                      "targetValue": "benzodiazepine"
-                    }
-                  },
-                  "flagText": "Caution for opioid prescribing, patient has been prescribed Benzodiazepine medication."
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "HistoricalTreatments": {
-      "title": "EHR Opioid and Related Medications",
-      "skipDataInfo": true,
-      "sections": [
-         {
-           "name": "Opioid Medications",
-           "dataKey": "OpioidMedications",
-           "dataKeySource": "HistoricalTreatments",
-           "info": [
-             {
-               "type": "elements",
-               "description": "Opioid Medications queries the following elements:",
-               "elements": [
-                 {
-                   "name": "Opioid medication statements and orders",
-                   "status": "any",
-                   "lookback": "2 years"
-                 }
-               ]
-             }
-           ],
-           "tables": [
-             {
-               "headers": {
-                 "Drug Description": "Name",
-                 "Quantity": { "key": "Quantity", "sortable": true},
-                 "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                 "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-                 "Prescriber": { "key": "Prescriber", "sortable": true},
-                 "Pharmacy": { "key": "Pharmacy", "sortable": true}
-               }
-             }
-           ]
-         },
-         {
-           "name": "Non-Opioid Pain Medications",
-           "dataKey": "NonOpioidMedications",
-           "dataKeySource": "HistoricalTreatments",
-           "guideline": [
-             {
-               "type": "CDC",
-               "title": "CDC Guideline #1",
-               "text":"Opioids are not first-line therapy."
-             }
-            ],
-           "info": [
-             {
-               "type": "elements",
-               "description": "Non-Opioid Medications queries the following elements:",
-               "elements": [
-                 {
-                   "name": "Non-opioid medication statements and orders",
-                   "status": "any",
-                   "lookback": "2 years"
-                 }
-               ]
-             }
-           ],
-           "tables": [
-             {
-               "headers": {
-                 "Drug Description": "Name",
-                 "Quantity": { "key": "Quantity", "sortable": true},
-                 "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                 "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-                 "Prescriber": { "key": "Prescriber", "sortable": true},
-                 "Pharmacy": { "key": "Pharmacy", "sortable": true}
-               },
-               "flags": [
-                 {
-                   "flag": "ifNone",
-                   "flagText": "Absence of non-opioid medications."
-                 }
-               ]
-             }
-           ]
-         },
-         {
-           "name": "Stool Softeners and Laxatives",
-           "dataKey": "StoolSoftenersAndLaxatives",
-           "dataKeySource": "HistoricalTreatments",
-           "guideline": [
-             {
-               "type": "CDC",
-               "title": "CDC Guideline #3",
-               "text": "To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
-             }
-           ],
-           "info": [
-             {
-               "type": "elements",
-               "description": "Stool Softeners and Laxatives queries the following elements:",
-               "elements": [
-                 {
-                   "name": "Stool softeners / laxatives medication statements and orders",
-                   "status": "any",
-                   "lookback": "6 months"
-                 }
-               ]
-             }
-           ],
-           "tables": [
-             {
-               "headers": {
-                 "Drug Description": "Name",
-                 "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                 "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                 "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-                 "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                 "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
-               },
-               "flags": [
-                 {
-                   "flag": {
-                     "ifAnd": [
-                       "ifNone",
-                       {
-                         "ifOneOrMore": {
-                           "table": "OpioidMedications",
-                           "source": "HistoricalTreatments"
-                         }
-                       }
-                     ]
-                   },
-                   "flagText": "Absence of stool softeners/laxative with presence of at least one opioid medication."
-                 }
-               ]
-             }
-           ]
-         }
-       ]
-    },
-    "PertinentMedicalHistory": {
-      "title": "Pertinent Medical History",
-      "skipDataInfo": true,
-      "sections": [
-        {
-          "name": "Conditions Associated with Chronic Pain",
-          "dataKey": "ConditionsAssociatedWithChronicPain",
-          "dataKeySource": "PertinentMedicalHistory",
-          "info": [
-            {
-              "type": "elements",
-              "description": "Conditions Associated with Chronic Pain queries the following elements:",
-              "elements": [
-                {
-                  "name": "Conditions associated with chronic pain",
-                  "status": "active or recurring",
-                  "lookback": "n/a"
-                }
-              ]
-            }
-          ],
-          "tables": [
-            {
-              "headers": {
-                "Name": "Name",
-                "Status": "Status",
-                "Start": {
-                  "key": "Onset",
-                  "formatter": "datishFormat",
-                  "minWidth": 150
-                },
-                "End": {
-                  "key": "Abatement",
-                  "formatter": "datishFormat",
-                  "minWidth": 150
-                },
-                "Recorded": {
-                  "key": "DateRecorded",
-                  "formatter": "datishFormat"
-                }
+                "flagText": "Possible co-prescribing of Benzodiazepine with opioids."
+              },
+              {
+                "flag": "ifOneOrMore",
+                "flagText": "Caution for opioid prescribing, patient has been prescribed Benzodiazepine medication."
               }
-            }
-          ]
+            ]
+          }
+        ]
+      },
+
+      {
+        "name": "Sedative Medications",
+        "dataKey": "SedativeMedications",
+        "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "WA",
+            "title": "WA AMDG Guideline",
+            "text": "Washington State rules require that co-prescribing of opioids and sedatives requires documentation, discussion of risks, and consideration of tapering medications."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Sedative Medications queries the following elements:",
+            "elements": [
+              {
+                "name": "Sedative medication requests",
+                "status": "any",
+                "lookback": "100 years"
+              }
+            ]
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "DispensedDate"
         },
-        {
-          "name": "Risk Factors for Opioid-related Harms",
-          "dataKey": "RiskFactorsForOpioidRelatedHarms",
-          "dataKeySource": "PertinentMedicalHistory",
-          "guideline": [
-            {
-              "type": "CDC",
-              "title": "CDC Guideline #8",
-              "text":  "Mitigate risk"
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": "Name",
+              "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
-            {
-              "type": "WA",
-              "title": "WA AMDG Guideline",
-              "text": "Avoid opioids if there is any FDA or clinical contraindications."
-            }
-          ],
-          "info": [
-            {
-              "type": "elements",
-              "description": "Risk Factors for Opioid-related Harms queries the following elements:",
-              "elements": [
-                {
-                  "name": "Depression",
-                  "status": "active or recurring",
-                  "lookback": "n/a"
-                },
-                {
-                  "name": "Anxiety",
-                  "status": "active or recurring",
-                  "lookback": "n/a"
-                },
-                {
-                  "name": "Substance use disorder",
-                  "status": "any",
-                  "lookback": "n/a"
-                },
-                {
-                  "name": "Opioid overdose and poisoning",
-                  "status": "any",
-                  "lookback": "n/a"
-                },
-                {
-                  "name": "Suicide attempt",
-                  "status": "any",
-                  "lookback": "n/a"
-                },
-                {
-                  "name": "Sleep-disordered breathing",
-                  "status": "active or recurring",
-                  "lookback": "n/a"
-                },
-                {
-                  "name": "Renal dysfunction",
-                  "status": "active or recurring",
-                  "lookback": "n/a"
-                },
-                {
-                  "name": "Hepatic dysfunction",
-                  "status": "active or recurring",
-                  "lookback": "n/a"
-                },
-                {
-                  "name": "Pregnancy",
-                  "status": "active or recurring",
-                  "lookback": "42 weeks"
-                },
-                {
-                  "name": "Age >= 65 YRS",
-                  "status": "n/a",
-                  "lookback": "n/a"
-                }
-              ]
-            }
-          ],
-          "alertMapping": {
-            "priority": 1,
-            "dateField": "Onset"
-          },
-          "tables": [
-            {
-              "headers": {
-                "Name": "Name",
-                "Status": "Status",
-                "Start": {
-                  "key": "Onset",
-                  "formatter": "datishFormat",
-                  "minWidth": 150
-                },
-                "End": {
-                  "key": "Abatement",
-                  "formatter": "datishFormat",
-                  "minWidth": 150
-                },
-                "Recorded": {
-                  "key": "DateRecorded",
-                  "formatter": "datishFormat"
-                }
-              },
-              "filter": "!Visit",
-              "flags": [
-                {
-                  "flag": "always",
-                  "flagText": "Factor that may place the patient at risk for an opioid-related harm {name}.",
-                  "flagTextMapping": [
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifOneOrMore",
                     {
-                      "pattern": "epression",
-                      "name": "Depression"
-                    },
-                    {
-                      "pattern": "verdose",
-                      "name": "Opioid related overdose"
-                    },
-                    {
-                      "pattern": "poisoning by other opioids",
-                      "name": "Opioid related overdose"
-                    },
-                    {
-                      "pattern": "nxiety",
-                      "name": "Anxiety"
-                    },
-                    {
-                      "pattern": "ubstance use",
-                      "name": "Substance use disorder"
-                    },
-                    {
-                      "pattern": "uicide",
-                      "name": "Suicide attempt"
-                    },
-                    {
-                      "pattern": "sleep",
-                      "name": "Sleep-disordered breathing"
-                    },
-                    {
-                      "pattern": "renal",
-                      "name": "Renal dysfunction"
-                    },
-                    {
-                      "pattern": "hepatic",
-                      "name": "Hepatic dysfunction"
-                    },
-                    {
-                      "pattern": "pregnan",
-                      "name": "Pregnancy"
-                    },
-                    {
-                      "pattern": "65",
-                      "name": "Age >= 65"
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
+                          }
+                        },
+                        {
+                          "ifContains": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications",
+                            "header": "Class",
+                            "targetValue":"opioid"
+                          }
+                        }
+                      ]
                     }
-                  ],
-                  "key": "Name"
-                }
-              ]
+                  ]
+                },
+                "flagText": "Possible co-prescribing of sedatives with opioids."
+              },
+              {
+                "flag": "ifOneOrMore",
+                "flagText": "Caution for opioid prescribing, patient has been prescribed sedatives."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Barbiturate Medications",
+        "dataKey": "BarbiturateMedications",
+        "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "WA",
+            "title": "WA AMDG Guideline",
+            "text": "Washington State rules require that co-prescribing of opioids and barbiturates requires documentation, discussion of risks, and consideration of tapering medications."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Barbiturate Medications queries the following elements:",
+            "elements": [
+              {
+                "name": "Barbiturate medication requests",
+                "status": "any",
+                "lookback": "100 years"
+              }
+            ]
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "DispensedDate"
+        },
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": "Name",
+              "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
-            {
-              "headers": {
-                "Name": "Name",
-                "Visit": {
-                  "key": "Visit",
-                  "formatter": "datishAgeFormat",
-                  "minWidth": 150
-                }
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifOneOrMore",
+                    {
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
+                          }
+                        },
+                        {
+                          "ifContains": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications",
+                            "header": "Class",
+                            "targetValue":"opioid"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "flagText": "Possible co-prescribing of sedatives with opioids."
               },
-              "filter": "Visit",
-              "flags": [
-                {
-                  "flag": "always",
-                  "flagText": "Factor that may place the patient at risk for an opioid-related harm."
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "NonPharmacologicTreatments": {
-      "title":"Non-Pharmacologic Treatments",
-      "skipDataInfo": true,
-      "sections": [
-        {
-          "name": "Non-Pharmacologic Treatments",
-          "dataKey": "NonPharmacologicTreatments",
-          "dataKeySource": "HistoricalTreatments",
-          "guideline": [
-            {
-              "type": "CDC",
-              "title": "CDC Guideline #1",
-              "text": "Opioids are not first-line therapy."
-            }
-          ],
-          "omitTitle": true,
-          "info": [
-            {
-              "type": "elements",
-              "description": "Non-Pharmacologic Treatments queries the following elements:",
-              "elements": [
-                {
-                  "name": "Non-pharmacologic procedures",
-                  "status": "any",
-                  "lookback": "2 years"
-                }
-              ]
-            }
-          ],
-          "tables": [
-            {
-              "headers": {
-                "Name": "Name",
-                "Date": { "key": "Date", "formatter": "datishFormat" },
-                "Type": "Type"
-              },
-              "flags": [
-                {
-                  "flag": "ifNone",
-                  "flagText": "Absence of non-pharmacologic treatments."
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "RiskConsiderations": {
-      "title": "Risk Considerations",
-      "skipDataInfo": true,
-      "sections":[
-        {
-          "name": "Benzodiazepine Medications",
-          "dataKey": "BenzodiazepineMedications",
-          "dataKeySource": "RiskConsiderations",
-          "guideline": [
-            {
-              "type": "CDC",
-              "title": "CDC Guideline #11",
-              "text": "Avoid concurrent opioid and benzodiazepine prescribing."
+              {
+                "flag": "ifOneOrMore",
+                "flagText": "Caution for opioid prescribing, patient has been prescribed barbiturates."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Carisoprodol Medications",
+        "dataKey": "CarisoprodolMedications",
+        "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "WA",
+            "title": "WA AMDG Guideline",
+            "text": "Washington State rules require that co-prescribing of opioids and carisoprodol medications requires documentation, discussion of risks, and consideration of tapering medications."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Carisoprodol Medications queries the following elements:",
+            "elements": [
+              {
+                "name": "Carisoprodol medication statements and orders",
+                "status": "any",
+                "lookback": "100 years"
+              }
+            ]
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "DispensedDate"
+        },
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": "Name",
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
             },
-            {
-              "type": "WA",
-              "title": "WA AMDG Guideline",
-              "text": "Washington State rules require that co-prescribing of opioids and benzodiazepine medications requires documentation, discussion of risks, and consideration of tapering medications."
-            }
-          ],
-          "info": [
-            {
-              "type": "elements",
-              "description": "Benzodiazepine Medications queries the following elements:",
-              "elements": [
-                {
-                  "name": "Benzodiazepine medication statements and orders",
-                  "status": "any",
-                  "lookback": "100 years"
-                }
-              ]
-            }
-          ],
-          "alertMapping": {
-            "priority": 1,
-            "dateField": "DispensedDate"
-          },
-          "tables": [
-            {
-              "headers": {
-                "Drug Description": "Name",
-                "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
-              },
-              "flags": [
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifOneOrMore",
-                      {
-                        "ifOr": [
-                          {
-                            "ifOneOrMore": {
-                              "table": "OpioidMedications",
-                              "source": "HistoricalTreatments"
-                            }
-                          },
-                          {
-                            "ifContains": {
-                              "table": "PDMPMedications",
-                              "source": "PDMPMedications",
-                              "header": "Class",
-                              "targetValue":"opioid"
-                            }
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifOneOrMore",
+                    {
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
                           }
-                        ]
-                      }
-                    ]
-                  },
-                  "flagText": "Possible co-prescribing of Benzodiazepine with opioids."
+                        },
+                        {
+                          "ifContains": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications",
+                            "header": "Class",
+                            "targetValue":"opioid"
+                          }
+                        }
+                      ]
+                    }
+                  ]
                 },
-                {
-                  "flag": "ifOneOrMore",
-                  "flagText": "Caution for opioid prescribing, patient has been prescribed Benzodiazepine medication."
-                }
-              ]
-            }
-          ]
+                "flagText": "Possible co-prescribing of Carisoprodol medication with opioids."
+              },
+              {
+                "flag": "ifOneOrMore",
+                "flagText": "Caution for opioid prescribing, patient has been prescribed Carisoprodol medication."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Naloxone Medications",
+        "dataKey": "NaloxoneMedications",
+        "dataKeySource": "RiskConsiderations",
+        "guideline": [
+          {
+            "type": "CDC",
+            "title": "CDC Guideline #8",
+            "text": "Use strategies to mitigate risk."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Naloxone Medications queries the following elements:",
+            "elements": [
+              {
+                "name": "Naloxone medication statements and orders",
+                "status": "any",
+                "lookback": "n/a"
+              }
+            ]
+          }
+        ],
+        "alertMapping": {
+          "priority": 5,
+          "dateField": "Start"
         },
-  
-        {
-          "name": "Sedative Medications",
-          "dataKey": "SedativeMedications",
-          "dataKeySource": "RiskConsiderations",
-          "guideline": [
-            {
-              "type": "WA",
-              "title": "WA AMDG Guideline",
-              "text": "Washington State rules require that co-prescribing of opioids and sedatives requires documentation, discussion of risks, and consideration of tapering medications."
-            }
-          ],
-          "info": [
-            {
-              "type": "elements",
-              "description": "Sedative Medications queries the following elements:",
-              "elements": [
-                {
-                  "name": "Sedative medication requests",
-                  "status": "any",
-                  "lookback": "100 years"
-                }
-              ]
-            }
-          ],
-          "alertMapping": {
-            "priority": 1,
-            "dateField": "DispensedDate"
-          },
-          "tables": [
-            {
-              "headers": {
-                "Drug Description": "Name",
-                "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
-              },
-              "flags": [
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifOneOrMore",
-                      {
-                        "ifOr": [
-                          {
-                            "ifOneOrMore": {
-                              "table": "OpioidMedications",
-                              "source": "HistoricalTreatments"
-                            }
-                          },
-                          {
-                            "ifContains": {
-                              "table": "PDMPMedications",
-                              "source": "PDMPMedications",
-                              "header": "Class",
-                              "targetValue":"opioid"
-                            }
-                          }
-                        ]
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": "Name",
+              "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
+              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+            },
+
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifNone",
+                    {
+                      "ifGreaterThanOrEqualTo": {
+                        "table": "CurrentMME",
+                        "source": "RiskConsiderations",
+                        "header": "Result",
+                        "value": 50
                       }
-                    ]
-                  },
-                  "flagText": "Possible co-prescribing of sedatives with opioids."
+                    }
+                  ]
                 },
-                {
-                  "flag": "ifOneOrMore",
-                  "flagText": "Caution for opioid prescribing, patient has been prescribed sedatives."
-                }
-              ]
-            }
-          ]
+                "flagText": "Absence of Naloxone medication and most recent MED assessment is 50+ MED/day."
+              },
+              {
+                "flag": "ifOneOrMore",
+                "flagText": "Evidence of Naloxone medication."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "UrineDrugScreens": {
+    "title": "Urine Drug Toxicology Screen",
+    "skipDataInfo": true,
+    "guideline": [
+      {
+        "type": "CDC",
+        "title": "CDC Guideline #10",
+        "text": "Use urine drug testing."
+      }
+    ],
+    "sections": [
+      {
+        "name": "Urine Drug Toxicology Screen",
+        "dataKey": "ReportAllUrineScreens",
+        "dataKeySource": "UrineDrugScreens",
+        "omitTitle": true,
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "Next_Screen_Date"
         },
-        {
-          "name": "Barbiturate Medications",
-          "dataKey": "BarbiturateMedications",
-          "dataKeySource": "RiskConsiderations",
-          "guideline": [
-            {
-              "type": "WA",
-              "title": "WA AMDG Guideline",
-              "text": "Washington State rules require that co-prescribing of opioids and barbiturates requires documentation, discussion of risks, and consideration of tapering medications."
-            }
-          ],
-          "info": [
-            {
-              "type": "elements",
-              "description": "Barbiturate Medications queries the following elements:",
-              "elements": [
-                {
-                  "name": "Barbiturate medication requests",
-                  "status": "any",
-                  "lookback": "100 years"
-                }
-              ]
-            }
-          ],
-          "alertMapping": {
-            "priority": 1,
-            "dateField": "DispensedDate"
-          },
-          "tables": [
-            {
-              "headers": {
-                "Drug Description": "Name",
-                "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+        "tables": [
+          {
+            "headers": {
+              "Name": {
+                "key": "Name",
+                "minWidth": 150
               },
-              "flags": [
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifOneOrMore",
-                      {
-                        "ifOr": [
-                          {
-                            "ifOneOrMore": {
-                              "table": "OpioidMedications",
-                              "source": "HistoricalTreatments"
-                            }
-                          },
-                          {
-                            "ifContains": {
-                              "table": "PDMPMedications",
-                              "source": "PDMPMedications",
-                              "header": "Class",
-                              "targetValue":"opioid"
-                            }
+              "Date": {
+                "key": "Date",
+                "formatter": "datishFormat",
+                "minWidth": 150
+              }
+            },
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifNone",
+                    "ifAdult",
+                    {
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
                           }
-                        ]
-                      }
-                    ]
-                  },
-                  "flagText": "Possible co-prescribing of sedatives with opioids."
+                        },
+                        {
+                          "ifOneOrMore": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications"
+                          }
+                        }
+                      ]
+                    }
+                  ]
                 },
-                {
-                  "flag": "ifOneOrMore",
-                  "flagText": "Caution for opioid prescribing, patient has been prescribed barbiturates."
-                }
-              ]
-            }
-          ]
+                "flagText": "No urine drug screen date found for this patient. Please check the first controlled substance prescription to determine if they are due for their 12 month drug screen."
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "if3MonthsDue" : {
+                        "targetField": "Next_Screen_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "A urine screening is due for this patient on or before [DATE].",
+                "flagClass": "warning",
+                "flagDateField": "Next_Screen_Date"
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "if4MonthsDue": {
+                        "targetField": "Next_Screen_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "A urine screening is due for this patient on or before [DATE].",
+                "flagClass": "warning-light",
+                "flagDateField": "Next_Screen_Date"
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
+                      }
+                    },
+                    {
+                      "ifOverdue" : {
+                        "targetField": "Next_Screen_Date"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "It has been more than 12 months since this patient's last urine drug screen.",
+                "flagDateField": "Date"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "CSAgreement": {
+    "title": "Controlled Substance Agreement",
+    "skipDataInfo": true,
+    "sections": [
+      {
+        "name": "Controlled Substance Agreement",
+        "dataKey": "ReportCSAgreement",
+        "dataKeySource": "CSAgreement",
+        "omitTitle": true,
+        "guideline": [
+          {
+            "type": "WA",
+            "text": "A Controlled Substance agreement with the patient is required annually."
+          }
+        ],
+        "alertMapping": {
+          "priority": 1,
+          "dateField": "Date"
         },
-        {
-          "name": "Carisoprodol Medications",
-          "dataKey": "CarisoprodolMedications",
-          "dataKeySource": "RiskConsiderations",
-          "guideline": [
-            {
-              "type": "WA",
-              "title": "WA AMDG Guideline",
-              "text": "Washington State rules require that co-prescribing of opioids and carisoprodol medications requires documentation, discussion of risks, and consideration of tapering medications."
-            }
-          ],
-          "info": [
-            {
-              "type": "elements",
-              "description": "Carisoprodol Medications queries the following elements:",
-              "elements": [
-                {
-                  "name": "Carisoprodol medication statements and orders",
-                  "status": "any",
-                  "lookback": "100 years"
-                }
-              ]
-            }
-          ],
-          "alertMapping": {
-            "priority": 1,
-            "dateField": "DispensedDate"
-          },
-          "tables": [
-            {
-              "headers": {
-                "Drug Description": "Name",
-                "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-                "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+        "tables": [
+          {
+            "headers": {
+              "Date": {
+                "key": "Date",
+                "formatter": "datishFormat",
+                "minWidth": 150
+              }
+            },
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifNone",
+                    "ifAdult"
+                  ]
+                },
+                "flagText": "No controlled substance agreement found for this patient."
               },
-              "flags": [
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifOneOrMore",
-                      {
-                        "ifOr": [
-                          {
-                            "ifOneOrMore": {
-                              "table": "OpioidMedications",
-                              "source": "HistoricalTreatments"
-                            }
-                          },
-                          {
-                            "ifContains": {
-                              "table": "PDMPMedications",
-                              "source": "PDMPMedications",
-                              "header": "Class",
-                              "targetValue":"opioid"
-                            }
-                          }
-                        ]
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
                       }
-                    ]
-                  },
-                  "flagText": "Possible co-prescribing of Carisoprodol medication with opioids."
+                    },
+                    {
+                      "if3MonthsDue" : {
+                        "targetField": "Next_Due_Date"
+                      }
+                    }
+                  ]
                 },
-                {
-                  "flag": "ifOneOrMore",
-                  "flagText": "Caution for opioid prescribing, patient has been prescribed Carisoprodol medication."
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Naloxone Medications",
-          "dataKey": "NaloxoneMedications",
-          "dataKeySource": "RiskConsiderations",
-          "guideline": [
-            {
-              "type": "CDC",
-              "title": "CDC Guideline #8",
-              "text": "Use strategies to mitigate risk."
-            }
-          ],
-          "info": [
-            {
-              "type": "elements",
-              "description": "Naloxone Medications queries the following elements:",
-              "elements": [
-                {
-                  "name": "Naloxone medication statements and orders",
-                  "status": "any",
-                  "lookback": "n/a"
-                }
-              ]
-            }
-          ],
-          "alertMapping": {
-            "priority": 5,
-            "dateField": "Start"
-          },
-          "tables": [
-            {
-              "headers": {
-                "Drug Description": "Name",
-                "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Written Date": { "key": "Start", "formatter": "datishFormat" },
-                "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-                "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-                "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+                "flagText": "A controlled substance agreement is due for this patient on or before [DATE].",
+                "flagClass": "warning",
+                "flagDateField": "Next_Due_Date"
               },
-  
-              "flags": [
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifNone",
-                      {
-                        "ifGreaterThanOrEqualTo": {
-                          "table": "CurrentMME",
-                          "source": "RiskConsiderations",
-                          "header": "Result",
-                          "value": 50
-                        }
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
                       }
-                    ]
-                  },
-                  "flagText": "Absence of Naloxone medication and most recent MED assessment is 50+ MED/day."
+                    },
+                    {
+                      "if4MonthsDue": {
+                        "targetField": "Next_Due_Date"
+                      }
+                    }
+                  ]
                 },
-                {
-                  "flag": "ifOneOrMore",
-                  "flagText": "Evidence of Naloxone medication."
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "UrineDrugScreens": {
-      "title": "Urine Drug Toxicology Screen",
-      "skipDataInfo": true,
-      "guideline": [
-        {
-          "type": "CDC",
-          "title": "CDC Guideline #10",
-          "text": "Use urine drug testing."
-        }
-      ],
-      "sections": [
-        {
-          "name": "Urine Drug Toxicology Screen",
-          "dataKey": "ReportAllUrineScreens",
-          "dataKeySource": "UrineDrugScreens",
-          "omitTitle": true,
-          "alertMapping": {
-            "priority": 1,
-            "dateField": "Next_Screen_Date"
-          },
-          "tables": [
-            {
-              "headers": {
-                "Name": {
-                  "key": "Name",
-                  "minWidth": 150
-                },
-                "Date": {
-                  "key": "Date",
-                  "formatter": "datishFormat",
-                  "minWidth": 150
-                }
+                "flagText": "A controlled substance agreement is due for this patient on or before [DATE].",
+                "flagClass": "warning-light",
+                "flagDateField": "Next_Due_Date"
               },
-              "flags": [
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifNone",
-                      "ifAdult",
-                      {
-                        "ifOr": [
-                          {
-                            "ifOneOrMore": {
-                              "table": "OpioidMedications",
-                              "source": "HistoricalTreatments"
-                            }
-                          },
-                          {
-                            "ifOneOrMore": {
-                              "table": "PDMPMedications",
-                              "source": "PDMPMedications"
-                            }
-                          }
-                        ]
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                      "ifMostRecent": {
+                        "targetField": "Date"
                       }
-                    ]
-                  },
-                  "flagText": "No urine drug screen date found for this patient. Please check the first controlled substance prescription to determine if they are due for their 12 month drug screen."
+                    },
+                    {
+                      "ifOverdue" : {
+                        "targetField": "Next_Due_Date"
+                      }
+                    }
+                  ]
                 },
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifAdult",
-                      {
-                        "ifMostRecent": {
-                          "targetField": "Date"
-                        }
-                      },
-                      {
-                        "if3MonthsDue" : {
-                          "targetField": "Next_Screen_Date"
-                        }
-                      }
-                    ]
-                  },
-                  "flagText": "A urine screening is due for this patient on or before [DATE].",
-                  "flagClass": "warning",
-                  "flagDateField": "Next_Screen_Date"
-                },
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifAdult",
-                      {
-                        "ifMostRecent": {
-                          "targetField": "Date"
-                        }
-                      },
-                      {
-                        "if4MonthsDue": {
-                          "targetField": "Next_Screen_Date"
-                        }
-                      }
-                    ]
-                  },
-                  "flagText": "A urine screening is due for this patient on or before [DATE].",
-                  "flagClass": "warning-light",
-                  "flagDateField": "Next_Screen_Date"
-                },
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifAdult",
-                      {
-                        "ifMostRecent": {
-                          "targetField": "Date"
-                        }
-                      },
-                      {
-                        "ifOverdue" : {
-                          "targetField": "Next_Screen_Date"
-                        }
-                      }
-                    ]
-                  },
-                  "flagText": "It has been more than 12 months since this patient's last urine drug screen.",
-                  "flagDateField": "Date"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-  
-    "CSAgreement": {
-      "title": "Controlled Substance Agreement",
-      "skipDataInfo": true,
-      "sections": [
-        {
-          "name": "Controlled Substance Agreement",
-          "dataKey": "ReportCSAgreement",
-          "dataKeySource": "CSAgreement",
-          "omitTitle": true,
-          "guideline": [
-            {
-              "type": "WA",
-              "text": "A Controlled Substance agreement with the patient is required annually."
-            }
-          ],
-          "alertMapping": {
-            "priority": 1,
-            "dateField": "Date"
-          },
-          "tables": [
-            {
-              "headers": {
-                "Date": {
-                  "key": "Date",
-                  "formatter": "datishFormat",
-                  "minWidth": 150
-                }
-              },
-              "flags": [
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifNone",
-                      "ifAdult"
-                    ]
-                  },
-                  "flagText": "No controlled substance agreement found for this patient."
-                },
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifAdult",
-                      {
-                        "ifMostRecent": {
-                          "targetField": "Date"
-                        }
-                      },
-                      {
-                        "if3MonthsDue" : {
-                          "targetField": "Next_Due_Date"
-                        }
-                      }
-                    ]
-                  },
-                  "flagText": "A controlled substance agreement is due for this patient on or before [DATE].",
-                  "flagClass": "warning",
-                  "flagDateField": "Next_Due_Date"
-                },
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifAdult",
-                      {
-                        "ifMostRecent": {
-                          "targetField": "Date"
-                        }
-                      },
-                      {
-                        "if4MonthsDue": {
-                          "targetField": "Next_Due_Date"
-                        }
-                      }
-                    ]
-                  },
-                  "flagText": "A controlled substance agreement is due for this patient on or before [DATE].",
-                  "flagClass": "warning-light",
-                  "flagDateField": "Next_Due_Date"
-                },
-                {
-                  "flag": {
-                    "ifAnd": [
-                      "ifAdult",
-                      {
-                        "ifMostRecent": {
-                          "targetField": "Date"
-                        }
-                      },
-                      {
-                        "ifOverdue" : {
-                          "targetField": "Next_Due_Date"
-                        }
-                      }
-                    ]
-                  },
-                  "flagText": "It has been more than 12 months since the last controlled substance agreement with this patient.",
-                  "flagDateField": "Date"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "PatientEducationMaterials": {
-      "title":"Patient Education Resources",
-      "skipDataInfo": true,
-      "dataSource": [{
-        "endpoint": "{process.env.PUBLIC_URL}/assets/data/patientEducationReferences.json",
+                "flagText": "It has been more than 12 months since the last controlled substance agreement with this patient.",
+                "flagDateField": "Date"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "PatientEducationMaterials": {
+    "title":"Patient Education Resources",
+    "skipDataInfo": true,
+    "dataSource": [{
+      "endpoint": "{process.env.PUBLIC_URL}/assets/data/patientEducationReferences.json",
+      "dataKey": "PatientEducationMaterials",
+      "dataKeySource": "EducationMaterials"
+    }],
+    "omitCountDisplay": true,
+    "sections": [
+      {
+        "name": "Patient Education Resources",
         "dataKey": "PatientEducationMaterials",
-        "dataKeySource": "EducationMaterials"
-      }],
-      "omitCountDisplay": true,
-      "sections": [
-        {
-          "name": "Patient Education Resources",
-          "dataKey": "PatientEducationMaterials",
-          "dataKeySource": "EducationMaterials",
-          "omitTitle": true,
-          "tables": [
-            {
-              "headers": {
-                "Patient Resources": {
-                  "key": "link",
-                  "formatter": "linkFormat",
-                  "formatterArguments": ["title","url", "type", "size"],
-                  "minWidth": 200,
-                  "className": "title",
-                  "sortable": false,
-                  "omitHeader": true
-                }
+        "dataKeySource": "EducationMaterials",
+        "omitTitle": true,
+        "tables": [
+          {
+            "headers": {
+              "Patient Resources": {
+                "key": "link",
+                "formatter": "linkFormat",
+                "formatterArguments": ["title","url", "type", "size"],
+                "minWidth": 200,
+                "className": "title",
+                "sortable": false,
+                "omitHeader": true
               }
             }
-          ]
-        }
-      ]
-    },
-    "ProviderEducationMaterials": {
-      "title":"Provider Resources",
-      "skipDataInfo": true,
-      "dataSource": [{
-        "endpoint": {
-          "demo" : "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences_demo.json",
-          "default": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json"
-        },
+          }
+        ]
+      }
+    ]
+  },
+  "ProviderEducationMaterials": {
+    "title":"Provider Resources",
+    "skipDataInfo": true,
+    "dataSource": [{
+      "endpoint": {
+        "demo" : "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences_demo.json",
+        "default": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json"
+      },
+      "dataKey": "ProviderEducationMaterials",
+      "dataKeySource": "EducationMaterials"
+    }],
+    "omitCountDisplay": true,
+    "sections": [{
+        "name": "Provider Resources",
         "dataKey": "ProviderEducationMaterials",
-        "dataKeySource": "EducationMaterials"
-      }],
-      "omitCountDisplay": true,
-      "sections": [{
-          "name": "Provider Resources",
-          "dataKey": "ProviderEducationMaterials",
-          "dataKeySource": "EducationMaterials",
-          "omitTitle": true,
-          "tables": [
-            {
-              "headers": {
-                "Provider Resources": {
-                  "key": "link",
-                  "formatter": "linkFormat",
-                  "formatterArguments": ["title","url", "type", "size"],
-                  "minWidth": 200,
-                  "className": "title",
-                  "sortable": false,
-                  "omitHeader": true
-                }
+        "dataKeySource": "EducationMaterials",
+        "omitTitle": true,
+        "tables": [
+          {
+            "headers": {
+              "Provider Resources": {
+                "key": "link",
+                "formatter": "linkFormat",
+                "formatterArguments": ["title","url", "type", "size"],
+                "minWidth": 200,
+                "className": "title",
+                "sortable": false,
+                "omitHeader": true
               }
             }
-          ]
-        }
-      ]
-    }
+          }
+        ]
+      }
+    ]
   }
+}

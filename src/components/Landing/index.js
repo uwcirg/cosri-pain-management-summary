@@ -76,15 +76,14 @@ export default class Landing extends Component {
     ])
       .then((responses) => {
         if (responses[0].status === "rejected" || !this.getPatientId()) {
-          if (responses[0] && responses[0].reason) {
-            console.log(responses[0].reason);
-          }
           this.clearProcessInterval();
+          const rejectReason = responses[0].reason
+            ? responses[0].reason
+            : "Error retrieving data";
+          console.log(rejectReason);
           this.setState({
             loading: false,
-            errorCollection: [
-              responses[0].reason ?? "No matching patient id found.",
-            ],
+            errorCollection: [rejectReason],
           });
           return;
         }
@@ -171,7 +170,6 @@ export default class Landing extends Component {
       })
       .catch((err) => {
         console.error(err);
-        console.log("GET TO ERROR HERE??")
         this.clearProcessInterval();
         this.setState({
           loading: false,
@@ -192,17 +190,34 @@ export default class Landing extends Component {
   }
 
   initEvents() {
-    //education material links
+    // education material links
     document.querySelectorAll(".education").forEach((item) => {
       item.addEventListener("click", (e) => {
-        this.writeToLog(`Education material: ${e.target.title}`, "info", {
+        writeToLog(`Education material: ${e.target.title}`, "info", {
           tags: ["education"],
+          patientName: this.getPatientName(),
         });
       });
     });
     this.handleHeaderPos();
     // support other events if need to
-    //support other events if need to
+  }
+
+  // fixed header when scrolling in the event that it is not within viewport
+  handleHeaderPos() {
+    document.addEventListener("scroll", () => {
+      clearTimeout(scrollHeaderIntervalId);
+      scrollHeaderIntervalId = setTimeout(
+        function () {
+          if (!isInViewport(this.anchorTopRef.current)) {
+            document.querySelector("body").classList.add("fixed");
+            return;
+          }
+          document.querySelector("body").classList.remove("fixed");
+        }.bind(this),
+        250
+      );
+    });
   }
 
   getTocBotOptions() {
@@ -260,28 +275,12 @@ export default class Landing extends Component {
   }
 
   initTocBot() {
-    if (!this.state || !this.state.result || !document.querySelector("nav")) return;
+    if (!this.state || !this.state.result || !document.querySelector("nav"))
+      return;
     tocbot.destroy();
     tocbot.init(this.getTocBotOptions());
     this.setState({
       tocInitialized: true,
-    });
-  }
-
-  // fixed header when scrolling in the event that it is not within viewport
-  handleHeaderPos() {
-    document.addEventListener("scroll", () => {
-      clearTimeout(scrollHeaderIntervalId);
-      scrollHeaderIntervalId = setTimeout(
-        function () {
-          if (!isInViewport(this.anchorTopRef.current)) {
-            document.querySelector("body").classList.add("fixed");
-            return;
-          }
-          document.querySelector("body").classList.remove("fixed");
-        }.bind(this),
-        250
-      );
     });
   }
 
@@ -323,7 +322,9 @@ export default class Landing extends Component {
   clearProcessInterval() {
     clearInterval(processIntervalId);
   }
-
+  getOverviewSectionKey() {
+    return "PatientRiskOverview";
+  }
   setError(message) {
     if (!message) return;
     this.setState({
@@ -335,9 +336,6 @@ export default class Landing extends Component {
     writeToLog(message, "error", {
       patientName: this.getPatientName(),
     });
-  }
-  getOverviewSectionKey() {
-    return "PatientRiskOverview";
   }
   //save MME calculations to file for debugging purpose, development environment ONLY
   savePDMPSummaryData() {
@@ -481,16 +479,17 @@ export default class Landing extends Component {
         })}
         {/* this just to test copy and paste */}
         {/* <div
-        className={`tab ${this.state.activeTab === 10 ? "active" : ""}`}
-        onClick={() => this.handleSetActiveTab(10)}
-        role="presentation"
-        key={`tab_10`}
-      >
-        COPY & PASTE
-      </div> */}
+          className={`tab ${this.state.activeTab === 10 ? "active" : ""}`}
+          onClick={() => this.handleSetActiveTab(10)}
+          role="presentation"
+          key={`tab_10`}
+        >
+          COPY & PASTE
+        </div> */}
       </div>
     );
   }
+
   renderTabPanels(summary, sectionFlags) {
     const tabs = this.getTabs();
     return (

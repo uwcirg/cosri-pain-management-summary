@@ -139,7 +139,7 @@ export default class Header extends Component {
 Header.propTypes = {
   patientName: PropTypes.string.isRequired,
   patientDOB: PropTypes.string.isRequired,
-  patientGender: PropTypes.string.isRequired,
+  patientGender: PropTypes.string,
   patientSearchURL: PropTypes.string,
   siteID: PropTypes.string,
 };

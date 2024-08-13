@@ -13,7 +13,7 @@ import r4OMTKDataELM from "../cql/r4/OMTKData.json";
 import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import r4SurveyCommonELM from "../cql/r4/survey_resources/Common_LogicLibrary.json";
 import valueSetDB from "../cql/valueset-db.json";
-import { getEnv } from "./envConfig";
+import { getEnv, fetchEnvData } from "./envConfig";
 import {
   getReportInstrumentList,
   getReportInstrumentIdByKey,
@@ -68,7 +68,7 @@ class VSACAwareCodeService extends cql.CodeService {
 }
 
 async function executeELM(collector, paramResourceTypes) {
-  //fetchEnvData();
+  fetchEnvData();
   let client, release, library, patientBundle;
   let resourceTypes = paramResourceTypes || {};
   const INSTRUMENT_LIST = isReportEnabled() ? getReportInstrumentList() : null;
@@ -590,7 +590,48 @@ function updateSearchParams(params, release, type) {
         default:
         //nothing
       }
-    } else if (release === 4) {
+    }
+  }
+  // If this is for Epic, there are some specific modifications needed for the queries to work properly
+  if (
+    getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES") &&
+    String(getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")).toLowerCase() === "true"
+  ) {
+    if (release === FHIR_RELEASE_VERSION_2) {
+      switch (type) {
+        case "Observation":
+          // Epic requires you to specify a category or code search parameter, so search on all categories
+          params.set(
+            "category",
+            [
+              "social-history",
+              "vital-signs",
+              "imaging",
+              "laboratory",
+              "procedure",
+              "survey",
+              "exam",
+              "therapy",
+            ].join(",")
+          );
+          break;
+        case "MedicationOrder":
+          // Epic returns only active meds by default, so we need to specifically ask for other types
+          // NOTE: purposefully omitting entered-in-error
+          params.set(
+            "status",
+            ["active", "on-hold", "completed", "stopped", "draft"].join(",")
+          );
+          break;
+        case "MedicationStatement":
+          // Epic returns only active meds by default, so we need to specifically ask for other types
+          // NOTE: purposefully omitting entered-in-error
+          params.set("status", ["active", "completed", "intended"].join(","));
+          break;
+        default:
+        //nothing
+      }
+    } else if (release === FHIR_RELEASE_VERSION_4) {
       // NOTE: Epic doesn't currently support R4, but assuming R4 versions of Epic would need this
       switch (type) {
         case "Observation":

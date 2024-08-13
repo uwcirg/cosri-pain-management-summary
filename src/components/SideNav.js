@@ -111,4 +111,5 @@ SideNav.propTypes = {
   id: PropTypes.string,
   navClassName: PropTypes.string,
   onClick: PropTypes.func,
+  parentContainerSelector: PropTypes.string,
 };

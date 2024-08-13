@@ -1262,6 +1262,15 @@ define ReportCSAgreement:
   }
   sort by Date desc
 
+define ReportDocumentReferenceData:
+    [DocumentReference] DO
+    return {
+        Date: InstantText(DO.date),
+        Type: DO.content[0].attachment.contentType.value,
+        Content: DO.content[0].attachment.data.value,
+        Description: DO.description.value
+    }
+
 
 // SUMMARY
 
@@ -1275,7 +1284,8 @@ define Summary: {
     Name: Combine(Patient.name.given G return G.value, ' ') + ' ' + Combine(Patient.name.family F return F.value, ' '),
     Gender: Patient.gender.value,
     Age: AgeInYears(),
-    MeetsInclusionCriteria: MeetsInclusionCriteria
+    MeetsInclusionCriteria: MeetsInclusionCriteria,
+    Documents: ReportDocumentReferenceData
   },
 
   PertinentMedicalHistory: {

@@ -81,7 +81,7 @@ export async function fetchExternalData(url, datasetKey, rootElement) {
 /*
  * function for retrieving data from other sources e.g. education materials
  */
-export async function getExternalData(summaryMap, patientId) {
+export async function getExternalData(summaryMap) {
   const promiseResultSet = getExternalDataSources(summaryMap);
   if (!promiseResultSet.length) {
     return null;
@@ -90,9 +90,7 @@ export async function getExternalData(summaryMap, patientId) {
   let results = await Promise.allSettled(
     promiseResultSet.map((item) => {
       return fetchExternalData(
-        processEndPoint(item.endpoint, {
-          patientId: patientId,
-        }),
+        processEndPoint(item.endpoint),
         item.dataKey,
         item.dataKey
       );

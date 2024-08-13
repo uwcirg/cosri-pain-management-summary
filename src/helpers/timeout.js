@@ -159,8 +159,11 @@ var Timeout = function () {
       //if session is about to expire, pop up modal to inform user as such and then redirect back to patient search
       openModal();
       //back to patient search
-      setTimeout(function () {
-        window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/clear_session";
+      setTimeout(function() {
+        if (getEnv("REACT_APP_DASHBOARD_URL"))
+          window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/clear_session";
+        else 
+          window.location = "/";
       }, 5000);
       printDebugStatement(
         "Session about to expire. Time elapsed since first visiting " +
