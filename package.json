@@ -93,7 +93,6 @@
     ]
   },
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
     "start": "craco start",
     "start-static": "node scripts/serve-build.js",
     "build": "craco build",
