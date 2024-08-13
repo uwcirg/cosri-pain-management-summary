@@ -60,8 +60,7 @@
   "resolutions": {
     "immer": "^9.0.2",
     "ssri": "^8.0.1",
-    "ansi-regex": "^5.0.1",
-    "react-error-overlay": "6.0.9"
+    "ansi-regex": "^5.0.1"
   },
   "overrides": {
     "@expo/dev-server": {
