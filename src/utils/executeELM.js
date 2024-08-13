@@ -285,9 +285,9 @@ function getLibrary(release) {
 
 function getPatientSource(release) {
   switch (release) {
-    case 2:
+    case FHIR_RELEASE_VERSION_2:
       return cqlfhir.PatientSource.FHIRv102();
-    case 4:
+    case FHIR_RELEASE_VERSION_4:
       return cqlfhir.PatientSource.FHIRv400();
     default:
       throw new Error("Only FHIR DSTU2 and FHIR R4 servers are supported");

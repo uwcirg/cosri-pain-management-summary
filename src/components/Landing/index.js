@@ -7,6 +7,7 @@ import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
   getPatientNameFromSource,
+  isEmptyArray,
   isInViewport,
   isNotProduction,
   isProduction,
@@ -53,7 +54,13 @@ export default class Landing extends Component {
   }
 
   componentDidMount() {
-    if (!this.state.loading) return;
+    if (
+      !this.state ||
+      !this.state.loading ||
+      this.state.result ||
+      !isEmptyArray(this.state.errorCollection)
+    )
+      return;
     // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
     fetchEnvData();
     // write out environment variables:
@@ -68,11 +75,15 @@ export default class Landing extends Component {
       landingUtils.getExternalData(summaryMap, this.getPatientId()),
     ])
       .then((responses) => {
-        if (responses[0].status === "rejected") {
+        if (responses[0].status === "rejected" || !this.getPatientId()) {
           this.clearProcessInterval();
+          const rejectReason = responses[0].reason
+            ? responses[0].reason
+            : "Error retrieving data";
+          console.log(rejectReason);
           this.setState({
             loading: false,
-            errorCollection: [responses[0].reason],
+            errorCollection: [rejectReason],
           });
           return;
         }
@@ -116,7 +127,9 @@ export default class Landing extends Component {
           ? Object.values(externalDataSet["errors"])
           : [];
         // log errors
-        [...collectorErrors, externalDataErrors].forEach(e => this.logError(e));
+        [...collectorErrors, externalDataErrors].forEach((e) =>
+          this.logError(e)
+        );
         // hide and show section(s) depending on config
         const currentSummaryMap = {
           ...this.state.summaryMap,
@@ -259,6 +272,8 @@ export default class Landing extends Component {
   }
 
   initTocBot() {
+    if (!this.state || !this.state.result || !document.querySelector("nav"))
+      return;
     tocbot.destroy();
     tocbot.init(this.getTocBotOptions());
     this.setState({

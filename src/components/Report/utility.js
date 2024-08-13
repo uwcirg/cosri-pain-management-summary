@@ -26,7 +26,7 @@ export function getGraphData(summaryData) {
 export function getBodyDiagramData(summaryData) {
   if (isEmptyArray(summaryData)) return null;
   const matchedData = summaryData.filter(
-    (item) => String(item.dataKey).toLowerCase() === BODY_DIAGRAM_DATA_KEY.toLowerCase()
+    (item) => String(item.QuestionnaireKey).toLowerCase() === BODY_DIAGRAM_DATA_KEY.toLowerCase()
   );
   if (!matchedData.length) return null;
   if (isEmptyArray(matchedData[0].ResponsesSummary)) return null;
