@@ -112,9 +112,9 @@ async function executeELM(collector, paramResourceTypes) {
           });
           //return doSearch(client, release, name, collector);
         });
-        console.log("resources ", requests);
-        console.log("collector ", collector);
-        console.log("resourceTypes ", resourceTypes);
+        // console.log("resources ", requests);
+        // console.log("collector ", collector);
+        // console.log("resourceTypes ", resourceTypes);
 
         // Don't return until all the requests have been resolved
         return Promise.allSettled(requests).then((requestResults) => {
@@ -185,58 +185,23 @@ async function executeELM(collector, paramResourceTypes) {
         // return a promise containing survey evaluated data
         return new Promise((resolve, reject) => {
           const elmLibs = getLibraryForInstruments();
-          //let evaluatedSurveyResults = [];
           Promise.allSettled(elmLibs).then(
             (elmResults) => {
-              // elmResults.forEach((o) => {
-              //   if (o.status === "rejected") return true;
-              //   const entries = Object.entries(o.value);
-              //   const qKey = entries[0][0];
-              //   const elm = entries[0][1];
-              //   if (!elm) {
-              //     return true;
-              //   }
-              //   const result = (async () => {
-              //     const r = await executeELMForInstrument(
-              //       qKey,
-              //       elm,
-              //       patientBundle
-              //     );
-              //     let evalSurveyResult;
-              //     if (r && r.patientResults) {
-              //       evalSurveyResult =
-              //         r.patientResults[Object.keys(r.patientResults)[0]];
-              //       evalSurveyResult.dataKey = qKey;
-              //       console.log("evalResult ", evalSurveyResult);
-              //     }
-              //     return evalSurveyResult;
-              //   })();
-              //   evaluatedSurveyResults.push({
-              //     [qKey]: result,
-              //   });
-              // });
-              console.log("elms results ", elmResults);
               executeELMForInstruments(elmResults, patientBundle)
                 .then((results) => {
                   console.log("eval result? ", results);
-                  Promise.all(results).then((results) => {
-                    console.log("promised results ", results);
+                  Promise.allSettled(results).then((results) => {
+                    console.log("results? ", results);
+                    if (!results) {
+                      resolve(evalResults);
+                      return;
+                    }
                     const evaluatedSurveyResults = results
-                      .filter((o) => o.patientResults)
+                      .filter((o) => o.value && o.value.patientResults)
                       .map(
                         (o) =>
-                          o.patientResults[Object.keys(o.patientResults)[0]]
+                          o.value.patientResults[Object.keys(o.value.patientResults)[0]]
                       );
-                    //   let evaluatedSurveyResults = [],
-                    //   evalSurveyResult;
-                    // if (formattedResults) {
-                    //   evalSurveyResult =
-                    //     results.patientResults[
-                    //       Object.keys(results.patientResults)[0]
-                    //     ];
-                    //evalSurveyResult.dataKey = qKey;
-                    // evaluatedSurveyResults.push(evalSurveyResult);
-
                     const PATIENT_SUMMARY_KEY = "Summary";
                     const SURVEY_SUMMARY_KEY = "SurveySummary";
 
@@ -252,70 +217,27 @@ async function executeELM(collector, paramResourceTypes) {
                     );
                     resolve(evalResults);
                   });
-
-                  //return evalResults;
                 })
                 .catch((e) => {
                   console.log(e);
                   resolve(evalResults);
                 });
-              // const evaluatedSurveyResults = (async () => {
-              //   const result = await executeELMForInstruments(
-              //     elmResults,
-              //     patientBundle
-              //   );
-
-              //   console.log("eval result? ", result)
-
-              //   let evalResults = [], evalSurveyResult;
-              //   if (result && result.patientResults) {
-              //     evalSurveyResult =
-              //     result.patientResults[
-              //         Object.keys(result.patientResults)[0]
-              //       ];
-              //     //evalSurveyResult.dataKey = qKey;
-              //     evalResults.push(evalSurveyResult);
-              //   }
-              //   return evalResults;
-              // })();
-              // const PATIENT_SUMMARY_KEY = "Summary";
-              // const SURVEY_SUMMARY_KEY = "SurveySummary";
-
-              // if (!evalResults[PATIENT_SUMMARY_KEY]) {
-              //   evalResults[PATIENT_SUMMARY_KEY] = {};
-              // }
-              // evalResults[PATIENT_SUMMARY_KEY][SURVEY_SUMMARY_KEY] =
-              //   evaluatedSurveyResults;
-              // //debug
-              // console.log(
-              //   "final evaluated CQL results including surveys ",
-              //   evalResults
-              // );
-              // resolve(evalResults);
             },
             (e) => {
               console.log(e);
               reject(
-                "Error occurred importing ELM lib. See console for detail"
+                "Error occurred executing ELM for survey resources. See console for detail"
               );
             }
           );
         });
-
-        // const results = executor.exec(patientSource);
-        // return results.patientResults[Object.keys(results.patientResults)[0]];
       });
-    // // Then return the results
-    // .then((results) => {
-    //   if (!INSTRUMENT_LIST)
-    //     return results.patientResults[Object.keys(results.patientResults)[0]];
-    // });
     resolve(returnResults);
   });
 }
 
 async function executeELMForInstruments(arrayElmPromiseResult, bundle) {
-  if (!arrayElmPromiseResult) return [];
+  if (isEmptyArray(arrayElmPromiseResult)) return [];
   let evalResults = [];
   arrayElmPromiseResult.forEach((o) => {
     if (o.status === "rejected") return true;
@@ -350,59 +272,9 @@ async function executeELMForInstruments(arrayElmPromiseResult, bundle) {
       console.log(`Error executing CQL for ${qKey} `, e);
     }
     evalResults.push(surveyResults);
-    //console.log("survey results ", surveyResults)
-    // let evalSurveyResult;
-    // if (surveyResults && surveyResults.patientResults) {
-    //   evalSurveyResult =
-    //     surveyResults.patientResults[
-    //       Object.keys(surveyResults.patientResults)[0]
-    //     ];
-    //   evalSurveyResult.dataKey = qKey;
-    //   evalResults.push(evalSurveyResult);
-    // }
-    //debugging
-    //console.log("evaluated results for ", qKey, evalSurveyResult);
   });
   return evalResults;
 }
-
-// async function executeELMForInstrument(qKey, elm, bundle) {
-//   if (!elm) return null;
-//   let surveyLib = new cql.Library(
-//     elm,
-//     new cql.Repository({
-//       FHIRHelpers: r4HelpersELM,
-//       Common_LogicLibrary: r4SurveyCommonELM,
-//     })
-//   );
-//   const surveyExecutor = new cql.Executor(
-//     surveyLib,
-//     new VSACAwareCodeService(valueSetDB),
-//     {
-//       dataKey: qKey,
-//       id: getReportInstrumentIdByKey(qKey),
-//     }
-//   );
-//   const surveyPatientSource = getPatientSource(FHIR_RELEASE_VERSION_4);
-//   surveyPatientSource.loadBundles([bundle]);
-//   let surveyResults;
-//   try {
-//     surveyResults = surveyExecutor.exec(surveyPatientSource);
-//   } catch (e) {
-//     surveyResults = null;
-//     console.log(`Error executing CQL for ${qKey} `, e);
-//   }
-//   return surveyResults;
-//   // let evalSurveyResult;
-//   // if (surveyResults && surveyResults.patientResults) {
-//   //   evalSurveyResult =
-//   //     surveyResults.patientResults[
-//   //       Object.keys(surveyResults.patientResults)[0]
-//   //     ];
-//   //   evalSurveyResult.dataKey = qKey;
-//   // }
-//   // return evalSurveyResult
-// }
 
 function getLibraryForInstruments() {
   const INSTRUMENT_LIST = getReportInstrumentList();
