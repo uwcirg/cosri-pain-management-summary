@@ -1,8 +1,6 @@
-import React from 'react';
-import { select } from 'd3-selection';
-import {timeFormat} from "d3-time-format";
-import { transition } from 'd3-transition';
-
+import React from "react";
+import { select } from "d3-selection";
+import { transition } from "d3-transition";
 
 class Line extends React.Component {
   constructor() {
@@ -10,125 +8,87 @@ class Line extends React.Component {
     this.ref = React.createRef();
     this.state = {
       xName: "",
-      yName: ""
-    }
+      yName: "",
+      data: null,
+    };
   }
   componentDidMount() {
+    this.removeAll();
+    this.updateChart();
+  }
+  componentDidUpdate(prevProps, prevState) {
+    // console.log(
+    //   "prev data ",
+    //   prevState.data,
+    //   " current data ",
+    //   this.props.data
+    // );
+    if (prevState.data !== this.props.data) {
+      this.removeAll();
+      this.updateChart();
+    }
+  }
+  removeAll() {
     const node = this.ref.current;
-    const { data, lineGenerator, xName, yName, xScale, yScale, dataPoints } = this.props;
-    const PLACEHOLDER_IDENTIFIER = "placeholder";
+    let currentNode = select(node);
+    currentNode.selectAll("path").remove();
+  }
+  updateChart() {
+    const node = this.ref.current;
+    const {
+      data,
+      lineGenerator,
+      xName,
+      yName,
+      xScale,
+      yScale,
+      dataPointsProps,
+      className,
+      showPrintLabel,
+    } = this.props;
 
     this.setState({
       xName: xName,
-      yName: yName
+      yName: yName,
+      data: data,
     });
 
-    let formatDate = timeFormat(`%Y-%b-%d`);
+    //  let formatDate = timeFormat(`%Y-%b-%d`);
+    // line
     let currentNode = select(node)
-      .append('path')
+      .append("path")
       .datum(data)
-      .attr('id', this.props.lineID)
-      .attr('stroke', this.props.strokeColor || "#217684")
-      .attr('stroke-width', this.props.strokeWidth || "2px")
-      .attr('fill', 'none')
-      .attr('d', lineGenerator);
+      .attr("id", this.props.lineID)
+      .attr("stroke", this.props.strokeColor || "#217684")
+      .attr("stroke-width", this.props.strokeWidth || 2)
+      .attr("fill", "none")
+      .attr("class", className)
+      .attr("d", lineGenerator);
     if (this.props.dotted) {
-      currentNode.style("stroke-dasharray", (this.props.dotSpacing || "3, 3"))  // <== This line here!!
+      currentNode.style("stroke-dasharray", this.props.dotSpacing || "3, 3"); // <== This line here!!
     }
-
-    if (dataPoints) {
-      const radiusWidth  = 0.55;
-      const expandedRadiusWidth = radiusWidth * 4;
-      const animationDuration = 100;
+    const dataId = dataPointsProps && dataPointsProps.id ? String(dataPointsProps.id).toUpperCase() : "data";
+    //print label - PRINT ONLY
+    if (showPrintLabel) {
       select(node)
-      .selectAll('circle')
-      .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append('circle')
-      .attr('class', 'circle')
-      .attr('stroke', dataPoints.strokeColor)
-      .attr('stroke-width', dataPoints.dataStrokeWidth)
-      .attr('fill',dataPoints.dataStrokeFill)
-      .attr('r', radiusWidth)
-      .attr('id', (d, i) => `circle_${i}`)
-      .attr('cx', d => xScale(d[xName]))
-      .attr('cy', d => yScale(d[yName]))
-      .on("mouseover", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-          return;
-        }
-        select(`#circle_${i}`)
-        .transition()
-        .duration(animationDuration)
-        .attr("r", expandedRadiusWidth);
-        select(`#dataText_${i}`).attr("class", "show");
-        select(`#dataRect_${i}`).attr("class", "show");
-      })
-      .on("mouseout", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
-          return;
-        }
-       select( `#circle_${i}`)
-        .transition()
-        .duration(animationDuration)
-        .attr("r", radiusWidth);
-        select(`#dataText_${i}`).attr("class", "hide");
-        select(`#dataRect_${i}`).attr("class", "hide");
-      });
-
-      //rect
-      select(node)
-      .selectAll('.rect-tooltip')
-      .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append("rect")
-      .attr("class", "rect-tooltip")
-      .attr('id', (d, i) => `dataRect_${i}`)
-      .attr("x", (d) => xScale(d[xName]) - 52)
-      .attr('y', d => yScale(d[yName]) + 12)
-      .attr("width", d => `${formatDate(d[xName])}, ${d[yName]}`.length * 6)
-      .attr("height", 20)
-      .attr('class', 'hide')
-      .style("stroke", "black")
-      .style("stroke-width", "0.25")
-      .style("fill", "#FFF");
-
-      //tooltip
-      select(node)
-      .selectAll('text')
-      .data(data.filter(item => !item[PLACEHOLDER_IDENTIFIER]))
-      .enter()
-      .append('text')
-      .attr('id', (d, i) => `dataText_${i}`)
-      .attr('x', (d) => xScale(d[xName]) - 48)
-      .attr('y', d => yScale(d[yName]) + 26)
-      .attr('class', 'hide')
-      .attr('font-size', 11)
-      .attr("text-anchor", "start")
-      .attr('font-weight', 600)
-      .text(function(d) {
-        return `${formatDate(d[xName])}, ${d[yName]}`
-      });
+        .selectAll(".print-title")
+        .data(data.filter((item, index) => index === data.length - 1))
+        .enter()
+        .append("text")
+        .attr("id", (d, i) => `dataPrintText_${dataId}${i}`)
+        .attr("x", (d) => xScale(d[xName]) - 12)
+        .attr("y", (d) => yScale(d[yName]) - 12)
+        .attr("class", "print-only print-title")
+        .attr("font-size", "0.7rem")
+        .attr("text-anchor", "start")
+        .attr("font-weight", 600)
+        .text(function () {
+          return dataId.replace(/_/g, " ");
+        });
     }
-    this.updateChart();
-  }
-  componentDidUpdate() {
-    this.updateChart();
-  }
-  updateChart() {
-    const {
-          lineGenerator, data,
-        } = this.props;
-
     const t = transition().duration(1000);
-
     const line = select(this.props.lineID);
-
-    line
-      .datum(data)
-      .transition(t)
-      .attr('d', lineGenerator);
-
+    line.datum(data).transition(t).attr("d", lineGenerator);
   }
   render() {
     return <g className={this.props.className} ref={this.ref} />;

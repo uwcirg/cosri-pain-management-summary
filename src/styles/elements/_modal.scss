@@ -3,12 +3,15 @@
   top: 100px;
   left: 0;
   right: 0;
-  width: 75%;
+  width: calc(100% - 32px);
   max-height: 75%;
   overflow: auto;
   margin: auto;
   background-color: $color-white;
   border-radius: 5px;
+  @media(min-width: 699px) {
+    width: 60%;
+  } 
 
   &.small {
     width: 460px;
@@ -80,6 +83,9 @@ body.ReactModal__Body--open {
       .fa-link {
         color: $color-blue;
       }
+    }
+    p {
+      line-height: 1.45;
     }
   }
   &__content {

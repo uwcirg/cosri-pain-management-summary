@@ -9446,6 +9446,101 @@
                }
             }
          }, {
+            "name" : "ReportDocumentReferenceData",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "DO",
+                  "expression" : {
+                     "dataType" : "{http://hl7.org/fhir}DocumentReference",
+                     "type" : "Retrieve"
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Date",
+                        "value" : {
+                           "name" : "InstantText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "date",
+                              "scope" : "DO",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Type",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "contentType",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "attachment",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "type" : "Indexer",
+                                    "operand" : [ {
+                                       "path" : "content",
+                                       "scope" : "DO",
+                                       "type" : "Property"
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "value" : "0",
+                                       "type" : "Literal"
+                                    } ]
+                                 }
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Content",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "data",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "attachment",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "type" : "Indexer",
+                                    "operand" : [ {
+                                       "path" : "content",
+                                       "scope" : "DO",
+                                       "type" : "Property"
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "value" : "0",
+                                       "type" : "Literal"
+                                    } ]
+                                 }
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Description",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "description",
+                              "scope" : "DO",
+                              "type" : "Property"
+                           }
+                        }
+                     } ]
+                  }
+               }
+            }
+         }, {
             "name" : "Summary",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -9623,6 +9718,12 @@
                         "name" : "MeetsInclusionCriteria",
                         "value" : {
                            "name" : "MeetsInclusionCriteria",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "Documents",
+                        "value" : {
+                           "name" : "ReportDocumentReferenceData",
                            "type" : "ExpressionRef"
                         }
                      } ]

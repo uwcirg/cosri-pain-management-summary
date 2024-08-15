@@ -1,0 +1,102 @@
+.slider-parent-container {
+  width: 100%;
+  margin: 16px auto;
+  position: relative;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.slider-container {
+  width: 100%;
+  margin: auto;
+}
+input[type="range"] {
+  width: 100%;
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  .label {
+    flex: 1;
+    text-align: right;
+    font-size: 0.75rem;
+    position: relative;
+    display: block;
+    min-width: 1px;
+    left: 12px;
+    &:first-of-type {
+      flex: 0;
+    }
+    &:first-of-type,
+    &:last-of-type {
+      left: 0;
+    }
+    &.active {
+      color: $color-blue-dark;
+      font-weight: 900;
+    }
+    &.rotate {
+      top: 12px;
+      min-height: 12px;
+      &[displayvalue="10yr"],
+      &[displayvalue="11yr"],
+      &[displayvalue="12yr"],
+      &[displayvalue="13yr"],
+      &[displayvalue="14yr"],
+      &[displayvalue="15yr"],
+      &[displayvalue="16yr"],
+      &[displayvalue="17yr"],
+      &[displayvalue="18yr"],
+      &[displayvalue="19yr"],
+      &[displayvalue="20yr"] {
+        top: 16px;
+        &.active {
+          font-weight: 900;
+        }
+      }
+      
+      transform: rotate(-75deg);
+      &:not(:first-of-type) {
+        left: 0px;
+      }
+      &:last-of-type {
+        left: 4px;
+      }
+    }
+  }
+}
+
+.top-info-text {
+  text-align: center;
+  font-size: 0.9em;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.bottom-info-text {
+  text-align: right;
+  font-size: 12px;
+  margin-top: 8px;
+  color: $color-gray;
+  &.gutter {
+    margin-top: 16px;
+  }
+}
+
+.slider {
+  width: 100%;
+  background: $color-gray-lighter;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+  accent-color: $link-color;
+}
+
+.slider:hover {
+  opacity: 1;
+}

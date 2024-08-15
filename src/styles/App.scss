@@ -10,12 +10,20 @@
 @import 'elements/accessibility';
 @import 'elements/banners';
 @import 'elements/base';
-@import 'elements/modal';
-@import 'elements/spinner';
-@import 'elements/tables';
 @import 'elements/button';
+@import 'elements/modal';
+@import 'elements/select';
+@import 'elements/slider';
+@import 'elements/spinner';
+@import 'elements/switch';
+@import 'elements/tables';
+@import 'elements/tabs';
 @import 'elements/version';
 
 // component-specific
 @import 'components/Header';
 @import 'components/Summary';
+@import 'components/Report';
+
+// print
+@import 'print';
