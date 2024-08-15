@@ -7,10 +7,12 @@ import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
   getPatientNameFromSource,
+  getSiteId,
   isEmptyArray,
   isInViewport,
   isNotProduction,
   isProduction,
+  isReportEnabled,
   writeToLog,
 } from "../../helpers/utility";
 import Timeout from "../../helpers/timeout";
@@ -424,8 +426,7 @@ export default class Landing extends Component {
 
   getTabs() {
     let tabs = ["overview"];
-    const config_tab = getEnv("REACT_APP_TABS");
-    if (config_tab) tabs = config_tab.split(",");
+    if (isReportEnabled()) tabs.push("report");
     return tabs;
   }
 
@@ -438,7 +439,7 @@ export default class Landing extends Component {
         patientGender={summaryPatient?.Gender}
         meetsInclusionCriteria={summaryPatient?.MeetsInclusionCriteria}
         patientSearchURL={PATIENT_SEARCH_URL}
-        siteID={getEnv("REACT_APP_SITE_ID")}
+        siteID={getSiteId()}
       />
     );
   }
