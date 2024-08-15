@@ -623,7 +623,11 @@ export function isElementOverflown(element, dimension) {
   return isWidthOverflown || isHeightOverflown;
 }
 
+export function getSiteId() {
+  return getEnv("REACT_APP_SITE_ID");
+}
+
 export function isReportEnabled() {
-  const config_tab = getEnv("REACT_APP_TABS");
-  return config_tab && String(config_tab).includes("report");
+  const siteId = getSiteId();
+  return String(siteId).toLowerCase() === "uwmc";
 }
