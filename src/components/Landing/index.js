@@ -81,8 +81,9 @@ export default class Landing extends Component {
           this.clearProcessInterval();
           const rejectReason = responses[0].reason
             ? responses[0].reason
-            : "Error retrieving data";
+            : "";
           console.log(rejectReason);
+          this.logError(rejectReason);
           this.setState({
             loading: false,
             errorCollection: [rejectReason],
