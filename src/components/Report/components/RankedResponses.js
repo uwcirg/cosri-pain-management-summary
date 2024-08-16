@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import CopyButton from "../../CopyButton";
 import {
   getDisplayDateFromISOString,
   isEmptyArray,
@@ -17,6 +18,7 @@ export default class RankedResponses extends Component {
     this.handleClickPrevButton = this.handleClickPrevButton.bind(this);
     this.handleSetFirst = this.handleSetFirst.bind(this);
     this.handleSetLast = this.handleSetLast.bind(this);
+    this.tableRef = React.createRef();
   }
   componentDidMount() {
     this.initData(this.props.summary);
@@ -151,15 +153,16 @@ export default class RankedResponses extends Component {
   renderNavTitle() {
     if (!this.shouldRenderNav()) return null;
     const titleContainerStyle = {
-      //color: "#777",
       fontSize: "0.85em",
       textAlign: "left",
       width: "100%",
-      marginBottom: "12px",
     };
     return (
-      <div style={titleContainerStyle} className="print-hidden">
-        Responses (Last on {getDisplayDateFromISOString(this.state.dates[0])})
+      <div className="flex flex-gap-1" style={{marginBottom: "16px"}}>
+        <div style={titleContainerStyle} className="print-hidden">
+          Responses (Last on {getDisplayDateFromISOString(this.state.dates[0])})
+        </div>
+        {this.renderCopyButton()}
       </div>
     );
   }
@@ -324,6 +327,14 @@ export default class RankedResponses extends Component {
       </td>
     );
   }
+  renderCopyButton() {
+    return (
+      <CopyButton
+        buttonTitle="Click to copy summary of responses"
+        elementToCopy={this.tableRef.current}
+      ></CopyButton>
+    );
+  }
   render() {
     //consts
     const tableStyle = {
@@ -361,7 +372,7 @@ export default class RankedResponses extends Component {
           style={navContainerStyle}
           className="responses-table-outer-wrapper slide-table-container"
         >
-          <table className="table" style={tableStyle}>
+          <table className="table" style={tableStyle} ref={this.tableRef}>
             {this.renderTableHeader()}
             {this.renderTableBody()}
           </table>
