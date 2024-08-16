@@ -330,7 +330,7 @@ export default class RankedResponses extends Component {
   renderCopyButton() {
     return (
       <CopyButton
-        buttonTitle="Click to copy the most recent responses"
+        buttonTitle="Click to copy summary of responses"
         elementToCopy={this.tableRef.current}
       ></CopyButton>
     );

@@ -183,7 +183,7 @@ export default class ResponsesSummary extends Component {
               </th>
             ))}
             {/* view all responses column */}
-            <th className="accent"></th>
+            <th className="accent exclude-from-copy"></th>
           </tr>
         </thead>
       );
