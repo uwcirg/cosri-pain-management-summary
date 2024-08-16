@@ -28392,11 +28392,6 @@
         "code": "730794",
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
         "version": "2020-02"
-      },
-      {
-        "code": "730918",
-        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-        "version": "2020-02"
       }
     ]
   },
