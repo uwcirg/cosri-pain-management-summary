@@ -196,7 +196,7 @@ export default class ResponsesSummary extends Component {
           <th className="accent" style={{ borderRight: 0 }}>
             Responses
           </th>
-          <th></th>
+          <th className="exclude-from-copy"></th>
         </tr>
       </thead>
     );
