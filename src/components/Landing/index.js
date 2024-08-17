@@ -74,7 +74,7 @@ export default class Landing extends Component {
 
     Promise.allSettled([
       executeElm(this.state.collector, this.state.resourceTypes),
-      landingUtils.getExternalData(summaryMap, this.getPatientId()),
+      landingUtils.getExternalData(summaryMap),
     ])
       .then((responses) => {
         if (responses[0].status === "rejected" || !this.getPatientId()) {
@@ -100,7 +100,7 @@ export default class Landing extends Component {
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         result["Summary"] = {
           ...result["Summary"],
-          ...(externalDataSet ? externalDataSet["data"] : null),
+          ...(externalDataSet ? externalDataSet["data"] : {}),
         };
         const { sectionFlags, flaggedCount } =
           landingUtils.getProcessedSummaryData(result.Summary, summaryMap);
