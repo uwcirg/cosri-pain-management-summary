@@ -161,18 +161,18 @@ export function getDisplayDateFromISOString(isocDateString, format) {
 }
 
 export function renderImageFromSVG(imageElement, svgElement) {
-  if (!svgElement) return;
+  if (!svgElement || !imageElement) return;
   const svgData = new XMLSerializer().serializeToString(svgElement);
   let canvas = document.createElement("canvas");
   let ctx = canvas.getContext("2d");
-  let img = imageElement;
-  if (!img) return;
+  let img = imageElement.cloneNode(true);
   img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
   img.onload = function () {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0, img.width, img.height);
+    canvas.width = imageElement.width;
+    canvas.height = imageElement.height;
+    ctx.drawImage(img, 0, 0, imageElement.width, imageElement.height);
   };
+  imageElement.replaceWith(img);
 }
 
 export function downloadDomImage(event, element, downloadFileName, options) {
@@ -538,6 +538,7 @@ export function writeToLog(message, level, params) {
   const logParams = params ? params : {};
   if (!logParams.tags) logParams.tags = [];
   logParams.tags.push("cosri-frontend");
+  
   const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
   const patientName = params.patientName ? params.patientName : "";
   let messageString = "";

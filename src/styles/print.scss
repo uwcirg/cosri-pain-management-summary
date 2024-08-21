@@ -2,6 +2,15 @@
   .print-only {
     display: block;
   }
+  .info-icon {
+    display: none;
+  }
+  .banner.exclusion-banner{
+    margin-bottom: 16px;
+    &.close .content {
+      display: block;
+    }
+  }
   #surveyGraphSvg_printOnly,
   .print-image,
   .panel .print-image {
@@ -91,8 +100,8 @@
         page-break-before: always;
       }
       .panel__item {
-        height: 100%;
-       // page-break-inside: avoid;
+        //height: 100%;
+        //page-break-inside: avoid;
       }
       // .panel, 
       // .panel__item{

@@ -10,6 +10,8 @@ import {
   toDate,
 } from "../../../helpers/utility";
 
+let checkPintImgRefIntervalId = 0;
+
 export default class BodyDiagram extends Component {
   constructor(props) {
     super(props);
@@ -23,7 +25,7 @@ export default class BodyDiagram extends Component {
     this.containerRef = React.createRef();
     this.bodyDiagramRef = React.createRef();
     this.utilButtonsContainerRef = React.createRef();
-    this.printImageRef = React.createRef();
+    this.printBodyDiagramImageRef = React.createRef();
     this.datesSelectorRef = React.createRef();
     this.toolbarRef = React.createRef();
 
@@ -42,16 +44,24 @@ export default class BodyDiagram extends Component {
   componentDidMount() {
     this.initLoadEvent();
     // render image for printing
-    if (this.printImageRef.current) {
-      setTimeout(
-        () =>
-          renderImageFromSVG(
-            this.printImageRef.current,
-            this.getSourceDocument()
-          ),
-        1500
-      );
-    }
+    checkPintImgRefIntervalId = setInterval(() => {
+      const sourceDocument = this.getSourceDocument();
+      if (sourceDocument && this.printBodyDiagramImageRef.current) {
+        clearInterval(checkPintImgRefIntervalId);
+        setTimeout(
+          () =>
+            renderImageFromSVG(
+              this.printBodyDiagramImageRef.current,
+              this.getSourceDocument()
+            ),
+          2000
+        );
+      }
+    }, 50);
+   
+  }
+  componentWillUnmount() {
+    clearInterval(checkPintImgRefIntervalId);
   }
   initLoadEvent() {
     const svgElement = this.bodyDiagramRef.current;
@@ -402,7 +412,7 @@ export default class BodyDiagram extends Component {
   renderPrintOnlyImage() {
     return (
       <img
-        ref={this.printImageRef}
+        ref={this.printBodyDiagramImageRef}
         alt="for print"
         className="exclude-from-copy body-diagram print-image absolute"
       ></img>
@@ -614,11 +624,11 @@ export default class BodyDiagram extends Component {
             >
               Body diagram
             </object>
+            {this.renderPrintOnlyImage()}
           </div>
-          {this.renderPrintOnlyImage()}
         </div>
         <div
-          className="flex flex-center flex-column"
+          className="flex flex-center flex-column print-hidden"
           style={{ backgroundColor: "#FFF" }}
         >
           {this.renderNavButtons()}
