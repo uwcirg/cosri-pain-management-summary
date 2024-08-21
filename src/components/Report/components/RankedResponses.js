@@ -348,7 +348,7 @@ export default class RankedResponses extends Component {
     const containerStyle = {
       padding: "16px 24px",
       position: "relative",
-      maxWidth: "1100px",
+      maxWidth: "800px",
     };
     const dotsContainerStyle = {
       width: "100%",
