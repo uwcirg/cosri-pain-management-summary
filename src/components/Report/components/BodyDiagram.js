@@ -47,7 +47,6 @@ export default class BodyDiagram extends Component {
     checkPintImgRefIntervalId = setInterval(() => {
       const sourceDocument = this.getSourceDocument();
       if (sourceDocument && this.printBodyDiagramImageRef.current) {
-        console.log("WTF");
         clearInterval(checkPintImgRefIntervalId);
         setTimeout(
           () =>
