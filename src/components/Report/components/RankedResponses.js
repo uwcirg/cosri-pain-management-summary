@@ -281,10 +281,12 @@ export default class RankedResponses extends Component {
                 }  accent dark-border fat`}
                 key={`ranked_responses_header_${index}`}
               >
-                Goals{" "}
-                <span className="small">
-                  ({getDisplayDateFromISOString(date)})
-                </span>
+                <div className="flex flex-start flex-wrap text-left">
+                  Goals
+                  <span className="small">
+                    ({getDisplayDateFromISOString(date)})
+                  </span>
+                </div>
               </th>
             );
           })}
@@ -348,7 +350,8 @@ export default class RankedResponses extends Component {
     const containerStyle = {
       padding: "16px 24px",
       position: "relative",
-      maxWidth: "800px",
+      maxWidth: "1000px",
+      border: "1px solid transparent"
     };
     const dotsContainerStyle = {
       width: "100%",
