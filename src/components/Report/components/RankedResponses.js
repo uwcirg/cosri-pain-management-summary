@@ -367,12 +367,13 @@ export default class RankedResponses extends Component {
       <div
         className="flex flex-column flex-gap-2 flex-align-start"
         style={containerStyle}
+        ref={this.tableRef}
       >
         <div
           style={navContainerStyle}
           className="responses-table-outer-wrapper slide-table-container"
         >
-          <table className="table" style={tableStyle} ref={this.tableRef}>
+          <table className="table" style={tableStyle} >
             {this.renderTableHeader()}
             {this.renderTableBody()}
           </table>

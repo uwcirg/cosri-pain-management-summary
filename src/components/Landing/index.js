@@ -39,7 +39,7 @@ export default class Landing extends Component {
       collector: [],
       resourceTypes: {},
       patientId: "",
-      activeTab: null,
+      activeTab: 0,
       loadingMessage: "Resources are being loaded...",
       hasMmeErrors: false,
       mmeErrors: [],
@@ -235,6 +235,7 @@ export default class Landing extends Component {
       // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
       headingsOffset: 1 * MIN_HEADER_HEIGHT,
       scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+      hasInnerContainers: true,
       onClick: (e) => {
         e.preventDefault();
         const sectionIdAttr = "datasectionid";

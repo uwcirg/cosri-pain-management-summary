@@ -184,9 +184,6 @@ a {
     transform: translate(12px, 0);
   }
 }
-.print-hidden {
-  display: block;
-}
 .print-cell-hidden {
   display: table-cell;
 }
@@ -214,4 +211,31 @@ a {
   font-size: 0.75rem;
   line-height: 1.5;
   font-weight: 600;
+}
+.is-collapsible {
+	/*
+		Increase the value "1000px" of "tocbot.css" to higher value, because otherwise "ol.toc-list" could be truncated (especially if the root heading is shown).
+		Do not unset the value, because the smooth transition of closing/opening collapsible list is prevented.
+		Do not increase the value to max signed 32 bit, because the visible transition at the end is too fast.
+	 */
+	max-height: 3000px;
+	/*
+		Both control points of the Bézier curve are in the lower-right corner.
+		I.e. when the list gets uncollapsed (.i.e. it has no style `.is-collapsed` anymore), the transition
+		is very slow at the beginning  (i.e. near `max-height: 0`)
+		and very fast at the end (i.e. `near max-height: 3000px`, where the transition is normally not visible anymore)
+	 */
+	transition: all 0.5s cubic-bezier(1, 0, 1, 0);
+}
+
+.is-collapsed {
+	/* override the increase in ".is-collapsible" */
+	max-height: 0;
+	/*
+		Both control points of the Bézier curve are in the upper-left corner.
+		I.e. when the list gets collapsed, the transition
+		is very fast at the beginning (i.e. `near max-height: 3000px`, where the transition is normally not visible)
+		and very slow at the end (i.e. near `max-height: 0`)
+	 */
+	transition: all 0.5s cubic-bezier(0, 1, 0, 1);
 }

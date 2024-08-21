@@ -858,7 +858,7 @@ export default class ReportOverviewGraph extends Component {
   renderNotInGraphMessage() {
     return (
       <div
-        className="text-warning"
+        className="text-warning print-hidden"
         style={{
           margin: "8px",
           paddingLeft: "16px",
@@ -1136,7 +1136,7 @@ export default class ReportOverviewGraph extends Component {
         lineHeight: 1.5,
       };
       return (
-        <div className="flex flex-center text-warning" style={containerStyle}>
+        <div className="flex flex-center text-warning print-hidden" style={containerStyle}>
           <div style={textContainerStyle}>
             <FontAwesomeIcon icon="exclamation-circle" title="notice" />
             <div>{this.getNotInGraphMessage()}</div>
