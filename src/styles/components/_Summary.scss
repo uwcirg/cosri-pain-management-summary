@@ -90,7 +90,7 @@
           }
           &.is-active-link {
             color: #fff;
-            background-color: $color-gray-light;
+            background-color: $color-blue-light;
           }
           &:hover {
             color: #fff;
@@ -175,6 +175,7 @@
       }
       .title-text-container {
         visibility: hidden;
+        height: 0;
         transition: visibility 350ms ease;
       }
       .toc-list.is-collapsible {
@@ -224,6 +225,7 @@
           display: flex;
           flex-direction: column;
           visibility: visible;
+          height: auto;
         }
         .toc-list.is-collapsible {
           display: block;
