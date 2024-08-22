@@ -906,9 +906,11 @@ export function getCollectorErrors(arrCollection) {
       console.log("Unable to convert url to URL object ", item.url);
       itemURL = item?.url;
     }
-    const sourceType = item?.type ?? itemURL;
-    const sourceTypeText = sourceType ? `[${sourceType}]` : "";
-    errors.push(`${sourceTypeText} ${item.error}`);
+    if (item.error) {
+      const sourceType = item?.type ?? itemURL;
+      const sourceTypeText = sourceType ? `[${sourceType}]` : "";
+      errors.push(`${sourceTypeText} ${item.error}`);
+    }
   });
   return errors;
 }

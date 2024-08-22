@@ -4,6 +4,7 @@ export default function AlertIcon(props) {
     <img
       src={process.env.PUBLIC_URL + "/assets/images/alertExclamation.png"}
       alt={props.alt?props.alt:"alert"}
+      title={props.title?props.title:""}
       {...props}
     />
   );
