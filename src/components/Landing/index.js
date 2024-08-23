@@ -97,13 +97,20 @@ export default class Landing extends Component {
         let result = {};
         let fhirData = responses[0].value;
         let externalDataSet = responses[1].value;
+        // hide and show section(s) depending on config
+        const currentSummaryMap = {
+          ...this.state.summaryMap,
+          ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
+            this.state.summaryMap
+          ),
+        };
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         result["Summary"] = {
           ...result["Summary"],
           ...(externalDataSet ? externalDataSet["data"] : {}),
         };
         const { sectionFlags, flaggedCount } =
-          landingUtils.getProcessedSummaryData(result.Summary, summaryMap);
+          landingUtils.getProcessedSummaryData(result.Summary, currentSummaryMap);
         this.setSummaryOverviewStatsData(result["Summary"]);
         this.setSummaryAlerts(result["Summary"], sectionFlags);
         this.setSummaryGraphData(result["Summary"]);
@@ -133,13 +140,6 @@ export default class Landing extends Component {
         [...collectorErrors, externalDataErrors].forEach((e) =>
           this.logError(e)
         );
-        // hide and show section(s) depending on config
-        const currentSummaryMap = {
-          ...this.state.summaryMap,
-          ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
-            this.state.summaryMap
-          ),
-        };
         this.setState(
           {
             result,
