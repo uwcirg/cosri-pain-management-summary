@@ -197,7 +197,15 @@ export default class Summary extends Component {
           top: isReportEnabled() ? "-148px" : "-100px",
           height: "2px",
         }}
-      ></div>
+      >
+        {/* eslint-disable-next-line */}
+        <a
+          name={`${sectionId}_anchor`}
+          href={`#${sectionId}`}
+          tabIndex={0}
+          aria-hidden="true"
+        ></a>
+      </div>
     );
   }
 
