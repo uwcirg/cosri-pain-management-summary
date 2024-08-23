@@ -284,6 +284,8 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
         // PC-PTSD score item 102017-1
         when I.linkId.value = '102017-1' then I.answer[0].value.value
         when I.linkId.value = '/102017-1' then I.answer[0].value.value
+        // STOP score item
+        when I.linkId.value = 'STOP-score' then I.answer[0].value.value
         // HACK, address GE questionnaire Other answer
         when 
              PositionOf('GE', I.linkId.value) != -1 and
