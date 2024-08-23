@@ -1,5 +1,37 @@
 import {getEnv, fetchEnvData} from '../utils/envConfig';
 
+/*
+  * decode Jwt token
+  */
+export function parseJwt (token) {
+  var base64Url = token.split('.')[1];
+  var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  return JSON.parse(jsonPayload);
+};
+
+/*
+* get access token information stored in sessionStorage
+*/
+export function getTokenInfoFromStorage() {
+  let token;
+  var keys = Object.keys(sessionStorage);
+  keys.forEach(function(key){
+    var obj;
+    try {
+      obj = JSON.parse(sessionStorage.getItem(key));
+    } catch(e) {
+      obj = null;
+    }
+    if (obj && obj["tokenResponse"] && obj["tokenResponse"]["access_token"]) {
+      token = parseJwt(obj["tokenResponse"]["access_token"]);
+    }
+  });
+  return token;
+}
+
 var Timeout = (function() {
   var timeoutIntervalId = 0;
   var waitForDOMIntervalId = 0;
@@ -40,33 +72,10 @@ var Timeout = (function() {
   }
 
   /*
-  * decode Jwt token
-  */
-  function parseJwt (token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  };
-
-  /*
   * get access token information stored in sessionStorage
   */
   function getSessionTokenInfo() {
-    var keys = Object.keys(sessionStorage);
-    keys.forEach(function(key){
-      var obj;
-      try {
-        obj = JSON.parse(sessionStorage.getItem(key));
-      } catch(e) {
-        obj = null;
-      }
-      if (obj && obj["tokenResponse"] && obj["tokenResponse"]["access_token"]) {
-        tokenInfo = parseJwt(obj["tokenResponse"]["access_token"]);
-      }
-    });
+    tokenInfo = getTokenInfoFromStorage();
     printDebugStatement("token info? " + (tokenInfo?JSON.stringify(tokenInfo):"no token"));
   }
 

@@ -538,7 +538,7 @@ export function writeToLog(message, level, params) {
   const logParams = params ? params : {};
   if (!logParams.tags) logParams.tags = [];
   logParams.tags.push("cosri-frontend");
-  
+
   const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
   const patientName = params.patientName ? params.patientName : "";
   let messageString = "";
@@ -631,4 +631,16 @@ export function getSiteId() {
 export function isReportEnabled() {
   const siteId = getSiteId();
   return String(siteId).toLowerCase() === "uwmc";
+}
+
+export function getEnvDashboardURL() {
+  return getEnv("REACT_APP_DASHBOARD_URL");
+}
+
+export function getPatientSearchURL(shouldClearSession) {
+  const PATIENT_SEARCH_ROOT_URL = getEnvDashboardURL();
+  if (!PATIENT_SEARCH_ROOT_URL) return "/";
+  const PATIENT_SEARCH_URL =
+    PATIENT_SEARCH_ROOT_URL + (shouldClearSession ? "/clear_session" : "");
+  return PATIENT_SEARCH_URL;
 }
