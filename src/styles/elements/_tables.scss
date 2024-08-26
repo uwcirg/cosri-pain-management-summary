@@ -123,6 +123,8 @@
   th {
     border: 1px solid $table-cell-border-color;
     background-color: #FFF;
+    transition: transform 350ms cubic-bezier(.25,.75,.5,1.25);
+    overflow: hidden;
     &.dark-border {
       border-color: $table-cell-border-dark-color;
     }
@@ -132,6 +134,12 @@
     &.fat {
       padding: 8px 16px !important;
     }
+    &.a-active {
+      transform: translateX(0);
+    }
+    &.a-inactive {
+      transform: translateX(-2000px);
+    }
   }
   td {
     border-right: 1px solid $table-cell-border-color;
@@ -139,6 +147,14 @@
     border-bottom: 1px solid $table-cell-border-color;
     padding: 4px;
     background-color: #FFF;
+    transition: transform 350ms cubic-bezier(.25,.75,.5,1.25);
+    overflow: hidden;
+    &.a-active {
+      transform: translateX(0);
+    }
+    &.a-inactive {
+      transform: translateX(-2000px);
+    }
     &.dark-border {
       border-color: $table-cell-border-dark-color;
     }
