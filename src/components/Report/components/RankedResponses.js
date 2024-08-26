@@ -158,7 +158,7 @@ export default class RankedResponses extends Component {
       width: "100%",
     };
     return (
-      <div className="flex flex-gap-1" style={{marginBottom: "16px"}}>
+      <div className="flex flex-gap-1" style={{ marginBottom: "16px" }}>
         <div style={titleContainerStyle} className="print-hidden">
           Responses (Last on {getDisplayDateFromISOString(this.state.dates[0])})
         </div>
@@ -167,17 +167,6 @@ export default class RankedResponses extends Component {
     );
   }
   renderNavButtons() {
-    // const iconStyle = {
-    //   borderWidth: "1px",
-    //   borderStyle: "solid",
-    //   padding: "8px",
-    //   width: "22px",
-    //   height: "22px",
-    //   borderRadius: "100vmax",
-    //   cursor: "pointer",
-    //   position: "relative",
-    //   zIndex: 10,
-    // };
     if (!this.shouldRenderNav()) return null;
     const buttonStyle = {
       borderWidth: "1px",
@@ -269,16 +258,18 @@ export default class RankedResponses extends Component {
         <tr>
           <th className="fixed-cell accent dark-border fat">Rank</th>
           {this.state.dates.map((date, index) => {
+            const statusClassName =
+              index <= this.state.selectedIndex ? "a-active" : "a-inactive";
             return (
               <th
                 style={{
                   backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
-                  display:
-                    index <= this.state.selectedIndex ? "table-cell" : "none",
+                  // display:
+                    //index <= this.state.selectedIndex ? "table-cell" : "none",
                 }}
                 className={`${
                   index > 0 ? "exclude-from-copy print-hidden active" : ""
-                }  accent dark-border fat`}
+                }  ${statusClassName} accent dark-border fat`}
                 key={`ranked_responses_header_${index}`}
               >
                 <div className="flex flex-start flex-wrap text-left">
@@ -314,16 +305,18 @@ export default class RankedResponses extends Component {
     );
   }
   renderRankedCell(index, rank) {
+    const statusClassName =
+      index <= this.state.selectedIndex ? "a-active" : "a-inactive";
     return (
       <td
         key={`${index}_${rank}`}
         style={{
           backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
-          display: index <= this.state.selectedIndex ? "table-cell" : "none",
+          //   display: index <= this.state.selectedIndex ? "table-cell" : "none",
         }}
         className={`${
           index > 0 ? "exclude-from-copy print-hidden" : ""
-        } dark-border fat nowrap`}
+        } ${statusClassName} dark-border fat nowrap`}
       >
         {this.getRankedDataByIndex(index, rank)}
       </td>
@@ -351,7 +344,7 @@ export default class RankedResponses extends Component {
       padding: "16px 24px",
       position: "relative",
       maxWidth: "1000px",
-      border: "1px solid transparent"
+      border: "1px solid transparent",
     };
     const dotsContainerStyle = {
       width: "100%",
@@ -376,7 +369,7 @@ export default class RankedResponses extends Component {
           style={navContainerStyle}
           className="responses-table-outer-wrapper slide-table-container"
         >
-          <table className="table" style={tableStyle} >
+          <table className="table" style={tableStyle}>
             {this.renderTableHeader()}
             {this.renderTableBody()}
           </table>
