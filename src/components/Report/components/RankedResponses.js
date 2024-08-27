@@ -129,7 +129,8 @@ export default class RankedResponses extends Component {
     });
   }
   handleClickPrevButton() {
-    const prevIndex = this.state.selectedIndex - 1;
+    const prevIndex =
+      this.state.selectedIndex > 0 ? this.state.selectedIndex - 1 : 0;
     // console.log("Prev Index ", prevIndex);
     if (prevIndex < 0) return;
     this.setState({
@@ -138,7 +139,10 @@ export default class RankedResponses extends Component {
     });
   }
   handleClickNextButton() {
-    const nextIndex = this.state.selectedIndex + 1;
+    const nextIndex =
+      this.state.selectedIndex < this.state.dates.length - 1
+        ? this.state.selectedIndex + 1
+        : this.state.dates.length - 1;
     if (nextIndex > this.state.dates.length - 1) return;
     this.setState({
       selectedIndex: nextIndex,
@@ -171,7 +175,7 @@ export default class RankedResponses extends Component {
     const buttonStyle = {
       borderWidth: "1px",
       borderStyle: "solid",
-      padding: "6px 20px",
+      padding: "8px 24px",
       borderRadius: "100vmax",
       fontWeight: 600,
       cursor: "pointer",
@@ -265,7 +269,7 @@ export default class RankedResponses extends Component {
                 style={{
                   backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
                   // display:
-                    //index <= this.state.selectedIndex ? "table-cell" : "none",
+                  //index <= this.state.selectedIndex ? "table-cell" : "none",
                 }}
                 className={`${
                   index > 0 ? "exclude-from-copy print-hidden active" : ""
@@ -297,7 +301,12 @@ export default class RankedResponses extends Component {
   renderTableRow(rank) {
     return (
       <tr>
-        <td className="fixed-cell text-bold dark-border text-center">{rank}</td>
+        <td
+          className="fixed-cell text-bold dark-border text-center"
+          style={{ verticalAlign: "middle" }}
+        >
+          {rank}
+        </td>
         {this.state.dates.map((date, index) => {
           return this.renderRankedCell(index, rank);
         })}
