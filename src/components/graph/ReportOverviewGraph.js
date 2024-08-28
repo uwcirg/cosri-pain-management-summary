@@ -700,14 +700,17 @@ export default class ReportOverviewGraph extends Component {
       (item) => this.state.qids.indexOf(item.qid) !== -1
     );
     const { arrNum, unit } = this.getScaleInfoForSlider(sliderData);
-    // console.log("arrNum ", arrNum, " unit ", unit);
+    console.log("arrNum ", arrNum, " unit ", unit);
     // const selectedRange = parseFloat(this.state.selectedDateRange);
     //console.log("number of years total: ", numYears);
     // console.log("selected value: ", selectedRange);
     // console.log("scale ticks: ", arrNum);
     const inYears = unit === "year";
+    const inMonths = unit === "month";
     const min = arrNum[0];
     const max = arrNum[arrNum.length - 1];
+    const shouldRotate =
+      (inMonths && min === 0 && max >= 1) || (inYears && max >= 10);
     const arrDisplayValues = arrNum.map((item, index) => {
       const prevItem =
         index > 0
@@ -802,7 +805,7 @@ export default class ReportOverviewGraph extends Component {
               return (
                 <span
                   key={`scale_${index}`}
-                  className={`label  ${inYears && max >= 10 ? "rotate" : ""} ${
+                  className={`label  ${shouldRotate ? "rotate" : ""} ${
                     comparedVal <= diff ? "active" : ""
                   }`}
                   ref={this.scaleLabelRefs[index]}
@@ -1136,7 +1139,10 @@ export default class ReportOverviewGraph extends Component {
         lineHeight: 1.5,
       };
       return (
-        <div className="flex flex-center text-warning print-hidden" style={containerStyle}>
+        <div
+          className="flex flex-center text-warning print-hidden"
+          style={containerStyle}
+        >
           <div style={textContainerStyle}>
             <FontAwesomeIcon icon="exclamation-circle" title="notice" />
             <div>{this.getNotInGraphMessage()}</div>

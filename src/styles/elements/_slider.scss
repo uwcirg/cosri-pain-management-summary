@@ -40,6 +40,20 @@ input[type="range"] {
     &.rotate {
       top: 12px;
       min-height: 12px;
+      &[dataunit="month"][displayvalue="1mo"],
+      &[dataunit="month"][displayvalue="2mo"],
+      &[dataunit="month"][displayvalue="3mo"],
+      &[dataunit="month"][displayvalue="4mo"],
+      &[dataunit="month"][displayvalue="5mo"],
+      &[dataunit="month"][displayvalue="6mo"],
+      &[dataunit="month"][displayvalue="7mo"],
+      &[dataunit="month"][displayvalue="8mo"],
+      &[dataunit="month"][displayvalue="9mo"],
+      &[dataunit="month"][displayvalue="10mo"],
+      &[dataunit="month"][displayvalue="11mo"],
+      &[dataunit="month"][displayvalue="12mo"] {
+        left: 8px !important;
+      }
       &[displayvalue="10yr"],
       &[displayvalue="11yr"],
       &[displayvalue="12yr"],
@@ -56,11 +70,11 @@ input[type="range"] {
           font-weight: 900;
         }
       }
-      
-      transform: rotate(-75deg);
-      &:not(:first-of-type) {
-        left: 0px;
-      }
+
+      transform: rotate(-90deg);
+      // &:not(:first-of-type) {
+      //   left: 0px;
+      // }
       &:last-of-type {
         left: 4px;
       }
@@ -85,6 +99,9 @@ input[type="range"] {
   &.gutter {
     margin-top: 16px;
   }
+}
+.slider-container:has(.rotate) + .bottom-info-text {
+  margin-top: 28px;
 }
 
 .slider {
