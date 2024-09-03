@@ -161,18 +161,18 @@ export function getDisplayDateFromISOString(isocDateString, format) {
 }
 
 export function renderImageFromSVG(imageElement, svgElement) {
-  if (!svgElement) return;
+  if (!svgElement || !imageElement) return;
   const svgData = new XMLSerializer().serializeToString(svgElement);
   let canvas = document.createElement("canvas");
   let ctx = canvas.getContext("2d");
-  let img = imageElement;
-  if (!img) return;
+  let img = imageElement.cloneNode(true);
   img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
   img.onload = function () {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0, img.width, img.height);
+    canvas.width = imageElement.width;
+    canvas.height = imageElement.height;
+    ctx.drawImage(img, 0, 0, imageElement.width, imageElement.height);
   };
+  imageElement.replaceWith(img);
 }
 
 export function downloadDomImage(event, element, downloadFileName, options) {
@@ -623,7 +623,23 @@ export function isElementOverflown(element, dimension) {
   return isWidthOverflown || isHeightOverflown;
 }
 
+export function getSiteId() {
+  return getEnv("REACT_APP_SITE_ID");
+}
+
 export function isReportEnabled() {
-  const config_tab = getEnv("REACT_APP_TABS");
-  return config_tab && String(config_tab).includes("report");
+  const siteId = getSiteId();
+  return String(siteId).toLowerCase() === "uwmc";
+}
+
+export function getEnvDashboardURL() {
+  return getEnv("REACT_APP_DASHBOARD_URL");
+}
+
+export function getPatientSearchURL(shouldClearSession) {
+  const PATIENT_SEARCH_ROOT_URL = getEnvDashboardURL();
+  if (!PATIENT_SEARCH_ROOT_URL) return "/";
+  const PATIENT_SEARCH_URL =
+    PATIENT_SEARCH_ROOT_URL + (shouldClearSession ? "/clear_session" : "");
+  return PATIENT_SEARCH_URL;
 }

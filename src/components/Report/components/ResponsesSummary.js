@@ -183,7 +183,7 @@ export default class ResponsesSummary extends Component {
               </th>
             ))}
             {/* view all responses column */}
-            <th className="accent"></th>
+            <th className="accent exclude-from-copy"></th>
           </tr>
         </thead>
       );
@@ -196,7 +196,7 @@ export default class ResponsesSummary extends Component {
           <th className="accent" style={{ borderRight: 0 }}>
             Responses
           </th>
-          <th></th>
+          <th className="exclude-from-copy"></th>
         </tr>
       </thead>
     );
@@ -363,11 +363,16 @@ export default class ResponsesSummary extends Component {
     const sectionHeaderElement = sectionElement
       ? sectionElement.querySelector(".sub-section__header__name")
       : null;
-    const headerElement = sectionHeaderElement
+    let headerElement = sectionHeaderElement
       ? sectionHeaderElement.cloneNode(true)
       : null;
-    if (headerElement) summaryElement.appendChild(headerElement);
-    const summaryTableElement = this.summaryTableRef.current.cloneNode(true);
+    
+    if (headerElement) {
+      headerElement.style.fontWeight = 600;
+      summaryElement.appendChild(headerElement);
+    }
+    let summaryTableElement = this.summaryTableRef.current.cloneNode(true);
+    summaryTableElement.style.marginTop = "16px";
     summaryTableElement.querySelectorAll("img").forEach((imageElement) => {
       const altText = imageElement.getAttribute("alt");
       if (!altText) return true;

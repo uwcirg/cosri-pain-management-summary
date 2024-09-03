@@ -8,12 +8,17 @@ import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
   getPatientNameFromSource,
+  getPatientSearchURL,
+  getSiteId,
   isEmptyArray,
   isInViewport,
+  isNotProduction,
   isProduction,
+  isReportEnabled,
   writeToLog,
 } from "../../helpers/utility";
 import Timeout from "../../helpers/timeout";
+import { getTokenInfoFromStorage } from "../../helpers/timeout";
 import summaryMap from "../../config/summary_config.json";
 
 import { getEnv, getEnvs, fetchEnvData } from "../../utils/envConfig";
@@ -60,27 +65,31 @@ export default class Landing extends Component {
       !isEmptyArray(this.state.errorCollection)
     )
       return;
-    /*
-     * fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
-     */
+
+    // start time out countdown on DOM mounted
+    Timeout();
+    // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
     fetchEnvData();
     // write out environment variables:
     getEnvs();
-    //start time out countdown on DOM mounted
-    Timeout();
     // display resources loading statuses
-   this.initProcessProgressDisplay();
+    this.initProcessProgressDisplay();
+
     Promise.allSettled([
       executeElm(this.state.collector, this.state.resourceTypes),
-      landingUtils.getExternalData(summaryMap, this.getPatientId()),
+      landingUtils.getExternalData(summaryMap),
     ])
       .then((responses) => {
+        if (!getTokenInfoFromStorage()) {
+          console.log("No access token found");
+          this.handleNoAccessToken();
+          return;
+        }
         if (responses[0].status === "rejected" || !this.getPatientId()) {
           this.clearProcessInterval();
-          const rejectReason = responses[0].reason
-            ? responses[0].reason
-            : "Error retrieving data";
+          const rejectReason = responses[0].reason ? responses[0].reason : "";
           console.log(rejectReason);
+          this.logError(rejectReason);
           this.setState({
             loading: false,
             errorCollection: [rejectReason],
@@ -94,13 +103,23 @@ export default class Landing extends Component {
         let result = {};
         let fhirData = responses[0].value;
         let externalDataSet = responses[1].value;
+        // hide and show section(s) depending on config
+        const currentSummaryMap = {
+          ...this.state.summaryMap,
+          ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
+            this.state.summaryMap
+          ),
+        };
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         result["Summary"] = {
           ...result["Summary"],
-          ...(externalDataSet ? externalDataSet["data"] : null),
+          ...(externalDataSet ? externalDataSet["data"] : {}),
         };
         const { sectionFlags, flaggedCount } =
-          landingUtils.getProcessedSummaryData(result.Summary, summaryMap);
+          landingUtils.getProcessedSummaryData(
+            result.Summary,
+            currentSummaryMap
+          );
         this.setSummaryOverviewStatsData(result["Summary"]);
         this.setSummaryAlerts(result["Summary"], sectionFlags);
         this.setSummaryGraphData(result["Summary"]);
@@ -130,13 +149,6 @@ export default class Landing extends Component {
         [...collectorErrors, externalDataErrors].forEach((e) =>
           this.logError(e)
         );
-        // hide and show section(s) depending on config
-        const currentSummaryMap = {
-          ...this.state.summaryMap,
-          ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
-            this.state.summaryMap
-          ),
-        };
         this.setState(
           {
             result,
@@ -171,11 +183,8 @@ export default class Landing extends Component {
       .catch((err) => {
         console.error(err);
         this.clearProcessInterval();
-        this.setState({
-          loading: false,
-          errorCollection: [...this.state.errorCollection, err],
-        });
-        // this.setError(err);
+        this.setState({ loading: false });
+        this.setError(err);
       });
   }
 
@@ -187,6 +196,18 @@ export default class Landing extends Component {
       // for styling purpose
       document.querySelector("body").classList.add("has-tabs");
     }
+  }
+
+  handleNoAccessToken() {
+    const returnURL = getPatientSearchURL(true);
+    if (returnURL && returnURL !== "/") {
+      window.location = returnURL;
+      return;
+    }
+    this.setState({
+      loading: false,
+      errorCollection: ["No access token information found."],
+    });
   }
 
   initEvents() {
@@ -426,8 +447,7 @@ export default class Landing extends Component {
 
   getTabs() {
     let tabs = ["overview"];
-    const config_tab = getEnv("REACT_APP_TABS");
-    if (config_tab) tabs = config_tab.split(",");
+    if (isReportEnabled()) tabs.push("report");
     return tabs;
   }
 
@@ -440,7 +460,7 @@ export default class Landing extends Component {
         patientGender={summaryPatient?.Gender}
         meetsInclusionCriteria={summaryPatient?.MeetsInclusionCriteria}
         patientSearchURL={PATIENT_SEARCH_URL}
-        siteID={getEnv("REACT_APP_SITE_ID")}
+        siteID={getSiteId()}
       />
     );
   }
@@ -514,12 +534,12 @@ export default class Landing extends Component {
           })}
           {/* this is to test copy and paste */}
           {/* <div
-          className={`tab-panel  multi-tabs ${
-            this.state.activeTab === 10 ? "active" : ""
-          }`}
-        >
-          <CopyPaste patientInfo={summary.Patient}></CopyPaste>
-        </div> */}
+            className={`tab-panel  multi-tabs ${
+              this.state.activeTab === 10 ? "active" : ""
+            }`}
+          >
+            <CopyPaste patientInfo={summary.Patient}></CopyPaste>
+          </div> */}
         </React.Fragment>
       </div>
     );
@@ -543,13 +563,9 @@ export default class Landing extends Component {
     if (this.state.loading) {
       return <Spinner loadingMessage={this.state.loadingMessage} />;
     }
-    const PATIENT_SEARCH_ROOT_URL = getEnv("REACT_APP_DASHBOARD_URL");
-    const PATIENT_SEARCH_URL = PATIENT_SEARCH_ROOT_URL
-      ? PATIENT_SEARCH_ROOT_URL + "/clear_session"
-      : "/";
 
     if (!this.state || this.state.result == null) {
-      return this.renderError(PATIENT_SEARCH_ROOT_URL);
+      return this.renderError(getPatientSearchURL(!!getTokenInfoFromStorage()));
     }
     const patientResource = this.getPatientResource();
     const summary = this.state.result.Summary;
@@ -559,10 +575,10 @@ export default class Landing extends Component {
       <div className="landing">
         <div id="anchorTop" ref={this.anchorTopRef}></div>
         <div id="skiptocontent"></div>
-        {!isProduction() && (
+        {isNotProduction() && (
           <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>
         )}
-        {this.renderHeader(summary, patientResource, PATIENT_SEARCH_URL)}
+        {this.renderHeader(summary, patientResource, getPatientSearchURL(true))}
         <div className="warpper">
           {this.renderTabs()}
           {this.renderTabPanels(summary, sectionFlags)}

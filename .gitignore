@@ -8,3 +8,4 @@
 /test_patient_dump
 *.css
 .DS_Store
+yarn*

@@ -204,7 +204,15 @@ export default class Summary extends Component {
           top: isReportEnabled() ? "-148px" : "-100px",
           height: "2px",
         }}
-      ></div>
+      >
+        {/* eslint-disable-next-line */}
+        <a
+          name={`${sectionId}_anchor`}
+          href={`#${sectionId}`}
+          tabIndex={0}
+          aria-hidden="true"
+        ></a>
+      </div>
     );
   }
 
@@ -294,13 +302,13 @@ export default class Summary extends Component {
     let tableID = `${subSection.dataKey}_table`;
 
     const headers = Object.keys(table.headers);
-    const hasFlaggedEntries = filteredEntries.some((entry) =>
-      !!this.getEntryFlagText(section, subSection.dataKey, entry)
+    const hasFlaggedEntries = filteredEntries.some(
+      (entry) => !!this.getEntryFlagText(section, subSection.dataKey, entry)
     );
     let columns = [];
     columns.push({
       id: "flagged",
-      Header: <span aria-label="flag"></span>,
+      Header: <span aria-label="flag" className="flag__span"></span>,
       accessor: (entry) =>
         this.getEntryFlagText(section, subSection.dataKey, entry),
       Cell: (props) => {
@@ -411,7 +419,9 @@ export default class Summary extends Component {
       >
         <Table
           className={`${
-            columns.length <= 2 ? "single-column sub-section__table" : "sub-section__table"
+            columns.length <= 2
+              ? "single-column sub-section__table"
+              : "sub-section__table"
           }`}
           columns={columns}
           data={filteredEntries}
@@ -904,7 +914,7 @@ export default class Summary extends Component {
 
 Summary.propTypes = {
   summary: PropTypes.object.isRequired,
-  summaryMap: PropTypes.object.isRequired,
+  summaryMap: PropTypes.object,
   patient: PropTypes.object,
   sectionFlags: PropTypes.object.isRequired,
   collector: PropTypes.array.isRequired,

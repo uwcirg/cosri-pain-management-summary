@@ -84,17 +84,17 @@ export default class ScoringSummary extends Component {
     if (isNumber(prevScore)) {
       if (comparisonToAlert === "lower") {
         if (currentScore < prevScore)
-          return <FailDownArrowIcon></FailDownArrowIcon>;
+          return <FailDownArrowIcon title="worse"></FailDownArrowIcon>;
         if (currentScore > prevScore)
-          return <PassUpArrowIcon></PassUpArrowIcon>;
+          return <PassUpArrowIcon title="better"></PassUpArrowIcon>;
         return <LineIcon></LineIcon>;
       } else {
         if (currentScore > prevScore) {
-          return <FailUpArrowIcon></FailUpArrowIcon>;
+          return <FailUpArrowIcon title="worse"></FailUpArrowIcon>;
         }
         if (currentScore < prevScore)
-          return <PassDownArrowIcon></PassDownArrowIcon>;
-        return <LineIcon></LineIcon>;
+          return <PassDownArrowIcon title="better"></PassDownArrowIcon>;
+        return <LineIcon title="same"></LineIcon>;
       }
     } else {
       return "--";

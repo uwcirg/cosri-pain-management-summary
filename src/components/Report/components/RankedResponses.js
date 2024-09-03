@@ -6,6 +6,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import CopyButton from "../../CopyButton";
 import {
   getDisplayDateFromISOString,
   isEmptyArray,
@@ -23,6 +24,7 @@ export default class RankedResponses extends Component {
     this.handleClickPrevButton = this.handleClickPrevButton.bind(this);
     this.handleSetFirst = this.handleSetFirst.bind(this);
     this.handleSetLast = this.handleSetLast.bind(this);
+    this.tableRef = React.createRef();
   }
   componentDidMount() {
     this.initData(this.props.summary);
@@ -133,7 +135,8 @@ export default class RankedResponses extends Component {
     });
   }
   handleClickPrevButton() {
-    const prevIndex = this.state.selectedIndex - 1;
+    const prevIndex =
+      this.state.selectedIndex > 0 ? this.state.selectedIndex - 1 : 0;
     // console.log("Prev Index ", prevIndex);
     if (prevIndex < 0) return;
     this.setState({
@@ -142,7 +145,10 @@ export default class RankedResponses extends Component {
     });
   }
   handleClickNextButton() {
-    const nextIndex = this.state.selectedIndex + 1;
+    const nextIndex =
+      this.state.selectedIndex < this.state.dates.length - 1
+        ? this.state.selectedIndex + 1
+        : this.state.dates.length - 1;
     if (nextIndex > this.state.dates.length - 1) return;
     this.setState({
       selectedIndex: nextIndex,
@@ -157,35 +163,25 @@ export default class RankedResponses extends Component {
   renderNavTitle() {
     if (!this.shouldRenderNav()) return null;
     const titleContainerStyle = {
-      //color: "#777",
       fontSize: "0.85em",
       textAlign: "left",
       width: "100%",
-      marginBottom: "12px",
     };
     return (
-      <div style={titleContainerStyle} className="print-hidden">
-        Responses (Last on {getDisplayDateFromISOString(this.state.dates[0])})
+      <div className="flex flex-gap-1" style={{ marginBottom: "16px" }}>
+        <div style={titleContainerStyle} className="print-hidden">
+          Responses (Last on {getDisplayDateFromISOString(this.state.dates[0])})
+        </div>
+        {this.renderCopyButton()}
       </div>
     );
   }
   renderNavButtons() {
-    // const iconStyle = {
-    //   borderWidth: "1px",
-    //   borderStyle: "solid",
-    //   padding: "8px",
-    //   width: "22px",
-    //   height: "22px",
-    //   borderRadius: "100vmax",
-    //   cursor: "pointer",
-    //   position: "relative",
-    //   zIndex: 10,
-    // };
     if (!this.shouldRenderNav()) return null;
     const buttonStyle = {
       borderWidth: "1px",
       borderStyle: "solid",
-      padding: "6px 20px",
+      padding: "8px 24px",
       borderRadius: "100vmax",
       fontWeight: 600,
       cursor: "pointer",
@@ -272,22 +268,26 @@ export default class RankedResponses extends Component {
         <tr>
           <th className="fixed-cell accent dark-border fat">Rank</th>
           {this.state.dates.map((date, index) => {
+            const statusClassName =
+              index <= this.state.selectedIndex ? "a-active" : "a-inactive";
             return (
               <th
                 style={{
                   backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
-                  display:
-                    index <= this.state.selectedIndex ? "table-cell" : "none",
+                  // display:
+                  //index <= this.state.selectedIndex ? "table-cell" : "none",
                 }}
                 className={`${
                   index > 0 ? "exclude-from-copy print-hidden active" : ""
-                }  accent dark-border fat`}
+                }  ${statusClassName} accent dark-border fat`}
                 key={`ranked_responses_header_${index}`}
               >
-                Goals{" "}
-                <span className="small">
-                  ({getDisplayDateFromISOString(date)})
-                </span>
+                <div className="flex flex-start flex-wrap text-left">
+                  Goals
+                  <span className="small">
+                    ({getDisplayDateFromISOString(date)})
+                  </span>
+                </div>
               </th>
             );
           })}
@@ -307,7 +307,12 @@ export default class RankedResponses extends Component {
   renderTableRow(rank) {
     return (
       <tr>
-        <td className="fixed-cell text-bold dark-border text-center">{rank}</td>
+        <td
+          className="fixed-cell text-bold dark-border text-center"
+          style={{ verticalAlign: "middle" }}
+        >
+          {rank}
+        </td>
         {this.state.dates.map((date, index) => {
           return this.renderRankedCell(index, rank);
         })}
@@ -315,19 +320,29 @@ export default class RankedResponses extends Component {
     );
   }
   renderRankedCell(index, rank) {
+    const statusClassName =
+      index <= this.state.selectedIndex ? "a-active" : "a-inactive";
     return (
       <td
         key={`${index}_${rank}`}
         style={{
           backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
-          display: index <= this.state.selectedIndex ? "table-cell" : "none",
+          //   display: index <= this.state.selectedIndex ? "table-cell" : "none",
         }}
         className={`${
           index > 0 ? "exclude-from-copy print-hidden" : ""
-        } dark-border fat nowrap`}
+        } ${statusClassName} dark-border fat nowrap`}
       >
         {this.getRankedDataByIndex(index, rank)}
       </td>
+    );
+  }
+  renderCopyButton() {
+    return (
+      <CopyButton
+        buttonTitle="Click to copy summary of responses"
+        elementToCopy={this.tableRef.current}
+      ></CopyButton>
     );
   }
   render() {
@@ -343,7 +358,8 @@ export default class RankedResponses extends Component {
     const containerStyle = {
       padding: "16px 24px",
       position: "relative",
-      maxWidth: "1100px",
+      maxWidth: "1000px",
+      border: "1px solid transparent",
     };
     const dotsContainerStyle = {
       width: "100%",
@@ -362,6 +378,7 @@ export default class RankedResponses extends Component {
       <div
         className="flex flex-column flex-gap-2 flex-align-start"
         style={containerStyle}
+        ref={this.tableRef}
       >
         <div
           style={navContainerStyle}

@@ -189,9 +189,7 @@ async function executeELM(collector, paramResourceTypes) {
             (elmResults) => {
               executeELMForInstruments(elmResults, patientBundle)
                 .then((results) => {
-                  console.log("eval result? ", results);
                   Promise.allSettled(results).then((results) => {
-                    console.log("results? ", results);
                     if (!results) {
                       resolve(evalResults);
                       return;
@@ -420,47 +418,6 @@ function updateSearchParams(params, release, type) {
           break;
         default:
         // nothing
-      }
-    }
-  }
-  // If this is for Epic, there are some specific modifications needed for the queries to work properly
-  if (
-    getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES") &&
-    String(getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")).toLowerCase() === "true"
-  ) {
-    if (release === 2) {
-      switch (type) {
-        case "Observation":
-          // Epic requires you to specify a category or code search parameter, so search on all categories
-          params.set(
-            "category",
-            [
-              "social-history",
-              "vital-signs",
-              "imaging",
-              "laboratory",
-              "procedure",
-              "survey",
-              "exam",
-              "therapy",
-            ].join(",")
-          );
-          break;
-        case "MedicationOrder":
-          // Epic returns only active meds by default, so we need to specifically ask for other types
-          // NOTE: purposefully omitting entered-in-error
-          params.set(
-            "status",
-            ["active", "on-hold", "completed", "stopped", "draft"].join(",")
-          );
-          break;
-        case "MedicationStatement":
-          // Epic returns only active meds by default, so we need to specifically ask for other types
-          // NOTE: purposefully omitting entered-in-error
-          params.set("status", ["active", "completed", "intended"].join(","));
-          break;
-        default:
-        //nothing
       }
     }
   }

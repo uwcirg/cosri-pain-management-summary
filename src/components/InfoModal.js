@@ -121,12 +121,12 @@ export default class InfoModal extends Component {
 
   render() {
     const { subSection, closeModal } = this.props;
-    const elements = subSection.info
-      ? subSection.info.find((el) => el.type === "elements")
-      : null;
-    const references = subSection.info
-      ? subSection.info.filter((el) => el.type === "reference")
-      : null;
+    const elements = subSection.info ? subSection.info.find(
+      (el) => el.type === "elements"
+    ) : null;
+    const references = subSection.info ? subSection.info.filter(
+      (el) => el.type === "reference"
+    ) : null;
     const description = subSection.description;
 
     return (
@@ -146,13 +146,13 @@ export default class InfoModal extends Component {
             <div className="elements">{this.renderElements(elements)}</div>
           )}
 
-          {references && references.length > 0 && (
+          {(references && references.length > 0) &&
             <div className="references">
               <h4>References:</h4>
               {this.renderReferences(references)}
             </div>
-          )}
-          {description && this.renderDescription(description())}
+          }
+          {description && this.renderDescription(description)}
         </div>
       </div>
     );

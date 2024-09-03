@@ -2,6 +2,16 @@
   .print-only {
     display: block;
   }
+  .video-link,
+  .info-icon {
+    display: none;
+  }
+  .banner.exclusion-banner{
+    margin-bottom: 16px;
+    &.close .content {
+      display: block;
+    }
+  }
   #surveyGraphSvg_printOnly,
   .print-image,
   .panel .print-image {
@@ -90,10 +100,10 @@
       .panel:not(:first-of-type) {
         page-break-before: always;
       }
-      .panel__item {
-        height: 100%;
-       // page-break-inside: avoid;
-      }
+      // .panel__item {
+      //   //height: 100%;
+      //   //page-break-inside: avoid;
+      // }
       // .panel, 
       // .panel__item{
       //   page-break-inside: avoid;

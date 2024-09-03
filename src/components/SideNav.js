@@ -35,13 +35,14 @@ export default class SideNav extends Component {
 
   handleResize() {
     const isSmallerScreen = window.innerWidth && window.innerWidth <= 1360;
+    const { parentContainerElement } = this.props;
     this.setState(
       {
-        showNav: this.props.parentContainerSelector
-          ? !isElementOverflown(
-              document.querySelector(this.props.parentContainerSelector)
-            ) || !isSmallerScreen
-          : !isSmallerScreen,
+        showNav: isSmallerScreen
+          ? false
+          : parentContainerElement
+          ? !isElementOverflown(parentContainerElement, "width")
+          : true,
       },
       () => {
         this.handleRootClass();
@@ -51,7 +52,7 @@ export default class SideNav extends Component {
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
-    setTimeout(() => this.handleResize(), 0);
+    setTimeout(() => this.handleResize(), 250);
   }
 
   render() {
@@ -111,5 +112,5 @@ SideNav.propTypes = {
   id: PropTypes.string,
   navClassName: PropTypes.string,
   onClick: PropTypes.func,
-  parentContainerSelector: PropTypes.string,
+  parentContainerElement: PropTypes.object,
 };
