@@ -114,8 +114,17 @@ export function isNumber(target) {
   return !isNaN(target);
 }
 
+export function isEnvEpicQueries() {
+  const envVar = getEnv("VITE_EPIC_SUPPORTED_QUERIES");
+  return envVar && String(envVar).toLowerCase() === "true";
+}
+
+export function getEnvInstrumentList() {
+  return getEnv("VITE_INSTRUMENT_IDS");
+}
+
 export function getReportInstrumentList() {
-  const envInstrumentList = getEnv("REACT_APP_INSTRUMENT_IDS");
+  const envInstrumentList = getEnvInstrumentList();
   if (envInstrumentList)
     return envInstrumentList
       .split(",")
@@ -519,26 +528,34 @@ export function addButtonErrorStateTransition(buttonRef, transitionDuration) {
   }, transitionDuration || 1000);
 }
 
+export function getEnvSystemType() {
+  return getEnv("VITE_SYSTEM_TYPE");
+}
+
 export function isNotProduction() {
-  let systemType = getEnv("REACT_APP_SYSTEM_TYPE");
+  let systemType = getEnvSystemType();
   return systemType && String(systemType).toLowerCase() !== "production";
 }
 
 export function isProduction() {
   return (
-    String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development"
+    String(getEnvSystemType()).toLowerCase() !== "development"
   );
+}
+
+export function getEnvConfidentialAPIURL() {
+  return getEnv("VITE_CONF_API_URL");
 }
 
 // write to audit log
 export function writeToLog(message, level, params) {
-  if (!getEnv("REACT_APP_CONF_API_URL")) return;
+  if (!getEnvConfidentialAPIURL()) return;
   if (!message) return;
   const logLevel = level ? level : "info";
   const logParams = params ? params : {};
   if (!logParams.tags) logParams.tags = [];
   logParams.tags.push("cosri-frontend");
-  const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
+  const auditURL = `${getEnvConfidentialAPIURL()}/auditlog`;
   const patientName = params.patientName ? params.patientName : "";
   let messageString = "";
   if (typeof message === "object") {
@@ -571,8 +588,8 @@ export function writeToLog(message, level, params) {
 }
 
 export function saveData(queryParams) {
-  if (!getEnv("REACT_APP_CONF_API_URL")) return;
-  const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
+  if (!getEnvConfidentialAPIURL()) return;
+  const saveDataURL = `${getEnvConfidentialAPIURL()}/save_data`;
   const params = queryParams || {};
   if (!params.data) return;
   fetch(saveDataURL, {
@@ -624,7 +641,7 @@ export function isElementOverflown(element, dimension) {
 }
 
 export function getSiteId() {
-  return getEnv("REACT_APP_SITE_ID");
+  return getEnv("VITE_SITE_ID");
 }
 
 export function isReportEnabled() {
@@ -633,7 +650,7 @@ export function isReportEnabled() {
 }
 
 export function getEnvDashboardURL() {
-  return getEnv("REACT_APP_DASHBOARD_URL");
+  return getEnv("VITE_DASHBOARD_URL");
 }
 
 export function getPatientSearchURL(shouldClearSession) {

@@ -6,6 +6,7 @@
 /coverage
 /tx_bundle_dump
 /test_patient_dump
+/.gradle
 *.css
 .DS_Store
 yarn*

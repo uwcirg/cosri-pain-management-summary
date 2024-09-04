@@ -4,18 +4,15 @@
   "description": "Pain Management Factors SMART-on-FHIR App",
   "license": "Apache-2.0",
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
-    "@fortawesome/free-solid-svg-icons": "^6.4.0",
-    "@fortawesome/react-fontawesome": "^0.2.0",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^14.4.3",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "buffer": "^6.0.3",
     "commonmark": "^0.31.1",
     "core-js": "^3.30.1",
     "cql-exec-fhir": "^2.1.5",
-    "cql-execution": "^3.0.0",
+    "cql-execution": "^3.1.0",
     "d3": "^5.16.0",
     "d3-array": "^2.4.0",
     "d3-axis": "^1.0.12",
@@ -26,36 +23,44 @@
     "d3-time-format": "^2.2.3",
     "d3-transition": "^1.3.2",
     "dotenv-webpack": "^8.1.0",
-    "fhirclient": "^2.5.2",
+    "fhirclient": "^2.5.4",
     "file-saver": "^2.0.5",
     "html-to-image": "^1.11.11",
-    "moment": "^2.24.0",
+    "moment": "^2.30.1",
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
     "react-collapsible": "^2.10.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
-    "react-router-dom": "^6.11.0",
+    "react-router-dom": "^6.26.1",
     "react-table": "^7.8.0",
     "react-tooltip": "^5.7.4",
     "tocbot": "^4.29.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@craco/craco": "^7.1.0",
-    "axios": "^1.4.0",
-    "cors": "^2.8.5",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/coverage-v8": "^2.0.5",
+    "axios": "^1.7.7",
     "cql-exec-vsac": "^2.0.2",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.9.1",
+    "eslint-config-react-app": "^7.0.1",
     "express": "^4.18.2",
-    "gh-pages": "^5.0.0",
+    "gh-pages": "^6.1.1",
+    "jsdom": "^25.0.0",
     "mock-local-storage": "^1.1.11",
-    "react-scripts": "^5.0.1",
     "request": "^2.88.2",
     "sass": "^1.62.0",
-    "temp": "^0.9.4"
-  },
-  "peerDependencies": {
-    "@testing-library/dom": "^7.21.4"
+    "temp": "^0.9.4",
+    "vite": "^5.4.3",
+    "vite-plugin-commonjs": "^0.10.1",
+    "vite-plugin-node-polyfills": "^0.22.0",
+    "vitest": "^2.0.5"
   },
   "resolutions": {
     "immer": "^9.0.2",
@@ -63,14 +68,9 @@
     "ansi-regex": "^5.0.1"
   },
   "overrides": {
-    "@expo/dev-server": {
-      "body-parser": "^1.20.1"
-    },
-    "css-select": {
-      "nth-check": "^2.0.1"
-    },
-    "json5": "^2.2.2",
-    "xml2js": "^0.5.0"
+    "@expo/image-utils": {
+      "semver": "^7.5.3"
+    }
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -92,12 +92,13 @@
     ]
   },
   "scripts": {
-    "start": "craco start",
-    "start-static": "node scripts/serve-build.js",
-    "build": "craco build",
-    "test": "craco test",
+    "cql-to-elm": "cross-env ./gradlew cql2elm",
+    "start": "vite --port 8000",
+    "build": "vite build",
+    "serve": "vite preview --port 8000",
+    "test": "vitest",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -r https://github.com/uwcirg/cosri-pain-management-summary.git -d build",
+    "deploy": "gh-pages -r https://github.com/uwcirg/cosri-pain-management-summary.git -d dist",
     "upload-test-patients": "node ./src/utils/uploadTestPatients",
     "update-test-patients": "node ./src/utils/updateTestPatients",
     "lint": "eslint ."

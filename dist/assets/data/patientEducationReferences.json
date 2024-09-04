@@ -1,0 +1,69 @@
+{
+    "PatientEducationMaterials" :
+        [
+            {
+                "link": {
+                    "title": "Chronic Pain Patient",
+                    "className": "education",
+                    "url": "https://www.doh.wa.gov/Portals/1/Documents/Pubs/631078-ChronicPain.pdf",
+                    "type": "PDF",
+                    "size": "552 KB"
+                }
+            },
+            {
+                "link": {
+                    "title": "Surgical Pain Patient",
+                    "className": "education",
+                    "url": "https://www.doh.wa.gov/Portals/1/Documents/Pubs/631079-SurgicalPain.pdf",
+                    "type": "PDF",
+                    "size": "492 KB"
+                }
+            },
+            {
+                "link": {
+                    "title": "Acute Pain Patient",
+                    "className": "education",
+                    "url": "https://www.doh.wa.gov/Portals/1/Documents/Pubs/631077-AcutePain.pdf",
+                    "type": "PDF",
+                    "size": "495 KB"
+                }
+            },
+            {
+                "link": {
+                    "title": "Sub-Acute Patient",
+                    "className": "education",
+                    "url": "https://www.doh.wa.gov/Portals/1/Documents/Pubs/630139-SubAcutePain.pdf",
+                    "type": "PDF",
+                    "size": "487 KB"
+                }
+            },
+            {
+                "link": {
+                    "title": "Naloxone Patient / Public",
+                    "className": "education",
+                    "url": "https://doh.wa.gov/sites/default/files/legacy/Documents/2300/2019/630146.pdf?uid=624f125ed218b",
+                    "type": "PDF",
+                    "size": "1.1 MB"
+                }
+            },
+            {
+                "link": {
+                    "title": "Patient / Public Video",
+                    "className": "education",
+                    "url": "https://www.youtube.com/watch?v=CF64WEju1pM&t=7s",
+                    "type": "video",
+                    "embedVideoSrc": "https://www.youtube.com/embed/CF64WEju1pM"
+                }
+            },
+            {
+                "link": {
+                    "title": "Visit the rest of the DOH toolkit",
+                    "class": "education",
+                    "url": "https://www.doh.wa.gov/ForPublicHealthandHealthcareProviders/HealthcareProfessionsandFacilities/OpioidPrescribing/HealthcareProviders/Toolkits",
+                    "type": "URL",
+                    "className": "call-to-action-link"
+                }
+            }
+        ]
+
+}

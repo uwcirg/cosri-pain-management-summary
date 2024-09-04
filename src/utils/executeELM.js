@@ -18,6 +18,7 @@ import {
   getReportInstrumentList,
   getReportInstrumentIdByKey,
   isEmptyArray,
+  isEnvEpicQueries,
   isReportEnabled,
 } from "../helpers/utility";
 
@@ -198,7 +199,9 @@ async function executeELM(collector, paramResourceTypes) {
                       .filter((o) => o.value && o.value.patientResults)
                       .map(
                         (o) =>
-                          o.value.patientResults[Object.keys(o.value.patientResults)[0]]
+                          o.value.patientResults[
+                            Object.keys(o.value.patientResults)[0]
+                          ]
                       );
                     const PATIENT_SUMMARY_KEY = "Summary";
                     const SURVEY_SUMMARY_KEY = "SurveySummary";
@@ -283,18 +286,17 @@ function getLibraryForInstruments() {
         `../cql/r4/survey_resources/${item.key.toUpperCase()}_LogicLibrary.json`
       )
         .then((module) => module.default)
-        // .then((module) => module.default)
         .catch((e) => {
           console.log("Issue occurred loading ELM  lib for " + item.key, e);
-          //elmJson = null;
-          elmJson = null;
         });
 
       if (!elmJson) {
         elmJson = await import(
           `../cql/r4/survey_resources/Default_LogicLibrary.json`
         ).then((module) => module.default);
+        console.log("default for " + item.key, elmJson);
       }
+      console.log("eval result for " + item.key, elmJson);
       return {
         [item.key]: elmJson,
       };
@@ -422,10 +424,7 @@ function updateSearchParams(params, release, type) {
     }
   }
   // If this is for Epic, there are some specific modifications needed for the queries to work properly
-  if (
-    getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES") &&
-    String(getEnv("REACT_APP_EPIC_SUPPORTED_QUERIES")).toLowerCase() === "true"
-  ) {
+  if (isEnvEpicQueries()) {
     if (release === FHIR_RELEASE_VERSION_2) {
       switch (type) {
         case "Observation":

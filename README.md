@@ -40,7 +40,7 @@ Systems integrating the Pain Management Summary will need to expose the correspo
 
 ### To build and run in development:
 
-1. Install [Node.js](https://nodejs.org/en/download/) (LTS edition, currently 14.x)
+1. Install [Node.js](https://nodejs.org/en/download/) (LTS edition, currently 20.x)
 2. Install [Yarn](https://yarnpkg.com/en/docs/install) (1.3.x or above)
 3. Install dependencies by executing `yarn` from the project's root directory
 4. If you have a SMART-on-FHIR client ID, edit `public/launch-context.json` to specify it
@@ -52,21 +52,22 @@ Systems integrating the Pain Management Summary will need to expose the correspo
 
 The Pain Management Summary can be deployed as static web resources on any HTTP server.  There are several customizations, however, that need to be made based on the site where it is deployed.
 
-1. Install [Node.js](https://nodejs.org/en/download/) (LTS edition, currently 14.x)
+1. Install [Node.js](https://nodejs.org/en/download/) (LTS edition, currently 20.x)
 2. Install [Yarn](https://yarnpkg.com/en/docs/install) (1.3.x or above)
 3. Install dependencies by executing `yarn` from the project's root directory
-4. Modify the `homepage` value in `package.json` to reflect the path (after the hostname) at which it will be deployed
-   a. For example, if deploying to https://my-server/pain-mgmt-summary/, the `homepage` value should be `"http://localhost:8000/pain-mgmt-summary"` (note that the hostname need not match)
-   b. If deploying to the root of the domain, you can leave `homepage` as `"."`
+4. Modify the `base` value in `vite.config.mjs` to reflect the path (after the hostname) at which it will be deployed
+   a. The path must start and end with a forward slash (`/`).
+   b. For example, if deploying to https://my-server/pain-mgmt-summary/, the `base` value should be `"/pain-mgmt-summary/"`.
+   c. If deploying to the root of the domain, set the `base` value to `"/"` or comment out the `base` property.
 5. Modify the `clientId` in `public/launch-context.json` to match the unique client ID you registered with the EHR from which this app will be launched
 6. NOTE: The launch context contains `"completeInTarget": true`. This is needed if you are running in an environment that initializes the app in a separate window (such as the public SMART sandbox).  It can be safely removed in other cases.
 7. If you've set up an analytics endpoint (see below), set the `analytics_endpoint` and `x_api_key` in `public/config.json`
-8. If you'll be launching the app from an Epic EHR, modify `.env` to set `REACT_APP_EPIC_SUPPORTED_QUERIES` to `true`
+8. If you'll be launching the app from an Epic EHR, modify `.env` to set `VITE_SUPPORTED_QUERIES` to `true`
    a. This modifies some queries based on Epic-specific requirements
-9. Run `yarn build` to compile the code to static files in the `build` folder
-10. Deploy the output from the `build` folder to a standard web server
+9. Run `yarn build` to compile the code to static files in the `dist` folder
+10. Deploy the output from the `dist` folder to a standard web server
 
-Optionally to step 9, you can run the static build contents in a simple Node http-server via the command: `yarn start-static`.
+Optionally to step 9, you can run `yarn serve` to use Vite's built-in server to host the code in `dist`. This approach, however, should not be used in production.
 
 ### To update the valueset-db.json file
 

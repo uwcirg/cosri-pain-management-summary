@@ -49,9 +49,9 @@ export function getEnv(key) {
   //window application global variables
   if (window["appConfig"] && window["appConfig"][key])
     return window["appConfig"][key];
-  const envDefined = typeof process !== "undefined" && process.env;
+  const envDefined = import.meta && import.meta.env;
   //enviroment variables as defined by Node
-  if (envDefined && process.env[key]) return process.env[key];
+  if (envDefined && import.meta.env[key]) return import.meta.env[key];
   return "";
 }
 
@@ -65,12 +65,13 @@ export function getEnvs() {
       arrEnvs.push({ key: key, value: window["appConfig"][key] });
     });
   }
-  const envDefined = typeof process !== "undefined" && process.env;
+  //const envDefined = typeof process !== "undefined" && process.env;
+  const envDefined = import.meta && import.meta.env;
   if (envDefined) {
-    const envKeys = Object.keys(process.env);
+    const envKeys = Object.keys(import.meta.env);
     envKeys.forEach((key) => {
       if (blacklist.indexOf(key.toUpperCase()) !== -1) return true;
-      arrEnvs.push({ key: key, value: process.env[key] });
+      arrEnvs.push({ key: key, value: import.meta.env[key] });
     });
   }
 

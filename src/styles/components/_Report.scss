@@ -80,6 +80,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-bottom: 8px;
           border-collapse: separate;
           background-color: #FFF;
+          border-spacing: 0;
           th {
             padding: 4px 24px 2px 0;
           }
@@ -454,6 +455,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           padding-left: 4px;
           padding-right: 4px;
           border-collapse: separate;
+          border-spacing: 0;
           white-space: normal;
           table-layout: fixed;
           background-color: #FFF;
