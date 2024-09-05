@@ -34,6 +34,10 @@ export default class MMEGraph extends Component {
     let maxDate = paramMaxDate,
       minDate = paramMinDate;
 
+    if (!maxDate) {
+      maxDate = new Date();
+    }
+
     if (!minDate) {
       minDate = new Date();
       minDate.setDate(maxDate.getDate() - total * 30);
@@ -143,7 +147,7 @@ export default class MMEGraph extends Component {
 
   render() {
     /*
-     *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, 
+     *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40},
      * {"dateWritten":"2019-04-15","MMEValue":40, "placeholder":true}]
      */
     let maxDate = new Date();

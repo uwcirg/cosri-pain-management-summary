@@ -55,6 +55,7 @@ export default class Summary extends Component {
     };
 
     this.elementRef = React.createRef();
+    this.parentContainerRef = React.createRef();
 
     this.subsectionTableProps = { id: "react_sub-section__table" };
 
@@ -461,8 +462,8 @@ export default class Summary extends Component {
   }
 
   renderRxSummaryPanel(panel) {
-    let panelSet = this.props.summary[panel.statsData.dataSectionRefKey];
-    let rxPanel = panelSet ? panelSet[panel.statsData.objectKey] : null;
+    let panelSet = this.props.summary[panel?.statsData?.dataSectionRefKey];
+    let rxPanel = panelSet ? panelSet[panel?.statsData?.objectKey] : null;
     let rxData = panelSet && rxPanel ? rxPanel : [];
     let heading = rxData.fields
       ? rxData.fields.map((item, index) => {
@@ -848,11 +849,11 @@ export default class Summary extends Component {
 
     const sectionsToRender = this.getSectionsToRender(summaryMap);
     return (
-      <div className="summary overview">
+      <div className="summary overview" ref={this.parentContainerRef}>
         <SideNav
           id="summarySideNavButton"
           navClassName={`${meetsInclusionCriteria ? "close" : "hide"}`}
-          parentContainerSelector={`.summary.overview`}
+          parentContainerElement={this.parentContainerRef.current}
         ></SideNav>
         <div className="summary__display" id="maincontent">
           <h1 className="summary__display-title">

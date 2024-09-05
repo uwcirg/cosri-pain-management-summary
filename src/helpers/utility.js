@@ -1,6 +1,6 @@
 import moment from "moment";
 import { toBlob, toJpeg } from "html-to-image";
-import { getEnv } from "../utils/envConfig";
+import { getEnv, ENV_VAR_PREFIX } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
 
 /*
@@ -115,12 +115,12 @@ export function isNumber(target) {
 }
 
 export function isEnvEpicQueries() {
-  const envVar = getEnv("VITE_EPIC_SUPPORTED_QUERIES");
+  const envVar = getEnv(`${ENV_VAR_PREFIX}_EPIC_SUPPORTED_QUERIES`);
   return envVar && String(envVar).toLowerCase() === "true";
 }
 
 export function getEnvInstrumentList() {
-  return getEnv("VITE_INSTRUMENT_IDS");
+  return getEnv(`${ENV_VAR_PREFIX}_INSTRUMENT_IDS`);
 }
 
 export function getReportInstrumentList() {
@@ -529,7 +529,7 @@ export function addButtonErrorStateTransition(buttonRef, transitionDuration) {
 }
 
 export function getEnvSystemType() {
-  return getEnv("VITE_SYSTEM_TYPE");
+  return getEnv(`${ENV_VAR_PREFIX}_SYSTEM_TYPE`);
 }
 
 export function isNotProduction() {
@@ -544,9 +544,8 @@ export function isProduction() {
 }
 
 export function getEnvConfidentialAPIURL() {
-  return getEnv("VITE_CONF_API_URL");
+  return getEnv(`${ENV_VAR_PREFIX}_CONF_API_URL`);
 }
-
 // write to audit log
 export function writeToLog(message, level, params) {
   if (!getEnvConfidentialAPIURL()) return;
@@ -641,7 +640,7 @@ export function isElementOverflown(element, dimension) {
 }
 
 export function getSiteId() {
-  return getEnv("VITE_SITE_ID");
+  return getEnv(`${ENV_VAR_PREFIX}_SITE_ID`);
 }
 
 export function isReportEnabled() {
@@ -650,7 +649,7 @@ export function isReportEnabled() {
 }
 
 export function getEnvDashboardURL() {
-  return getEnv("VITE_DASHBOARD_URL");
+  return getEnv(`${ENV_VAR_PREFIX}_DASHBOARD_URL`);
 }
 
 export function getPatientSearchURL(shouldClearSession) {
@@ -659,4 +658,8 @@ export function getPatientSearchURL(shouldClearSession) {
   const PATIENT_SEARCH_URL =
     PATIENT_SEARCH_ROOT_URL + (shouldClearSession ? "/clear_session" : "");
   return PATIENT_SEARCH_URL;
+}
+
+export function getEnvVersionString() {
+  return getEnv(`${ENV_VAR_PREFIX}_VERSION_STRING`)
 }

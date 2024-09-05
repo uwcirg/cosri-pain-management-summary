@@ -155,7 +155,7 @@
   th {
     border: 1px solid $table-cell-border-color;
     background-color: #FFF;
-    transition: transform 400ms cubic-bezier(.25,.75,.5,1.25);
+    transition: transform 550ms cubic-bezier(.25,.75,.5,1.25);
     overflow: hidden;
     &.dark-border {
       border-color: $table-cell-border-dark-color;
@@ -179,7 +179,7 @@
     border-bottom: 1px solid $table-cell-border-color;
     padding: 4px;
     background-color: #FFF;
-    transition: transform 350ms cubic-bezier(.25,.75,.5,1.25);
+    transition: transform 550ms cubic-bezier(.25,.75,.5,1.25);
     overflow: hidden;
     &.a-active {
       transform: translateX(0);

@@ -7,10 +7,10 @@ import executeElm from "../../utils/executeELM";
 import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
+  getEnvSystemType,
   getPatientNameFromSource,
   getPatientSearchURL,
   getSiteId,
-  getEnvSystemType,
   isEmptyArray,
   isInViewport,
   isNotProduction,
@@ -257,6 +257,7 @@ export default class Landing extends Component {
       // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
       headingsOffset: 1 * MIN_HEADER_HEIGHT,
       scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+      hasInnerContainers: true,
       onClick: (e) => {
         e.preventDefault();
         const sectionIdAttr = "datasectionid";

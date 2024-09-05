@@ -1,5 +1,5 @@
-import { getEnv, fetchEnvData } from "../utils/envConfig";
-import { getEnvDashboardURL } from "../helpers/utility";
+import { fetchEnvData } from "../utils/envConfig";
+import { getEnvDashboardURL, getEnvSystemType } from "../helpers/utility";
 
 /*
  * decode Jwt token
@@ -52,8 +52,10 @@ var Timeout = function () {
    * check if the system type is production
    */
   function isProduction() {
-    const dashboardURL = getEnvDashboardURL();
-    return dashboardURL && String(dashboardURL).toLowerCase() !== "development";
+    return (
+      getEnvDashboardURL() &&
+      String(getEnvSystemType()).toLowerCase() !== "development"
+    );
   }
 
   /*

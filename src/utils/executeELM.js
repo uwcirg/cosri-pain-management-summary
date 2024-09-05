@@ -13,12 +13,12 @@ import r4OMTKDataELM from "../cql/r4/OMTKData.json";
 import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import r4SurveyCommonELM from "../cql/r4/survey_resources/Common_LogicLibrary.json";
 import valueSetDB from "../cql/valueset-db.json";
-import { getEnv, fetchEnvData } from "./envConfig";
+import { fetchEnvData } from "./envConfig";
 import {
+  isEnvEpicQueries,
   getReportInstrumentList,
   getReportInstrumentIdByKey,
   isEmptyArray,
-  isEnvEpicQueries,
   isReportEnabled,
 } from "../helpers/utility";
 
