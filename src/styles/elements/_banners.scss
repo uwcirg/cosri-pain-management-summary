@@ -65,7 +65,12 @@
       transform: rotate(0);
     }
     .content {
-      display: inline;
+      max-height: 800px; /* approximate max height */
+      overflow-y: hidden;
+      line-height: 1.45;
+      transition-property: all;
+      transition-duration: .5s;
+      transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
       strong {
         color: #444;
       }
@@ -75,7 +80,7 @@
         transform: rotate(-90deg);
       }
       .content {
-        display: none;
+        max-height: 0;
       }
     }
   }

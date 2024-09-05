@@ -9,7 +9,7 @@ import ReactModal from "react-modal";
 import defaultSummaryMap from "../config/summary_config.json";
 import * as formatit from "../helpers/formatit";
 import * as sortit from "../helpers/sortit";
-import { getErrorMessageString, isReportEnabled } from "../helpers/utility";
+import { getErrorMessageString, isEmptyArray, isReportEnabled } from "../helpers/utility";
 
 import ChartIcon from "../icons/ChartIcon";
 import MedicalHistoryIcon from "../icons/MedicalHistoryIcon";
@@ -117,7 +117,7 @@ export default class Summary extends Component {
       ? Object.keys(sectionFlags[section])
       : null;
 
-    if (!subSections || !subSections.length) {
+    if (isEmptyArray(subSections)) {
       return "";
     }
 

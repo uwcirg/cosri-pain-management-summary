@@ -1,6 +1,6 @@
 import moment from "moment";
 import { toBlob, toJpeg } from "html-to-image";
-import { getEnv } from "../utils/envConfig";
+import { getEnv, ENV_VAR_PREFIX } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
 
 /*
@@ -114,8 +114,17 @@ export function isNumber(target) {
   return !isNaN(target);
 }
 
+export function isEnvEpicQueries() {
+  const envVar = getEnv(`${ENV_VAR_PREFIX}_EPIC_SUPPORTED_QUERIES`);
+  return envVar && String(envVar).toLowerCase() === "true";
+}
+
+export function getEnvInstrumentList() {
+  return getEnv(`${ENV_VAR_PREFIX}_INSTRUMENT_IDS`);
+}
+
 export function getReportInstrumentList() {
-  const envInstrumentList = getEnv("REACT_APP_INSTRUMENT_IDS");
+  const envInstrumentList = getEnvInstrumentList();
   if (envInstrumentList)
     return envInstrumentList
       .split(",")
@@ -290,9 +299,9 @@ export function copySVGImage(
   event.preventDefault();
   if (!svgElement) return;
   const width =
-    typeof svgElement.clientWidth !== undefined ? svgElement.clientWidth : 0;
+    typeof svgElement.clientWidth !== "undefined" ? svgElement.clientWidth : 0;
   const height =
-    typeof svgElement.clientHeight !== undefined ? svgElement.clientHeight : 0;
+    typeof svgElement.clientHeight !== "undefined" ? svgElement.clientHeight : 0;
   const setDimensions = () => {
     if (typeof svgElement.setAttribute !== "function") return;
     if (width) svgElement.setAttribute("width", width);
@@ -519,27 +528,34 @@ export function addButtonErrorStateTransition(buttonRef, transitionDuration) {
   }, transitionDuration || 1000);
 }
 
+export function getEnvSystemType() {
+  return getEnv(`${ENV_VAR_PREFIX}_SYSTEM_TYPE`);
+}
+
 export function isNotProduction() {
-  let systemType = getEnv("REACT_APP_SYSTEM_TYPE");
+  let systemType = getEnvSystemType();
   return systemType && String(systemType).toLowerCase() !== "production";
 }
 
 export function isProduction() {
   return (
-    String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development"
+    String(getEnvSystemType()).toLowerCase() !== "development"
   );
 }
 
+export function getEnvConfidentialAPIURL() {
+  return getEnv(`${ENV_VAR_PREFIX}_CONF_API_URL`);
+}
 // write to audit log
 export function writeToLog(message, level, params) {
-  if (!getEnv("REACT_APP_CONF_API_URL")) return;
+  if (!getEnvConfidentialAPIURL()) return;
   if (!message) return;
   const logLevel = level ? level : "info";
   const logParams = params ? params : {};
   if (!logParams.tags) logParams.tags = [];
   logParams.tags.push("cosri-frontend");
 
-  const auditURL = `${getEnv("REACT_APP_CONF_API_URL")}/auditlog`;
+  const auditURL = `${getEnvConfidentialAPIURL()}/auditlog`;
   const patientName = params.patientName ? params.patientName : "";
   let messageString = "";
   if (typeof message === "object") {
@@ -572,8 +588,8 @@ export function writeToLog(message, level, params) {
 }
 
 export function saveData(queryParams) {
-  if (!getEnv("REACT_APP_CONF_API_URL")) return;
-  const saveDataURL = `${getEnv("REACT_APP_CONF_API_URL")}/save_data`;
+  if (!getEnvConfidentialAPIURL()) return;
+  const saveDataURL = `${getEnvConfidentialAPIURL()}/save_data`;
   const params = queryParams || {};
   if (!params.data) return;
   fetch(saveDataURL, {
@@ -625,7 +641,7 @@ export function isElementOverflown(element, dimension) {
 }
 
 export function getSiteId() {
-  return getEnv("REACT_APP_SITE_ID");
+  return getEnv(`${ENV_VAR_PREFIX}_SITE_ID`);
 }
 
 export function isReportEnabled() {
@@ -634,7 +650,7 @@ export function isReportEnabled() {
 }
 
 export function getEnvDashboardURL() {
-  return getEnv("REACT_APP_DASHBOARD_URL");
+  return getEnv(`${ENV_VAR_PREFIX}_DASHBOARD_URL`);
 }
 
 export function getPatientSearchURL(shouldClearSession) {
@@ -643,4 +659,8 @@ export function getPatientSearchURL(shouldClearSession) {
   const PATIENT_SEARCH_URL =
     PATIENT_SEARCH_ROOT_URL + (shouldClearSession ? "/clear_session" : "");
   return PATIENT_SEARCH_URL;
+}
+
+export function getEnvVersionString() {
+  return getEnv(`${ENV_VAR_PREFIX}_VERSION_STRING`)
 }

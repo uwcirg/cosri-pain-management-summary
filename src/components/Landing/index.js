@@ -6,6 +6,7 @@ import executeElm from "../../utils/executeELM";
 import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
+  getEnvSystemType,
   getPatientNameFromSource,
   getPatientSearchURL,
   getSiteId,
@@ -579,7 +580,7 @@ export default class Landing extends Component {
         <div id="anchorTop" ref={this.anchorTopRef}></div>
         <div id="skiptocontent"></div>
         {isNotProduction() && (
-          <SystemBanner type={getEnv("REACT_APP_SYSTEM_TYPE")}></SystemBanner>
+          <SystemBanner type={getEnvSystemType()}></SystemBanner>
         )}
         {this.renderHeader(summary, patientResource, getPatientSearchURL(true))}
         <div className="warpper">
