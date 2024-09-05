@@ -239,6 +239,10 @@ export default class ReportOverviewGraph extends Component {
     });
   }
 
+  isInSelectedQids(qid) {
+    return this.state.qids.find(item => item === qid);
+  }
+
   isInGraph(qid) {
     if (isEmptyArray(this.state.graphData)) return false;
     return this.state.graphData.find((item) => item.qid === qid);
@@ -255,7 +259,7 @@ export default class ReportOverviewGraph extends Component {
     return !isEmptyArray(filteredData);
   }
   addDataLineToGraph(qid, callback) {
-    if (this.isInGraph(qid)) return;
+   // if (this.isInGraph(qid)) return;
     if (isEmptyArray(this.state.originalGraphData)) return;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
@@ -266,24 +270,22 @@ export default class ReportOverviewGraph extends Component {
         {
           graphData: updatedData,
           qids: [...new Set(updatedData.map((item) => item.qid))],
-          selectedDateRange: this.getScaleInfoForSlider(
-            updatedData
-          ).max,
+          selectedDateRange: this.getScaleInfoForSlider(updatedData).max,
         },
         callback
       );
     }
   }
   removeDataLineFromGraph(qid, callback) {
-    if (!this.isInGraph(qid) || isEmptyArray(this.state.graphData)) return;
+   // if (!this.isInGraph(qid) || isEmptyArray(this.state.graphData)) return;
+   if (isEmptyArray(this.state.graphData)) return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
+    if (isEmptyArray(updatedData)) return;
     this.setState(
       {
         graphData: updatedData,
         qids: [...new Set(updatedData.map((item) => item.qid))],
-        selectedDateRange: this.getScaleInfoForSlider(
-          updatedData
-        ).max,
+        selectedDateRange: this.getScaleInfoForSlider(updatedData).max,
       },
       callback
     );
@@ -329,6 +331,9 @@ export default class ReportOverviewGraph extends Component {
 
   handleSwitchChange(e) {
     const itemValue = e.target.value;
+    const dataIndex = parseInt(e.target.getAttribute("dataindex"));
+    let targetElement = this.switchCheckboxRefs[dataIndex]?.current;
+    if (targetElement) targetElement.setAttribute("checked", e.target.checked);
     if (e.target.checked) {
       this.addDataLineToGraph(itemValue);
     } else {
@@ -564,6 +569,7 @@ export default class ReportOverviewGraph extends Component {
                       <input
                         type="checkbox"
                         value={item}
+                        dataindex={index}
                         onChange={this.handleSwitchChange}
                         // disabled={
                         //   !this.isInDateRange(item) ||
@@ -574,7 +580,7 @@ export default class ReportOverviewGraph extends Component {
                           this.isInGraph(item) && this.hasOnlyOneGraphLine()
                         }
                         ref={this.switchCheckboxRefs[index]}
-                        checked={!!this.isInGraph(item)}
+                        checked={!!this.isInSelectedQids(item)}
                       />
                       <span className="switch-slider round"></span>
                     </label>

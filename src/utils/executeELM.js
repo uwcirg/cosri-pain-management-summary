@@ -243,7 +243,7 @@ function getLibraryForInstruments() {
       )
         .then((module) => module.default)
         .catch((e) => {
-          console.log("Issue occurred loading ELM  lib for " + item.key, e);
+          console.log("Issue occurred loading ELM lib for " + item.key + ". Will use default lib.", e);
           elmJson = null;
         });
       if (!elmJson) {
