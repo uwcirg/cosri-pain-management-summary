@@ -1,16 +1,6 @@
 library Phq9LogicLibrary version '1.0.0'
-<<<<<<< HEAD
-<<<<<<< HEAD
 using FHIR version '4.0.1'
 include "FHIRHelpers" version '4.0.1' called FHIRHelpers
-=======
-using FHIR version '4.0.0'
-include "FHIRHelpers" version '4.0.0' called FHIRHelpers
->>>>>>> 62dc10adb005321bcdbe6d0d26853a9d31e5c61a
-=======
-using FHIR version '4.0.0'
-include "FHIRHelpers" version '4.0.0' called FHIRHelpers
->>>>>>> 83eac68f53639a94e5c72320d14369805ebe59f3
 include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
 // -----------------------------------------------------------------------------
