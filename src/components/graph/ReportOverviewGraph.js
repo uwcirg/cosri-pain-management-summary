@@ -266,6 +266,9 @@ export default class ReportOverviewGraph extends Component {
         {
           graphData: updatedData,
           qids: [...new Set(updatedData.map((item) => item.qid))],
+          selectedDateRange: this.getScaleInfoForSlider(
+            updatedData
+          ).max,
         },
         callback
       );
@@ -278,6 +281,9 @@ export default class ReportOverviewGraph extends Component {
       {
         graphData: updatedData,
         qids: [...new Set(updatedData.map((item) => item.qid))],
+        selectedDateRange: this.getScaleInfoForSlider(
+          updatedData
+        ).max,
       },
       callback
     );
@@ -324,15 +330,18 @@ export default class ReportOverviewGraph extends Component {
   handleSwitchChange(e) {
     const itemValue = e.target.value;
     if (e.target.checked) {
-      this.addDataLineToGraph(itemValue, this.handleDateRangeChange);
+      this.addDataLineToGraph(itemValue);
     } else {
-      this.removeDataLineFromGraph(itemValue, this.handleDateRangeChange);
+      this.removeDataLineFromGraph(itemValue);
     }
   }
 
   handleDateRangeChange(e) {
     let selectedValue =
-      e && e.target ? e.target.value : this.state.selectedDateRange;
+      e && e.target
+        ? e.target.value
+        : this.getScaleInfoForSlider(this.state.originalGraphData).max ??
+          this.state.selectedDateRange;
     if (!selectedValue) {
       selectedValue = this.getScaleInfoForSlider(
         this.state.originalGraphData
