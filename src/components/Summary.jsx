@@ -528,7 +528,7 @@ export default class Summary extends Component {
                   data-tooltip-id={`alert_summary_${index}_tooltip`}
                   data-tooltip-content={`Go to ${item.name} section`}
                 />
-                {item.text}
+                <span className="text">{item.text}</span>
               </a>
               <Tooltip id={`alert_summary_${index}_tooltip`}></Tooltip>
             </div>
