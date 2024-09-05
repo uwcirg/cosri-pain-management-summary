@@ -179,7 +179,9 @@ export default class ScoringSummary extends Component {
       ? questionnaireObj.QuestionnaireName
       : questionnaireObj.QuestionnaireID;
     if (!questionnaireName) return <td>--</td>;
-    const anchorId = `#${questionnaireName}_anchor`;
+    const anchorId = `#${String(
+      questionnaireObj.QuestionnaireKey
+    ).toUpperCase()}_anchor`;
     const displayText = questionnaireShortName
       ? questionnaireShortName
       : questionnaireName;
