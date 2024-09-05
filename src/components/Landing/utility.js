@@ -8,11 +8,13 @@ import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
 import {
   getDiffDays,
+  getEnvSystemType,
+  getEnvConfidentialAPIURL,
   isEmptyArray,
   saveData,
   writeToLog,
 } from "../../helpers/utility";
-import { getEnv } from "../../utils/envConfig";
+import { getEnv, ENV_VAR_PREFIX } from "../../utils/envConfig";
 
 let uuid = 0;
 
@@ -24,10 +26,7 @@ export function processEndPoint(endpoint, endpointParams) {
   if (!endpoint) return "";
   const params = endpointParams ? endpointParams : {};
   return endpoint
-    .replace(
-      "{process.env.REACT_APP_CONF_API_URL}",
-      getEnv("REACT_APP_CONF_API_URL")
-    )
+    .replace(`{process.env.${ENV_VAR_PREFIX}_CONF_API_URL}`, getEnvConfidentialAPIURL())
     .replace("{process.env.PUBLIC_URL}", getEnv("PUBLIC_URL"))
     .replace("{patientId}", params.patientId);
 }
@@ -710,7 +709,7 @@ export function savePDMPSummaryData(summary, fileName) {
 export function getExternalDataSources(summaryMap) {
   const promiseResultSet = [];
   if (!summaryMap) return promiseResultSet;
-  const systemType = String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase();
+  const systemType = String(getEnvSystemType()).toLowerCase();
 
   /*
    * retrieve entries from Summary map, i.e. summary.json that requires fetching data via external API
@@ -831,8 +830,9 @@ export function getSummaryMapWithUpdatedSectionsVis(summaryMap) {
       //hide sub section if any
       newMap[key]["sections"].forEach((section) => {
         if (
-          getEnv(`REACT_APP_SUBSECTION_${section.dataKey.toUpperCase()}`) ===
-          "hidden"
+          getEnv(
+            `${ENV_VAR_PREFIX}_SUBSECTION_${section.dataKey.toUpperCase()}`
+          ) === "hidden"
         ) {
           section["hideSection"] = true;
           sectionsToBeHidden.push(section);
@@ -846,7 +846,7 @@ export function getSummaryMapWithUpdatedSectionsVis(summaryMap) {
         continue;
     }
     //hide main section if any
-    if (getEnv(`REACT_APP_SECTION_${key.toUpperCase()}`) === "hidden") {
+    if (getEnv(`${ENV_VAR_PREFIX}_SECTION_${key.toUpperCase()}`) === "hidden") {
       newMap[key]["hideSection"] = true;
     }
   }

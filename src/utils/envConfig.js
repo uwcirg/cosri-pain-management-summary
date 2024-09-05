@@ -90,3 +90,5 @@ export function getEnvs() {
   console.log("Environment variables ", arrEnvs);
   return arrEnvs;
 }
+
+export const ENV_VAR_PREFIX = "REACT_APP";

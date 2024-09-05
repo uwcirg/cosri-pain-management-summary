@@ -40,6 +40,7 @@ input[type="range"] {
     &.rotate {
       top: 12px;
       min-height: 12px;
+      transform: rotate(-90deg);
       &[dataunit="month"][displayvalue="1mo"],
       &[dataunit="month"][displayvalue="2mo"],
       &[dataunit="month"][displayvalue="3mo"],
@@ -70,11 +71,6 @@ input[type="range"] {
           font-weight: 900;
         }
       }
-
-      transform: rotate(-90deg);
-      // &:not(:first-of-type) {
-      //   left: 0px;
-      // }
       &:last-of-type {
         left: 4px;
       }

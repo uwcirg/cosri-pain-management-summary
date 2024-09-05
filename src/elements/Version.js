@@ -1,8 +1,8 @@
 import React from 'react';
-import {getEnv} from "../utils/envConfig";
+import {getEnvVersionString} from "../helpers/utility";
 
 const Version = () => {
-  const versionString = getEnv("REACT_APP_VERSION_STRING");
+  const versionString = getEnvVersionString();
   if (!versionString) return null;
   return (
     <div className="version__display">
