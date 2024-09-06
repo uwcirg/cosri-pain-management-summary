@@ -260,20 +260,20 @@ export default class RankedResponses extends Component {
     return (
       <thead>
         <tr>
-          <th className="fixed-cell accent dark-border fat">Rank</th>
+          <th className="fixed-cell accent dark-border fat" style={{width: "60px"}}>Rank</th>
           {this.state.dates.map((date, index) => {
-            const statusClassName =
-              index <= this.state.selectedIndex ? "a-active" : "a-inactive";
+            // const statusClassName =
+            //   index <= this.state.selectedIndex ? "a-active" : "a-inactive";
             return (
               <th
                 style={{
                   backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
-                  // display:
-                  //index <= this.state.selectedIndex ? "table-cell" : "none",
+                  display:
+                  index <= this.state.selectedIndex ? "table-cell" : "none",
                 }}
                 className={`${
                   index > 0 ? "exclude-from-copy print-hidden active" : ""
-                }  ${statusClassName} accent dark-border fat`}
+                }  accent dark-border fat`}
                 key={`ranked_responses_header_${index}`}
               >
                 <div className="flex flex-start flex-wrap text-left">
@@ -303,7 +303,7 @@ export default class RankedResponses extends Component {
       <tr>
         <td
           className="fixed-cell text-bold dark-border text-center"
-          style={{ verticalAlign: "middle" }}
+          style={{ verticalAlign: "middle", width: "60px" }}
         >
           {rank}
         </td>
@@ -314,18 +314,18 @@ export default class RankedResponses extends Component {
     );
   }
   renderRankedCell(index, rank) {
-    const statusClassName =
-      index <= this.state.selectedIndex ? "a-active" : "a-inactive";
+    // const statusClassName =
+    //   index <= this.state.selectedIndex ? "a-active" : "a-inactive";
     return (
       <td
         key={`${index}_${rank}`}
         style={{
           backgroundColor: index > 0 ? "#f6f9fa" : "#FFF",
-          //   display: index <= this.state.selectedIndex ? "table-cell" : "none",
+          display: index <= this.state.selectedIndex ? "table-cell" : "none",
         }}
         className={`${
           index > 0 ? "exclude-from-copy print-hidden" : ""
-        } ${statusClassName} dark-border fat nowrap`}
+        } dark-border fat`}
       >
         {this.getRankedDataByIndex(index, rank)}
       </td>
@@ -378,7 +378,7 @@ export default class RankedResponses extends Component {
           style={navContainerStyle}
           className="responses-table-outer-wrapper slide-table-container"
         >
-          <table className="table" style={tableStyle}>
+          <table className="table slider-table" style={tableStyle}>
             {this.renderTableHeader()}
             {this.renderTableBody()}
           </table>
