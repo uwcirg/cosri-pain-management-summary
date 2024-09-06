@@ -86,6 +86,9 @@ input[type="range"] {
   justify-content: center;
   align-items: center;
   margin-bottom: 8px;
+  &.text {
+    color: $color-blue-dark;
+  }
 }
 .bottom-info-text {
   text-align: right;

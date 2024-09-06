@@ -240,7 +240,7 @@ export default class ReportOverviewGraph extends Component {
   }
 
   isInSelectedQids(qid) {
-    return this.state.qids.find(item => item === qid);
+    return this.state.qids.find((item) => item === qid);
   }
 
   isInGraph(qid) {
@@ -259,7 +259,7 @@ export default class ReportOverviewGraph extends Component {
     return !isEmptyArray(filteredData);
   }
   addDataLineToGraph(qid, callback) {
-   // if (this.isInGraph(qid)) return;
+    // if (this.isInGraph(qid)) return;
     if (isEmptyArray(this.state.originalGraphData)) return;
     const qData = this.state.originalGraphData.filter(
       (item) => item.qid === qid
@@ -277,8 +277,8 @@ export default class ReportOverviewGraph extends Component {
     }
   }
   removeDataLineFromGraph(qid, callback) {
-   // if (!this.isInGraph(qid) || isEmptyArray(this.state.graphData)) return;
-   if (isEmptyArray(this.state.graphData)) return;
+    // if (!this.isInGraph(qid) || isEmptyArray(this.state.graphData)) return;
+    if (isEmptyArray(this.state.graphData)) return;
     const updatedData = this.state.graphData.filter((item) => item.qid !== qid);
     if (isEmptyArray(updatedData)) return;
     this.setState(
@@ -715,7 +715,7 @@ export default class ReportOverviewGraph extends Component {
       (item) => this.state.qids.indexOf(item.qid) !== -1
     );
     const { arrNum, unit } = this.getScaleInfoForSlider(sliderData);
-    //console.log("arrNum ", arrNum, " unit ", unit);
+    // console.log("arrNum ", arrNum, " unit ", unit);
     // const selectedRange = parseFloat(this.state.selectedDateRange);
     //console.log("number of years total: ", numYears);
     // console.log("selected value: ", selectedRange);
@@ -727,23 +727,27 @@ export default class ReportOverviewGraph extends Component {
     const shouldRotate =
       (inMonths && min === 0 && max >= 1) || (inYears && max >= 10);
     const arrDisplayValues = arrNum.map((item, index) => {
-      const prevItem =
-        index > 0
-          ? arrNum.find(
-              (n, i) =>
-                i < index &&
-                (i === 0 ||
-                  (n < 1 && n % 0.25 === 0) ||
-                  (n < 1 && n % 0.5 === 0) ||
-                  (n < 1 && n % 0.75 === 0) ||
-                  n % 1 === 0)
-            )
-          : null;
+      const prevItem = arrNum.find(
+        (n, i) =>
+          i < index &&
+          ((item <= 1 && i === 0) ||
+            (item <= 1 && n < 1 && n % 0.25 === 0) ||
+            (item <= 1 && n < 1 && n % 0.5 === 0) ||
+            (item <= 1 && n < 1 && n % 0.75 === 0) ||
+            (item > 1 && n % 1 === 0))
+      );
+      const isEndPoints = index === 0 || index === arrNum.length - 1;
       const shouldDisplay =
-        index === 0 ||
-        index === arrNum.length - 1 ||
-        (prevItem > 1 && item > 1 && item % 1 === 0) ||
-        (prevItem && item - prevItem > 0.085);
+        isEndPoints ||
+        (!isEndPoints && prevItem >= 1 && item >= 1 && item % 1 === 0) ||
+        (!isEndPoints &&
+          prevItem <= 1 &&
+          item <= 1 &&
+          (item % 0.25 === 0 ||
+            item % 0.5 === 0 ||
+            item % 0.75 === 0 ||
+            item % 1 === 0) &&
+          item - prevItem >= 0.16);
       // console.log(
       //   "item ",
       //   item,
@@ -760,17 +764,14 @@ export default class ReportOverviewGraph extends Component {
             ? item
               ? item * 12 + "mo"
               : ""
-            : item === arrNum[0] ||
-              (shouldDisplay && (item / 0.25) % 1 === 0) ||
-              (shouldDisplay && (item / 0.5) % 1 === 0) ||
-              (shouldDisplay && (item / 0.75) % 1 === 0)
+            : shouldDisplay
             ? item
               ? (item * 12) % 12 === 0
                 ? item + "yr"
                 : item * 12 + "mo"
               : ""
             : ""
-          : shouldDisplay & (item % 1 === 0)
+          : shouldDisplay
           ? item + "yr"
           : "";
       return {
@@ -782,7 +783,7 @@ export default class ReportOverviewGraph extends Component {
     if (!arrNum.length) return null;
     return (
       <div className="slider-parent-container" ref={this.sliderContainerRef}>
-        {!inYears && <div className="top-info-text">Past 1 Year</div>}
+        {!inYears && <div className="top-info-text text">Past 1 Year</div>}
         {inYears && (
           <div className="top-info-text">{this.renderDateRangeSelector()}</div>
         )}
@@ -867,10 +868,12 @@ export default class ReportOverviewGraph extends Component {
       .map((item) => String(item).toUpperCase());
     if (!noDataQids.length) return "";
     const dateRange = this.getDisplayDateRange();
-    const dateRangeText = dateRange ? `in the ${dateRange}` : "";
-    return `No reportable data for ${noDataQids.join(
+    const dateRangeText = dateRange
+      ? `in the <strong>${dateRange}</strong>`
+      : "";
+    return `No reportable data for <strong>${noDataQids.join(
       ", "
-    )} ${dateRangeText.toLowerCase()}`;
+    )}</strong> ${dateRangeText.toLowerCase()}`;
   }
 
   renderNotInGraphMessage() {
@@ -883,9 +886,8 @@ export default class ReportOverviewGraph extends Component {
           paddingRight: "16px",
           minHeight: "20px",
         }}
-      >
-        {this.getNotInGraphMessage()}
-      </div>
+        dangerouslySetInnerHTML={{ __html: this.getNotInGraphMessage() }}
+      ></div>
     );
   }
   render() {
@@ -1137,12 +1139,12 @@ export default class ReportOverviewGraph extends Component {
     const renderNoStateEntry = () => {
       const containerStyle = {
         position: "absolute",
-        width: "calc(100% - 32px)",
+        width: "calc(100% - 64px)",
         height: "70%",
         background: "#f4f5f64d",
         left: "0",
         zIndex: 100,
-        padding: "16px",
+        padding: "32px",
       };
       const textContainerStyle = {
         padding: "32px 0",
@@ -1160,7 +1162,9 @@ export default class ReportOverviewGraph extends Component {
         >
           <div style={textContainerStyle}>
             <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-            <div>{this.getNotInGraphMessage()}</div>
+            <div
+              dangerouslySetInnerHTML={{ __html: this.getNotInGraphMessage() }}
+            ></div>
           </div>
         </div>
       );
