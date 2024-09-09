@@ -329,7 +329,7 @@ const reportConfig = [
         component: (props) => <ResponsesSummary {...props}></ResponsesSummary>,
       },
       {
-        dataKey: "promis-global",
+        dataKey: "PROMIS-GLOBAL",
         title: "PROMIS short form - global",
         description: () => (
           <div>

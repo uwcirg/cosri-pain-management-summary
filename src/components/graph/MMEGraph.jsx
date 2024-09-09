@@ -8,7 +8,7 @@ import Markers from "./markers";
 import Tooltip from "./tooltip";
 import { dateFormat } from "../../helpers/formatit";
 import { dateCompare } from "../../helpers/sortit";
-import { sumArray, daysFromToday } from "../../helpers/utility";
+import { sumArray, daysFromToday, isEmptyArray } from "../../helpers/utility";
 
 const defaultFields = {
   x: "date",
@@ -182,6 +182,9 @@ export default class MMEGraph extends Component {
     });
     //get stats for data
     let graphStats = this.getStats(this.props.data);
+    const half = !isEmptyArray(graphStats) ? Math.ceil(graphStats.length / 2) : null; // Calculate the middle index
+    const firstHalf = half ? graphStats.slice(0, half) : null; // Slice from the beginning to the middle
+    const secondHalf = half ? graphStats.slice(half) : null; // Slice from the middle to the end
     let arrayDates = data.map((d) => {
       return d[xFieldName];
     });
@@ -416,14 +419,24 @@ export default class MMEGraph extends Component {
             </svg>
           </div>
         </div>
-        {graphStats.length > 0 && (
+        {!isEmptyArray(graphStats) && (
           <div className="stats-container">
-            {graphStats.map((item, index) => (
-              <div className="stats-item" key={item.value + index}>
-                <span className="title">{item.display}</span>
-                <span className="description">{item.value}</span>
-              </div>
-            ))}
+            <div className="stats-item">
+              {firstHalf.map((item, index) => (
+                <div key={item.value + index}>
+                  <span className="title">{item.display}</span>
+                  <span className="description">{item.value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="stats-item">
+              {secondHalf.map((item, index) => (
+                <div  key={item.value + index}>
+                  <span className="title">{item.display}</span>
+                  <span className="description">{item.value}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </React.Fragment>

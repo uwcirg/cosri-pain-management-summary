@@ -278,6 +278,7 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
         // PEG score item
         when I.linkId.value = '91147-9' then I.answer[0].value.value
         when I.linkId.value = '/91147-9' then I.answer[0].value.value
+        when I.linkId.value = 'CIRG-PEG-SUM' then I.answer[0].value.value
         // PROMIS score item 85523-9
         when I.linkId.value = '85523-9' then I.answer[0].value.value
         when I.linkId.value = '/85523-9' then I.answer[0].value.value

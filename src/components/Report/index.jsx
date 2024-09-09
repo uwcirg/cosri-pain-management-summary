@@ -47,9 +47,11 @@ export default class Report extends Component {
   }
 
   renderSectionAnchor(sectionId) {
+    const anchorID = String(sectionId).toUpperCase();
     return (
       <div
-        id={`${sectionId}__anchor`}
+        id={`${anchorID}__anchor`}
+        name={`${anchorID}__anchor`}
         style={{
           position: "relative",
           top: "-148px",
@@ -60,18 +62,19 @@ export default class Report extends Component {
   }
 
   renderSectionHeader(section) {
+    const sectionKey = String(section.dataKey).toUpperCase();
     return (
       <div key={`sectionHeader_container_${section}`}>
-        {this.renderSectionAnchor(section.dataKey)}
+        {this.renderSectionAnchor(sectionKey)}
         <h2
-          id={`${section.dataKey}_section`}
+          id={`${sectionKey}_section`}
           className={`section__header ${
             section.showHeaderInPrint ? "print-header" : ""
           }`}
         >
           <div
             className="section__header-title"
-            datasectionid={section.dataKey}
+            datasectionid={sectionKey}
           >
             {section.icon && (
               <span title={section.title}>{section.icon()}</span>
@@ -144,12 +147,13 @@ export default class Report extends Component {
     );
   }
   renderSubSectionHeader(item, summaryData) {
+    const itemKey = String(item.dataKey).toUpperCase();
     return (
-      <React.Fragment key={`sub-section_header_container_${item.dataKey}`}>
-        {this.renderSectionAnchor(item.dataKey)}
+      <React.Fragment key={`sub-section_header_container_${itemKey}`}>
+        {this.renderSectionAnchor(itemKey)}
         <h3
-          datasectionid={item.dataKey}
-          id={`${item.dataKey}_title`}
+          datasectionid={itemKey}
+          id={`${itemKey}_title`}
           className="sub-section__header"
         >
           {this.renderSubSectionTitle(item)}
@@ -163,7 +167,7 @@ export default class Report extends Component {
       <span
         className="sub-section__header__name"
         // style={{ fontWeight: 700, fontSize: "1.1em" }}
-        datasectionid={item.dataKey}
+        datasectionid={String(item.dataKey).toUpperCase()}
       >
         {/* <FontAwesomeIcon
           className={`flag flag-nav`}

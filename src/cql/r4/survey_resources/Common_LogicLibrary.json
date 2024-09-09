@@ -2533,6 +2533,43 @@
                                     }
                                  }, {
                                     "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                    "value" : "CIRG-PEG-SUM",
+                                    "type" : "Literal"
+                                 } ]
+                              },
+                              "then" : {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "type" : "Indexer",
+                                       "operand" : [ {
+                                          "path" : "answer",
+                                          "scope" : "I",
+                                          "type" : "Property"
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
+                                       } ]
+                                    }
+                                 }
+                              }
+                           }, {
+                              "when" : {
+                                 "type" : "Equal",
+                                 "operand" : [ {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "linkId",
+                                       "scope" : "I",
+                                       "type" : "Property"
+                                    }
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
                                     "value" : "85523-9",
                                     "type" : "Literal"
                                  } ]

@@ -597,18 +597,26 @@
 
       .graph {
         .stats-container {
-          margin-left: 24px;
-          margin-right: 24px;
+          // margin-left: 24px;
+          // margin-right: 24px;
+          max-width: 85%;
+          margin-left: auto;
+          margin-right: auto;
           margin-bottom: 16px;
           font-size: 14px;
           padding: 8px 16px;
           border: 2px solid $color-gray-lighter;
           min-height: 36px;
           position: relative;
+          display: flex;
+          flex-direction: row;
+          column-gap: 16px;
           .stats-item {
-            margin-bottom: 4px;
-            width: 50%;
-            float: left;
+            flex: 1;
+            align-self: stretch;
+            display: flex;
+            flex-direction: column;
+            row-gap: 8px;
           }
           .title {
             margin-right: 8px;
