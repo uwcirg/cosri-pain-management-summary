@@ -150,7 +150,6 @@ async function executeELM(collector, oResourceTypes) {
         return new Promise((resolve, reject) => {
           const elmLibs = getLibraryForInstruments();
           executeELMForReport(patientBundle).then((result) => {
-            console.log("Report result ", result);
             const PATIENT_SUMMARY_KEY = "Summary";
             if (!evalResults[PATIENT_SUMMARY_KEY]) {
               evalResults[PATIENT_SUMMARY_KEY] = {};
@@ -179,6 +178,11 @@ async function executeELM(collector, oResourceTypes) {
                   "Error occurred importing ELM lib. See console for detail"
                 );
               }
+            );
+          }).catch((e) => {
+            console.log(e);
+            reject(
+              "Error occurred processing report logic. See console for detail"
             );
           });
         });

@@ -112,7 +112,7 @@ export default class Table extends Component {
       <div style={{ position: "relative" }}>
         <div style={{ position: "absolute", right: "24px" }}>
           <CopyButton
-            buttonTitle="Click to copy table"
+            buttonTitle="Click to copy"
             elementToCopy={this.getElementToCopy()}
           ></CopyButton>
         </div>
