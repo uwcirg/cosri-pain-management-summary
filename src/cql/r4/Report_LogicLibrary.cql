@@ -50,22 +50,22 @@ define ReferralCodeList: {
 define ProcedureHistory:
   ([Procedure] ProcList
     where ProcList.status.value = 'completed' and not (ReferralCodeList contains ConceptCode(ProcList.code))) P
-    let performDate: (P.performed as FHIR.dateTime).value
+    let performDate: if P.performed is not null then (P.performed as FHIR.dateTime).value else null
     return {
       Name: ConceptText(P.code),
       Date: performDate,
-      DateText: DateTimeText(P.performed as FHIR.dateTime)
+      DateText: if P.performed is not null then DateTimeText(P.performed as FHIR.dateTime) else null
     }
     sort by Date desc
 
 define ReferralHistory:
   ([Procedure] ProcList
     where ProcList.status.value = 'completed' and (ReferralCodeList contains ConceptCode(ProcList.code))) P
-    let performDate: (P.performed as FHIR.dateTime).value
+    let performDate: if P.performed is not null then (P.performed as FHIR.dateTime).value else null
     return {
       Name: ConceptText(P.code),
       Date: performDate,
-      DateText: DateTimeText(P.performed as FHIR.dateTime)
+      DateText: if P.performed is not null then DateTimeText(P.performed as FHIR.dateTime) else null
     }
     sort by Date desc
 

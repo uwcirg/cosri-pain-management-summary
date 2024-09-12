@@ -476,7 +476,7 @@ export default class ResponsesSummary extends Component {
     );
   }
   render() {
-    return this.renderSummary(this.props.summary, this.props.columns);
+    return this.renderSummary(this.props.surveyData, this.props.columns);
   }
 }
 

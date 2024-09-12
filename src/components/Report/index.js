@@ -105,7 +105,7 @@ export default class Report extends Component {
     const procedureData = reportUtil.getProcedureData(reportData);
     const referralData = reportUtil.getReferralData(reportData);
     const propData = {
-      summary: surveySummaryData,
+      surveyData: surveySummaryData,
       scoringData: scoringData,
       graphData: graphData,
       bodyDiagramData: bodyDiagramData,
@@ -139,7 +139,7 @@ export default class Report extends Component {
               {item.component &&
                 item.component({
                   ...propData,
-                  summary: matchedData,
+                  surveyData: matchedData,
                 })}
               {this.renderSubSectionAnchor(item)}
             </div>
