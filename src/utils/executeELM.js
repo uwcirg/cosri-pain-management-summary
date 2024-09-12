@@ -12,6 +12,7 @@ import r4MMECalculatorELM from "../cql/r4/MMECalculator.json";
 import r4OMTKDataELM from "../cql/r4/OMTKData.json";
 import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import r4SurveyCommonELM from "../cql/r4/survey_resources/Common_LogicLibrary.json";
+import r4ReportCommonELM from "../cql/r4/Report_LogicLibrary.json";
 import valueSetDB from "../cql/valueset-db.json";
 import { fetchEnvData } from "./envConfig";
 import {
@@ -148,38 +149,69 @@ async function executeELM(collector, oResourceTypes) {
         // return a promise containing survey evaluated data
         return new Promise((resolve, reject) => {
           const elmLibs = getLibraryForInstruments();
-          Promise.allSettled(elmLibs).then(
-            (elmResults) => {
-              const evaluatedSurveyResults = executeELMForInstruments(
-                elmResults,
-                patientBundle
-              );
-              const PATIENT_SUMMARY_KEY = "Summary";
-              const SURVEY_SUMMARY_KEY = "SurveySummary";
-
-              if (!evalResults[PATIENT_SUMMARY_KEY]) {
-                evalResults[PATIENT_SUMMARY_KEY] = {};
-              }
-              evalResults[PATIENT_SUMMARY_KEY][SURVEY_SUMMARY_KEY] =
-                evaluatedSurveyResults;
-              //debug
-              console.log(
-                "final evaluated CQL results including surveys ",
-                evalResults
-              );
-              resolve(evalResults);
-            },
-            (e) => {
-              console.log(e);
-              reject(
-                "Error occurred importing ELM lib. See console for detail"
-              );
+          executeELMForReport(patientBundle).then((result) => {
+            console.log("Report result ", result);
+            const PATIENT_SUMMARY_KEY = "Summary";
+            if (!evalResults[PATIENT_SUMMARY_KEY]) {
+              evalResults[PATIENT_SUMMARY_KEY] = {};
             }
-          );
+            evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] = result;
+            Promise.allSettled(elmLibs).then(
+              (elmResults) => {
+                const evaluatedSurveyResults = executeELMForInstruments(
+                  elmResults,
+                  patientBundle
+                );
+
+                const SURVEY_SUMMARY_KEY = "SurveySummary";
+                evalResults[PATIENT_SUMMARY_KEY][SURVEY_SUMMARY_KEY] =
+                  evaluatedSurveyResults;
+                //debug
+                console.log(
+                  "final evaluated CQL results including surveys ",
+                  evalResults
+                );
+                resolve(evalResults);
+              },
+              (e) => {
+                console.log(e);
+                reject(
+                  "Error occurred importing ELM lib. See console for detail"
+                );
+              }
+            );
+          });
         });
       });
     resolve(finalResults);
   });
+}
+
+async function executeELMForReport(bundle) {
+  if (!bundle) return null;
+  let reportLib = new cql.Library(
+    r4ReportCommonELM,
+    new cql.Repository({
+      FHIRHelpers: r4HelpersELM,
+    })
+  );
+  const reportExecutor = new cql.Executor(
+    reportLib,
+    new cql.CodeService(valueSetDB)
+  );
+  const patientSource = cqlfhir.PatientSource.FHIRv400();
+  patientSource.loadBundles([bundle]);
+  let results;
+  try {
+    results = reportExecutor.exec(patientSource);
+    if (results.patientResults)
+      results =
+        results.patientResults[Object.keys(results.patientResults)[0]].Summary;
+  } catch (e) {
+    results = null;
+    console.log(`Error executing CQL for report `, e);
+  }
+  return results;
 }
 
 function executeELMForInstruments(arrayElmPromiseResult, bundle) {
@@ -243,7 +275,12 @@ function getLibraryForInstruments() {
       )
         .then((module) => module.default)
         .catch((e) => {
-          console.log("Issue occurred loading ELM lib for " + item.key + ". Will use default lib.", e);
+          console.log(
+            "Issue occurred loading ELM lib for " +
+              item.key +
+              ". Will use default lib.",
+            e
+          );
           elmJson = null;
         });
       if (!elmJson) {

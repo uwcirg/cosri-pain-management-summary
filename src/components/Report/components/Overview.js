@@ -4,10 +4,11 @@ import ScoringSummary from "./ScoringSummary";
 import BodyDiagram from "./BodyDiagram";
 import ReportOverviewGraph from "../../graph/ReportOverviewGraph";
 import * as reportUtil from "../utility";
+import {isEmptyArray} from "../../../helpers/utility";
 
 export default class Overview extends Component {
   hasNoSummaryData(summaryData) {
-    return reportUtil.hasNoSummaryData(summaryData);
+    return reportUtil.hasNoSurveySummaryData(summaryData);
   }
   render() {
     const { summary, scoringData, graphData, bodyDiagramData } = this.props;
@@ -38,7 +39,7 @@ export default class Overview extends Component {
               showAnchorLinks={true}
             ></ScoringSummary>
           </div>
-          {bodyDiagramData && (
+          {!isEmptyArray(bodyDiagramData) && (
             <div className="panel__item bordered" style={containerStyle}>
               <BodyDiagram summary={bodyDiagramData}></BodyDiagram>
             </div>

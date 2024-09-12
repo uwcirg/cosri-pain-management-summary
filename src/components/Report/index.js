@@ -36,6 +36,10 @@ export default class Report extends Component {
     this.setState({ showModal: false });
   };
 
+  hasNoSummaryData(summaryData) {
+    return !summaryData || !(summaryData.survey && summaryData.report)
+  }
+
   getScoringData(summaryData) {
     return reportUtil.getScoringData(summaryData);
   }
@@ -93,19 +97,25 @@ export default class Report extends Component {
     );
   }
   renderSectionBody(summaryData, section) {
-    const scoringData = this.getScoringData(summaryData);
+    const surveySummaryData = reportUtil.getSurveySummaryData(summaryData);
+    const scoringData = this.getScoringData(surveySummaryData);
     const graphData = this.getGraphData(scoringData);
-    const bodyDiagramData = this.getBodyDiagramDataData(summaryData);
-
+    const bodyDiagramData = this.getBodyDiagramDataData(surveySummaryData);
+    const reportData = reportUtil.getReportSummaryData(summaryData);
+    const procedureData = reportUtil.getProcedureData(reportData);
+    const referralData = reportUtil.getReferralData(reportData);
+    const propData = {
+      summary: surveySummaryData,
+      scoringData: scoringData,
+      graphData: graphData,
+      bodyDiagramData: bodyDiagramData,
+      procedureData: procedureData,
+      referralData: referralData
+    }
     if (section.component) {
       return (
         <div className="section">
-          {section.component({
-            summary: summaryData,
-            scoringData: scoringData,
-            graphData: graphData,
-            bodyDiagramData: bodyDiagramData,
-          })}
+          {section.component(propData)}
         </div>
       );
     }
@@ -113,8 +123,8 @@ export default class Report extends Component {
     return (
       <div className="section">
         {section.sections.map((item, index) => {
-          const matchedData = !isEmptyArray(summaryData)
-            ? summaryData.find(
+          const matchedData = !isEmptyArray(surveySummaryData)
+            ? surveySummaryData.find(
                 (summaryDataItem) =>
                   String(summaryDataItem.QuestionnaireKey).toLowerCase() ===
                   String(item.dataKey).toLowerCase()
@@ -128,6 +138,7 @@ export default class Report extends Component {
               {this.renderSubSectionHeader(item, matchedData)}
               {item.component &&
                 item.component({
+                  ...propData,
                   summary: matchedData,
                 })}
               {this.renderSubSectionAnchor(item)}
@@ -255,7 +266,7 @@ export default class Report extends Component {
 
   render() {
     const { summaryData } = this.props;
-    const hasNoData = reportUtil.hasNoSummaryData(summaryData);
+    const hasNoData = this.hasNoSummaryData(summaryData);
     return (
       <div className="summary report">
         <SideNav id="reportSideNavButton"></SideNav>
@@ -273,5 +284,5 @@ export default class Report extends Component {
 }
 
 Report.propTypes = {
-  summaryData: PropTypes.array,
+  summaryData: PropTypes.object,
 };

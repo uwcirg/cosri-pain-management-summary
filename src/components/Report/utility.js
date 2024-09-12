@@ -1,6 +1,24 @@
-import { isEmptyArray } from "../../helpers/utility";
+import { isEmptyArray, removeDuplicatesFromArrayByProperty } from "../../helpers/utility";
 import { BODY_DIAGRAM_DATA_KEY } from "../../config/report_config";
-export function hasNoSummaryData(summaryData) {
+export function getSurveySummaryData(summaryData) {
+  if (!summaryData) return null;
+  if (summaryData.survey) return summaryData.survey;
+  return null;
+}
+export function getReportSummaryData(summaryData) {
+  if (!summaryData) return null;
+  if (summaryData.report) return summaryData.report;
+  return null;
+}
+export function getProcedureData(summaryData) {
+  if (!summaryData || !summaryData.TreatmentHistory) return null;
+  return summaryData.TreatmentHistory.Procedures;
+}
+export function getReferralData(summaryData) {
+  if (!summaryData || !summaryData.TreatmentHistory) return null;
+  return summaryData.TreatmentHistory.Referrals;
+}
+export function hasNoSurveySummaryData(summaryData) {
   return (
     isEmptyArray(summaryData) ||
     summaryData.filter(
@@ -26,9 +44,12 @@ export function getGraphData(summaryData) {
 export function getBodyDiagramData(summaryData) {
   if (isEmptyArray(summaryData)) return null;
   const matchedData = summaryData.filter(
-    (item) => String(item.QuestionnaireKey).toLowerCase() === BODY_DIAGRAM_DATA_KEY.toLowerCase()
+    (item) =>
+      String(item.QuestionnaireKey).toLowerCase() ===
+      BODY_DIAGRAM_DATA_KEY.toLowerCase()
   );
   if (!matchedData.length) return null;
-  if (isEmptyArray(matchedData[0].ResponsesSummary)) return null;
-  return matchedData[0].ResponsesSummary;
+  let returnData = matchedData[0].ResponsesSummary;
+  // date compared example: "2024-08-02T00:35:56+00:00"
+  return removeDuplicatesFromArrayByProperty(returnData, "date");
 }

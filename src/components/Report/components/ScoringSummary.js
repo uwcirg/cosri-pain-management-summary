@@ -13,7 +13,7 @@ import {
   isNumber,
   toDate,
 } from "../../../helpers/utility";
-import { hasNoSummaryData } from "../utility";
+import { hasNoSurveySummaryData } from "../utility";
 export default class ScoringSummary extends Component {
   constructor() {
     super(...arguments);
@@ -303,7 +303,7 @@ export default class ScoringSummary extends Component {
   }
   render() {
     const { summary, showAnchorLinks } = this.props;
-    const noSummaryData = hasNoSummaryData(summary);
+    const noSummaryData = hasNoSurveySummaryData(summary);
     const readOnly = this.props.readOnly;
     return (
       <React.Fragment>

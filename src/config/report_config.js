@@ -7,6 +7,8 @@ import PainIcon from "../icons/PainIcon";
 import OverViewComponent from "../components/Report/components/Overview";
 import ResponsesSummary from "../components/Report/components/ResponsesSummary";
 import RankedResponses from "../components/Report/components/RankedResponses";
+import Procedures from "../components/Report/components/Procedures";
+import Referrals from "../components/Report/components/Referrals";
 
 const iconProps = {
   width: 35,
@@ -23,6 +25,8 @@ export const PCPTSD5_DATA_KEY = "PC-PTSD-5";
 export const PROMISGLOBAL_DATA_KEY = "PROMIS-GLOBAL";
 export const STOP_DATA_KEY = "PAINTRACKER-STOP";
 export const TRT_DATA_KEY = "PAINTRACKER-TRT";
+export const PROCECURE_DATA_KEY = "PROCEDURE_HISTORY";
+export const REFERRAL_DATA_KEY = "REFERRAL_HISTORY";
 
 const reportConfig = [
   {
@@ -381,8 +385,58 @@ const reportConfig = [
     ),
     sections: [
       {
+        dataKey: PROCECURE_DATA_KEY,
+        title: "Procedures",
+        component: (props) => (
+          <Procedures
+            tableOptions={{
+              id: `${PROCECURE_DATA_KEY}_table`,
+              defaultSorted: {
+                id: "Date",
+                desc: true,
+              },
+              headers: {
+                Name: "Name",
+                Date: {
+                  key: "DateText",
+                  formatter: "datishFormat",
+                  sorter: "dateCompare",
+                  sortable: true,
+                },
+              },
+            }}
+            {...props}
+          ></Procedures>
+        ),
+      },
+      {
+        dataKey: REFERRAL_DATA_KEY,
+        title: "Referrals",
+        component: (props) => (
+          <Referrals
+            tableOptions={{
+              id: `${REFERRAL_DATA_KEY}_table`,
+              defaultSorted: {
+                id: "Date",
+                desc: true,
+              },
+              headers: {
+                Name: "Name",
+                Date: {
+                  key: "DateText",
+                  formatter: "datishFormat",
+                  sorter: "dateCompare",
+                  sortable: true,
+                },
+              },
+            }}
+            {...props}
+          ></Referrals>
+        ),
+      },
+      {
         dataKey: TRT_DATA_KEY,
-        title: "PainTracker TRT questionnaire",
+        title: "PainTracker TRT questionnaire (self-reported)",
         description: () => (
           <div>
             <p>
