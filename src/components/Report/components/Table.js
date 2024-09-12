@@ -11,13 +11,13 @@ export default class Table extends Component {
     super(...arguments);
     this.tableRef = React.createRef();
   }
-  renderTable(table, entries) {
+  renderTable(tableOptions={}, entries) {
     // If a filter is provided, only render those things that have the filter field (or don't have it when it's negated)
     let filteredEntries = entries;
-    if (!isEmptyArray(table.filter)) {
+    if (!isEmptyArray(tableOptions.filter)) {
       // A filter starting with '!' is negated (looking for absence of that field)
-      const negated = table.filter[0] === "!";
-      const filter = negated ? table.filter.substring(1) : table.filter;
+      const negated = tableOptions.filter[0] === "!";
+      const filter = negated ? tableOptions.filter.substring(1) : tableOptions.filter;
       filteredEntries = entries.filter((e) =>
         negated ? e[filter] == null : e[filter] != null
       );
@@ -25,9 +25,9 @@ export default class Table extends Component {
     if (isEmptyArray(filteredEntries)) return null;
 
     //ReactTable needs an ID for aria-describedby
-    let tableID = `${table.id}_tableContainer`;
+    let tableID = `${tableOptions.id}_tableContainer`;
 
-    const headers = Object.keys(table.headers);
+    const headers = Object.keys(tableOptions.headers);
     let columns = [
       {
         id: "flagged",
@@ -35,7 +35,7 @@ export default class Table extends Component {
     ];
 
     headers.forEach((header) => {
-      const headerKey = table.headers[header];
+      const headerKey = tableOptions.headers[header];
       const headerClass = headerKey.className ? headerKey.className : "";
       const column = {
         id: header,
@@ -103,8 +103,8 @@ export default class Table extends Component {
 
     let customProps = { id: tableID };
     let defaultSorted = [];
-    if (table.defaultSorted) {
-      defaultSorted.push(table.defaultSorted);
+    if (tableOptions.defaultSorted) {
+      defaultSorted.push(tableOptions.defaultSorted);
     }
     //getTheadThProps solution courtesy of:
     //https://spectrum.chat/react-table/general/is-there-a-way-to-activate-sort-via-onkeypress~66656e87-7f5c-4767-8b23-ddf35d73f8af
