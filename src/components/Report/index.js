@@ -36,9 +36,9 @@ export default class Report extends Component {
     this.setState({ showModal: false });
   };
 
-  hasNoSummaryData(summaryData) {
-    if (summaryData || summaryData.report || summaryData.survey) return false;
-    return true;
+  hasSummaryData(summaryData) {
+    if (!summaryData) return false;
+    return !!(summaryData.report || summaryData.survey);
   }
 
   getScoringData(summaryData) {
@@ -260,8 +260,7 @@ export default class Report extends Component {
 
   render() {
     const { summaryData } = this.props;
-    const hasNoData = this.hasNoSummaryData(summaryData);
-    console.log("summaryData ", summaryData);
+    const hasNoData = !(this.hasSummaryData(summaryData));
     return (
       <div className="summary report">
         <SideNav id="reportSideNavButton"></SideNav>
