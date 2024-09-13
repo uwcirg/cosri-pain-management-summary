@@ -436,7 +436,7 @@ const reportConfig = [
       },
       {
         dataKey: TRT_DATA_KEY,
-        title: "PainTracker TRT questionnaire (self-reported)",
+        title: "PainTracker TRT questionnaire",
         description: () => (
           <div>
             <p>

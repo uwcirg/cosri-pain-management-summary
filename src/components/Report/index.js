@@ -37,7 +37,8 @@ export default class Report extends Component {
   };
 
   hasNoSummaryData(summaryData) {
-    return !summaryData || !(summaryData.survey && summaryData.report)
+    if (summaryData || summaryData.report || summaryData.survey) return false;
+    return true;
   }
 
   getScoringData(summaryData) {
@@ -76,10 +77,7 @@ export default class Report extends Component {
             section.showHeaderInPrint ? "print-header" : ""
           }`}
         >
-          <div
-            className="section__header-title"
-            datasectionid={sectionKey}
-          >
+          <div className="section__header-title" datasectionid={sectionKey}>
             {section.icon && (
               <span title={section.title}>{section.icon()}</span>
             )}
@@ -110,14 +108,10 @@ export default class Report extends Component {
       graphData: graphData,
       bodyDiagramData: bodyDiagramData,
       procedureData: procedureData,
-      referralData: referralData
-    }
+      referralData: referralData,
+    };
     if (section.component) {
-      return (
-        <div className="section">
-          {section.component(propData)}
-        </div>
-      );
+      return <div className="section">{section.component(propData)}</div>;
     }
     if (!section.sections || !section.sections.length) return null;
     return (
@@ -267,6 +261,7 @@ export default class Report extends Component {
   render() {
     const { summaryData } = this.props;
     const hasNoData = this.hasNoSummaryData(summaryData);
+    console.log("summaryData ", summaryData);
     return (
       <div className="summary report">
         <SideNav id="reportSideNavButton"></SideNav>

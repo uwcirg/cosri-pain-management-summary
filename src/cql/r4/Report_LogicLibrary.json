@@ -22,13 +22,6 @@
             "version" : "4.0.0"
          } ]
       },
-      "includes" : {
-         "def" : [ {
-            "localIdentifier" : "FHIRHelpers",
-            "path" : "FHIRHelpers",
-            "version" : "4.0.0"
-         } ]
-      },
       "contexts" : {
          "def" : [ {
             "name" : "Patient"
@@ -274,40 +267,19 @@
                "let" : [ {
                   "identifier" : "performDate",
                   "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "path" : "performed",
-                              "scope" : "P",
-                              "type" : "Property"
-                           }
-                        }
-                     },
-                     "then" : {
-                        "path" : "value",
-                        "type" : "Property",
-                        "source" : {
-                           "strict" : false,
-                           "type" : "As",
-                           "operand" : {
-                              "path" : "performed",
-                              "scope" : "P",
-                              "type" : "Property"
-                           },
-                           "asTypeSpecifier" : {
-                              "name" : "{http://hl7.org/fhir}dateTime",
-                              "type" : "NamedTypeSpecifier"
-                           }
-                        }
-                     },
-                     "else" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}DateTime",
+                     "path" : "value",
+                     "type" : "Property",
+                     "source" : {
+                        "strict" : false,
                         "type" : "As",
                         "operand" : {
-                           "type" : "Null"
+                           "path" : "performed",
+                           "scope" : "P",
+                           "type" : "Property"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}dateTime",
+                           "type" : "NamedTypeSpecifier"
                         }
                      }
                   }
@@ -336,42 +308,21 @@
                      }, {
                         "name" : "DateText",
                         "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "path" : "performed",
-                                    "scope" : "P",
-                                    "type" : "Property"
-                                 }
-                              }
-                           },
-                           "then" : {
-                              "name" : "DateTimeText",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "strict" : false,
-                                 "type" : "As",
-                                 "operand" : {
-                                    "path" : "performed",
-                                    "scope" : "P",
-                                    "type" : "Property"
-                                 },
-                                 "asTypeSpecifier" : {
-                                    "name" : "{http://hl7.org/fhir}dateTime",
-                                    "type" : "NamedTypeSpecifier"
-                                 }
-                              } ]
-                           },
-                           "else" : {
-                              "asType" : "{urn:hl7-org:elm-types:r1}String",
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "strict" : false,
                               "type" : "As",
                               "operand" : {
-                                 "type" : "Null"
+                                 "path" : "performed",
+                                 "scope" : "P",
+                                 "type" : "Property"
+                              },
+                              "asTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}dateTime",
+                                 "type" : "NamedTypeSpecifier"
                               }
-                           }
+                           } ]
                         }
                      } ]
                   }
@@ -440,40 +391,19 @@
                "let" : [ {
                   "identifier" : "performDate",
                   "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "path" : "performed",
-                              "scope" : "P",
-                              "type" : "Property"
-                           }
-                        }
-                     },
-                     "then" : {
-                        "path" : "value",
-                        "type" : "Property",
-                        "source" : {
-                           "strict" : false,
-                           "type" : "As",
-                           "operand" : {
-                              "path" : "performed",
-                              "scope" : "P",
-                              "type" : "Property"
-                           },
-                           "asTypeSpecifier" : {
-                              "name" : "{http://hl7.org/fhir}dateTime",
-                              "type" : "NamedTypeSpecifier"
-                           }
-                        }
-                     },
-                     "else" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}DateTime",
+                     "path" : "value",
+                     "type" : "Property",
+                     "source" : {
+                        "strict" : false,
                         "type" : "As",
                         "operand" : {
-                           "type" : "Null"
+                           "path" : "performed",
+                           "scope" : "P",
+                           "type" : "Property"
+                        },
+                        "asTypeSpecifier" : {
+                           "name" : "{http://hl7.org/fhir}dateTime",
+                           "type" : "NamedTypeSpecifier"
                         }
                      }
                   }
@@ -502,42 +432,21 @@
                      }, {
                         "name" : "DateText",
                         "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "path" : "performed",
-                                    "scope" : "P",
-                                    "type" : "Property"
-                                 }
-                              }
-                           },
-                           "then" : {
-                              "name" : "DateTimeText",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "strict" : false,
-                                 "type" : "As",
-                                 "operand" : {
-                                    "path" : "performed",
-                                    "scope" : "P",
-                                    "type" : "Property"
-                                 },
-                                 "asTypeSpecifier" : {
-                                    "name" : "{http://hl7.org/fhir}dateTime",
-                                    "type" : "NamedTypeSpecifier"
-                                 }
-                              } ]
-                           },
-                           "else" : {
-                              "asType" : "{urn:hl7-org:elm-types:r1}String",
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "strict" : false,
                               "type" : "As",
                               "operand" : {
-                                 "type" : "Null"
+                                 "path" : "performed",
+                                 "scope" : "P",
+                                 "type" : "Property"
+                              },
+                              "asTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}dateTime",
+                                 "type" : "NamedTypeSpecifier"
                               }
-                           }
+                           } ]
                         }
                      } ]
                   }

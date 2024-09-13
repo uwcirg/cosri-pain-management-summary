@@ -1,6 +1,5 @@
 library ReportLogicLibrary version '1.0.0'
 using FHIR version '4.0.0'
-include "FHIRHelpers" version '4.0.0' called FHIRHelpers
 
 // -----------------------------------------------------------------------------
 // PATIENT INFORMATION
@@ -50,22 +49,22 @@ define ReferralCodeList: {
 define ProcedureHistory:
   ([Procedure] ProcList
     where ProcList.status.value = 'completed' and not (ReferralCodeList contains ConceptCode(ProcList.code))) P
-    let performDate: if P.performed is not null then (P.performed as FHIR.dateTime).value else null
+    let performDate: (P.performed as FHIR.dateTime).value 
     return {
       Name: ConceptText(P.code),
       Date: performDate,
-      DateText: if P.performed is not null then DateTimeText(P.performed as FHIR.dateTime) else null
+      DateText: DateTimeText(P.performed as FHIR.dateTime) 
     }
     sort by Date desc
 
 define ReferralHistory:
   ([Procedure] ProcList
     where ProcList.status.value = 'completed' and (ReferralCodeList contains ConceptCode(ProcList.code))) P
-    let performDate: if P.performed is not null then (P.performed as FHIR.dateTime).value else null
+    let performDate: (P.performed as FHIR.dateTime).value
     return {
       Name: ConceptText(P.code),
       Date: performDate,
-      DateText: if P.performed is not null then DateTimeText(P.performed as FHIR.dateTime) else null
+      DateText: DateTimeText(P.performed as FHIR.dateTime)
     }
     sort by Date desc
 

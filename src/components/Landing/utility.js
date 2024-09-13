@@ -881,7 +881,7 @@ export function getSummaryErrors(summary) {
   // the rest of the errors
   let errors = [];
   for (let section in summary) {
-    if (summary[section].error) {
+    if (summary[section] && summary[section].error) {
       errors.push(summary[section].error);
     }
   }

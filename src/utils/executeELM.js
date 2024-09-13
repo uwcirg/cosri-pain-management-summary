@@ -12,7 +12,6 @@ import r4MMECalculatorELM from "../cql/r4/MMECalculator.json";
 import r4OMTKDataELM from "../cql/r4/OMTKData.json";
 import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import r4SurveyCommonELM from "../cql/r4/survey_resources/Common_LogicLibrary.json";
-import r4ReportCommonELM from "../cql/r4/Report_LogicLibrary.json";
 import valueSetDB from "../cql/valueset-db.json";
 import { fetchEnvData } from "./envConfig";
 import {
@@ -144,47 +143,39 @@ async function executeELM(collector, oResourceTypes) {
         //debugging
         console.table("CQL execution results ", evalResults);
 
-        if (!INSTRUMENT_LIST) return evalResults;
+        if (!isReportEnabled()) return evalResults;
 
         // return a promise containing survey evaluated data
         return new Promise((resolve, reject) => {
           const elmLibs = getLibraryForInstruments();
-          executeELMForReport(patientBundle).then((result) => {
-            const PATIENT_SUMMARY_KEY = "Summary";
-            if (!evalResults[PATIENT_SUMMARY_KEY]) {
-              evalResults[PATIENT_SUMMARY_KEY] = {};
+          const PATIENT_SUMMARY_KEY = "Summary";
+          if (!evalResults[PATIENT_SUMMARY_KEY]) {
+            evalResults[PATIENT_SUMMARY_KEY] = {};
+          }
+          Promise.allSettled([executeELMForReport(patientBundle), ...elmLibs]).then(
+            (results) => {
+              evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
+                results[0].status !== "rejected" ? results[0].value : null;
+              const evaluatedSurveyResults = executeELMForInstruments(
+                results.slice(1),
+                patientBundle
+              );
+              evalResults[PATIENT_SUMMARY_KEY]["SurveySummary"] =
+                evaluatedSurveyResults;
+              //debug
+              console.log(
+                "final evaluated CQL results including surveys ",
+                evalResults
+              );
+              resolve(evalResults);
+            },
+            (e) => {
+              console.log(e);
+              reject(
+                "Error occurred executing report library logics. See console for detail"
+              );
             }
-            evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] = result;
-            Promise.allSettled(elmLibs).then(
-              (elmResults) => {
-                const evaluatedSurveyResults = executeELMForInstruments(
-                  elmResults,
-                  patientBundle
-                );
-
-                const SURVEY_SUMMARY_KEY = "SurveySummary";
-                evalResults[PATIENT_SUMMARY_KEY][SURVEY_SUMMARY_KEY] =
-                  evaluatedSurveyResults;
-                //debug
-                console.log(
-                  "final evaluated CQL results including surveys ",
-                  evalResults
-                );
-                resolve(evalResults);
-              },
-              (e) => {
-                console.log(e);
-                reject(
-                  "Error occurred importing ELM lib. See console for detail"
-                );
-              }
-            );
-          }).catch((e) => {
-            console.log(e);
-            reject(
-              "Error occurred processing report logic. See console for detail"
-            );
-          });
+          );
         });
       });
     resolve(finalResults);
@@ -193,12 +184,15 @@ async function executeELM(collector, oResourceTypes) {
 
 async function executeELMForReport(bundle) {
   if (!bundle) return null;
-  let reportLib = new cql.Library(
-    r4ReportCommonELM,
-    new cql.Repository({
-      FHIRHelpers: r4HelpersELM,
-    })
-  );
+  let r4ReportCommonELM = await import("../cql/r4/Report_LogicLibrary.json")
+    .then((module) => module.default)
+    .catch((e) => {
+      console.log("Issue occurred loading ELM lib for reoirt", e);
+      r4ReportCommonELM = null;
+    });
+  if (!r4ReportCommonELM) return null;
+
+  let reportLib = new cql.Library(r4ReportCommonELM);
   const reportExecutor = new cql.Executor(
     reportLib,
     new cql.CodeService(valueSetDB)
