@@ -1,4 +1,7 @@
-import { isEmptyArray, removeDuplicatesFromArrayByProperty } from "../../helpers/utility";
+import {
+  isEmptyArray,
+  removeDuplicatesFromArrayByProperty,
+} from "../../helpers/utility";
 import { BODY_DIAGRAM_DATA_KEY } from "../../config/report_config";
 export function getSurveySummaryData(summaryData) {
   if (!summaryData) return null;
@@ -18,8 +21,26 @@ export function getReferralData(summaryData) {
   if (!summaryData || !summaryData.TreatmentHistory) return null;
   return summaryData.TreatmentHistory.Referrals;
 }
-export function hasNoSurveySummaryData(summaryData) {
-  return (
+export function hasReportSummaryData(summaryData) {
+  if (!summaryData) return false;
+  let sectionData = [];
+  const keys = Object.keys(summaryData);
+  for (const key of keys) {
+    if (!isEmptyArray(summaryData[key])) {
+      sectionData = [...sectionData, ...summaryData[key]];
+      continue;
+    }
+    const sectionKeys = Object.keys(summaryData[key]);
+    for (const sectionKey of sectionKeys) {
+      if (!isEmptyArray(summaryData[key][sectionKey])) {
+        sectionData = [...sectionData, ...summaryData[key][sectionKey]];
+      }
+    }
+  }
+  return !isEmptyArray(sectionData);
+}
+export function hasSurveySummaryData(summaryData) {
+  return ! (
     isEmptyArray(summaryData) ||
     summaryData.filter(
       (item) => item.ResponsesSummary && item.ResponsesSummary.length > 0
