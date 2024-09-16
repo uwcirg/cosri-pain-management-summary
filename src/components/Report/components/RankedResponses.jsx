@@ -27,7 +27,7 @@ export default class RankedResponses extends Component {
     this.tableRef = React.createRef();
   }
   componentDidMount() {
-    this.initData(this.props.summary);
+    this.initData(this.props.surveyData);
   }
   initData(summary) {
     if (!summary) return;

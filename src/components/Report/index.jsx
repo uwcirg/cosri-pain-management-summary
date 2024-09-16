@@ -36,6 +36,14 @@ export default class Report extends Component {
     this.setState({ showModal: false });
   };
 
+  hasSummaryData(summaryData) {
+    if (!summaryData) return false;
+    return !!(
+      reportUtil.hasReportSummaryData(summaryData.report) ||
+      reportUtil.hasSurveySummaryData(summaryData.survey)
+    );
+  }
+
   getScoringData(summaryData) {
     return reportUtil.getScoringData(summaryData);
   }
@@ -72,10 +80,7 @@ export default class Report extends Component {
             section.showHeaderInPrint ? "print-header" : ""
           }`}
         >
-          <div
-            className="section__header-title"
-            datasectionid={sectionKey}
-          >
+          <div className="section__header-title" datasectionid={sectionKey}>
             {section.icon && (
               <span title={section.title}>{section.icon()}</span>
             )}
@@ -93,28 +98,30 @@ export default class Report extends Component {
     );
   }
   renderSectionBody(summaryData, section) {
-    const scoringData = this.getScoringData(summaryData);
+    const surveySummaryData = reportUtil.getSurveySummaryData(summaryData);
+    const scoringData = this.getScoringData(surveySummaryData);
     const graphData = this.getGraphData(scoringData);
-    const bodyDiagramData = this.getBodyDiagramDataData(summaryData);
-
+    const bodyDiagramData = this.getBodyDiagramDataData(surveySummaryData);
+    const reportData = reportUtil.getReportSummaryData(summaryData);
+    const procedureData = reportUtil.getProcedureData(reportData);
+    const referralData = reportUtil.getReferralData(reportData);
+    const propData = {
+      surveyData: surveySummaryData,
+      scoringData: scoringData,
+      graphData: graphData,
+      bodyDiagramData: bodyDiagramData,
+      procedureData: procedureData,
+      referralData: referralData,
+    };
     if (section.component) {
-      return (
-        <div className="section">
-          {section.component({
-            summary: summaryData,
-            scoringData: scoringData,
-            graphData: graphData,
-            bodyDiagramData: bodyDiagramData,
-          })}
-        </div>
-      );
+      return <div className="section">{section.component(propData)}</div>;
     }
     if (!section.sections || !section.sections.length) return null;
     return (
       <div className="section">
         {section.sections.map((item, index) => {
-          const matchedData = !isEmptyArray(summaryData)
-            ? summaryData.find(
+          const matchedData = !isEmptyArray(surveySummaryData)
+            ? surveySummaryData.find(
                 (summaryDataItem) =>
                   String(summaryDataItem.QuestionnaireKey).toLowerCase() ===
                   String(item.dataKey).toLowerCase()
@@ -128,7 +135,8 @@ export default class Report extends Component {
               {this.renderSubSectionHeader(item, matchedData)}
               {item.component &&
                 item.component({
-                  summary: matchedData,
+                  ...propData,
+                  surveyData: matchedData,
                 })}
               {this.renderSubSectionAnchor(item)}
             </div>
@@ -255,7 +263,7 @@ export default class Report extends Component {
 
   render() {
     const { summaryData } = this.props;
-    const hasNoData = reportUtil.hasNoSummaryData(summaryData);
+    const hasNoData = !this.hasSummaryData(summaryData);
     return (
       <div className="summary report">
         <SideNav id="reportSideNavButton"></SideNav>
@@ -273,5 +281,5 @@ export default class Report extends Component {
 }
 
 Report.propTypes = {
-  summaryData: PropTypes.array,
+  summaryData: PropTypes.object,
 };

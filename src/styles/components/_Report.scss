@@ -84,7 +84,8 @@ $selector-box-shadow: 0 2px 2px #383e40;
           th {
             padding: 4px 24px 2px 0;
           }
-          th, td {
+          th:empty, td:empty {
+            //border-bottom: 0;
             // text-wrap: balance;
           }
         }
@@ -166,7 +167,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       text-align: center;
       vertical-align: bottom;
       padding-right: 4px;
-      border-bottom: 2px solid $color-blue;
+    //  border-bottom: 2px solid $color-blue;
       padding: 4px 12px 2px 0;
       font-size: 0.95em;
     }

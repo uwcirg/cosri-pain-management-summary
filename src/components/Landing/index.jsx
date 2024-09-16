@@ -528,7 +528,10 @@ export default class Landing extends Component {
                 {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
                 {item === "report" && (
-                  <Report summaryData={summary.SurveySummary}></Report>
+                  <Report summaryData={{
+                    report: summary.ReportSummary,
+                    survey: summary.SurveySummary
+                  }}></Report>
                 )}
                 {/* other tab panel as specified here */}
               </div>

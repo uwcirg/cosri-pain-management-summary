@@ -3,7 +3,7 @@ import { useFlexLayout, useTable, useSortBy, usePagination } from "react-table";
 import AscendingSortImg from "../icons/icon-sort-up.png";
 import DescenidngSortImg from "../icons/icon-sort-down.png";
 
-export default function Table({ key, columns, data, tableParams }) {
+export default function Table({ key, columns, data, tableParams, tableClass }) {
   const params = tableParams ? tableParams : {};
   // Use the state and functions returned from useTable to build your UI
   const {
@@ -125,7 +125,9 @@ export default function Table({ key, columns, data, tableParams }) {
     <div>
       <table
         key={key}
-        className={`ReactTable ${columns.length <= 2 ? "single-column" : ""}`}
+        className={`ReactTable ${
+          tableClass ? tableClass : columns.length <= 2 ? "single-column" : ""
+        }`}
         {...getTableProps()}
         {...(params.tableProps ? params.tableProps : {})}
       >

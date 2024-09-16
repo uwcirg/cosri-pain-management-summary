@@ -178,12 +178,13 @@ export default class ResponsesSummary extends Component {
                   ...(index === columns.length - 1 ? { borderRight: 0 } : {}),
                 }}
                 colSpan={column.number ?? 1}
+                className="accent"
               >
                 {column.description}
               </th>
             ))}
             {/* view all responses column */}
-            <th className="accent exclude-from-copy"></th>
+            <th className="exclude-from-copy accent"></th>
           </tr>
         </thead>
       );
@@ -196,7 +197,7 @@ export default class ResponsesSummary extends Component {
           <th className="accent" style={{ borderRight: 0 }}>
             Responses
           </th>
-          <th className="exclude-from-copy"></th>
+          <th className="exclude-from-copy accent"></th>
         </tr>
       </thead>
     );
@@ -476,7 +477,7 @@ export default class ResponsesSummary extends Component {
     );
   }
   render() {
-    return this.renderSummary(this.props.summary, this.props.columns);
+    return this.renderSummary(this.props.surveyData, this.props.columns);
   }
 }
 

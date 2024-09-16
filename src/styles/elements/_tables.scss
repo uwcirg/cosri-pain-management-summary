@@ -15,6 +15,9 @@
       }
     }
   }
+  .rt-thead.-header {
+    box-shadow: none;
+  }
 
   .rt-tbody .rt-td,
   .rt-thead .rt-th,
@@ -194,5 +197,10 @@
         transform: translateX(-2000px);
       }
     }
+  }
+}
+.ReactTable.wide {
+  th, td {
+    max-width: 100%;
   }
 }

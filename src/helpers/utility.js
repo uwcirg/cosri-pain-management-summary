@@ -301,7 +301,9 @@ export function copySVGImage(
   const width =
     typeof svgElement.clientWidth !== "undefined" ? svgElement.clientWidth : 0;
   const height =
-    typeof svgElement.clientHeight !== "undefined" ? svgElement.clientHeight : 0;
+    typeof svgElement.clientHeight !== "undefined"
+      ? svgElement.clientHeight
+      : 0;
   const setDimensions = () => {
     if (typeof svgElement.setAttribute !== "function") return;
     if (width) svgElement.setAttribute("width", width);
@@ -538,9 +540,7 @@ export function isNotProduction() {
 }
 
 export function isProduction() {
-  return (
-    String(getEnvSystemType()).toLowerCase() !== "development"
-  );
+  return String(getEnvSystemType()).toLowerCase() !== "development";
 }
 
 export function getEnvConfidentialAPIURL() {
@@ -629,6 +629,17 @@ export function isEmptyArray(object) {
   return !object.length;
 }
 
+export function removeDuplicatesFromArrayByProperty(arr, prop) {
+  if (isEmptyArray(arr) || !prop) return arr;
+  return arr.reduce((accumulator, current) => {
+    const existing = accumulator.find((item) => item[prop] === current[prop]);
+    if (!existing) {
+      accumulator.push(current);
+    }
+    return accumulator;
+  }, []);
+}
+
 export function isElementOverflown(element, dimension) {
   if (!element) return false;
   const isWidthOverflown = element.scrollWidth > element.clientWidth;
@@ -661,5 +672,5 @@ export function getPatientSearchURL(shouldClearSession) {
 }
 
 export function getEnvVersionString() {
-  return getEnv(`${ENV_VAR_PREFIX}_VERSION_STRING`)
+  return getEnv(`${ENV_VAR_PREFIX}_VERSION_STRING`);
 }

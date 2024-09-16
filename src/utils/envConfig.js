@@ -79,4 +79,4 @@ export function getEnvs() {
   return arrEnvs;
 }
 
-export const ENV_VAR_PREFIX = "VITE_APP";
+export const ENV_VAR_PREFIX = "VITE";

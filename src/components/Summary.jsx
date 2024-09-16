@@ -289,7 +289,7 @@ export default class Summary extends Component {
   renderTable(table, entries, section, subSection, index) {
     // If a filter is provided, only render those things that have the filter field (or don't have it when it's negated)
     let filteredEntries = entries;
-    if (table && table.filter && table.filter.length > 0) {
+    if (!isEmptyArray(table.filter)) {
       // A filter starting with '!' is negated (looking for absence of that field)
       const negated = table.filter[0] === "!";
       const filter = negated ? table.filter.substring(1) : table.filter;
@@ -464,13 +464,13 @@ export default class Summary extends Component {
   renderRxSummaryPanel(panel) {
     let panelSet = this.props.summary[panel?.statsData?.dataSectionRefKey];
     let rxPanel = panelSet ? panelSet[panel?.statsData?.objectKey] : null;
-    let rxData = panelSet && rxPanel ? rxPanel : [];
-    let heading = rxData.fields
+    let rxData = panelSet && rxPanel ? rxPanel : {};
+    let heading = !isEmptyArray(rxData.fields)
       ? rxData.fields.map((item, index) => {
           return <th key={`stats_head_${index}`}>{item.display_name}</th>;
         })
       : "";
-    let bodyContent = rxData.data
+    let bodyContent = !isEmptyArray(rxData.data)
       ? rxData.data.map((item, index) => {
           return (
             <tr key={`stats_row_${index}`}>
@@ -512,7 +512,7 @@ export default class Summary extends Component {
     if (!panel || !panel.alertsData) return null;
     let alertsData =
       this.props.summary[panel.alertsData.dataSectionRefKey] || [];
-    let alertsContent = alertsData.length
+    let alertsContent = !isEmptyArray(alertsData)
       ? alertsData.map((item, index) => {
           return (
             <div
@@ -608,7 +608,7 @@ export default class Summary extends Component {
     const subSections = subSectionsToRender.map((subSection, index) => {
       const dataKeySource = this.props.summary[subSection.dataKeySource];
       const data = dataKeySource ? dataKeySource[subSection.dataKey] : null;
-      const entries = (Array.isArray(data) ? data : []).filter(
+      const entries = (!isEmptyArray(data) ? data : []).filter(
         (r) => r != null
       );
       const panels = subSection.panels;

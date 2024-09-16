@@ -64,7 +64,6 @@ export default class BodyDiagram extends Component {
         );
       }
     }, 50);
-   
   }
   componentWillUnmount() {
     clearInterval(checkPintImgRefIntervalId);
@@ -505,11 +504,7 @@ export default class BodyDiagram extends Component {
     );
   }
   shouldRenderNav() {
-    if (
-      !this.state.dates ||
-      !this.state.dates.length ||
-      this.state.dates.length < 2
-    )
+    if (isEmptyArray(this.state.dates) || this.state.dates.length < 2)
       return false;
     return true;
   }

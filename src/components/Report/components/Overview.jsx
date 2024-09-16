@@ -4,13 +4,19 @@ import ScoringSummary from "./ScoringSummary";
 import BodyDiagram from "./BodyDiagram";
 import ReportOverviewGraph from "../../graph/ReportOverviewGraph";
 import * as reportUtil from "../utility";
+import { isEmptyArray } from "../../../helpers/utility";
 
 export default class Overview extends Component {
   hasNoSummaryData(summaryData) {
-    return reportUtil.hasNoSummaryData(summaryData);
+    return !(reportUtil.hasSurveySummaryData(summaryData));
   }
   render() {
-    const { summary, scoringData, graphData, bodyDiagramData } = this.props;
+    const {
+      surveyData: summary,
+      scoringData,
+      graphData,
+      bodyDiagramData,
+    } = this.props;
     const containerStyle = {
       height: "100%",
       display: "flex",
@@ -28,8 +34,7 @@ export default class Overview extends Component {
     return (
       <div className="panel-container">
         <div className={`panel graph`}>
-          <ReportOverviewGraph data={graphData}
-          ></ReportOverviewGraph>
+          <ReportOverviewGraph data={graphData}></ReportOverviewGraph>
         </div>
         <div className={`panel`}>
           <div className="panel__item bordered full-width score-panel">
@@ -38,7 +43,7 @@ export default class Overview extends Component {
               showAnchorLinks={true}
             ></ScoringSummary>
           </div>
-          {bodyDiagramData && (
+          {!isEmptyArray(bodyDiagramData) && (
             <div className="panel__item bordered" style={containerStyle}>
               <BodyDiagram summary={bodyDiagramData}></BodyDiagram>
             </div>
