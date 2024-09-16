@@ -8,7 +8,7 @@ import { isEmptyArray } from "../../../helpers/utility";
 
 export default class Overview extends Component {
   hasNoSummaryData(summaryData) {
-    return reportUtil.hasNoSurveySummaryData(summaryData);
+    return !(reportUtil.hasSurveySummaryData(summaryData));
   }
   render() {
     const {
