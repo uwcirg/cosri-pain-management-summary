@@ -96,6 +96,10 @@
             color: #fff;
             //background-color: $color-gray-light;
           }
+          &:hover {
+            color: #fff;
+            //background-color: $color-gray-light;
+          }
 
           .section__header-title {
             display: flex;
@@ -593,18 +597,26 @@
 
       .graph {
         .stats-container {
-          margin-left: 24px;
-          margin-right: 24px;
+          // margin-left: 24px;
+          // margin-right: 24px;
+          max-width: 85%;
+          margin-left: auto;
+          margin-right: auto;
           margin-bottom: 16px;
           font-size: 14px;
           padding: 8px 16px;
           border: 2px solid $color-gray-lighter;
           min-height: 36px;
           position: relative;
+          display: flex;
+          flex-direction: row;
+          column-gap: 16px;
           .stats-item {
-            margin-bottom: 4px;
-            width: 50%;
-            float: left;
+            flex: 1;
+            align-self: stretch;
+            display: flex;
+            flex-direction: column;
+            row-gap: 8px;
           }
           .title {
             margin-right: 8px;
@@ -772,6 +784,20 @@
             position: relative;
             top: 6px;
           }
+          .single-column {
+            .rt-th:nth-child(1),
+            .rt-td:nth-child(1),
+            td:nth-child(1) {
+              width:0 !important;
+              border: 0;
+            }
+            .rt-th:nth-child(2),
+            .rt-td:nth-child(2),
+            td:nth-child(2) {
+              width: calc(100% - 160px) !important;
+              border-width: 0 1px 0 0;
+            }
+          }
           .sub-section__table {
             border: 0;
             &.bordered {
@@ -824,12 +850,15 @@
             }
 
             .rt-th:nth-child(2),
-            .rt-td:nth-child(2) {
+            .rt-td:nth-child(2),
+            th:nth-child(2),
+            td:nth-child(2) {
               min-width: calc(52px + 10vw);
             }
             &.single-column {
               .rt-th:nth-child(2),
-              .rt-td:nth-child(2) {
+              .rt-td:nth-child(2),
+              td:nth-child(2) {
                 min-width: calc(100% - 160px);
                 max-width: calc(100% - 160px);
               }

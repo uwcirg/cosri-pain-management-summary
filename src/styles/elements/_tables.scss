@@ -20,14 +20,34 @@
   }
 
   .rt-tbody .rt-td,
-  .rt-thead .rt-th {
+  .rt-thead .rt-th,
+  th,
+  td {
     text-align: left;
     vertical-align: top;
     border: 0;
     padding: 4px 8px 4px 4px;
   }
+  th {
+    max-width: 140px;
+    &:empty,
+    &:has(.flag__span:empty) {
+      border: 0;
+      width: 0;
+      flex: 0 !important;
+    }
+  }
+  td {
+    max-width: 140px;
+    &:empty:first-of-type {
+      border-right: 0;
+      border-left: 0;
+      border-bottom: 0;
+      flex: 0 !important;
+    }
+  }
 
-  .rt-thead .rt-th {
+  .rt-thead .rt-th, th {
     white-space: nowrap;
 
     &:focus {
@@ -119,10 +139,22 @@
     }
   }
 }
+.ReactTable.single-column {
+  td {
+    max-width: 100%;
+  }
+}
 
 .table {
-  border-collapse: separate;
-  border-spacing: 0;
+  overflow: auto;
+  &table, table {
+    border-collapse: separate;
+    border-spacing: 0;
+    &.ReactTable {
+      table-layout:fixed;
+      width:100%;
+    }
+  }
   th {
     border: 1px solid $table-cell-border-color;
     background-color: #FFF;
@@ -165,5 +197,10 @@
         transform: translateX(-2000px);
       }
     }
+  }
+}
+.ReactTable.wide {
+  th, td {
+    max-width: 100%;
   }
 }

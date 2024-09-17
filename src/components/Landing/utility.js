@@ -8,8 +8,8 @@ import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
 import {
   getDiffDays,
-  getEnvSystemType,
   getEnvConfidentialAPIURL,
+  getEnvSystemType,
   isEmptyArray,
   saveData,
   writeToLog,
