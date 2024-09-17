@@ -137,63 +137,88 @@ export default function Table({ key, columns, data, tableParams, tableClass }) {
               key={`row_${key}_${headerIndex}`}
               {...headerGroup.getHeaderGroupProps()}
             >
-              {headerGroup.headers.map((column, colIndex) => (
-                <th
-                  key={`th_${key}_${colIndex}`}
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                >
-                  <div
+              {headerGroup.headers.map((column, colIndex) => {
+                const headerProps = column.getHeaderProps(column.getSortByToggleProps());
+                const cellMinSize = column.minWidth ? column.minWidth: "auto";
+                const cellSize = column.size
+                    ? `${column.size}`
+                    : "160px";
+                return (
+                  <th
+                    {...headerProps}
                     style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
+                      ...headerProps.style,
+                      flex: `${cellSize} 0 auto`,
+                      width: cellSize,
+                      minWidth: cellMinSize
                     }}
+                  
+                    key={`th_${key}_${colIndex}`}
                   >
-                    {column.render("Header")}{" "}
-                    {column.isSorted && column.isSortedDesc && (
-                      <div style={{ position: "relative", top: "-2px" }}>
-                        {renderDescSortIcon()}
-                      </div>
-                    )}
-                    {column.isSorted && !column.isSortedDesc && (
-                      <div style={{ position: "relative", top: "-2px" }}>
-                        {renderAscSortIcon()}
-                      </div>
-                    )}
-                    {!column.isSorted && !column.disableSortBy && (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          rowGap: "1px",
-                          alignItems: "center",
-                          position: "relative",
-                          top: "-2px",
-                        }}
-                      >
-                        {renderAscSortIcon()}
-                        {renderDescSortIcon()}
-                      </div>
-                    )}
-                  </div>
-                </th>
-              ))}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      {column.render("Header")}{" "}
+                      {column.isSorted && column.isSortedDesc && (
+                        <div style={{ position: "relative", top: "-2px" }}>
+                          {renderDescSortIcon()}
+                        </div>
+                      )}
+                      {column.isSorted && !column.isSortedDesc && (
+                        <div style={{ position: "relative", top: "-2px" }}>
+                          {renderAscSortIcon()}
+                        </div>
+                      )}
+                      {!column.isSorted && !column.disableSortBy && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: "1px",
+                            alignItems: "center",
+                            position: "relative",
+                            top: "-2px",
+                          }}
+                        >
+                          {renderAscSortIcon()}
+                          {renderDescSortIcon()}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                );
+              })}
             </tr>
           ))}
         </thead>
-        <tbody key={`tbody_${key}`} {...getTableBodyProps()}>
+        <tbody {...getTableBodyProps()} key={`tbody_${key}`}>
           {page.map((row, i) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()}>
+              <tr {...row.getRowProps()} key={`tr_${key}`}>
                 {row.cells.map((cell, cellIndex) => {
+                  const cellProps = cell.getCellProps();
+                  const cellMinSize = cell.column.minWidth ? cell.column.minWidth: "auto";
+                  const cellSize = cell.column.size
+                    ? `${cell.column.size}`
+                    : "160px";
                   return (
                     <td
-                      key={`td_${key}_${cellIndex}`}
-                      {...cell.getCellProps()}
+                      {...cellProps}
                       className={
                         cell.column.className ? cell.column.className : ""
                       }
+                      key={`td_${key}_${cellIndex}`}
+                      style={{
+                        ...cellProps.style,
+                        flex: `${cellSize} 0 auto`,
+                        width: cellSize,
+                        minWidth: cellMinSize
+                      }}
                     >
                       {cell.render("Cell")}
                     </td>

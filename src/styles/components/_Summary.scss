@@ -850,7 +850,9 @@
             }
 
             .rt-th:nth-child(2),
-            .rt-td:nth-child(2) {
+            .rt-td:nth-child(2),
+            th:nth-child(2),
+            td:nth-child(2) {
               min-width: calc(52px + 10vw);
             }
             &.single-column {

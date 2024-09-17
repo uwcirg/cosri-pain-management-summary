@@ -396,12 +396,19 @@ const reportConfig = [
                 desc: true,
               },
               headers: {
-                Name: "Name",
+                Name: {
+                  key : "Name",
+                  sortable: true,
+                  size: "100%",
+                  minWidth: "50%"
+                },
                 Date: {
                   key: "DateText",
                   formatter: "datishFormat",
                   sorter: "dateCompare",
                   sortable: true,
+                  size: "50%",
+                  minWidth: "50%"
                 },
               },
             }}
@@ -421,12 +428,19 @@ const reportConfig = [
                 desc: true,
               },
               headers: {
-                Name: "Name",
+                Name: {
+                  key : "Name",
+                  sortable: true,
+                  size: "100%",
+                  minWidth: "50%"
+                },
                 Date: {
                   key: "DateText",
                   formatter: "datishFormat",
                   sorter: "dateCompare",
                   sortable: true,
+                  size: "100%",
+                  minWidth: "50%"
                 },
               },
             }}

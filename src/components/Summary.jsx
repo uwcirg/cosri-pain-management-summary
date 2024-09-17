@@ -349,6 +349,7 @@ export default class Summary extends Component {
             </span>
           );
         },
+        accessorKey: header,
         accessor: (entry) => {
           let value = entry[headerKey];
           if (headerKey.formatter) {
@@ -390,6 +391,9 @@ export default class Summary extends Component {
             column.sortType = (rowA, rowB, columnId) =>
               sortObj[columnFormatter](rowA[columnId], rowB[columnId]);
         }
+      }
+      if (headerKey.size) {
+        column.size = headerKey.size;
       }
 
       if (headerKey.minWidth != null) {

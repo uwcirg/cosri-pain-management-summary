@@ -5,7 +5,7 @@
     "skipDataInfo": true,
     "statsConfig": {
       "dataKey": "PDMPMedications",
-      "dataKeySource":"PDMPMedications",
+      "dataKeySource": "PDMPMedications",
       "data": [
         {
           "title": "rxsummary",
@@ -71,21 +71,19 @@
       "mmeField": "MMEValue",
       "startDateField": "Start",
       "endDateField": "End",
-      "demoData":
-      [
-        {"date": "2020-09-30","MMEValue": 0, "placeholder": true},
-        {"date": "2020-10-01","MMEValue": 22.5},
-        {"date": "2020-10-09", "MMEValue": 22.5},
-        {"date": "2020-10-10", "MMEValue": 0},
-        {"date": "2020-11-02", "MMEValue": 0},
-        {"date": "2020-11-03", "MMEValue": 22.5},
-        {"date": "2020-11-06", "MMEValue": 22.5},
-        {"date": "2020-11-07", "MMEValue": 45},
-        {"date": "2020-11-11", "MMEValue": 45},
-        {"date": "2020-11-12", "MMEValue": 22.5},
-        {"date": "2020-12-07", "MMEValue": 22.5},
-        {"date": "2020-12-08", "MMEValue": 0, "placeholder": true}
-
+      "demoData": [
+        { "date": "2020-09-30", "MMEValue": 0, "placeholder": true },
+        { "date": "2020-10-01", "MMEValue": 22.5 },
+        { "date": "2020-10-09", "MMEValue": 22.5 },
+        { "date": "2020-10-10", "MMEValue": 0 },
+        { "date": "2020-11-02", "MMEValue": 0 },
+        { "date": "2020-11-03", "MMEValue": 22.5 },
+        { "date": "2020-11-06", "MMEValue": 22.5 },
+        { "date": "2020-11-07", "MMEValue": 45 },
+        { "date": "2020-11-11", "MMEValue": 45 },
+        { "date": "2020-11-12", "MMEValue": 22.5 },
+        { "date": "2020-12-07", "MMEValue": 22.5 },
+        { "date": "2020-12-08", "MMEValue": 0, "placeholder": true }
       ],
       "summaryDataSource": [
         {
@@ -134,7 +132,7 @@
     ]
   },
   "PDMPMedications": {
-    "title":"State PMP Prescriptions",
+    "title": "State PMP Prescriptions",
     "provenanceText": "State PMP prescriptions are queried from the state prescription monitoring program (PMP).  Dispensers may take up to X days to report prescription fills to the PMP.  An exact match between patient name and DOB is required, or no results will be returned.  It is also possible for prescriptions to be duplicated in the PMP and cross-border fills may not presented.  Historical prescription fills from the PMP go back one year from the data of the query.",
     "demoData": {
       "advisoryText": "Demo data is used here.",
@@ -179,35 +177,70 @@
               "desc": true
             },
             "headers": {
-              "Drug Description": "Name",
-              "Class": {"key": "Class", "formatter": "listToStringFormat", "sortable": true, "minWidth": 120},
-              "Quantity": "Quantity",
-              "Duration": "Duration",
-              "MME": {"key": "MME", "formatter": "numberFormat", "default": "Not returned", "sortable": true},
-              "Written Date": { "key": "Start", "formatter": "datishFormat", "sorter": "dateCompare", "sortable": true },
-              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat", "sorter": "dateCompare", "sortable": true},
+              "Drug Description": {
+                "key": "Name",
+                "sortable": true,
+                "minWidth": "180px"
+              },
+              "Class": {
+                "key": "Class",
+                "formatter": "listToStringFormat",
+                "sortable": true,
+                "minWidth": "120px"
+              },
+              "Quantity": {
+                "key": "Quantity",
+                "sortable": true,
+                "size": "120px"
+              },
+              "Duration": {
+                "key": "Duration",
+                "sortable": true,
+                "size": "120px"
+              },
+              "MME": {
+                "key": "MME",
+                "formatter": "numberFormat",
+                "default": "Not returned",
+                "sortable": true,
+                "size": "120px"
+              },
+              "Written Date": {
+                "key": "Start",
+                "formatter": "datishFormat",
+                "sorter": "dateCompare",
+                "sortable": true,
+                "size": "120px"
+              },
+              "Dispensed": {
+                "key": "DispensedDate",
+                "formatter": "datishFormat",
+                "sorter": "dateCompare",
+                "sortable": true,
+                "size": "120px"
+              },
               "Prescriber": "Prescriber",
               "Pharmacy": "Pharmacy"
             },
             "flags": [
               {
                 "flag": {
-                    "ifAnd": [
-                      {
-                        "ifEqualTo": {
-                          "header": "Class",
-                          "targetValue": "sedative"
-                        }
-                      },
-                      {
-                        "ifContains": {
-                          "table": "PDMPMedications",
-                          "source": "PDMPMedications",
-                          "header": "Class",
-                          "targetValue": "opioid"
-                        }
+                  "ifAnd": [
+                    {
+                      "ifEqualTo": {
+                        "header": "Class",
+                        "targetValue": "sedative"
                       }
-                    ]
+                    },
+                    {
+                      "ifContains": {
+                        "table": "PDMPMedications",
+                        "source": "PDMPMedications",
+                        "header": "Class",
+                        "targetValue": "opioid"
+                      }
+                    }
+                  ]
                 },
                 "flagText": "Possible co-prescribing of sedatives with opioids."
               },
@@ -229,7 +262,7 @@
                       }
                     }
                   ]
-              },
+                },
                 "flagText": "Possible co-prescribing of barbiturates with opioids."
               },
               {
@@ -250,12 +283,12 @@
                       }
                     }
                   ]
-              },
+                },
                 "flagText": "Possible co-prescribing of Benzodiazepine with opioids."
               },
               {
                 "flag": {
-                    "ifEqualTo": {
+                  "ifEqualTo": {
                     "header": "Class",
                     "targetValue": "sedative"
                   }
@@ -264,7 +297,7 @@
               },
               {
                 "flag": {
-                    "ifEqualTo": {
+                  "ifEqualTo": {
                     "header": "Class",
                     "targetValue": "barbiturate"
                   }
@@ -273,7 +306,7 @@
               },
               {
                 "flag": {
-                    "ifEqualTo": {
+                  "ifEqualTo": {
                     "header": "Class",
                     "targetValue": "benzodiazepine"
                   }
@@ -290,133 +323,169 @@
     "title": "EHR Opioid and Related Medications",
     "skipDataInfo": true,
     "sections": [
-       {
-         "name": "Opioid Medications",
-         "dataKey": "OpioidMedications",
-         "dataKeySource": "HistoricalTreatments",
-         "info": [
-           {
-             "type": "elements",
-             "description": "Opioid Medications queries the following elements:",
-             "elements": [
-               {
-                 "name": "Opioid medication statements and orders",
-                 "status": "any",
-                 "lookback": "2 years"
-               }
-             ]
-           }
-         ],
-         "tables": [
-           {
-             "headers": {
-               "Drug Description": "Name",
-               "Quantity": { "key": "Quantity", "sortable": true},
-               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-               "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-               "Prescriber": { "key": "Prescriber", "sortable": true},
-               "Pharmacy": { "key": "Pharmacy", "sortable": true}
-             }
-           }
-         ]
-       },
-       {
-         "name": "Non-Opioid Pain Medications",
-         "dataKey": "NonOpioidMedications",
-         "dataKeySource": "HistoricalTreatments",
-         "guideline": [
-           {
-             "type": "CDC",
-             "title": "CDC Guideline #1",
-             "text":"Opioids are not first-line therapy."
-           }
-          ],
-         "info": [
-           {
-             "type": "elements",
-             "description": "Non-Opioid Medications queries the following elements:",
-             "elements": [
-               {
-                 "name": "Non-opioid medication statements and orders",
-                 "status": "any",
-                 "lookback": "2 years"
-               }
-             ]
-           }
-         ],
-         "tables": [
-           {
-             "headers": {
-               "Drug Description": "Name",
-               "Quantity": { "key": "Quantity", "sortable": true},
-               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-               "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-               "Prescriber": { "key": "Prescriber", "sortable": true},
-               "Pharmacy": { "key": "Pharmacy", "sortable": true}
-             },
-             "flags": [
-               {
-                 "flag": "ifNone",
-                 "flagText": "Absence of non-opioid medications."
-               }
-             ]
-           }
-         ]
-       },
-       {
-         "name": "Stool Softeners and Laxatives",
-         "dataKey": "StoolSoftenersAndLaxatives",
-         "dataKeySource": "HistoricalTreatments",
-         "guideline": [
-           {
-             "type": "CDC",
-             "title": "CDC Guideline #3",
-             "text": "To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
-           }
-         ],
-         "info": [
-           {
-             "type": "elements",
-             "description": "Stool Softeners and Laxatives queries the following elements:",
-             "elements": [
-               {
-                 "name": "Stool softeners / laxatives medication statements and orders",
-                 "status": "any",
-                 "lookback": "6 months"
-               }
-             ]
-           }
-         ],
-         "tables": [
-           {
-             "headers": {
-               "Drug Description": "Name",
-               "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-               "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-               "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-               "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
-             },
-             "flags": [
-               {
-                 "flag": {
-                   "ifAnd": [
-                     "ifNone",
-                     {
-                       "ifOneOrMore": {
-                         "table": "OpioidMedications",
-                         "source": "HistoricalTreatments"
-                       }
-                     }
-                   ]
-                 },
-                 "flagText": "Absence of stool softeners/laxative with presence of at least one opioid medication."
-               }
-             ]
-           }
-         ]
-       }
-     ]
+      {
+        "name": "Opioid Medications",
+        "dataKey": "OpioidMedications",
+        "dataKeySource": "HistoricalTreatments",
+        "info": [
+          {
+            "type": "elements",
+            "description": "Opioid Medications queries the following elements:",
+            "elements": [
+              {
+                "name": "Opioid medication statements and orders",
+                "status": "any",
+                "lookback": "2 years"
+              }
+            ]
+          }
+        ],
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": {
+                "key": "Name",
+                "sortable": true,
+                "minWidth": "180px"
+              },
+              "Quantity": { "key": "Quantity", "sortable": true },
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": {
+                "key": "DispensedDate",
+                "formatter": "datishFormat"
+              },
+              "Prescriber": { "key": "Prescriber", "sortable": true },
+              "Pharmacy": { "key": "Pharmacy", "sortable": true }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Non-Opioid Pain Medications",
+        "dataKey": "NonOpioidMedications",
+        "dataKeySource": "HistoricalTreatments",
+        "guideline": [
+          {
+            "type": "CDC",
+            "title": "CDC Guideline #1",
+            "text": "Opioids are not first-line therapy."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Non-Opioid Medications queries the following elements:",
+            "elements": [
+              {
+                "name": "Non-opioid medication statements and orders",
+                "status": "any",
+                "lookback": "2 years"
+              }
+            ]
+          }
+        ],
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": {
+                "key": "Name",
+                "sortable": true,
+                "minWidth": "180px"
+              },
+              "Quantity": { "key": "Quantity", "sortable": true },
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": {
+                "key": "DispensedDate",
+                "formatter": "datishFormat"
+              },
+              "Prescriber": { "key": "Prescriber", "sortable": true },
+              "Pharmacy": { "key": "Pharmacy", "sortable": true }
+            },
+            "flags": [
+              {
+                "flag": "ifNone",
+                "flagText": "Absence of non-opioid medications."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Stool Softeners and Laxatives",
+        "dataKey": "StoolSoftenersAndLaxatives",
+        "dataKeySource": "HistoricalTreatments",
+        "guideline": [
+          {
+            "type": "CDC",
+            "title": "CDC Guideline #3",
+            "text": "To prevent constipation associated with opioid use, advise patients to increase hydration and fiber intake and to maintain or increase physical activity. Stool softeners or laxatives might be needed."
+          }
+        ],
+        "info": [
+          {
+            "type": "elements",
+            "description": "Stool Softeners and Laxatives queries the following elements:",
+            "elements": [
+              {
+                "name": "Stool softeners / laxatives medication statements and orders",
+                "status": "any",
+                "lookback": "6 months"
+              }
+            ]
+          }
+        ],
+        "tables": [
+          {
+            "headers": {
+              "Drug Description": {
+                "key": "Name",
+                "sortable": true,
+                "minWidth": "180px"
+              },
+              "Quantity": {
+                "key": "Quantity",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
+              "Written Date": { "key": "Start", "formatter": "datishFormat" },
+              "Dispensed": {
+                "key": "DispensedDate",
+                "formatter": "datishFormat"
+              },
+              "Prescriber": {
+                "key": "Prescriber",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
+              "Pharmacy": {
+                "key": "Pharmacy",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              }
+            },
+            "flags": [
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifNone",
+                    {
+                      "ifOneOrMore": {
+                        "table": "OpioidMedications",
+                        "source": "HistoricalTreatments"
+                      }
+                    }
+                  ]
+                },
+                "flagText": "Absence of stool softeners/laxative with presence of at least one opioid medication."
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   "PertinentMedicalHistory": {
     "title": "Pertinent Medical History",
@@ -447,12 +516,12 @@
               "Start": {
                 "key": "Onset",
                 "formatter": "datishFormat",
-                "minWidth": 150
+                "minWidth": "150px"
               },
               "End": {
                 "key": "Abatement",
                 "formatter": "datishFormat",
-                "minWidth": 150
+                "minWidth": "150px"
               },
               "Recorded": {
                 "key": "DateRecorded",
@@ -470,7 +539,7 @@
           {
             "type": "CDC",
             "title": "CDC Guideline #8",
-            "text":  "Mitigate risk"
+            "text": "Mitigate risk"
           },
           {
             "type": "WA",
@@ -548,12 +617,12 @@
               "Start": {
                 "key": "Onset",
                 "formatter": "datishFormat",
-                "minWidth": 150
+                "minWidth": "150px"
               },
               "End": {
                 "key": "Abatement",
                 "formatter": "datishFormat",
-                "minWidth": 150
+                "minWidth": "150px"
               },
               "Recorded": {
                 "key": "DateRecorded",
@@ -621,7 +690,7 @@
               "Visit": {
                 "key": "Visit",
                 "formatter": "datishAgeFormat",
-                "minWidth": 150
+                "minWidth": "150px"
               }
             },
             "filter": "Visit",
@@ -637,7 +706,7 @@
     ]
   },
   "NonPharmacologicTreatments": {
-    "title":"Non-Pharmacologic Treatments",
+    "title": "Non-Pharmacologic Treatments",
     "skipDataInfo": true,
     "sections": [
       {
@@ -686,7 +755,7 @@
   "RiskConsiderations": {
     "title": "Risk Considerations",
     "skipDataInfo": true,
-    "sections":[
+    "sections": [
       {
         "name": "Benzodiazepine Medications",
         "dataKey": "BenzodiazepineMedications",
@@ -723,12 +792,34 @@
         "tables": [
           {
             "headers": {
-              "Drug Description": "Name",
-              "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Drug Description": {
+                "key": "Name",
+                "sortable": true,
+                "minWidth": "180px"
+              },
+              "Quantity": {
+                "key": "Quantity",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+              "Dispensed": {
+                "key": "DispensedDate",
+                "formatter": "datishFormat"
+              },
+              "Prescriber": {
+                "key": "Prescriber",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
+              "Pharmacy": {
+                "key": "Pharmacy",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              }
             },
             "flags": [
               {
@@ -748,7 +839,7 @@
                             "table": "PDMPMedications",
                             "source": "PDMPMedications",
                             "header": "Class",
-                            "targetValue":"opioid"
+                            "targetValue": "opioid"
                           }
                         }
                       ]
@@ -797,12 +888,34 @@
         "tables": [
           {
             "headers": {
-              "Drug Description": "Name",
-              "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Drug Description": {
+                "key": "Name",
+                "sortable": true,
+                "minWidth": "180px"
+              },
+              "Quantity": {
+                "key": "Quantity",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+              "Dispensed": {
+                "key": "DispensedDate",
+                "formatter": "datishFormat"
+              },
+              "Prescriber": {
+                "key": "Prescriber",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
+              "Pharmacy": {
+                "key": "Pharmacy",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              }
             },
             "flags": [
               {
@@ -822,7 +935,7 @@
                             "table": "PDMPMedications",
                             "source": "PDMPMedications",
                             "header": "Class",
-                            "targetValue":"opioid"
+                            "targetValue": "opioid"
                           }
                         }
                       ]
@@ -870,12 +983,34 @@
         "tables": [
           {
             "headers": {
-              "Drug Description": "Name",
-              "Quantity": { "key": "Quantity", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Drug Description": {
+                "key": "Name",
+                "sortable": true,
+                "minWidth": "180px"
+              },
+              "Quantity": {
+                "key": "Quantity",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+              "Dispensed": {
+                "key": "DispensedDate",
+                "formatter": "datishFormat"
+              },
+              "Prescriber": {
+                "key": "Prescriber",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
+              "Pharmacy": {
+                "key": "Pharmacy",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              }
             },
             "flags": [
               {
@@ -895,7 +1030,7 @@
                             "table": "PDMPMedications",
                             "source": "PDMPMedications",
                             "header": "Class",
-                            "targetValue":"opioid"
+                            "targetValue": "opioid"
                           }
                         }
                       ]
@@ -943,11 +1078,28 @@
         "tables": [
           {
             "headers": {
-              "Drug Description": "Name",
+              "Drug Description": {
+                "key": "Name",
+                "sortable": true,
+                "minWidth": "180px"
+              },
               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-              "Prescriber": { "key": "Prescriber", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Pharmacy": { "key": "Pharmacy", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+              "Dispensed": {
+                "key": "DispensedDate",
+                "formatter": "datishFormat"
+              },
+              "Prescriber": {
+                "key": "Prescriber",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
+              "Pharmacy": {
+                "key": "Pharmacy",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              }
             },
             "flags": [
               {
@@ -967,7 +1119,7 @@
                             "table": "PDMPMedications",
                             "source": "PDMPMedications",
                             "header": "Class",
-                            "targetValue":"opioid"
+                            "targetValue": "opioid"
                           }
                         }
                       ]
@@ -1015,12 +1167,34 @@
         "tables": [
           {
             "headers": {
-              "Drug Description": "Name",
-              "Quantity": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
+              "Drug Description": {
+                "key": "Name",
+                "sortable": true,
+                "minWidth": "180px"
+              },
+              "Quantity": {
+                "key": "Name",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
               "Written Date": { "key": "Start", "formatter": "datishFormat" },
-              "Dispensed": { "key": "DispensedDate", "formatter": "datishFormat" },
-              "Prescriber": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false},
-              "Pharmacy": { "key": "Name", "formatter": "stringSubstitutionFormat", "formatterArguments": [""], "sortable": false}
+              "Dispensed": {
+                "key": "DispensedDate",
+                "formatter": "datishFormat"
+              },
+              "Prescriber": {
+                "key": "Name",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              },
+              "Pharmacy": {
+                "key": "Name",
+                "formatter": "stringSubstitutionFormat",
+                "formatterArguments": [""],
+                "sortable": false
+              }
             },
 
             "flags": [
@@ -1075,12 +1249,12 @@
             "headers": {
               "Name": {
                 "key": "Name",
-                "minWidth": 150
+                "minWidth": "150px"
               },
               "Date": {
                 "key": "Date",
                 "formatter": "datishFormat",
-                "minWidth": 150
+                "minWidth": "150px"
               }
             },
             "flags": [
@@ -1119,7 +1293,7 @@
                       }
                     },
                     {
-                      "if3MonthsDue" : {
+                      "if3MonthsDue": {
                         "targetField": "Next_Screen_Date"
                       }
                     }
@@ -1159,7 +1333,7 @@
                       }
                     },
                     {
-                      "ifOverdue" : {
+                      "ifOverdue": {
                         "targetField": "Next_Screen_Date"
                       }
                     }
@@ -1200,16 +1374,13 @@
               "Date": {
                 "key": "Date",
                 "formatter": "datishFormat",
-                "minWidth": 150
+                "minWidth": "150px"
               }
             },
             "flags": [
               {
                 "flag": {
-                  "ifAnd": [
-                    "ifNone",
-                    "ifAdult"
-                  ]
+                  "ifAnd": ["ifNone", "ifAdult"]
                 },
                 "flagText": "No controlled substance agreement found for this patient."
               },
@@ -1223,7 +1394,7 @@
                       }
                     },
                     {
-                      "if3MonthsDue" : {
+                      "if3MonthsDue": {
                         "targetField": "Next_Due_Date"
                       }
                     }
@@ -1263,7 +1434,7 @@
                       }
                     },
                     {
-                      "ifOverdue" : {
+                      "ifOverdue": {
                         "targetField": "Next_Due_Date"
                       }
                     }
@@ -1279,13 +1450,15 @@
     ]
   },
   "PatientEducationMaterials": {
-    "title":"Patient Education Resources",
+    "title": "Patient Education Resources",
     "skipDataInfo": true,
-    "dataSource": [{
-      "endpoint": "{process.env.PUBLIC_URL}/assets/data/patientEducationReferences.json",
-      "dataKey": "PatientEducationMaterials",
-      "dataKeySource": "EducationMaterials"
-    }],
+    "dataSource": [
+      {
+        "endpoint": "{process.env.PUBLIC_URL}/assets/data/patientEducationReferences.json",
+        "dataKey": "PatientEducationMaterials",
+        "dataKeySource": "EducationMaterials"
+      }
+    ],
     "omitCountDisplay": true,
     "sections": [
       {
@@ -1299,8 +1472,8 @@
               "Patient Resources": {
                 "key": "link",
                 "formatter": "linkFormat",
-                "formatterArguments": ["title","url", "type", "size"],
-                "minWidth": 200,
+                "formatterArguments": ["title", "url", "type", "size"],
+                "minWidth": "200px",
                 "className": "title",
                 "sortable": false,
                 "omitHeader": true
@@ -1312,18 +1485,21 @@
     ]
   },
   "ProviderEducationMaterials": {
-    "title":"Provider Resources",
+    "title": "Provider Resources",
     "skipDataInfo": true,
-    "dataSource": [{
-      "endpoint": {
-        "demo" : "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences_demo.json",
-        "default": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json"
-      },
-      "dataKey": "ProviderEducationMaterials",
-      "dataKeySource": "EducationMaterials"
-    }],
+    "dataSource": [
+      {
+        "endpoint": {
+          "demo": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences_demo.json",
+          "default": "{process.env.PUBLIC_URL}/assets/data/providerEducationReferences.json"
+        },
+        "dataKey": "ProviderEducationMaterials",
+        "dataKeySource": "EducationMaterials"
+      }
+    ],
     "omitCountDisplay": true,
-    "sections": [{
+    "sections": [
+      {
         "name": "Provider Resources",
         "dataKey": "ProviderEducationMaterials",
         "dataKeySource": "EducationMaterials",
@@ -1334,8 +1510,8 @@
               "Provider Resources": {
                 "key": "link",
                 "formatter": "linkFormat",
-                "formatterArguments": ["title","url", "type", "size"],
-                "minWidth": 200,
+                "formatterArguments": ["title", "url", "type", "size"],
+                "minWidth": "200px",
                 "className": "title",
                 "sortable": false,
                 "omitHeader": true
