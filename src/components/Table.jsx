@@ -3,7 +3,7 @@ import { useFlexLayout, useTable, useSortBy, usePagination } from "react-table";
 import AscendingSortImg from "../icons/icon-sort-up.png";
 import DescenidngSortImg from "../icons/icon-sort-down.png";
 
-export default function Table({ key, columns, data, tableParams, tableClass }) {
+export default function Table({ tableKey, columns, data, tableParams, tableClass }) {
   const params = tableParams ? tableParams : {};
   // Use the state and functions returned from useTable to build your UI
   const {
@@ -124,18 +124,18 @@ export default function Table({ key, columns, data, tableParams, tableClass }) {
   return (
     <div>
       <table
-        key={key}
         className={`ReactTable ${
           tableClass ? tableClass : columns.length <= 2 ? "single-column" : ""
         }`}
         {...getTableProps()}
         {...(params.tableProps ? params.tableProps : {})}
+        key={tableKey}
       >
         <thead>
           {headerGroups.map((headerGroup, headerIndex) => (
             <tr
-              key={`row_${key}_${headerIndex}`}
               {...headerGroup.getHeaderGroupProps()}
+              key={`row_${tableKey}_${headerIndex}`}
             >
               {headerGroup.headers.map((column, colIndex) => {
                 const headerProps = column.getHeaderProps(column.getSortByToggleProps());
@@ -153,7 +153,7 @@ export default function Table({ key, columns, data, tableParams, tableClass }) {
                       minWidth: cellMinSize
                     }}
                   
-                    key={`th_${key}_${colIndex}`}
+                    key={`th_${tableKey}_${colIndex}`}
                   >
                     <div
                       style={{
@@ -195,11 +195,11 @@ export default function Table({ key, columns, data, tableParams, tableClass }) {
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()} key={`tbody_${key}`}>
+        <tbody {...getTableBodyProps()} key={`tbody_${tableKey}`}>
           {page.map((row, i) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()} key={`tr_${key}`}>
+              <tr {...row.getRowProps()} key={`tr_${tableKey}_${i}`}>
                 {row.cells.map((cell, cellIndex) => {
                   const cellProps = cell.getCellProps();
                   const cellMinSize = cell.column.minWidth ? cell.column.minWidth: "auto";
@@ -212,7 +212,7 @@ export default function Table({ key, columns, data, tableParams, tableClass }) {
                       className={
                         cell.column.className ? cell.column.className : ""
                       }
-                      key={`td_${key}_${cellIndex}`}
+                      key={`td_${tableKey}_${cellIndex}`}
                       style={{
                         ...cellProps.style,
                         flex: `${cellSize} 0 auto`,

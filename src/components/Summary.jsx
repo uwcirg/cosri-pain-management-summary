@@ -423,7 +423,7 @@ export default class Summary extends Component {
         className={`table`}
       >
         <Table
-          key={tableID}
+          tableKey={tableID}
           className={`${
             columns.length <= 2
               ? "single-column sub-section__table"

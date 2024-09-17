@@ -125,7 +125,7 @@ export default class Table extends Component {
           ref={this.tableRef}
         >
           <DefaultTable
-            key={tableID}
+            tableKey={tableID}
             columns={columns}
             data={filteredEntries}
             tableClass="wide"
