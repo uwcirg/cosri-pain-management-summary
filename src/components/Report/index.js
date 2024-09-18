@@ -9,6 +9,7 @@ import Version from "../../elements/Version";
 import reportSummarySections from "../../config/report_config";
 import {
   getQuestionnaireDescription,
+  getQuestionnaireTitle,
   isEmptyArray,
 } from "../../helpers/utility";
 import * as reportUtil from "./utility";
@@ -27,6 +28,7 @@ export default class Report extends Component {
 
   handleOpenModal = (modalSubSection, event) => {
     //only open modal on 'enter' or click
+    event.stopPropagation();
     if (event.keyCode === 13 || event.type === "click") {
       this.setState({ showModal: true, modalSubSection });
     }
@@ -171,7 +173,7 @@ export default class Report extends Component {
     );
   }
   renderSubSectionTitle(item, summaryData) {
-    const title = summaryData?.Questionnaire?.title?.value??item.title;
+    const title = getQuestionnaireTitle(summaryData?.Questionnaire);
     return (
       <span
         className="sub-section__header__name"
@@ -196,6 +198,7 @@ export default class Report extends Component {
     item.description =
       getQuestionnaireDescription(summaryData.Questionnaire) ??
       sectionItem.description;
+    item.name = getQuestionnaireTitle(summaryData.Questionnaire);
 
     if (!item.description) return null;
 
@@ -211,7 +214,9 @@ export default class Report extends Component {
           <span
             className="info-icon"
             icon="info-circle"
-            title={`more info: ${item.dataKey}`}
+            title={`more info: ${
+              item.dataKey ?? getQuestionnaireTitle(summaryData?.Questionnaire)
+            }`}
             role="tooltip"
           >
             more info

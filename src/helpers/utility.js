@@ -485,6 +485,13 @@ export function getQuestionnaireDescription(fhirQuestionnaire) {
   return description;
 }
 
+export function getQuestionnaireTitle(fhirQuestionnaire) {
+  if (!fhirQuestionnaire) return "";
+  if (fhirQuestionnaire.title && fhirQuestionnaire.title.value)
+    return fhirQuestionnaire.title.value;
+  return "";
+}
+
 export function toDate(stringDate) {
   if (stringDate instanceof Date) return stringDate;
   return new Date(stringDate);
