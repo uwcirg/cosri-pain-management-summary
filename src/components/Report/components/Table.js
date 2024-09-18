@@ -37,14 +37,15 @@ export default class Table extends Component {
     headers.forEach((header) => {
       const headerKey = tableOptions.headers[header];
       const headerClass = headerKey.className ? headerKey.className : "";
+      const headerID = `${header.replace(/\s/g, "_")}_column`;
       const column = {
-        id: header,
+        id: headerID,
         Header: () => {
           if (headerKey.omitHeader) return "";
           if (headerKey.header)
             return <h3 className="col-header-title">{header}</h3>;
           return (
-            <span className={`col-header col-${header} ${headerClass}`}>
+            <span className={`col-header col-${headerID} ${headerClass}`}>
               {header}
             </span>
           );
