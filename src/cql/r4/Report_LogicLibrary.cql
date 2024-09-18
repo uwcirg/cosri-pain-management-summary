@@ -53,7 +53,8 @@ define ProcedureHistory:
     return {
       Name: ConceptText(P.code),
       Date: performDate,
-      DateText: DateTimeText(P.performed as FHIR.dateTime) 
+      DateText: DateTimeText(P.performed as FHIR.dateTime),
+      CPT_CODE: ConceptCode(P.code)
     }
     sort by Date desc
 
@@ -64,7 +65,8 @@ define ReferralHistory:
     return {
       Name: ConceptText(P.code),
       Date: performDate,
-      DateText: DateTimeText(P.performed as FHIR.dateTime)
+      DateText: DateTimeText(P.performed as FHIR.dateTime),
+      CPT_CODE: ConceptCode(P.code)
     }
     sort by Date desc
 

@@ -87,11 +87,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
             // text-wrap: balance;
           }
         }
-        @media (min-width: 992px) {
-          .table {
-            width: calc(95% - 48px);
-          }
-        }
         .no-entries {
           padding: 8px 0 16px;
         }
@@ -142,6 +137,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
             }
           }
         }
+        @media (min-width: 992px) {
+          .table {
+            width: calc(95% - 48px);
+          }
+        }
       }
     }
   }
@@ -172,6 +172,19 @@ $selector-box-shadow: 0 2px 2px #383e40;
     td {
       padding-top: 8px;
       vertical-align: top;
+    }
+  }
+  .table {
+    .report-table {
+      .rt-th:has(.col-Date_column),
+      .rt-td:has(.col-Date_column) {
+        max-width: 15%;
+        min-width: 0 !important;
+      }
+      .rt-th:has(.col-Name_column),
+      .rt-td:has(.col-Name_column) {
+        min-width: 70%;
+      }
     }
   }
   .responses-table-outer-wrapper {

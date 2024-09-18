@@ -11,13 +11,15 @@ export default class Table extends Component {
     super(...arguments);
     this.tableRef = React.createRef();
   }
-  renderTable(tableOptions={}, entries) {
+  renderTable(tableOptions = {}, entries) {
     // If a filter is provided, only render those things that have the filter field (or don't have it when it's negated)
     let filteredEntries = entries;
     if (!isEmptyArray(tableOptions.filter)) {
       // A filter starting with '!' is negated (looking for absence of that field)
       const negated = tableOptions.filter[0] === "!";
-      const filter = negated ? tableOptions.filter.substring(1) : tableOptions.filter;
+      const filter = negated
+        ? tableOptions.filter.substring(1)
+        : tableOptions.filter;
       filteredEntries = entries.filter((e) =>
         negated ? e[filter] == null : e[filter] != null
       );
@@ -36,15 +38,16 @@ export default class Table extends Component {
 
     headers.forEach((header) => {
       const headerKey = tableOptions.headers[header];
-      const headerClass = headerKey.className ? headerKey.className : "";
+      const headerID = `${header.replace(/\s/g, "_")}_column`;
+      const headerClass = headerKey.className ? headerKey.className : `col-${headerID}`;
       const column = {
-        id: header,
+        id: headerID,
         Header: () => {
           if (headerKey.omitHeader) return "";
           if (headerKey.header)
             return <h3 className="col-header-title">{header}</h3>;
           return (
-            <span className={`col-header col-${header} ${headerClass}`}>
+            <span className={`col-header ${headerClass}`}>
               {header}
             </span>
           );
@@ -60,11 +63,15 @@ export default class Table extends Component {
               ...formatterArguments
             );
           }
-          return value
-            ? value
-            : headerKey.default
-            ? headerKey.default
-            : entry[headerKey.key];
+          return (
+            <span className={headerClass}>
+              {value
+                ? value
+                : headerKey.default
+                ? headerKey.default
+                : entry[headerKey.key]}
+            </span>
+          );
         },
         sortable: headerKey.sortable !== false,
       };
@@ -96,6 +103,9 @@ export default class Table extends Component {
 
       if (headerKey.maxWidth != null) {
         column.maxWidth = headerKey.maxWidth;
+      }
+      if (headerClass) {
+        column.className = headerClass;
       }
 
       columns.push(column);

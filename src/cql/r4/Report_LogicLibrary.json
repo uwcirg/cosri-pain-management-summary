@@ -324,6 +324,17 @@
                               }
                            } ]
                         }
+                     }, {
+                        "name" : "CPT_CODE",
+                        "value" : {
+                           "name" : "ConceptCode",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "code",
+                              "scope" : "P",
+                              "type" : "Property"
+                           } ]
+                        }
                      } ]
                   }
                },
@@ -446,6 +457,17 @@
                                  "name" : "{http://hl7.org/fhir}dateTime",
                                  "type" : "NamedTypeSpecifier"
                               }
+                           } ]
+                        }
+                     }, {
+                        "name" : "CPT_CODE",
+                        "value" : {
+                           "name" : "ConceptCode",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "code",
+                              "scope" : "P",
+                              "type" : "Property"
                            } ]
                         }
                      } ]
