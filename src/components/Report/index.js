@@ -164,13 +164,14 @@ export default class Report extends Component {
           id={`${itemKey}_title`}
           className="sub-section__header"
         >
-          {this.renderSubSectionTitle(item)}
+          {this.renderSubSectionTitle(item, summaryData)}
           {this.renderSubSectionInfo(item, summaryData)}
         </h3>
       </React.Fragment>
     );
   }
-  renderSubSectionTitle(item) {
+  renderSubSectionTitle(item, summaryData) {
+    const title = summaryData?.Questionnaire?.title?.value??item.title;
     return (
       <span
         className="sub-section__header__name"
@@ -183,7 +184,7 @@ export default class Report extends Component {
           title="flag"
           tabIndex={0}
         /> */}
-        {item.title}
+        {title}
       </span>
     );
   }
