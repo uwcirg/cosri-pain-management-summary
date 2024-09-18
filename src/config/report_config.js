@@ -385,31 +385,6 @@ const reportConfig = [
     ),
     sections: [
       {
-        dataKey: PROCECURE_DATA_KEY,
-        title: "Procedures",
-        component: (props) => (
-          <Procedures
-            tableOptions={{
-              id: `${PROCECURE_DATA_KEY}_table`,
-              defaultSorted: {
-                id: "Date",
-                desc: true,
-              },
-              headers: {
-                Name: "Name",
-                Date: {
-                  key: "DateText",
-                  formatter: "datishFormat",
-                  sorter: "dateCompare",
-                  sortable: true,
-                },
-              },
-            }}
-            {...props}
-          ></Procedures>
-        ),
-      },
-      {
         dataKey: REFERRAL_DATA_KEY,
         title: "Referrals",
         component: (props) => (
@@ -421,17 +396,44 @@ const reportConfig = [
                 desc: true,
               },
               headers: {
-                Name: "Name",
                 Date: {
                   key: "DateText",
                   formatter: "datishFormat",
                   sorter: "dateCompare",
                   sortable: true,
                 },
+                Name: "Name",
+                "CPT CODE": "CPT_CODE",
               },
             }}
             {...props}
           ></Referrals>
+        ),
+      },
+      {
+        dataKey: PROCECURE_DATA_KEY,
+        title: "Procedures",
+        component: (props) => (
+          <Procedures
+            tableOptions={{
+              id: `${PROCECURE_DATA_KEY}_table`,
+              defaultSorted: {
+                id: "Date",
+                desc: true,
+              },
+              headers: {
+                Date: {
+                  key: "DateText",
+                  formatter: "datishFormat",
+                  sorter: "dateCompare",
+                  sortable: true,
+                },
+                Name: "Name",
+                "CPT CODE": "CPT_CODE",
+              },
+            }}
+            {...props}
+          ></Procedures>
         ),
       },
       {
