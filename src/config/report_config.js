@@ -460,6 +460,7 @@ const reportConfig = [
                 description: "Responses",
               },
             ]}
+            includeQuestionHeaders={true}
             {...props}
           ></ResponsesSummary>
         ),

@@ -67,8 +67,7 @@ export default class ResponsesSummary extends Component {
             ? item.value.display.value
             : answerValue
         );
-      if (!isEmptyArray(matchedOption))
-        return matchedOption[0];
+      if (!isEmptyArray(matchedOption)) return matchedOption[0];
       else return reportedAnswerValue;
     } else return reportedAnswerValue;
   }
@@ -103,6 +102,27 @@ export default class ResponsesSummary extends Component {
     if (!this.hasResponses(summary)) return 0;
     return summary.ResponsesSummary.length;
   }
+  formatResponsesWithHeaders(questionnaireItems, summaryItems) {
+    if (isEmptyArray(questionnaireItems)) return summaryItems;
+    const responses = summaryItems.map((item) => {
+      const responses = JSON.parse(JSON.stringify(item.responses));
+      item.responses = questionnaireItems
+        .map((item) => {
+          const linkId = item.linkId.value;
+          if (linkId.includes("header")) {
+            return {
+              header: true,
+              linkId: linkId,
+              text: item.text.value,
+            };
+          }
+          return responses?.find((o) => o.linkId === linkId);
+        })
+        .filter((item) => !!item);
+      return item;
+    });
+    return responses;
+  }
   renderResponses(qid, summaryItems, endIndex) {
     if (isEmptyArray(summaryItems)) {
       return <div>No recorded responses</div>;
@@ -122,7 +142,11 @@ export default class ResponsesSummary extends Component {
                 return (
                   <th
                     key={`response_header_${item.id}`}
-                    className={index > 0 ? "exclude-from-copy text-center" : "text-center"}
+                    className={
+                      index > 0
+                        ? "exclude-from-copy text-center"
+                        : "text-center"
+                    }
                   >
                     {this.getDisplayDate(item)}
                   </th>
@@ -131,37 +155,51 @@ export default class ResponsesSummary extends Component {
           </tr>
         </thead>
         <tbody>
-          {summaryItems[0].responses.map((item, rindex) => (
-            <tr key={`response_row_${item.linkId}_${rindex}`}>
-              <td className="fixed-cell">
-                {item.question.includes("score") ? (
-                  <b>{item.question}</b>
-                ) : (
-                  item.question
-                )}
-              </td>
-              <td>
-                {this.getMatchedAnswerTextByLinkId(
-                  summaryItems[0],
-                  item.linkId,
-                  item.answer
-                )}
-              </td>
-              {summaryItems.length > 1 &&
-                summaryItems
-                  .slice(1, endIndex ? endIndex : summaryItems.length)
-                  .map((o, index) => {
-                    return (
-                      <td
-                        key={`${item.id}_response_${index}`}
-                        className="exclude-from-copy"
-                      >
-                        {this.getMatchedAnswerByItem(o, item)}
-                      </td>
-                    );
-                  })}
-            </tr>
-          ))}
+          {summaryItems[0].responses.map((item, rindex) => {
+            if (item.header) {
+              return (
+                <tr key={`response_row_${item.linkId}_${rindex}`}>
+                  <td className="row-header">{item.text}</td>
+                  {summaryItems
+                    .slice(0, endIndex ? endIndex : summaryItems.length)
+                    .map((item, index) => (
+                      <td key={`header_${item.linkId}_${index}`}>&nbsp;</td>
+                    ))}
+                </tr>
+              );
+            }
+            return (
+              <tr key={`response_row_${item.linkId}_${rindex}`}>
+                <td className="fixed-cell">
+                  {item.question.includes("score") ? (
+                    <b>{item.question}</b>
+                  ) : (
+                    item.question
+                  )}
+                </td>
+                <td>
+                  {this.getMatchedAnswerTextByLinkId(
+                    summaryItems[0],
+                    item.linkId,
+                    item.answer
+                  )}
+                </td>
+                {summaryItems.length > 1 &&
+                  summaryItems
+                    .slice(1, endIndex ? endIndex : summaryItems.length)
+                    .map((o, index) => {
+                      return (
+                        <td
+                          key={`${item.id}_response_${index}`}
+                          className="exclude-from-copy"
+                        >
+                          {this.getMatchedAnswerByItem(o, item)}
+                        </td>
+                      );
+                    })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     );
@@ -347,7 +385,12 @@ export default class ResponsesSummary extends Component {
           >
             {this.renderResponses(
               summary.QuestionnaireName,
-              summary.ResponsesSummary
+              this.props.includeQuestionHeaders
+                ? this.formatResponsesWithHeaders(
+                    summary.QuestionnaireItems,
+                    summary.ResponsesSummary
+                  )
+                : summary.ResponsesSummary
             )}
           </div>
         </div>
@@ -366,7 +409,7 @@ export default class ResponsesSummary extends Component {
     let headerElement = sectionHeaderElement
       ? sectionHeaderElement.cloneNode(true)
       : null;
-    
+
     if (headerElement) {
       headerElement.style.fontWeight = 600;
       summaryElement.appendChild(headerElement);
