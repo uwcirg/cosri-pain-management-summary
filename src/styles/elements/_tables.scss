@@ -151,6 +151,13 @@
     &.nowrap {
       white-space: nowrap;
     }
+    &.row-header {
+      background-color: #FFF !important;
+      font-weight: 900;
+      &:first-of-type {
+        border-right-color: $color-blue-darker !important;
+      }
+    }
   }
   &.slider-table {
     td, th {
