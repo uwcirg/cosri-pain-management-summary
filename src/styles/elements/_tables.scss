@@ -174,3 +174,13 @@
     }
   }
 }
+
+.two-columns {
+  .table {
+    table-layout: auto !important;
+    th:first-of-type,
+    td:first-of-type {
+      width: 60%;
+    }
+  }
+}
