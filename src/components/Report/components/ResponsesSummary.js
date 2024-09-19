@@ -104,16 +104,22 @@ export default class ResponsesSummary extends Component {
   }
   formatResponsesWithHeaders(questionnaireItems, summaryItems) {
     if (isEmptyArray(questionnaireItems)) return summaryItems;
+    const arrHeaderText = [];
     const responses = summaryItems.map((item) => {
       const responses = JSON.parse(JSON.stringify(item.responses));
       item.responses = questionnaireItems
         .map((item) => {
           const linkId = item.linkId.value;
+          const headerText = item.text.value;
           if (linkId.includes("header")) {
+            if (arrHeaderText.indexOf(headerText) !== -1) {
+              return null;
+            }
+            arrHeaderText.push(headerText);
             return {
               header: true,
               linkId: linkId,
-              text: item.text.value,
+              text: headerText,
             };
           }
           return responses?.find((o) => o.linkId === linkId);
