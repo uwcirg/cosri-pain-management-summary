@@ -155,7 +155,13 @@
       background-color: #FFF !important;
       font-weight: 900;
       &:first-of-type {
-        border-right-color: $color-blue-darker !important;
+        text-wrap: nowrap;
+      }
+      &:not(:last-of-type) {
+        border-right: 0 #FFF !important;
+      }
+      &:not(:first-of-type) {
+        border-left: 0 #FFF !important;
       }
     }
   }
