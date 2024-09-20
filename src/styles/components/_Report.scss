@@ -336,7 +336,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       }
     }
 
-    tr:not(:last-of-type) {
+    tr:not(:last-of-type):not(+:has(td.row-header)) {
       td {
         border-bottom: 1px solid $color-gray-lighter;
       }
