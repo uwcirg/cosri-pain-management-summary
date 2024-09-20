@@ -173,7 +173,9 @@ export default class Report extends Component {
     );
   }
   renderSubSectionTitle(item, summaryData) {
-    const title = getQuestionnaireTitle(summaryData?.Questionnaire);
+    const title = summaryData?.Questionnaire
+      ? getQuestionnaireTitle(summaryData?.Questionnaire)
+      : item.title;
     return (
       <span
         className="sub-section__header__name"
