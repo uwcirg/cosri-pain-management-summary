@@ -36,7 +36,7 @@
 
     &.-cursor-pointer {
       span {
-        background-image: url('../../icons/icon-sort.png');
+        background-image: url("../../icons/icon-sort.png");
         background-repeat: no-repeat;
         background-size: 8px;
         background-position: 96% 50%;
@@ -48,11 +48,11 @@
       }
 
       &.-sort-asc span {
-        background-image: url('../../icons/icon-sort-up.png');
+        background-image: url("../../icons/icon-sort-up.png");
       }
 
       &.-sort-desc span {
-        background-image: url('../../icons/icon-sort-down.png');
+        background-image: url("../../icons/icon-sort-down.png");
       }
     }
 
@@ -68,7 +68,6 @@
       margin: 0;
       border-bottom: 1px solid $color-gray-lighter;
     }
-
   }
 
   .rt-tbody .rt-td {
@@ -108,7 +107,7 @@
 
       .-btn {
         background: $color-blue;
-        color: #FFF;
+        color: #fff;
         &:hover {
           background: $color-blue-darker;
         }
@@ -125,7 +124,7 @@
   border-spacing: 0;
   th {
     border: 1px solid $table-cell-border-color;
-    background-color: #FFF;
+    background-color: #fff;
     &.dark-border {
       border-color: $table-cell-border-dark-color;
     }
@@ -141,7 +140,7 @@
     border-left: 1px solid $table-cell-border-color;
     border-bottom: 1px solid $table-cell-border-color;
     padding: 4px;
-    background-color: #FFF;
+    background-color: #fff;
     &.dark-border {
       border-color: $table-cell-border-dark-color;
     }
@@ -151,23 +150,34 @@
     &.nowrap {
       white-space: nowrap;
     }
-    &.row-header {
-      background-color: #FFF !important;
-      font-weight: 900;
-      &:first-of-type {
-        text-wrap: nowrap;
+  }
+  tr {
+    td {
+      &.row-header {
+        background-color: $color-gray-lightest !important;
+        font-weight: 900;
+        border-bottom: 1px solid $color-blue-darker !important;
+        &:first-of-type {
+          text-wrap: nowrap;
+        }
+        &:not(:last-of-type) {
+          border-right: 0 #fff !important;
+        }
+        &:not(:first-of-type) {
+          border-left: 0 #fff !important;
+        }
       }
-      &:not(:last-of-type) {
-        border-right: 0 #FFF !important;
-      }
-      &:not(:first-of-type) {
-        border-left: 0 #FFF !important;
+    }
+    &:not(:first-of-type) {
+      td.row-header {
+        border-top: 1px solid $color-blue-darker !important;
       }
     }
   }
   &.slider-table {
-    td, th {
-      transition: transform 550ms cubic-bezier(.25,.75,.5,1.25);
+    td,
+    th {
+      transition: transform 550ms cubic-bezier(0.25, 0.75, 0.5, 1.25);
       overflow: hidden;
       //width: 0;
       &.a-active {
