@@ -169,7 +169,7 @@ export default class ResponsesSummary extends Component {
                   {summaryItems
                     .slice(0, endIndex ? endIndex : summaryItems.length)
                     .map((item, index) => (
-                      <td key={`header_${item.linkId}_${index}`}>&nbsp;</td>
+                      <td key={`header_${item.linkId}_${index}`} className="row-header">&nbsp;</td>
                     ))}
                 </tr>
               );
