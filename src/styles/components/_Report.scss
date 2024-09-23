@@ -223,7 +223,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
   }
   .response-table-wrapper {
-    max-width: calc(100% - 180px);
+    max-width: calc(100% - 48px);
     max-height: 576px;
     overflow-y: auto;
     overflow-x: auto;
@@ -231,7 +231,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     margin-right: 24px;
     margin-bottom: 24px;
     @media (min-width: 992px) {
-      max-width: 872px;
+      max-width: calc(100% - 180px);
       &.two-columns {
         width: fit-content;
         max-width: 70%;
