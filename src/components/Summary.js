@@ -504,7 +504,7 @@ export default class Summary extends Component {
             )}
           </div>
         </div>
-        <ReactTooltip className="summary-tooltip" id="overviewTooltip" />
+        <ReactTooltip className="summary-tooltip" id="overviewTooltip" clickable={true} />
       </div>
     );
   }
@@ -545,7 +545,7 @@ export default class Summary extends Component {
           <div className="title">{panel.alertsData.title}</div>
           <div className="content">{alertsContent}</div>
         </div>
-        <ReactTooltip className="summary-tooltip" id="overviewTooltip" />
+        <ReactTooltip className="summary-tooltip" id="overviewTooltip" clickable={true} />
       </div>
     );
   }

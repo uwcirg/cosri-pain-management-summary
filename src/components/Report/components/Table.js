@@ -39,18 +39,16 @@ export default class Table extends Component {
     headers.forEach((header) => {
       const headerKey = tableOptions.headers[header];
       const headerID = `${header.replace(/\s/g, "_")}_column`;
-      const headerClass = headerKey.className ? headerKey.className : `col-${headerID}`;
+      const headerClass = headerKey.className
+        ? headerKey.className
+        : `col-${headerID}`;
       const column = {
         id: headerID,
         Header: () => {
           if (headerKey.omitHeader) return "";
           if (headerKey.header)
             return <h3 className="col-header-title">{header}</h3>;
-          return (
-            <span className={`col-header ${headerClass}`}>
-              {header}
-            </span>
-          );
+          return <span className={`col-header ${headerClass}`}>{header}</span>;
         },
         accessor: (entry) => {
           let value = entry[headerKey];
@@ -120,7 +118,14 @@ export default class Table extends Component {
     //https://spectrum.chat/react-table/general/is-there-a-way-to-activate-sort-via-onkeypress~66656e87-7f5c-4767-8b23-ddf35d73f8af
     return (
       <div style={{ position: "relative" }}>
-        <div style={{ position: "absolute", right: "24px" }}>
+        <div
+          style={{
+            position: "absolute",
+            right: "24px",
+            top: "-52px",
+            zIndex: 10,
+          }}
+        >
           <CopyButton
             buttonTitle="Click to copy"
             elementToCopy={this.getElementToCopy()}

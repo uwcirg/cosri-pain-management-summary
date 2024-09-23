@@ -71,6 +71,7 @@ export default class SideNav extends Component {
           data-for={navId}
           data-tip={navToggleToolTip}
           data-place="right"
+          clickable={true}
           className={`${this.props.navClassName} summary__nav-button close`}
           title="toggle side navigation menu"
           onClick={(e) => {
@@ -79,7 +80,7 @@ export default class SideNav extends Component {
             if (this.props.onClick) this.props.onClick();
           }}
         ></div>
-        <ReactTooltip className="summary-tooltip" id={navId} />
+        <ReactTooltip className="summary-tooltip" id={navId} clickable={true} />
       </div>
     );
   }
