@@ -1,8 +1,8 @@
 $tab-background-color: #fffffff6;
-$tab-inactive-background-color: #999ea3;
-$tab-inactive-color: #e0e2e4;
+$tab-inactive-background-color: #cacfd4;
+$tab-inactive-color: #7f8183;
 $tab-height: 48px;
-$tab-polygon: polygon(5% 5%, 95% 5%, 100% 100%, 0% 100%);
+$tab-polygon: polygon(4.5% 5%, 94.5% 5%, 100% 100%, 0% 100%);
 .warpper {
   display: flex;
   flex-direction: column;
@@ -21,17 +21,19 @@ $tab-polygon: polygon(5% 5%, 95% 5%, 100% 100%, 0% 100%);
   clip-path: $tab-polygon;
   border-radius: 26px 26px 0 0;
   box-shadow: 0 2px 4px $color-gray;
-  min-width: 132px;
+  min-width: 140px;
   text-align: center;
   letter-spacing: 0.1rem;
   font-weight: 600;
-  font-size: 1.02rem;
+  font-size: 1rem;
   text-transform: uppercase;
   border-top: 1px solid $tab-inactive-background-color;
   border-left: 1px solid $tab-inactive-background-color;
   border-right: 1px solid $tab-inactive-background-color;
   &:not(.active):hover {
     background-color: $color-gray-light;
+    color: #FFF;
+    border-color: $color-gray-light;
   }
   // transition: background 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9),
   //   border 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9);
