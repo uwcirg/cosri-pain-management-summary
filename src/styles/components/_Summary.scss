@@ -10,7 +10,7 @@
 
   &__nav {
     color: $color-white;
-    padding: 56px 0 32px 0px;
+    padding: 46px 0 32px 0px;
     width: $summary-nav-width;
     z-index: 1;
     transition: opacity 450ms ease 100ms;
@@ -21,7 +21,7 @@
     }
 
     &.is-position-fixed {
-      top: 104px;
+      top: 124px;
     }
 
     .toc-list.is-collapsible {
@@ -185,7 +185,7 @@
 
     .close {
       position: absolute;
-      top: 16px;
+      top: 8px;
       right: 6px;
       color: #fff;
       opacity: 0.8;
@@ -248,15 +248,15 @@
       position: fixed;
       z-index: 500;
       &:before {
-        left: 6px;
-        top: 8px;
+        left: 8px;
+        top: 0px;
       }
     }
     &.open {
       .is-position-fixed ~ .close {
         &:before {
           position: fixed;
-          left: 192px;
+          left: 196px;
         }
       }
       .is-position-fixed {
@@ -1104,13 +1104,13 @@
 //}
 .has-tabs {
   .summary__nav-wrapper .is-position-fixed ~ .close {
-    top: calc(#{$min-header-height} + 48px);
+    top: calc(#{$min-header-height} + 56px);
   }
-  .collapsed {
-    .summary__nav-wrapper .is-position-fixed ~ .close {
-      top: calc(#{$min-header-height} + 16px);
-    }
-  }
+  // .collapsed {
+  //   .summary__nav-wrapper .is-position-fixed ~ .close {
+  //     top: calc(#{$min-header-height} + 16px);
+  //   }
+  // }
   .summary__nav.is-position-fixed {
     top: 148px;
   }
