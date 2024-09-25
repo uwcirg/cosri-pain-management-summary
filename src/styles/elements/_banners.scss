@@ -28,6 +28,9 @@
       cursor: pointer;
       font-size: 0.95rem;
       font-weight: 900;
+      &:hover {
+        color: $link-color-dark;
+      }
     }
     &.warning {
       background-color: $color-red-darker;
