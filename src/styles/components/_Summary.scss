@@ -1012,6 +1012,9 @@
         .text {
           color: $color-black;
         }
+        &:hover {
+          color: $link-color-dark;
+        }
 
         &:focus {
           outline: none;
@@ -1036,6 +1039,9 @@
         font-weight: 600;
         border: 0;
         cursor: pointer;
+        &:hover {
+          color: $link-color-dark;
+        }
 
         &:focus {
           outline: none;
