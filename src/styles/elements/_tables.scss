@@ -97,9 +97,9 @@
 
     .-pagination {
       box-shadow: none;
-      border-top: 1px solid $color-gray-lighter;
-      padding: 0;
-      padding-top: 4px;
+      border-top: 1px solid $color-gray-lightest;
+      border-bottom: 1px solid $color-gray-lightest;
+      padding: 4px 0 4px;
       gap: 16px;
       align-items: center;
       justify-content: center;
