@@ -80,9 +80,10 @@
     input,
     select {
       border-radius: 0;
+      font-weight: 600;
     }
     input {
-      height: 24px;
+      height: 32px;
     }
     select {
       height: 32px;
@@ -90,6 +91,7 @@
     .-pageJump {
       input {
         border-radius: 0;
+        color: $link-color;
       }
     }
 
@@ -98,11 +100,31 @@
       border-top: 1px solid $color-gray-lighter;
       padding: 0;
       padding-top: 4px;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      .-previous, .-next, .-center {
+        flex: 0;
+        justify-content: center;
+        flex-basis: fit-content;
+      }
 
       button {
-        width: 60%;
+        width: 100%;
+        width: 104px;
         margin: 4px auto;
         height: 32px;
+        font-weight: 600;
+        border-radius: 24px;
+        color: $link-color !important;
+        border-radius: 100vmax;
+        border: 1px solid $link-border-color;
+        padding: 4px 24px;
+        background-color: #FFF !important;
+        &:not([disabled]):hover {
+          background-color: $link-color !important;
+          color: #FFF !important;
+        }
       }
 
       .-btn {
