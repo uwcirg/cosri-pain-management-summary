@@ -107,6 +107,35 @@
         flex: 0;
         justify-content: center;
         flex-basis: fit-content;
+        position: relative;
+      }
+      .-next:before,
+      .-previous:before {
+        display: inline-block;
+        font-style: normal;
+        font-variant: normal;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        position: absolute;
+        font-weight: 900;
+        top: 16px;
+        color: $link-color;
+      }
+      .-next:before {
+        content: "\276F";
+        right: 40px;
+      }
+      .-previous:before {
+        content: "\2039";
+        left: 24px;
+        font-size: 26px;
+        top: 8px;
+      }
+      .-next:hover:not(:has([disabled])),
+      .-previous:hover:not(:has([disabled])) {
+        &:before {
+          color: #FFF;
+        }
       }
 
       button {
