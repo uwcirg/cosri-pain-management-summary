@@ -92,6 +92,7 @@
       input {
         border-radius: 0;
         color: $link-color;
+        padding: 4px 6px;
       }
     }
 
@@ -109,32 +110,46 @@
         flex-basis: fit-content;
         position: relative;
       }
-      .-next:before,
-      .-previous:before {
-        display: inline-block;
-        font-style: normal;
-        font-variant: normal;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        position: absolute;
-        font-weight: 900;
-        top: 16px;
-        color: $link-color;
+      .-next,
+      .-previous {
+        button:before {
+          display: inline-block;
+          font-style: normal;
+          font-variant: normal;
+          text-rendering: auto;
+          -webkit-font-smoothing: antialiased;
+          position: absolute;
+          font-weight: 900;
+          color: $link-color;
+        }
       }
-      .-next:before {
-        content: "\276F";
-        right: 40px;
+      .-next {
+        button {
+          padding: 4px 20px 4px 12px;
+          &:before {
+            content: "\276F";
+            top: 11px;
+            right: 38px;
+          }
+        }
       }
-      .-previous:before {
-        content: "\2039";
-        left: 24px;
-        font-size: 26px;
-        top: 8px;
+      .-previous {
+        button {
+          padding: 4px 12px 4px 24px;
+          &:before {
+            content: "\2039";
+            left: 24px;
+            font-size: 26px;
+            top: 3px;
+          }
+        }
       }
-      .-next:hover:not(:has([disabled])),
-      .-previous:hover:not(:has([disabled])) {
-        &:before {
-          color: #FFF;
+      .-next:not(:has([disabled])),
+      .-previous:not(:has([disabled])) {
+        button:hover {
+          &:before {
+            color: #FFF;
+          }
         }
       }
 
@@ -150,6 +165,7 @@
         border: 1px solid $link-border-color;
         padding: 4px 24px;
         background-color: #FFF !important;
+        position: relative;
         &:not([disabled]):hover {
           background-color: $link-color !important;
           color: #FFF !important;
