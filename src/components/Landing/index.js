@@ -7,6 +7,7 @@ import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
   getEnvSystemType,
+  getEPICPatientIdFromSource,
   getPatientNameFromSource,
   getPatientSearchURL,
   getSiteId,
@@ -97,9 +98,7 @@ export default class Landing extends Component {
           });
           return;
         }
-        writeToLog("application loaded", "info", {
-          patientName: this.getPatientName(),
-        });
+        writeToLog("application loaded", "info", this.getPatientLogParams());
         //set FHIR results
         let result = {};
         let fhirData = responses[0].value;
@@ -131,7 +130,7 @@ export default class Landing extends Component {
           landingUtils.getSummaryErrors(result.Summary);
         landingUtils.logMMEEntries(result.Summary, {
           tags: ["mme-calc"],
-          patientName: this.getPatientName(),
+          ...this.getPatientLogParams(),
         });
         // console.log(
         //   "errors ",
@@ -212,12 +211,13 @@ export default class Landing extends Component {
   }
 
   initEvents() {
+    const logParams = this.getPatientLogParams();
     // education material links
     document.querySelectorAll(".education").forEach((item) => {
       item.addEventListener("click", (e) => {
         writeToLog(`Education material: ${e.target.title}`, "info", {
           tags: ["education"],
-          patientName: this.getPatientName(),
+          ...logParams,
         });
       });
     });
@@ -356,9 +356,16 @@ export default class Landing extends Component {
   }
   logError(message) {
     if (!message) return;
-    writeToLog(message, "error", {
+    writeToLog(message, "error", this.getPatientLogParams());
+  }
+
+  getPatientLogParams() {
+    // see https://github.com/uwcirg/logserver for recommended params
+    return {
       patientName: this.getPatientName(),
-    });
+      subject: `/Patient/${this.getPatientId()}`,
+      "epic-patient-id": getEPICPatientIdFromSource(this.getPatientResource()),
+    };
   }
 
   //save MME calculations to file for debugging purpose, development environment ONLY
@@ -376,7 +383,7 @@ export default class Landing extends Component {
     summary[this.getOverviewSectionKey() + "_alerts"] =
       landingUtils.getProcessedAlerts(sectionFlags, {
         tags: ["alert"],
-        patientName: this.getPatientName(),
+        ...this.getPatientLogParams(),
       });
   }
   setSummaryGraphData(summary) {
@@ -438,6 +445,11 @@ export default class Landing extends Component {
       },
       () => {
         this.initTocBot();
+        writeToLog(index > 1 ? "report tab" : "overview tab", "info", {
+          tags: ["tab"],
+          ...this.getPatientLogParams(),
+        });
+
         window.scrollTo(0, 1);
       }
     );
@@ -530,10 +542,12 @@ export default class Landing extends Component {
                 {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
                 {item === "report" && (
-                  <Report summaryData={{
-                    report: summary.ReportSummary,
-                    survey: summary.SurveySummary
-                  }}></Report>
+                  <Report
+                    summaryData={{
+                      report: summary.ReportSummary,
+                      survey: summary.SurveySummary,
+                    }}
+                  ></Report>
                 )}
                 {/* other tab panel as specified here */}
               </div>
