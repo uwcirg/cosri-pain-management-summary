@@ -363,7 +363,7 @@ export default class Landing extends Component {
     // see https://github.com/uwcirg/logserver for recommended params
     return {
       patientName: this.getPatientName(),
-      subject: `/Patient/${this.getPatientId()}`,
+      subject: `Patient/${this.getPatientId()}`,
       "epic-patient-id": getEPICPatientIdFromSource(this.getPatientResource()),
     };
   }
