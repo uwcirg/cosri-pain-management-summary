@@ -38,7 +38,7 @@ input[type="range"] {
       font-weight: 900;
     }
     &.rotate {
-      top: 12px;
+      top: 8px;
       min-height: 12px;
       transform: rotate(-90deg);
       &[dataunit="month"][displayvalue="1mo"],
@@ -54,6 +54,7 @@ input[type="range"] {
       &[dataunit="month"][displayvalue="11mo"],
       &[dataunit="month"][displayvalue="12mo"] {
         left: 8px !important;
+        top: 12px;
       }
       &[displayvalue="10yr"],
       &[displayvalue="11yr"],

@@ -747,6 +747,10 @@ export default class ReportOverviewGraph extends Component {
             item % 0.5 === 0 ||
             item % 0.75 === 0 ||
             item % 1 === 0) &&
+          (prevItem % 0.25 === 0 ||
+            prevItem % 0.5 === 0 ||
+            prevItem % 0.75 === 0 ||
+            prevItem % 1 === 0) &&
           item - prevItem >= 0.16);
       // console.log(
       //   "item ",
@@ -779,7 +783,6 @@ export default class ReportOverviewGraph extends Component {
         display: displayValue,
       };
     });
-    const shouldRotateLabel = inYears && max >= 10;
     if (!arrNum.length) return null;
     return (
       <div className="slider-parent-container" ref={this.sliderContainerRef}>
@@ -837,7 +840,7 @@ export default class ReportOverviewGraph extends Component {
         </div>
         <div
           className={`bottom-info-text exclude-from-copy ${
-            shouldRotateLabel ? "gutter" : ""
+            shouldRotate ? "gutter" : ""
           }`}
         >
           date range
