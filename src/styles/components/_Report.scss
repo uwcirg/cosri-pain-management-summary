@@ -139,6 +139,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         @media (min-width: 992px) {
           .table {
+            width: 100%;
+          }
+        }
+        @media (min-width: 1200px) {
+          .table {
             width: calc(95% - 48px);
           }
         }
@@ -295,7 +300,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       border-top: 2px solid $color-blue;
       border-bottom: 2px solid $color-blue;
       padding: 8px;
-      white-space: nowrap;
+     //white-space: nowrap;
       &:first-of-type {
         border-left: 2px solid $color-blue;
         border-right: 2px solid $color-blue;
