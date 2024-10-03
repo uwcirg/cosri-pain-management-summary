@@ -715,7 +715,7 @@ export default class ReportOverviewGraph extends Component {
       (item) => this.state.qids.indexOf(item.qid) !== -1
     );
     const { arrNum, unit } = this.getScaleInfoForSlider(sliderData);
-    //console.log("arrNum ", arrNum, " unit ", unit);
+    // console.log("arrNum ", arrNum, " unit ", unit);
     // const selectedRange = parseFloat(this.state.selectedDateRange);
     //console.log("number of years total: ", numYears);
     // console.log("selected value: ", selectedRange);
