@@ -569,7 +569,7 @@ export function getEnvConfidentialAPIURL() {
 }
 // write to audit log
 export function writeToLog(message, level, params) {
-  console.log("log params ", params, " message ", message);
+  // console.log("log params ", params, " message ", message);
   if (!getEnvConfidentialAPIURL()) return;
   if (!message) return;
   const logLevel = level ? level : "info";
