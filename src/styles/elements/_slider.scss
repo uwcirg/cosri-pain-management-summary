@@ -38,7 +38,7 @@ input[type="range"] {
       font-weight: 900;
     }
     &.rotate {
-      top: 8px;
+      top: 6px;
       min-height: 12px;
       transform: rotate(-90deg);
       &[dataunit="month"][displayvalue="1mo"],
@@ -52,9 +52,14 @@ input[type="range"] {
       &[dataunit="month"][displayvalue="9mo"],
       &[dataunit="month"][displayvalue="10mo"],
       &[dataunit="month"][displayvalue="11mo"],
-      &[dataunit="month"][displayvalue="12mo"] {
+      &[dataunit="month"][displayvalue="12mo"],
+      &[dataunit="year"][displayvalue="12mo"] {
         left: 8px !important;
-        top: 12px;
+        top: 10px;
+        &:first-of-type,
+        &:last-of-type {
+          top: 12px;
+        }
       }
       &[displayvalue="10yr"],
       &[displayvalue="11yr"],
