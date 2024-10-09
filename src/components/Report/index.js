@@ -99,6 +99,34 @@ export default class Report extends Component {
       </div>
     );
   }
+  renderFlagIconsInHeader(section) {
+    const sectionFlags = this.props.sectionFlags;
+    if (!sectionFlags) return null;
+    if (!section.dataKey || !section.dataKeySource) return null;
+    const flagObj = sectionFlags[section.dataKeySource]
+      ? sectionFlags[section.dataKeySource][section.dataKey]
+      : null;
+    if (isEmptyArray(flagObj)) return null;
+    return (
+      <div className="flags-container">
+        {flagObj.map((o, index) => {
+          return (
+            <div
+              key={`${section.dataKey}_flag_${index}`}
+              className="flag-item"
+              title={o.text}
+            >
+              <FontAwesomeIcon
+                className={`flag ${o.flagClass}`}
+                icon="exclamation-circle"
+                key={`${section.dataKey}_flagicon_${index}`}
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
   renderSectionBody(summaryData, section) {
     const surveySummaryData = reportUtil.getSurveySummaryData(summaryData);
     const scoringData = this.getScoringData(surveySummaryData);
@@ -114,6 +142,9 @@ export default class Report extends Component {
       bodyDiagramData: bodyDiagramData,
       procedureData: procedureData,
       referralData: referralData,
+      reportData: reportData,
+      medicationListData: reportUtil.getMedicationListData(reportData),
+      sectionFlags: this.props.sectionFlags,
     };
     if (section.component) {
       return <div className="section">{section.component(propData)}</div>;
@@ -141,6 +172,7 @@ export default class Report extends Component {
                   surveyData: matchedData,
                 })}
               {this.renderSubSectionAnchor(item)}
+              {this.renderSubSectionFlags(item)}
             </div>
           );
         })}
@@ -168,8 +200,33 @@ export default class Report extends Component {
         >
           {this.renderSubSectionTitle(item, summaryData)}
           {this.renderSubSectionInfo(item, summaryData)}
+          {this.renderFlagIconsInHeader(item)}
         </h3>
       </React.Fragment>
+    );
+  }
+  renderSubSectionFlags(section) {
+    const sectionFlags = this.props.sectionFlags;
+    if (!sectionFlags) return null;
+    if (!section.dataKey || !section.dataKeySource) return null;
+    const flagObj = sectionFlags[section.dataKeySource]
+      ? sectionFlags[section.dataKeySource][section.dataKey]
+      : null;
+    if (isEmptyArray(flagObj)) return null;
+    return (
+      <div className="flags-container">
+        {flagObj.map((o, index) => {
+          return (
+            <div key={`${section.dataKey}_flag_${index}`} className="flag-item">
+              <FontAwesomeIcon
+                className={`flag ${o.flagClass}`}
+                icon="exclamation-circle"
+              />
+              <span>{o.text}</span>
+            </div>
+          );
+        })}
+      </div>
     );
   }
   renderSubSectionTitle(item, summaryData) {
@@ -290,4 +347,5 @@ export default class Report extends Component {
 
 Report.propTypes = {
   summaryData: PropTypes.object,
+  sectionFlags: PropTypes.object,
 };

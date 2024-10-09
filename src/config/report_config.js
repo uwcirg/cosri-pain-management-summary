@@ -9,6 +9,7 @@ import ResponsesSummary from "../components/Report/components/ResponsesSummary";
 import RankedResponses from "../components/Report/components/RankedResponses";
 import Procedures from "../components/Report/components/Procedures";
 import Referrals from "../components/Report/components/Referrals";
+import MedicationList from "../components/Report/components/MedicationList";
 
 const iconProps = {
   width: 35,
@@ -27,6 +28,7 @@ export const STOP_DATA_KEY = "PAINTRACKER-STOP";
 export const TRT_DATA_KEY = "PAINTRACKER-TRT";
 export const PROCECURE_DATA_KEY = "PROCEDURE_HISTORY";
 export const REFERRAL_DATA_KEY = "REFERRAL_HISTORY";
+export const MEDICATION_LIST_DATA_KEY = "MedicationList";
 
 const reportConfig = [
   {
@@ -434,6 +436,45 @@ const reportConfig = [
             }}
             {...props}
           ></Procedures>
+        ),
+      },
+      {
+        dataKey: MEDICATION_LIST_DATA_KEY,
+        dataKeySource: "ReportSummary",
+        title: "Medications",
+        flags: [
+          {
+            flag: {
+              ifOneOrMore: {
+                table: "MedicationRequestsForNaloxoneConsideration",
+                source: "RiskConsiderations",
+              },
+            },
+            flagClass: "info",
+            flagText:
+              "Current MME 50 or more, consider prescribing Naloxone",
+          }
+        ],
+        component: (props) => (
+          <MedicationList
+            tableOptions={{
+              id: `${MEDICATION_LIST_DATA_KEY}_table`,
+              defaultSorted: {
+                id: "Start",
+                desc: true,
+              },
+              headers: {
+                Drug_Description: "Name",
+                Written_Date: {
+                  key: "Start",
+                  formatter: "datishFormat",
+                  sorter: "dateCompare",
+                  sortable: true,
+                },
+              },
+            }}
+            {...props}
+          ></MedicationList>
         ),
       },
       {

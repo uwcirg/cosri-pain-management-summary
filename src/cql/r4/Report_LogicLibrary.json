@@ -482,6 +482,118 @@
                }
             }
          }, {
+            "name" : "MedicationList",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "M",
+                  "expression" : {
+                     "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                     "type" : "Retrieve"
+                  }
+               } ],
+               "relationship" : [ ],
+               "where" : {
+                  "type" : "And",
+                  "operand" : [ {
+                     "type" : "LessOrEqual",
+                     "operand" : [ {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "authoredOn",
+                           "scope" : "M",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "type" : "ToDateTime",
+                        "operand" : {
+                           "type" : "Today"
+                        }
+                     } ]
+                  }, {
+                     "type" : "GreaterOrEqual",
+                     "operand" : [ {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "authoredOn",
+                           "scope" : "M",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "type" : "ToDateTime",
+                        "operand" : {
+                           "type" : "Subtract",
+                           "operand" : [ {
+                              "type" : "Today"
+                           }, {
+                              "value" : 2,
+                              "unit" : "year",
+                              "type" : "Quantity"
+                           } ]
+                        }
+                     } ]
+                  } ]
+               },
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "strict" : false,
+                              "type" : "As",
+                              "operand" : {
+                                 "path" : "medication",
+                                 "scope" : "M",
+                                 "type" : "Property"
+                              },
+                              "asTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "Start",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "M",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Authored",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "authoredOn",
+                              "scope" : "M",
+                              "type" : "Property"
+                           }
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "asc",
+                     "path" : "Authored",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
             "name" : "Summary",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -504,6 +616,12 @@
                            "type" : "ExpressionRef"
                         }
                      } ]
+                  }
+               }, {
+                  "name" : "MedicationList",
+                  "value" : {
+                     "name" : "MedicationList",
+                     "type" : "ExpressionRef"
                   }
                } ]
             }

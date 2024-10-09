@@ -504,7 +504,11 @@ export default class Summary extends Component {
             )}
           </div>
         </div>
-        <ReactTooltip className="summary-tooltip" id="overviewTooltip" clickable={true} />
+        <ReactTooltip
+          className="summary-tooltip"
+          id="overviewTooltip"
+          clickable={true}
+        />
       </div>
     );
   }
@@ -522,18 +526,29 @@ export default class Summary extends Component {
               ref={this.elementRef}
               data-ref={`${item.id}_title`}
             >
-              <a href={`#${item.id}_anchor`}>
-                <FontAwesomeIcon
-                  className={`flag ${item.className}`}
-                  icon="exclamation-circle"
-                  data-tip={`Go to ${item.name} section`}
-                  data-for="overviewTooltip"
-                  data-ref={`${item.id}_title`}
-                  role="tooltip"
-                  data-iscapture="true"
-                />
-                <span className="text">{item.text}</span>
-              </a>
+              {item.name && (
+                <a href={`#${item.id}_anchor`}>
+                  <FontAwesomeIcon
+                    className={`flag ${item.className}`}
+                    icon="exclamation-circle"
+                    data-tip={`Go to ${item.name} section`}
+                    data-for="overviewTooltip"
+                    data-ref={`${item.id}_title`}
+                    role="tooltip"
+                    data-iscapture="true"
+                  />
+                  <span className="text">{item.text}</span>
+                </a>
+              )}
+              {!item.name && (
+                <div className="no-anchor">
+                  <FontAwesomeIcon
+                    className={`flag ${item.className}`}
+                    icon="exclamation-circle"
+                  />
+                  <span className="text">{item.text}</span>
+                </div>
+              )}
             </div>
           );
         })
@@ -545,7 +560,11 @@ export default class Summary extends Component {
           <div className="title">{panel.alertsData.title}</div>
           <div className="content">{alertsContent}</div>
         </div>
-        <ReactTooltip className="summary-tooltip" id="overviewTooltip" clickable={true} />
+        <ReactTooltip
+          className="summary-tooltip"
+          id="overviewTooltip"
+          clickable={true}
+        />
       </div>
     );
   }
