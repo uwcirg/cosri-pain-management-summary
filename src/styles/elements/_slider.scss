@@ -40,7 +40,7 @@ input[type="range"] {
     &.rotate {
       top: 6px;
       min-height: 12px;
-      transform: rotate(-90deg);
+      transform: rotate(-75deg);
       &[dataunit="month"][displayvalue="1mo"],
       &[dataunit="month"][displayvalue="2mo"],
       &[dataunit="month"][displayvalue="3mo"],
@@ -54,12 +54,8 @@ input[type="range"] {
       &[dataunit="month"][displayvalue="11mo"],
       &[dataunit="month"][displayvalue="12mo"],
       &[dataunit="year"][displayvalue="12mo"] {
-        left: 8px !important;
-        top: 10px;
-        &:first-of-type,
-        &:last-of-type {
-          top: 12px;
-        }
+        left: 10px !important;
+        top: 12px;
       }
       &[displayvalue="10yr"],
       &[displayvalue="11yr"],
