@@ -114,7 +114,7 @@ Fentanyl, transdermal patch (MCG/HR)	2.4
 Fentanyl, Injection 1
 Fentanyl, Lozenge Product 0.13
 Hydrocodone	1
-Hydromorphone	4
+Hydromorphone	5
 Levomethadyl acetate	8
 Levorphanol tartrate	11
 Meperidine 	0.1
@@ -129,7 +129,7 @@ Oxycodone	1.5
 Oxymorphone	3
 Pentazocine	0.37
 Tapentadol	0.4
-Tramadol	0.1
+Tramadol	0.2
 Benzhydrocodone 1.22
 Oliceridine 5
 */
@@ -158,7 +158,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 2400 then 0 /*	Chlorpheniramine */
     when 3500 then 0.15 /*	Diphenoxylate */
     when 2670 then 0.15 /*	Codeine */
-    when 3423 then 4 /*	Hydromorphone */
+    when 3423 then 5 /*	Hydromorphone */
     when 3498 then 0 /*	Diphenhydramine */
     when 56795 then ( /* Sufentanil */
       case
@@ -215,7 +215,7 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 8745 then 0 /*	Promethazine */
     when 8896 then 0 /*	Pseudoephedrine */
     when 9009 then 0 /*	Pyrilamine */
-    when 10689 then 0.1 /*	Tramadol */
+    when 10689 then 0.2 /*	Tramadol */
     when 10849 then 0 /*	Triprolidine */
     when 19759 then 0 /*	bromodiphenhydramine */
     when 19860 then 0 /*	butalbital */
