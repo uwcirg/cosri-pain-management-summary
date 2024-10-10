@@ -27756,7 +27756,7 @@
         "version": "2020-02"
       },
       {
-        "code": "1597573",
+        "code": "1431102",
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
         "version": "2020-02"
       },
@@ -27767,6 +27767,21 @@
       },
       {
         "code": "1307061",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1191212",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1191222",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
+        "code": "1191228",
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
         "version": "2020-02"
       },
