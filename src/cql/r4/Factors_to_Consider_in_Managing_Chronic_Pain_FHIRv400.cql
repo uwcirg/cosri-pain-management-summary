@@ -745,7 +745,6 @@ define MedicationRequestsLastTwoYears:
   where M.MME >= 50 and ((year from Today() - year from M.CalculatedEnd) <= 2)
 
 define MedicationRequestsForNaloxoneConsideration:
-  //TODO if prescribed naloxone from DAWG data, return null
   if HasNaloxoneInLastYear then
     null
   else
