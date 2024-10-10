@@ -210,7 +210,12 @@ export function getProcessedSummaryData(summary, summaryMap) {
                   entry && entry[flagDateField]
                     ? extractDateFromGMTDateString(entry[flagDateField])
                     : "",
-                priority: alertMapping.priority ? alertMapping.priority : 0,
+                priority:
+                  flagClass === "info"
+                    ? 1000
+                    : alertMapping.priority
+                    ? alertMapping.priority
+                    : 0,
               });
             }
 

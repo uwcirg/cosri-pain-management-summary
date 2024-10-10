@@ -65,6 +65,8 @@
 // Update 20210204
 //   Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
 //   When Report MME, compile MME for medications classified as Opioid Medication and also from PDMP
+// Update 20241010
+// Add Naloxone prescription alert check, see MedicationRequestsForNaloxoneConsideration
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
@@ -727,9 +729,26 @@ define ReportPDMPMedicationRequests:
       NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
       RXNorm_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value),
       Status: O.status.value,
-      Class: getMedicationRequestDrugClass(O)
+      Class: getMedicationRequestDrugClass(O),
+      AuthoredOn: O.authoredOn
     }
     sort by DispensedDate desc, End desc
+
+define HasNaloxoneInLastYear:
+  Length(
+    (ReportNaloxoneMedicationRequests) M 
+    where M.AuthoredOn <= Today() and M.AuthoredOn >= (Today() - 1 year)
+  ) > 0
+
+define MedicationRequestsLastTwoYears:
+  (ReportPDMPMedicationRequests) M
+  where M.MME >= 50 and ((year from Today() - year from M.CalculatedEnd) <= 2)
+
+define MedicationRequestsForNaloxoneConsideration:
+  if HasNaloxoneInLastYear then
+    null
+  else
+    MedicationRequestsLastTwoYears
 
 
 // Non-opioid medication orders and statements with dates (lookback 2 years)
@@ -1109,7 +1128,8 @@ define ReportNaloxoneMedicationRequests:
     DispensedDate: DateTimeText(GetMedicationRequestDispensedDate(O)),
     Start: DateTimeText(O.authoredOn),
     End:   null as String, // MedicationRequest end date not supported in R4,
-    Status: O.status.value
+    Status: O.status.value,
+    AuthoredOn: O.authoredOn.value
   }
   sort by Start desc, End desc
 
@@ -1192,7 +1212,8 @@ define Summary: {
     SedativeMedications: ReportSedativeMedicationRequests,
     BarbiturateMedications: ReportBarbiturateMedicationRequests,
     CarisoprodolMedications: ReportCarisoprodolMedications,
-    NaloxoneMedications: ReportNaloxoneMedications
+    NaloxoneMedications: ReportNaloxoneMedications,
+    MedicationRequestsForNaloxoneConsideration: MedicationRequestsForNaloxoneConsideration
   },
   PDMPMedications: {
     PDMPMedications: ReportPDMPMedicationRequests

@@ -279,6 +279,16 @@
                   }
                 },
                 "flagText": "Caution for opioid prescribing, patient has been prescribed Benzodiazepine medication."
+              },
+              {
+                "flag": {
+                  "ifOneOrMore": {
+                    "table": "MedicationRequestsForNaloxoneConsideration",
+                    "source": "RiskConsiderations"
+                  }
+                },
+                "flagText": "Current MME 50 or more, consider prescribing Naloxone",
+                "flagClass": "info"
               }
             ]
           }
