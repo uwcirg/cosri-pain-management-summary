@@ -740,7 +740,6 @@ define HasNaloxoneInLastYear:
     where M.AuthoredOn <= Today() and M.AuthoredOn >= (Today() - 1 year)
   ) > 0
 
-
 define MedicationRequestsLastTwoYears:
   (ReportPDMPMedicationRequests) M
   where M.MME >= 50 and ((year from Today() - year from M.CalculatedEnd) <= 2)
