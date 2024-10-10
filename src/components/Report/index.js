@@ -237,7 +237,7 @@ export default class Report extends Component {
       : defaultMessage;
 
     return (
-      <div className="flex flex-start summary__notice">
+      <div className="flex flex-start summary__notice flex-gap-1">
         <FontAwesomeIcon icon="exclamation-circle" title="notice" />
         {message}
       </div>
