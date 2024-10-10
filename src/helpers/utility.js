@@ -497,6 +497,20 @@ export function toDate(stringDate) {
   return new Date(stringDate);
 }
 
+export function getEPICPatientIdFromSource(fhirPatientSource) {
+  if (!fhirPatientSource || isEmptyArray(fhirPatientSource.identifier))
+    return "";
+  if (isReportEnabled()) {
+    return fhirPatientSource.identifier.find(
+      (o) => o.system === "http://www.uwmedicine.org/epic_patient_id"
+    )?.value;
+  }
+
+  //add other check for different system if needed
+
+  return "";
+}
+
 export function getPatientNameFromSource(fhirPatientSource) {
   if (
     !fhirPatientSource ||
