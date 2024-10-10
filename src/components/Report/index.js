@@ -11,6 +11,7 @@ import {
   getQuestionnaireDescription,
   getQuestionnaireTitle,
   isEmptyArray,
+  isReportEnabled,
 } from "../../helpers/utility";
 import * as reportUtil from "./utility";
 
@@ -229,10 +230,16 @@ export default class Report extends Component {
   }
 
   renderNoDataNotice() {
+    const defaultMessage =
+      "The system indicates that there is no reportable data for this patient.";
+    const message = isReportEnabled()
+      ? "No PainTracker or UW Medicine procedures, referrals or medications found for this patient. If the patient registered to PainTracker today, request PainTracker data from front desk staff."
+      : defaultMessage;
+
     return (
-      <div className="flex flex-start summary__notice">
+      <div className="flex flex-start summary__notice flex-gap-1">
         <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-        The system indicates that there is no reportable data for this patient.
+        {message}
       </div>
     );
   }
