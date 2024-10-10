@@ -1340,7 +1340,7 @@
                         },
                         "then" : {
                            "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                           "value" : "12.6",
+                           "value" : "15.4",
                            "type" : "Literal"
                         }
                      } ],

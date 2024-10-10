@@ -37,7 +37,7 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 * 09/21/21 BugFix fix integer/decimal daily dose comparison when detetermine conversion factor for Methodone
 * 12/01/21 Add conversion factor for Sufentanil, Alfentanil, and Remifentanil
 * 12/21/21 Add conversion factor for Diphenoxylate
-* 10/09/24 Change conversion factor for Hydromorphone (from 4 to 6), for Tramadol (from 0.1 to 0.2)
+* 10/09/24 Change conversion factor for Hydromorphone (from 4 to 6), for Tramadol (from 0.1 to 0.2), for buprenorphine (from 1.8 X 7 = 12.6 to 2.2 X 7 )
 */
 
 include OMTKData version '3.0.0' called OMTKData
@@ -98,7 +98,7 @@ https://www.cdc.gov/drugoverdose/modules/data-files.html
 CMS Guidance:
 https://www.cms.gov/Medicare/Prescription-Drug-Coverage/PrescriptionDrugCovContra/Downloads/Oral-MME-CFs-vFeb-2018.pdf
 Opioid (strength in mg except where noted)	MME Conversion Factor*
-Buprenorphine, transdermal patch (MCG/HR)	12.6
+Buprenorphine, transdermal patch (MCG/HR)	15.4 (2.2 X 7)
 Buprenorphine, tablet or film	30
 Buprenorphine, film (MCG)	0.03
 Butorphanol	7
@@ -148,7 +148,8 @@ define function GetConversionFactor(ingredientCode Code, dailyDose Quantity, dos
     when 1767 then 0 /*	Brompheniramine */
     when 1819 then ( /*	Buprenorphine */
       case
-        when ToInteger(doseFormCode.code) = 316987 then 12.6 /* Transdermal system */
+        //2.2 X 7 = 15.4
+        when ToInteger(doseFormCode.code) = 316987 then 15.4 /* Transdermal system */
         else 30 /* Tablet or Film (or Film in MCG) */
       end
     )
