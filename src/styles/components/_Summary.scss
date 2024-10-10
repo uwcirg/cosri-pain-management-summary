@@ -557,7 +557,9 @@
           }
           .alerts-container {
             margin-top: 16px;
-            a {
+          }
+          .alerts-container {
+            a, .no-anchor {
               text-decoration: none;
               font-weight: 600;
               display: flex;
@@ -576,6 +578,9 @@
               color: $color-red-darker;
               font-size: 28px;
               min-width: 28px;
+              &.info {
+                color: $color-info;
+              }
               &.warning {
                 color: $color-warning;
               }
@@ -585,6 +590,10 @@
               &:hover {
                 color: $color-red;
                 cursor: pointer;
+              }
+              &.info:hover {
+                color: $color-info;
+                cursor: auto;
               }
             }
           }

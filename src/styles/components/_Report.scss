@@ -7,6 +7,28 @@ $selector-box-shadow: 0 2px 2px #383e40;
     background-color: $color-gray-lightest;
     border-top: 4px solid $color-blue;
   }
+  .flags-container {
+    .flag-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .flag {
+      color: $color-red-darker;
+      font-size: 1.2rem;
+      &.info {
+        color: $color-info;
+      }
+      &:hover {
+        color: $color-red;
+        cursor: pointer;
+      }
+      &.info:hover {
+        color: $color-info-light;
+        cursor: auto;
+      }
+    }
+  }
   .summary__nav {
     padding: 64px 0 24px 0px;
     .title-text-container {
@@ -51,15 +73,29 @@ $selector-box-shadow: 0 2px 2px #383e40;
         min-height: 72px;
         background: $color-white;
         padding: 8px;
+        .flags-container {
+          margin-left: 24px;
+          margin-right: 24px;
+          margin-bottom: 16px;
+        }
       }
       .sub-section {
         border: 1px solid $color-gray-lighter;
         margin-bottom: 8px;
         margin-top: 8px;
         &__header {
-          padding: 0 20px 4px;
+          padding: 0 20px 12px;
           margin-block-start: 0.5em;
           margin-block-end: 0.5em;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          .flags-container {
+            margin: 0;
+            .flag {
+              font-size: 1rem;
+            }
+          }
         }
         &__anchor {
           width: 2px;
@@ -69,7 +105,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           display: flex;
           align-items: center;
           margin-block-start: 0;
-          margin-block-end: 8px;
         }
         &:not(.sub-section-notitle):first-of-type {
           margin-top: 0;

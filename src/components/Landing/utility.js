@@ -11,10 +11,12 @@ import {
   getEnvSystemType,
   getEnvConfidentialAPIURL,
   isEmptyArray,
+  isReportEnabled,
   saveData,
   writeToLog,
 } from "../../helpers/utility";
 import { getEnv, ENV_VAR_PREFIX } from "../../utils/envConfig";
+import report_config from "../../config/report_config";
 
 let uuid = 0;
 
@@ -26,7 +28,10 @@ export function processEndPoint(endpoint, endpointParams) {
   if (!endpoint) return "";
   const params = endpointParams ? endpointParams : {};
   return endpoint
-    .replace(`{process.env.${ENV_VAR_PREFIX}_CONF_API_URL}`, getEnvConfidentialAPIURL())
+    .replace(
+      `{process.env.${ENV_VAR_PREFIX}_CONF_API_URL}`,
+      getEnvConfidentialAPIURL()
+    )
     .replace("{process.env.PUBLIC_URL}", getEnv("PUBLIC_URL"))
     .replace("{patientId}", params.patientId);
 }
@@ -149,7 +154,7 @@ export function getDemoData(section, params) {
 }
 
 export function getProcessedSummaryData(summary, summaryMap) {
-  const sectionFlags = {};
+  let sectionFlags = {};
   const sectionKeys = Object.keys(summaryMap || {});
   let flaggedCount = 0;
 
@@ -238,6 +243,43 @@ export function getProcessedSummaryData(summary, summaryMap) {
       }
     });
   });
+
+  if (isReportEnabled()) {
+    report_config.forEach((section) => {
+      if (section.sections) {
+        section.sections.forEach((subSection) => {
+          if (subSection.flags) {
+            const sectionFlagged = flagit(null, subSection, summary);
+            console.log(
+              "report section flag ",
+              sectionFlagged,
+              " section ",
+              subSection
+            );
+            if (sectionFlagged) {
+              sectionFlags[subSection.dataKeySource] = {};
+              sectionFlags[subSection.dataKeySource][subSection.dataKey] = [
+                {
+                  ...(typeof sectionFlagged === "object" ? sectionFlagged : {}),
+                  flagClass:
+                    typeof sectionFlagged === "object"
+                      ? sectionFlagged["class"]
+                      : "",
+                  flagText:
+                    typeof sectionFlagged === "object"
+                      ? sectionFlagged["text"]
+                      : sectionFlagged,
+                  subSection: subSection,
+                },
+              ];
+            }
+          }
+        });
+      }
+    });
+  }
+
+  console.log("flags ", sectionFlags);
 
   return { sectionFlags, flaggedCount };
 }

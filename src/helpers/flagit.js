@@ -4,7 +4,7 @@ const functions = { ifAnd, ifOr, ifNone, ifOneOrMore, ifGreaterThanOrEqualTo, if
 // returns false if the given entry should not be flagged
 // returns the flag text for an entry that should be flagged
 export default function flagit(entry, subSection, summary) {
-  const flags = subSection.tables[0].flags;
+  const flags = subSection && subSection.tables ? subSection?.tables[0]?.flags : subSection.flags;
   if (flags == null) return false;
 
   const flagResults = flags.reduce((accumulator, flag) => {
