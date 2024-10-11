@@ -27706,6 +27706,11 @@
         "version": "2020-02"
       },
       {
+        "code": "1544853",
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2020-02"
+      },
+      {
         "code": "1864412",
         "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
         "version": "2020-02"
