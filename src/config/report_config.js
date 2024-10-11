@@ -444,15 +444,8 @@ const reportConfig = [
         title: "Medications",
         flags: [
           {
-            flag: {
-              ifOneOrMore: {
-                table: "MedicationRequestsForNaloxoneConsideration",
-                source: "RiskConsiderations",
-              },
-            },
-            flagClass: "info",
-            flagText:
-              "Current MME 50 or more, consider prescribing Naloxone",
+            parentKey: "PDMPMedications",
+            dataKey: "PDMPMedications"
           }
         ],
         component: (props) => (

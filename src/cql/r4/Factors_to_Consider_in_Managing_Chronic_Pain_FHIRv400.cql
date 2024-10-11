@@ -65,6 +65,8 @@
 // Update 20210204
 //   Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
 //   When Report MME, compile MME for medications classified as Opioid Medication and also from PDMP
+// Update 20241010
+// Add Naloxone prescription alert check, see MedicationRequestsForNaloxoneConsideration
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
@@ -735,17 +737,14 @@ define ReportPDMPMedicationRequests:
 define HasNaloxoneInLastYear:
   Length(
     (ReportNaloxoneMedicationRequests) M 
-   // where (year from Today() - year from M.AuthoredOn) <= 1
     where M.AuthoredOn <= Today() and M.AuthoredOn >= (Today() - 1 year)
   ) > 0
-
 
 define MedicationRequestsLastTwoYears:
   (ReportPDMPMedicationRequests) M
   where M.MME >= 50 and ((year from Today() - year from M.CalculatedEnd) <= 2)
 
 define MedicationRequestsForNaloxoneConsideration:
-  //TODO if prescribed naloxone from DAWG data, return null
   if HasNaloxoneInLastYear then
     null
   else

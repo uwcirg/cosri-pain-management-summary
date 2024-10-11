@@ -8,9 +8,11 @@ import SideNav from "../SideNav";
 import Version from "../../elements/Version";
 import reportSummarySections from "../../config/report_config";
 import {
+  dedupArrObjects,
   getQuestionnaireDescription,
   getQuestionnaireTitle,
   isEmptyArray,
+  isReportEnabled,
 } from "../../helpers/utility";
 import * as reportUtil from "./utility";
 
@@ -99,13 +101,34 @@ export default class Report extends Component {
       </div>
     );
   }
-  renderFlagIconsInHeader(section) {
+  getSectionFlags(section) {
+    if (isEmptyArray(section.flags)) return null;
     const sectionFlags = this.props.sectionFlags;
     if (!sectionFlags) return null;
-    if (!section.dataKey || !section.dataKeySource) return null;
-    const flagObj = sectionFlags[section.dataKeySource]
-      ? sectionFlags[section.dataKeySource][section.dataKey]
-      : null;
+    return dedupArrObjects(
+      section.flags
+        .map((o) => {
+          if (
+            sectionFlags[o.parentKey] &&
+            sectionFlags[o.parentKey][o.dataKey]
+          ) {
+            return sectionFlags[o.parentKey][o.dataKey];
+          }
+          return null;
+        })
+        .filter((o) => !!o)
+        .flat()
+        .map((o) => {
+          return {
+            flagText: o.flagText,
+            flagClass: o.flagClass,
+          };
+        }),
+      "flagText"
+    );
+  }
+  renderFlagIconsInHeader(section) {
+    const flagObj = this.getSectionFlags(section);
     if (isEmptyArray(flagObj)) return null;
     return (
       <div className="flags-container">
@@ -114,7 +137,7 @@ export default class Report extends Component {
             <div
               key={`${section.dataKey}_flag_${index}`}
               className="flag-item"
-              title={o.text}
+              title={o.flagText}
             >
               <FontAwesomeIcon
                 className={`flag ${o.flagClass}`}
@@ -206,12 +229,7 @@ export default class Report extends Component {
     );
   }
   renderSubSectionFlags(section) {
-    const sectionFlags = this.props.sectionFlags;
-    if (!sectionFlags) return null;
-    if (!section.dataKey || !section.dataKeySource) return null;
-    const flagObj = sectionFlags[section.dataKeySource]
-      ? sectionFlags[section.dataKeySource][section.dataKey]
-      : null;
+    const flagObj = this.getSectionFlags(section);
     if (isEmptyArray(flagObj)) return null;
     return (
       <div className="flags-container">
@@ -222,7 +240,7 @@ export default class Report extends Component {
                 className={`flag ${o.flagClass}`}
                 icon="exclamation-circle"
               />
-              <span>{o.text}</span>
+              <span>{o.flagText}</span>
             </div>
           );
         })}
@@ -286,10 +304,16 @@ export default class Report extends Component {
   }
 
   renderNoDataNotice() {
+    const defaultMessage =
+      "The system indicates that there is no reportable data for this patient.";
+    const message = isReportEnabled()
+      ? "No PainTracker or UW Medicine procedures, referrals or medications found for this patient. If the patient registered to PainTracker today, request PainTracker data from front desk staff."
+      : defaultMessage;
+
     return (
-      <div className="flex flex-start summary__notice">
+      <div className="flex flex-start summary__notice flex-gap-1">
         <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-        The system indicates that there is no reportable data for this patient.
+        {message}
       </div>
     );
   }

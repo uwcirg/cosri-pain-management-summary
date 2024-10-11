@@ -11,12 +11,10 @@ import {
   getEnvSystemType,
   getEnvConfidentialAPIURL,
   isEmptyArray,
-  isReportEnabled,
   saveData,
   writeToLog,
 } from "../../helpers/utility";
 import { getEnv, ENV_VAR_PREFIX } from "../../utils/envConfig";
-import report_config from "../../config/report_config";
 
 let uuid = 0;
 
@@ -215,7 +213,12 @@ export function getProcessedSummaryData(summary, summaryMap) {
                   entry && entry[flagDateField]
                     ? extractDateFromGMTDateString(entry[flagDateField])
                     : "",
-                priority: alertMapping.priority ? alertMapping.priority : 0,
+                priority:
+                  flagClass === "info"
+                    ? 1000
+                    : alertMapping.priority
+                    ? alertMapping.priority
+                    : 0,
               });
             }
 
@@ -243,41 +246,6 @@ export function getProcessedSummaryData(summary, summaryMap) {
       }
     });
   });
-
-  if (isReportEnabled()) {
-    report_config.forEach((section) => {
-      if (section.sections) {
-        section.sections.forEach((subSection) => {
-          if (subSection.flags) {
-            const sectionFlagged = flagit(null, subSection, summary);
-            console.log(
-              "report section flag ",
-              sectionFlagged,
-              " section ",
-              subSection
-            );
-            if (sectionFlagged) {
-              sectionFlags[subSection.dataKeySource] = {};
-              sectionFlags[subSection.dataKeySource][subSection.dataKey] = [
-                {
-                  ...(typeof sectionFlagged === "object" ? sectionFlagged : {}),
-                  flagClass:
-                    typeof sectionFlagged === "object"
-                      ? sectionFlagged["class"]
-                      : "",
-                  flagText:
-                    typeof sectionFlagged === "object"
-                      ? sectionFlagged["text"]
-                      : sectionFlagged,
-                  subSection: subSection,
-                },
-              ];
-            }
-          }
-        });
-      }
-    });
-  }
 
   console.log("flags ", sectionFlags);
 
