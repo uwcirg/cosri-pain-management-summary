@@ -90,7 +90,13 @@
       "summaryDataSource": [
         {
           "section_key": "RiskConsiderations",
-          "subSection_key": "ReportMMEByDates"
+          "subSection_key": "ReportMMEByDates",
+          "key": "default"
+        },
+        {
+          "section_key": "RiskConsiderations",
+          "subSection_key": "ReportMMEByDatesWithoutBuprenorphine",
+          "key": "wo_buprenorphine"
         }
       ]
     },
