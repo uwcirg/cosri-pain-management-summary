@@ -529,6 +529,11 @@ export default class MMEGraph extends Component {
                 <XYAxis {...{ xSettings, ySettings }} />
                 {!isEmptyArray(noBupLineData) &&
                   this.renderShadeArea(data, defaultProps)}
+                {!isEmptyArray(noBupLineData) &&
+                  this.renderTotalMMEWithoutBupLine(
+                    noBupLineData,
+                    dataLineProps
+                  )}
                 {this.renderDefaultTotalMMELine(
                   data.filter((o) => o.type === "default"),
                   dataLineProps,
@@ -562,11 +567,6 @@ export default class MMEGraph extends Component {
                 {/* <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>
                   CDC avoid/justify threshold
                 </text> */}
-                {!isEmptyArray(noBupLineData) &&
-                  this.renderTotalMMEWithoutBupLine(
-                    noBupLineData,
-                    dataLineProps
-                  )}
               </g>
             </svg>
           </div>
