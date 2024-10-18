@@ -512,7 +512,7 @@ export default class MMEGraph extends Component {
       );
     }
     return (
-      <div ref={this.containerRef} style={{ paddingBottom: "24px" }}>
+      <div ref={this.containerRef} style={{ paddingBottom: "24px", backgroundColor: "#FFF" }}>
         <div className="MMEgraph">
           <div className="flex">
             <div className="title">Morphine Equivalent Dose (MED)</div>
