@@ -412,35 +412,20 @@ export default class Landing extends Component {
         summary[item.section_key] &&
         summary[item.section_key][item.subSection_key]
       ) {
-        // graph_data = [
-        //   ...graph_data,
-        //   ...summary[item.section_key][item.subSection_key],
-        // ];
-        // graphDataSet["default"] = [
-        //   ...graphDataSet["default"]??[],
-        //   ...summary[item.section_key][item.subSection_key],
-        // ];
-        // console.log('summary data ', summary[item.section_key][item.subSection_key])
+        const sectionKey = item.key
+          ? item.key
+          : `${item.section_key}_${item.subSection_key}`;
         if (item.key) {
-          graphDataSet[item.key] = landingUtils.getProcessedGraphData(
+          graphDataSet[sectionKey] = landingUtils.getProcessedGraphData(
             graphConfig,
-            JSON.parse(JSON.stringify(summary[item.section_key][item.subSection_key]))
+            JSON.parse(
+              JSON.stringify(summary[item.section_key][item.subSection_key])
+            )
           );
         }
       }
     });
-    // graphDataSet["default"] = landingUtils.getProcessedGraphData(graphConfig,  graph_data);
-    // graphDataSet["no_buprenorphine"] = landingUtils.getProcessedGraphData(graphConfig,  graph_data.map(o => {
-    //   if (o.isBup) o.MMEValue = 1;
-    //   o.modified = true;
-    //   return o;
-    // }));
-    // console.log("graph data ? ", graph_data)
-    // graphDataSet["default"] = landingUtils.getProcessedGraphData(graphConfig,  graphDataSet["default"]);
-    console.log("set", graphDataSet);
     summary[this.getOverviewSectionKey() + "_graph"] = graphDataSet;
-    // summary[this.getOverviewSectionKey() + "_graph"] =
-    //   landingUtils.getProcessedGraphData(graphConfig, graph_data);
   }
 
   setSummaryOverviewStatsData(summary) {

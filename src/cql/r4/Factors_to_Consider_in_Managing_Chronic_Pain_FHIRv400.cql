@@ -66,7 +66,10 @@
 //   Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
 //   When Report MME, compile MME for medications classified as Opioid Medication and also from PDMP
 // Update 20241010
-// Add Naloxone prescription alert check, see MedicationRequestsForNaloxoneConsideration
+//   Add Naloxone prescription alert check, see MedicationRequestsForNaloxoneConsideration
+// Update 20241018
+//  Buprenorphine related changes, see ReportBuprenorphineMedicationRequests, BuprenorphineMMEByDates,ReportBuprenorphineMMEByDates
+//  ReportMMEByDatesWithoutBuprenorphine
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 

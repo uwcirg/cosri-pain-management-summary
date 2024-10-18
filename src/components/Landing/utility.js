@@ -470,6 +470,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     //       (target) => JSON.stringify(target) === JSON.stringify(item)
     //     ) === index
     // );
+    console.table("graph data ", formattedData);
 
   return formattedData;
 }
