@@ -58,7 +58,7 @@ class Markers extends React.Component {
     }
     const animationDuration = 100;
     const dataId = dataPointsProps.id ? String(dataPointsProps.id).toUpperCase() : "data";
-    const markerType = String(this.props.markerType).toLowerCase();
+    const markerType = this.props.markerType ? String(this.props.markerType).toLowerCase() : "circle";
     const markerSize = this.props.markerSize ? this.props.markerSize : 10;
     let markerShape = MARKER_SHAPES[this.props.markerType];
     if (!markerShape) markerShape = d3.symbolCircle;

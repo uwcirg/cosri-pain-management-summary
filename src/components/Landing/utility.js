@@ -266,7 +266,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
 
   //sort data by start date
   let graph_data = !isEmptyArray(graphDataSource)
-    ? graphDataSource
+    ? JSON.parse(JSON.stringify(graphDataSource))
         .filter(function (item) {
           return item[startDateFieldName] && item[endDateFieldName];
         })
@@ -277,7 +277,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   /*
    * 'NaN' is the value for null when coerced into number, need to make sure that is not included
    */
-  const getRealNumber = (o) => (o && !isNaN(o) ? o : 0);
+  const getRealNumber = (o) => (o !== null && !isNaN(o) && o >= 0 ? o : 0);
   let dataPoints = [];
   let prevObj = null,
     nextObj = null;
@@ -375,7 +375,8 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     }
     //overlapping data points
     if (
-      prevObj &&
+      prevObj 
+      &&
       prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]
     ) {
       //add data point with MME value for the previous med as the connecting data point
@@ -385,7 +386,8 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
       dataPoint[PLACEHOLDER_FIELD_NAME] = true;
       finalDataPoints.push(dataPoint);
       finalDataPoints.push(currentDataPoint);
-    } else if (
+    } 
+    else if (
       prevObj &&
       currentDataPoint[START_DELIMITER_FIELD_NAME] &&
       dateNumberFormat(currentDataPoint[startDateFieldName]) >
@@ -431,6 +433,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
         finalDataPoints.push(dataPoint);
       }
     } else {
+      
       if (!nextObj) currentDataPoint[FINAL_CALCULATED_FIELD_FLAG] = true;
       finalDataPoints.push(currentDataPoint);
     }
@@ -446,7 +449,6 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     }
     prevObj = finalDataPoints[finalDataPoints.length - 1];
   });
-  console.log("graph data ", finalDataPoints);
   let formattedData = JSON.parse(JSON.stringify(finalDataPoints))
     .map((point) => {
       let o = {};
@@ -462,12 +464,12 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
       }
       return o;
     })
-    .filter(
-      (item, index, ref) =>
-        ref.findIndex(
-          (target) => JSON.stringify(target) === JSON.stringify(item)
-        ) === index
-    );
+    // .filter(
+    //   (item, index, ref) =>
+    //     ref.findIndex(
+    //       (target) => JSON.stringify(target) === JSON.stringify(item)
+    //     ) === index
+    // );
 
   return formattedData;
 }
