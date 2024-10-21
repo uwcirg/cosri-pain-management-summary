@@ -19,6 +19,7 @@ const defaultFields = {
 const xFieldName = defaultFields.x;
 const yFieldName = defaultFields.y;
 const WITHOUT_BUP_KEY = "wo_buprenorphine";
+const DEFAULT_LINE_KEY = "default";
 const DEFAULT_STROKE_COLOR = "#168698";
 const INFO_COLOR = "#056dc5";
 export default class MMEGraph extends Component {
@@ -165,7 +166,7 @@ export default class MMEGraph extends Component {
 
   renderShadeArea(data, props) {
     if (isEmptyArray(data)) return null;
-    const defaultData = data.filter((o) => o.type === "default");
+    const defaultData = data.filter((o) => o.type === DEFAULT_LINE_KEY);
     const noBupData = data.filter((o) => o.type === WITHOUT_BUP_KEY);
     return (
       <Area
@@ -227,7 +228,7 @@ export default class MMEGraph extends Component {
       />
     );
   }
-
+  
   renderLineLegend(defaultData, noBupData) {
     if (isEmptyArray(defaultData) && isEmptyArray(noBupData)) return null;
     if (isEmptyArray(noBupData)) return null;
@@ -512,7 +513,10 @@ export default class MMEGraph extends Component {
       );
     }
     return (
-      <div ref={this.containerRef} style={{ paddingBottom: "24px", backgroundColor: "#FFF" }}>
+      <div
+        ref={this.containerRef}
+        style={{ paddingBottom: "24px", backgroundColor: "#FFF" }}
+      >
         <div className="MMEgraph">
           <div className="flex">
             <div className="title">Morphine Equivalent Dose (MED)</div>
@@ -535,7 +539,7 @@ export default class MMEGraph extends Component {
                     dataLineProps
                   )}
                 {this.renderDefaultTotalMMELine(
-                  data.filter((o) => o.type === "default"),
+                  data.filter((o) => o.type === DEFAULT_LINE_KEY),
                   dataLineProps,
                   markerDataProps
                 )}
