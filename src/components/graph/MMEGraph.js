@@ -21,7 +21,8 @@ const yFieldName = defaultFields.y;
 const WITHOUT_BUP_KEY = "wo_buprenorphine";
 const DEFAULT_LINE_KEY = "default";
 const DEFAULT_STROKE_COLOR = "#168698";
-const INFO_COLOR = "#056dc5";
+//const INFO_COLOR = "#056dc5";
+const INFO_COLOR = "#7d2184";
 export default class MMEGraph extends Component {
   constructor() {
     super(...arguments);
@@ -212,6 +213,7 @@ export default class MMEGraph extends Component {
     if (isEmptyArray(data)) return null;
     const lineId = "dataLine_wo_bup";
     const lineColor = INFO_COLOR;
+  
     return (
       <Line
         lineID={lineId}
@@ -219,16 +221,16 @@ export default class MMEGraph extends Component {
         data={data}
         {...{
           ...lineProps,
-          strokeWidth: 1,
+          strokeWidth: 4,
           strokeColor: lineColor,
           strokeFill: lineColor,
           dotted: true,
-          dotSpacing: "2, 2",
+          dotSpacing: "2, 4",
         }}
       />
     );
   }
-  
+
   renderLineLegend(defaultData, noBupData) {
     if (isEmptyArray(defaultData) && isEmptyArray(noBupData)) return null;
     if (isEmptyArray(noBupData)) return null;
