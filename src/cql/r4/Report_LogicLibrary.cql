@@ -70,9 +70,22 @@ define ReferralHistory:
     }
     sort by Date desc
 
+define MedicationList:
+    [MedicationRequest] M
+    // within 2 years
+    //where ((year from Today() - year from M.authoredOn.value) <= 2)
+    where M.authoredOn.value <= Today() and M.authoredOn.value >= (Today() - 2 year)
+    return {
+        Name:  ConceptText(M.medication as FHIR.CodeableConcept),
+        Start: DateTimeText(M.authoredOn),
+        Authored: M.authoredOn.value
+    }
+    sort by Authored
+
 define Summary: {
   TreatmentHistory: {
     Procedures: ProcedureHistory,
     Referrals: ReferralHistory
-  }
+  },
+  MedicationList: MedicationList
 }

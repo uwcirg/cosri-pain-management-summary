@@ -547,6 +547,7 @@ export default class Landing extends Component {
                       report: summary.ReportSummary,
                       survey: summary.SurveySummary,
                     }}
+                    sectionFlags={sectionFlags}
                   ></Report>
                 )}
                 {/* other tab panel as specified here */}
