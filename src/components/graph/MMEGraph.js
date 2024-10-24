@@ -195,10 +195,14 @@ export default class MMEGraph extends Component {
   renderDefaultTotalMMELine(data, lineProps, markerProps) {
     if (isEmptyArray(data)) return null;
     const lineId = "dataLine_default";
+    return <Line lineID={lineId} key={lineId} data={data} {...lineProps} />;
+  }
+
+  renderDefaultTotalMMEMarkers(data, lineProps, markerProps) {
+    if (isEmptyArray(data)) return null;
     const dataPointsProps = { ...markerProps, id: "default_markers" };
     return (
       <React.Fragment>
-        <Line lineID={lineId} key={lineId} data={data} {...lineProps} />
         <Markers data={data} {...lineProps} dataPointsProps={dataPointsProps} />
         <Tooltip
           data={data}
@@ -213,7 +217,7 @@ export default class MMEGraph extends Component {
     if (isEmptyArray(data)) return null;
     const lineId = "dataLine_wo_bup";
     const lineColor = INFO_COLOR;
-  
+
     return (
       <Line
         lineID={lineId}
@@ -570,6 +574,11 @@ export default class MMEGraph extends Component {
                 <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>
                   CDC: Consider offering naloxone
                 </text>
+                {this.renderDefaultTotalMMEMarkers(
+                  data.filter((o) => o.type === DEFAULT_LINE_KEY),
+                  dataLineProps,
+                  markerDataProps
+                )}
                 {/* <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>
                   CDC avoid/justify threshold
                 </text> */}
