@@ -65,9 +65,13 @@ class Line extends React.Component {
       .attr("class", className)
       .attr("d", lineGenerator);
     if (this.props.dotted) {
-      currentNode.style("stroke-dasharray", this.props.dotSpacing || "3, 3"); // <== This line here!!
+      currentNode.style("stroke-dasharray", this.props.dotSpacing || "3, 3")
+       
     }
-    const dataId = dataPointsProps && dataPointsProps.id ? String(dataPointsProps.id).toUpperCase() : "data";
+    const dataId =
+      dataPointsProps && dataPointsProps.id
+        ? String(dataPointsProps.id).toUpperCase()
+        : "data";
     //print label - PRINT ONLY
     if (showPrintLabel) {
       select(node)
