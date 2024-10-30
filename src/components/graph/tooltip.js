@@ -46,6 +46,7 @@ class Tooltip extends React.Component {
       showDataIdInLabel,
     } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
+    const BASELINE_IDENTIFIER = "baseline";
 
     this.setState({
       xName: xName,
@@ -56,7 +57,7 @@ class Tooltip extends React.Component {
     const formatDate = timeFormat(`%Y-%b-%d`);
     const dataId = dataPointsProps.id ? String(dataPointsProps.id).toUpperCase() : "data";
 
-    const isExcludeItem = (item) => item["baseline"] || item[PLACEHOLDER_IDENTIFIER];
+    const isExcludeItem = (item) => !item[yName] || item[BASELINE_IDENTIFIER] || item[PLACEHOLDER_IDENTIFIER];
 
     const displayRect = () =>
       select(node)

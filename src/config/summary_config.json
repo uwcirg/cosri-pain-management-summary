@@ -95,6 +95,11 @@
         },
         {
           "section_key": "RiskConsiderations",
+          "subSection_key": "ReportMMEByDatesWithBuprenorphine",
+          "key": "buprenorphine"
+        },
+        {
+          "section_key": "RiskConsiderations",
           "subSection_key": "ReportMMEByDatesWithoutBuprenorphine",
           "key": "wo_buprenorphine"
         }

@@ -266,7 +266,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
 
   //sort data by start date
   let graph_data = !isEmptyArray(graphDataSource)
-    ? JSON.parse(JSON.stringify(graphDataSource))
+    ? graphDataSource
         .filter(function (item) {
           return item[startDateFieldName] && item[endDateFieldName];
         })
@@ -274,6 +274,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
           return dateCompare(a[startDateFieldName], b[startDateFieldName]);
         })
     : [];
+  console.log("graph data ", graph_data)
   /*
    * 'NaN' is the value for null when coerced into number, need to make sure that is not included
    */

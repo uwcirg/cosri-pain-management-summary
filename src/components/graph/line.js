@@ -95,7 +95,7 @@ class Line extends React.Component {
     line.datum(data).transition(t).attr("d", lineGenerator);
   }
   render() {
-    return <g className={this.props.className} ref={this.ref} />;
+    return <g className={this.props.className} ref={this.ref} style={this.props.style} />;
   }
 }
 

@@ -9,7 +9,7 @@ import Markers from "./markers";
 import Tooltip from "./tooltip";
 import { dateFormat } from "../../helpers/formatit";
 import { dateCompare } from "../../helpers/sortit";
-import { sumArray, daysFromToday, isEmptyArray } from "../../helpers/utility";
+import { sumArray, daysFromToday, isEmptyArray, renderImageFromSVG } from "../../helpers/utility";
 import CopyButton from "../CopyButton";
 
 const defaultFields = {
@@ -18,16 +18,60 @@ const defaultFields = {
 };
 const xFieldName = defaultFields.x;
 const yFieldName = defaultFields.y;
+const DEFAULT_LINE_ID = "dataLine_default";
+const BUP_LINE_ID = "dataLine_bup";
+const WO_BUP_LINE_ID = "dataLine_no_bup";
 const WITHOUT_BUP_KEY = "wo_buprenorphine";
+const BUP_ONLY_KEY = "buprenorphine";
 const DEFAULT_LINE_KEY = "default";
 const DEFAULT_STROKE_COLOR = "#168698";
 //const INFO_COLOR = "#056dc5";
-const INFO_COLOR = "#7d2184";
+//const INFO_COLOR = "#7d2184";
+const NO_BUP_LINE_COLOR = "#a5a8a8";
+const BUP_LINE_COLOR = "#014652";
+const arrLineObj = [
+  {
+    id: BUP_LINE_ID,
+    label: "Total MME with Bupe",
+    style: {
+      borderBottomColor: BUP_LINE_COLOR,
+      borderBottomWidth: "4px",
+      borderBottomStyle: "dotted",
+    },
+  },
+  {
+    id: WO_BUP_LINE_ID,
+    label: "Total MME without Bupe",
+    style: {
+      borderBottomColor: NO_BUP_LINE_COLOR,
+      borderBottomWidth: "4px",
+      borderBottomStyle: "dotted",
+    },
+  },
+];
 export default class MMEGraph extends Component {
   constructor() {
     super(...arguments);
+    this.state = {
+      lineIds: arrLineObj.map((o) => o.id),
+    };
     //refs
     this.containerRef = React.createRef();
+    this.switchCheckboxRefs = [];
+    this.graphRef = React.createRef();
+    this.printImageRef = React.createRef();
+
+    // This binding is necessary to make `this` work in the callback
+    this.addDataLineToGraph = this.addDataLineToGraph.bind(this);
+    this.removeDataLineFromGraph = this.removeDataLineFromGraph.bind(this);
+    this.handleSwitchChange = this.handleSwitchChange.bind(this);
+  }
+  componentDidMount() {
+    this.initSwitchCheckboxRefs();
+    setTimeout(() => {
+      // rendering image for printing
+      renderImageFromSVG(this.printImageRef.current, this.graphRef.current);
+    }, 1500);
   }
   getDefaultDataValueSet(
     paramValue,
@@ -156,6 +200,13 @@ export default class MMEGraph extends Component {
     ];
   }
 
+  initSwitchCheckboxRefs() {
+    // Initialize the array with React.createRef() objects
+    for (let i = 0; i < this.state.lineIds.length; i++) {
+      this.switchCheckboxRefs.push(React.createRef());
+    }
+  }
+
   renderCopyButton() {
     return (
       <CopyButton
@@ -194,11 +245,11 @@ export default class MMEGraph extends Component {
 
   renderDefaultTotalMMELine(data, lineProps, markerProps) {
     if (isEmptyArray(data)) return null;
-    const lineId = "dataLine_default";
+    const lineId = DEFAULT_LINE_ID;
     return <Line lineID={lineId} key={lineId} data={data} {...lineProps} />;
   }
 
-  renderDefaultTotalMMEMarkers(data, lineProps, markerProps) {
+  renderTotalMMEMarkers(data, lineProps, markerProps) {
     if (isEmptyArray(data)) return null;
     const dataPointsProps = { ...markerProps, id: "default_markers" };
     return (
@@ -213,10 +264,31 @@ export default class MMEGraph extends Component {
     );
   }
 
+  renderTotalMMEBupOnlyLine(data, lineProps) {
+    if (isEmptyArray(data)) return null;
+    const lineId = BUP_LINE_ID;
+    const lineColor = BUP_LINE_COLOR;
+    return (
+      <Line
+        lineID={lineId}
+        key={lineId}
+        data={data}
+        {...{
+          ...lineProps,
+          strokeWidth: 5,
+          strokeColor: lineColor,
+          strokeFill: lineColor,
+          // dotted: true,
+          // dotSpacing: "4, 1",
+        }}
+      />
+    );
+  }
+
   renderTotalMMEWithoutBupLine(data, lineProps) {
     if (isEmptyArray(data)) return null;
-    const lineId = "dataLine_wo_bup";
-    const lineColor = INFO_COLOR;
+    const lineId = WO_BUP_LINE_ID;
+    const lineColor = NO_BUP_LINE_COLOR;
 
     return (
       <Line
@@ -225,19 +297,18 @@ export default class MMEGraph extends Component {
         data={data}
         {...{
           ...lineProps,
-          strokeWidth: 4,
+          strokeWidth: 2,
           strokeColor: lineColor,
           strokeFill: lineColor,
           dotted: true,
-          dotSpacing: "2, 4",
+          dotSpacing: "4, 2",
         }}
       />
     );
   }
 
-  renderLineLegend(defaultData, noBupData) {
-    if (isEmptyArray(defaultData) && isEmptyArray(noBupData)) return null;
-    if (isEmptyArray(noBupData)) return null;
+  renderLineLegend(noBupData, bupOnlyLineData) {
+    if (isEmptyArray(noBupData) && isEmptyArray(bupOnlyLineData)) return null;
     return (
       <div
         style={{
@@ -250,13 +321,15 @@ export default class MMEGraph extends Component {
           fontSize: "0.9em",
         }}
       >
-        {!isEmptyArray(defaultData) && (
+        {!isEmptyArray(bupOnlyLineData) && (
           <div className="flex flex-start-1">
             <div
               style={{
                 width: "60px",
-                height: "4px",
-                backgroundColor: DEFAULT_STROKE_COLOR,
+                height: "2px",
+                borderBottomColor: BUP_LINE_COLOR,
+                borderBottomWidth: "4px",
+                borderBottomStyle: "dotted",
               }}
             ></div>
             <div>MED totals including Buprenorphine</div>
@@ -268,7 +341,7 @@ export default class MMEGraph extends Component {
               style={{
                 width: "60px",
                 height: "2px",
-                borderBottomColor: INFO_COLOR,
+                borderBottomColor: NO_BUP_LINE_COLOR,
                 borderBottomWidth: "2px",
                 borderBottomStyle: "dotted",
               }}
@@ -276,6 +349,121 @@ export default class MMEGraph extends Component {
             <div>MED totals excluding Buprenorphine</div>
           </div>
         )}
+      </div>
+    );
+  }
+
+  renderSwitches() {
+    const oLines = arrLineObj;
+    return (
+      <div className="legend-container print-hidden exclude-from-copy">
+        <div
+          className="legend"
+          style={{
+            margin: "10px 20px 20px 20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}
+        >
+          {oLines.map((item, index) => {
+            return (
+              <div
+                className="legend__item flex"
+                key={`line_legend_${item.id}_${index}`}
+                style={{ fontSize: "0.7rem" }}
+              >
+                <div className="legend__item--key" style={item.style}>
+                  <span className="text">{item.label.toUpperCase()}</span>
+                </div>
+
+                <div className="select-icons-container print-hidden">
+                  <label
+                    className={`exclude-from-copy switch`}
+                    title={
+                      this.isInGraph(item.id)
+                        ? `Remove ${item.label} from graph`
+                        : `Add ${item.label} to graph`
+                    }
+                  >
+                    <input
+                      type="checkbox"
+                      value={item.id}
+                      dataindex={index}
+                      onChange={this.handleSwitchChange}
+                      // disabled={
+                      //   this.isInGraph(item.id) && this.hasOnlyOneGraphLine()
+                      // }
+                      checked={!!this.isInSelectedLineIds(item.id)}
+                      ref={this.switchCheckboxRefs[index]}
+                    />
+                    <span className="switch-slider round"></span>
+                  </label>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  isInSelectedLineIds(id) {
+    return this.state.lineIds.find((item) => item === id);
+  }
+
+  isInGraph(id) {
+    if (isEmptyArray(this.state.lineIds)) return false;
+    return this.state.lineIds.find((item) => item === id);
+  }
+
+  addDataLineToGraph(id, callback) {
+    if (!id) {
+      return;
+    }
+    this.setState(
+      {
+        lineIds: [...new Set([...this.state.lineIds, id])],
+      },
+      callback
+    );
+  }
+  removeDataLineFromGraph(id, callback) {
+    this.setState(
+      {
+        lineIds: this.state.lineIds.filter((item) => item !== id),
+      },
+      callback
+    );
+  }
+
+  hasOnlyOneGraphLine() {
+    return this.state.lineIds.length === 1;
+  }
+
+  handleSwitchChange(e) {
+    const itemValue = e.target.value;
+    const dataIndex = parseInt(e.target.getAttribute("dataindex"));
+    let targetElement = this.switchCheckboxRefs[dataIndex]?.current;
+    if (targetElement) targetElement.setAttribute("checked", e.target.checked);
+    console.log("item value ", itemValue, " state ", this.state.lineIds);
+    //if (!this.isInGraph(itemValue)) {
+    if (e.target.checked) {
+      this.addDataLineToGraph(itemValue);
+    } else {
+      this.removeDataLineFromGraph(itemValue);
+    }
+  }
+
+  renderPrintOnlyImage() {
+    return (
+      <div className="print-only" style={{position: "absolute", top: 0, bottom: 0, right: 0, left: 0}}>
+        <img
+          ref={this.printImageRef}
+          alt="for print"
+          className="mme-graph print-image"
+          style={{ zIndex: -1, position: "relative", width: "100%", height: "80%", objectFit: "contain" }}
+        ></img>
       </div>
     );
   }
@@ -402,9 +590,20 @@ export default class MMEGraph extends Component {
       ...lineParamsSet
     );
     //let CDCData = this.getDefaultDataValueSet(CDC_MAX_VALUE, baseLineDate, maxDate, ...lineParamsSet);
-
+    const noBupLineData = data.filter((o) => o.type === WITHOUT_BUP_KEY);
+    const bupOnlyLineData = data.filter((o) => o.type === BUP_ONLY_KEY);
+    const shouldShowSwitches =
+      !isEmptyArray(noBupLineData) || !isEmptyArray(bupOnlyLineData);
+    const shouldShowBupLine =
+      !isEmptyArray(noBupLineData) && this.isInGraph(BUP_LINE_ID);
+    const shouldShowNoBupLine =
+      !isEmptyArray(noBupLineData) && this.isInGraph(WO_BUP_LINE_ID);
+    // const shouldShowShade =
+    //   this.isInGraph(BUP_LINE_ID) && this.isInGraph(WO_BUP_LINE_ID);
+    const shouldShowMarkers =
+      this.isInGraph(BUP_LINE_ID) || this.isInGraph(DEFAULT_LINE_ID);
     const margins = {
-      top: 0,
+      top: 24,
       right: 56,
       bottom: 48,
       left: 56,
@@ -434,10 +633,12 @@ export default class MMEGraph extends Component {
       xName: xFieldName,
       yName: yFieldName,
     };
-    const defaultDataStrokeColor = DEFAULT_STROKE_COLOR;
+    const DATA_STROKE_COLOR = shouldShowBupLine
+      ? BUP_LINE_COLOR
+      : DEFAULT_STROKE_COLOR;
     const additionalProps = {
-      strokeColor: defaultDataStrokeColor,
-      strokeFill: defaultDataStrokeColor,
+      strokeColor: DATA_STROKE_COLOR,
+      strokeFill: DATA_STROKE_COLOR,
       //   strokeWidth: 2.5,
       strokeWidth: 2.8,
       markerSize: 4,
@@ -446,7 +647,7 @@ export default class MMEGraph extends Component {
       ...additionalProps,
       ...{
         strokeWidth: 2.5,
-        strokeFill: defaultDataStrokeColor,
+        strokeFill: DATA_STROKE_COLOR,
       },
     };
     const tickInterval = Math.ceil(diffDays / 30 / xIntervals);
@@ -492,7 +693,7 @@ export default class MMEGraph extends Component {
     const markerDataProps = additionalProps["dataPointsProps"];
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
-    const noBupLineData = data.filter((o) => o.type === WITHOUT_BUP_KEY);
+
     if (hasError) {
       return (
         <div className="MMEgraph no-entry">
@@ -523,67 +724,89 @@ export default class MMEGraph extends Component {
         ref={this.containerRef}
         style={{ paddingBottom: "24px", backgroundColor: "#FFF" }}
       >
-        <div className="MMEgraph">
+        <div
+          className={`MMEgraph ${shouldShowSwitches ? "contain-switches" : ""}`}
+        >
           <div className="flex">
             <div className="title">Morphine Equivalent Dose (MED)</div>
             <div>{this.renderCopyButton()}</div>
           </div>
-          <div className="MME-svg-container">
-            <svg
-              className="MMEChartSvg"
-              width="100%"
-              height="100%"
-              viewBox={`0 0 ${graphWidth} ${graphHeight}`}
-            >
-              <g transform={`translate(${margins.left}, ${margins.top})`}>
-                <XYAxis {...{ xSettings, ySettings }} />
-                {!isEmptyArray(noBupLineData) &&
-                  this.renderShadeArea(data, defaultProps)}
-                {!isEmptyArray(noBupLineData) &&
-                  this.renderTotalMMEWithoutBupLine(
-                    noBupLineData,
-                    dataLineProps
-                  )}
-                {this.renderDefaultTotalMMELine(
-                  data.filter((o) => o.type === DEFAULT_LINE_KEY),
-                  dataLineProps,
-                  markerDataProps
-                )}
-                {/* <Line lineID="dataLine" data={data} {...dataLineProps} /> */}
-                <Line
-                  lineID="WALine"
-                  strokeColor={WA_COLOR}
-                  dotted="true"
-                  dotSpacing="3, 3"
-                  data={WAData}
-                  {...defaultProps}
-                />
-                <Line
-                  lineID="CDCSecondaryLine"
-                  strokeColor={CDC_COLOR}
-                  dotted="true"
-                  dotSpacing="3, 3"
-                  data={CDCSecondaryData}
-                  {...defaultProps}
-                />
-                {/* <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} /> */}
-                {/* <Tooltip data={data} {...dataLineProps}></Tooltip> */}
-                <text {...WALegendSettings}>
-                  WA State: Consultation threshold
-                </text>
-                <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>
-                  CDC: Consider offering naloxone
-                </text>
-                {this.renderDefaultTotalMMEMarkers(
-                  data.filter((o) => o.type === DEFAULT_LINE_KEY),
-                  dataLineProps,
-                  markerDataProps
-                )}
-                {/* <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>
+          <div className="flex">
+            <div className="MME-svg-container">
+              <svg
+                className="MMEChartSvg print-hidden"
+                width="100%"
+                height="100%"
+                viewBox={`0 0 ${graphWidth} ${graphHeight}`}
+                ref={this.graphRef}
+              >
+                <g transform={`translate(${margins.left}, ${margins.top})`}>
+                  <XYAxis {...{ xSettings, ySettings }} />
+                  {/* {shouldShowShade && this.renderShadeArea(data, defaultProps)} */}
+                  {shouldShowBupLine &&
+                    this.renderTotalMMEBupOnlyLine(
+                      bupOnlyLineData,
+                      dataLineProps
+                    )}
+                  {shouldShowNoBupLine &&
+                    this.renderTotalMMEWithoutBupLine(
+                      noBupLineData,
+                      dataLineProps
+                    )}
+                  {!shouldShowSwitches &&
+                    this.isInGraph(DEFAULT_LINE_ID) &&
+                    this.renderDefaultTotalMMELine(
+                      data.filter((o) => o.type === DEFAULT_LINE_KEY),
+                      dataLineProps,
+                      markerDataProps
+                    )}
+                  {/* <Line lineID="dataLine" data={data} {...dataLineProps} /> */}
+                  <Line
+                    lineID="WALine"
+                    strokeColor={WA_COLOR}
+                    dotted="true"
+                    dotSpacing="2, 1"
+                    data={WAData}
+                    className="wa-line"
+                    style={{opacity: 0.4}}
+                    {...defaultProps}
+                  />
+                  <Line
+                    lineID="CDCSecondaryLine"
+                    strokeColor={CDC_COLOR}
+                    dotted="true"
+                    dotSpacing="2, 1"
+                    data={CDCSecondaryData}
+                    className="cdc-line"
+                    style={{opacity: 0.4}}
+                    {...defaultProps}
+                  />
+                  {/* <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} /> */}
+                  {/* <Tooltip data={data} {...dataLineProps}></Tooltip> */}
+                  <text {...WALegendSettings}>
+                    WA State: Consultation threshold
+                  </text>
+                  <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>
+                    CDC: Consider offering naloxone
+                  </text>
+                  {shouldShowMarkers &&
+                    this.renderTotalMMEMarkers(
+                      data.filter((o) =>
+                        o.type === shouldShowBupLine
+                          ? BUP_LINE_ID
+                          : DEFAULT_LINE_KEY
+                      ),
+                      dataLineProps,
+                      markerDataProps
+                    )}
+                  {/* <text {...CDCLegendSettings} y={yScale(90 + textMargin)}>
                   CDC avoid/justify threshold
                 </text> */}
-              </g>
-            </svg>
+                </g>
+              </svg>
+              {this.renderPrintOnlyImage()}
+            </div>
+            {shouldShowSwitches && this.renderSwitches()}
           </div>
         </div>
         {graphStats.length > 0 && (
@@ -596,7 +819,7 @@ export default class MMEGraph extends Component {
             ))}
           </div>
         )}
-        {this.renderLineLegend(data, noBupLineData)}
+        {/* {this.renderLineLegend(noBupLineData, bupOnlyLineData)} */}
       </div>
     );
   }

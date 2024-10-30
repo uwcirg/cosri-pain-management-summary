@@ -415,6 +415,9 @@
           & {
             max-width: 85%;
           }
+          &.contain-switches {
+            max-width: 100%;
+          }
         }
         .title {
           margin-left: 42px;
@@ -632,6 +635,9 @@
             flex: 1;
             align-self: stretch;
             min-width: 480px;
+            &:has(.contain-switches) {
+              min-width: 640px;
+            }
           }
         }
       }
