@@ -7080,7 +7080,7 @@
                            } ]
                         }
                      }, {
-                        "name" : "type",
+                        "name" : "category",
                         "value" : {
                            "valueType" : "{urn:hl7-org:elm-types:r1}String",
                            "value" : "default",
@@ -7209,48 +7209,6 @@
                }
             }
          }, {
-            "name" : "ReportNonBuprenorphineMMEByDates",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "o",
-                  "expression" : {
-                     "name" : "ReportMMEByDates",
-                     "type" : "ExpressionRef"
-                  }
-               } ],
-               "relationship" : [ ],
-               "where" : {
-                  "type" : "And",
-                  "operand" : [ {
-                     "type" : "Not",
-                     "operand" : {
-                        "type" : "IsNull",
-                        "operand" : {
-                           "path" : "MMEValue",
-                           "scope" : "o",
-                           "type" : "Property"
-                        }
-                     }
-                  }, {
-                     "type" : "Not",
-                     "operand" : {
-                        "type" : "In",
-                        "operand" : [ {
-                           "path" : "rxCUI",
-                           "scope" : "o",
-                           "type" : "Property"
-                        }, {
-                           "name" : "BuprenorphineRxCUIs",
-                           "type" : "ExpressionRef"
-                        } ]
-                     }
-                  } ]
-               }
-            }
-         }, {
             "name" : "ReportMMEByDatesWithoutBuprenorphine",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -7326,30 +7284,11 @@
                            }
                         }
                      }, {
-                        "name" : "type",
+                        "name" : "category",
                         "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "In",
-                              "operand" : [ {
-                                 "path" : "rxCUI",
-                                 "scope" : "R",
-                                 "type" : "Property"
-                              }, {
-                                 "name" : "BuprenorphineRxCUIs",
-                                 "type" : "ExpressionRef"
-                              } ]
-                           },
-                           "then" : {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                              "value" : "buprenorphine",
-                              "type" : "Literal"
-                           },
-                           "else" : {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                              "value" : "not_buprenorphine",
-                              "type" : "Literal"
-                           }
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "wo_buprenorphine",
+                           "type" : "Literal"
                         }
                      } ]
                   }
@@ -7363,7 +7302,7 @@
                }
             }
          }, {
-            "name" : "ReportMMEByDatesWithBuprenorphine",
+            "name" : "ReportMMEByDatesWithBuprenorphineOnly",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -7441,30 +7380,11 @@
                            }
                         }
                      }, {
-                        "name" : "type",
+                        "name" : "category",
                         "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "In",
-                              "operand" : [ {
-                                 "path" : "rxCUI",
-                                 "scope" : "R",
-                                 "type" : "Property"
-                              }, {
-                                 "name" : "BuprenorphineRxCUIs",
-                                 "type" : "ExpressionRef"
-                              } ]
-                           },
-                           "then" : {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                              "value" : "buprenorphine",
-                              "type" : "Literal"
-                           },
-                           "else" : {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                              "value" : "not_buprenorphine",
-                              "type" : "Literal"
-                           }
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "buprenorphine_only",
+                           "type" : "Literal"
                         }
                      } ]
                   }
@@ -10672,89 +10592,6 @@
                            "type" : "ExpressionRef"
                         }
                      }, {
-                        "name" : "FirstBup",
-                        "value" : {
-                           "type" : "First",
-                           "source" : {
-                              "name" : "BuprenorphineMMEByDates",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
-                        "name" : "ReportMMEByDatesWithBuprenorphine",
-                        "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "IsNull",
-                              "operand" : {
-                                 "type" : "First",
-                                 "source" : {
-                                    "name" : "BuprenorphineMMEByDates",
-                                    "type" : "ExpressionRef"
-                                 }
-                              }
-                           },
-                           "then" : {
-                              "type" : "As",
-                              "operand" : {
-                                 "type" : "Null"
-                              },
-                              "asTypeSpecifier" : {
-                                 "type" : "ListTypeSpecifier",
-                                 "elementType" : {
-                                    "type" : "TupleTypeSpecifier",
-                                    "element" : [ {
-                                       "name" : "Start",
-                                       "elementType" : {
-                                          "name" : "{urn:hl7-org:elm-types:r1}String",
-                                          "type" : "NamedTypeSpecifier"
-                                       }
-                                    }, {
-                                       "name" : "End",
-                                       "elementType" : {
-                                          "name" : "{urn:hl7-org:elm-types:r1}String",
-                                          "type" : "NamedTypeSpecifier"
-                                       }
-                                    }, {
-                                       "name" : "rxNormCode",
-                                       "elementType" : {
-                                          "name" : "{urn:hl7-org:elm-types:r1}Code",
-                                          "type" : "NamedTypeSpecifier"
-                                       }
-                                    }, {
-                                       "name" : "rxCUI",
-                                       "elementType" : {
-                                          "name" : "{urn:hl7-org:elm-types:r1}String",
-                                          "type" : "NamedTypeSpecifier"
-                                       }
-                                    }, {
-                                       "name" : "MMEValue",
-                                       "elementType" : {
-                                          "name" : "{urn:hl7-org:elm-types:r1}Decimal",
-                                          "type" : "NamedTypeSpecifier"
-                                       }
-                                    }, {
-                                       "name" : "isBup",
-                                       "elementType" : {
-                                          "name" : "{urn:hl7-org:elm-types:r1}Boolean",
-                                          "type" : "NamedTypeSpecifier"
-                                       }
-                                    }, {
-                                       "name" : "type",
-                                       "elementType" : {
-                                          "name" : "{urn:hl7-org:elm-types:r1}String",
-                                          "type" : "NamedTypeSpecifier"
-                                       }
-                                    } ]
-                                 }
-                              }
-                           },
-                           "else" : {
-                              "name" : "ReportMMEByDates",
-                              "type" : "ExpressionRef"
-                           }
-                        }
-                     }, {
                         "name" : "ReportMMEByDatesWithoutBuprenorphine",
                         "value" : {
                            "type" : "If",
@@ -10763,7 +10600,7 @@
                               "operand" : {
                                  "type" : "First",
                                  "source" : {
-                                    "name" : "BuprenorphineMMEByDates",
+                                    "name" : "ReportBuprenorphineMMEByDates",
                                     "type" : "ExpressionRef"
                                  }
                               }
@@ -10808,7 +10645,7 @@
                                           "type" : "NamedTypeSpecifier"
                                        }
                                     }, {
-                                       "name" : "type",
+                                       "name" : "category",
                                        "elementType" : {
                                           "name" : "{urn:hl7-org:elm-types:r1}String",
                                           "type" : "NamedTypeSpecifier"
@@ -10823,22 +10660,72 @@
                            }
                         }
                      }, {
-                        "name" : "ReportNonBuprenorphineMMEByDates",
+                        "name" : "ReportMMEByDatesWithBuprenorphineOnly",
                         "value" : {
-                           "name" : "ReportNonBuprenorphineMMEByDates",
-                           "type" : "ExpressionRef"
-                        }
-                     }, {
-                        "name" : "ReportBuprenorphineMedicationRequests",
-                        "value" : {
-                           "name" : "ReportBuprenorphineMedicationRequests",
-                           "type" : "ExpressionRef"
-                        }
-                     }, {
-                        "name" : "ReportBuprenorphineMMEByDates",
-                        "value" : {
-                           "name" : "ReportBuprenorphineMMEByDates",
-                           "type" : "ExpressionRef"
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "type" : "First",
+                                 "source" : {
+                                    "name" : "ReportBuprenorphineMMEByDates",
+                                    "type" : "ExpressionRef"
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Null"
+                              },
+                              "asTypeSpecifier" : {
+                                 "type" : "ListTypeSpecifier",
+                                 "elementType" : {
+                                    "type" : "TupleTypeSpecifier",
+                                    "element" : [ {
+                                       "name" : "Start",
+                                       "elementType" : {
+                                          "name" : "{urn:hl7-org:elm-types:r1}String",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }, {
+                                       "name" : "End",
+                                       "elementType" : {
+                                          "name" : "{urn:hl7-org:elm-types:r1}String",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }, {
+                                       "name" : "rxNormCode",
+                                       "elementType" : {
+                                          "name" : "{urn:hl7-org:elm-types:r1}Code",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }, {
+                                       "name" : "rxCUI",
+                                       "elementType" : {
+                                          "name" : "{urn:hl7-org:elm-types:r1}String",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }, {
+                                       "name" : "MMEValue",
+                                       "elementType" : {
+                                          "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    }, {
+                                       "name" : "category",
+                                       "elementType" : {
+                                          "name" : "{urn:hl7-org:elm-types:r1}String",
+                                          "type" : "NamedTypeSpecifier"
+                                       }
+                                    } ]
+                                 }
+                              }
+                           },
+                           "else" : {
+                              "name" : "ReportMMEByDatesWithBuprenorphineOnly",
+                              "type" : "ExpressionRef"
+                           }
                         }
                      }, {
                         "name" : "BenzodiazepineMedications",

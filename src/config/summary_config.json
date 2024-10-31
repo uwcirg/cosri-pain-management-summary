@@ -90,18 +90,77 @@
       "summaryDataSource": [
         {
           "section_key": "RiskConsiderations",
-          "subSection_key": "ReportMMEByDates",
-          "key": "default"
-        },
-        {
-          "section_key": "RiskConsiderations",
-          "subSection_key": "ReportMMEByDatesWithBuprenorphine",
-          "key": "buprenorphine"
+          "subSection_key": "ReportMMEByDatesDefault",
+          "key": "default",
+          "lineProps": {
+            "id": "dataLine_default",
+            "strokeColor": "#168698",
+            "strokeFill": "#168698",
+            "strokeWidth": 2.8
+          },
+          "markerProps": {
+            "id": "dataLine_default_markers",
+            "strokeColor": "#168698",
+            "strokeFill": "#168698",
+            "markerSize": 4
+          },
+          "stats": true
         },
         {
           "section_key": "RiskConsiderations",
           "subSection_key": "ReportMMEByDatesWithoutBuprenorphine",
-          "key": "wo_buprenorphine"
+          "key": "wo_buprenorphine",
+          "lineProps": {
+            "id": "dataLine_wo_bup",
+            "strokeColor": "#024242",
+            "strokeFill": "#024242",
+            "strokeWidth": 5
+          },
+          "markerProps": {
+            "id": "dataLine_wo_bup_markers",
+            "strokeColor": "#024242",
+            "strokeFill": "#024242",
+            "markerSize": 4
+          },
+          "legendProps": {
+            "label": "Total MME w/o Bup",
+            "style": {
+              "borderBottomColor": "#024242",
+              "borderBottomWidth": "4px",
+              "borderBottomStyle": "solid"
+            }
+          },
+          "stats": true,
+          "statsProps": {
+            "title": "Total MME w/o Bup"
+          }
+        },
+        {
+          "section_key": "RiskConsiderations",
+          "subSection_key": "ReportMMEByDatesWithBuprenorphineOnly",
+          "key": "buprenorphine_only",
+          "lineProps": {
+            "id": "dataLine_bup_only",
+            "strokeColor": "#dc6bab",
+            "strokeWidth": "2",
+            "strokeFill": "#dc6bab",
+            "dotted": true,
+            "dotSpacing": "4, 2"
+          },
+          "markerProps": {
+            "id": "dataLine_bup_only_markers",
+            "strokeColor": "#dc6bab",
+            "strokeFill": "#dc6bab",
+            "markerSize": 4
+          },
+          "legendProps": {
+            "label": "Bup-only MME",
+            "style": {
+              "borderBottomColor": "#dc6bab",
+              "borderBottomWidth": "4px",
+              "borderBottomStyle": "dotted"
+            }
+          }
         }
       ]
     },

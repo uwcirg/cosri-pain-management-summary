@@ -410,21 +410,23 @@ export default class Landing extends Component {
     sections.forEach((item) => {
       if (
         summary[item.section_key] &&
-        summary[item.section_key][item.subSection_key]
+        summary[item.section_key][item.subSection_key] &&
+        !isEmptyArray(summary[item.section_key][item.subSection_key])
       ) {
-        const sectionKey = item.key
-          ? item.key
-          : `${item.section_key}_${item.subSection_key}`;
-        if (item.key) {
-          graphDataSet[sectionKey] = landingUtils.getProcessedGraphData(
+        const sectionKey =
+          item.key ?? `${item.section_key}_${item.subSection_key}`;
+        graphDataSet[sectionKey] = {
+          ...item,
+          data: landingUtils.getProcessedGraphData(
             graphConfig,
             JSON.parse(
               JSON.stringify(summary[item.section_key][item.subSection_key])
             )
-          );
-        }
+          ),
+        };
       }
     });
+    console.log("graphData Set ", graphDataSet);
     summary[this.getOverviewSectionKey() + "_graph"] = graphDataSet;
   }
 

@@ -364,6 +364,9 @@
       @media (min-width: 992px) {
         .MME-svg-container {
           padding-bottom: 80%;
+          &.smaller {
+            padding-bottom: 60%;
+          }
         }
       }
       .MMEChartSvg {
@@ -610,6 +613,9 @@
           border: 2px solid $color-gray-lighter;
           min-height: 36px;
           position: relative;
+          &.include-title {
+            min-height: 56px;
+          }
           .stats-item {
             margin-bottom: 4px;
             width: 50%;

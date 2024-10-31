@@ -932,7 +932,7 @@ define ReportMMEByDates:
     rxCUI: R.rxNormCode.code,
     MMEValue: R.MMEValue,
     isBup: R.rxNormCode.code in BuprenorphineRxCUIs,
-    type: 'default'
+    category: 'default'
   }
   sort by End
 
@@ -949,15 +949,10 @@ define BuprenorphineMMEByDates:
   }
   sort by End
 
-//a list including MME value for Buprenorphine
+//a list including non-null MME value for Buprenorphine
 define ReportBuprenorphineMMEByDates:
   ((BuprenorphineMMEByDates) o
     where o.MMEValue is not null
-  )
-//a list including MME value for meds not Buprenorphine
-define ReportNonBuprenorphineMMEByDates:
-  ((ReportMMEByDates) o
-    where o.MMEValue is not null and not (o.rxCUI in BuprenorphineRxCUIs)
   )
 
 // a list including total MME values without Buprenorphine
@@ -971,11 +966,12 @@ define ReportMMEByDatesWithoutBuprenorphine:
     rxCUI: R.rxNormCode.code,
     //miniscule value for displaying on graph above x-axis
     MMEValue: if R.rxCUI in BuprenorphineRxCUIs then 0.000000001 else R.MMEValue,
-    type: if R.rxCUI in BuprenorphineRxCUIs then 'buprenorphine' else 'not_buprenorphine'
+    category: 'wo_buprenorphine'
   }
   sort by End
 
-define ReportMMEByDatesWithBuprenorphine:
+// a list including total MME values with Buprenorphine ONLY
+define ReportMMEByDatesWithBuprenorphineOnly:
   (ReportMMEByDates) R
   return 
   {
@@ -985,7 +981,7 @@ define ReportMMEByDatesWithBuprenorphine:
     rxCUI: R.rxNormCode.code,
     //miniscule value for displaying on graph above x-axis
     MMEValue: if not (R.rxCUI in BuprenorphineRxCUIs) then 0.000000001 else R.MMEValue,
-    type: if R.rxCUI in BuprenorphineRxCUIs then 'buprenorphine' else 'not_buprenorphine'
+    category: 'buprenorphine_only'
   }
   sort by End
   
@@ -1279,23 +1275,16 @@ define Summary: {
   RiskConsiderations: {
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
-    FirstBup: First(BuprenorphineMMEByDates),
-    ReportMMEByDatesWithBuprenorphine:
-      if First(ReportBuprenorphineMMEByDates) is null then
-        null
-      else
-        ReportMMEByDates,
-
     ReportMMEByDatesWithoutBuprenorphine: 
       if First(ReportBuprenorphineMMEByDates) is null then
         null
-      // else if Length(ReportNonBuprenorphineMMEByDates) < 1 then
-      //   null
       else
         ReportMMEByDatesWithoutBuprenorphine,
-   // ReportNonBuprenorphineMMEByDates: ReportNonBuprenorphineMMEByDates,
-   // ReportBuprenorphineMedicationRequests: ReportBuprenorphineMedicationRequests,
-   // ReportBuprenorphineMMEByDates: ReportBuprenorphineMMEByDates,
+    ReportMMEByDatesWithBuprenorphineOnly: 
+      if First(ReportBuprenorphineMMEByDates) is null then
+        null
+      else
+        ReportMMEByDatesWithBuprenorphineOnly,
     //for debugging, uncomment to test
     //ReportPrescriptions: ReportPrescriptions,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
