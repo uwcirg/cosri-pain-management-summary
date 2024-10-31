@@ -465,12 +465,12 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
       }
       return o;
     })
-    // .filter(
-    //   (item, index, ref) =>
-    //     ref.findIndex(
-    //       (target) => JSON.stringify(target) === JSON.stringify(item)
-    //     ) === index
-    // );
+    .filter(
+      (item, index, ref) =>
+        ref.findIndex(
+          (target) => JSON.stringify(target) === JSON.stringify(item)
+        ) === index
+    );
     console.table("graph data ", formattedData);
 
   return formattedData;
