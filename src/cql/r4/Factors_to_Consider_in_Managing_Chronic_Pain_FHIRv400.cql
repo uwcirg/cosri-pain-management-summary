@@ -69,7 +69,7 @@
 //   Add Naloxone prescription alert check, see MedicationRequestsForNaloxoneConsideration
 // Update 20241018
 //  Buprenorphine related changes, see ReportBuprenorphineMedicationRequests, BuprenorphineMMEByDates,ReportBuprenorphineMMEByDates
-//  ReportMMEByDatesWithoutBuprenorphine
+//  ReportMMEByDatesWithoutBuprenorphine, ReportMMEByDatesWithBuprenorphineOnly
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
@@ -1275,6 +1275,11 @@ define Summary: {
   RiskConsiderations: {
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
+    ReportMMEByDatesDefault:
+      if First(ReportBuprenorphineMMEByDates) is not null then
+        null
+      else
+        ReportMMEByDates,
     ReportMMEByDatesWithoutBuprenorphine: 
       if First(ReportBuprenorphineMMEByDates) is null then
         null
