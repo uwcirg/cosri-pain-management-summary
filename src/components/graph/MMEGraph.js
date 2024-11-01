@@ -156,7 +156,7 @@ export default class MMEGraph extends Component {
     return {
       title:
         dataObj.statsProps && dataObj.statsProps.title
-          ? dataObj.statsProps.title
+          ? dataObj.statsProps.title.replace("{Y_FIELD_LABEL}", Y_FIELD_LABEL)
           : "",
       data: [
         {
@@ -243,7 +243,9 @@ export default class MMEGraph extends Component {
               >
                 <div className="legend__item--key" style={legendProps.style}>
                   <span className="text">
-                    {legendProps.label.toUpperCase()}
+                    {legendProps.label
+                      .replace("{Y_FIELD_LABEL}", Y_FIELD_LABEL)
+                      .toUpperCase()}
                   </span>
                 </div>
 
