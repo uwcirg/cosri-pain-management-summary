@@ -274,7 +274,6 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
           return dateCompare(a[startDateFieldName], b[startDateFieldName]);
         })
     : [];
-  console.log("graph data ", graph_data)
   /*
    * 'NaN' is the value for null when coerced into number, need to make sure that is not included
    */
