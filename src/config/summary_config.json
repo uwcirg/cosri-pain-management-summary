@@ -87,28 +87,31 @@
         {"date": "2020-12-08", "MMEValue": 0, "placeholder": true}
 
       ],
+      "defaultDataSource": {
+        "section_key": "RiskConsiderations",
+        "subSection_key": "ReportMMEByDates",
+        "key": "default",
+        "lineProps": {
+          "id": "dataLine_default",
+          "strokeColor": "#168698",
+          "strokeFill": "#168698",
+          "strokeWidth": 2.8
+        },
+        "markerProps": {
+          "id": "dataLine_default_markers",
+          "strokeColor": "#168698",
+          "strokeFill": "#168698",
+          "markerSize": 4
+        },
+        "stats": true,
+        "statsProps": {
+          "title": "Total {Y_FIELD_LABEL}"
+        }
+      },
       "summaryDataSource": [
         {
           "section_key": "RiskConsiderations",
-          "subSection_key": "ReportMMEByDatesDefault",
-          "key": "default",
-          "lineProps": {
-            "id": "dataLine_default",
-            "strokeColor": "#168698",
-            "strokeFill": "#168698",
-            "strokeWidth": 2.8
-          },
-          "markerProps": {
-            "id": "dataLine_default_markers",
-            "strokeColor": "#168698",
-            "strokeFill": "#168698",
-            "markerSize": 4
-          },
-          "stats": true
-        },
-        {
-          "section_key": "RiskConsiderations",
-          "subSection_key": "ReportMMEByDatesWithoutBuprenorphine",
+          "subSection_key": "ReportDailyMMEByDateWithoutBuprenorphine",
           "key": "wo_buprenorphine",
           "lineProps": {
             "id": "dataLine_wo_bup",
@@ -139,7 +142,7 @@
         },
         {
           "section_key": "RiskConsiderations",
-          "subSection_key": "ReportMMEByDatesWithBuprenorphineOnly",
+          "subSection_key": "ReportDailyMMEByDateWithBuprenorphineOnly",
           "key": "buprenorphine_only",
           "lineProps": {
             "id": "dataLine_bup_only",
@@ -161,6 +164,10 @@
               "borderBottomWidth": "3px",
               "borderBottomStyle": "solid"
             }
+          },
+          "stats": true,
+          "statsProps": {
+            "title": "Total Bup-only {Y_FIELD_LABEL}"
           }
         }
       ]

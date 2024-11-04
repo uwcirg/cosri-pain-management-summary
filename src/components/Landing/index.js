@@ -426,6 +426,20 @@ export default class Landing extends Component {
         };
       }
     });
+    if (Object.keys(graphDataSet).length === 0) {
+      const defaultConfig = graphConfig.defaultDataSource;
+      graphDataSet[defaultConfig.key] = {
+        ...defaultConfig,
+        data: landingUtils.getProcessedGraphData(
+          graphConfig,
+          JSON.parse(
+            JSON.stringify(
+              summary[defaultConfig.section_key][defaultConfig.subSection_key]
+            )
+          )
+        ),
+      };
+    }
     console.log("graphData Set ", graphDataSet);
     summary[this.getOverviewSectionKey() + "_graph"] = graphDataSet;
   }
