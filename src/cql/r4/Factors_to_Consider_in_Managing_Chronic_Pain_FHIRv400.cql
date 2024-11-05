@@ -968,6 +968,11 @@ define GetBuprenorphineMMEListByDates:
 
 // a list of daily total MME values without Buprenorphine
 define ReportDailyMMEByDateWithoutBuprenorphine:
+if First(GetBuprenorphineMMEListByDates) is null then
+  null
+else if First(GetNonBuprenorphineMMEListByDates) is null then
+  null
+else
   (ReportMMEByDates) R
   return 
   {
@@ -983,18 +988,21 @@ define ReportDailyMMEByDateWithoutBuprenorphine:
 
 // a list of daily total MME values with Buprenorphine ONLY
 define ReportDailyMMEByDateWithBuprenorphineOnly:
-  (ReportMMEByDates) R
-  return 
-  {
-    Start: R.Start,
-    End: R.End,
-    rxNormCode: R.rxNormCode,
-    rxCUI: R.rxNormCode.code,
-    //miniscule value for displaying on graph above x-axis
-    MMEValue: if not (R.rxCUI in BuprenorphineRxCUIs) then 0.000000001 else R.MMEValue,
-    category: 'buprenorphine_only'
-  }
-  sort by End
+  if First(GetBuprenorphineMMEListByDates) is null then
+    null
+  else
+    (ReportMMEByDates) R
+    return 
+    {
+      Start: R.Start,
+      End: R.End,
+      rxNormCode: R.rxNormCode,
+      rxCUI: R.rxNormCode.code,
+      //miniscule value for displaying on graph above x-axis
+      MMEValue: if not (R.rxCUI in BuprenorphineRxCUIs) then 0.000000001 else R.MMEValue,
+      category: 'buprenorphine_only'
+    }
+    sort by End
   
 
 define ReportPrescriptions:
@@ -1286,18 +1294,8 @@ define Summary: {
   RiskConsiderations: {
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
-    ReportDailyMMEByDateWithoutBuprenorphine:
-      if First(GetBuprenorphineMMEListByDates) is null then
-        null
-      else if First(GetNonBuprenorphineMMEListByDates) is null then
-        null
-      else
-        ReportDailyMMEByDateWithoutBuprenorphine,
-    ReportDailyMMEByDateWithBuprenorphineOnly: 
-      if First(GetBuprenorphineMMEListByDates) is null then
-        null
-      else
-        ReportDailyMMEByDateWithBuprenorphineOnly,
+    ReportDailyMMEByDateWithoutBuprenorphine: ReportDailyMMEByDateWithoutBuprenorphine,
+    ReportDailyMMEByDateWithBuprenorphineOnly: ReportDailyMMEByDateWithBuprenorphineOnly,
     //for debugging, uncomment to test
     //ReportPrescriptions: ReportPrescriptions,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,

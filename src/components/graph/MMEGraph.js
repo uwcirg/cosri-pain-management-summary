@@ -22,7 +22,6 @@ const defaultFields = {
 };
 const xFieldName = defaultFields.x;
 const yFieldName = defaultFields.y;
-const DEFAULT_KEY = "default";
 const Y_FIELD_LABEL = "MME";
 const DEFAULT_STROKE_COLOR = "#168698";
 export default class MMEGraph extends Component {
@@ -561,9 +560,7 @@ export default class MMEGraph extends Component {
     const defaultMarkerProps = additionalProps["dataPointsProps"];
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
-    const shouldShowSwitches =
-      Object.keys(this.props.data).filter((key) => key !== DEFAULT_KEY).length >
-      1;
+    const shouldShowSwitches = Object.keys(this.props.data).length > 1;
 
     if (hasError) {
       return (
