@@ -72,7 +72,7 @@ export default class MMEGraph extends Component {
     }
     if (!minDate) {
       minDate = new Date();
-      minDate.setDate(maxDate.getDate() - total * 30);
+      minDate.setDate(maxDate.getDate() - total * 60);
     }
     let index = 0;
     let increment = Math.ceil((maxDate.getTime() - minDate.getTime()) / total);
@@ -428,7 +428,7 @@ export default class MMEGraph extends Component {
        * set up baseline data point starting at 0
        */
       baseLineDate.setTime(
-        new Date(minDate.valueOf()).getTime() - 30 * 24 * 60 * 60 * 1000
+        new Date(minDate.valueOf()).getTime() - 60 * 24 * 60 * 60 * 1000
       );
       let baselineItem = {};
       baselineItem[xFieldName] = baseLineDate;
@@ -455,7 +455,7 @@ export default class MMEGraph extends Component {
       }
     }
     let calcMaxDate = new Date(maxDate.valueOf());
-    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 65);
+    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 90);
     maxDate = new Date(maxDate);
     const diffTime = Math.abs(maxDate - minDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
