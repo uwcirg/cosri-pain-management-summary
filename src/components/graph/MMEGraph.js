@@ -96,6 +96,7 @@ export default class MMEGraph extends Component {
   }
 
   getMaxMMEValue(data) {
+    if (!data) return 0;
     let maxValue = 0;
     data.forEach((item) => {
       maxValue = Math.max(maxValue, item["MMEValue"]);
@@ -347,6 +348,30 @@ export default class MMEGraph extends Component {
     );
   }
 
+  renderStats(graphStats) {
+    if (!graphStats || !graphStats.data) return null;
+    return (
+      <div
+        className={`stats-container ${graphStats.title ? "include-title" : ""}`}
+      >
+        {graphStats.title && (
+          <React.Fragment>
+            <div className="stats-item">
+              <strong>{graphStats.title}</strong>
+            </div>
+            <div className="stats-item">&nbsp;</div>
+          </React.Fragment>
+        )}
+        {graphStats.data.map((item, index) => (
+          <div className="stats-item" key={`stats_item_${index}`}>
+            <span className="title">{item.display}</span>
+            <span className="description">{item.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   render() {
     /*
      *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, {"dateWritten":"2019-04-15","MMEValue":40, "placeholder":true}]
@@ -428,7 +453,7 @@ export default class MMEGraph extends Component {
        * set up baseline data point starting at 0
        */
       baseLineDate.setTime(
-        new Date(minDate.valueOf()).getTime() - 60 * 24 * 60 * 60 * 1000
+        new Date(minDate.valueOf()).getTime() - 30 * 24 * 60 * 60 * 1000
       );
       let baselineItem = {};
       baselineItem[xFieldName] = baseLineDate;
@@ -474,9 +499,9 @@ export default class MMEGraph extends Component {
     );
     const margins = {
       top: 24,
-      right: 56,
-      bottom: 48,
-      left: 56,
+      right: 48,
+      bottom: 56,
+      left: 48,
     };
 
     const width = parentWidth - margins.left - margins.right;
@@ -671,29 +696,8 @@ export default class MMEGraph extends Component {
             </div>
             {shouldShowSwitches && this.renderSwitches()}
           </div>
+          {this.renderStats(graphStats)}
         </div>
-        {graphStats && graphStats.data && (
-          <div
-            className={`stats-container ${
-              graphStats.title ? "include-title" : ""
-            }`}
-          >
-            {graphStats.title && (
-              <React.Fragment>
-                <div className="stats-item">
-                  <strong>{graphStats.title}</strong>
-                </div>
-                <div className="stats-item">&nbsp;</div>
-              </React.Fragment>
-            )}
-            {graphStats.data.map((item, index) => (
-              <div className="stats-item" key={`stats_item_${index}`}>
-                <span className="title">{item.display}</span>
-                <span className="description">{item.value}</span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     );
   }
