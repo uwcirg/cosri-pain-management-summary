@@ -49,7 +49,9 @@ export default class Table extends Component {
           const displayName = header.replace(/_/g, " ");
           if (headerKey.header)
             return <h3 className="col-header-title">{displayName}</h3>;
-          return <span className={`col-header ${headerClass}`}>{displayName}</span>;
+          return (
+            <span className={`col-header ${headerClass}`}>{displayName}</span>
+          );
         },
         accessor: (entry) => {
           let value = entry[headerKey];
@@ -65,7 +67,9 @@ export default class Table extends Component {
           return (
             <span className={headerClass}>
               {value
-                ? value
+                ? typeof value === "object"
+                  ? value.toString()
+                  : value
                 : headerKey.default
                 ? headerKey.default
                 : entry[headerKey.key]}

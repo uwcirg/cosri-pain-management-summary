@@ -458,12 +458,14 @@ const reportConfig = [
               },
               headers: {
                 Drug_Description: "Name",
+                Dosage: "Dosage",
                 Written_Date: {
                   key: "Start",
                   formatter: "datishFormat",
                   sorter: "dateCompare",
                   sortable: true,
                 },
+                Prescriber: "Prescriber"
               },
             }}
             {...props}

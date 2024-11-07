@@ -22,6 +22,13 @@
             "version" : "4.0.0"
          } ]
       },
+      "includes" : {
+         "def" : [ {
+            "localIdentifier" : "FHIRHelpers",
+            "path" : "FHIRHelpers",
+            "version" : "4.0.0"
+         } ]
+      },
       "contexts" : {
          "def" : [ {
             "name" : "Patient"
@@ -37,6 +44,15 @@
                   "dataType" : "{http://hl7.org/fhir}Patient",
                   "type" : "Retrieve"
                }
+            }
+         }, {
+            "name" : "UWMC_SYSTEM_VALUE",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "http://www.uwmedicine.org/medication_id",
+               "type" : "Literal"
             }
          }, {
             "name" : "ConceptText",
@@ -496,46 +512,30 @@
                } ],
                "relationship" : [ ],
                "where" : {
-                  "type" : "And",
+                  "type" : "Equal",
                   "operand" : [ {
-                     "type" : "LessOrEqual",
+                     "name" : "ToString",
+                     "libraryName" : "FHIRHelpers",
+                     "type" : "FunctionRef",
                      "operand" : [ {
-                        "path" : "value",
+                        "path" : "system",
                         "type" : "Property",
                         "source" : {
-                           "path" : "authoredOn",
-                           "scope" : "M",
-                           "type" : "Property"
-                        }
-                     }, {
-                        "type" : "ToDateTime",
-                        "operand" : {
-                           "type" : "Today"
-                        }
-                     } ]
-                  }, {
-                     "type" : "GreaterOrEqual",
-                     "operand" : [ {
-                        "path" : "value",
-                        "type" : "Property",
-                        "source" : {
-                           "path" : "authoredOn",
-                           "scope" : "M",
-                           "type" : "Property"
-                        }
-                     }, {
-                        "type" : "ToDateTime",
-                        "operand" : {
-                           "type" : "Subtract",
+                           "type" : "Indexer",
                            "operand" : [ {
-                              "type" : "Today"
+                              "path" : "identifier",
+                              "scope" : "M",
+                              "type" : "Property"
                            }, {
-                              "value" : 2,
-                              "unit" : "year",
-                              "type" : "Quantity"
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "0",
+                              "type" : "Literal"
                            } ]
                         }
                      } ]
+                  }, {
+                     "name" : "UWMC_SYSTEM_VALUE",
+                     "type" : "ExpressionRef"
                   } ]
                },
                "return" : {
@@ -570,6 +570,90 @@
                               "scope" : "M",
                               "type" : "Property"
                            } ]
+                        }
+                     }, {
+                        "name" : "Dosage",
+                        "value" : {
+                           "type" : "Query",
+                           "source" : [ {
+                              "alias" : "$this",
+                              "expression" : {
+                                 "type" : "Query",
+                                 "source" : [ {
+                                    "alias" : "$this",
+                                    "expression" : {
+                                       "path" : "dosageInstruction",
+                                       "scope" : "M",
+                                       "type" : "Property"
+                                    }
+                                 } ],
+                                 "where" : {
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "IsNull",
+                                       "operand" : {
+                                          "path" : "text",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "$this",
+                                             "type" : "AliasRef"
+                                          }
+                                       }
+                                    }
+                                 },
+                                 "return" : {
+                                    "distinct" : false,
+                                    "expression" : {
+                                       "path" : "text",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "$this",
+                                          "type" : "AliasRef"
+                                       }
+                                    }
+                                 }
+                              }
+                           } ],
+                           "where" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "$this",
+                                       "type" : "AliasRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "return" : {
+                              "distinct" : false,
+                              "expression" : {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "$this",
+                                    "type" : "AliasRef"
+                                 }
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Prescriber",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "display",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "requester",
+                                 "scope" : "M",
+                                 "type" : "Property"
+                              }
+                           }
                         }
                      }, {
                         "name" : "Authored",

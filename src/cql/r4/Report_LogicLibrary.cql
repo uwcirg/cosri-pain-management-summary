@@ -1,11 +1,15 @@
 library ReportLogicLibrary version '1.0.0'
 using FHIR version '4.0.0'
+// The FHIRHelpers library provides common functions for simplifying interaction w/ the FHIR R4 data model.
+include FHIRHelpers version '4.0.0' called FHIRHelpers
 
 // -----------------------------------------------------------------------------
 // PATIENT INFORMATION
 // -----------------------------------------------------------------------------
 context Patient
 
+//system url identifier used to identify resources, e.g. MedicationRequest, from PDMP
+define UWMC_SYSTEM_VALUE: 'http://www.uwmedicine.org/medication_id'
 // ## Re-usable functions ##
 
 // Returns the first-found display text for a CodeableConcept, looking first at the `text` attribute, then the
@@ -74,10 +78,14 @@ define MedicationList:
     [MedicationRequest] M
     // within 2 years
     //where ((year from Today() - year from M.authoredOn.value) <= 2)
-    where M.authoredOn.value <= Today() and M.authoredOn.value >= (Today() - 2 year)
+    where M.identifier[0].system = UWMC_SYSTEM_VALUE
+    //and M.authoredOn.value <= Today() 
+    //and M.authoredOn.value >= (Today() - 2 year)
     return {
         Name:  ConceptText(M.medication as FHIR.CodeableConcept),
         Start: DateTimeText(M.authoredOn),
+        Dosage: M.dosageInstruction.text.value,
+        Prescriber: M.requester.display.value,
         Authored: M.authoredOn.value
     }
     sort by Authored

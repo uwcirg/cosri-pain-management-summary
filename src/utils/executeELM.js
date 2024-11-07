@@ -152,7 +152,10 @@ async function executeELM(collector, oResourceTypes) {
           if (!evalResults[PATIENT_SUMMARY_KEY]) {
             evalResults[PATIENT_SUMMARY_KEY] = {};
           }
-          Promise.allSettled([executeELMForReport(patientBundle), ...elmLibs]).then(
+          Promise.allSettled([
+            executeELMForReport(patientBundle),
+            ...elmLibs,
+          ]).then(
             (results) => {
               evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
                 results[0].status !== "rejected" ? results[0].value : null;
@@ -190,9 +193,12 @@ async function executeELMForReport(bundle) {
       console.log("Issue occurred loading ELM lib for reoirt", e);
       r4ReportCommonELM = null;
     });
+ 
   if (!r4ReportCommonELM) return null;
 
-  let reportLib = new cql.Library(r4ReportCommonELM);
+  let reportLib = new cql.Library(r4ReportCommonELM,  new cql.Repository({
+    FHIRHelpers: r4HelpersELM,
+  }));
   const reportExecutor = new cql.Executor(
     reportLib,
     new cql.CodeService(valueSetDB)
