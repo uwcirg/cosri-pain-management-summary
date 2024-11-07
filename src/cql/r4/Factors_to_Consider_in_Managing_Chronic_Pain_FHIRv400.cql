@@ -70,6 +70,7 @@
 // Update 20241104
 //  Buprenorphine related changes, see ReportBuprenorphineMedicationRequests, GetBuprenorphineMMEListByDates,GetNoNBuprenorphineMMEListByDates,
 //  ReportDailyMMEByDateWithoutBuprenorphine, ReportDailyMMEByDateWithBuprenorphineOnly
+//  update alert check for MedicationRequestsForNaloxoneConsideration to consider Non-Bup MedicationRequests only, see NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
@@ -756,15 +757,15 @@ define HasNaloxoneInLastYear:
     where M.AuthoredOn <= Today() and M.AuthoredOn >= (Today() - 1 year)
   ) > 0
 
-define MedicationRequestsLastTwoYears:
-  (ReportPDMPMedicationRequests) M
-  where M.MME >= 50 and ((year from Today() - year from M.CalculatedEnd) <= 2)
+define NonBupMedRequestsForNaloxoneConsiderationLastTwoYears:
+  (GetNonBuprenorphineMMEListByDates) M
+  where M.MMEValue >= 50 and ((year from Today() - year from ToDate(M.End)) <= 2)
 
 define MedicationRequestsForNaloxoneConsideration:
   if HasNaloxoneInLastYear then
     null
   else
-    MedicationRequestsLastTwoYears
+    NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
 
 
 // Non-opioid medication orders and statements with dates (lookback 2 years)
