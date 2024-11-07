@@ -77,10 +77,9 @@ define ReferralHistory:
 define MedicationList:
     [MedicationRequest] M
     // within 2 years
-    //where ((year from Today() - year from M.authoredOn.value) <= 2)
     where M.identifier[0].system = UWMC_SYSTEM_VALUE
-    //and M.authoredOn.value <= Today() 
-    //and M.authoredOn.value >= (Today() - 2 year)
+          and M.authoredOn.value <= Today() 
+          and M.authoredOn.value >= (Today() - 2 year)
     return {
         Name:  ConceptText(M.medication as FHIR.CodeableConcept),
         Start: DateTimeText(M.authoredOn),

@@ -512,30 +512,75 @@
                } ],
                "relationship" : [ ],
                "where" : {
-                  "type" : "Equal",
+                  "type" : "And",
                   "operand" : [ {
-                     "name" : "ToString",
-                     "libraryName" : "FHIRHelpers",
-                     "type" : "FunctionRef",
+                     "type" : "And",
                      "operand" : [ {
-                        "path" : "system",
-                        "type" : "Property",
-                        "source" : {
-                           "type" : "Indexer",
+                        "type" : "Equal",
+                        "operand" : [ {
+                           "name" : "ToString",
+                           "libraryName" : "FHIRHelpers",
+                           "type" : "FunctionRef",
                            "operand" : [ {
-                              "path" : "identifier",
+                              "path" : "system",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "path" : "identifier",
+                                    "scope" : "M",
+                                    "type" : "Property"
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
+                              }
+                           } ]
+                        }, {
+                           "name" : "UWMC_SYSTEM_VALUE",
+                           "type" : "ExpressionRef"
+                        } ]
+                     }, {
+                        "type" : "LessOrEqual",
+                        "operand" : [ {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "authoredOn",
                               "scope" : "M",
                               "type" : "Property"
+                           }
+                        }, {
+                           "type" : "ToDateTime",
+                           "operand" : {
+                              "type" : "Today"
+                           }
+                        } ]
+                     } ]
+                  }, {
+                     "type" : "GreaterOrEqual",
+                     "operand" : [ {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "authoredOn",
+                           "scope" : "M",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "type" : "ToDateTime",
+                        "operand" : {
+                           "type" : "Subtract",
+                           "operand" : [ {
+                              "type" : "Today"
                            }, {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                              "value" : "0",
-                              "type" : "Literal"
+                              "value" : 2,
+                              "unit" : "year",
+                              "type" : "Quantity"
                            } ]
                         }
                      } ]
-                  }, {
-                     "name" : "UWMC_SYSTEM_VALUE",
-                     "type" : "ExpressionRef"
                   } ]
                },
                "return" : {
