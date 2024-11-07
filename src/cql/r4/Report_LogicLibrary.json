@@ -225,6 +225,155 @@
                } ]
             }
          }, {
+            "name" : "GetEncounterLocation",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "First",
+               "source" : {
+                  "type" : "Query",
+                  "source" : [ {
+                     "alias" : "P",
+                     "expression" : {
+                        "type" : "Query",
+                        "source" : [ {
+                           "alias" : "E",
+                           "expression" : {
+                              "dataType" : "{http://hl7.org/fhir}Encounter",
+                              "type" : "Retrieve"
+                           }
+                        } ],
+                        "relationship" : [ ],
+                        "where" : {
+                           "type" : "Equal",
+                           "operand" : [ {
+                              "name" : "ToString",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "id",
+                                 "scope" : "E",
+                                 "type" : "Property"
+                              } ]
+                           }, {
+                              "name" : "enc_id",
+                              "type" : "OperandRef"
+                           } ]
+                        }
+                     }
+                  } ],
+                  "relationship" : [ ],
+                  "return" : {
+                     "expression" : {
+                        "type" : "Query",
+                        "source" : [ {
+                           "alias" : "$this",
+                           "expression" : {
+                              "type" : "Query",
+                              "source" : [ {
+                                 "alias" : "$this",
+                                 "expression" : {
+                                    "type" : "Query",
+                                    "source" : [ {
+                                       "alias" : "$this",
+                                       "expression" : {
+                                          "path" : "location",
+                                          "scope" : "P",
+                                          "type" : "Property"
+                                       }
+                                    } ],
+                                    "where" : {
+                                       "type" : "Not",
+                                       "operand" : {
+                                          "type" : "IsNull",
+                                          "operand" : {
+                                             "path" : "location",
+                                             "type" : "Property",
+                                             "source" : {
+                                                "name" : "$this",
+                                                "type" : "AliasRef"
+                                             }
+                                          }
+                                       }
+                                    },
+                                    "return" : {
+                                       "distinct" : false,
+                                       "expression" : {
+                                          "path" : "location",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "$this",
+                                             "type" : "AliasRef"
+                                          }
+                                       }
+                                    }
+                                 }
+                              } ],
+                              "where" : {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "IsNull",
+                                    "operand" : {
+                                       "path" : "display",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "$this",
+                                          "type" : "AliasRef"
+                                       }
+                                    }
+                                 }
+                              },
+                              "return" : {
+                                 "distinct" : false,
+                                 "expression" : {
+                                    "path" : "display",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "$this",
+                                       "type" : "AliasRef"
+                                    }
+                                 }
+                              }
+                           }
+                        } ],
+                        "where" : {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "$this",
+                                    "type" : "AliasRef"
+                                 }
+                              }
+                           }
+                        },
+                        "return" : {
+                           "distinct" : false,
+                           "expression" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "$this",
+                                 "type" : "AliasRef"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "enc_id",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}String",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
             "name" : "ProcedureHistory",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -299,6 +448,59 @@
                         }
                      }
                   }
+               }, {
+                  "identifier" : "encounterReference",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "encounter",
+                                 "scope" : "P",
+                                 "type" : "Property"
+                              }
+                           }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "reference",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "encounter",
+                                    "scope" : "P",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        } ]
+                     },
+                     "then" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "reference",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "encounter",
+                              "scope" : "P",
+                              "type" : "Property"
+                           }
+                        }
+                     },
+                     "else" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}String",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
+                     }
+                  }
                } ],
                "relationship" : [ ],
                "return" : {
@@ -339,6 +541,57 @@
                                  "type" : "NamedTypeSpecifier"
                               }
                            } ]
+                        }
+                     }, {
+                        "name" : "Location",
+                        "value" : {
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "encounterReference",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "name" : "GetEncounterLocation",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "type" : "Split",
+                                    "stringToSplit" : {
+                                       "name" : "encounterReference",
+                                       "type" : "QueryLetRef"
+                                    },
+                                    "separator" : {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "/",
+                                       "type" : "Literal"
+                                    }
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "1",
+                                    "type" : "Literal"
+                                 } ]
+                              } ]
+                           },
+                           "else" : {
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Null"
+                              },
+                              "asTypeSpecifier" : {
+                                 "type" : "ListTypeSpecifier",
+                                 "elementType" : {
+                                    "name" : "{urn:hl7-org:elm-types:r1}String",
+                                    "type" : "NamedTypeSpecifier"
+                                 }
+                              }
+                           }
                         }
                      }, {
                         "name" : "CPT_CODE",
@@ -434,6 +687,59 @@
                         }
                      }
                   }
+               }, {
+                  "identifier" : "encounterReference",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "encounter",
+                                 "scope" : "P",
+                                 "type" : "Property"
+                              }
+                           }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "reference",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "encounter",
+                                    "scope" : "P",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        } ]
+                     },
+                     "then" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "reference",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "encounter",
+                              "scope" : "P",
+                              "type" : "Property"
+                           }
+                        }
+                     },
+                     "else" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}String",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
+                     }
+                  }
                } ],
                "relationship" : [ ],
                "return" : {
@@ -474,6 +780,57 @@
                                  "type" : "NamedTypeSpecifier"
                               }
                            } ]
+                        }
+                     }, {
+                        "name" : "Location",
+                        "value" : {
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "encounterReference",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "name" : "GetEncounterLocation",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "type" : "Split",
+                                    "stringToSplit" : {
+                                       "name" : "encounterReference",
+                                       "type" : "QueryLetRef"
+                                    },
+                                    "separator" : {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "/",
+                                       "type" : "Literal"
+                                    }
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "1",
+                                    "type" : "Literal"
+                                 } ]
+                              } ]
+                           },
+                           "else" : {
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Null"
+                              },
+                              "asTypeSpecifier" : {
+                                 "type" : "ListTypeSpecifier",
+                                 "elementType" : {
+                                    "name" : "{urn:hl7-org:elm-types:r1}String",
+                                    "type" : "NamedTypeSpecifier"
+                                 }
+                              }
+                           }
                         }
                      }, {
                         "name" : "CPT_CODE",
@@ -716,7 +1073,7 @@
                },
                "sort" : {
                   "by" : [ {
-                     "direction" : "asc",
+                     "direction" : "desc",
                      "path" : "Authored",
                      "type" : "ByColumn"
                   } ]

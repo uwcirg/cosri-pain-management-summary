@@ -393,10 +393,6 @@ const reportConfig = [
           <Referrals
             tableOptions={{
               id: `${REFERRAL_DATA_KEY}_table`,
-              defaultSorted: {
-                id: "Date",
-                desc: true,
-              },
               headers: {
                 Date: {
                   key: "DateText",
@@ -405,7 +401,8 @@ const reportConfig = [
                   sortable: true,
                 },
                 Name: "Name",
-                "CPT CODE": "CPT_CODE",
+                "Ordering Department": "Location",
+                "CPT Code": "CPT_CODE",
               },
             }}
             {...props}
@@ -419,10 +416,6 @@ const reportConfig = [
           <Procedures
             tableOptions={{
               id: `${PROCECURE_DATA_KEY}_table`,
-              defaultSorted: {
-                id: "Date",
-                desc: true,
-              },
               headers: {
                 Date: {
                   key: "DateText",
@@ -431,7 +424,8 @@ const reportConfig = [
                   sortable: true,
                 },
                 Name: "Name",
-                "CPT CODE": "CPT_CODE",
+                "Ordering Department": "Location",
+                "CPT Code": "CPT_CODE",
               },
             }}
             {...props}
@@ -452,10 +446,6 @@ const reportConfig = [
           <MedicationList
             tableOptions={{
               id: `${MEDICATION_LIST_DATA_KEY}_table`,
-              defaultSorted: {
-                id: "Start",
-                desc: true,
-              },
               headers: {
                 Drug_Description: "Name",
                 Dosage: "Dosage",

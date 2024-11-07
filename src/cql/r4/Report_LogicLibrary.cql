@@ -50,14 +50,20 @@ define ReferralCodeList: {
 // REPORT LOGIC, e.g. Procedure, Condition, ServiceRequest
 //------------------------------------------------------------------------------
 
+define function GetEncounterLocation(enc_id String):
+  First(([Encounter] E where E.id = enc_id) P return P.location.location.display.value)
+
 define ProcedureHistory:
   ([Procedure] ProcList
     where ProcList.status.value = 'completed' and not (ReferralCodeList contains ConceptCode(ProcList.code))) P
-    let performDate: (P.performed as FHIR.dateTime).value 
+    let 
+      performDate: (P.performed as FHIR.dateTime).value,
+      encounterReference: if P.encounter is not null and P.encounter.reference is not null then P.encounter.reference.value else null
     return {
       Name: ConceptText(P.code),
       Date: performDate,
       DateText: DateTimeText(P.performed as FHIR.dateTime),
+      Location: if encounterReference is not null then GetEncounterLocation(Split(encounterReference, '/')[1]) else null,
       CPT_CODE: ConceptCode(P.code)
     }
     sort by Date desc
@@ -65,11 +71,14 @@ define ProcedureHistory:
 define ReferralHistory:
   ([Procedure] ProcList
     where ProcList.status.value = 'completed' and (ReferralCodeList contains ConceptCode(ProcList.code))) P
-    let performDate: (P.performed as FHIR.dateTime).value
+    let 
+      performDate: (P.performed as FHIR.dateTime).value,
+      encounterReference: if P.encounter is not null and P.encounter.reference is not null then P.encounter.reference.value else null
     return {
       Name: ConceptText(P.code),
       Date: performDate,
       DateText: DateTimeText(P.performed as FHIR.dateTime),
+      Location: if encounterReference is not null then GetEncounterLocation(Split(encounterReference, '/')[1]) else null,
       CPT_CODE: ConceptCode(P.code)
     }
     sort by Date desc
@@ -87,7 +96,7 @@ define MedicationList:
         Prescriber: M.requester.display.value,
         Authored: M.authoredOn.value
     }
-    sort by Authored
+    sort by Authored desc
 
 define Summary: {
   TreatmentHistory: {
