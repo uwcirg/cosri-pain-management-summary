@@ -247,8 +247,6 @@ export function getProcessedSummaryData(summary, summaryMap) {
     });
   });
 
-  console.log("flags ", sectionFlags);
-
   return { sectionFlags, flaggedCount };
 }
 
