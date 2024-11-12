@@ -26,7 +26,10 @@ export function processEndPoint(endpoint, endpointParams) {
   if (!endpoint) return "";
   const params = endpointParams ? endpointParams : {};
   return endpoint
-    .replace(`{process.env.${ENV_VAR_PREFIX}_CONF_API_URL}`, getEnvConfidentialAPIURL())
+    .replace(
+      `{process.env.${ENV_VAR_PREFIX}_CONF_API_URL}`,
+      getEnvConfidentialAPIURL()
+    )
     .replace("{process.env.PUBLIC_URL}", getEnv("PUBLIC_URL"))
     .replace("{patientId}", params.patientId);
 }
@@ -247,6 +250,55 @@ export function getProcessedSummaryData(summary, summaryMap) {
   return { sectionFlags, flaggedCount };
 }
 
+export function getSummaryGraphDataSet(graphConfig, summaryData) {
+  if (!summaryData) return null;
+  if (!(graphConfig && graphConfig.summaryDataSource)) {
+    return null;
+  }
+  //demo config set to on, then draw just the demo graph data
+  if (getEnv(graphConfig.demoConfigKey)) {
+    return graphConfig.demoData;
+  }
+  //get the data from summary data
+  let sections = graphConfig.summaryDataSource;
+  let graphDataSet = {};
+  sections.forEach((item) => {
+    if (
+      summaryData[item.section_key] &&
+      summaryData[item.section_key][item.subSection_key] &&
+      !isEmptyArray(summaryData[item.section_key][item.subSection_key])
+    ) {
+      const sectionKey =
+        item.key ?? `${item.section_key}_${item.subSection_key}`;
+      graphDataSet[sectionKey] = {
+        ...item,
+        data: getProcessedGraphData(
+          graphConfig,
+          JSON.parse(
+            JSON.stringify(summaryData[item.section_key][item.subSection_key])
+          )
+        ),
+      };
+    }
+  });
+  if (Object.keys(graphDataSet).length === 0) {
+    const defaultConfig = graphConfig.defaultDataSource;
+    graphDataSet[defaultConfig.key] = {
+      ...defaultConfig,
+      data: getProcessedGraphData(
+        graphConfig,
+        JSON.parse(
+          JSON.stringify(
+            summaryData[defaultConfig.section_key][defaultConfig.subSection_key]
+          )
+        )
+      ),
+    };
+  }
+  console.log("graphData Set ", graphDataSet);
+  return graphDataSet;
+}
+
 export function getProcessedGraphData(graphConfig, graphDataSource) {
   const [
     startDateFieldName,
@@ -375,8 +427,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     }
     //overlapping data points
     if (
-      prevObj 
-      &&
+      prevObj &&
       prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]
     ) {
       //add data point with MME value for the previous med as the connecting data point
@@ -386,8 +437,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
       dataPoint[PLACEHOLDER_FIELD_NAME] = true;
       finalDataPoints.push(dataPoint);
       finalDataPoints.push(currentDataPoint);
-    } 
-    else if (
+    } else if (
       prevObj &&
       currentDataPoint[START_DELIMITER_FIELD_NAME] &&
       dateNumberFormat(currentDataPoint[startDateFieldName]) >
@@ -433,7 +483,6 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
         finalDataPoints.push(dataPoint);
       }
     } else {
-      
       if (!nextObj) currentDataPoint[FINAL_CALCULATED_FIELD_FLAG] = true;
       finalDataPoints.push(currentDataPoint);
     }
@@ -546,9 +595,13 @@ export function getProcessedAlerts(sectionFlags, logParams) {
   );
 }
 
-export function getProcessedStatsData(statsFields, dataSource) {
+export function getProcessedStatsData(statsConfig, summaryData) {
   let stats = {};
-  if (isEmptyArray(statsFields)) return stats;
+  if (!statsConfig || isEmptyArray(statsConfig.data)) return stats;
+  const statsFields = statsConfig.data;
+  const dataSource = summaryData[statsConfig.dataKeySource]
+    ? summaryData[statsConfig.dataKeySource][statsConfig.dataKey]
+    : [];
 
   //compile tally of source identified by a key
   statsFields.forEach((item) => {
