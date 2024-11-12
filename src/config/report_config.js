@@ -401,7 +401,6 @@ const reportConfig = [
                   sortable: true,
                 },
                 Name: "Name",
-                "Ordering Department": "Location",
                 "CPT Code": "CPT_CODE",
               },
             }}
@@ -424,7 +423,6 @@ const reportConfig = [
                   sortable: true,
                 },
                 Name: "Name",
-                "Ordering Department": "Location",
                 "CPT Code": "CPT_CODE",
               },
             }}
