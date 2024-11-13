@@ -696,3 +696,14 @@ export function getPatientSearchURL(shouldClearSession) {
 export function getEnvVersionString() {
   return getEnv(`${ENV_VAR_PREFIX}_VERSION_STRING`);
 }
+
+export function dedupArrObjects(arr, key) {
+  if (isEmptyArray(arr)) return null;
+  if (!key) return arr;
+  return arr.reduce((acc, obj) => {
+    if (!acc.find(item => item[key] === obj[key])) {
+      acc.push(obj);
+    }
+    return acc;
+  }, []);
+}

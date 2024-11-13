@@ -26,7 +26,10 @@ export function processEndPoint(endpoint, endpointParams) {
   if (!endpoint) return "";
   const params = endpointParams ? endpointParams : {};
   return endpoint
-    .replace(`{process.env.${ENV_VAR_PREFIX}_CONF_API_URL}`, getEnvConfidentialAPIURL())
+    .replace(
+      `{process.env.${ENV_VAR_PREFIX}_CONF_API_URL}`,
+      getEnvConfidentialAPIURL()
+    )
     .replace("{process.env.PUBLIC_URL}", getEnv("PUBLIC_URL"))
     .replace("{patientId}", params.patientId);
 }
@@ -149,7 +152,7 @@ export function getDemoData(section, params) {
 }
 
 export function getProcessedSummaryData(summary, summaryMap) {
-  const sectionFlags = {};
+  let sectionFlags = {};
   const sectionKeys = Object.keys(summaryMap || {});
   let flaggedCount = 0;
 

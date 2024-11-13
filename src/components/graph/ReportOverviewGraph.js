@@ -722,7 +722,7 @@ export default class ReportOverviewGraph extends Component {
     const inYears = unit === "year";
     const min = arrNum[0];
     const max = arrNum[arrNum.length - 1];
-    const shouldRotate = (inYears && max >= 10);
+    const shouldRotate = inYears && max >= 10;
     const revArrNum = JSON.parse(JSON.stringify(arrNum)).reverse();
     const arrDisplayValues = arrNum.map((item, index) => {
       const prevItem = revArrNum.find(
