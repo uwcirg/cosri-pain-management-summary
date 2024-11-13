@@ -446,6 +446,7 @@ const reportConfig = [
               id: `${MEDICATION_LIST_DATA_KEY}_table`,
               headers: {
                 Drug_Description: "Name",
+                Quantity: "Quantity",
                 Dosage: "Dosage",
                 Written_Date: {
                   key: "Start",

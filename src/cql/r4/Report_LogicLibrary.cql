@@ -93,6 +93,7 @@ define MedicationList:
         Name:  ConceptText(M.medication as FHIR.CodeableConcept),
         Start: DateTimeText(M.authoredOn),
         Dosage: M.dosageInstruction.text.value,
+        Quantity: if M.dispenseRequest is not null and M.dispenseRequest.quantity is not null then M.dispenseRequest.quantity.value.value else null,
         Prescriber: M.requester.display.value,
         Authored: M.authoredOn.value
     }

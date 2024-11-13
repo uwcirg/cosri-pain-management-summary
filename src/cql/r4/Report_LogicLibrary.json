@@ -1043,6 +1043,63 @@
                            }
                         }
                      }, {
+                        "name" : "Quantity",
+                        "value" : {
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "And",
+                              "operand" : [ {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "IsNull",
+                                    "operand" : {
+                                       "path" : "dispenseRequest",
+                                       "scope" : "M",
+                                       "type" : "Property"
+                                    }
+                                 }
+                              }, {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "IsNull",
+                                    "operand" : {
+                                       "path" : "quantity",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "path" : "dispenseRequest",
+                                          "scope" : "M",
+                                          "type" : "Property"
+                                       }
+                                    }
+                                 }
+                              } ]
+                           },
+                           "then" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "quantity",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "dispenseRequest",
+                                       "scope" : "M",
+                                       "type" : "Property"
+                                    }
+                                 }
+                              }
+                           },
+                           "else" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Null"
+                              }
+                           }
+                        }
+                     }, {
                         "name" : "Prescriber",
                         "value" : {
                            "path" : "value",
