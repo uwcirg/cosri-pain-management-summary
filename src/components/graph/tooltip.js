@@ -46,6 +46,7 @@ class Tooltip extends React.Component {
       showDataIdInLabel,
     } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
+    const BASELINE_IDENTIFIER = "baseline";
 
     this.setState({
       xName: xName,
@@ -56,10 +57,12 @@ class Tooltip extends React.Component {
     const formatDate = timeFormat(`%Y-%b-%d`);
     const dataId = dataPointsProps.id ? String(dataPointsProps.id).toUpperCase() : "data";
 
+    const isExcludeItem = (item) => !item[yName] || item[BASELINE_IDENTIFIER] || item[PLACEHOLDER_IDENTIFIER];
+
     const displayRect = () =>
       select(node)
         .selectAll(".tooltip-rect")
-        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .data(data.filter((item) => !isExcludeItem(item)))
         .enter()
         .append("rect")
         .attr("class", (d, i) => `tooltip-rect tooltip_${dataId}${i}`)
@@ -79,7 +82,7 @@ class Tooltip extends React.Component {
     const displayToolTipText = (xOffset, yOffset) =>
       select(node)
         .selectAll(".tooltip_text")
-        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .data(data.filter((item) => !isExcludeItem(item)))
         .enter()
         .append("text")
         .attr("class", (d, i) => `tooltip_text tooltip_${dataId}${i}`)
@@ -96,7 +99,7 @@ class Tooltip extends React.Component {
     const displayToolTipId = (xOffset, yOffset) =>
       select(node)
         .selectAll(".tooltip_text_id")
-        .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+        .data(data.filter((item) => !isExcludeItem(item)))
         .enter()
         .append("text")
         .attr("class", (d, i) => `tooltip_text_id tooltip_${dataId}${i}`)

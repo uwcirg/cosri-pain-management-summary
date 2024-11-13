@@ -66,7 +66,11 @@
 //   Remove currentMME, reportCurrentMME as calculations are being done via frontend JS
 //   When Report MME, compile MME for medications classified as Opioid Medication and also from PDMP
 // Update 20241010
-// Add Naloxone prescription alert check, see MedicationRequestsForNaloxoneConsideration
+//   Add Naloxone prescription alert check, see MedicationRequestsForNaloxoneConsideration
+// Update 20241104
+//  Buprenorphine related changes, see ReportBuprenorphineMedicationRequests, GetBuprenorphineMMEListByDates,GetNoNBuprenorphineMMEListByDates,
+//  ReportDailyMMEByDateWithoutBuprenorphine, ReportDailyMMEByDateWithBuprenorphineOnly
+//  update alert check for MedicationRequestsForNaloxoneConsideration to consider Non-Bup MedicationRequests only, see NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
 library Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv400 version '1.0.0'
 
 
@@ -180,6 +184,9 @@ valueset "Urine drug screen for pain management": '2.16.840.1.113762.1.4.1032.28
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.44/expansion)
 valueset "Stool softeners and laxatives": '2.16.840.1.113762.1.4.1032.44'
+
+// [custom set for buprenorphine]
+valueset "Buprenorphine medications": '2.16.840.1.buprenorphine.custom'
 
 
 // ## Individual codes ##
@@ -696,6 +703,16 @@ define ReportOpioidMedications:
   (ReportOpioidMedicationRequests union ReportOpioidMedicationStatements) M
   sort by Start desc, End desc
 
+//a list of MedicationRequest FHIR resources for Buprenorphine
+define ReportBuprenorphineMedicationRequests:
+  [MedicationRequest: "Buprenorphine medications"]
+
+//Buprenorphine RXCUIs in list
+define BuprenorphineRxCUIs:
+  (ReportBuprenorphineMedicationRequests) o
+  let
+    c: (o.medication as FHIR.CodeableConcept)
+    return Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
 
 // medication requests from PDMP
 // using relevant system identifier for filtering
@@ -740,15 +757,15 @@ define HasNaloxoneInLastYear:
     where M.AuthoredOn <= Today() and M.AuthoredOn >= (Today() - 1 year)
   ) > 0
 
-define MedicationRequestsLastTwoYears:
-  (ReportPDMPMedicationRequests) M
-  where M.MME >= 50 and ((year from Today() - year from M.CalculatedEnd) <= 2)
+define NonBupMedRequestsForNaloxoneConsiderationLastTwoYears:
+  (GetNonBuprenorphineMMEListByDates) M
+  where M.MMEValue >= 50 and ((year from Today() - year from ToDate(M.End)) <= 2)
 
 define MedicationRequestsForNaloxoneConsideration:
   if HasNaloxoneInLastYear then
     null
   else
-    MedicationRequestsLastTwoYears
+    NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
 
 
 // Non-opioid medication orders and statements with dates (lookback 2 years)
@@ -908,14 +925,86 @@ define ReportMMEByDates:
   (ReportMME) R
   where
     //make sure not to include null MME value
-    R.End is not null and R.MMEValue is not null and ((year from Today() - year from R.CalculatedEnd) <= 2)
+    R.End is not null and 
+    R.MMEValue is not null and 
+    ((year from Today() - year from R.CalculatedEnd) <= 2)
   return {
     Start: R.Start,
     End: R.End,
     rxNormCode: R.rxNormCode,
+    rxCUI: R.rxNormCode.code,
+    MMEValue: R.MMEValue,
+    isBup: R.rxNormCode.code in BuprenorphineRxCUIs,
+    category: 'default'
+  }
+  sort by End
+
+//a list including non-null MME value for non - Buprenorphine
+define GetNonBuprenorphineMMEListByDates:
+  ((ReportMMEByDates) O
+    where not (O.rxCUI in BuprenorphineRxCUIs)
+  ) R 
+  return {
+    Start: R.Start,
+    End: R.End,
+    rxNormCode: R.rxNormCode,
+    rxCUI: R.rxNormCode.code,
     MMEValue: R.MMEValue
   }
   sort by End
+
+//a list including non-null MME value for Buprenorphine
+define GetBuprenorphineMMEListByDates:
+  ((ReportMMEByDates) O
+    where O.rxCUI in BuprenorphineRxCUIs
+  ) R 
+  return {
+    Start: R.Start,
+    End: R.End,
+    rxNormCode: R.rxNormCode,
+    rxCUI: R.rxNormCode.code,
+    MMEValue: R.MMEValue
+  }
+  sort by End
+
+// a list of daily total MME values without Buprenorphine
+define ReportDailyMMEByDateWithoutBuprenorphine:
+if First(GetBuprenorphineMMEListByDates) is null then
+  null
+else if First(GetNonBuprenorphineMMEListByDates) is null then
+  null
+else
+  (ReportMMEByDates) R
+  return 
+  {
+    Start: R.Start,
+    End: R.End,
+    rxNormCode: R.rxNormCode,
+    rxCUI: R.rxNormCode.code,
+    //miniscule value for displaying on graph above x-axis
+    MMEValue: if R.rxCUI in BuprenorphineRxCUIs then 0.000000001 else R.MMEValue,
+    category: 'wo_buprenorphine'
+  }
+  sort by End
+
+// a list of daily total MME values with Buprenorphine ONLY
+define ReportDailyMMEByDateWithBuprenorphineOnly:
+  if First(GetBuprenorphineMMEListByDates) is null then
+    null
+  else
+    (ReportMMEByDates) R
+    return 
+    {
+      Start: R.Start,
+      End: R.End,
+      rxNormCode: R.rxNormCode,
+      rxCUI: R.rxNormCode.code,
+      //miniscule value for displaying on graph above x-axis
+      MMEValue: if not (R.rxCUI in BuprenorphineRxCUIs) then 0.000000001 else R.MMEValue,
+      category: 'buprenorphine_only'
+    }
+    sort by End
+  
 
 define ReportPrescriptions:
   (OpioidMedicationRequests) M
@@ -1206,6 +1295,8 @@ define Summary: {
   RiskConsiderations: {
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
+    ReportDailyMMEByDateWithoutBuprenorphine: ReportDailyMMEByDateWithoutBuprenorphine,
+    ReportDailyMMEByDateWithBuprenorphineOnly: ReportDailyMMEByDateWithBuprenorphineOnly,
     //for debugging, uncomment to test
     //ReportPrescriptions: ReportPrescriptions,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,

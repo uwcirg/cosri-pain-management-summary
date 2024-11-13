@@ -123,6 +123,8 @@
           }
 
           .info-count-text {
+            display: inline-block;
+            margin-bottom: 4px;
             margin-right: 4px;
           }
           .info-count-text:empty {
@@ -364,6 +366,9 @@
       @media (min-width: 992px) {
         .MME-svg-container {
           padding-bottom: 80%;
+          &.smaller {
+            padding-bottom: 65%;
+          }
         }
       }
       .MMEChartSvg {
@@ -415,9 +420,12 @@
           & {
             max-width: 85%;
           }
+          &.contain-switches {
+            max-width: 100%;
+          }
         }
         .title {
-          margin-left: 42px;
+          margin-left: 24px;
           font-weight: 700;
           font-size: 1.3em;
         }
@@ -599,14 +607,17 @@
 
       .graph {
         .stats-container {
-          margin-left: 24px;
-          margin-right: 24px;
+          margin-left: 16px;
+          margin-right: 16px;
           margin-bottom: 16px;
           font-size: 14px;
           padding: 8px 16px;
           border: 2px solid $color-gray-lighter;
           min-height: 36px;
           position: relative;
+          &.include-title {
+            min-height: 56px;
+          }
           .stats-item {
             margin-bottom: 4px;
             width: 50%;
@@ -614,6 +625,10 @@
           }
           .title {
             margin-right: 8px;
+            margin-right: 8px;
+            margin-left: 0;
+            font-size: 0.9rem;
+            font-weight: normal;
           }
           .description {
             font-weight: 600;
@@ -632,6 +647,9 @@
             flex: 1;
             align-self: stretch;
             min-width: 480px;
+            &:has(.contain-switches) {
+              min-width: 640px;
+            }
           }
         }
       }

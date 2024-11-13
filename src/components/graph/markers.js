@@ -46,6 +46,8 @@ class Markers extends React.Component {
       dataPointsProps,
     } = this.props;
     const PLACEHOLDER_IDENTIFIER = "placeholder";
+    const BASELINE_IDENTIFIER = "baseline";
+    const isExcludeItem = (item) => !item[yName] || item[BASELINE_IDENTIFIER] || item[PLACEHOLDER_IDENTIFIER];
 
     this.setState({
       xName: xName,
@@ -58,7 +60,7 @@ class Markers extends React.Component {
     }
     const animationDuration = 100;
     const dataId = dataPointsProps.id ? String(dataPointsProps.id).toUpperCase() : "data";
-    const markerType = String(this.props.markerType).toLowerCase();
+    const markerType = this.props.markerType ? String(this.props.markerType).toLowerCase() : "circle";
     const markerSize = this.props.markerSize ? this.props.markerSize : 10;
     let markerShape = MARKER_SHAPES[this.props.markerType];
     if (!markerShape) markerShape = d3.symbolCircle;
@@ -66,7 +68,7 @@ class Markers extends React.Component {
     const strokeWidth = dataPointsProps.strokeWidth || 2;
     select(node)
       .selectAll(`.${markerType}`)
-      .data(data.filter((item) => !item[PLACEHOLDER_IDENTIFIER]))
+      .data(data.filter((item) => !isExcludeItem(item)))
       .enter()
       .append("path")
       .attr("d", d3.symbol().type(markerShape).size(markerSize))
@@ -79,7 +81,7 @@ class Markers extends React.Component {
       .attr("stroke-width", strokeWidth)
       .attr("fill", dataPointsProps.fillColor)
       .on("mouseover", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
+        if (isExcludeItem(d)) {
           return;
         }
         select(`#${markerType}_${dataId}${i}`)
@@ -92,7 +94,7 @@ class Markers extends React.Component {
         d3.selectAll(`.tooltip_${dataId}${i}`).style("display", "block");
       })
       .on("mouseout", (d, i) => {
-        if (d["baseline"] || d[PLACEHOLDER_IDENTIFIER]) {
+        if (isExcludeItem(d)) {
           return;
         }
         select(`#${markerType}_${dataId}${i}`)
