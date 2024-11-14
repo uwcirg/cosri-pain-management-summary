@@ -72,7 +72,7 @@ export default class MMEGraph extends Component {
     }
     if (!minDate) {
       minDate = new Date();
-      minDate.setDate(maxDate.getDate() - total * 60);
+      minDate.setDate(maxDate.getDate() - total * 30);
     }
     let index = 0;
     let increment = Math.ceil((maxDate.getTime() - minDate.getTime()) / total);
@@ -228,7 +228,7 @@ export default class MMEGraph extends Component {
         <div
           className="legend"
           style={{
-            margin: "10px 20px 20px 20px",
+            margin: "10px 0 20px",
             display: "flex",
             flexDirection: "column",
             gap: "12px",
@@ -376,8 +376,6 @@ export default class MMEGraph extends Component {
     /*
      *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40}, {"dateWritten":"2019-04-15","MMEValue":40, "placeholder":true}]
      */
-    let maxDate = new Date();
-    let minDate = new Date().setDate(maxDate.getDate() - 365);
     let baseLineDate = new Date();
     const parentWidth = 488;
     const parentHeight = 344;
@@ -419,34 +417,17 @@ export default class MMEGraph extends Component {
       return d;
     });
     //get stats for data
-    //let graphStats = this.getStats(compiledData);
     let graphStats = this.getStats(
       this.arrLineObj.filter((o) => !isEmptyArray(o.data) && !!o.stats)[0]
     );
+    let maxDate = new Date();
+    let minDate = new Date().setDate(maxDate.getDate() - 365);
     let arrayDates = data.map((d) => {
       return d[xFieldName];
     });
     if (arrayDates.length) {
       maxDate = new Date(Math.max.apply(null, arrayDates));
-      minDate = new Date(Math.min.apply(null, arrayDates));
-    }
-    const arrMonthsYears = [];
-    //date axis is in month intervals so check to see how many there are
-    arrayDates.forEach((item) => {
-      let my = item.getMonth() + 1 + " " + item.getFullYear();
-      if (arrMonthsYears.indexOf(my) === -1) arrMonthsYears.push(my);
-    });
-    if (arrMonthsYears.length < xIntervals - 2) {
-      /*
-       * make sure graph has appropiate end points on the graph
-       * if the total count of data points is less than the initial set number of intervals
-       */
-      let calcMinDate = new Date(minDate.valueOf());
-      minDate = calcMinDate.setDate(
-        calcMinDate.getDate() - 30 * (xIntervals - arrMonthsYears.length + 1)
-      );
-      minDate = new Date(minDate);
-      //console.log("min date ", minDate, " max date ", maxDate)
+      minDate = new Date(Math.min.apply(null, [...arrayDates, minDate]));
     }
     if (arrayDates.length) {
       /*
@@ -475,28 +456,21 @@ export default class MMEGraph extends Component {
         todayDataPoint[xFieldName] = todayObj;
         todayDataPoint[yFieldName] = 0;
         todayDataPoint["placeholder"] = true;
-        data = [...data, todayDataPoint];
+        const categories = [
+          ...new Set(data.filter((d) => !!d.category).map((d) => d.category)),
+        ];
+        data = [
+          ...data,
+          ...categories.map((o) => ({ ...todayDataPoint, category: o })),
+        ];
         maxDate = new Date();
       }
     }
     let calcMaxDate = new Date(maxDate.valueOf());
-    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 90);
+    maxDate = calcMaxDate.setDate(calcMaxDate.getDate() + 30);
     maxDate = new Date(maxDate);
     const diffTime = Math.abs(maxDate - minDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    let WAData = this.getDefaultDataValueSet(
-      WA_MAX_VALUE,
-      baseLineDate,
-      maxDate,
-      ...lineParamsSet
-    );
-    let CDCSecondaryData = this.getDefaultDataValueSet(
-      CDC_SECONDARY_MAX_VALUE,
-      baseLineDate,
-      maxDate,
-      ...lineParamsSet
-    );
     const margins = {
       top: 24,
       right: 48,
@@ -508,12 +482,27 @@ export default class MMEGraph extends Component {
     const height = parentHeight - margins.top - margins.bottom;
     const xScale = scaleTime()
       .domain([baseLineDate, maxDate])
-      .rangeRound([0, width]);
+      .rangeRound([0, width])
+      .nice();
     const yMaxValue = Math.max(140, this.getMaxMMEValue(data));
     const yScale = scaleLinear()
       .domain([0, yMaxValue])
       .range([height, 0])
       .nice();
+    let WAData = this.getDefaultDataValueSet(
+      WA_MAX_VALUE,
+      // baseLineDate,
+      xScale.domain()[0],
+      maxDate,
+      ...lineParamsSet
+    );
+    let CDCSecondaryData = this.getDefaultDataValueSet(
+      CDC_SECONDARY_MAX_VALUE,
+      // baseLineDate,
+      xScale.domain()[0],
+      maxDate,
+      ...lineParamsSet
+    );
 
     const lineGenerator = line()
       .x((d) => xScale(d[xFieldName]))
