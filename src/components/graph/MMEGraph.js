@@ -461,7 +461,16 @@ export default class MMEGraph extends Component {
         ];
         data = [
           ...data,
-          ...categories.map((o) => ({ ...todayDataPoint, category: o })),
+          ...categories
+            .filter(
+              (c) =>
+                !data.find(
+                  (d) =>
+                    d.category === c &&
+                    dateFormat("", d[xFieldName], "YYYY-MM-DD") === today
+                )
+            )
+            .map((o) => ({ ...todayDataPoint, category: o })),
         ];
         maxDate = new Date();
       }
