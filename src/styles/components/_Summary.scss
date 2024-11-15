@@ -485,6 +485,12 @@
       @media (min-width: 992px) {
         .panels {
           flex-wrap: nowrap;
+          .sub-section__panel:first-of-type {
+            flex: 1.05 1;
+          }
+          .sub-panels {
+            flex: 0.95 1;
+          }
         }
       }
       .panel.alerts,
