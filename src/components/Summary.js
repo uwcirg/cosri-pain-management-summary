@@ -697,7 +697,7 @@ export default class Summary extends Component {
               <div className="panels">
                 {this.renderPanel(section, panels, "graph")}
                 {
-                  <div className="sub-panels">
+                  <div className="sub-panels right">
                     {this.renderPanel(section, panels, "rxsummary")}
                     {this.renderPanel(section, panels, "alerts")}
                     {this.renderPanel(section, panels, "surveysummary")}
