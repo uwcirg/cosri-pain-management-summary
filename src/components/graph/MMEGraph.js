@@ -228,10 +228,10 @@ export default class MMEGraph extends Component {
         <div
           className="legend"
           style={{
-            margin: "10px 0 20px",
+            margin: "0",
             display: "flex",
             flexDirection: "column",
-            gap: "12px",
+            gap: "16px",
           }}
         >
           {oLines.map((item, index) => {
@@ -240,10 +240,13 @@ export default class MMEGraph extends Component {
               <div
                 className="legend__item flex"
                 key={`line_legend_${item.key}_${index}`}
-                style={{ fontSize: "0.7rem" }}
+                style={{ fontSize: "0.68rem", columnGap: "8px" }}
               >
                 <div className="legend__item--key" style={legendProps.style}>
-                  <span className="text">
+                  <span
+                    className="text"
+                    style={{ maxWidth: "88px", display: "inline-block" }}
+                  >
                     {legendProps.label
                       .replace("{Y_FIELD_LABEL}", Y_FIELD_LABEL)
                       .toUpperCase()}
@@ -482,7 +485,7 @@ export default class MMEGraph extends Component {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const margins = {
       top: 24,
-      right: 48,
+      right: 32,
       bottom: 56,
       left: 48,
     };
