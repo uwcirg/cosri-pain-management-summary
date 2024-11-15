@@ -79,4 +79,4 @@ export function getEnvs() {
   return arrEnvs;
 }
 
-export const ENV_VAR_PREFIX = "REACT";
+export const ENV_VAR_PREFIX = "REACT_APP";

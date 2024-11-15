@@ -11,8 +11,8 @@ RUN yarn build
 
 FROM nginx
 
-ARG VITE_VERSION_STRING
-ENV VITE_VERSION_STRING=$VITE_VERSION_STRING
+ARG REACT_APP_VERSION_STRING
+ENV REACT_APP_VERSION_STRING=$VITE_VERSION_STRING
 
 COPY docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 COPY --from=build-deps /opt/app/dist /usr/share/nginx/html
