@@ -1340,7 +1340,7 @@
                         },
                         "then" : {
                            "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                           "value" : "12.6",
+                           "value" : "15.4",
                            "type" : "Literal"
                         }
                      } ],
@@ -1455,7 +1455,7 @@
                      "type" : "ToDecimal",
                      "operand" : {
                         "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                        "value" : "4",
+                        "value" : "5",
                         "type" : "Literal"
                      }
                   }
@@ -2319,7 +2319,7 @@
                   },
                   "then" : {
                      "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
-                     "value" : "0.1",
+                     "value" : "0.2",
                      "type" : "Literal"
                   }
                }, {

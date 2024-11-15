@@ -7,6 +7,7 @@ export default defineConfig({
   // Specify the path at which the application will be deployed on a server. The path MUST end with "/".
   // To deploy at the root path, use "/" or remove the "base" property entirely.
   base: "/",
+  envPrefix: "REACT_",
   plugins: [
     react(),
     nodePolyfills({

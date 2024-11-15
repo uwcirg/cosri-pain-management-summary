@@ -170,7 +170,11 @@
             "accessLevel" : "Public"
          }, {
             "name" : "Stool softeners and laxatives",
-            "id" : "https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.44",
+            "id" : "2.16.840.1.113762.1.4.1032.44",
+            "accessLevel" : "Public"
+         }, {
+            "name" : "Buprenorphine medications",
+            "id" : "2.16.840.1.buprenorphine.custom",
             "accessLevel" : "Public"
          } ]
       },
@@ -5415,6 +5419,100 @@
                }
             }
          }, {
+            "name" : "ReportBuprenorphineMedicationRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+               "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+               "codeProperty" : "medication",
+               "codeComparator" : "in",
+               "type" : "Retrieve",
+               "codes" : {
+                  "name" : "Buprenorphine medications",
+                  "preserve" : true,
+                  "type" : "ValueSetRef"
+               }
+            }
+         }, {
+            "name" : "BuprenorphineRxCUIs",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "o",
+                  "expression" : {
+                     "name" : "ReportBuprenorphineMedicationRequests",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "c",
+                  "expression" : {
+                     "strict" : false,
+                     "type" : "As",
+                     "operand" : {
+                        "path" : "medication",
+                        "scope" : "o",
+                        "type" : "Property"
+                     },
+                     "asTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}CodeableConcept",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Coalesce",
+                     "operand" : [ {
+                        "type" : "Query",
+                        "source" : [ {
+                           "alias" : "c2",
+                           "expression" : {
+                              "path" : "coding",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "c",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        } ],
+                        "relationship" : [ ],
+                        "where" : {
+                           "type" : "Equivalent",
+                           "operand" : [ {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "system",
+                                 "scope" : "c2",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                              "value" : "http://www.nlm.nih.gov/research/umls/rxnorm",
+                              "type" : "Literal"
+                           } ]
+                        },
+                        "return" : {
+                           "expression" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "code",
+                                 "scope" : "c2",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     } ]
+                  }
+               }
+            }
+         }, {
             "name" : "PDMPMedicationRequests",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -5872,6 +5970,13 @@
                               "type" : "AliasRef"
                            } ]
                         }
+                     }, {
+                        "name" : "AuthoredOn",
+                        "value" : {
+                           "path" : "authoredOn",
+                           "scope" : "O",
+                           "type" : "Property"
+                        }
                      } ]
                   }
                },
@@ -5885,6 +5990,887 @@
                      "path" : "End",
                      "type" : "ByColumn"
                   } ]
+               }
+            }
+         }, {
+            "name" : "NaloxoneMedicationRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+               "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+               "codeProperty" : "medication",
+               "codeComparator" : "in",
+               "type" : "Retrieve",
+               "codes" : {
+                  "name" : "Naloxone medications",
+                  "preserve" : true,
+                  "type" : "ValueSetRef"
+               }
+            }
+         }, {
+            "name" : "ReportNaloxoneMedicationRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "name" : "NaloxoneMedicationRequests",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Type",
+                        "value" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Request",
+                           "type" : "Literal"
+                        }
+                     }, {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "strict" : false,
+                              "type" : "As",
+                              "operand" : {
+                                 "path" : "medication",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              },
+                              "asTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "DispensedDate",
+                        "value" : {
+                           "name" : "DateText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "GetMedicationRequestDispensedDate",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "name" : "O",
+                                 "type" : "AliasRef"
+                              } ]
+                           } ]
+                        }
+                     }, {
+                        "name" : "Start",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "End",
+                        "value" : {
+                           "strict" : false,
+                           "type" : "As",
+                           "operand" : {
+                              "type" : "Null"
+                           },
+                           "asTypeSpecifier" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }
+                     }, {
+                        "name" : "Status",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "status",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "AuthoredOn",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "Start",
+                     "type" : "ByColumn"
+                  }, {
+                     "direction" : "desc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "HasNaloxoneInLastYear",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Greater",
+               "operand" : [ {
+                  "type" : "Length",
+                  "operand" : {
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "M",
+                        "expression" : {
+                           "name" : "ReportNaloxoneMedicationRequests",
+                           "type" : "ExpressionRef"
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "where" : {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "LessOrEqual",
+                           "operand" : [ {
+                              "path" : "AuthoredOn",
+                              "scope" : "M",
+                              "type" : "Property"
+                           }, {
+                              "type" : "ToDateTime",
+                              "operand" : {
+                                 "type" : "Today"
+                              }
+                           } ]
+                        }, {
+                           "type" : "GreaterOrEqual",
+                           "operand" : [ {
+                              "path" : "AuthoredOn",
+                              "scope" : "M",
+                              "type" : "Property"
+                           }, {
+                              "type" : "ToDateTime",
+                              "operand" : {
+                                 "type" : "Subtract",
+                                 "operand" : [ {
+                                    "type" : "Today"
+                                 }, {
+                                    "value" : 1,
+                                    "unit" : "year",
+                                    "type" : "Quantity"
+                                 } ]
+                              }
+                           } ]
+                        } ]
+                     }
+                  }
+               }, {
+                  "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                  "value" : "0",
+                  "type" : "Literal"
+               } ]
+            }
+         }, {
+            "name" : "ReportMME",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "type" : "Union",
+                     "operand" : [ {
+                        "name" : "PDMPMedicationRequests",
+                        "type" : "ExpressionRef"
+                     }, {
+                        "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                        "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+                        "codeProperty" : "medication",
+                        "codeComparator" : "in",
+                        "type" : "Retrieve",
+                        "codes" : {
+                           "name" : "Opioid Pain Medications",
+                           "preserve" : true,
+                           "type" : "ValueSetRef"
+                        }
+                     } ]
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "MME_Object",
+                  "expression" : {
+                     "name" : "MME",
+                     "libraryName" : "MMECalculator",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "type" : "ToList",
+                        "operand" : {
+                           "name" : "O",
+                           "type" : "AliasRef"
+                        }
+                     } ]
+                  }
+               }, {
+                  "identifier" : "AuthoredDate",
+                  "expression" : {
+                     "name" : "DateTimeText",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "path" : "authoredOn",
+                        "scope" : "O",
+                        "type" : "Property"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "DispensedDate",
+                  "expression" : {
+                     "name" : "DateText",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "GetMedicationRequestDispensedDate",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "name" : "O",
+                           "type" : "AliasRef"
+                        } ]
+                     } ]
+                  }
+               }, {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "CalculatedStatus",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "SameOrAfter",
+                        "operand" : [ {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }, {
+                           "type" : "Today"
+                        } ]
+                     },
+                     "then" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "active",
+                        "type" : "Literal"
+                     },
+                     "else" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}String",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Type",
+                        "value" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Request",
+                           "type" : "Literal"
+                        }
+                     }, {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "strict" : false,
+                              "type" : "As",
+                              "operand" : {
+                                 "path" : "medication",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              },
+                              "asTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "Written",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Start",
+                        "value" : {
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "DispensedDate",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "name" : "DispensedDate",
+                              "type" : "QueryLetRef"
+                           },
+                           "else" : {
+                              "name" : "AuthoredDate",
+                              "type" : "QueryLetRef"
+                           }
+                        }
+                     }, {
+                        "name" : "End",
+                        "value" : {
+                           "type" : "ToString",
+                           "operand" : {
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
+                           }
+                        }
+                     }, {
+                        "name" : "Status",
+                        "value" : {
+                           "name" : "CalculatedStatus",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "doseQuantity",
+                        "value" : {
+                           "path" : "doseQuantity",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     }, {
+                        "name" : "dosesPerDay",
+                        "value" : {
+                           "path" : "dosesPerDay",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     }, {
+                        "name" : "strength",
+                        "value" : {
+                           "path" : "strength",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     }, {
+                        "name" : "supplyQuantity",
+                        "value" : {
+                           "path" : "supplyQuantity",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     }, {
+                        "name" : "supplyDuration",
+                        "value" : {
+                           "path" : "supplyDuration",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     }, {
+                        "name" : "factor",
+                        "value" : {
+                           "path" : "conversionFactor",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     }, {
+                        "name" : "MMEValue",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "mme",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "name" : "MME_Object",
+                                    "type" : "QueryLetRef"
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "rxNormCode",
+                        "value" : {
+                           "path" : "rxNormCode",
+                           "type" : "Property",
+                           "source" : {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "name" : "MME_Object",
+                                 "type" : "QueryLetRef"
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "0",
+                                 "type" : "Literal"
+                              } ]
+                           }
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "ReportMMEByDates",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "R",
+                  "expression" : {
+                     "name" : "ReportMME",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "where" : {
+                  "type" : "And",
+                  "operand" : [ {
+                     "type" : "And",
+                     "operand" : [ {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "path" : "End",
+                              "scope" : "R",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "path" : "MMEValue",
+                              "scope" : "R",
+                              "type" : "Property"
+                           }
+                        }
+                     } ]
+                  }, {
+                     "type" : "LessOrEqual",
+                     "operand" : [ {
+                        "type" : "Subtract",
+                        "operand" : [ {
+                           "precision" : "Year",
+                           "type" : "DateTimeComponentFrom",
+                           "operand" : {
+                              "type" : "Today"
+                           }
+                        }, {
+                           "precision" : "Year",
+                           "type" : "DateTimeComponentFrom",
+                           "operand" : {
+                              "path" : "CalculatedEnd",
+                              "scope" : "R",
+                              "type" : "Property"
+                           }
+                        } ]
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "2",
+                        "type" : "Literal"
+                     } ]
+                  } ]
+               },
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Start",
+                        "value" : {
+                           "path" : "Start",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "End",
+                        "value" : {
+                           "path" : "End",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "rxNormCode",
+                        "value" : {
+                           "path" : "rxNormCode",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "rxCUI",
+                        "value" : {
+                           "path" : "code",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "rxNormCode",
+                              "scope" : "R",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "MMEValue",
+                        "value" : {
+                           "path" : "MMEValue",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "isBup",
+                        "value" : {
+                           "type" : "In",
+                           "operand" : [ {
+                              "path" : "code",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "rxNormCode",
+                                 "scope" : "R",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "name" : "BuprenorphineRxCUIs",
+                              "type" : "ExpressionRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "category",
+                        "value" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "default",
+                           "type" : "Literal"
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "asc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "GetNonBuprenorphineMMEListByDates",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "R",
+                  "expression" : {
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "O",
+                        "expression" : {
+                           "name" : "ReportMMEByDates",
+                           "type" : "ExpressionRef"
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "where" : {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "In",
+                           "operand" : [ {
+                              "path" : "rxCUI",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }, {
+                              "name" : "BuprenorphineRxCUIs",
+                              "type" : "ExpressionRef"
+                           } ]
+                        }
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Start",
+                        "value" : {
+                           "path" : "Start",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "End",
+                        "value" : {
+                           "path" : "End",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "rxNormCode",
+                        "value" : {
+                           "path" : "rxNormCode",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     }, {
+                        "name" : "rxCUI",
+                        "value" : {
+                           "path" : "code",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "rxNormCode",
+                              "scope" : "R",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "MMEValue",
+                        "value" : {
+                           "path" : "MMEValue",
+                           "scope" : "R",
+                           "type" : "Property"
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "NonBupMedRequestsForNaloxoneConsiderationLastTwoYears",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "M",
+                  "expression" : {
+                     "name" : "GetNonBuprenorphineMMEListByDates",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "where" : {
+                  "type" : "And",
+                  "operand" : [ {
+                     "type" : "GreaterOrEqual",
+                     "operand" : [ {
+                        "path" : "MMEValue",
+                        "scope" : "M",
+                        "type" : "Property"
+                     }, {
+                        "type" : "ToDecimal",
+                        "operand" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                           "value" : "50",
+                           "type" : "Literal"
+                        }
+                     } ]
+                  }, {
+                     "type" : "LessOrEqual",
+                     "operand" : [ {
+                        "type" : "Subtract",
+                        "operand" : [ {
+                           "precision" : "Year",
+                           "type" : "DateTimeComponentFrom",
+                           "operand" : {
+                              "type" : "Today"
+                           }
+                        }, {
+                           "precision" : "Year",
+                           "type" : "DateTimeComponentFrom",
+                           "operand" : {
+                              "type" : "ToDate",
+                              "operand" : {
+                                 "path" : "End",
+                                 "scope" : "M",
+                                 "type" : "Property"
+                              }
+                           }
+                        } ]
+                     }, {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                        "value" : "2",
+                        "type" : "Literal"
+                     } ]
+                  } ]
+               }
+            }
+         }, {
+            "name" : "MedicationRequestsForNaloxoneConsideration",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "If",
+               "condition" : {
+                  "name" : "HasNaloxoneInLastYear",
+                  "type" : "ExpressionRef"
+               },
+               "then" : {
+                  "type" : "As",
+                  "operand" : {
+                     "type" : "Null"
+                  },
+                  "asTypeSpecifier" : {
+                     "type" : "ListTypeSpecifier",
+                     "elementType" : {
+                        "type" : "TupleTypeSpecifier",
+                        "element" : [ {
+                           "name" : "Start",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "End",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "rxNormCode",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}Code",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "rxCUI",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "MMEValue",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        } ]
+                     }
+                  }
+               },
+               "else" : {
+                  "name" : "NonBupMedRequestsForNaloxoneConsiderationLastTwoYears",
+                  "type" : "ExpressionRef"
                }
             }
          }, {
@@ -7127,346 +8113,7 @@
                }
             }
          }, {
-            "name" : "ReportMME",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "O",
-                  "expression" : {
-                     "type" : "Union",
-                     "operand" : [ {
-                        "name" : "PDMPMedicationRequests",
-                        "type" : "ExpressionRef"
-                     }, {
-                        "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-                        "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
-                        "codeProperty" : "medication",
-                        "codeComparator" : "in",
-                        "type" : "Retrieve",
-                        "codes" : {
-                           "name" : "Opioid Pain Medications",
-                           "preserve" : true,
-                           "type" : "ValueSetRef"
-                        }
-                     } ]
-                  }
-               } ],
-               "let" : [ {
-                  "identifier" : "MME_Object",
-                  "expression" : {
-                     "name" : "MME",
-                     "libraryName" : "MMECalculator",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "type" : "ToList",
-                        "operand" : {
-                           "name" : "O",
-                           "type" : "AliasRef"
-                        }
-                     } ]
-                  }
-               }, {
-                  "identifier" : "AuthoredDate",
-                  "expression" : {
-                     "name" : "DateTimeText",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "path" : "authoredOn",
-                        "scope" : "O",
-                        "type" : "Property"
-                     } ]
-                  }
-               }, {
-                  "identifier" : "DispensedDate",
-                  "expression" : {
-                     "name" : "DateText",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "name" : "GetMedicationRequestDispensedDate",
-                        "type" : "FunctionRef",
-                        "operand" : [ {
-                           "name" : "O",
-                           "type" : "AliasRef"
-                        } ]
-                     } ]
-                  }
-               }, {
-                  "identifier" : "CalculatedEnd",
-                  "expression" : {
-                     "name" : "GetMedicationRequestEndDate",
-                     "type" : "FunctionRef",
-                     "operand" : [ {
-                        "name" : "O",
-                        "type" : "AliasRef"
-                     } ]
-                  }
-               }, {
-                  "identifier" : "CalculatedStatus",
-                  "expression" : {
-                     "type" : "If",
-                     "condition" : {
-                        "type" : "SameOrAfter",
-                        "operand" : [ {
-                           "name" : "CalculatedEnd",
-                           "type" : "QueryLetRef"
-                        }, {
-                           "type" : "Today"
-                        } ]
-                     },
-                     "then" : {
-                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                        "value" : "active",
-                        "type" : "Literal"
-                     },
-                     "else" : {
-                        "asType" : "{urn:hl7-org:elm-types:r1}String",
-                        "type" : "As",
-                        "operand" : {
-                           "type" : "Null"
-                        }
-                     }
-                  }
-               } ],
-               "relationship" : [ ],
-               "return" : {
-                  "expression" : {
-                     "type" : "Tuple",
-                     "element" : [ {
-                        "name" : "Type",
-                        "value" : {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                           "value" : "Request",
-                           "type" : "Literal"
-                        }
-                     }, {
-                        "name" : "Name",
-                        "value" : {
-                           "name" : "ConceptText",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "strict" : false,
-                              "type" : "As",
-                              "operand" : {
-                                 "path" : "medication",
-                                 "scope" : "O",
-                                 "type" : "Property"
-                              },
-                              "asTypeSpecifier" : {
-                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
-                                 "type" : "NamedTypeSpecifier"
-                              }
-                           } ]
-                        }
-                     }, {
-                        "name" : "CalculatedEnd",
-                        "value" : {
-                           "name" : "CalculatedEnd",
-                           "type" : "QueryLetRef"
-                        }
-                     }, {
-                        "name" : "Written",
-                        "value" : {
-                           "name" : "DateTimeText",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "authoredOn",
-                              "scope" : "O",
-                              "type" : "Property"
-                           } ]
-                        }
-                     }, {
-                        "name" : "Start",
-                        "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "name" : "DispensedDate",
-                                    "type" : "QueryLetRef"
-                                 }
-                              }
-                           },
-                           "then" : {
-                              "name" : "DispensedDate",
-                              "type" : "QueryLetRef"
-                           },
-                           "else" : {
-                              "name" : "AuthoredDate",
-                              "type" : "QueryLetRef"
-                           }
-                        }
-                     }, {
-                        "name" : "End",
-                        "value" : {
-                           "type" : "ToString",
-                           "operand" : {
-                              "name" : "CalculatedEnd",
-                              "type" : "QueryLetRef"
-                           }
-                        }
-                     }, {
-                        "name" : "Status",
-                        "value" : {
-                           "name" : "CalculatedStatus",
-                           "type" : "QueryLetRef"
-                        }
-                     }, {
-                        "name" : "doseQuantity",
-                        "value" : {
-                           "path" : "doseQuantity",
-                           "type" : "Property",
-                           "source" : {
-                              "type" : "Indexer",
-                              "operand" : [ {
-                                 "name" : "MME_Object",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "0",
-                                 "type" : "Literal"
-                              } ]
-                           }
-                        }
-                     }, {
-                        "name" : "dosesPerDay",
-                        "value" : {
-                           "path" : "dosesPerDay",
-                           "type" : "Property",
-                           "source" : {
-                              "type" : "Indexer",
-                              "operand" : [ {
-                                 "name" : "MME_Object",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "0",
-                                 "type" : "Literal"
-                              } ]
-                           }
-                        }
-                     }, {
-                        "name" : "strength",
-                        "value" : {
-                           "path" : "strength",
-                           "type" : "Property",
-                           "source" : {
-                              "type" : "Indexer",
-                              "operand" : [ {
-                                 "name" : "MME_Object",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "0",
-                                 "type" : "Literal"
-                              } ]
-                           }
-                        }
-                     }, {
-                        "name" : "supplyQuantity",
-                        "value" : {
-                           "path" : "supplyQuantity",
-                           "type" : "Property",
-                           "source" : {
-                              "type" : "Indexer",
-                              "operand" : [ {
-                                 "name" : "MME_Object",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "0",
-                                 "type" : "Literal"
-                              } ]
-                           }
-                        }
-                     }, {
-                        "name" : "supplyDuration",
-                        "value" : {
-                           "path" : "supplyDuration",
-                           "type" : "Property",
-                           "source" : {
-                              "type" : "Indexer",
-                              "operand" : [ {
-                                 "name" : "MME_Object",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "0",
-                                 "type" : "Literal"
-                              } ]
-                           }
-                        }
-                     }, {
-                        "name" : "factor",
-                        "value" : {
-                           "path" : "conversionFactor",
-                           "type" : "Property",
-                           "source" : {
-                              "type" : "Indexer",
-                              "operand" : [ {
-                                 "name" : "MME_Object",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "0",
-                                 "type" : "Literal"
-                              } ]
-                           }
-                        }
-                     }, {
-                        "name" : "MMEValue",
-                        "value" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "mme",
-                              "type" : "Property",
-                              "source" : {
-                                 "type" : "Indexer",
-                                 "operand" : [ {
-                                    "name" : "MME_Object",
-                                    "type" : "QueryLetRef"
-                                 }, {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "0",
-                                    "type" : "Literal"
-                                 } ]
-                              }
-                           }
-                        }
-                     }, {
-                        "name" : "rxNormCode",
-                        "value" : {
-                           "path" : "rxNormCode",
-                           "type" : "Property",
-                           "source" : {
-                              "type" : "Indexer",
-                              "operand" : [ {
-                                 "name" : "MME_Object",
-                                 "type" : "QueryLetRef"
-                              }, {
-                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                 "value" : "0",
-                                 "type" : "Literal"
-                              } ]
-                           }
-                        }
-                     } ]
-                  }
-               },
-               "sort" : {
-                  "by" : [ {
-                     "direction" : "desc",
-                     "path" : "End",
-                     "type" : "ByColumn"
-                  } ]
-               }
-            }
-         }, {
-            "name" : "ReportMMEByDates",
+            "name" : "GetBuprenorphineMMEListByDates",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -7474,62 +8121,29 @@
                "source" : [ {
                   "alias" : "R",
                   "expression" : {
-                     "name" : "ReportMME",
-                     "type" : "ExpressionRef"
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "O",
+                        "expression" : {
+                           "name" : "ReportMMEByDates",
+                           "type" : "ExpressionRef"
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "where" : {
+                        "type" : "In",
+                        "operand" : [ {
+                           "path" : "rxCUI",
+                           "scope" : "O",
+                           "type" : "Property"
+                        }, {
+                           "name" : "BuprenorphineRxCUIs",
+                           "type" : "ExpressionRef"
+                        } ]
+                     }
                   }
                } ],
                "relationship" : [ ],
-               "where" : {
-                  "type" : "And",
-                  "operand" : [ {
-                     "type" : "And",
-                     "operand" : [ {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "path" : "End",
-                              "scope" : "R",
-                              "type" : "Property"
-                           }
-                        }
-                     }, {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "path" : "MMEValue",
-                              "scope" : "R",
-                              "type" : "Property"
-                           }
-                        }
-                     } ]
-                  }, {
-                     "type" : "LessOrEqual",
-                     "operand" : [ {
-                        "type" : "Subtract",
-                        "operand" : [ {
-                           "precision" : "Year",
-                           "type" : "DateTimeComponentFrom",
-                           "operand" : {
-                              "type" : "Today"
-                           }
-                        }, {
-                           "precision" : "Year",
-                           "type" : "DateTimeComponentFrom",
-                           "operand" : {
-                              "path" : "CalculatedEnd",
-                              "scope" : "R",
-                              "type" : "Property"
-                           }
-                        } ]
-                     }, {
-                        "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                        "value" : "2",
-                        "type" : "Literal"
-                     } ]
-                  } ]
-               },
                "return" : {
                   "expression" : {
                      "type" : "Tuple",
@@ -7555,6 +8169,17 @@
                            "type" : "Property"
                         }
                      }, {
+                        "name" : "rxCUI",
+                        "value" : {
+                           "path" : "code",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "rxNormCode",
+                              "scope" : "R",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
                         "name" : "MMEValue",
                         "value" : {
                            "path" : "MMEValue",
@@ -7566,10 +8191,385 @@
                },
                "sort" : {
                   "by" : [ {
-                     "direction" : "desc",
+                     "direction" : "asc",
                      "path" : "End",
                      "type" : "ByColumn"
                   } ]
+               }
+            }
+         }, {
+            "name" : "ReportDailyMMEByDateWithoutBuprenorphine",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "If",
+               "condition" : {
+                  "type" : "IsNull",
+                  "operand" : {
+                     "type" : "First",
+                     "source" : {
+                        "name" : "GetBuprenorphineMMEListByDates",
+                        "type" : "ExpressionRef"
+                     }
+                  }
+               },
+               "then" : {
+                  "type" : "As",
+                  "operand" : {
+                     "type" : "Null"
+                  },
+                  "asTypeSpecifier" : {
+                     "type" : "ListTypeSpecifier",
+                     "elementType" : {
+                        "type" : "TupleTypeSpecifier",
+                        "element" : [ {
+                           "name" : "Start",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "End",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "rxNormCode",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}Code",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "rxCUI",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "MMEValue",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "category",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        } ]
+                     }
+                  }
+               },
+               "else" : {
+                  "type" : "If",
+                  "condition" : {
+                     "type" : "IsNull",
+                     "operand" : {
+                        "type" : "First",
+                        "source" : {
+                           "name" : "GetNonBuprenorphineMMEListByDates",
+                           "type" : "ExpressionRef"
+                        }
+                     }
+                  },
+                  "then" : {
+                     "type" : "As",
+                     "operand" : {
+                        "type" : "Null"
+                     },
+                     "asTypeSpecifier" : {
+                        "type" : "ListTypeSpecifier",
+                        "elementType" : {
+                           "type" : "TupleTypeSpecifier",
+                           "element" : [ {
+                              "name" : "Start",
+                              "elementType" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}String",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }, {
+                              "name" : "End",
+                              "elementType" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}String",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }, {
+                              "name" : "rxNormCode",
+                              "elementType" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}Code",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }, {
+                              "name" : "rxCUI",
+                              "elementType" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}String",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }, {
+                              "name" : "MMEValue",
+                              "elementType" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           }, {
+                              "name" : "category",
+                              "elementType" : {
+                                 "name" : "{urn:hl7-org:elm-types:r1}String",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }
+                  },
+                  "else" : {
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "R",
+                        "expression" : {
+                           "name" : "ReportMMEByDates",
+                           "type" : "ExpressionRef"
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "return" : {
+                        "expression" : {
+                           "type" : "Tuple",
+                           "element" : [ {
+                              "name" : "Start",
+                              "value" : {
+                                 "path" : "Start",
+                                 "scope" : "R",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "name" : "End",
+                              "value" : {
+                                 "path" : "End",
+                                 "scope" : "R",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "name" : "rxNormCode",
+                              "value" : {
+                                 "path" : "rxNormCode",
+                                 "scope" : "R",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "name" : "rxCUI",
+                              "value" : {
+                                 "path" : "code",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "rxNormCode",
+                                    "scope" : "R",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }, {
+                              "name" : "MMEValue",
+                              "value" : {
+                                 "type" : "If",
+                                 "condition" : {
+                                    "type" : "In",
+                                    "operand" : [ {
+                                       "path" : "rxCUI",
+                                       "scope" : "R",
+                                       "type" : "Property"
+                                    }, {
+                                       "name" : "BuprenorphineRxCUIs",
+                                       "type" : "ExpressionRef"
+                                    } ]
+                                 },
+                                 "then" : {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                    "value" : "0.000000001",
+                                    "type" : "Literal"
+                                 },
+                                 "else" : {
+                                    "path" : "MMEValue",
+                                    "scope" : "R",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }, {
+                              "name" : "category",
+                              "value" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "wo_buprenorphine",
+                                 "type" : "Literal"
+                              }
+                           } ]
+                        }
+                     },
+                     "sort" : {
+                        "by" : [ {
+                           "direction" : "asc",
+                           "path" : "End",
+                           "type" : "ByColumn"
+                        } ]
+                     }
+                  }
+               }
+            }
+         }, {
+            "name" : "ReportDailyMMEByDateWithBuprenorphineOnly",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "If",
+               "condition" : {
+                  "type" : "IsNull",
+                  "operand" : {
+                     "type" : "First",
+                     "source" : {
+                        "name" : "GetBuprenorphineMMEListByDates",
+                        "type" : "ExpressionRef"
+                     }
+                  }
+               },
+               "then" : {
+                  "type" : "As",
+                  "operand" : {
+                     "type" : "Null"
+                  },
+                  "asTypeSpecifier" : {
+                     "type" : "ListTypeSpecifier",
+                     "elementType" : {
+                        "type" : "TupleTypeSpecifier",
+                        "element" : [ {
+                           "name" : "Start",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "End",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "rxNormCode",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}Code",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "rxCUI",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "MMEValue",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        }, {
+                           "name" : "category",
+                           "elementType" : {
+                              "name" : "{urn:hl7-org:elm-types:r1}String",
+                              "type" : "NamedTypeSpecifier"
+                           }
+                        } ]
+                     }
+                  }
+               },
+               "else" : {
+                  "type" : "Query",
+                  "source" : [ {
+                     "alias" : "R",
+                     "expression" : {
+                        "name" : "ReportMMEByDates",
+                        "type" : "ExpressionRef"
+                     }
+                  } ],
+                  "relationship" : [ ],
+                  "return" : {
+                     "expression" : {
+                        "type" : "Tuple",
+                        "element" : [ {
+                           "name" : "Start",
+                           "value" : {
+                              "path" : "Start",
+                              "scope" : "R",
+                              "type" : "Property"
+                           }
+                        }, {
+                           "name" : "End",
+                           "value" : {
+                              "path" : "End",
+                              "scope" : "R",
+                              "type" : "Property"
+                           }
+                        }, {
+                           "name" : "rxNormCode",
+                           "value" : {
+                              "path" : "rxNormCode",
+                              "scope" : "R",
+                              "type" : "Property"
+                           }
+                        }, {
+                           "name" : "rxCUI",
+                           "value" : {
+                              "path" : "code",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "rxNormCode",
+                                 "scope" : "R",
+                                 "type" : "Property"
+                              }
+                           }
+                        }, {
+                           "name" : "MMEValue",
+                           "value" : {
+                              "type" : "If",
+                              "condition" : {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "In",
+                                    "operand" : [ {
+                                       "path" : "rxCUI",
+                                       "scope" : "R",
+                                       "type" : "Property"
+                                    }, {
+                                       "name" : "BuprenorphineRxCUIs",
+                                       "type" : "ExpressionRef"
+                                    } ]
+                                 }
+                              },
+                              "then" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                                 "value" : "0.000000001",
+                                 "type" : "Literal"
+                              },
+                              "else" : {
+                                 "path" : "MMEValue",
+                                 "scope" : "R",
+                                 "type" : "Property"
+                              }
+                           }
+                        }, {
+                           "name" : "category",
+                           "value" : {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                              "value" : "buprenorphine_only",
+                              "type" : "Literal"
+                           }
+                        } ]
+                     }
+                  },
+                  "sort" : {
+                     "by" : [ {
+                        "direction" : "asc",
+                        "path" : "End",
+                        "type" : "ByColumn"
+                     } ]
+                  }
                }
             }
          }, {
@@ -10180,22 +11180,6 @@
                }
             }
          }, {
-            "name" : "NaloxoneMedicationRequests",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-               "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
-               "codeProperty" : "medication",
-               "codeComparator" : "in",
-               "type" : "Retrieve",
-               "codes" : {
-                  "name" : "Naloxone medications",
-                  "preserve" : true,
-                  "type" : "ValueSetRef"
-               }
-            }
-         }, {
             "name" : "NaloxoneMedicationStatements",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -10209,113 +11193,6 @@
                   "name" : "Naloxone medications",
                   "preserve" : true,
                   "type" : "ValueSetRef"
-               }
-            }
-         }, {
-            "name" : "ReportNaloxoneMedicationRequests",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "O",
-                  "expression" : {
-                     "name" : "NaloxoneMedicationRequests",
-                     "type" : "ExpressionRef"
-                  }
-               } ],
-               "relationship" : [ ],
-               "return" : {
-                  "expression" : {
-                     "type" : "Tuple",
-                     "element" : [ {
-                        "name" : "Type",
-                        "value" : {
-                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                           "value" : "Request",
-                           "type" : "Literal"
-                        }
-                     }, {
-                        "name" : "Name",
-                        "value" : {
-                           "name" : "ConceptText",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "strict" : false,
-                              "type" : "As",
-                              "operand" : {
-                                 "path" : "medication",
-                                 "scope" : "O",
-                                 "type" : "Property"
-                              },
-                              "asTypeSpecifier" : {
-                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
-                                 "type" : "NamedTypeSpecifier"
-                              }
-                           } ]
-                        }
-                     }, {
-                        "name" : "DispensedDate",
-                        "value" : {
-                           "name" : "DateText",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "name" : "GetMedicationRequestDispensedDate",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "name" : "O",
-                                 "type" : "AliasRef"
-                              } ]
-                           } ]
-                        }
-                     }, {
-                        "name" : "Start",
-                        "value" : {
-                           "name" : "DateTimeText",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "authoredOn",
-                              "scope" : "O",
-                              "type" : "Property"
-                           } ]
-                        }
-                     }, {
-                        "name" : "End",
-                        "value" : {
-                           "strict" : false,
-                           "type" : "As",
-                           "operand" : {
-                              "type" : "Null"
-                           },
-                           "asTypeSpecifier" : {
-                              "name" : "{urn:hl7-org:elm-types:r1}String",
-                              "type" : "NamedTypeSpecifier"
-                           }
-                        }
-                     }, {
-                        "name" : "Status",
-                        "value" : {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "status",
-                              "scope" : "O",
-                              "type" : "Property"
-                           }
-                        }
-                     } ]
-                  }
-               },
-               "sort" : {
-                  "by" : [ {
-                     "direction" : "desc",
-                     "path" : "Start",
-                     "type" : "ByColumn"
-                  }, {
-                     "direction" : "desc",
-                     "path" : "End",
-                     "type" : "ByColumn"
-                  } ]
                }
             }
          }, {
@@ -10455,6 +11332,12 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "DispensedDate",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "Start",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -10472,6 +11355,12 @@
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
                                     }
+                                 }, {
+                                    "name" : "AuthoredOn",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
                                  } ]
                               }, {
                                  "type" : "TupleTypeSpecifier",
@@ -10483,12 +11372,6 @@
                                     }
                                  }, {
                                     "name" : "Name",
-                                    "elementType" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "DispensedDate",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -10540,6 +11423,12 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "DispensedDate",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "Start",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -10557,6 +11446,12 @@
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
                                     }
+                                 }, {
+                                    "name" : "AuthoredOn",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
                                  } ]
                               }, {
                                  "type" : "TupleTypeSpecifier",
@@ -10568,12 +11463,6 @@
                                     }
                                  }, {
                                     "name" : "Name",
-                                    "elementType" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "DispensedDate",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
@@ -10745,6 +11634,7 @@
                   "alias" : "DO",
                   "expression" : {
                      "dataType" : "{http://hl7.org/fhir}DocumentReference",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/DocumentReference",
                      "type" : "Retrieve"
                   }
                } ],
@@ -11107,6 +11997,18 @@
                            "type" : "ExpressionRef"
                         }
                      }, {
+                        "name" : "ReportDailyMMEByDateWithoutBuprenorphine",
+                        "value" : {
+                           "name" : "ReportDailyMMEByDateWithoutBuprenorphine",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "ReportDailyMMEByDateWithBuprenorphineOnly",
+                        "value" : {
+                           "name" : "ReportDailyMMEByDateWithBuprenorphineOnly",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
                         "name" : "BenzodiazepineMedications",
                         "value" : {
                            "name" : "ReportBenzodiazepineMedications",
@@ -11134,6 +12036,12 @@
                         "name" : "NaloxoneMedications",
                         "value" : {
                            "name" : "ReportNaloxoneMedications",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
+                        "name" : "MedicationRequestsForNaloxoneConsideration",
+                        "value" : {
+                           "name" : "MedicationRequestsForNaloxoneConsideration",
                            "type" : "ExpressionRef"
                         }
                      } ]

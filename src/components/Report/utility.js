@@ -21,6 +21,11 @@ export function getReferralData(summaryData) {
   if (!summaryData || !summaryData.TreatmentHistory) return null;
   return summaryData.TreatmentHistory.Referrals;
 }
+export function getMedicationListData(summaryData) {
+  if (!summaryData) return null;
+  if (summaryData.MedicationList) return summaryData.MedicationList;
+  return null;
+}
 export function hasReportSummaryData(summaryData) {
   if (!summaryData) return false;
   let sectionData = [];

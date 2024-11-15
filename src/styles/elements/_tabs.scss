@@ -1,38 +1,45 @@
 $tab-background-color: #fffffff6;
-$tab-height: 49px;
+$tab-inactive-background-color: #d9dcdd;
+$tab-inactive-color: #717376;
+$tab-height: 48px;
+$tab-polygon: polygon(4.5% 5%, 94.5% 5%, 100% 100%, 0% 100%);
 .warpper {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-top: 108px;
+  padding-top: $min-header-height;
   height: 100%;
 }
 .tab {
   cursor: pointer;
-  padding: 14px 20px 12px;
-  margin: 0px 12px;
-  background: $color-gray-lightest;
+  padding: 16px 20px 10px;
+  margin: 0px 8px;
+  background: $tab-inactive-background-color;
   display: inline-block;
-  color: $color-disabled;
-  border-radius: 8px 8px 0px 0px;
+  color: $tab-inactive-color;
+  -webkit-clip-path: $tab-polygon;
+  clip-path: $tab-polygon;
+  border-radius: 26px 26px 0 0;
   box-shadow: 0 2px 4px $color-gray;
-  min-width: 120px;
+  min-width: 140px;
   text-align: center;
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.05rem;
   font-weight: 600;
-  font-size: 1.02rem;
-  border-radius: 16px 16px 0 0;
-  text-transform: uppercase;
-  border-top: 1px solid $color-gray-lighter;
-  border-left: 1px solid $color-gray-lighter;
-  border-right: 1px solid $color-gray-lighter;
-  transition: background 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9),
-    border 500ms cubic-bezier(0.1, 0.7, 0.6, 0.9);
+  font-size: 1.2rem;
+  text-transform: capitalize;
+  border-top: 1px solid $tab-inactive-background-color;
+  border-left: 1px solid $tab-inactive-background-color;
+  border-right: 1px solid $tab-inactive-background-color;
+  &:not(.active):hover {
+    background-color: $color-blue-darker;
+    color: #FFF;
+    border-color: $color-blue-darker;
+  }
   &.active {
-    font-size: 1.05rem;
+    font-size: 1.25rem;
     background: $color-blue;
     color: #fff;
-    border-top: 4px solid $color-blue;
+    border-top: 1px solid $color-blue;
     border-left: 1px solid $color-blue;
     border-right: 1px solid $color-blue;
   }

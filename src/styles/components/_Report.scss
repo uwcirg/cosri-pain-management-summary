@@ -7,6 +7,28 @@ $selector-box-shadow: 0 2px 2px #383e40;
     background-color: $color-gray-lightest;
     border-top: 4px solid $color-blue;
   }
+  .flags-container {
+    .flag-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .flag {
+      color: $color-red-darker;
+      font-size: 1.2rem;
+      &.info {
+        color: $color-info;
+      }
+      &:hover {
+        color: $color-red;
+        cursor: pointer;
+      }
+      &.info:hover {
+        color: $color-info-light;
+        cursor: auto;
+      }
+    }
+  }
   .summary__nav {
     padding: 64px 0 24px 0px;
     .title-text-container {
@@ -40,7 +62,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     margin-bottom: 8px;
     background-color: $color-beige;
     font-size: 1.1rem;
-    color: darken($color-warning-dark, 5%);
+    color: $color-warning;
   }
   .summary__display {
     padding: 8px;
@@ -51,15 +73,29 @@ $selector-box-shadow: 0 2px 2px #383e40;
         min-height: 72px;
         background: $color-white;
         padding: 8px;
+        .flags-container {
+          margin-left: 24px;
+          margin-right: 24px;
+          margin-bottom: 16px;
+        }
       }
       .sub-section {
         border: 1px solid $color-gray-lighter;
         margin-bottom: 8px;
         margin-top: 8px;
         &__header {
-          padding: 0 20px 4px;
+          padding: 0 20px 12px;
           margin-block-start: 0.5em;
           margin-block-end: 0.5em;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          .flags-container {
+            margin: 0;
+            .flag {
+              font-size: 1rem;
+            }
+          }
         }
         &__anchor {
           width: 2px;
@@ -69,7 +105,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           display: flex;
           align-items: center;
           margin-block-start: 0;
-          margin-block-end: 8px;
         }
         &:not(.sub-section-notitle):first-of-type {
           margin-top: 0;
@@ -87,11 +122,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           th:empty, td:empty {
             //border-bottom: 0;
             // text-wrap: balance;
-          }
-        }
-        @media (min-width: 992px) {
-          .table {
-            width: calc(95% - 48px);
           }
         }
         .no-entries {
@@ -144,6 +174,16 @@ $selector-box-shadow: 0 2px 2px #383e40;
             }
           }
         }
+        @media (min-width: 992px) {
+          .table {
+            width: 100%;
+          }
+        }
+        @media (min-width: 1200px) {
+          .table {
+            width: calc(95% - 48px);
+          }
+        }
       }
     }
   }
@@ -175,6 +215,32 @@ $selector-box-shadow: 0 2px 2px #383e40;
       padding-top: 8px;
       vertical-align: top;
     }
+  }
+  .table {
+    .report-table {
+      .rt-th:has(.col-Date_column),
+      .rt-td:has(.col-Date_column) {
+        max-width: 15%;
+        min-width: 0 !important;
+      }
+      .rt-th:has(.col-Name_column),
+      .rt-td:has(.col-Name_column) {
+        min-width: 40%;
+      }
+    }
+  }
+  .response-table-wrapper::-webkit-scrollbar {
+    width: 12px;               /* width of the entire scrollbar */
+  }
+  
+  .response-table-wrapper::-webkit-scrollbar-track {
+    background: $color-gray-lighter;        /* color of the tracking area */
+  }
+  
+  .response-table-wrapper::-webkit-scrollbar-thumb {
+    background-color: $color-blue;    /* color of the scroll thumb */
+    border-radius: 20px;       /* roundness of the scroll thumb */
+    border: 3px solid $color-gray-lighter;  /* creates padding around scroll thumb */
   }
   .responses-table-outer-wrapper {
     position: relative;
@@ -212,18 +278,20 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
   }
   .response-table-wrapper {
-    max-width: calc(100% - 180px);
+    max-width: calc(100% - 48px);
     max-height: 576px;
     overflow-y: auto;
     overflow-x: auto;
     margin-left: 24px;
     margin-right: 24px;
     margin-bottom: 24px;
+    scrollbar-color: $color-blue $color-gray-lighter;
+    scrollbar-width: thin;
     @media (min-width: 992px) {
-      max-width: 872px;
+      max-width: calc(100% - 180px);
       &.two-columns {
         width: fit-content;
-        max-width: 52%;
+        max-width: 70%;
         block-size: fit-content;
       }
     }
@@ -253,7 +321,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
   }
   .response-table {
-    table-layout: fixed;
+    table-layout: auto;
     border-collapse: separate;
     border-spacing: 0;
     font-size: 0.9em;
@@ -266,21 +334,22 @@ $selector-box-shadow: 0 2px 2px #383e40;
     }
     th {
       text-align: left;
-      border-top: 1px solid $color-blue;
-      border-bottom: 1px solid $color-blue;
+      border-top: 2px solid $color-blue;
+      border-bottom: 2px solid $color-blue;
       padding: 8px;
-      white-space: nowrap;
+     //white-space: nowrap;
       &:first-of-type {
-        border-left: 1px solid $color-blue;
+        border-left: 2px solid $color-blue;
+        border-right: 2px solid $color-blue;
       }
       &:last-of-type {
-        border-right: 1px solid $color-blue;
+        border-right: 2px solid $color-blue;
       }
       &:not(:last-of-type) {
-        border-right: 1px solid $color-gray-lighter;
+        border-right: 2px solid $color-blue;
       }
       &.fixed-cell {
-        border-right: 1px solid $color-blue;
+        border-right: 2px solid $color-blue;
       }
       &:first-of-type {
         width: 28%;
@@ -325,11 +394,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
       }
     }
 
-    tr:not(:last-of-type) {
-      td {
-        border-bottom: 1px solid $color-gray-lighter;
-      }
-    }
+    // tr:not(:last-of-type):not(+ :has(td.row-header)) {
+    //   td {
+    //     border-bottom: 1px solid $color-gray-lighter;
+    //   }
+    // }
     tfoot {
       td {
         padding: 16px 8px;
@@ -431,7 +500,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         flex: 1 1;
       }
       &-title {
-        font-size: 1.25em;
+        font-size: 1.3em;
         text-align: left;
       }
       &__item {

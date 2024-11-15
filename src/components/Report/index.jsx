@@ -8,8 +8,11 @@ import SideNav from "../SideNav";
 import Version from "../../elements/Version";
 import reportSummarySections from "../../config/report_config";
 import {
+  dedupArrObjects,
   getQuestionnaireDescription,
+  getQuestionnaireTitle,
   isEmptyArray,
+  isReportEnabled,
 } from "../../helpers/utility";
 import * as reportUtil from "./utility";
 
@@ -27,6 +30,7 @@ export default class Report extends Component {
 
   handleOpenModal = (modalSubSection, event) => {
     //only open modal on 'enter' or click
+    event.stopPropagation();
     if (event.keyCode === 13 || event.type === "click") {
       this.setState({ showModal: true, modalSubSection });
     }
@@ -97,6 +101,55 @@ export default class Report extends Component {
       </div>
     );
   }
+  getSectionFlags(section) {
+    if (isEmptyArray(section.flags)) return null;
+    const sectionFlags = this.props.sectionFlags;
+    if (!sectionFlags) return null;
+    return dedupArrObjects(
+      section.flags
+        .map((o) => {
+          if (
+            sectionFlags[o.parentKey] &&
+            sectionFlags[o.parentKey][o.dataKey]
+          ) {
+            return sectionFlags[o.parentKey][o.dataKey];
+          }
+          return null;
+        })
+        .filter((o) => !!o)
+        .flat()
+        .map((o) => {
+          return {
+            flagText: o.flagText,
+            flagClass: o.flagClass,
+          };
+        }),
+      "flagText"
+    );
+  }
+  renderFlagIconsInHeader(section) {
+    const flagObj = this.getSectionFlags(section);
+    if (isEmptyArray(flagObj)) return null;
+    return (
+      <div className="flags-container">
+        {flagObj.map((o, index) => {
+          return (
+            <div
+              key={`${section.dataKey}_flag_${index}`}
+              className="flag-item"
+              title={o.flagText}
+            >
+              <FontAwesomeIcon
+                className={`flag ${o.flagClass}`}
+                icon="exclamation-circle"
+                key={`${section.dataKey}_flagicon_${index}`}
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
   renderSectionBody(summaryData, section) {
     const surveySummaryData = reportUtil.getSurveySummaryData(summaryData);
     const scoringData = this.getScoringData(surveySummaryData);
@@ -112,6 +165,9 @@ export default class Report extends Component {
       bodyDiagramData: bodyDiagramData,
       procedureData: procedureData,
       referralData: referralData,
+      reportData: reportData,
+      medicationListData: reportUtil.getMedicationListData(reportData),
+      sectionFlags: this.props.sectionFlags,
     };
     if (section.component) {
       return <div className="section">{section.component(propData)}</div>;
@@ -139,6 +195,7 @@ export default class Report extends Component {
                   surveyData: matchedData,
                 })}
               {this.renderSubSectionAnchor(item)}
+              {this.renderSubSectionFlags(item)}
             </div>
           );
         })}
@@ -164,13 +221,36 @@ export default class Report extends Component {
           id={`${itemKey}_title`}
           className="sub-section__header"
         >
-          {this.renderSubSectionTitle(item)}
+          {this.renderSubSectionTitle(item, summaryData)}
           {this.renderSubSectionInfo(item, summaryData)}
+          {this.renderFlagIconsInHeader(item)}
         </h3>
       </React.Fragment>
     );
   }
-  renderSubSectionTitle(item) {
+  renderSubSectionFlags(section) {
+    const flagObj = this.getSectionFlags(section);
+    if (isEmptyArray(flagObj)) return null;
+    return (
+      <div className="flags-container">
+        {flagObj.map((o, index) => {
+          return (
+            <div key={`${section.dataKey}_flag_${index}`} className="flag-item">
+              <FontAwesomeIcon
+                className={`flag ${o.flagClass}`}
+                icon="exclamation-circle"
+              />
+              <span>{o.flagText}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+  renderSubSectionTitle(item, summaryData) {
+    const title = summaryData?.Questionnaire
+      ? getQuestionnaireTitle(summaryData?.Questionnaire)
+      : item.title;
     return (
       <span
         className="sub-section__header__name"
@@ -183,7 +263,7 @@ export default class Report extends Component {
           title="flag"
           tabIndex={0}
         /> */}
-        {item.title}
+        {title}
       </span>
     );
   }
@@ -195,6 +275,7 @@ export default class Report extends Component {
     item.description =
       getQuestionnaireDescription(summaryData.Questionnaire) ??
       sectionItem.description;
+    item.name = getQuestionnaireTitle(summaryData.Questionnaire);
 
     if (!item.description) return null;
 
@@ -210,7 +291,9 @@ export default class Report extends Component {
           <span
             className="info-icon"
             icon="info-circle"
-            title={`more info: ${item.dataKey}`}
+            title={`more info: ${
+              item.dataKey ?? getQuestionnaireTitle(summaryData?.Questionnaire)
+            }`}
             role="tooltip"
           >
             more info
@@ -221,10 +304,16 @@ export default class Report extends Component {
   }
 
   renderNoDataNotice() {
+    const defaultMessage =
+      "The system indicates that there is no reportable data for this patient.";
+    const message = isReportEnabled()
+      ? "No PainTracker or UW Medicine procedures, referrals or medications found for this patient. If the patient registered to PainTracker today, request PainTracker data from front desk staff."
+      : defaultMessage;
+
     return (
-      <div className="flex flex-start summary__notice">
+      <div className="flex flex-start summary__notice flex-gap-1">
         <FontAwesomeIcon icon="exclamation-circle" title="notice" />
-        The system indicates that there is no reportable data for this patient.
+        {message}
       </div>
     );
   }
@@ -282,4 +371,5 @@ export default class Report extends Component {
 
 Report.propTypes = {
   summaryData: PropTypes.object,
+  sectionFlags: PropTypes.object,
 };

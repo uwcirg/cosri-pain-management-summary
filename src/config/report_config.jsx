@@ -9,6 +9,7 @@ import ResponsesSummary from "../components/Report/components/ResponsesSummary";
 import RankedResponses from "../components/Report/components/RankedResponses";
 import Procedures from "../components/Report/components/Procedures";
 import Referrals from "../components/Report/components/Referrals";
+import MedicationList from "../components/Report/components/MedicationList";
 
 const iconProps = {
   width: 35,
@@ -27,6 +28,7 @@ export const STOP_DATA_KEY = "PAINTRACKER-STOP";
 export const TRT_DATA_KEY = "PAINTRACKER-TRT";
 export const PROCECURE_DATA_KEY = "PROCEDURE_HISTORY";
 export const REFERRAL_DATA_KEY = "REFERRAL_HISTORY";
+export const MEDICATION_LIST_DATA_KEY = "MedicationList";
 
 const reportConfig = [
   {
@@ -385,63 +387,27 @@ const reportConfig = [
     ),
     sections: [
       {
-        dataKey: PROCECURE_DATA_KEY,
-        title: "Procedures",
-        component: (props) => (
-          <Procedures
-            tableOptions={{
-              id: `${PROCECURE_DATA_KEY}_table`,
-              defaultSorted: {
-                id: "Date",
-                desc: true,
-              },
-              headers: {
-                Name: {
-                  key : "Name",
-                  sortable: true,
-                  size: "100%",
-                  minWidth: "50%"
-                },
-                Date: {
-                  key: "DateText",
-                  formatter: "datishFormat",
-                  sorter: "dateCompare",
-                  sortable: true,
-                  size: "50%",
-                  minWidth: "50%"
-                },
-              },
-            }}
-            {...props}
-          ></Procedures>
-        ),
-      },
-      {
         dataKey: REFERRAL_DATA_KEY,
         title: "Referrals",
         component: (props) => (
           <Referrals
             tableOptions={{
               id: `${REFERRAL_DATA_KEY}_table`,
-              defaultSorted: {
-                id: "Date",
-                desc: true,
-              },
               headers: {
-                Name: {
-                  key : "Name",
-                  sortable: true,
-                  size: "100%",
-                  minWidth: "50%"
-                },
                 Date: {
                   key: "DateText",
                   formatter: "datishFormat",
                   sorter: "dateCompare",
                   sortable: true,
-                  size: "100%",
-                  minWidth: "50%"
                 },
+                Name: {
+                  key : "Name",
+                  sortable: true,
+                  size: "100%",
+                  minWidth: "35%"
+                },
+                "Ordering Department": "Location",
+                "CPT Code": "CPT_CODE",
               },
             }}
             {...props}
@@ -449,8 +415,67 @@ const reportConfig = [
         ),
       },
       {
+        dataKey: PROCECURE_DATA_KEY,
+        title: "Procedures",
+        component: (props) => (
+          <Procedures
+            tableOptions={{
+              id: `${PROCECURE_DATA_KEY}_table`,
+              headers: {
+                Date: {
+                  key: "DateText",
+                  formatter: "datishFormat",
+                  sorter: "dateCompare",
+                  sortable: true,
+                },
+                Name: {
+                  key : "Name",
+                  sortable: true,
+                  size: "100%",
+                  minWidth: "35%"
+                },
+                "Ordering Department": "Location",
+                "CPT Code": "CPT_CODE",
+              },
+            }}
+            {...props}
+          ></Procedures>
+        ),
+      },
+      {
+        dataKey: MEDICATION_LIST_DATA_KEY,
+        dataKeySource: "ReportSummary",
+        title: "Medications",
+        flags: [
+          {
+            parentKey: "PDMPMedications",
+            dataKey: "PDMPMedications"
+          }
+        ],
+        component: (props) => (
+          <MedicationList
+            tableOptions={{
+              id: `${MEDICATION_LIST_DATA_KEY}_table`,
+              headers: {
+                Drug_Description: "Name",
+                Quantity: "Quantity",
+                Dosage: "Dosage",
+                Written_Date: {
+                  key: "Start",
+                  formatter: "datishFormat",
+                  sorter: "dateCompare",
+                  sortable: true,
+                },
+                Prescriber: "Prescriber"
+              },
+            }}
+            {...props}
+          ></MedicationList>
+        ),
+      },
+      {
         dataKey: TRT_DATA_KEY,
-        title: "PainTracker TRT questionnaire",
+        title: "Patient-reported Treatments Questionnaire",
         description: () => (
           <div>
             <p>
@@ -472,6 +497,7 @@ const reportConfig = [
                 description: "Responses",
               },
             ]}
+            includeQuestionHeaders={true}
             {...props}
           ></ResponsesSummary>
         ),

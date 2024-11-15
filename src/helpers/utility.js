@@ -485,9 +485,30 @@ export function getQuestionnaireDescription(fhirQuestionnaire) {
   return description;
 }
 
+export function getQuestionnaireTitle(fhirQuestionnaire) {
+  if (!fhirQuestionnaire) return "";
+  if (fhirQuestionnaire.title && fhirQuestionnaire.title.value)
+    return fhirQuestionnaire.title.value;
+  return "";
+}
+
 export function toDate(stringDate) {
   if (stringDate instanceof Date) return stringDate;
   return new Date(stringDate);
+}
+
+export function getEPICPatientIdFromSource(fhirPatientSource) {
+  if (!fhirPatientSource || isEmptyArray(fhirPatientSource.identifier))
+    return "";
+  if (isReportEnabled()) {
+    return fhirPatientSource.identifier.find(
+      (o) => o.system === "http://www.uwmedicine.org/epic_patient_id"
+    )?.value;
+  }
+
+  //add other check for different system if needed
+
+  return "";
 }
 
 export function getPatientNameFromSource(fhirPatientSource) {
@@ -673,4 +694,15 @@ export function getPatientSearchURL(shouldClearSession) {
 
 export function getEnvVersionString() {
   return getEnv(`${ENV_VAR_PREFIX}_VERSION_STRING`);
+}
+
+export function dedupArrObjects(arr, key) {
+  if (isEmptyArray(arr)) return null;
+  if (!key) return arr;
+  return arr.reduce((acc, obj) => {
+    if (!acc.find(item => item[key] === obj[key])) {
+      acc.push(obj);
+    }
+    return acc;
+  }, []);
 }

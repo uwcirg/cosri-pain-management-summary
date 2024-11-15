@@ -8,6 +8,7 @@ import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
   getEnvSystemType,
+  getEPICPatientIdFromSource,
   getPatientNameFromSource,
   getPatientSearchURL,
   getSiteId,
@@ -22,7 +23,7 @@ import Timeout from "../../helpers/timeout";
 import { getTokenInfoFromStorage } from "../../helpers/timeout";
 import summaryMap from "../../config/summary_config.json";
 
-import { getEnv, getEnvs, fetchEnvData } from "../../utils/envConfig";
+import { getEnvs, fetchEnvData } from "../../utils/envConfig";
 import SystemBanner from "../SystemBanner";
 import Header from "../Header";
 import Report from "../Report";
@@ -97,9 +98,7 @@ export default class Landing extends Component {
           });
           return;
         }
-        writeToLog("application loaded", "info", {
-          patientName: this.getPatientName(),
-        });
+        writeToLog("application loaded", "info", this.getPatientLogParams());
         //set FHIR results
         let result = {};
         let fhirData = responses[0].value;
@@ -131,7 +130,7 @@ export default class Landing extends Component {
           landingUtils.getSummaryErrors(result.Summary);
         landingUtils.logMMEEntries(result.Summary, {
           tags: ["mme-calc"],
-          patientName: this.getPatientName(),
+          ...this.getPatientLogParams(),
         });
         // console.log(
         //   "errors ",
@@ -212,12 +211,13 @@ export default class Landing extends Component {
   }
 
   initEvents() {
+    const logParams = this.getPatientLogParams();
     // education material links
     document.querySelectorAll(".education").forEach((item) => {
       item.addEventListener("click", (e) => {
         writeToLog(`Education material: ${e.target.title}`, "info", {
           tags: ["education"],
-          patientName: this.getPatientName(),
+          ...logParams,
         });
       });
     });
@@ -356,9 +356,16 @@ export default class Landing extends Component {
   }
   logError(message) {
     if (!message) return;
-    writeToLog(message, "error", {
+    writeToLog(message, "error", this.getPatientLogParams());
+  }
+
+  getPatientLogParams() {
+    // see https://github.com/uwcirg/logserver for recommended params
+    return {
       patientName: this.getPatientName(),
-    });
+      subject: `Patient/${this.getPatientId()}`,
+      "epic-patient-id": getEPICPatientIdFromSource(this.getPatientResource()),
+    };
   }
   //save MME calculations to file for debugging purpose, development environment ONLY
   savePDMPSummaryData() {
@@ -370,63 +377,33 @@ export default class Landing extends Component {
     landingUtils.savePDMPSummaryData(summary, fileName);
   }
 
+  hasOverviewSection() {
+    return summaryMap && summaryMap[this.getOverviewSectionKey()];
+  }
+
   setSummaryAlerts(summary, sectionFlags) {
-    if (!summaryMap[this.getOverviewSectionKey()]) return;
+    if (!this.hasOverviewSection()) return;
     summary[this.getOverviewSectionKey() + "_alerts"] =
       landingUtils.getProcessedAlerts(sectionFlags, {
         tags: ["alert"],
-        patientName: this.getPatientName(),
+        ...this.getPatientLogParams(),
       });
   }
   setSummaryGraphData(summary) {
-    let overviewSection = summaryMap[this.getOverviewSectionKey()];
-    if (!overviewSection) {
-      return false;
-    }
+    if (!this.hasOverviewSection()) return;
     //process graph data
-    let graphConfig = overviewSection.graphConfig;
-    if (!(graphConfig && graphConfig.summaryDataSource)) {
-      return;
-    }
-    //get the data from summary data
-    let sections = graphConfig.summaryDataSource;
-    let graph_data = [];
-
-    //demo config set to on, then draw just the demo graph data
-    if (getEnv(graphConfig.demoConfigKey)) {
-      graph_data = graphConfig.demoData;
-      summary[this.getOverviewSectionKey() + "_graph"] = graph_data;
-      return;
-    }
-    sections.forEach((item) => {
-      if (
-        summary[item.section_key] &&
-        summary[item.section_key][item.subSection_key]
-      ) {
-        graph_data = [
-          ...graph_data,
-          ...summary[item.section_key][item.subSection_key],
-        ];
-      }
-    });
+    const overviewSection = summaryMap[this.getOverviewSectionKey()];
     summary[this.getOverviewSectionKey() + "_graph"] =
-      landingUtils.getProcessedGraphData(graphConfig, graph_data);
+      landingUtils.getSummaryGraphDataSet(overviewSection.graphConfig, summary);
   }
 
   setSummaryOverviewStatsData(summary) {
+    if (!this.hasOverviewSection()) return;
     const overviewSection = summaryMap[this.getOverviewSectionKey()];
-    if (!overviewSection) {
-      return false;
-    }
-    const config = overviewSection.statsConfig;
-    if (!config || !config.data) {
-      summary[this.getOverviewSectionKey() + "_stats"] = {};
-      return;
-    }
-    const dataSource = summary[config.dataKeySource]
-      ? summary[config.dataKeySource][config.dataKey]
-      : [];
-    const stats = landingUtils.getProcessedStatsData(config.data, dataSource);
+    const stats = landingUtils.getProcessedStatsData(
+      overviewSection.statsConfig,
+      summary
+    );
     summary[this.getOverviewSectionKey() + "_stats"] = stats;
   }
 
@@ -437,6 +414,11 @@ export default class Landing extends Component {
       },
       () => {
         this.initTocBot();
+        writeToLog(index >= 1 ? "report tab" : "overview tab", "info", {
+          tags: ["tab"],
+          ...this.getPatientLogParams(),
+        });
+
         window.scrollTo(0, 1);
       }
     );
@@ -528,10 +510,13 @@ export default class Landing extends Component {
                 {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
                 {item === "report" && (
-                  <Report summaryData={{
-                    report: summary.ReportSummary,
-                    survey: summary.SurveySummary
-                  }}></Report>
+                  <Report
+                    summaryData={{
+                      report: summary.ReportSummary,
+                      survey: summary.SurveySummary,
+                    }}
+                    sectionFlags={sectionFlags}
+                  ></Report>
                 )}
                 {/* other tab panel as specified here */}
               </div>

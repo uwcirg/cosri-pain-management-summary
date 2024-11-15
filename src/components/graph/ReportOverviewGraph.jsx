@@ -715,25 +715,23 @@ export default class ReportOverviewGraph extends Component {
       (item) => this.state.qids.indexOf(item.qid) !== -1
     );
     const { arrNum, unit } = this.getScaleInfoForSlider(sliderData);
-    // console.log("arrNum ", arrNum, " unit ", unit);
     // const selectedRange = parseFloat(this.state.selectedDateRange);
     //console.log("number of years total: ", numYears);
     // console.log("selected value: ", selectedRange);
     // console.log("scale ticks: ", arrNum);
     const inYears = unit === "year";
-    const inMonths = unit === "month";
     const min = arrNum[0];
     const max = arrNum[arrNum.length - 1];
-    const shouldRotate =
-      (inMonths && min === 0 && max >= 1) || (inYears && max >= 10);
+    const shouldRotate = inYears && max >= 10;
+    const revArrNum = JSON.parse(JSON.stringify(arrNum)).reverse();
     const arrDisplayValues = arrNum.map((item, index) => {
-      const prevItem = arrNum.find(
+      const prevItem = revArrNum.find(
         (n, i) =>
-          i < index &&
-          ((item <= 1 && i === 0) ||
-            (item <= 1 && n < 1 && n % 0.25 === 0) ||
-            (item <= 1 && n < 1 && n % 0.5 === 0) ||
-            (item <= 1 && n < 1 && n % 0.75 === 0) ||
+          n < item &&
+          ((item <= 1 && i === revArrNum.length - 1) ||
+            (item <= 1 && n < 1 && n === 0.25) ||
+            (item <= 1 && n < 1 && n === 0.5) ||
+            (item <= 1 && n < 1 && n === 0.75) ||
             (item > 1 && n % 1 === 0))
       );
       const isEndPoints = index === 0 || index === arrNum.length - 1;
@@ -743,11 +741,8 @@ export default class ReportOverviewGraph extends Component {
         (!isEndPoints &&
           prevItem <= 1 &&
           item <= 1 &&
-          (item % 0.25 === 0 ||
-            item % 0.5 === 0 ||
-            item % 0.75 === 0 ||
-            item % 1 === 0) &&
-          item - prevItem >= 0.16);
+          (item === 0.25 || item === 0.5 || item === 0.75 || item % 1 === 0) &&
+          item - prevItem >= 0.25);
       // console.log(
       //   "item ",
       //   item,
@@ -779,7 +774,10 @@ export default class ReportOverviewGraph extends Component {
         display: displayValue,
       };
     });
-    const shouldRotateLabel = inYears && max >= 10;
+    const totalNums = arrDisplayValues.filter((o) => !!o.display).length;
+    const revDisplayValues = JSON.parse(
+      JSON.stringify(arrDisplayValues)
+    ).reverse();
     if (!arrNum.length) return null;
     return (
       <div className="slider-parent-container" ref={this.sliderContainerRef}>
@@ -804,6 +802,9 @@ export default class ReportOverviewGraph extends Component {
             {arrNum.map((item, index) => {
               const dataUnit = item < 1 ? "month" : "year";
               const displayValue = arrDisplayValues[index].display;
+              const prevValue =
+                revDisplayValues.find((o) => o.display && o.value < item)
+                  ?.value ?? 0;
               const diff = dataUnit === "year" ? 0.1 : 0.001;
               const comparedVal = Math.abs(this.state.selectedDateRange - item);
               // console.log(
@@ -821,9 +822,15 @@ export default class ReportOverviewGraph extends Component {
               return (
                 <span
                   key={`scale_${index}`}
-                  className={`label  ${shouldRotate ? "rotate" : ""} ${
-                    comparedVal <= diff ? "active" : ""
-                  }`}
+                  className={`label  ${
+                    shouldRotate ||
+                    (totalNums >= 10 &&
+                      prevValue < 1 &&
+                      prevValue > 0 &&
+                      item - prevValue <= 0.5)
+                      ? "rotate"
+                      : ""
+                  } ${comparedVal <= diff ? "active" : ""}`}
                   ref={this.scaleLabelRefs[index]}
                   datavalue={item}
                   displayvalue={displayValue}
@@ -837,7 +844,7 @@ export default class ReportOverviewGraph extends Component {
         </div>
         <div
           className={`bottom-info-text exclude-from-copy ${
-            shouldRotateLabel ? "gutter" : ""
+            shouldRotate ? "gutter" : ""
           }`}
         >
           date range

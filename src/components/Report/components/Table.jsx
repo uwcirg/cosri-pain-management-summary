@@ -34,17 +34,19 @@ export default class Table extends Component {
     let columns = [];
     headers.forEach((header) => {
       const headerKey = tableOptions.headers[header];
-      const headerClass = headerKey.className ? headerKey.className : "";
+      const headerID = `${header.replace(/\s/g, "_")}_column`;
+      const headerClass = headerKey.className
+        ? headerKey.className
+        : `col-${headerID}`;
       const column = {
-        id: header,
+        id: headerID,
         Header: () => {
           if (headerKey.omitHeader) return "";
+          const displayName = header.replace(/_/g, " ");
           if (headerKey.header)
-            return <h3 className="col-header-title">{header}</h3>;
+            return <h3 className="col-header-title">{displayName}</h3>;
           return (
-            <span className={`col-header col-${header} ${headerClass}`}>
-              {header}
-            </span>
+            <span className={`col-header ${headerClass}`}>{displayName}</span>
           );
         },
         accessor: (entry) => {
@@ -58,11 +60,17 @@ export default class Table extends Component {
               ...formatterArguments
             );
           }
-          return value
-            ? value
-            : headerKey.default
-            ? headerKey.default
-            : entry[headerKey.key];
+          return (
+            <span className={headerClass}>
+              {value
+                ? typeof value === "object"
+                  ? value.toString()
+                  : value
+                : headerKey.default
+                ? headerKey.default
+                : entry[headerKey.key]}
+            </span>
+          );
         },
         disableSortBy: headerKey.sortable ? false : true,
       };
@@ -97,6 +105,9 @@ export default class Table extends Component {
       if (headerKey.maxWidth != null) {
         column.maxWidth = headerKey.maxWidth;
       }
+      if (headerClass) {
+        column.className = headerClass;
+      }
 
       columns.push(column);
     });
@@ -110,7 +121,14 @@ export default class Table extends Component {
     //https://spectrum.chat/react-table/general/is-there-a-way-to-activate-sort-via-onkeypress~66656e87-7f5c-4767-8b23-ddf35d73f8af
     return (
       <div style={{ position: "relative" }}>
-        <div style={{ position: "absolute", right: "12px", top: "4px"}}>
+        <div
+          style={{
+            position: "absolute",
+            right: "24px",
+            top: "-52px",
+            zIndex: 10,
+          }}
+        >
           <CopyButton
             buttonTitle="Click to copy"
             elementToCopy={this.getElementToCopy()}

@@ -27,6 +27,14 @@
     vertical-align: top;
     border: 0;
     padding: 4px 8px 4px 4px;
+    &.flag-cell {
+      max-width: 32px !important;
+      color: $color-red;
+      border-right: 0;
+      & + td {
+        border-left: 0;
+      }
+    }
   }
   th {
     max-width: 140px;
@@ -35,6 +43,10 @@
       border: 0;
       width: 0;
       flex: 0 !important;
+      max-width: 40px !important;
+      & + th {
+        border-left: 0;
+      }
     }
   }
   td {
@@ -56,7 +68,7 @@
 
     &.-cursor-pointer {
       span {
-        background-image: url('../../icons/icon-sort.png');
+        background-image: url("../../icons/icon-sort.png");
         background-repeat: no-repeat;
         background-size: 8px;
         background-position: 96% 50%;
@@ -68,11 +80,11 @@
       }
 
       &.-sort-asc span {
-        background-image: url('../../icons/icon-sort-up.png');
+        background-image: url("../../icons/icon-sort-up.png");
       }
 
       &.-sort-desc span {
-        background-image: url('../../icons/icon-sort-down.png');
+        background-image: url("../../icons/icon-sort-down.png");
       }
     }
 
@@ -88,7 +100,6 @@
       margin: 0;
       border-bottom: 1px solid $color-gray-lighter;
     }
-
   }
 
   .rt-tbody .rt-td {
@@ -97,38 +108,117 @@
     overflow: visible;
     line-height: 1.45;
   }
+  + .pagination,
   .pagination-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    border-top: 1px solid $color-blue-lighter;
     input,
     select {
       border-radius: 0;
+      font-weight: 600;
+      color: $link-color;
     }
     input {
-      height: 24px;
+      height: 40px;
+      border: 1px solid $color-gray-lighter;
     }
     select {
-      height: 32px;
+      height: 40px;
+      border: 1px solid $color-gray-lighter;
     }
     .-pageJump {
       input {
         border-radius: 0;
+        color: $link-color;
+        padding: 4px 6px;
       }
     }
-
-    .-pagination {
+    .buttons-container {
       box-shadow: none;
-      border-top: 1px solid $color-gray-lighter;
-      padding: 0;
-      padding-top: 4px;
+      // border-top: 1px solid $color-gray-lightest;
+      // border-bottom: 1px solid $color-gray-lightest;
+      border: 0;
+      padding: 4px 0 4px;
+      gap: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      button, .-previous, .-next, .-center {
+        flex: 1;
+        justify-content: center;
+        flex-basis: fit-content;
+        position: relative;
+        width: 100%;
+      }
+      .-next,
+      .-previous {
+        button:before {
+          display: inline-block;
+          font-style: normal;
+          font-variant: normal;
+          text-rendering: auto;
+          -webkit-font-smoothing: antialiased;
+          position: absolute;
+          font-weight: 900;
+          color: $link-color;
+        }
+      }
+      .-next {
+        button {
+          padding: 4px 20px 4px 12px;
+          &:before {
+            content: "\276F";
+            top: 11px;
+            right: 38px;
+          }
+        }
+      }
+      .-previous {
+        button {
+          padding: 4px 12px 4px 24px;
+          &:before {
+            content: "\2039";
+            left: 24px;
+            font-size: 26px;
+            top: 3px;
+          }
+        }
+      }
+      .-next:not(:has([disabled])),
+      .-previous:not(:has([disabled])) {
+        button:hover {
+          &:before {
+            color: #FFF;
+          }
+        }
+      }
 
       button {
-        width: 60%;
+        width: 100%;
+        width: 104px;
         margin: 4px auto;
         height: 32px;
+        font-weight: 600;
+        border-radius: 24px;
+        color: $link-color !important;
+        border-radius: 100vmax;
+        border: 1px solid $link-border-color;
+        padding: 4px 24px;
+        background-color: #FFF !important;
+        position: relative;
+        &:not([disabled]):hover {
+          background-color: $link-color !important;
+          color: #FFF !important;
+        }
       }
 
       .-btn {
         background: $color-blue;
-        color: #FFF;
+        color: #fff;
         &:hover {
           background: $color-blue-darker;
         }
@@ -156,8 +246,8 @@
     }
   }
   th {
-    border: 1px solid $table-cell-border-color;
-    background-color: #FFF;
+    border-bottom: 1px solid $table-cell-border-color;
+    background-color: #fff;
     &.dark-border {
       border-color: $table-cell-border-dark-color;
     }
@@ -173,7 +263,7 @@
     border-left: 1px solid $table-cell-border-color;
     border-bottom: 1px solid $table-cell-border-color;
     padding: 4px;
-    background-color: #FFF;
+    background-color: #fff;
     &.dark-border {
       border-color: $table-cell-border-dark-color;
     }
@@ -184,9 +274,33 @@
       white-space: nowrap;
     }
   }
+  tr {
+    td {
+      &.row-header {
+        background-color: $color-gray-lightest !important;
+        font-weight: 900;
+        border-bottom: 1px solid $color-blue-darker !important;
+        &:first-of-type {
+          text-wrap: nowrap;
+        }
+        &:not(:last-of-type) {
+          border-right: 0 #fff !important;
+        }
+        &:not(:first-of-type) {
+          border-left: 0 #fff !important;
+        }
+      }
+    }
+    &:not(:first-of-type) {
+      td.row-header {
+        border-top: 1px solid $color-blue-darker !important;
+      }
+    }
+  }
   &.slider-table {
-    td, th {
-      transition: transform 550ms cubic-bezier(.25,.75,.5,1.25);
+    td,
+    th {
+      transition: transform 550ms cubic-bezier(0.25, 0.75, 0.5, 1.25);
       overflow: hidden;
       //width: 0;
       &.a-active {
@@ -202,5 +316,15 @@
 .ReactTable.wide {
   th, td {
     max-width: 100%;
+  }
+}
+
+.two-columns {
+  .table {
+    table-layout: auto !important;
+    th:first-of-type,
+    td:first-of-type {
+      width: 70%;
+    }
   }
 }

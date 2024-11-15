@@ -136,8 +136,8 @@ export function stringSubstitutionFormat(result, input, replacement) {
  * format input as a anchor link or embed video link
  */
 export function linkFormat(result, input) {
-  let isVideoLink = input["type"] === "video" && input["embedVideoSrc"];
-  const referenceURL = input["url"];
+  let isVideoLink = input['type'] === 'video' && input['embedVideoSrc'];
+  const referenceURL = String(input["url"]).replace("{process.env.PUBLIC_URL}", process.env.PUBLIC_URL);
   if (isVideoLink) {
     return (
       <VideoLink

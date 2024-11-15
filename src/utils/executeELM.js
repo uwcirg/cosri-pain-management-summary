@@ -204,7 +204,7 @@ async function executeELM(collector, paramResourceTypes) {
             (results) => {
               let reportResults =
                 results[0].status !== "rejected" ? results[0].value : null;
-              if (reportResults.patientResults)
+              if (reportResults && reportResults.patientResults)
                 reportResults =
                   reportResults.patientResults[
                     Object.keys(reportResults.patientResults)[0]
@@ -269,14 +269,17 @@ async function executeELMForReport(bundle) {
       console.log("Issue occurred loading ELM lib for reoirt", e);
       r4ReportCommonELM = null;
     });
+ 
   if (!r4ReportCommonELM) return null;
 
-  let reportLib = new cql.Library(r4ReportCommonELM);
+  let reportLib = new cql.Library(r4ReportCommonELM,  new cql.Repository({
+    FHIRHelpers: r4HelpersELM,
+  }));
   const reportExecutor = new cql.Executor(
     reportLib,
     new cql.CodeService(valueSetDB)
   );
-  const patientSource = cqlfhir.PatientSource.FHIRv400();
+  const patientSource = cqlfhir.PatientSource.FHIRv401();
   patientSource.loadBundles([bundle]);
   let results;
   try {
