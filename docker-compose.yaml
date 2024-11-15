@@ -7,7 +7,7 @@ services:
       args:
         # set build arg from environment variable with same name
         # add default to squelch warnings
-        VITE_VERSION_STRING: ${VITE_VERSION_STRING:-local}
+        REACT_APP_VERSION_STRING: ${REACT_APP_VERSION_STRING:-local}
 
     ports:
       # allow override of published port
