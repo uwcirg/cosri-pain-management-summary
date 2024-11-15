@@ -62,7 +62,7 @@ The Pain Management Summary can be deployed as static web resources on any HTTP 
 5. Modify the `clientId` in `public/launch-context.json` to match the unique client ID you registered with the EHR from which this app will be launched
 6. NOTE: The launch context contains `"completeInTarget": true`. This is needed if you are running in an environment that initializes the app in a separate window (such as the public SMART sandbox).  It can be safely removed in other cases.
 7. If you've set up an analytics endpoint (see below), set the `analytics_endpoint` and `x_api_key` in `public/config.json`
-8. If you'll be launching the app from an Epic EHR, modify `.env` to set `VITE_SUPPORTED_QUERIES` to `true`
+8. If you'll be launching the app from an Epic EHR, modify `.env` to set `REACT_APP_SUPPORTED_QUERIES` to `true`
    a. This modifies some queries based on Epic-specific requirements
 9. Run `yarn build` to compile the code to static files in the `dist` folder
 10. Deploy the output from the `dist` folder to a standard web server
