@@ -588,7 +588,7 @@ export default class MMEGraph extends Component {
     const defaultMarkerProps = additionalProps["dataPointsProps"];
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
-    const shouldShowSwitches = Object.keys(this.props.data).length > 1;
+    const shouldShowSwitches = Object.keys(this.props.data??[]).length > 1;
 
     if (hasError) {
       return (
