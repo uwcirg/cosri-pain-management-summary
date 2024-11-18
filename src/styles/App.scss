@@ -1,28 +1,31 @@
+/* ------------------------- IMPORT 3RD PARTY VENDORS ---------------------- */
+// @import 'node_modules/tocbot/src/scss/tocbot-core';
+
 /* ------------------------- IMPORT VARIABLES ------------------------------ */
-@import 'elements/variables';
+@use 'elements/variables';
 
 /* ------------------------- IMPORT 3RD PARTY VENDORS ---------------------- */
-@import 'node_modules/tocbot/src/scss/tocbot-core';
+@use 'elements/tocboc';
 
 /* ------------------------- IMPORT CUSTOM SCSS ---------------------------- */
 // site-wide elements
-@import 'elements/accessibility';
-@import 'elements/banners';
-@import 'elements/base';
-@import 'elements/button';
-@import 'elements/modal';
-@import 'elements/select';
-@import 'elements/slider';
-@import 'elements/spinner';
-@import 'elements/switch';
-@import 'elements/tables';
-@import 'elements/tabs';
-@import 'elements/version';
+@use 'elements/accessibility';
+@use 'elements/banners';
+@use 'elements/base';
+@use 'elements/button';
+@use 'elements/modal';
+@use 'elements/select';
+@use 'elements/slider';
+@use 'elements/spinner';
+@use 'elements/switch';
+@use 'elements/tables';
+@use 'elements/tabs';
+@use 'elements/version';
 
 // component-specific
-@import 'components/Header';
-@import 'components/Summary';
-@import 'components/Report';
+@use 'components/Header';
+@use 'components/Summary';
+@use 'components/Report';
 
 // print
-@import 'print';
+@use 'print';

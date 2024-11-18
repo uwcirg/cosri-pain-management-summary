@@ -1,26 +1,9 @@
+@use 'variables' as *;
 .ReactTable * {
   box-sizing: inherit;
 }
 
 .ReactTable {
-  .rt-tbody .rt-tr-group {
-    border: 0;
-    overflow: hidden;
-
-    .rt-tr {
-      background: $color-white;
-
-      &:hover {
-        background-color: $color-blue-lighter;
-      }
-    }
-  }
-  .rt-thead.-header {
-    box-shadow: none;
-  }
-
-  .rt-tbody .rt-td,
-  .rt-thead .rt-th,
   th,
   td {
     text-align: left;
@@ -28,7 +11,8 @@
     border: 0;
     padding: 4px 8px 4px 4px;
     &.flag-cell {
-      max-width: 32px !important;
+      max-width: 36px !important;
+      text-align: center;
       color: $color-red;
       border-right: 0;
       & + td {
@@ -36,7 +20,9 @@
       }
     }
   }
+
   th {
+    white-space: nowrap;
     max-width: 140px;
     &:empty,
     &:has(.flag__span:empty) {
@@ -48,20 +34,6 @@
         border-left: 0;
       }
     }
-  }
-  td {
-    max-width: 140px;
-    &:empty:first-of-type {
-      border-right: 0;
-      border-left: 0;
-      border-bottom: 0;
-      flex: 0 !important;
-    }
-  }
-
-  .rt-thead .rt-th, th {
-    white-space: nowrap;
-
     &:focus {
       border: 1px dotted gray;
     }
@@ -102,14 +74,16 @@
     }
   }
 
-  .rt-tbody .rt-td {
-    white-space: normal;
-    display: block;
-    overflow: visible;
-    line-height: 1.45;
+  td {
+    max-width: 140px;
+    &:empty:first-of-type {
+      border-right: 0;
+      border-left: 0;
+      border-bottom: 0;
+      flex: 0 !important;
+    }
   }
-  + .pagination,
-  .pagination-bottom {
+  + .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -247,6 +221,11 @@
   }
   th {
     border-bottom: 1px solid $table-cell-border-color;
+    &.bordered {
+      border-left: 1px solid $table-cell-border-color;
+      border-right: 1px solid $table-cell-border-color;
+      border-top: 1px solid $table-cell-border-color;
+    }
     background-color: #fff;
     &.dark-border {
       border-color: $table-cell-border-dark-color;
@@ -259,9 +238,12 @@
     }
   }
   td {
-    border-right: 1px solid $table-cell-border-color;
     border-left: 1px solid $table-cell-border-color;
-    border-bottom: 1px solid $table-cell-border-color;
+    &.bordered {
+      border-left: 1px solid $table-cell-border-color;
+      border-right: 1px solid $table-cell-border-color;
+      border-bottom: 1px solid $table-cell-border-color;
+    }
     padding: 4px;
     background-color: #fff;
     &.dark-border {

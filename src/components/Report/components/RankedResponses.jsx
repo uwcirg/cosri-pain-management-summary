@@ -266,7 +266,7 @@ export default class RankedResponses extends Component {
     return (
       <thead>
         <tr>
-          <th className="fixed-cell accent dark-border fat" style={{width: "60px"}}>Rank</th>
+          <th className="fixed-cell accent dark-border fat bordered" style={{width: "60px"}}>Rank</th>
           {this.state.dates.map((date, index) => {
             // const statusClassName =
             //   index <= this.state.selectedIndex ? "a-active" : "a-inactive";
@@ -278,8 +278,8 @@ export default class RankedResponses extends Component {
                   index <= this.state.selectedIndex ? "table-cell" : "none",
                 }}
                 className={`${
-                  index > 0 ? "exclude-from-copy print-hidden active" : ""
-                }  accent dark-border fat`}
+                  index > 0 ? "exclude-from-copy print-hidden active bordered" : ""
+                }  accent dark-border fat bordered`}
                 key={`ranked_responses_header_${index}`}
               >
                 <div className="flex flex-start flex-wrap text-left">
@@ -308,7 +308,7 @@ export default class RankedResponses extends Component {
     return (
       <tr>
         <td
-          className="fixed-cell text-bold dark-border text-center"
+          className="fixed-cell text-bold dark-border text-center bordered"
           style={{ verticalAlign: "middle", width: "60px" }}
         >
           {rank}
@@ -331,7 +331,7 @@ export default class RankedResponses extends Component {
         }}
         className={`${
           index > 0 ? "exclude-from-copy print-hidden" : ""
-        } dark-border fat`}
+        } dark-border fat bordered`}
       >
         {this.getRankedDataByIndex(index, rank)}
       </td>
