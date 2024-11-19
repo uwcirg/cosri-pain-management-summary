@@ -62,8 +62,9 @@
 
     .col-header {
       display: inline-block;
+      margin-left: 4px;
+      margin-right: 4px;
       border-bottom: 3px solid $color-blue;
-      //border-bottom: 3px solid $color-gold-light;
       padding: 0 16px 2px 0;
       font-weight: 600;
     }
