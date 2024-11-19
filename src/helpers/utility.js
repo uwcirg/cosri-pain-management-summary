@@ -575,7 +575,6 @@ export function writeToLog(message, level, params) {
   const logParams = params ? params : {};
   if (!logParams.tags) logParams.tags = [];
   logParams.tags.push("cosri-frontend");
-
   const auditURL = `${getEnvConfidentialAPIURL()}/auditlog`;
   const patientName = params.patientName ? params.patientName : "";
   let messageString = "";

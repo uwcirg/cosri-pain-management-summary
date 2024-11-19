@@ -19,14 +19,14 @@
          }, {
             "localIdentifier" : "FHIR",
             "uri" : "http://hl7.org/fhir",
-            "version" : "4.0.0"
+            "version" : "4.0.1"
          } ]
       },
       "includes" : {
          "def" : [ {
             "localIdentifier" : "FHIRHelpers",
             "path" : "FHIRHelpers",
-            "version" : "4.0.0"
+            "version" : "4.0.1"
          }, {
             "localIdentifier" : "OMTKLogic",
             "path" : "OMTKLogic",
@@ -61,6 +61,7 @@
                "type" : "SingletonFrom",
                "operand" : {
                   "dataType" : "{http://hl7.org/fhir}Patient",
+                  "templateId" : "http://hl7.org/fhir/StructureDefinition/Patient",
                   "type" : "Retrieve"
                }
             }
@@ -92,7 +93,7 @@
             "operand" : [ {
                "name" : "quantity",
                "operandTypeSpecifier" : {
-                  "name" : "{http://hl7.org/fhir}Quantity",
+                  "name" : "{http://hl7.org/fhir}SimpleQuantity",
                   "type" : "NamedTypeSpecifier"
                }
             } ]
@@ -282,7 +283,7 @@
             "operand" : [ {
                "name" : "quantity",
                "operandTypeSpecifier" : {
-                  "name" : "{http://hl7.org/fhir}Quantity",
+                  "name" : "{http://hl7.org/fhir}SimpleQuantity",
                   "type" : "NamedTypeSpecifier"
                }
             } ]
@@ -490,7 +491,7 @@
                               "name" : "{http://hl7.org/fhir}Range",
                               "type" : "NamedTypeSpecifier"
                            }, {
-                              "name" : "{http://hl7.org/fhir}Quantity",
+                              "name" : "{http://hl7.org/fhir}SimpleQuantity",
                               "type" : "NamedTypeSpecifier"
                            } ]
                         }
@@ -1111,7 +1112,7 @@
                         "name" : "ToFHIRQuantity",
                         "type" : "FunctionRef",
                         "operand" : [ {
-                           "asType" : "{http://hl7.org/fhir}Quantity",
+                           "asType" : "{http://hl7.org/fhir}SimpleQuantity",
                            "type" : "As",
                            "operand" : {
                               "path" : "dose",
@@ -1130,7 +1131,7 @@
                            "type" : "Null"
                         },
                         "asTypeSpecifier" : {
-                           "name" : "{http://hl7.org/fhir}Quantity",
+                           "name" : "{http://hl7.org/fhir}SimpleQuantity",
                            "type" : "NamedTypeSpecifier"
                         }
                      }
