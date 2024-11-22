@@ -59,7 +59,6 @@ export default function flagit(entry, subSection, summary) {
 function ifAnd(flagRulesArray, entry, subSection, summary) {
   for (let i = 0; i < flagRulesArray.length; ++i) {
     const flagRule = flagRulesArray[i];
-
     let match;
     if (typeof flagRule === 'string') {
       match = functions[flagRule](entry, entry, subSection, summary);
@@ -120,7 +119,8 @@ function ifGreaterThanOrEqualTo(value, entry, subSection, summary) {
   if (Array.isArray(targetEntry) && targetEntry.length) {
     targetEntry = targetEntry[0]
   }
-  return parseInt(targetEntry[value.header], 10) >= value.value;
+  const valueToCompare = value.targetValue != null ? value.targetValue : value.value;
+  return parseInt(targetEntry[value.header], 10) >= valueToCompare;
 }
 /*
  * return true if an entry's value for a field matches the specified target value
@@ -128,6 +128,9 @@ function ifGreaterThanOrEqualTo(value, entry, subSection, summary) {
 function ifEqualTo(value, entry, subSection, summary) {
   if (!entry) return false;
   if (Array.isArray(entry[value.header])) return entry[value.header].indexOf(value.targetValue) !== -1;
+  if (value.type === "boolean") {
+    return Boolean(entry[value.header]) === Boolean(value.targetValue);
+  }
   return entry[value.header] === value.targetValue;
 }
 /*

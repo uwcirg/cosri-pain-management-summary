@@ -4607,6 +4607,53 @@
                         "type" : "NamedTypeSpecifier"
                      }
                   }
+               }, {
+                  "identifier" : "RxnormCode",
+                  "expression" : {
+                     "type" : "Coalesce",
+                     "operand" : [ {
+                        "type" : "Query",
+                        "source" : [ {
+                           "alias" : "c2",
+                           "expression" : {
+                              "path" : "coding",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "c",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        } ],
+                        "relationship" : [ ],
+                        "where" : {
+                           "type" : "Equivalent",
+                           "operand" : [ {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "system",
+                                 "scope" : "c2",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                              "value" : "http://www.nlm.nih.gov/research/umls/rxnorm",
+                              "type" : "Literal"
+                           } ]
+                        },
+                        "return" : {
+                           "expression" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "code",
+                                 "scope" : "c2",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     } ]
+                  }
                } ],
                "relationship" : [ ],
                "return" : {
@@ -4885,48 +4932,30 @@
                      }, {
                         "name" : "RXNorm_Code",
                         "value" : {
-                           "type" : "Coalesce",
+                           "name" : "RxnormCode",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "isBup",
+                        "value" : {
+                           "type" : "In",
                            "operand" : [ {
-                              "type" : "Query",
-                              "source" : [ {
-                                 "alias" : "c2",
-                                 "expression" : {
-                                    "path" : "coding",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "c",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }
-                              } ],
-                              "relationship" : [ ],
-                              "where" : {
-                                 "type" : "Equivalent",
-                                 "operand" : [ {
-                                    "path" : "value",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "path" : "system",
-                                       "scope" : "c2",
-                                       "type" : "Property"
-                                    }
-                                 }, {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                    "value" : "http://www.nlm.nih.gov/research/umls/rxnorm",
-                                    "type" : "Literal"
-                                 } ]
-                              },
-                              "return" : {
-                                 "expression" : {
-                                    "path" : "value",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "path" : "code",
-                                       "scope" : "c2",
-                                       "type" : "Property"
-                                    }
-                                 }
-                              }
+                              "name" : "RxnormCode",
+                              "type" : "QueryLetRef"
+                           }, {
+                              "name" : "BuprenorphineRxCUIs",
+                              "type" : "ExpressionRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "isActive",
+                        "value" : {
+                           "type" : "SameOrAfter",
+                           "operand" : [ {
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
+                           }, {
+                              "type" : "Today"
                            } ]
                         }
                      }, {
