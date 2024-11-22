@@ -726,7 +726,8 @@ define ReportPDMPMedicationRequests:
     CalculatedEnd: GetMedicationRequestEndDate(O),
     dispenseRequest:  O.dispenseRequest,
     MME_Object: MMECalculator.MME(O),
-    c: (O.medication as FHIR.CodeableConcept)
+    c: (O.medication as FHIR.CodeableConcept),
+    RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
     return {
       Type:  'Request',
       Name:  ConceptText(c),
@@ -744,7 +745,9 @@ define ReportPDMPMedicationRequests:
       Prescriber: O.requester.display.value,
       Pharmacy: GetMedicationRequestPharmacy(O),
       NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
-      RXNorm_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value),
+      RXNorm_Code: RxnormCode,
+      isBup: RxnormCode in BuprenorphineRxCUIs,
+      isActive: CalculatedEnd same or after Today(),
       Status: O.status.value,
       Class: getMedicationRequestDrugClass(O),
       AuthoredOn: O.authoredOn
