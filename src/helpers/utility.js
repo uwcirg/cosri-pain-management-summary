@@ -678,7 +678,7 @@ export function getSiteId() {
 
 export function isReportEnabled() {
   const siteId = getSiteId();
-  return String(siteId).toLowerCase() === "uwmc";
+  return ["uwmc", "demo"].indexOf(String(siteId).toLowerCase()) !== -1;
 }
 
 export function getEnvDashboardURL() {
