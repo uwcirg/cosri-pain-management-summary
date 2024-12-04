@@ -1,22 +1,40 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
   faChevronLeft,
   faChevronRight,
   faCircle,
+  faClipboard,
+  faCopy,
+  faDownload,
+  faExclamationCircle,
+  faExclamationTriangle,
   faInfoCircle,
   faLink,
+  faMinus,
+  faPlus,
+  faRedo,
   faTimes,
-  faExclamationCircle,
-  faUserCircle
+  faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
   faChevronLeft,
   faChevronRight,
   faCircle,
+  faClipboard,
+  faCopy,
+  faDownload,
+  faExclamationCircle,
+  faExclamationTriangle,
   faInfoCircle,
   faLink,
+  faMinus,
+  faPlus,
+  faRedo,
   faTimes,
-  faExclamationCircle,
   faUserCircle
 );

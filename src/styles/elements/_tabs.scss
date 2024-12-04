@@ -1,0 +1,105 @@
+$tab-background-color: #fffffff6;
+$tab-inactive-background-color: #d9dcdd;
+$tab-inactive-color: #717376;
+$tab-height: 48px;
+$tab-polygon: polygon(4.5% 5%, 94.5% 5%, 100% 100%, 0% 100%);
+.warpper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: $min-header-height;
+  height: 100%;
+}
+.tab {
+  cursor: pointer;
+  padding: 16px 20px 10px;
+  margin: 0px 8px;
+  background: $tab-inactive-background-color;
+  display: inline-block;
+  color: $tab-inactive-color;
+  -webkit-clip-path: $tab-polygon;
+  clip-path: $tab-polygon;
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 2px 4px $color-gray;
+  min-width: 140px;
+  text-align: center;
+  letter-spacing: 0.05rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+  text-transform: capitalize;
+  border-top: 1px solid $tab-inactive-background-color;
+  border-left: 1px solid $tab-inactive-background-color;
+  border-right: 1px solid $tab-inactive-background-color;
+  &:not(.active):hover {
+    background-color: $color-blue-darker;
+    color: #FFF;
+    border-color: $color-blue-darker;
+  }
+  &.active {
+    font-size: 1.25rem;
+    background: $color-blue;
+    color: #fff;
+    border-top: 1px solid $color-blue;
+    border-left: 1px solid $color-blue;
+    border-right: 1px solid $color-blue;
+  }
+}
+
+.tabs {
+  padding-left: 36px;
+  padding-right: 36px;
+  display: flex;
+  width: calc(100% - 72px);
+  min-height: $tab-height;
+  background: #fff;
+  position: fixed;
+  z-index: 999;
+  border-bottom: 4px solid $color-blue;
+  box-shadow: 16px 16px 8px -16px $color-gray-light;
+  &.hide {
+    display: none;
+  }
+}
+// .panels {
+.tab-panels {
+  background: $tab-background-color;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 3px;
+  // overflow:hidden;
+  padding: 0;
+}
+// .panel{
+.tab-panel {
+  display: none;
+  animation: fadein 0.8s;
+  position: relative;
+  box-shadow: inset 4px 4px 24px -12px $color-gray;
+}
+.has-tabs {
+  .tab-panel {
+    margin-top: $tab-height;
+  }
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.panel-title {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.tab-panel {
+  display: none;
+  &.active {
+    display: block;
+    // &.multi-tabs {
+    //   border-top: 4px solid $color-blue;
+    // }
+  }
+}

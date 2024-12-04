@@ -1,14 +1,16 @@
-# "COSRI" Clinical Opioid Summary with Rx Integration, based on the "Pain Management Summary SMART on FHIR Application"
+# "COSRI" Clinical Opioid Summary with Rx Integration, is based on the "AHRQ Pain Management Summary SMART on FHIR Application"
 
-"COSRI" Clinical Opioid Summary with Rx Integration is developed by https://github.com/uwcirg for Washington State Department of Health, as an extension of https://github.com/AHRQ-CDS/AHRQ-CDS-Connect-PAIN-MANAGEMENT-SUMMARY .
+The COSRI Pain Management Summary tool was developed by making substantial enhancements to the AHRQ CDS Pain Management Summary tool. That tool was developed as part of the CDS Connect project https://cds.ahrq.gov/, sponsored by the Agency for Healthcare Research and Quality (AHRQ), and developed under contract with AHRQ by MITRE's CAMH FFRDC. The CDS Pain Management Summary tool is  a SMART on FHIR dashboard for managing pain, intended to be run within an EHR.  The development of COSRI on top of that work entailed enhancements including integration of a FHIR endpoint for PDMP data, new user interface elements, new CQL logic representing WA state rules, MED calculations and visualizations, auditing,  and other features.  Needless to say, we stand on the shoulders of giants, and are grateful that they shared their wisdom and experience through an open source codebase that served us well as a point of departure for developing COSRI.
 
-## About
+"COSRI" is developed by https://cirg.washington.edu as part of our open-source body of work (https://github.com/uwcirg) for the Washington State Department of Health and Washington State Health Care Authority.
+
+## About (from AHRQ CDS description, updated)
 
 The Pain Management Summary SMART on FHIR application was developed to support the pilot of the CDS artifact, [Factors to Consider in Managing Chronic Pain: A Pain Management Summary](https://cds.ahrq.gov/cdsconnect/artifact/factors-consider-managing-chronic-pain-pain-management-summary).  This artifact presents a variety of key "factors" for clinicians to consider when assessing the history of a patient's chronic pain.  These factors include subjective and objective findings, along with recorded treatments and interventions to inform shared decision making on treatments moving forward.
 
 The Pain Management Summary SMART on FHIR application was piloted during Summer 2018.  Local modifications and development were needed to fully support this application in the pilot environment.  For example, custom development was needed to expose pain assessments via the FHIR API. See the pilot reports for more information.
 
-This application was originally piloted with support for FHIR DSTU2.  The app has been updated since the pilot to also support FHIR R4, although pilot R4 support has not been piloted in a clinical setting.
+This application was originally piloted with support for FHIR DSTU2.  The app has been updated since the pilot to also support FHIR R4, ~~although pilot R4 support has not been piloted in a clinical setting~~ and COSRI production implementations now user R4.
 
 This prototype application is part of the [CDS Connect](https://cds.ahrq.gov/cdsconnect) project, sponsored by the [Agency for Healthcare Research and Quality](https://www.ahrq.gov/) (AHRQ), and developed under contract with AHRQ by [MITRE's CAMH](https://www.mitre.org/centers/cms-alliances-to-modernize-healthcare/who-we-are) FFRDC.
 

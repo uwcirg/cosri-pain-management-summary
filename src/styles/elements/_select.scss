@@ -1,0 +1,87 @@
+select {
+  /* Reset Select */
+  appearance: none;
+  box-shadow: none;
+  /* Personalize */
+  flex: 1;
+  padding: 0 1em;
+  width: auto;
+  color: $link-color;
+  background-color: #fff;
+  background-image: none;
+  cursor: pointer;
+  border: 0;
+  outline-width: 0;
+  outline: none;
+  font-weight: 600;
+  &:hover {
+    color: $link-color-dark;
+  }
+}
+/* Remove IE arrow */
+select::-ms-expand {
+  display: none;
+}
+/* Custom Select wrapper */
+.select {
+  position: relative;
+  display: flex;
+  width: auto;
+  min-width: 15rem;
+  height: 2rem;
+  border-radius: 0.25em;
+  overflow: hidden;
+  border: 1px solid $link-border-color;
+  select {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  &.larger {
+    select {
+      font-size: 0.95rem;
+    }
+  }
+  &.disable-select,
+  &.read-only {
+    border-color: transparent;
+    select {
+      color: $color-black;
+      font-weight: 500;
+    }
+    &::after {
+      display: none;
+    }
+  }
+}
+/* Arrow */
+.select::after {
+  content: "\25BC";
+  position: absolute;
+  top: 0.2rem;
+  right: 0;
+  padding: 0.45em;
+  background-color: #fff;
+  color: $link-color;
+  transition: 0.25s all ease;
+  pointer-events: none;
+}
+/* Transition */
+.select:hover::after {
+  color: $link-color-dark;
+}
+
+.select-selected {
+  animation: zoom-in-out 1s ease-out;
+}
+
+@keyframes zoom-in-out {
+  0% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.06, 1.06);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}

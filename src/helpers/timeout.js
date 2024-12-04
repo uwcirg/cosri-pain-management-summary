@@ -1,6 +1,44 @@
-import {getEnv, fetchEnvData} from '../utils/envConfig';
+import { fetchEnvData } from "../utils/envConfig";
+import { getEnvDashboardURL, getEnvSystemType } from "../helpers/utility";
 
-var Timeout = (function() {
+/*
+ * decode Jwt token
+ */
+export function parseJwt(token) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(jsonPayload);
+}
+
+/*
+ * get access token information stored in sessionStorage
+ */
+export function getTokenInfoFromStorage() {
+  let token;
+  var keys = Object.keys(sessionStorage);
+  keys.forEach(function (key) {
+    var obj;
+    try {
+      obj = JSON.parse(sessionStorage.getItem(key));
+    } catch (e) {
+      obj = null;
+    }
+    if (obj && obj["tokenResponse"] && obj["tokenResponse"]["access_token"]) {
+      token = parseJwt(obj["tokenResponse"]["access_token"]);
+    }
+  });
+  return token;
+}
+
+var Timeout = function () {
   var timeoutIntervalId = 0;
   var waitForDOMIntervalId = 0;
   var timeoutGUID = 0;
@@ -14,7 +52,10 @@ var Timeout = (function() {
    * check if the system type is production
    */
   function isProduction() {
-    return (getEnv("REACT_APP_DASHBOARD_URL") && String(getEnv("REACT_APP_SYSTEM_TYPE")).toLowerCase() !== "development");
+    return (
+      getEnvDashboardURL() &&
+      String(getEnvSystemType()).toLowerCase() !== "development"
+    );
   }
 
   /*
@@ -29,50 +70,31 @@ var Timeout = (function() {
    * set logout location
    */
   function setLogoutLocation() {
-    if (!getEnv("REACT_APP_DASHBOARD_URL")) {
-      printDebugStatement("No environment variable available. logout location " + logoutLocation);
+    if (!getEnvDashboardURL()) {
+      printDebugStatement(
+        "No environment variable available. logout location " + logoutLocation
+      );
       return;
     }
-    var loc = getEnv("REACT_APP_DASHBOARD_URL") + "/logout?timeout=true";
+    var loc = getEnvDashboardURL() + "/logout?timeout=true";
     logoutLocation = loc;
     printDebugStatement("Logout location " + logoutLocation);
-    return  loc; //this should log to the server
+    return loc; //this should log to the server
   }
 
   /*
-  * decode Jwt token
-  */
-  function parseJwt (token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  };
-
-  /*
-  * get access token information stored in sessionStorage
-  */
+   * get access token information stored in sessionStorage
+   */
   function getSessionTokenInfo() {
-    var keys = Object.keys(sessionStorage);
-    keys.forEach(function(key){
-      var obj;
-      try {
-        obj = JSON.parse(sessionStorage.getItem(key));
-      } catch(e) {
-        obj = null;
-      }
-      if (obj && obj["tokenResponse"] && obj["tokenResponse"]["access_token"]) {
-        tokenInfo = parseJwt(obj["tokenResponse"]["access_token"]);
-      }
-    });
-    printDebugStatement("token info? " + (tokenInfo?JSON.stringify(tokenInfo):"no token"));
+    tokenInfo = getTokenInfoFromStorage();
+    printDebugStatement(
+      "token info? " + (tokenInfo ? JSON.stringify(tokenInfo) : "no token")
+    );
   }
 
   /*
-  * set maximum session time based on token exp value, if available
-  */
+   * set maximum session time based on token exp value, if available
+   */
   function setSessionMaxTime() {
     if (!tokenInfo && !tokenInfo.exp) {
       sessionLifetime = defaultTimetime;
@@ -81,12 +103,12 @@ var Timeout = (function() {
     }
     //JWT token exp is number of seconds (not milliseconds) since Epoch
     var expiredDateTime = new Date(tokenInfo.exp * 1000); //javascript requires miliseconds since Epoch so need to multiple exp times 1000
-    var totalTime = (expiredDateTime.getTime() - Date.now());
+    var totalTime = expiredDateTime.getTime() - Date.now();
     if (totalTime <= 0) {
       printDebugStatement("Token expired");
       return;
     }
-    sessionLifetime = (totalTime / 1000); //in seconds
+    sessionLifetime = totalTime / 1000; //in seconds
     printDebugStatement("Session lifetime " + sessionLifetime);
   }
 
@@ -95,36 +117,37 @@ var Timeout = (function() {
    */
   function initTimeoutIdentifier() {
     var jti = tokenInfo && tokenInfo.jti ? tokenInfo.jti : null;
-    var client_id = tokenInfo && tokenInfo.client_id ? tokenInfo.client_id : null;
+    var client_id =
+      tokenInfo && tokenInfo.client_id ? tokenInfo.client_id : null;
     var tokenId = jti ? jti : client_id;
     //set unique timeout countdown tracking interval id
-    timeoutGUID = (tokenId ? tokenId : _createUUID());
+    timeoutGUID = tokenId ? tokenId : _createUUID();
     printDebugStatement("identifier ? " + timeoutGUID);
   }
 
   /*
-  * unique timeout interval identifier
-  */
+   * unique timeout interval identifier
+   */
   function getTimeoutIdentifier() {
-    return "timeOnLoad_"+timeoutGUID;
+    return "timeOnLoad_" + timeoutGUID;
   }
   /*
-  * set initial app access time when app loads
-  */
+   * set initial app access time when app loads
+   */
   function setTimeOnLoad() {
     window.localStorage.setItem(getTimeoutIdentifier(), Date.now());
   }
   /*
-  * return the initial app access time
-  */
-  function getLastActiveTime(){
+   * return the initial app access time
+   */
+  function getLastActiveTime() {
     let storedActiveTime = window.localStorage.getItem(getTimeoutIdentifier());
     return storedActiveTime ? storedActiveTime : Date.now();
   }
 
   function isAboutToExpire() {
     let timeElapsed = (Date.now() - getLastActiveTime()) / 1000;
-    return (sessionLifetime - timeElapsed) < 60;
+    return sessionLifetime - timeElapsed < 60;
   }
 
   function isExpired() {
@@ -132,10 +155,11 @@ var Timeout = (function() {
     return timeElapsed >= sessionLifetime;
   }
   /*
-  * check how much time has elapsed, if exceeds session lifetime, redirect to specified logout location
-  */
+   * check how much time has elapsed, if exceeds session lifetime, redirect to specified logout location
+   */
   function checkTimeout() {
-    if (isExpired()) { //session has expired
+    if (isExpired()) {
+      //session has expired
       //logout user?
       window.redirectToLogout();
       return;
@@ -145,29 +169,36 @@ var Timeout = (function() {
       //if session is about to expire, pop up modal to inform user as such and then redirect back to patient search
       openModal();
       //back to patient search
-      setTimeout(function() {
-        window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/clear_session";
+      setTimeout(function () {
+        if (getEnvDashboardURL())
+          window.location = getEnvDashboardURL() + "/clear_session";
+        else window.location = "/";
       }, 5000);
-      printDebugStatement("Session about to expire. Time elapsed since first visiting " + timeElapsed);
+      printDebugStatement(
+        "Session about to expire. Time elapsed since first visiting " +
+          timeElapsed
+      );
       return;
     }
   }
 
   window.redirectToLogout = function redirectToLogout() {
     window.location = logoutLocation;
-  }
+  };
 
   function isDOMReady() {
     //DOM root element, it could be an error element indicating null state
-    var targetNode = document.querySelector(".landing") || document.querySelector(".root-error");
+    var targetNode =
+      document.querySelector(".landing") ||
+      document.querySelector(".root-error");
     if (!targetNode) return false;
     clearInterval(waitForDOMIntervalId);
     return true;
   }
 
   /*
-  * initialized timeout interval countdown timer
-  */
+   * initialized timeout interval countdown timer
+   */
   function startTimeoutTimer() {
     clearTimeout(timeoutIntervalId);
     printDebugStatement("timeout counting starts ");
@@ -180,27 +211,31 @@ var Timeout = (function() {
   }
 
   function _createUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      /* eslint-disable */
-      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        /* eslint-disable */
+        var r = (Math.random() * 16) | 0,
+          v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
   }
 
   /*
-  * initialize user events that will reset the timeout timer
-  * will not logout user when is active
-  */
+   * initialize user events that will reset the timeout timer
+   * will not logout user when is active
+   */
   function resetTimeoutEvents() {
-    document.querySelector(".App").addEventListener("click", function() {
+    document.querySelector(".App").addEventListener("click", function () {
       checkTimeout();
       startTimeoutTimer();
     });
-    document.addEventListener("scroll", function() {
-      window.requestAnimationFrame(function() {
+    document.addEventListener("scroll", function () {
+      window.requestAnimationFrame(function () {
         printDebugStatement("time out count resets when scrolling");
         clearTimeout(scrollTickerId);
-        scrollTickerId = setTimeout(function() {
+        scrollTickerId = setTimeout(function () {
           checkTimeout();
           startTimeoutTimer();
         }, 250);
@@ -208,14 +243,14 @@ var Timeout = (function() {
     });
   }
   function hasNoToken() {
-    return (!tokenInfo || !Object.keys(tokenInfo).length);
+    return !tokenInfo || !Object.keys(tokenInfo).length;
   }
   function handleNoToken() {
     getSessionTokenInfo();
     if (hasNoToken()) {
       //back to dashboard
-      if (getEnv("REACT_APP_DASHBOARD_URL")) {
-        window.location = getEnv("REACT_APP_DASHBOARD_URL") + "/home";
+      if (getEnvDashboardURL()) {
+        window.location = getEnvDashboardURL() + "/home";
       }
       clearInterval(waitForDOMIntervalId);
     }
@@ -253,7 +288,7 @@ var Timeout = (function() {
     document.body.appendChild(modalElement);
   }
   function init() {
-    waitForDOMIntervalId = setInterval(function() {
+    waitForDOMIntervalId = setInterval(function () {
       if (isDOMReady()) {
         fetchEnvData();
         //set logout location
@@ -277,5 +312,5 @@ var Timeout = (function() {
     }, 50);
   }
   init();
-});
+};
 export default Timeout;

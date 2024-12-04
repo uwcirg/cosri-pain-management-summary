@@ -39,6 +39,33 @@
             },
             {
                 "link": {
+                    "title": "Naloxone Information Sheet",
+                    "className": "education",
+                    "url": "{process.env.PUBLIC_URL}/assets/files/NaloxoneInformationSheet.pdf",
+                    "type": "PDF",
+                    "size": "142 KB"
+                }
+            },
+            {
+                "link": {
+                    "title": "Naloxone Instruction (English)",
+                    "className": "education",
+                    "url": "https://20797746.fs1.hubspotusercontent-na1.net/hubfs/20797746/Narcan%20Nasal%20Spray%204%20mg%20OTC%20Quick%20Start%20Guide.pdf",
+                    "type": "PDF",
+                    "size": "142 KB"
+                }
+            },
+            {
+                "link": {
+                    "title": "Naloxone Instruction (Spanish)",
+                    "className": "education",
+                    "url": "https://narcan.com/hubfs/2024-Website-Assets/Spanish%20Files/NARCAN%20Instructions%20for%20Use.pdf?hsLang=en",
+                    "type": "PDF",
+                    "size": "674 KB"
+                }
+            },
+            {
+                "link": {
                     "title": "Naloxone Patient / Public",
                     "className": "education",
                     "url": "https://doh.wa.gov/sites/default/files/legacy/Documents/2300/2019/630146.pdf?uid=624f125ed218b",

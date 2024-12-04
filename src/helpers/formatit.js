@@ -116,6 +116,7 @@ export function stringSubstitutionFormat(result, input, replacement) {
  */
 export function linkFormat(result, input) {
   let isVideoLink = input['type'] === 'video' && input['embedVideoSrc'];
+  const referenceURL = String(input["url"]).replace("{process.env.PUBLIC_URL}", process.env.PUBLIC_URL);
   if (isVideoLink) {
     return (
         <VideoLink
@@ -126,18 +127,33 @@ export function linkFormat(result, input) {
         />
     );
   }
+  const renderLinkContent = () => (
+    <React.Fragment>
+      <div>
+        <span
+          className={`title ${
+            input["titleClassName"] ? input["titleClassName"] : ""
+          }`}
+        >
+          {input["title"]}
+        </span>
+        {input["type"] === "PDF" && (
+          <span className="text-muted info">
+            ({input["type"]}, size: {input["size"]})
+          </span>
+        )}
+      </div>
+      {input["subtitle"] && (
+        <div className="subtitle-container text-muted">{input["subtitle"]}</div>
+      )}
+    </React.Fragment>
+  );
+  // if no link URL, just display the content without the link
+  if (!referenceURL) return (<div>{renderLinkContent()}</div>);
   return (
     <div className="link-container">
-        <a href={input['url']} target='_blank' rel='noopener noreferrer' className={input['className']}>
-          <div>
-            <span className={`title ${input['titleClassName'] ? input['titleClassName']: ""}`}>{input['title']}</span>
-            {
-              input['type'] === "PDF" && <span className="text-muted info">({input['type']}, size: {input['size']})</span>
-            }
-          </div>
-          {
-            input['subtitle'] && <div className="subtitle-container text-muted">{input['subtitle']}</div>
-          }
+        <a href={referenceURL} target='_blank' rel='noopener noreferrer' className={input['className']}>
+          {renderLinkContent()}
          </a>
     </div>
   );
