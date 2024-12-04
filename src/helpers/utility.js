@@ -721,7 +721,7 @@ export function getUserIdFromAccessToken() {
   return accessToken["preferred_username"];
 }
 
-export function addMamotoTracking() {
+export function addMatomoTracking() {
   // already generated script, return
   if (document.querySelector("#matomoScript")) return;
   const userId = getUserIdFromAccessToken();
