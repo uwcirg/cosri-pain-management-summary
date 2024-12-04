@@ -724,16 +724,16 @@ export function getUserIdFromAccessToken() {
 export function addMamotoTracking() {
   // already generated script, return
   if (document.querySelector("#matomoScript")) return;
-  window._paq = [];
-  window._paq.push(["trackPageView"]);
-  window._paq.push(["enableLinkTracking"]);
   const userId = getUserIdFromAccessToken();
   // no user Id return
   if (!userId) return;
   const siteId = getMamotoTrackingSiteId();
   // no site Id return
   if (!siteId) return;
-  
+  // init global piwik tracking object
+  window._paq = [];
+  window._paq.push(["trackPageView"]);
+  window._paq.push(["enableLinkTracking"]);
   window._paq.push(["setSiteId", siteId]);
   window._paq.push(["setUserId", userId]);
 
