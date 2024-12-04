@@ -709,7 +709,7 @@ export function dedupArrObjects(arr, key) {
   }, []);
 }
 
-export function getMamotoTrackingSiteId() {
+export function getMatomoTrackingSiteId() {
   return getEnv(`${ENV_VAR_PREFIX}_MATOMO_SITE_ID`);
 }
 
@@ -727,7 +727,7 @@ export function addMatomoTracking() {
   const userId = getUserIdFromAccessToken();
   // no user Id return
   if (!userId) return;
-  const siteId = getMamotoTrackingSiteId();
+  const siteId = getMatomoTrackingSiteId();
   // no site Id return
   if (!siteId) return;
   // init global piwik tracking object
