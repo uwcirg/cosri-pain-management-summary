@@ -2,6 +2,7 @@ import moment from "moment";
 import { toBlob, toJpeg } from "html-to-image";
 import { getEnv, ENV_VAR_PREFIX } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
+import { getTokenInfoFromStorage } from "./timeout";
 
 /*
  * return number of days between two dates
@@ -707,3 +708,45 @@ export function dedupArrObjects(arr, key) {
     return acc;
   }, []);
 }
+
+export function getMamotoTrackingSiteId() {
+  return getEnv(`${ENV_VAR_PREFIX}_MATOMO_SITE_ID`);
+}
+
+export function getUserIdFromAccessToken() {
+  const accessToken = getTokenInfoFromStorage();
+  if (!accessToken) return null;
+  if (accessToken.profile) return accessToken.profile;
+  if (accessToken.fhirUser) return accessToken.fhirUser;
+  return accessToken["preferred_username"];
+}
+
+export function addMamotoTracking() {
+  // already generated script, return
+  if (document.querySelector("#matomoScript")) return;
+  window._paq = [];
+  window._paq.push(["trackPageView"]);
+  window._paq.push(["enableLinkTracking"]);
+  const userId = getUserIdFromAccessToken();
+  // no user Id return
+  if (!userId) return;
+  const siteId = getMamotoTrackingSiteId();
+  // no site Id return
+  if (!siteId) return;
+  
+  window._paq.push(["setSiteId", siteId]);
+  window._paq.push(["setUserId", userId]);
+
+  let u = "https://piwik.cirg.washington.edu/";
+  window._paq.push(["setTrackerUrl", u + "matomo.php"]);
+  let d = document,
+    g = d.createElement("script"),
+    headElement = document.querySelector("head");
+  g.type = "text/javascript";
+  g.async = true;
+  g.defer = true;
+  g.setAttribute("src", u + "matomo.js");
+  g.setAttribute("id", "matomoScript");
+  headElement.appendChild(g);
+}
+

@@ -6,6 +6,7 @@ import executeElm from "../../utils/executeELM";
 import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
+  addMamotoTracking,
   getEnvSystemType,
   getEPICPatientIdFromSource,
   getPatientNameFromSource,
@@ -98,6 +99,8 @@ export default class Landing extends Component {
           });
           return;
         }
+        // add PIWIK tracking
+        addMamotoTracking();
         writeToLog("application loaded", "info", this.getPatientLogParams());
         //set FHIR results
         let result = {};
