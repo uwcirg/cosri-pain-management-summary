@@ -179,7 +179,7 @@ async function executeELM(collector, oResourceTypes) {
             )
             .catch((e) => {
               console.log("Error processing instrument ELM: ", e);
-              reject("rror processing instrument ELM. See console for details.");
+              reject("error processing instrument ELM. See console for details.");
             });
         });
       });
