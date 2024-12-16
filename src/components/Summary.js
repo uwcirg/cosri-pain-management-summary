@@ -13,6 +13,7 @@ import {
   getErrorMessageString,
   isEmptyArray,
   isReportEnabled,
+  isNumber
 } from "../helpers/utility";
 
 import ChartIcon from "../icons/ChartIcon";
@@ -353,7 +354,7 @@ export default class Summary extends Component {
               ...formatterArguments
             );
           }
-          return value
+          return value || isNumber(value)
             ? value
             : headerKey.default
             ? headerKey.default

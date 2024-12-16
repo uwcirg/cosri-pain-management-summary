@@ -152,33 +152,34 @@ async function executeELM(collector, oResourceTypes) {
           if (!evalResults[PATIENT_SUMMARY_KEY]) {
             evalResults[PATIENT_SUMMARY_KEY] = {};
           }
-          Promise.allSettled([
-            executeELMForReport(patientBundle),
-            ...elmLibs,
-          ]).then(
-            (results) => {
-              evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
-                results[0].status !== "rejected" ? results[0].value : null;
-              const evaluatedSurveyResults = executeELMForInstruments(
-                results.slice(1),
-                patientBundle
-              );
-              evalResults[PATIENT_SUMMARY_KEY]["SurveySummary"] =
-                evaluatedSurveyResults;
-              //debug
-              console.log(
-                "final evaluated CQL results including surveys ",
-                evalResults
-              );
-              resolve(evalResults);
-            },
-            (e) => {
-              console.log(e);
-              reject(
-                "Error occurred executing report library logics. See console for detail"
-              );
-            }
-          );
+          Promise.allSettled([executeELMForReport(patientBundle), ...elmLibs])
+            .then(
+              (results) => {
+                evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
+                  results[0].status !== "rejected" ? results[0].value : null;
+                const evaluatedSurveyResults = executeELMForInstruments(
+                  results.slice(1),
+                  patientBundle
+                );
+                evalResults[PATIENT_SUMMARY_KEY]["SurveySummary"] =
+                  evaluatedSurveyResults;
+                //debug
+                console.log(
+                  "final evaluated CQL results including surveys ",
+                  evalResults
+                );
+                resolve(evalResults);
+              },
+              (e) => {
+                console.log(e);
+                reject(
+                  "Error occurred executing report library logics. See console for detail"
+                );
+              }
+            )
+            .catch((e) => {
+              console.log("Error processing instrument ELM ", e);
+            });
         });
       });
     resolve(finalResults);
@@ -193,12 +194,15 @@ async function executeELMForReport(bundle) {
       console.log("Issue occurred loading ELM lib for reoirt", e);
       r4ReportCommonELM = null;
     });
- 
+
   if (!r4ReportCommonELM) return null;
 
-  let reportLib = new cql.Library(r4ReportCommonELM,  new cql.Repository({
-    FHIRHelpers: r4HelpersELM,
-  }));
+  let reportLib = new cql.Library(
+    r4ReportCommonELM,
+    new cql.Repository({
+      FHIRHelpers: r4HelpersELM,
+    })
+  );
   const reportExecutor = new cql.Executor(
     reportLib,
     new cql.CodeService(valueSetDB)
@@ -274,8 +278,11 @@ function getLibraryForInstruments() {
   return INSTRUMENT_LIST.map((item) =>
     (async () => {
       let elmJson = null;
+      const libPrefix = item.useDefaultELMLib
+        ? "Default"
+        : item.key.toUpperCase();
       elmJson = await import(
-        `../cql/r4/survey_resources/${item.key.toUpperCase()}_LogicLibrary.json`
+        `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
       )
         .then((module) => module.default)
         .catch((e) => {
@@ -287,6 +294,7 @@ function getLibraryForInstruments() {
           );
           elmJson = null;
         });
+
       if (!elmJson) {
         elmJson = await import(
           `../cql/r4/survey_resources/Default_LogicLibrary.json`

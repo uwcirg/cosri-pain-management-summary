@@ -60,6 +60,7 @@ const reportConfig = [
       {
         id: "CIRG-PainTracker-GE",
         key: GE_DATA_KEY,
+        useDefaultELMLib: true
       },
     ],
     //status: "inactive",
@@ -380,6 +381,7 @@ const reportConfig = [
       {
         id: "CIRG-PainTracker-TRT",
         key: TRT_DATA_KEY,
+        useDefaultELMLib: true
       },
     ],
     icon: (props) => (
