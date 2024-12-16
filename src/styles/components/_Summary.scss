@@ -403,9 +403,10 @@
             height: 100%;
             width: 100%;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             font-size: 1.1em;
+            line-height: 1.35;
           }
         }
         @media (min-width: 992px) {
