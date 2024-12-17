@@ -67,6 +67,7 @@ export default class CopyButton extends Component {
             "button",
             "button-primary",
             "button-secondary",
+            "pagination"
           ];
           return !exclusionClasses.some((classname) =>
             node.classList?.contains(classname)

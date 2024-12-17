@@ -8,6 +8,7 @@ export default defineConfig({
   // To deploy at the root path, use "/" or remove the "base" property entirely.
   base: "/",
   envPrefix: "REACT_",
+  
   plugins: [
     react(),
     nodePolyfills({

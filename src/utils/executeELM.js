@@ -245,7 +245,10 @@ async function executeELM(collector, paramResourceTypes) {
                   );
                   resolve(evalResults);
                 });
-              })
+              }).catch((e) => {
+                console.log("Error processing instrument ELM: ", e);
+                reject("error processing instrument ELM. See console for details.");
+              });
             
             },
             (e) => {
@@ -269,12 +272,15 @@ async function executeELMForReport(bundle) {
       console.log("Issue occurred loading ELM lib for reoirt", e);
       r4ReportCommonELM = null;
     });
- 
+
   if (!r4ReportCommonELM) return null;
 
-  let reportLib = new cql.Library(r4ReportCommonELM,  new cql.Repository({
-    FHIRHelpers: r4HelpersELM,
-  }));
+  let reportLib = new cql.Library(
+    r4ReportCommonELM,
+    new cql.Repository({
+      FHIRHelpers: r4HelpersELM,
+    })
+  );
   const reportExecutor = new cql.Executor(
     reportLib,
     new cql.CodeService(valueSetDB)
@@ -339,26 +345,24 @@ function getLibraryForInstruments() {
   if (!INSTRUMENT_LIST) return null;
   return INSTRUMENT_LIST.map((item) =>
     (async () => {
-      let elmJson;
-      try {
-        elmJson = await import(
-          `../cql/r4/survey_resources/${item.key.toUpperCase()}_LogicLibrary.json`
-        )
-          .then((module) => module.default)
-          .catch((e) => {
-            console.log(
-              "Issue occurred loading ELM lib for " +
-                item.key +
-                ". Will use default lib.",
-              e
-            );
-            elmJson = null;
-          });
-        }
-      catch(e) {
-        console.log("Error loading library ", e);
-        elmJson = null;
-      }
+      let elmJson = null;
+      const libPrefix = item.useDefaultELMLib
+        ? "Default"
+        : item.key.toUpperCase();
+      elmJson = await import(
+        `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
+      )
+        .then((module) => module.default)
+        .catch((e) => {
+          console.log(
+            "Issue occurred loading ELM lib for " +
+              item.key +
+              ". Will use default lib.",
+            e
+          );
+          elmJson = null;
+        });
+
       if (!elmJson) {
         elmJson = await import(
           `../cql/r4/survey_resources/Default_LogicLibrary.json`

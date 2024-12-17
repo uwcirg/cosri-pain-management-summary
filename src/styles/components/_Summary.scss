@@ -28,8 +28,20 @@
     .toc-list.is-collapsible {
       .toc-list-item {
         margin-bottom: 4px;
+        .flags-container {
+          display: flex;
+          flex-direction: row;
+          max-height: 56px;
+          flex-wrap: wrap;
+          gap: 8px;
+          svg {
+            font-size: 0.8em;
+            width: 16px;
+            margin-right: 0;
+          }
+        }
         .toc-link {
-          font-size: 0.8em;
+          font-size: 0.75em;
           padding: 4px 0 4px 24px;
           margin-left: 8px;
           line-height: 1.55;
@@ -408,9 +420,10 @@
             height: 100%;
             width: 100%;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             font-size: 1.1em;
+            line-height: 1.35;
           }
         }
         @media (min-width: 992px) {
@@ -952,7 +965,7 @@
           border-left: 1px solid $color-gray-lightest;
           line-height: 1.5;
           background-color: #fff;
-          padding: 16px 24px;
+          padding: 8px 16px 16px;
           margin-top: 8px;
         }
         .close-button {

@@ -18,7 +18,7 @@ export default class InfoModal extends Component {
       {
         Header: () => <span className="col-header">Name</span>,
         accessor: "name",
-        minWidth: 225,
+        minWidth: "45%",
         disableSortBy: true,
       },
       {

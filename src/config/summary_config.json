@@ -250,10 +250,6 @@
         },
         "tables": [
           {
-            "defaultSorted": {
-              "id": "Dispensed",
-              "desc": true
-            },
             "headers": {
               "Drug Description": {
                 "key": "Name",
@@ -288,7 +284,7 @@
                 "formatter": "datishFormat",
                 "sorter": "dateCompare",
                 "sortable": true,
-                "size": "120px"
+                "size": "140px"
               },
               "Dispensed": {
                 "key": "DispensedDate",
@@ -393,10 +389,34 @@
               },
               {
                 "flag": {
-                  "ifOneOrMore": {
-                    "table": "MedicationRequestsForNaloxoneConsideration",
-                    "source": "RiskConsiderations"
-                  }
+                  "ifAnd": [
+                    {
+                      "ifEqualTo": {
+                        "header": "Class",
+                        "targetValue": "opioid"
+                      }
+                    },
+                    {
+                      "ifGreaterThanOrEqualTo": {
+                        "header": "MME",
+                        "targetValue": 50
+                      }
+                    },
+                    {
+                      "ifEqualTo": {
+                        "header": "isActive",
+                        "type": "boolean",
+                        "targetValue": true
+                      }
+                    },
+                    {
+                      "ifEqualTo": {
+                        "header": "isBup",
+                        "type": "boolean",
+                        "targetValue": false
+                      }
+                    }
+                  ]
                 },
                 "flagText": "Current MME 50 or more, consider prescribing Naloxone",
                 "flagClass": "info"
@@ -883,7 +903,7 @@
               "Drug Description": {
                 "key": "Name",
                 "sortable": true,
-                "minWidth": "180px"
+                "minWidth": "220px"
               },
               "Quantity": {
                 "key": "Quantity",
@@ -979,7 +999,7 @@
               "Drug Description": {
                 "key": "Name",
                 "sortable": true,
-                "minWidth": "180px"
+                "minWidth": "220px"
               },
               "Quantity": {
                 "key": "Quantity",
@@ -1074,7 +1094,7 @@
               "Drug Description": {
                 "key": "Name",
                 "sortable": true,
-                "minWidth": "180px"
+                "minWidth": "220px"
               },
               "Quantity": {
                 "key": "Quantity",
@@ -1337,7 +1357,7 @@
             "headers": {
               "Name": {
                 "key": "Name",
-                "minWidth": "150px"
+                "minWidth": "50%"
               },
               "Date": {
                 "key": "Date",

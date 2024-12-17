@@ -60,6 +60,7 @@ const reportConfig = [
       {
         id: "CIRG-PainTracker-GE",
         key: GE_DATA_KEY,
+        useDefaultELMLib: true
       },
     ],
     //status: "inactive",
@@ -380,6 +381,7 @@ const reportConfig = [
       {
         id: "CIRG-PainTracker-TRT",
         key: TRT_DATA_KEY,
+        useDefaultELMLib: true
       },
     ],
     icon: (props) => (
@@ -403,10 +405,12 @@ const reportConfig = [
                 Name: {
                   key : "Name",
                   sortable: true,
-                  size: "100%",
                   minWidth: "35%"
                 },
-                "Ordering Department": "Location",
+                "Ordering Department": {
+                  key : "Location",
+                  minWidth: "22%"
+                },
                 "CPT Code": "CPT_CODE",
               },
             }}
@@ -434,7 +438,10 @@ const reportConfig = [
                   size: "100%",
                   minWidth: "35%"
                 },
-                "Ordering Department": "Location",
+                "Ordering Department": {
+                  key : "Location",
+                  minWidth: "22%"
+                },
                 "CPT Code": "CPT_CODE",
               },
             }}

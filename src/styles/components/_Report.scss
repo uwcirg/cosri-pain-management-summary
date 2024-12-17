@@ -78,6 +78,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-left: 24px;
           margin-right: 24px;
           margin-bottom: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          &.rows {
+            flex-direction: row;
+          }
         }
       }
       .sub-section {
@@ -532,7 +538,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
           background-color: #FFF;
           tr {
             &:not(:last-of-type) {
-              border-bottom: 1px solid $color-gray-lightest;
+              td {
+                border-bottom: 1px solid $color-gray-lightest;
+              }
             }
           }
           td {

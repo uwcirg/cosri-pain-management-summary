@@ -40,6 +40,7 @@ import Version from "../elements/Version";
 import {
   getErrorMessageString,
   isEmptyArray,
+  isNumber,
   isReportEnabled,
 } from "../helpers/utility";
 import { getScoringData } from "./Report/utility";
@@ -361,7 +362,7 @@ export default class Summary extends Component {
               ...formatterArguments
             );
           }
-          return value
+          return value || isNumber(value)
             ? value
             : headerKey.default
             ? headerKey.default

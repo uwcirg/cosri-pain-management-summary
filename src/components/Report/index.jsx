@@ -131,7 +131,7 @@ export default class Report extends Component {
     const flagObj = this.getSectionFlags(section);
     if (isEmptyArray(flagObj)) return null;
     return (
-      <div className="flags-container">
+      <div className="flags-container rows">
         {flagObj.map((o, index) => {
           return (
             <div

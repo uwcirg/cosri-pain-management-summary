@@ -10,6 +10,7 @@
     vertical-align: top;
     border: 0;
     padding: 4px 8px 4px 4px;
+    line-height: 1.4;
     &.flag-cell {
       max-width: 36px !important;
       text-align: center;
@@ -23,7 +24,6 @@
 
   th {
     white-space: nowrap;
-    max-width: 140px;
     &:empty,
     &:has(.flag__span:empty) {
       border: 0;
@@ -76,7 +76,6 @@
   }
 
   td {
-    max-width: 140px;
     &:empty:first-of-type {
       border-right: 0;
       border-left: 0;
@@ -212,6 +211,16 @@
 
 .table {
   overflow: auto;
+  .ReactTable {
+    th, td {
+      max-width: 140px;
+    }
+    &.single-column {
+      td, th {
+        max-width: 100%;
+      }
+    }
+  }
   &table, table {
     border-collapse: separate;
     border-spacing: 0;

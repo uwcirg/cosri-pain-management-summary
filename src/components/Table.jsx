@@ -3,7 +3,13 @@ import { useFlexLayout, useTable, useSortBy, usePagination } from "react-table";
 import AscendingSortImg from "../icons/icon-sort-up.png";
 import DescenidngSortImg from "../icons/icon-sort-down.png";
 
-export default function Table({ tableKey, columns, data, tableParams, tableClass }) {
+export default function Table({
+  tableKey,
+  columns,
+  data,
+  tableParams,
+  tableClass,
+}) {
   const params = tableParams ? tableParams : {};
   // Use the state and functions returned from useTable to build your UI
   const {
@@ -138,11 +144,11 @@ export default function Table({ tableKey, columns, data, tableParams, tableClass
               key={`row_${tableKey}_${headerIndex}`}
             >
               {headerGroup.headers.map((column, colIndex) => {
-                const headerProps = column.getHeaderProps(column.getSortByToggleProps());
-                const cellMinSize = column.minWidth ? column.minWidth: "auto";
-                const cellSize = column.size
-                    ? `${column.size}`
-                    : "160px";
+                const headerProps = column.getHeaderProps(
+                  column.getSortByToggleProps()
+                );
+                const cellMinSize = column.minWidth ? column.minWidth : "auto";
+                const cellSize = column.size ? `${column.size}` : "160px";
                 return (
                   <th
                     {...headerProps}
@@ -150,9 +156,8 @@ export default function Table({ tableKey, columns, data, tableParams, tableClass
                       ...headerProps.style,
                       flex: `${cellSize} 0 auto`,
                       width: cellSize,
-                      minWidth: cellMinSize
+                      minWidth: cellMinSize,
                     }}
-                  
                     key={`th_${tableKey}_${colIndex}`}
                   >
                     <div
@@ -202,7 +207,9 @@ export default function Table({ tableKey, columns, data, tableParams, tableClass
               <tr {...row.getRowProps()} key={`tr_${tableKey}_${i}`}>
                 {row.cells.map((cell, cellIndex) => {
                   const cellProps = cell.getCellProps();
-                  const cellMinSize = cell.column.minWidth ? cell.column.minWidth: "auto";
+                  const cellMinSize = cell.column.minWidth
+                    ? cell.column.minWidth
+                    : "auto";
                   const cellSize = cell.column.size
                     ? `${cell.column.size}`
                     : "160px";
@@ -217,7 +224,7 @@ export default function Table({ tableKey, columns, data, tableParams, tableClass
                         ...cellProps.style,
                         flex: `${cellSize} 0 auto`,
                         width: cellSize,
-                        minWidth: cellMinSize
+                        minWidth: cellMinSize,
                       }}
                     >
                       {cell.render("Cell")}
@@ -228,11 +235,41 @@ export default function Table({ tableKey, columns, data, tableParams, tableClass
             );
           })}
           {emptyRows > 0 && (
-            <tr className="no-hover">
-              <td
+            <tr
+              className="no-hover"
+              style={{ display: "flex", flex: "1 0 auto" }}
+            >
+              {/* <td
                 colSpan={columns.length}
                 style={{ height: 33 * emptyRows }}
-              ></td>
+              ></td> */}
+              {page[0].cells.map((cell, cellIndex) => {
+                const cellProps = cell.getCellProps();
+                const cellMinSize = cell.column.minWidth
+                  ? cell.column.minWidth
+                  : "auto";
+                const cellSize = cell.column.size
+                  ? `${cell.column.size}`
+                  : "160px";
+                return (
+                  <td
+                    {...cellProps}
+                    className={
+                      cell.column.className ? cell.column.className : ""
+                    }
+                    key={`td_${tableKey}_filler_${cellIndex}`}
+                    style={{
+                      ...cellProps.style,
+                      flex: `${cellSize} 0 auto`,
+                      width: cellSize,
+                      minWidth: cellMinSize,
+                      height: 26 * emptyRows,
+                    }}
+                  >
+                    &nbsp;
+                  </td>
+                );
+              })}
             </tr>
           )}
         </tbody>
