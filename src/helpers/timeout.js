@@ -72,7 +72,8 @@ var Timeout = function () {
   function setLogoutLocation() {
     if (!getEnvDashboardURL()) {
       printDebugStatement(
-        "No environment variable available. logout location " + logoutLocation
+        "No environment dashboard URL variable available. logout location " +
+          logoutLocation
       );
       return;
     }
@@ -170,8 +171,8 @@ var Timeout = function () {
       openModal();
       //back to patient search
       setTimeout(function () {
-        if (getEnvDashboardURL())
-          window.location = getEnvDashboardURL() + "/clear_session";
+        const dashboardURL = getEnvDashboardURL();
+        if (dashboardURL) window.location = dashboardURL + "/clear_session";
         else window.location = "/";
       }, 5000);
       printDebugStatement(
@@ -249,8 +250,9 @@ var Timeout = function () {
     getSessionTokenInfo();
     if (hasNoToken()) {
       //back to dashboard
-      if (getEnvDashboardURL()) {
-        window.location = getEnvDashboardURL() + "/home";
+      const dashboardURL = getEnvDashboardURL();
+      if (dashboardURL) {
+        window.location = dashboardURL + "/home";
       }
       clearInterval(waitForDOMIntervalId);
     }

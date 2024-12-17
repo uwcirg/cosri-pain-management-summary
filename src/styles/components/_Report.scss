@@ -1,3 +1,4 @@
+@use '../elements/variables' as *;
 $selector-box-shadow: 0 2px 2px #383e40;
 .report {
   padding: 0;
@@ -62,7 +63,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     margin-bottom: 8px;
     background-color: $color-beige;
     font-size: 1.1rem;
-    color: darken($color-warning-dark, 5%);
+    color: $color-warning;
   }
   .summary__display {
     padding: 8px;
@@ -77,6 +78,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-left: 24px;
           margin-right: 24px;
           margin-bottom: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          &.rows {
+            flex-direction: row;
+          }
         }
       }
       .sub-section {
@@ -115,10 +122,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-bottom: 8px;
           border-collapse: separate;
           background-color: #FFF;
+          border-spacing: 0;
           th {
             padding: 4px 24px 2px 0;
           }
-          th, td {
+          th:empty, td:empty {
+            //border-bottom: 0;
             // text-wrap: balance;
           }
         }
@@ -205,7 +214,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       text-align: center;
       vertical-align: bottom;
       padding-right: 4px;
-      border-bottom: 2px solid $color-blue;
+    //  border-bottom: 2px solid $color-blue;
       padding: 4px 12px 2px 0;
       font-size: 0.95em;
     }
@@ -392,11 +401,11 @@ $selector-box-shadow: 0 2px 2px #383e40;
       }
     }
 
-    tr:not(:last-of-type):not(+:has(td.row-header)) {
-      td {
-        border-bottom: 1px solid $color-gray-lighter;
-      }
-    }
+    // tr:not(:last-of-type):not(+ :has(td.row-header)) {
+    //   td {
+    //     border-bottom: 1px solid $color-gray-lighter;
+    //   }
+    // }
     tfoot {
       td {
         padding: 16px 8px;
@@ -523,12 +532,15 @@ $selector-box-shadow: 0 2px 2px #383e40;
           padding-left: 4px;
           padding-right: 4px;
           border-collapse: separate;
+          border-spacing: 0;
           white-space: normal;
           table-layout: fixed;
           background-color: #FFF;
           tr {
             &:not(:last-of-type) {
-              border-bottom: 1px solid $color-gray-lightest;
+              td {
+                border-bottom: 1px solid $color-gray-lightest;
+              }
             }
           }
           td {

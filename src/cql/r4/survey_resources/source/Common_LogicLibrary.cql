@@ -1,8 +1,8 @@
 library Common_LogicLibrary version '1.0.0'
 
-using FHIR version '4.0.0'
+using FHIR version '4.0.1'
 
-include "FHIRHelpers" version '4.0.0' called FHIRHelpers
+include "FHIRHelpers" version '4.0.1' called FHIRHelpers
 
 
 define AnswerQuestionTypes: {
@@ -285,8 +285,11 @@ define function FormattedQuestionnaireResponses(responseItems List<FHIR.Question
         // PC-PTSD score item 102017-1
         when I.linkId.value = '102017-1' then I.answer[0].value.value
         when I.linkId.value = '/102017-1' then I.answer[0].value.value
+<<<<<<< HEAD
+=======
         // STOP score item
         when I.linkId.value = 'STOP-score' then I.answer[0].value.value
+>>>>>>> 83eac68f53639a94e5c72320d14369805ebe59f3
         // HACK, address GE questionnaire Other answer
         when 
              PositionOf('GE', I.linkId.value) != -1 and

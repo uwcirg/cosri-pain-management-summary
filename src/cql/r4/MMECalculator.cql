@@ -12,9 +12,9 @@ MedicationRequest resource.
     provide (supplyQuantity / supplyDuration) calculation as default doses per day if frequency & period is missing from Medication Request
 */
 
-using FHIR version '4.0.0'
+using FHIR version '4.0.1'
 
-include FHIRHelpers version '4.0.0'
+include FHIRHelpers version '4.0.1'
 include OMTKLogic version '3.0.0'
 
 parameter ErrorLevel String default 'Warning'
@@ -34,7 +34,7 @@ Helper function to force the choice of the FHIR.SimpleQuantity value.
 This avoids the need for the _is_ and _as_ operators on choices,
 which is not implemented in the JavaScript CQL engine.
 */
-define function ToFHIRQuantity(quantity FHIR.Quantity):
+define function ToFHIRQuantity(quantity FHIR.SimpleQuantity):
   quantity
 
 /*
@@ -52,7 +52,7 @@ https://github.com/cqframework/clinical_quality_language/issues/557
 
 Until the above issue is addressed, this function provides ToQuantity functionality for this library
 */
-define function ToQuantity(quantity FHIR.Quantity):
+define function ToQuantity(quantity FHIR.SimpleQuantity):
   case
     when quantity is null then null
     when quantity.value is null then null
@@ -126,7 +126,7 @@ define function Prescriptions(Orders List<MedicationRequest>):
         repeat.period.value else null,
       period: OMTKLogic.Quantity(periodDuration, repeat.periodUnit.value),
       doseRange: ToFHIRRange(doseAndRate.dose),
-      doseQuantity: if doseAndRate.dose is not null then ToFHIRQuantity(doseAndRate.dose) else null as Quantity,
+      doseQuantity: if doseAndRate.dose is not null then ToFHIRQuantity(doseAndRate.dose) else null as SimpleQuantity,
       supplyQuantity: dispenseRequest.quantity.value.value,
       supplyDuration: dispenseRequest.expectedSupplyDuration.value.value,
       doseDescription:
