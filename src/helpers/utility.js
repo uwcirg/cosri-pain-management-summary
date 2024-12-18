@@ -573,10 +573,18 @@ export function writeToLog(message, level, params) {
   if (!getEnvConfidentialAPIURL()) return;
   if (!message) return;
   const logLevel = level ? level : "info";
-  const logParams = params ? params : {};
+  // use Object.assign to prevent modification of original params 
+  const logParams = Object.assign({}, params ? params : {});
   if (!logParams.tags) logParams.tags = [];
-  logParams.tags.push("cosri-frontend");
-
+  const COSRI_FRONTEND_TAG = "cosri-frontend";
+  if (logParams.tags.indexOf(COSRI_FRONTEND_TAG) === -1) {
+    logParams.tags.push(COSRI_FRONTEND_TAG);
+  }
+  if (Object.keys(logParams).indexOf("user") === -1) {
+    const userId = getUserIdFromAccessToken();
+    if (userId)
+      logParams.user = userId;
+  }
   const auditURL = `${getEnvConfidentialAPIURL()}/auditlog`;
   const patientName = params.patientName ? params.patientName : "";
   let messageString = "";
