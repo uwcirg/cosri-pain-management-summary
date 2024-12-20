@@ -583,7 +583,7 @@ export function writeToLog(message, level, params) {
   if (Object.keys(logParams).indexOf("user") === -1) {
     const userId = getUserIdFromAccessToken();
     if (userId)
-      logParams.user = userId;
+      logParams.user.username = userId;
   }
   const auditURL = `${getEnvConfidentialAPIURL()}/auditlog`;
   const patientName = params.patientName ? params.patientName : "";
