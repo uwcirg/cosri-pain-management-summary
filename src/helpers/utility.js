@@ -581,9 +581,12 @@ export function writeToLog(message, level, params) {
     logParams.tags.push(COSRI_FRONTEND_TAG);
   }
   if (Object.keys(logParams).indexOf("user") === -1) {
-    const userId = getUserIdFromAccessToken();
-    if (userId)
-      logParams.user.username = userId;
+    const userId = "amysbubble";
+    if (userId) {
+      logParams.user = {
+        username: userId
+      };
+    }
   }
   const auditURL = `${getEnvConfidentialAPIURL()}/auditlog`;
   const patientName = params.patientName ? params.patientName : "";
