@@ -581,7 +581,7 @@ export function writeToLog(message, level, params) {
     logParams.tags.push(COSRI_FRONTEND_TAG);
   }
   if (Object.keys(logParams).indexOf("user") === -1) {
-    const userId = "amysbubble";
+    const userId = getUserIdFromAccessToken();
     if (userId) {
       logParams.user = {
         username: userId
