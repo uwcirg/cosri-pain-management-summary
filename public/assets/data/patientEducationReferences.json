@@ -41,7 +41,7 @@
                 "link": {
                     "title": "Naloxone Information Sheet",
                     "className": "education",
-                    "url": "{process.env.PUBLIC_URL}/assets/files/NaloxoneInformationSheet.pdf",
+                    "url": "/assets/files/NaloxoneInformationSheet.pdf",
                     "type": "PDF",
                     "size": "142 KB"
                 }
