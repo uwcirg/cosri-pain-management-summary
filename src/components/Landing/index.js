@@ -419,7 +419,7 @@ export default class Landing extends Component {
       () => {
         this.initTocBot();
         writeToLog(index >= 1 ? "report tab" : "overview tab", "info", {
-          tags: ["tab"],
+          tags: ["tab", "analytics"],
           ...this.getPatientLogParams(),
         });
 
