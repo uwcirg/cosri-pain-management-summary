@@ -588,19 +588,20 @@ export function writeToLog(message, level, params) {
         username: userId
       };
     }
-  }
-
-  if (Object.keys(logParams).indexOf("DEA") === -1) {
     const dea = getDEAFromAccessToken();
     if (dea) {
-      logParams.DEA = dea;
+      if (!logParams.user) {
+        logParams.user = {};
+      }
+      logParams.user.DEA = dea;
     }
-  }
 
-  if (Object.keys(logParams).indexOf("roles") === -1) {
     const roles = getRealmRolesFromAccessToken();
     if (roles) {
-      logParams.roles = roles;
+      if (!logParams.user) {
+        logParams.user = {};
+      }
+      logParams.user.roles = roles;
     }
   }
 
