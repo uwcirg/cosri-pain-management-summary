@@ -575,6 +575,7 @@ export function writeToLog(message, level, params) {
   const logLevel = level ? level : "info";
   // use Object.assign to prevent modification of original params 
   const logParams = Object.assign({}, params ? params : {});
+
   if (!logParams.tags) logParams.tags = [];
   const COSRI_FRONTEND_TAG = "cosri-frontend";
   if (logParams.tags.indexOf(COSRI_FRONTEND_TAG) === -1) {
@@ -587,7 +588,23 @@ export function writeToLog(message, level, params) {
         username: userId
       };
     }
+    const dea = getDEAFromAccessToken();
+    if (dea) {
+      if (!logParams.user) {
+        logParams.user = {};
+      }
+      logParams.user.DEA = dea;
+    }
+
+    const roles = getRealmRolesFromAccessToken();
+    if (roles) {
+      if (!logParams.user) {
+        logParams.user = {};
+      }
+      logParams.user.roles = roles;
+    }
   }
+
   const auditURL = `${getEnvConfidentialAPIURL()}/auditlog`;
   const patientName = params.patientName ? params.patientName : "";
   let messageString = "";
@@ -730,6 +747,19 @@ export function getUserIdFromAccessToken() {
   if (accessToken.profile) return accessToken.profile;
   if (accessToken.fhirUser) return accessToken.fhirUser;
   return accessToken["preferred_username"];
+}
+
+export function getDEAFromAccessToken() {
+  const accessToken = getTokenInfoFromStorage();
+  if (!accessToken) return null;
+  return accessToken.DEA;
+}
+
+export function getRealmRolesFromAccessToken() {
+  const accessToken = getTokenInfoFromStorage();
+  if (!accessToken) return null;
+  if (!accessToken["realm_access"]) return null;
+  return accessToken["realm_access"].roles;
 }
 
 export function addMatomoTracking() {
