@@ -83,9 +83,9 @@ To get you UMLS API Key:
 2. Click 'My Profile' in the orange banner at the top of the screen
 3. Your API key should be listed below your username in the table
 4. If no API key is listed:
-   1. Click ‘Edit Profile’
-   2. Select the ‘Generate new API Key’ checkbox
-   3. Click ‘Save Profile’
+   1. Click 'Edit Profile'
+   2. Select the 'Generate new API Key' checkbox
+   3. Click 'Save Profile'
    4. Your new API key should now be listed.
 
 ### To update the test patients' date-based fields
