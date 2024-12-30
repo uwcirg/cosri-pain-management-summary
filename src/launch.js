@@ -3,14 +3,14 @@ import "react-app-polyfill/stable";
 import FHIR from "fhirclient";
 import { getEnv, fetchEnvData } from "./utils/envConfig";
 import { getEnvConfidentialAPIURL } from "./helpers/utility";
-
 //make sure REACT environmental variables have been populated;
 fetchEnvData();
 
 // retrieve launch context from backend, if configured
 let context_url = getEnv("PUBLIC_URL") + "/launch-context.json";
-if (getEnvConfidentialAPIURL()) {
-  context_url = getEnvConfidentialAPIURL() + "/auth/auth-info";
+const confidentialAPIUrl = getEnvConfidentialAPIURL();
+if (confidentialAPIUrl) {
+  context_url = confidentialAPIUrl + "/auth/auth-info";
 }
 
 fetch(context_url, {

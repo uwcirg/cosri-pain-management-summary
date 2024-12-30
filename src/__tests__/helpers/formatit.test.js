@@ -1,4 +1,3 @@
-import renderer from 'react-test-renderer';
 import * as formatit from '../../helpers/formatit';
 
 it('formats dates correctly', () => {
