@@ -95,13 +95,14 @@ async function executeELM(collector, paramResourceTypes) {
         const shouldLoadSurveyResources =
           FHIR_RELEASE_VERSION_4 && INSTRUMENT_LIST;
         const surveyResources = shouldLoadSurveyResources
-          ? SURVEY_FHIR_RESOURCES
+          ? [...SURVEY_FHIR_RESOURCES, "Report"]
           : [];
         const requests = [
           ...extractResourcesFromELM(library),
           ...surveyResources,
         ].map((name) => {
           resourceTypes[name] = false;
+          if (name === "Report") return true;
           if (name === "Patient") {
             resourceTypes[name] = true;
             return [pt];
@@ -218,6 +219,7 @@ async function executeELM(collector, paramResourceTypes) {
                 patientBundle
               ).then(results => {
                 Promise.allSettled(results).then((results) => {
+                  resourceTypes["Report"] = true;
                   if (!results) {
                     resolve(evalResults);
                     return;
@@ -243,9 +245,13 @@ async function executeELM(collector, paramResourceTypes) {
                     "final evaluated CQL results including surveys ",
                     evaluatedSurveyResults
                   );
+                  resourceTypes["Report"] = true;
                   resolve(evalResults);
                 });
               }).catch((e) => {
+                resourceTypes["Report"] = {
+                  error: e
+                }
                 console.log("Error processing instrument ELM: ", e);
                 reject("error processing instrument ELM. See console for details.");
               });

@@ -177,7 +177,7 @@ export default class Landing extends Component {
           () => {
             this.initEvents();
             this.clearProcessInterval();
-            this.savePDMPSummaryData();
+            //this.savePDMPSummaryData();
             this.handleSetActiveTab(0);
           }
         );
