@@ -43,8 +43,8 @@ export default class DevTools extends Component {
   errorMessage(er, i) {
     return (
       <tr key={i}>
-        <td>{er.type}</td>
-        <td>{er.error.message || er.error.statusText || 'No error message provided'}</td>
+        <td>{er.type || er.url}</td>
+        <td>{er.error.message || er.error.statusText || (typeof er.error === "string" && er.error) || 'No error message provided'}</td>
       </tr>
     );
   }

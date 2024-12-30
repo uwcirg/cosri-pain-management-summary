@@ -1,52 +1,59 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Open Sans', Arial, sans-serif;
+  font-family: "Open Sans", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   //color: $color-body;
   color: $color-gray-dark;
 }
+
 /*
  * handle fixed header
  */
 body.fixed {
   .header {
-    position: fixed;
-    top: 0;
-    z-index: 998;
-    background: #FFF;
-    width: 100%;
+    background: #fff;
     box-shadow: 1px 1px 2px $color-gray-light;
   }
-  .summary__nav {
-    width: $summary-nav-width;
-    &.is-position-fixed {
-      padding: calc(#{$min-header-height} + 36px) 0 20px 0px !important;
-    }
-  }
-  .summary {
-    margin-top: $min-header-height;
-  }
+}
+#anchorTop {
+  position: relative;
+  top: 100px;
 }
 h3 {
-  font-size: 1.2em;
+  font-size: 1.3em;
 }
 h3:focus {
   outline: none;
 }
-
 a {
   color: $link-color;
   font-weight: 600;
   text-decoration: none;
   border-bottom: 1px solid $link-border-color;
+  word-wrap: break-word;
+  &:hover {
+    color: $link-color-dark;
+  }
+}
+.text-small {
+  font-size: 0.85rem;
+}
+.text-center {
+  text-align: center;
+}
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
 }
 .text-alert {
   color: $color-alert;
 }
 .text-warning {
-  color: $color-warning;
+  color: $color-warning-dark;
 }
 .text-success {
   color: $color-success;
@@ -58,7 +65,16 @@ a {
   color: $color-gray-dark;
 }
 .text-center {
-  text-align: center;
+  text-align: center !important;
+}
+.text-capitalize {
+  text-transform: capitalize;
+}
+.sub {
+  font-size: 0.8rem;
+}
+.text-right {
+  text-align: right;
 }
 .small {
   font-size: 14px;
@@ -69,6 +85,53 @@ a {
 }
 .hide {
   display: none;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 4px;
+}
+.flex-column {
+  flex-direction: column;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-gap-1 {
+  gap: 8px;
+}
+.flex-gap-2 {
+  gap: 16px;
+}
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
+}
+.flex-start {
+  display: flex;
+  justify-content: flex-start;
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+.flex-align-start {
+  display: flex;
+  align-items: flex-start;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.framed-border {
+  border: 1px solid $color-gray-lighter !important;
 }
 .lds-ellipsis {
   display: inline-block;
@@ -124,4 +187,59 @@ a {
   100% {
     transform: translate(12px, 0);
   }
+}
+.print-cell-hidden {
+  display: table-cell;
+}
+.print-only {
+  display: none;
+}
+.print-image {
+  &.absolute {
+    z-index: -1;
+    position: absolute;
+  }
+}
+.disabled {
+  opacity: 0.4;
+}
+
+.tooltip-donut {
+  position: absolute;
+  text-align: left;
+  padding: 8px;
+  background: #ffffff;
+  color: $color-body;
+  border: 1px solid $color-gray-lighter;
+  pointer-events: none;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  font-weight: 600;
+}
+.is-collapsible {
+	/*
+		Increase the value "1000px" of "tocbot.css" to higher value, because otherwise "ol.toc-list" could be truncated (especially if the root heading is shown).
+		Do not unset the value, because the smooth transition of closing/opening collapsible list is prevented.
+		Do not increase the value to max signed 32 bit, because the visible transition at the end is too fast.
+	 */
+	max-height: 3000px;
+	/*
+		Both control points of the Bézier curve are in the lower-right corner.
+		I.e. when the list gets uncollapsed (.i.e. it has no style `.is-collapsed` anymore), the transition
+		is very slow at the beginning  (i.e. near `max-height: 0`)
+		and very fast at the end (i.e. `near max-height: 3000px`, where the transition is normally not visible anymore)
+	 */
+	transition: all 0.5s cubic-bezier(1, 0, 1, 0);
+}
+
+.is-collapsed {
+	/* override the increase in ".is-collapsible" */
+	max-height: 0;
+	/*
+		Both control points of the Bézier curve are in the upper-left corner.
+		I.e. when the list gets collapsed, the transition
+		is very fast at the beginning (i.e. `near max-height: 3000px`, where the transition is normally not visible)
+		and very slow at the end (i.e. near `max-height: 0`)
+	 */
+	transition: all 0.5s cubic-bezier(0, 1, 0, 1);
 }

@@ -30,4 +30,4 @@ jobs:
 
           # create docker image tags to match git tags
           tag_names: true
-          buildargs: VERSION_STRING
+          buildargs: REACT_APP_VERSION_STRING
