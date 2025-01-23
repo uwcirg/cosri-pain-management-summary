@@ -687,6 +687,11 @@ export function isElementOverflown(element, dimension) {
 export function getSiteId() {
   return getEnv(`${ENV_VAR_PREFIX}_SITE_ID`);
 }
+export function getSiteState() {
+  const siteState = getEnv(`${ENV_VAR_PREFIX}_SITE_STATE`);
+  if (siteState) return siteState;
+  return "WA";
+}
 
 export function isReportEnabled() {
   const siteId = getSiteId();

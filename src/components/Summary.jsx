@@ -39,6 +39,7 @@ import MMEGraph from "./graph/MMEGraph";
 import Version from "../elements/Version";
 import {
   getErrorMessageString,
+  getSiteState,
   isEmptyArray,
   isNumber,
   isReportEnabled,
@@ -220,14 +221,20 @@ export default class Summary extends Component {
 
   renderGuideLine(subSection) {
     if (!subSection) return "";
-    let guidelineElement = subSection["guideline"]
-      ? subSection["guideline"]
-      : null;
-    if (!guidelineElement) return "";
+    let arrGuideline = subSection["guideline"] ? subSection["guideline"] : null;
+    if (!isEmptyArray(arrGuideline)) {
+      const siteState = getSiteState();
+      arrGuideline = arrGuideline.filter(
+        (o) =>
+          String(o.type).toLowerCase() === "cdc" ||
+          String(o.type).toLowerCase() === String(siteState).toLowerCase()
+      );
+    }
+    if (isEmptyArray(arrGuideline)) return "";
     let guidelineContent = "";
     guidelineContent = (
       <div className="guideline-wrapper">
-        {guidelineElement.map((item, index) => {
+        {arrGuideline.map((item, index) => {
           return (
             <div key={`guideline_${index}`} className={`${item.type}`}>
               {item.title && (

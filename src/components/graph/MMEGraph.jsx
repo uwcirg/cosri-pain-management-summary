@@ -11,10 +11,12 @@ import { dateCompare } from "../../helpers/sortit";
 import {
   sumArray,
   daysFromToday,
+  getSiteState,
   isEmptyArray,
   renderImageFromSVG,
 } from "../../helpers/utility";
 import CopyButton from "../CopyButton";
+import { siteMMEGraphAttributes } from "../../config/graph_config";
 
 const defaultFields = {
   x: "date",
@@ -27,6 +29,7 @@ const DEFAULT_STROKE_COLOR = "#168698";
 export default class MMEGraph extends Component {
   constructor() {
     super(...arguments);
+    this.siteState = getSiteState();
     this.state = {
       lineIds: Object.entries(this.props.data ?? []).map((o) => `${o[1].key}`),
     };
@@ -376,17 +379,21 @@ export default class MMEGraph extends Component {
     );
   }
 
+  getSiteGraphAttributes() {
+    return siteMMEGraphAttributes[String(this.siteState).toUpperCase()];
+  }
+
   render() {
     /*
      *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40},
      * {"dateWritten":"2019-04-15","MMEValue":40, "placeholder":true}]
      */
+    const siteGraphAttributes = this.getSiteGraphAttributes();
     let baseLineDate = new Date();
     const parentWidth = 488;
     const parentHeight = 344;
-    const WA_MAX_VALUE = 120;
+    const SITE_MAX_VALUE = siteGraphAttributes?.maxYValue;
     const CDC_SECONDARY_MAX_VALUE = 50;
-    //const CDC_MAX_VALUE = 90;
     const xIntervals = 12;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
     const hasError = this.props.showError;
@@ -503,16 +510,14 @@ export default class MMEGraph extends Component {
       .domain([0, yMaxValue])
       .range([height, 0])
       .nice();
-    let WAData = this.getDefaultDataValueSet(
-      WA_MAX_VALUE,
-      // baseLineDate,
-      xScale.domain()[0],
-      maxDate,
-      ...lineParamsSet
-    );
+    // let WAData = this.getDefaultDataValueSet(
+    //   WA_MAX_VALUE,
+    //   xScale.domain()[0],
+    //   maxDate,
+    //   ...lineParamsSet
+    // );
     let CDCSecondaryData = this.getDefaultDataValueSet(
       CDC_SECONDARY_MAX_VALUE,
-      // baseLineDate,
       xScale.domain()[0],
       maxDate,
       ...lineParamsSet
@@ -534,7 +539,6 @@ export default class MMEGraph extends Component {
     const additionalProps = {
       strokeColor: DEFAULT_STROKE_COLOR,
       strokeFill: DEFAULT_STROKE_COLOR,
-      //   strokeWidth: 2.5,
       strokeWidth: 2.8,
       markerSize: 4,
     };
@@ -571,14 +575,9 @@ export default class MMEGraph extends Component {
       x: xScale(baseLineDate) + 8,
     };
 
-    const WA_COLOR = "#a75454";
+    const SITE_COLOR = siteGraphAttributes?.color;
     const CDC_COLOR = "#c57829";
     const textMargin = 4;
-    const WALegendSettings = {
-      y: yScale(120 + textMargin),
-      fill: WA_COLOR,
-      ...defaultLegendSettings,
-    };
     const CDCLegendSettings = {
       fill: CDC_COLOR,
       ...defaultLegendSettings,
@@ -588,7 +587,7 @@ export default class MMEGraph extends Component {
     const defaultMarkerProps = additionalProps["dataPointsProps"];
     const graphWidth = width + margins.left + margins.right;
     const graphHeight = height + margins.top + margins.bottom;
-    const shouldShowSwitches = Object.keys(this.props.data??[]).length > 1;
+    const shouldShowSwitches = Object.keys(this.props.data ?? []).length > 1;
 
     if (hasError) {
       return (
@@ -652,17 +651,23 @@ export default class MMEGraph extends Component {
                       )
                     );
                   })}
-                  {/* <Line lineID="dataLine" data={data} {...dataLineProps} /> */}
-                  <Line
-                    lineID="WALine"
-                    strokeColor={WA_COLOR}
-                    dotted="true"
-                    dotSpacing="2, 1"
-                    data={WAData}
-                    className="wa-line"
-                    style={{ opacity: 0.4 }}
-                    {...defaultProps}
-                  />
+                  {siteGraphAttributes && (
+                    <Line
+                      lineID={`${this.siteState}_line`}
+                      strokeColor={SITE_COLOR}
+                      dotted="true"
+                      dotSpacing="2, 1"
+                      data={this.getDefaultDataValueSet(
+                        SITE_MAX_VALUE,
+                        xScale.domain()[0],
+                        maxDate,
+                        ...lineParamsSet
+                      )}
+                      className={`${this.siteState}-line`}
+                      style={{ opacity: 0.4 }}
+                      {...defaultProps}
+                    />
+                  )}
                   <Line
                     lineID="CDCSecondaryLine"
                     strokeColor={CDC_COLOR}
@@ -673,11 +678,17 @@ export default class MMEGraph extends Component {
                     style={{ opacity: 0.4 }}
                     {...defaultProps}
                   />
-                  {/* <Line lineID="CDCLine" strokeColor={CDC_COLOR} dotted="true" dotSpacing="3, 3" data={CDCData} {...defaultProps} /> */}
-                  {/* <Tooltip data={data} {...dataLineProps}></Tooltip> */}
-                  <text {...WALegendSettings}>
-                    WA State: Consultation threshold
-                  </text>
+                  {siteGraphAttributes && (
+                    <text
+                      {...{
+                        y: yScale(SITE_MAX_VALUE + textMargin),
+                        fill: SITE_COLOR,
+                        ...defaultLegendSettings,
+                      }}
+                    >
+                      {siteGraphAttributes.text}
+                    </text>
+                  )}
                   <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>
                     CDC: Consider offering naloxone
                   </text>
