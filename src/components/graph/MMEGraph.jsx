@@ -383,16 +383,23 @@ export default class MMEGraph extends Component {
     return siteMMEGraphAttributes[String(this.siteState).toUpperCase()];
   }
 
+  getSiteConsultationAttributes() {
+    const siteGraphAttributes = this.getSiteGraphAttributes();
+    if (!siteGraphAttributes) return null;
+    return siteGraphAttributes.consultationLine;
+  }
+
   render() {
     /*
      *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40},
      * {"dateWritten":"2019-04-15","MMEValue":40, "placeholder":true}]
      */
     const siteGraphAttributes = this.getSiteGraphAttributes();
+    const siteConsultationAttributes = this.getSiteConsultationAttributes();
     let baseLineDate = new Date();
     const parentWidth = 488;
     const parentHeight = 344;
-    const SITE_MAX_VALUE = siteGraphAttributes?.maxYValue;
+    const SITE_CONSULTATION_MAX_VALUE = siteConsultationAttributes?.yValue;
     const CDC_SECONDARY_MAX_VALUE = 50;
     const xIntervals = 12;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
@@ -575,7 +582,7 @@ export default class MMEGraph extends Component {
       x: xScale(baseLineDate) + 8,
     };
 
-    const SITE_COLOR = siteGraphAttributes?.color;
+    const SITE_COLOR = siteGraphAttributes?.color ?? "#a75454";
     const CDC_COLOR = "#c57829";
     const textMargin = 4;
     const CDCLegendSettings = {
@@ -651,14 +658,14 @@ export default class MMEGraph extends Component {
                       )
                     );
                   })}
-                  {siteGraphAttributes && (
+                  {SITE_CONSULTATION_MAX_VALUE && (
                     <Line
                       lineID={`${this.siteState}_line`}
                       strokeColor={SITE_COLOR}
                       dotted="true"
                       dotSpacing="2, 1"
                       data={this.getDefaultDataValueSet(
-                        SITE_MAX_VALUE,
+                        SITE_CONSULTATION_MAX_VALUE,
                         xScale.domain()[0],
                         maxDate,
                         ...lineParamsSet
@@ -678,17 +685,18 @@ export default class MMEGraph extends Component {
                     style={{ opacity: 0.4 }}
                     {...defaultProps}
                   />
-                  {siteGraphAttributes && (
-                    <text
-                      {...{
-                        y: yScale(SITE_MAX_VALUE + textMargin),
-                        fill: SITE_COLOR,
-                        ...defaultLegendSettings,
-                      }}
-                    >
-                      {siteGraphAttributes.text}
-                    </text>
-                  )}
+                  {SITE_CONSULTATION_MAX_VALUE &&
+                    siteConsultationAttributes?.text && (
+                      <text
+                        {...{
+                          y: yScale(SITE_CONSULTATION_MAX_VALUE + textMargin),
+                          fill: SITE_COLOR,
+                          ...defaultLegendSettings,
+                        }}
+                      >
+                        {siteConsultationAttributes.text}
+                      </text>
+                    )}
                   <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>
                     CDC: Consider offering naloxone
                   </text>

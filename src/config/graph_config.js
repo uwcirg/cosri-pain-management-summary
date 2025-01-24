@@ -15,8 +15,10 @@ export const defaultLineAttributes = {
 export const siteMMEGraphAttributes = {
   "WA": {
     color: "#a75454",
-    maxYValue: 120,
-    text: "WA State: Consultation threshold"
+    consultationLine: {
+      yValue: 120,
+      text: "WA State: Consultation threshold"
+    }
   }
 };
 
