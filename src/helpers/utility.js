@@ -152,9 +152,6 @@ export function getDisplayDateFromISOString(isocDateString, format) {
   if (!isocDateString) return "--";
   const objDate = new Date(isocDateString);
   if (isNaN(objDate)) return "--";
-  // need to account for timezone offset for a UTC date/time
-  let tzOffset = objDate.getTimezoneOffset() * 60000;
-  objDate.setTime(objDate.getTime() + tzOffset);
   const displayDate = objDate
     ? objDate.toLocaleString(
         "en-us",
