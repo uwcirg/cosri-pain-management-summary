@@ -414,9 +414,6 @@ export default class MMEGraph extends Component {
     let noEntry = !data || !data.length;
     data = data.filter((d) => d[xFieldName]);
     data = data.map((d) => {
-      //let dObj = new Date(d[xFieldName]);
-      // let tzOffset = dObj.getTimezoneOffset() * 60000;
-      // dObj.setTime(dObj.getTime() + tzOffset);
       d[xFieldName] = getDateObjectInLocalDateTime(d[xFieldName]);
       return d;
     });

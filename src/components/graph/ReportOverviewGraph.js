@@ -157,9 +157,6 @@ export default class ReportOverviewGraph extends Component {
     data = this.getFilteredDataByNumYears(data, years);
 
     data = data.map((d) => {
-      //let dObj = toDate(d[xFieldName]);
-      // let tzOffset = dObj.getTimezoneOffset() * 60000;
-      // dObj.setTime(dObj.getTime() + tzOffset);
       d[xFieldName] = getDateObjectInLocalDateTime(d[xFieldName]);
       return d;
     });
