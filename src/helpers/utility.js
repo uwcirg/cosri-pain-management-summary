@@ -28,7 +28,7 @@ export function getDiffDays(dateString1, dateString2) {
 export function getDateObjectInLocalDateTime(input) {
   if (!input) return null;
   if (shortDateRE.test(input)) {
-    // If input is just a date (YYYY-MM-DD), appending "T00:00:00" to allow correct conversion to local date/time
+    // If input is in short ISO date (YYYY-MM-DD), appending "T00:00:00" to allow correct conversion to local date/time
     return new Date(input + "T00:00:00");
   }
   if (dateREZ.test(input)) {
@@ -111,9 +111,9 @@ export function sumArray(array) {
 export function daysFromToday(dateInput, todayInput) {
   let today = new Date();
   if (todayInput)
-    today = todayInput instanceof Date ? todayInput : new Date(todayInput);
+    today = todayInput instanceof Date ? todayInput : getDateObjectInLocalDateTime(todayInput);
   let originalDate =
-    dateInput instanceof Date ? dateInput : new Date(dateInput);
+    dateInput instanceof Date ? dateInput : getDateObjectInLocalDateTime(dateInput);
   let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
   let oneDay = 1000 * 60 * 60 * 24;
   let diff = (today.setHours(0, 0, 0, 0) - dObj.setHours(0, 0, 0, 0)) / oneDay;
@@ -167,7 +167,7 @@ export function getReportInstrumentIdByKey(key) {
 
 export function getDisplayDateFromISOString(isocDateString, format) {
   if (!isocDateString) return "--";
-  const objDate = new Date(isocDateString);
+  const objDate = getDateObjectInLocalDateTime(isocDateString);
   if (isNaN(objDate)) return "--";
   const displayDate = objDate
     ? objDate.toLocaleString(
