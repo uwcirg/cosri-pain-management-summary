@@ -2,7 +2,6 @@ import {
   datishFormat,
   dateFormat,
   dateNumberFormat,
-  extractDateFromGMTDateString,
 } from "../../helpers/formatit";
 import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
@@ -211,7 +210,7 @@ export function getProcessedSummaryData(summary, summaryMap) {
                 flagCount: flaggedCount,
                 flagDateText:
                   entry && entry[flagDateField]
-                    ? extractDateFromGMTDateString(entry[flagDateField])
+                    ? dateFormat("", entry[flagDateField])
                     : "",
                 priority:
                   flagClass === "info"
@@ -335,10 +334,12 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     nextObj = null;
   graph_data.forEach(function (currentMedicationItem, index) {
     let dataPoint = {};
-    let startDate = extractDateFromGMTDateString(
+    let startDate = dateFormat(
+      "",
       currentMedicationItem[startDateFieldName]
     );
-    let endDate = extractDateFromGMTDateString(
+    let endDate = dateFormat(
+      "",
       currentMedicationItem[endDateFieldName]
     );
     let oStartDate = new Date(startDate);
