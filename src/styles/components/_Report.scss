@@ -66,7 +66,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
     color: darken($color-warning-dark, 5%);
   }
   .summary__display {
-    padding: 8px;
     .sections {
       height: 100%;
       background-color: #fff;
@@ -228,7 +227,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       padding-right: 4px;
       border-bottom: 2px solid $color-blue;
       padding: 4px 12px 2px 0;
-      font-size: 0.7em;
+      font-size: 0.75em;
       @media (min-width: 699px) {
         font-size: 0.9rem;
       }
@@ -236,6 +235,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
     td {
       padding-top: 8px;
       vertical-align: top;
+      font-size: 0.75rem;
+      @media (min-width: 699px) {
+        font-size: 0.9rem;
+      }
     }
   }
   .table {
@@ -575,6 +578,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
   }
   object {
     max-width: 100%;
+    width: 100%;
     svg, img {
       width: 100%;
       max-width: 100%;
