@@ -82,7 +82,7 @@
           display: flex;
           align-items: flex-start;
           text-decoration: none;
-          padding: 12px;
+          padding: 12px 16px;
           font-weight: 600;
           font-size: 0.8em;
           line-height: 1.45;
@@ -169,8 +169,8 @@
 
   &__nav-wrapper {
     min-height: calc(100vh - 100px);
-    width: 48px;
-    min-width: 48px;
+    min-width: 64px;
+    width: 64px;
     background-color: $color-gray-dark;
     transition: all 375ms cubic-bezier(0, 0.52, 0, 1);
     position: relative;
@@ -291,6 +291,13 @@
     flex: 1;
     background-color: $color-gray-lightest;
     z-index: 10;
+    max-width: 100%;
+    @media (min-width: 768px) {
+      & {
+        max-width: calc(100% - 64px);
+        margin: auto;
+      }
+    }
 
     &-title {
       background-color: $color-blue;
@@ -375,10 +382,15 @@
       .MME-svg-container {
         position: relative;
         height: 0;
-        width: 560px;
+        width: 100%;
         padding: 0;
-        padding-bottom: 50%;
+        padding-bottom: 80%;
         margin-bottom: 8px;
+      }
+      @media (min-width: 699px) {
+        .MME-svg-container {
+          min-width: 560px;
+        }
       }
       @media (min-width: 992px) {
         .MME-svg-container {
@@ -489,19 +501,15 @@
         justify-content: flex-start;
         align-items: center;
         flex-wrap: wrap;
-        // max-width: 1200px;
-        // margin: auto;
+        overflow-x: auto;
+        gap: 16px;
         .sub-panels {
-          // flex-basis: 100%;
           flex: 1 1;
         }
       }
       @media (min-width: 992px) {
         .panels {
           flex-wrap: nowrap;
-          .sub-section__panel:first-of-type {
-            flex: 1.05 1;
-          }
           .sub-panels {
             flex: 0.95 1;
           }
@@ -510,7 +518,6 @@
       .panel.alerts,
       .panel.rxsummary,
       .panel.surveysummary {
-        margin-left: 16px;
         align-self: stretch;
         display: flex;
         width: 100%;
@@ -631,6 +638,8 @@
 
       .graph {
         .stats-container {
+          display: grid;
+          grid-template-columns: 50% 50%;
           margin-left: 16px;
           margin-right: 16px;
           margin-bottom: 16px;
@@ -644,8 +653,6 @@
           }
           .stats-item {
             margin-bottom: 4px;
-            width: 50%;
-            float: left;
           }
           .title {
             margin-right: 8px;
@@ -1178,17 +1185,17 @@
   .summary__nav-wrapper .is-position-fixed ~ .close {
     top: calc(#{$min-header-height} + 56px);
   }
-  // .collapsed {
-  //   .summary__nav-wrapper .is-position-fixed ~ .close {
-  //     top: calc(#{$min-header-height} + 16px);
-  //   }
-  // }
   .summary__nav.is-position-fixed {
     top: 148px;
   }
 }
 .active {
   .summary__nav-wrapper {
-    display: block;
+    display: none;
+    @media (min-width: 768px) {
+      & {
+        display: block;
+      }
+    }
   }
 }

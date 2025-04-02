@@ -5,9 +5,8 @@ $tab-inactive-color: #717376;
 $tab-height: 48px;
 $tab-polygon: polygon(4.5% 5%, 94.5% 5%, 100% 100%, 0% 100%);
 .warpper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: block;
+  max-width: 100%;
   padding-top: $min-header-height;
   height: 100%;
 }

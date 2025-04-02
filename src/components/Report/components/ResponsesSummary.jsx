@@ -360,7 +360,7 @@ export default class ResponsesSummary extends Component {
             className={`link-container ${this.state.open ? "active" : ""}`}
           >
             <div className="flex" style={{ gap: "24px" }}>
-              <div className="flex">
+              <div className="flex flex-wrap">
                 {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
                 <div className="exclude-from-copy">
                   {this.renderCopyButton()}
@@ -490,7 +490,9 @@ export default class ResponsesSummary extends Component {
           });
         }}
       >
-        {this.state.open ? "Done Viewing" : "View All Responses"}
+        <span className="text">
+          {this.state.open ? "Done Viewing" : "View All Responses"}
+        </span>
         <FontAwesomeIcon
           icon="chevron-right"
           title="expand/collapse"

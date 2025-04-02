@@ -270,7 +270,6 @@ export default class ScoringSummary extends Component {
             paddingBottom: "48px",   
           }
         }}
-       
       ></CopyButton>
     );
   }
@@ -317,7 +316,6 @@ export default class ScoringSummary extends Component {
         <table
           className="table score-summary-table"
           ref={this.tableRef}
-          //style={this.tableStyle}
         >
           {this.renderCaption(!noSummaryData && !readOnly)}
           {!noSummaryData && this.renderTableHeaders()}

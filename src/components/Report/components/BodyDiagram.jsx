@@ -584,12 +584,9 @@ export default class BodyDiagram extends Component {
   }
   render() {
     if (!this.hasSummaryData()) return null;
-    const parentContainerStyle = {
-      width: "calc(100% - 24px)",
-    };
     const mainContainerStyle = {
       backgroundColor: "#FFF",
-      width: "100%",
+      width: "calc(100% - 16px)",
       position: "relative",
       padding: "4px 4px 12px",
       border: "1px solid transparent",
@@ -600,7 +597,7 @@ export default class BodyDiagram extends Component {
       alignItems: "flex-start",
     };
     return (
-      <div style={parentContainerStyle}>
+      <div>
         <div ref={this.containerRef} style={mainContainerStyle}>
           <div
             className="flex"
