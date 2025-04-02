@@ -225,7 +225,12 @@
         font-weight: 900;
         border-bottom: 1px solid $color-blue-darker !important;
         &:first-of-type {
-          text-wrap: nowrap;
+          text-wrap: wrap;
+          @media (min-width: 768px) {
+            & {
+              text-wrap: nowrap
+            }
+          }
         }
         &:not(:last-of-type) {
           border-right: 0 #fff !important;

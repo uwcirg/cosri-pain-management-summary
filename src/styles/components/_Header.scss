@@ -8,6 +8,7 @@
   align-items: center;
   height: $min-header-height;
   overflow-y: hidden;
+  gap: 16px;
 
   &__return-link .return-icon {
     font-size: 1.5em;
@@ -28,14 +29,23 @@
     justify-content: center;
     flex-direction: column;
     height: 100%;
-    min-width: $summary-nav-width;
     background-color: #FFF;
     color: $color-white;
+    @media (min-width: 699px) {
+      & {
+        min-width: $summary-nav-width;
+      }
+    }
 
     &-img {
       &.primary {
-        width: 180px;
+        width: 100px;
         max-width: 100%;
+      }
+      @media (min-width: 699px) {
+        &.primary {
+          width: 180px;
+        }
       }
       &.secondary {
         width: 28px;
@@ -72,17 +82,22 @@
     }
   }
   &__search {
-    margin-left: 24px;
-    margin-right: 16px;
     margin-top: 16px;
     align-self: flex-start;
-    button {
-      min-width: 160px;
-    }
   }
   &__logos {
     display: flex;
     align-items: center;
+  }
+
+  &__site-logo {
+    display: none;
+  }
+
+  @media (min-width: 842px) {
+    &__site-logo {
+      display: block;
+    }  
   }
 
   &__summary {
@@ -94,17 +109,16 @@
     margin: 0;
     margin-right: 16px;
     height: 100%;
-
+    gap: 8px;
     &-patient {
       display: flex;
       align-items: center;
-      margin-left: 8px;
+      gap: 12px;
 
       .patient-icon {
         font-size: 1.6em;
         color: $color-blue;
         margin-top: 2px;
-        margin-right: 8px;
         position: relative;
       }
 
@@ -137,7 +151,6 @@
         }
       }
       .patient-info {
-        padding-right: 8px;
         min-width: 240px;
       }
     }
