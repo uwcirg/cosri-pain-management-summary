@@ -359,7 +359,7 @@ export default class ResponsesSummary extends Component {
             className={`link-container ${this.state.open ? "active" : ""}`}
           >
             <div className="flex" style={{ gap: "24px" }}>
-              <div className="flex">
+              <div className="flex flex-wrap">
                 {lastResponsesDate && <span>Last on {lastResponsesDate}</span>}
                 <div className="exclude-from-copy">
                   {this.renderCopyButton()}

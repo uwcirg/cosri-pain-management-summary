@@ -228,7 +228,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
       padding-right: 4px;
       border-bottom: 2px solid $color-blue;
       padding: 4px 12px 2px 0;
-      font-size: 0.95em;
+      font-size: 0.7em;
+      @media (min-width: 699px) {
+        font-size: 0.9rem;
+      }
     }
     td {
       padding-top: 8px;
@@ -391,9 +394,6 @@ $selector-box-shadow: 0 2px 2px #383e40;
           border-right: 1px solid $color-blue;
         }
       }
-      // &:not(:first-of-type) {
-      //   white-space: nowrap;
-      // }
     }
     tbody tr {
       background-color: #fff;
@@ -554,7 +554,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
           }
           td {
             padding: 6px 4px 0;
-            font-size: 0.95em;
+            font-size: 0.7rem;
+            @media (min-width: 699px) {
+              font-size: 0.9rem;
+            }
             //white-space: nowrap;
             vertical-align: top;
             line-height: 1.45;
@@ -568,6 +571,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
           vertical-align: middle;
         }
       }
+    }
+  }
+  object {
+    max-width: 100%;
+    svg, img {
+      width: 100%;
+      max-width: 100%;
     }
   }
   .graph {
@@ -820,7 +830,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     .panel-container {
       .panel.graph {
         .survey-graph {
-          width: calc(100% - 4rem);
+          width: calc(100% - 24px);
           @media (min-width: 768px) {
             width: calc(100% - 8rem);
           }
