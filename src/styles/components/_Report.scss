@@ -6,6 +6,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
     height: 100%;
     background-color: $color-gray-lightest;
     border-top: 4px solid $color-blue;
+    max-width: 100%;
   }
   .flags-container {
     .flag-item {
@@ -105,6 +106,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           display: flex;
           align-items: center;
           margin-block-start: 0;
+          line-height: 1.4;
         }
         &:not(.sub-section-notitle):first-of-type {
           margin-top: 0;
@@ -115,11 +117,17 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-bottom: 8px;
           border-collapse: separate;
           background-color: #FFF;
+          table-layout: fixed;
+          white-space: normal;
+          word-break: break-word;
+          width: calc(100% - 48px);
+          @media (min-width: 768px) {
+            & {
+              table-layout: auto;
+            }
+          }
           th {
             padding: 4px 24px 2px 0;
-          }
-          th, td {
-            // text-wrap: balance;
           }
         }
         .no-entries {
@@ -142,8 +150,21 @@ $selector-box-shadow: 0 2px 2px #383e40;
             background-color: #FFF;
             text-align: center;
             font-weight: 600;
+            .text {
+              display: none;
+            }
+            @media (min-width: 768px) {
+              .text {
+                display: block;
+              }
+            }
             &.arrow {
-              min-width: 192px;
+              @media (min-width: 768px) {
+                & {
+                  min-width: 192px;
+                }
+              }
+              
               svg {
                 transform: rotate(90deg);
               }
@@ -174,7 +195,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
         @media (min-width: 992px) {
           .table {
-            width: 100%;
+            width: calc(100% - 48px);
           }
         }
         @media (min-width: 1200px) {
@@ -451,7 +472,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           margin-top: 4px;
         }
         .survey-graph {
-          width: calc(100% - 8rem);
+          width: calc(100% - 14rem);
           padding: 0 8px;
           border: 1px solid transparent;
           position: relative;
@@ -519,7 +540,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         }
 
         .table {
-          width: 100%;
+          width: calc(100% - 8px);
           padding-left: 4px;
           padding-right: 4px;
           border-collapse: separate;

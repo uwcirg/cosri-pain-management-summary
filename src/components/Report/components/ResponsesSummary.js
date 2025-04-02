@@ -489,7 +489,9 @@ export default class ResponsesSummary extends Component {
           });
         }}
       >
-        {this.state.open ? "Done Viewing" : "View All Responses"}
+        <span className="text">
+          {this.state.open ? "Done Viewing" : "View All Responses"}
+        </span>
         <FontAwesomeIcon
           icon="chevron-right"
           title="expand/collapse"
