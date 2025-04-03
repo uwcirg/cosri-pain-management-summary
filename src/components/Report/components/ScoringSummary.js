@@ -264,6 +264,12 @@ export default class ScoringSummary extends Component {
       <CopyButton
         buttonTitle="Click to copy scoring summary table"
         elementToCopy={this.tableRef.current}
+        options={{
+          // workaround for table getting cut off when copying due to overflow
+          style: {
+            paddingBottom: "48px",   
+          }
+        }}
       ></CopyButton>
     );
   }
@@ -310,7 +316,6 @@ export default class ScoringSummary extends Component {
         <table
           className="table score-summary-table"
           ref={this.tableRef}
-          //style={this.tableStyle}
         >
           {this.renderCaption(!noSummaryData && !readOnly)}
           {!noSummaryData && this.renderTableHeaders()}
