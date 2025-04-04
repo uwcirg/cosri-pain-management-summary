@@ -2,14 +2,23 @@ import React from 'react';
 import moment from 'moment';
 import VideoLink from '../components/Video';
 
-const dateRE = /^\d{4}-\d{2}-\d{2}(T|\b)/; // loosely matches '2012-04-05' or '2012-04-05T00:00:00.000+00:00'
-const quantityRE = /^(\d+(\.\d+)?)(\s+(\S+))?$/; // matches '40' or '40 a' (a is UCUM unit for years)
+export const shortDateRE = /^\d{4}-\d{2}-\d{2}$/; // matches '2012-04-05'
+export const dateRE = /^\d{4}-\d{2}-\d{2}(T|\b)/; // loosely matches '2012-04-05' or '2012-04-05T00:00:00.000+00:00'
+export const dateREZ = /^(?:(?:19|20)\d{2}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|02-(?:0[1-9]|1\d|2[0-8]))|(?:(?:19|20)(?:[02468][048]|[13579][26])-02-29))T([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$/; //match '2023-11-10T18:30:49Z' with required UTC designator, "Z"
+export const quantityRE = /^(\d+(\.\d+)?)(\s+(\S+))?$/; // matches '40' or '40 a' (a is UCUM unit for years)
 const booleanRE = /^(true|false)$/; // matches 'true' or 'false'
 
 export function dateFormat(result, input, format) {
-  format = format || 'YYYY-MMM-DD';
   if (input == null) return '';
-  return moment.parseZone(input).format(format);
+  const formatToUse = format ? format : 'YYYY-MMM-DD';
+  if (dateREZ.test(input)) return timeZonedDateFormat(input, format);
+  return moment.parseZone(input).format(formatToUse);
+}
+
+export function timeZonedDateFormat(input, format) {
+  const formatToUse = format ? format : 'YYYY-MMM-DD';
+  if (input == null) return '';
+  return moment.parseZone((new Date(input)).toISOString()).format(formatToUse);
 }
 
 /*
@@ -40,8 +49,12 @@ export function dateAgeFormat(result, input) {
   if (result == null || result.Patient == null || input == null) return '';
   const patientDOB = result.Patient.birthDate._json;
   const patientAgeAtDate = moment(input).diff(patientDOB, 'years');
+  if (dateREZ.test(input)) {
+    return `${timeZonedDateFormat(result, input)} (age ${patientAgeAtDate})`;
+  }
   return `${dateFormat(result, input)} (age ${patientAgeAtDate})`;
 }
+
 
 export function datishFormat(result, input) {
   return _datishAgeFormat(result, input, false);
