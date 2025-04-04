@@ -6,7 +6,7 @@
   padding-right: 16px;
 }
 .slider-container {
-  width: 100%;
+  width: calc(100% - 32px);
   margin: auto;
 }
 input[type="range"] {
