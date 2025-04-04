@@ -16,6 +16,7 @@ import {
 } from "../../config/graph_config";
 import {
   getDifferenceInYears,
+  getDateObjectInLocalDateTime,
   isEmptyArray,
   isNumber,
   renderImageFromSVG,
@@ -156,10 +157,7 @@ export default class ReportOverviewGraph extends Component {
     data = this.getFilteredDataByNumYears(data, years);
 
     data = data.map((d) => {
-      let dObj = toDate(d[xFieldName]);
-      let tzOffset = dObj.getTimezoneOffset() * 60000;
-      dObj.setTime(dObj.getTime() + tzOffset);
-      d[xFieldName] = dObj;
+      d[xFieldName] = getDateObjectInLocalDateTime(d[xFieldName]);
       return d;
     });
 
@@ -563,7 +561,7 @@ export default class ReportOverviewGraph extends Component {
                           ? `Remove ${item} from graph`
                           : this.isInDateRange(item)
                           ? `Add ${item} to graph`
-                          : "No data in selected date range"
+                          : "No scoring data in selected date range"
                       }
                     >
                       <input
@@ -878,7 +876,7 @@ export default class ReportOverviewGraph extends Component {
     const dateRangeText = dateRange
       ? `in the <strong>${dateRange}</strong>`
       : "";
-    return `No reportable data for <strong>${noDataQids.join(
+    return `No scoring data for <strong>${noDataQids.join(
       ", "
     )}</strong> ${dateRangeText.toLowerCase()}`;
   }
@@ -1248,8 +1246,8 @@ export default class ReportOverviewGraph extends Component {
       <React.Fragment>
         <div className="survey-graph" ref={this.graphContainerRef}>
           {renderTitle()}
-          <div className="flex">
-            <div style={{ position: "relative", width: "100%", gap: "24px" }}>
+          <div className="flex flex-wrap-sm flex-align-start">
+            <div style={{ position: "relative", width: "100%"}}>
               {noStateEntry && renderNoStateEntry()}
               <div
                 className="survey-svg-container"
@@ -1262,12 +1260,13 @@ export default class ReportOverviewGraph extends Component {
             </div>
             <div
               className="flex flex-gap-1"
-              style={{ marginTop: (graphHeight / 2) * -1 + "px" }}
+              //style={{ marginTop: (graphHeight / 2) * -1 + "px" }}
             >
               {this.renderUtilButtons()}
               {this.renderLegend()}
             </div>
-          </div>
+            </div>
+         
           {!noStateEntry && this.renderNotInGraphMessage()}
           {this.renderPrintOnlyImage()}
         </div>

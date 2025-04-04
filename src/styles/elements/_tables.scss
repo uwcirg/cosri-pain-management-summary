@@ -87,6 +87,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     gap: 16px;
     margin-top: 16px;
     border-top: 1px solid $color-blue-lighter;
@@ -172,8 +173,8 @@
       }
 
       button {
-        width: 100%;
-        width: 104px;
+        min-width: 6rem;
+        max-width: 100%;
         margin: 4px auto;
         height: 32px;
         font-weight: 600;
@@ -224,8 +225,11 @@
   &table, table {
     border-collapse: separate;
     border-spacing: 0;
+    white-space: normal;
+    &.layout-fixed {
+      table-layout: fixed;
+    }
     &.ReactTable {
-      table-layout:fixed;
       width:100%;
     }
   }

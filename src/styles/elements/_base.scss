@@ -128,8 +128,19 @@ a {
   display: flex;
   align-items: flex-start;
 }
+.flex-align-center {
+  display: flex;
+  align-items: center;
+}
 .flex-wrap {
   flex-wrap: wrap;
+}
+.flex-wrap-sm {
+  @media (max-width: 698px) {
+    & {
+      flex-wrap: wrap;
+    }
+  }
 }
 .framed-border {
   border: 1px solid $color-gray-lighter !important;
@@ -196,6 +207,7 @@ a {
   display: none;
 }
 .print-image {
+  max-width: 100%;
   &.absolute {
     z-index: -1;
     position: absolute;

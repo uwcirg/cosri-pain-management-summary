@@ -217,7 +217,7 @@ export default class ScoringSummary extends Component {
     if (!data || !data.ResponsesSummary) return <td>--</td>;
     return (
       <td className="nowrap">
-        <div className="flex">
+        <div className="flex flex-wrap">
           <Score
             score={this.getCurrentDisplayScore(data)}
             scoreParams={this.getCurrentData(data.ResponsesSummary)}
@@ -314,7 +314,7 @@ export default class ScoringSummary extends Component {
     return (
       <React.Fragment>
         <table
-          className="table score-summary-table"
+          className="table score-summary-table layout-fixed"
           ref={this.tableRef}
         >
           {this.renderCaption(!noSummaryData && !readOnly)}

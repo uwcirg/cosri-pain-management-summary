@@ -40,12 +40,12 @@
 
     &-img {
       &.primary {
-        width: 100px;
+        width: 10rem;
         max-width: 100%;
       }
       @media (min-width: 699px) {
         &.primary {
-          width: 180px;
+          width: 12rem;
         }
       }
       &.secondary {
@@ -126,10 +126,15 @@
       .patient-name {
         font-weight: 600;
         line-height: 1em;
-        font-size: 1.8em;
+        font-size: 1.4rem;
         text-transform: capitalize;
         margin: 0;
         display: inline-block;
+        @media (min-width: 699px) {
+          & {
+            font-size: 1.6rem;
+          }
+        }
       }
 
       .patient-demographics {
@@ -152,7 +157,7 @@
         }
       }
       .patient-info {
-        min-width: 240px;
+        min-width: 12rem;
       }
     }
 

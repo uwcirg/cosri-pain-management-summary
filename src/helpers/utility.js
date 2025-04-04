@@ -2,6 +2,7 @@ import moment from "moment";
 import { toBlob, toJpeg } from "html-to-image";
 import { getEnv, ENV_VAR_PREFIX } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
+import { shortDateRE, dateREZ} from "./formatit";
 import { getTokenInfoFromStorage } from "./timeout";
 
 /*
@@ -18,6 +19,24 @@ export function getDiffDays(dateString1, dateString2) {
   var diffInTime = date2.getTime() - date1.getTime();
   // To calculate the no. of days between two dates
   return Math.ceil(diffInTime / (1000 * 3600 * 24));
+}
+
+/*
+ * return Date object for a given input date string
+ * @params input date string to be converted
+ */
+export function getDateObjectInLocalDateTime(input) {
+  if (!input) return null;
+  if (shortDateRE.test(input)) {
+    // If input is in short ISO date (YYYY-MM-DD), appending "T00:00:00" to allow correct conversion to local date/time
+    return new Date(input + "T00:00:00");
+  }
+  if (dateREZ.test(input)) {
+    // If input is already a full ISO 8601 timestamp, pass it as-is
+    // a date string with a Z designator will result in a local date/time when passed to Date object
+    return new Date(input);
+  }
+  return new Date(input);
 }
 
 /*
@@ -92,12 +111,10 @@ export function sumArray(array) {
 export function daysFromToday(dateInput, todayInput) {
   let today = new Date();
   if (todayInput)
-    today = todayInput instanceof Date ? todayInput : new Date(todayInput);
+    today = todayInput instanceof Date ? todayInput : getDateObjectInLocalDateTime(todayInput);
   let originalDate =
-    dateInput instanceof Date ? dateInput : new Date(dateInput);
+    dateInput instanceof Date ? dateInput : getDateObjectInLocalDateTime(dateInput);
   let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
-  let tzOffset = dObj.getTimezoneOffset() * 60000;
-  dObj.setTime(dObj.getTime() + tzOffset);
   let oneDay = 1000 * 60 * 60 * 24;
   let diff = (today.setHours(0, 0, 0, 0) - dObj.setHours(0, 0, 0, 0)) / oneDay;
   //console.log("date " , dateInput, " dif ", diff)
@@ -150,11 +167,8 @@ export function getReportInstrumentIdByKey(key) {
 
 export function getDisplayDateFromISOString(isocDateString, format) {
   if (!isocDateString) return "--";
-  const objDate = new Date(isocDateString);
+  const objDate = getDateObjectInLocalDateTime(isocDateString);
   if (isNaN(objDate)) return "--";
-  // need to account for timezone offset for a UTC date/time
-  let tzOffset = objDate.getTimezoneOffset() * 60000;
-  objDate.setTime(objDate.getTime() + tzOffset);
   const displayDate = objDate
     ? objDate.toLocaleString(
         "en-us",
