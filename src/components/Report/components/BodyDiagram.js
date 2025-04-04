@@ -361,13 +361,14 @@ export default class BodyDiagram extends Component {
       position: "relative",
       top: "4px",
       left: "4px",
+      textAlign: "left"
     };
     return (
       <div
         style={legendContainerStyle}
         className="print-hidden legend-wrapper part-of-bd"
       >
-        <div className="flex">
+        <div className="flex flex-gap-1">
           <div
             style={{
               ...iconStyle,
@@ -376,7 +377,7 @@ export default class BodyDiagram extends Component {
           ></div>
           <div>Worst Pain</div>
         </div>
-        <div className="flex">
+        <div className="flex flex-gap-1">
           <div
             style={{
               ...iconStyle,
@@ -386,7 +387,7 @@ export default class BodyDiagram extends Component {
           <div>Other Locations</div>
         </div>
         {this.state.dates.length > 1 && (
-          <div className="flex">
+          <div className="flex flex-gap-1 flex-align-center">
             <div
               style={{
                 ...iconStyle,
@@ -448,7 +449,7 @@ export default class BodyDiagram extends Component {
     const styles = {
       position: "absolute",
       top: "0",
-      transform: `translate(-50%, ${this.getToolbarHeight() + 36}px)`,
+      transform: `translate(-50%, ${this.getToolbarHeight() + 48}px)`,
     };
     cloneSvgElement.setAttribute("id", "temp_bd");
     cloneSvgElement.classList.add("part-of-bd");
@@ -580,14 +581,15 @@ export default class BodyDiagram extends Component {
     if (!this.hasSummaryData()) return null;
     const mainContainerStyle = {
       backgroundColor: "#FFF",
-      width: "calc(100% - 16px)",
+      width: "100%",
+      maxWidth: "100%",
       position: "relative",
       padding: "4px 4px 12px",
       border: "1px solid transparent",
     };
     const toolbarContainerStyle = {
       marginTop: 8,
-      marginBottom: 24,
+      marginBottom: 48,
       alignItems: "flex-start",
     };
     return (

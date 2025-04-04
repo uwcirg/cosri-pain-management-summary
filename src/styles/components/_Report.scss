@@ -120,7 +120,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           white-space: normal;
           word-break: break-word;
           width: calc(100% - 48px);
-          @media (min-width: 768px) {
+          @media (min-width: $md-media-query-width) {
             & {
               table-layout: auto;
             }
@@ -152,13 +152,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
             .text {
               display: none;
             }
-            @media (min-width: 768px) {
+            @media (min-width: $md-media-query-width) {
               .text {
                 display: block;
               }
             }
             &.arrow {
-              @media (min-width: 768px) {
+              @media (min-width: $md-media-query-width) {
                 & {
                   min-width: 192px;
                 }
@@ -205,6 +205,17 @@ $selector-box-shadow: 0 2px 2px #383e40;
       }
     }
   }
+  .ReactTable {
+    .rt-th,
+    .rt-td {
+      font-size: 0.8rem;
+      @media ($sm-media-query-width) {
+        & {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
   .table {
     .flex {
       gap: 4px;
@@ -227,16 +238,16 @@ $selector-box-shadow: 0 2px 2px #383e40;
       padding-right: 4px;
       border-bottom: 2px solid $color-blue;
       padding: 4px 12px 2px 0;
-      font-size: 0.75em;
-      @media (min-width: 699px) {
+      font-size: 0.8em;
+      @media (min-width: $sm-media-query-width) {
         font-size: 0.9rem;
       }
     }
     td {
       padding-top: 8px;
       vertical-align: top;
-      font-size: 0.75rem;
-      @media (min-width: 699px) {
+      font-size: 0.8rem;
+      @media (min-width: $sm-media-query-width) {
         font-size: 0.9rem;
       }
     }
@@ -480,7 +491,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
           border: 1px solid transparent;
           position: relative;
           background-color: #FFF;
-          @media (min-width: 768px) {
+          @media (min-width: $md-media-query-width) {
             width: calc(100% - 12rem);
           }
           @media (min-width: 1120px) {
@@ -558,14 +569,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
           td {
             padding: 6px 4px 0;
             font-size: 0.7rem;
-            @media (min-width: 699px) {
-              font-size: 0.9rem;
-            }
-            //white-space: nowrap;
             vertical-align: top;
             line-height: 1.45;
             &.empty {
               min-width: 40px;
+            }
+            @media (min-width: $sm-media-query-width) {
+              font-size: 0.9rem;
             }
           }
         }
@@ -593,6 +603,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       justify-content: center;
       align-items: center;
       background-color: #fff;
+      margin-top: 8px;
     }
     .legend {
       margin: auto;
@@ -790,10 +801,10 @@ $selector-box-shadow: 0 2px 2px #383e40;
 }
 .modal.report-info-modal {
   width: calc(100% - 48px);
-  @media (min-width: 699px) {
+  @media (min-width: $sm-media-query-width) {
     width: 60%;
   }
-  @media (min-width: 768px) {
+  @media (min-width: $md-media-query-width) {
     width: 50%;
   }
 }
@@ -835,10 +846,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
       .panel.graph {
         .survey-graph {
           width: calc(100% - 24px);
-          @media (min-width: 768px) {
-            width: calc(100% - 8rem);
-          }
-          @media (min-width: 768px) {
+          @media (min-width: $md-media-query-width) {
             width: calc(100% - 12rem);
           }
           @media (min-width: 900px) {

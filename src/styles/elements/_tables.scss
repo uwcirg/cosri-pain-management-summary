@@ -189,6 +189,10 @@
 .table {
   border-collapse: separate;
   border-spacing: 0;
+  &.layout-fixed {
+    table-layout: fixed;
+    white-space: normal;
+  }
   th {
     border: 1px solid $table-cell-border-color;
     background-color: #fff;
