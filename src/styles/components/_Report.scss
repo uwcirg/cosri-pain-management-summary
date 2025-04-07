@@ -172,6 +172,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
             &.arrow {
               @media (min-width: $md-media-query-width) {
                 & {
+                  display: flex;
                   min-width: 192px;
                 }
               }
@@ -418,7 +419,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
         min-width: 120px;
         @media (min-width: $sm-media-query-width) {
           & {
-            min-width: 320px;
+            min-width: 300px;
           }
         }
       }
