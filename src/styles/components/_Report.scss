@@ -173,6 +173,7 @@ $selector-box-shadow: 0 2px 2px #383e40;
               @media (min-width: $md-media-query-width) {
                 & {
                   display: flex;
+                  align-items: center;
                   min-width: 192px;
                 }
               }
