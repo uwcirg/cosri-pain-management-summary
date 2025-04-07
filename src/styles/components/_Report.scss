@@ -126,11 +126,14 @@ $selector-box-shadow: 0 2px 2px #383e40;
           border-spacing: 0;
           table-layout: fixed;
           white-space: normal;
-          word-break: break-word;
           width: calc(100% - 48px);
+          &.response-table {
+            table-layout: auto;
+          }
           @media (min-width: $md-media-query-width) {
             & {
               table-layout: auto;
+              word-break: normal;
             }
           }
           th {
@@ -157,12 +160,13 @@ $selector-box-shadow: 0 2px 2px #383e40;
             background-color: #FFF;
             text-align: center;
             font-weight: 600;
+            gap: 8px;
             .text {
               display: none;
             }
             @media (min-width: $md-media-query-width) {
               .text {
-                display: block;
+                display: inline-block;
               }
             }
             &.arrow {
@@ -246,17 +250,21 @@ $selector-box-shadow: 0 2px 2px #383e40;
       padding-right: 4px;
     //  border-bottom: 2px solid $color-blue;
       padding: 4px 12px 2px 0;
-      font-size: 0.8em;
+      font-size: 0.85em;
       @media (min-width: $sm-media-query-width) {
-        font-size: 0.9rem;
+        & {
+          font-size: 0.95rem;
+        }
       }
     }
     td {
       padding-top: 8px;
       vertical-align: top;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       @media (min-width: $sm-media-query-width) {
-        font-size: 0.9rem;
+        & {
+          font-size: 0.95rem;
+        }
       }
     }
   }
@@ -332,7 +340,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
     scrollbar-color: $color-blue $color-gray-lighter;
     scrollbar-width: thin;
     @media (min-width: 992px) {
-      max-width: calc(100% - 180px);
+      & {
+        max-width: calc(100% - 180px);
+      }
       &.two-columns {
         width: fit-content;
         max-width: 70%;
@@ -340,24 +350,32 @@ $selector-box-shadow: 0 2px 2px #383e40;
       }
     }
     @media (min-width: 1100px) {
-      max-width: 928px;
+      & {
+        max-width: 928px;
+      }
     }
     @media (min-width: 1200px) {
-      max-width: 1048px;
+      & {
+        max-width: 1048px;
+      }
       &.two-columns {
         width: fit-content;
         block-size: fit-content;
       }
     }
     @media (min-width: 1400px) {
-      max-width: 1048px;
+      & {
+        max-width: 1048px;
+      }
       &.two-columns {
         width: fit-content;
         block-size: fit-content;
       }
     }
     @media (min-width: 1600px) {
-      max-width: 1200px;
+      & {
+        max-width: 1200px;
+      }
       &.two-columns {
         width: fit-content;
         block-size: fit-content;
@@ -397,7 +415,12 @@ $selector-box-shadow: 0 2px 2px #383e40;
       }
       &:first-of-type {
         width: 28%;
-        min-width: 320px;
+        min-width: 120px;
+        @media (min-width: $sm-media-query-width) {
+          & {
+            min-width: 320px;
+          }
+        }
       }
     }
     td {
@@ -586,7 +609,9 @@ $selector-box-shadow: 0 2px 2px #383e40;
               min-width: 40px;
             }
             @media (min-width: $sm-media-query-width) {
-              font-size: 0.9rem;
+              & {
+                font-size: 0.9rem;
+              }
             }
           }
         }
@@ -813,10 +838,14 @@ $selector-box-shadow: 0 2px 2px #383e40;
 .modal.report-info-modal {
   width: calc(100% - 48px);
   @media (min-width: $sm-media-query-width) {
-    width: 60%;
+    & {
+      width: 60%;
+    }
   }
   @media (min-width: $md-media-query-width) {
-    width: 50%;
+    & {
+      width: 50%;
+    }
   }
 }
 .slide-table-container {

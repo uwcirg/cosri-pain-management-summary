@@ -496,7 +496,6 @@ export default class ResponsesSummary extends Component {
         <FontAwesomeIcon
           icon="chevron-right"
           title="expand/collapse"
-          style={{ marginLeft: "8px" }}
         />
       </button>
     );
