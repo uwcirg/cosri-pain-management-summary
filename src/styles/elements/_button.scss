@@ -38,7 +38,8 @@
 .rounded {
   border-radius: 100vmax;
 }
-button.disabled {
+button.disabled,
+button[disabled] {
   opacity: 0.5;
 }
 .button-secondary {

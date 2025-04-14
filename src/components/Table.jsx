@@ -54,14 +54,14 @@ export default function Table({
         </button>
         <button
           className="button"
-          onClick={() => previousPage()}
+          onClick={previousPage}
           disabled={!canPreviousPage}
         >
           {"<"}
         </button>
         <button
           className="button"
-          onClick={() => nextPage()}
+          onClick={(e) => nextPage(e)}
           disabled={!canNextPage}
         >
           {">"}
@@ -81,7 +81,7 @@ export default function Table({
             setPageSize(Number(e.target.value));
           }}
         >
-          {[10, 20, 50, 100].map((pageSize) => (
+          {[5, 10, 20, 50, 100].map((pageSize) => (
             <option key={pageSize} value={pageSize}>
               {pageSize}
             </option>
@@ -91,17 +91,8 @@ export default function Table({
       </div>
       <div>
         <span>
-          page{" "}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            min={1}
-            max={pageOptions.length}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              gotoPage(page);
-            }}
-          />{" "}
+          page <strong>{pageIndex + 1}</strong>
+          {" "}
           of {pageOptions.length}
         </span>
       </div>
