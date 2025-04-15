@@ -23,7 +23,7 @@ import {
 } from "../helpers/utility";
 
 const noCacheHeader = {
-  "Cache-Control": "no-cache, no-store, max-age=0",
+  "Cache-Control": "no-cache",
 };
 const FHIR_RELEASE_VERSION_2 = 2;
 const FHIR_RELEASE_VERSION_4 = 4;
