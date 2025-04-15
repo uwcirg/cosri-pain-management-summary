@@ -34,7 +34,7 @@ export default class SideNav extends Component {
   }
 
   handleResize() {
-    const isSmallerScreen = window.innerWidth && window.innerWidth <= 1360;
+    const isSmallerScreen = window.innerWidth && window.innerWidth <= 1300;
     const { parentContainerElement } = this.props;
     this.setState(
       {

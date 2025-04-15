@@ -4,6 +4,9 @@
 }
 
 .ReactTable {
+  &.smaller {
+    font-size: 0.95rem;
+  }
   th,
   td {
     text-align: left;
@@ -214,7 +217,7 @@
   overflow: auto;
   .ReactTable {
     th, td {
-      max-width: 140px;
+      max-width: 100%;
     }
     &.single-column {
       td, th {

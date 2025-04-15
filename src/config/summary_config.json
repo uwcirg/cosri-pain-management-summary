@@ -248,6 +248,7 @@
           "priority": 1,
           "dateField": "DispensedDate"
         },
+        "tableClass": "smaller",
         "tables": [
           {
             "headers": {
@@ -265,33 +266,33 @@
               "Quantity": {
                 "key": "Quantity",
                 "sortable": true,
-                "size": "120px"
+                "width": "120px"
               },
               "Duration": {
                 "key": "Duration",
                 "sortable": true,
-                "size": "120px"
+                "width": "120px"
               },
               "MME": {
                 "key": "MME",
                 "formatter": "numberFormat",
                 "default": "Not returned",
                 "sortable": true,
-                "size": "120px"
+                "width": "120px"
               },
               "Written Date": {
                 "key": "Start",
                 "formatter": "datishFormat",
                 "sorter": "dateCompare",
                 "sortable": true,
-                "size": "140px"
+                "width": "140px"
               },
               "Dispensed": {
                 "key": "DispensedDate",
                 "formatter": "datishFormat",
                 "sorter": "dateCompare",
                 "sortable": true,
-                "size": "120px"
+                "width": "120px"
               },
               "Prescriber": "Prescriber",
               "Pharmacy": "Pharmacy"
@@ -1278,7 +1279,7 @@
               "Drug Description": {
                 "key": "Name",
                 "sortable": true,
-                "minWidth": "180px"
+                "minWidth": "180"
               },
               "Quantity": {
                 "key": "Name",

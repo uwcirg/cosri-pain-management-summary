@@ -432,10 +432,10 @@ export default class Summary extends Component {
       >
         <Table
           tableKey={tableID}
-          className={`${
+          tableClass={`${
             columns.length <= 2
-              ? "single-column sub-section__table"
-              : "sub-section__table"
+              ? `single-column sub-section__table ${subSection.tableClass??""}`
+              : `sub-section__table ${subSection.tableClass??""}`
           }`}
           columns={columns}
           data={filteredEntries}

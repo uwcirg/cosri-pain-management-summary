@@ -1,5 +1,5 @@
 import React from "react";
-import { useFlexLayout, useTable, useSortBy, usePagination } from "react-table";
+import { useTable, useSortBy, usePagination } from "react-table";
 import AscendingSortImg from "../icons/icon-sort-up.png";
 import DescenidngSortImg from "../icons/icon-sort-down.png";
 
@@ -10,6 +10,7 @@ export default function Table({
   tableParams,
   tableClass,
 }) {
+  const tableAnchorRef = React.createRef();
   const params = tableParams ? tableParams : {};
   // Use the state and functions returned from useTable to build your UI
   const {
@@ -38,37 +39,55 @@ export default function Table({
       },
     },
     useSortBy,
-    usePagination,
-    useFlexLayout
+    usePagination
+    // useFlexLayout
   );
+
+  const toTop = () =>
+    tableAnchorRef.current?.scrollIntoView({
+      behavior: "instant",
+      block: "start",
+    });
 
   const renderPagination = () => (
     <div className="pagination">
       <div className="buttons-container">
         <button
           className="button"
-          onClick={() => gotoPage(0)}
+          onClick={() => {
+            gotoPage(0);
+            toTop();
+          }}
           disabled={!canPreviousPage}
         >
           {"<<"}
         </button>
         <button
           className="button"
-          onClick={previousPage}
+          onClick={(e) => {
+            previousPage(e);
+            toTop();
+          }}
           disabled={!canPreviousPage}
         >
           {"<"}
         </button>
         <button
           className="button"
-          onClick={(e) => nextPage(e)}
+          onClick={(e) => {
+            nextPage(e);
+            toTop();
+          }}
           disabled={!canNextPage}
         >
           {">"}
         </button>
         <button
           className="button"
-          onClick={() => gotoPage(pageCount - 1)}
+          onClick={() => {
+            gotoPage(pageCount - 1);
+            toTop();
+          }}
           disabled={!canNextPage}
         >
           {">>"}
@@ -91,9 +110,7 @@ export default function Table({
       </div>
       <div>
         <span>
-          page <strong>{pageIndex + 1}</strong>
-          {" "}
-          of {pageOptions.length}
+          page <strong>{pageIndex + 1}</strong> of {pageOptions.length}
         </span>
       </div>
     </div>
@@ -120,6 +137,12 @@ export default function Table({
   // Render the UI for your table
   return (
     <div>
+      <div
+        style={{ position: "relative", top: -160, height: 1, fontSize: "0.1rem" }}
+        ref={tableAnchorRef}
+      >
+        &nbsp;
+      </div>
       <table
         className={`ReactTable ${
           tableClass ? tableClass : columns.length <= 2 ? "single-column" : ""
@@ -138,16 +161,15 @@ export default function Table({
                 const headerProps = column.getHeaderProps(
                   column.getSortByToggleProps()
                 );
-                const cellMinSize = column.minWidth ? column.minWidth : "auto";
-                const cellSize = column.size ? `${column.size}` : "160px";
+                const cellMinWidth = column.minWidth ? column.minWidth : "auto";
+                const cellWidth = column.width ? `${column.width}` : "160px";
                 return (
                   <th
                     {...headerProps}
                     style={{
                       ...headerProps.style,
-                      flex: `${cellSize} 0 auto`,
-                      width: cellSize,
-                      minWidth: cellMinSize,
+                      width: cellWidth,
+                      minWidth: cellMinWidth,
                     }}
                     key={`th_${tableKey}_${colIndex}`}
                   >
@@ -198,11 +220,11 @@ export default function Table({
               <tr {...row.getRowProps()} key={`tr_${tableKey}_${i}`}>
                 {row.cells.map((cell, cellIndex) => {
                   const cellProps = cell.getCellProps();
-                  const cellMinSize = cell.column.minWidth
+                  const cellMinWidth = cell.column.minWidth
                     ? cell.column.minWidth
                     : "auto";
-                  const cellSize = cell.column.size
-                    ? `${cell.column.size}`
+                  const cellWidth = cell.column.width
+                    ? `${cell.column.width}`
                     : "160px";
                   return (
                     <td
@@ -213,9 +235,8 @@ export default function Table({
                       key={`td_${tableKey}_${cellIndex}`}
                       style={{
                         ...cellProps.style,
-                        flex: `${cellSize} 0 auto`,
-                        width: cellSize,
-                        minWidth: cellMinSize,
+                        width: cellWidth,
+                        minWidth: cellMinWidth,
                       }}
                     >
                       {cell.render("Cell")}
@@ -226,21 +247,14 @@ export default function Table({
             );
           })}
           {emptyRows > 0 && (
-            <tr
-              className="no-hover"
-              style={{ display: "flex", flex: "1 0 auto" }}
-            >
-              {/* <td
-                colSpan={columns.length}
-                style={{ height: 33 * emptyRows }}
-              ></td> */}
+            <tr className="no-hover">
               {page[0].cells.map((cell, cellIndex) => {
                 const cellProps = cell.getCellProps();
-                const cellMinSize = cell.column.minWidth
+                const cellMinWidth = cell.column.minWidth
                   ? cell.column.minWidth
                   : "auto";
-                const cellSize = cell.column.size
-                  ? `${cell.column.size}`
+                const cellWidth = cell.column.width
+                  ? `${cell.column.width}`
                   : "160px";
                 return (
                   <td
@@ -251,10 +265,9 @@ export default function Table({
                     key={`td_${tableKey}_filler_${cellIndex}`}
                     style={{
                       ...cellProps.style,
-                      flex: `${cellSize} 0 auto`,
-                      width: cellSize,
-                      minWidth: cellMinSize,
-                      height: 26 * emptyRows,
+                      width: cellWidth,
+                      minWidth: cellMinWidth,
+                      height: 24 * emptyRows,
                     }}
                   >
                     &nbsp;
