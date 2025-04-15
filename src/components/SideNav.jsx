@@ -57,8 +57,8 @@ export default class SideNav extends Component {
 
   render() {
     const navToggleToolTip = this.state.showNav
-      ? "collapse side navigation menu"
-      : "expand side navigation menu";
+      ? "collapse"
+      : "expand";
     const navId = this.props.id ? this.props.id : "sideNavButton";
     return (
       <>
@@ -72,7 +72,7 @@ export default class SideNav extends Component {
             ref={(ref) => (this.navRef = ref)}
             data-for={navId}
             data-tip={navToggleToolTip}
-            data-place="right"
+            data-place="auto"
             className={`${this.props.navClassName} summary__nav-button close`}
             title="toggle side navigation menu"
             onClick={(e) => {

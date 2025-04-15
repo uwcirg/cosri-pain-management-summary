@@ -65,7 +65,7 @@ export default class Header extends Component {
           <div className="header__summary-patient">
             {(patientName || patientDOB) && (
               <div className="patient-info">
-                <div className="flex" style={{ alignItems: "flex-start" }}>
+                <div className="flex flex-gap-1" style={{ alignItems: "flex-start" }}>
                   {patientName && (
                     <FontAwesomeIcon
                       className="patient-icon"
@@ -117,7 +117,7 @@ export default class Header extends Component {
                 />
               </div>
             )}
-            <div className="entries">
+            <div className="entries left">
               <img
                 src={"/assets/images/doh_logo.png"}
                 alt="doh logo"

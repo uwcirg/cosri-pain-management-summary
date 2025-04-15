@@ -82,7 +82,7 @@
           display: flex;
           align-items: flex-start;
           text-decoration: none;
-          padding: 12px 16px;
+          padding: 12px;
           font-weight: 600;
           font-size: 0.8em;
           line-height: 1.45;
@@ -205,7 +205,7 @@
     .close {
       position: absolute;
       top: 8px;
-      right: 6px;
+      right: 20px;
       color: #fff;
       opacity: 0.8;
       z-index: 5;
@@ -262,7 +262,7 @@
       }
     }
     .is-position-fixed ~ .close {
-      top: calc(#{$min-header-height} + 16px);
+      top: calc(#{$min-header-height} + 8px);
       left: 0;
       position: fixed;
       z-index: 500;
@@ -1192,7 +1192,12 @@
     top: calc(#{$min-header-height} + 56px);
   }
   .summary__nav.is-position-fixed {
-    top: 148px;
+    top: 162px;
+  }
+  .report {
+    .summary__nav.is-position-fixed {
+      top: 140px;
+    }
   }
 }
 .active {
