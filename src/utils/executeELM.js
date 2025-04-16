@@ -27,6 +27,7 @@ const noCacheHeader = {
 };
 const FHIR_RELEASE_VERSION_2 = 2;
 const FHIR_RELEASE_VERSION_4 = 4;
+let CLIENT_SERVER_URL = "";
 
 async function executeELM(collector, oResourceTypes) {
   fetchEnvData();
@@ -41,6 +42,11 @@ async function executeELM(collector, oResourceTypes) {
       .ready()
       .then((clientArg) => {
         client = clientArg;
+        if (client && client.state) {
+          //e.g. https://backend.uwmedicine.cosri.app/fhir-router/4bc20310-8963-4440-b6aa-627ce6def3b9/
+          //e.g. https://launch.smarthealthit.org/v/r4/fhir
+          CLIENT_SERVER_URL = client.state.serverUrl;
+        }
         return client.getFhirRelease();
       })
       // then remember the release for later and get the release-specific library
@@ -179,7 +185,9 @@ async function executeELM(collector, oResourceTypes) {
             )
             .catch((e) => {
               console.log("Error processing instrument ELM: ", e);
-              reject("error processing instrument ELM. See console for details.");
+              reject(
+                "error processing instrument ELM. See console for details."
+              );
             });
         });
       });
@@ -220,6 +228,7 @@ async function executeELMForReport(bundle) {
     results = null;
     console.log(`Error executing CQL for report `, e);
   }
+  console.log("Report results", results);
   return results;
 }
 
@@ -371,15 +380,14 @@ function doSearch(client, release, type, collector) {
     }
     results
       .then(() => {
-        return resources;
+        resolve(resources);
       })
       .catch((error) => {
         collector.push({ error: error, url: uri, type: type, data: error });
         // don't return the error as we want partial results if available
         // (and we don't want to halt the Promis.all that wraps this)
-        return resources;
+        resolve(resources);
       });
-    resolve(results);
   });
 }
 
@@ -394,8 +402,19 @@ function processPage(uri, collector, resources) {
     ) {
       url = bundle.link.find((l) => l.relation === "self").url;
     }
+    let constructedURL = null;
+    try {
+      constructedURL = new URL(url);
+    } catch(e) {
+      console.log(`Error constructing URL from ${url}`, e);
+      constructedURL = null;
+    }
+    if (constructedURL && CLIENT_SERVER_URL) {
+      // e.g. https://launch.smarthealthit.org/v/r4/fhir?_getpages=fd88f4cd-b4c3-4993-8338-652cc47801ad&_getpagesoffset=50&_count=50&_pretty=true&_bundletype=searchset
+      url = CLIENT_SERVER_URL + constructedURL.search;
+    }
     //debugging
-    //console.log("collector url? ", url, ", bundle: ", bundle)
+    //console.log("collector url? ", url, ", bundle: ", bundle);
     collector.push({ url: url, data: bundle });
     // Add to the resources
     if (bundle.entry) {
@@ -419,13 +438,14 @@ function updateSearchParams(params, release, type) {
           params.set("_id", INSTRUMENT_LIST.join(","));
           break;
         case "QuestionnaireResponse":
-          params.set("_count", 300);
           params.set("_sort", "_lastUpdated");
           break;
         default:
         // nothing
       }
     }
+    //set default count
+    params.set("_count", 300);
   }
   // If this is for Epic, there are some specific modifications needed for the queries to work properly
   if (isEnvEpicQueries()) {
