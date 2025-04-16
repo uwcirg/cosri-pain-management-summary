@@ -228,7 +228,6 @@ async function executeELMForReport(bundle) {
     results = null;
     console.log(`Error executing CQL for report `, e);
   }
-  console.log("Report results", results);
   return results;
 }
 
