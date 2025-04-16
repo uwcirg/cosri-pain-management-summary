@@ -443,8 +443,6 @@ function updateSearchParams(params, release, type) {
         // nothing
       }
     }
-    //set default count
-    params.set("_count", 300);
   }
   // If this is for Epic, there are some specific modifications needed for the queries to work properly
   if (isEnvEpicQueries()) {
