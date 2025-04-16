@@ -425,8 +425,8 @@ function processPage(client, uri, collector, resources) {
           const requestURL = getRequestURL(client, reuseURL.search);
           if (requestURL) o.url = requestURL;
         }
-          if (o.relation === "next")
-            console.log("Next URL ", o.url)
+          // if (o.relation === "next")
+          //   console.log("Next URL ", o.url)
         return o;
       });
       url = bundle.link.find((l) => l.relation === "self").url;
