@@ -360,7 +360,7 @@ function getRequestURL(client, uri = "") {
     //e.g. https://launch.smarthealthit.org/v/r4/fhir
     serverURL = client.state.serverUrl;
   }
-  if (!serverURL) return uri;
+  if (!serverURL) return "";
   return serverURL + (!serverURL.endsWith("/") ? "/" : "") + uri;
 }
 
@@ -373,14 +373,13 @@ function doSearch(client, release, type, collector) {
   const nonPatientResourceTypes = ["questionnaire"];
   const isNotPatientResourceType =
     nonPatientResourceTypes.indexOf(type.toLowerCase()) !== -1;
-  const requestURL = getRequestURL(client, uri);
   const options = {
-    url: requestURL,
+    url: uri,
     headers: noCacheHeader,
   };
   const fhirOptions = {
     pageLimit: 0, // unlimited pages
-    onPage: processPage(uri, collector, resources),
+    onPage: processPage(client, uri, collector, resources),
   };
   return new Promise((resolve) => {
     let results;
@@ -402,7 +401,7 @@ function doSearch(client, release, type, collector) {
   });
 }
 
-function processPage(uri, collector, resources) {
+function processPage(client, uri, collector, resources) {
   return (bundle) => {
     // Add to the collector
     let url = uri;
@@ -411,10 +410,27 @@ function processPage(uri, collector, resources) {
       bundle.link &&
       bundle.link.some((l) => l.relation === "self" && l.url != null)
     ) {
+      bundle.link = bundle.link.map((o) => {
+        if (!o.url) return o;
+        let reuseURL = null;
+        try {
+          reuseURL = new URL(o.url);
+        } catch (e) {
+          console.log(`Unable to create URL object for ${o.url}`, e);
+          reuseURL = null;
+        }
+        if (reuseURL) {
+          const requestURL = getRequestURL(client, reuseURL.search);
+          if (requestURL) o.url = requestURL;
+        }
+        //   if (o.relation === "next")
+        //     console.log("Next URL ", o.url)
+        return o;
+      });
       url = bundle.link.find((l) => l.relation === "self").url;
     }
     //debugging
-    //console.log("collector url? ", url, ", bundle: ", bundle);
+    // console.log("collector url? ", url, ", bundle: ", bundle);
     collector.push({ url: url, data: bundle });
     // Add to the resources
     if (bundle.entry) {
