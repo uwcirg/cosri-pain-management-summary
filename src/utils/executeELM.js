@@ -211,51 +211,53 @@ async function executeELM(collector, paramResourceTypes) {
                     Object.keys(reportResults.patientResults)[0]
                   ].Summary;
               evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] = reportResults;
-              const surveyLibResults = results.slice(1).filter(result => !!result.value);
-              console.log("lib results", surveyLibResults)
+              const surveyLibResults = results
+                .slice(1)
+                .filter((result) => !!result.value);
+              console.log("lib results", surveyLibResults);
               //resolve(evalResults);
-              executeELMForInstruments(
-                surveyLibResults,
-                patientBundle
-              ).then(results => {
-                Promise.allSettled(results).then((results) => {
-                  resourceTypes["Report"] = true;
-                  if (!results) {
-                    resolve(evalResults);
-                    return;
-                  }
-                  const evaluatedSurveyResults = results
-                    .filter((o) => o.value && o.value.patientResults)
-                    .map(
-                      (o) =>
-                        o.value.patientResults[
-                          Object.keys(o.value.patientResults)[0]
-                        ]
-                    );
-                  const PATIENT_SUMMARY_KEY = "Summary";
-                  const SURVEY_SUMMARY_KEY = "SurveySummary";
+              executeELMForInstruments(surveyLibResults, patientBundle)
+                .then((results) => {
+                  Promise.allSettled(results).then((results) => {
+                    resourceTypes["Report"] = true;
+                    if (!results) {
+                      resolve(evalResults);
+                      return;
+                    }
+                    const evaluatedSurveyResults = results
+                      .filter((o) => o.value && o.value.patientResults)
+                      .map(
+                        (o) =>
+                          o.value.patientResults[
+                            Object.keys(o.value.patientResults)[0]
+                          ]
+                      );
+                    const PATIENT_SUMMARY_KEY = "Summary";
+                    const SURVEY_SUMMARY_KEY = "SurveySummary";
 
-                  if (!evalResults[PATIENT_SUMMARY_KEY]) {
-                    evalResults[PATIENT_SUMMARY_KEY] = {};
-                  }
-                  evalResults[PATIENT_SUMMARY_KEY][SURVEY_SUMMARY_KEY] =
-                    evaluatedSurveyResults;
-                  //debug
-                  console.log(
-                    "final evaluated CQL results including surveys ",
-                    evaluatedSurveyResults
+                    if (!evalResults[PATIENT_SUMMARY_KEY]) {
+                      evalResults[PATIENT_SUMMARY_KEY] = {};
+                    }
+                    evalResults[PATIENT_SUMMARY_KEY][SURVEY_SUMMARY_KEY] =
+                      evaluatedSurveyResults;
+                    //debug
+                    console.log(
+                      "final evaluated CQL results including surveys ",
+                      evaluatedSurveyResults
+                    );
+                    resourceTypes["Report"] = true;
+                    resolve(evalResults);
+                  });
+                })
+                .catch((e) => {
+                  resourceTypes["Report"] = {
+                    error: e,
+                  };
+                  console.log("Error processing instrument ELM: ", e);
+                  reject(
+                    "error processing instrument ELM. See console for details."
                   );
-                  resourceTypes["Report"] = true;
-                  resolve(evalResults);
                 });
-              }).catch((e) => {
-                resourceTypes["Report"] = {
-                  error: e
-                }
-                console.log("Error processing instrument ELM: ", e);
-                reject("error processing instrument ELM. See console for details.");
-              });
-            
             },
             (e) => {
               console.log(e);
@@ -420,6 +422,25 @@ function getPatientSource(release) {
   }
 }
 
+/*
+ * @param client, FHIR client object
+ * @param uri, path including search parameters if applicable, e.g. Patient?_sort=_lastUpdated
+ * return re-constructed URL string including server url if applicable
+ */
+function getRequestURL(client, uri = "") {
+  if (!client) return uri;
+  let serverURL = "";
+  if (client && client.state) {
+    //e.g. https://backend.uwmedicine.cosri.app/fhir-router/4bc20310-8963-4440-b6aa-627ce6def3b9/
+    //e.g. https://launch.smarthealthit.org/v/r4/fhir
+    serverURL = client.state.serverUrl;
+  }
+  if (!serverURL) return "";
+  let uriToUse = uri;
+  if (uriToUse.startsWith("/")) uriToUse = uri.slice(1);
+  return serverURL + (!serverURL.endsWith("/") ? "/" : "") + uriToUse;
+}
+
 function doSearch(client, release, type, collector) {
   const params = new URLSearchParams();
   updateSearchParams(params, release, type);
@@ -435,7 +456,7 @@ function doSearch(client, release, type, collector) {
   };
   const fhirOptions = {
     pageLimit: 0, // unlimited pages
-    onPage: processPage(uri, collector, resources),
+    onPage: processPage(client, uri, collector, resources),
   };
   return new Promise((resolve) => {
     let results;
@@ -446,19 +467,18 @@ function doSearch(client, release, type, collector) {
     }
     results
       .then(() => {
-        return resources;
+        resolve(resources);
       })
       .catch((error) => {
         collector.push({ error: error, url: uri, type: type, data: error });
         // don't return the error as we want partial results if available
         // (and we don't want to halt the Promis.all that wraps this)
-        return resources;
+        resolve(resources);
       });
-    resolve(results);
   });
 }
 
-function processPage(uri, collector, resources) {
+function processPage(client, uri, collector, resources) {
   return (bundle) => {
     // Add to the collector
     let url = uri;
@@ -467,10 +487,27 @@ function processPage(uri, collector, resources) {
       bundle.link &&
       bundle.link.some((l) => l.relation === "self" && l.url != null)
     ) {
+      bundle.link = bundle.link.map((o) => {
+        if (!o.url) return o;
+        let reuseURL = null;
+        try {
+          reuseURL = new URL(o.url);
+        } catch (e) {
+          console.log(`Unable to create URL object for ${o.url}`, e);
+          reuseURL = null;
+        }
+        if (reuseURL) {
+          const requestURL = getRequestURL(client, reuseURL.search);
+          if (requestURL) o.url = requestURL;
+        }
+        // if (o.relation === "next")
+        //   console.log("Next URL ", o.url)
+        return o;
+      });
       url = bundle.link.find((l) => l.relation === "self").url;
     }
     //debugging
-    //console.log("collector url? ", url, ", bundle: ", bundle)
+    // console.log("collector url? ", url, ", bundle: ", bundle);
     collector.push({ url: url, data: bundle });
     // Add to the resources
     if (bundle.entry) {
@@ -494,7 +531,6 @@ function updateSearchParams(params, release, type) {
           params.set("_id", INSTRUMENT_LIST.join(","));
           break;
         case "QuestionnaireResponse":
-          params.set("_count", 300);
           params.set("_sort", "_lastUpdated");
           break;
         default:
