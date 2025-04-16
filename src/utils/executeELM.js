@@ -27,7 +27,6 @@ const noCacheHeader = {
 };
 const FHIR_RELEASE_VERSION_2 = 2;
 const FHIR_RELEASE_VERSION_4 = 4;
-let CLIENT_SERVER_URL = "";
 
 async function executeELM(collector, oResourceTypes) {
   fetchEnvData();
@@ -42,11 +41,6 @@ async function executeELM(collector, oResourceTypes) {
       .ready()
       .then((clientArg) => {
         client = clientArg;
-        if (client && client.state) {
-          //e.g. https://backend.uwmedicine.cosri.app/fhir-router/4bc20310-8963-4440-b6aa-627ce6def3b9/
-          //e.g. https://launch.smarthealthit.org/v/r4/fhir
-          CLIENT_SERVER_URL = client.state.serverUrl;
-        }
         return client.getFhirRelease();
       })
       // then remember the release for later and get the release-specific library
@@ -353,6 +347,23 @@ function getPatientSource(release) {
   }
 }
 
+/*
+ * @param client, FHIR client object
+ * @param uri, path including search parameters if applicable, e.g. Patient?_sort=_lastUpdated
+ * return re-constructed URL string including server url if applicable
+ */
+function getRequestURL(client, uri = "") {
+  if (!client) return uri;
+  let serverURL = "";
+  if (client && client.state) {
+    //e.g. https://backend.uwmedicine.cosri.app/fhir-router/4bc20310-8963-4440-b6aa-627ce6def3b9/
+    //e.g. https://launch.smarthealthit.org/v/r4/fhir
+    serverURL = client.state.serverUrl;
+  }
+  if (!serverURL) return uri;
+  return serverURL + (!serverURL.endsWith("/") ? "/" : "") + uri;
+}
+
 function doSearch(client, release, type, collector) {
   const params = new URLSearchParams();
   updateSearchParams(params, release, type);
@@ -362,8 +373,9 @@ function doSearch(client, release, type, collector) {
   const nonPatientResourceTypes = ["questionnaire"];
   const isNotPatientResourceType =
     nonPatientResourceTypes.indexOf(type.toLowerCase()) !== -1;
+  const requestURL = getRequestURL(client, uri);
   const options = {
-    url: uri,
+    url: requestURL,
     headers: noCacheHeader,
   };
   const fhirOptions = {
@@ -400,17 +412,6 @@ function processPage(uri, collector, resources) {
       bundle.link.some((l) => l.relation === "self" && l.url != null)
     ) {
       url = bundle.link.find((l) => l.relation === "self").url;
-    }
-    let constructedURL = null;
-    try {
-      constructedURL = new URL(url);
-    } catch(e) {
-      console.log(`Error constructing URL from ${url}`, e);
-      constructedURL = null;
-    }
-    if (constructedURL && CLIENT_SERVER_URL) {
-      // e.g. https://launch.smarthealthit.org/v/r4/fhir?_getpages=fd88f4cd-b4c3-4993-8338-652cc47801ad&_getpagesoffset=50&_count=50&_pretty=true&_bundletype=searchset
-      url = CLIENT_SERVER_URL + constructedURL.search;
     }
     //debugging
     //console.log("collector url? ", url, ", bundle: ", bundle);
