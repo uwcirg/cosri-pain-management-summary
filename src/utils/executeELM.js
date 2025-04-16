@@ -454,12 +454,13 @@ function updateSearchParams(params, release, type) {
       switch (type) {
         case "Questionnaire":
           params.set("_id", INSTRUMENT_LIST.join(","));
+          params.set("_count", 300);
           break;
         case "QuestionnaireResponse":
           params.set("_sort", "_lastUpdated");
           break;
         default:
-        // nothing
+          params.set("_count", 50);
       }
     }
   }
