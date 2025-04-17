@@ -532,9 +532,10 @@ function updateSearchParams(params, release, type) {
           break;
         case "QuestionnaireResponse":
           params.set("_sort", "_lastUpdated");
+          params.set("_count", 300);
           break;
         default:
-        // nothing
+          params.set("_count", 50);
       }
     }
   }
