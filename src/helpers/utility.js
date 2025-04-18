@@ -28,12 +28,8 @@ export function getDiffDays(dateString1, dateString2) {
 export function getDateObjectInLocalDateTime(input) {
   if (!input) return null;
   if (shortDateRE.test(input)) {
-    // If input is in short ISO date (YYYY-MM-DD), consider time/zone offset to allow correct conversion to local date/time
-    //return new Date(input + "T00:00:00");
-    let dObj = new Date(input);
-    let tzOffset = dObj.getTimezoneOffset() * 60000;
-    dObj.setTime(dObj.getTime() + tzOffset);
-    return dObj;
+    // If input is in short ISO date (YYYY-MM-DD), appending "T00:00:00" to allow correct conversion to local date/time
+    return new Date(input + "T00:00:00");
   }
   if (dateREZ.test(input)) {
     // If input is already a full ISO 8601 timestamp, pass it as-is
