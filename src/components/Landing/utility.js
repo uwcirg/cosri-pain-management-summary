@@ -342,7 +342,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     let endDate = extractDateFromGMTDateString(
       currentMedicationItem[endDateFieldName]
     );
-    let oStartDate = getDateObjectInLocalDateTime(startDate);
+    let oStartDate = new Date(startDate);
     let diffDays = getDiffDays(startDate, endDate);
     nextObj = index + 1 <= graph_data.length - 1 ? graph_data[index + 1] : null;
     let currentMMEValue = getRealNumber(

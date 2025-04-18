@@ -13,8 +13,8 @@ import { getTokenInfoFromStorage } from "./timeout";
 export function getDiffDays(dateString1, dateString2) {
   if (!dateString1 || !dateString2) return 0;
   //set two date variables
-  let date1 = getDateObjectInLocalDateTime(dateString1),
-    date2 = getDateObjectInLocalDateTime(dateString2);
+  let date1 = new Date(dateString1),
+    date2 = new Date(dateString2);
   // To calculate the time difference of two dates
   var diffInTime = date2.getTime() - date1.getTime();
   // To calculate the no. of days between two dates
@@ -118,11 +118,11 @@ export function daysFromToday(dateInput, todayInput) {
     today =
       todayInput instanceof Date
         ? todayInput
-        : getDateObjectInLocalDateTime(todayInput);
+        : new Date(todayInput);
   let originalDate =
     dateInput instanceof Date
       ? dateInput
-      : getDateObjectInLocalDateTime(dateInput);
+      : new Date(dateInput);
   let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
   let oneDay = 1000 * 60 * 60 * 24;
   let diff = (today.setHours(0, 0, 0, 0) - dObj.setHours(0, 0, 0, 0)) / oneDay;
