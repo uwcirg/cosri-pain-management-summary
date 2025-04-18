@@ -13,8 +13,8 @@ import { getTokenInfoFromStorage } from "./timeout";
 export function getDiffDays(dateString1, dateString2) {
   if (!dateString1 || !dateString2) return 0;
   //set two date variables
-  let date1 = new Date(dateString1),
-    date2 = new Date(dateString2);
+  let date1 = getDateObjectInLocalDateTime(dateString1),
+    date2 = getDateObjectInLocalDateTime(dateString2);
   // To calculate the time difference of two dates
   var diffInTime = date2.getTime() - date1.getTime();
   // To calculate the no. of days between two dates
@@ -509,7 +509,7 @@ export function getQuestionnaireTitle(fhirQuestionnaire) {
 
 export function toDate(stringDate) {
   if (stringDate instanceof Date) return stringDate;
-  return new Date(stringDate);
+  return getDateObjectInLocalDateTime(stringDate);
 }
 
 export function getEPICPatientIdFromSource(fhirPatientSource) {

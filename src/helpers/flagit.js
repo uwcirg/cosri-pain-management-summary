@@ -1,4 +1,4 @@
-import { isDateInPast, getDiffMonths } from "./utility";
+import { isDateInPast, getDiffMonths, getDateObjectInLocalDateTime } from "./utility";
 const functions = {
   ifAnd,
   ifOr,
@@ -202,7 +202,7 @@ function if3MonthsDue(value, entry, subSection, summary) {
   if (!entry) return false;
   const targetDate = entry[value.targetField];
   if (!targetDate) return false;
-  const diff = getDiffMonths(new Date(), new Date(targetDate));
+  const diff = getDiffMonths(new Date(), getDateObjectInLocalDateTime(targetDate));
   //console.log("if3MonthsDue months diff ", diff);
   return diff >= 0 && diff <= 3;
 }
@@ -215,7 +215,7 @@ function if4MonthsDue(value, entry, subSection, summary) {
   if (!entry) return false;
   const targetDate = entry[value.targetField];
   if (!targetDate) return false;
-  const diff = getDiffMonths(new Date(), new Date(targetDate));
+  const diff = getDiffMonths(new Date(), getDateObjectInLocalDateTime(targetDate));
   //console.log("if4MonthsDue months diff ", diff);
   return diff > 3 && diff <= 4;
 }
@@ -228,7 +228,7 @@ function ifOverdue(value, entry, subSection, summary) {
   if (!entry) return false;
   const targetDate = entry[value.targetField];
   if (!targetDate) return false;
-  return isDateInPast(new Date(targetDate), new Date());
+  return isDateInPast(getDateObjectInLocalDateTime(targetDate), new Date());
 }
 
 function ifAdult(value, entry, subSection, summary) {
