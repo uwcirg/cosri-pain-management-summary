@@ -8,7 +8,7 @@ export default defineConfig({
   // To deploy at the root path, use "/" or remove the "base" property entirely.
   base: "/",
   envPrefix: "REACT_",
-  
+
   plugins: [
     react(),
     nodePolyfills({
@@ -19,10 +19,10 @@ export default defineConfig({
       filter(id) {
         // `node_modules` is exclude by default, so we need to include it explicitly
         // https://github.com/vite-plugin/vite-plugin-commonjs/blob/v0.7.0/src/index.ts#L125-L127
-        if (id.includes('node_modules/commonmark')) {
-          return true
+        if (id.includes("node_modules/commonmark")) {
+          return true;
         }
-      }
+      },
     }),
   ],
   // Stub out large XML JS files that are referenced but not needed
@@ -62,6 +62,9 @@ export default defineConfig({
           }
           if (id.includes("node_modules")) {
             return "vendor";
+          }
+          if (id.includes("Report")) {
+            return "report"; // Split report components into their own chunk
           }
         },
       },
