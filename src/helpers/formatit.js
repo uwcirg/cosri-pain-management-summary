@@ -49,9 +49,6 @@ export function dateAgeFormat(result, input) {
   if (result == null || result.Patient == null || input == null) return '';
   const patientDOB = result.Patient.birthDate._json;
   const patientAgeAtDate = moment(input).diff(patientDOB, 'years');
-  if (dateREZ.test(input)) {
-    return `${timeZonedDateFormat(result, input)} (age ${patientAgeAtDate})`;
-  }
   return `${dateFormat(result, input)} (age ${patientAgeAtDate})`;
 }
 

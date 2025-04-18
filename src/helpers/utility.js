@@ -2,7 +2,7 @@ import moment from "moment";
 import { toBlob, toJpeg } from "html-to-image";
 import { getEnv, ENV_VAR_PREFIX } from "../utils/envConfig";
 import reportSummarySections from "../config/report_config";
-import { shortDateRE, dateREZ} from "./formatit";
+import { shortDateRE, dateREZ } from "./formatit";
 import { getTokenInfoFromStorage } from "./timeout";
 
 /*
@@ -111,9 +111,14 @@ export function sumArray(array) {
 export function daysFromToday(dateInput, todayInput) {
   let today = new Date();
   if (todayInput)
-    today = todayInput instanceof Date ? todayInput : getDateObjectInLocalDateTime(todayInput);
+    today =
+      todayInput instanceof Date
+        ? todayInput
+        : getDateObjectInLocalDateTime(todayInput);
   let originalDate =
-    dateInput instanceof Date ? dateInput : getDateObjectInLocalDateTime(dateInput);
+    dateInput instanceof Date
+      ? dateInput
+      : getDateObjectInLocalDateTime(dateInput);
   let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
   let oneDay = 1000 * 60 * 60 * 24;
   let diff = (today.setHours(0, 0, 0, 0) - dObj.setHours(0, 0, 0, 0)) / oneDay;
@@ -509,7 +514,7 @@ export function getQuestionnaireTitle(fhirQuestionnaire) {
 
 export function toDate(stringDate) {
   if (stringDate instanceof Date) return stringDate;
-  return new Date(stringDate);
+  return getDateObjectInLocalDateTime(stringDate);
 }
 
 export function getEPICPatientIdFromSource(fhirPatientSource) {
@@ -587,7 +592,7 @@ export function writeToLog(message, level, params) {
   if (!getEnvConfidentialAPIURL()) return;
   if (!message) return;
   const logLevel = level ? level : "info";
-  // use Object.assign to prevent modification of original params 
+  // use Object.assign to prevent modification of original params
   const logParams = Object.assign({}, params ? params : {});
   if (!logParams.tags) logParams.tags = [];
   const COSRI_FRONTEND_TAG = "cosri-frontend";
@@ -598,7 +603,7 @@ export function writeToLog(message, level, params) {
     const userId = getUserIdFromAccessToken();
     if (userId) {
       logParams.user = {
-        username: userId
+        username: userId,
       };
     }
   }
@@ -727,7 +732,7 @@ export function dedupArrObjects(arr, key) {
   if (isEmptyArray(arr)) return null;
   if (!key) return arr;
   return arr.reduce((acc, obj) => {
-    if (!acc.find(item => item[key] === obj[key])) {
+    if (!acc.find((item) => item[key] === obj[key])) {
       acc.push(obj);
     }
     return acc;
@@ -774,4 +779,3 @@ export function addMatomoTracking() {
   g.setAttribute("id", "matomoScript");
   headElement.appendChild(g);
 }
-
