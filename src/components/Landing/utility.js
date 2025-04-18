@@ -2,13 +2,15 @@ import {
   datishFormat,
   dateFormat,
   dateNumberFormat,
+  extractDateFromGMTDateString,
 } from "../../helpers/formatit";
 import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
 import {
+  getDateObjectInLocalDateTime,
   getDiffDays,
-  getEnvSystemType,
   getEnvConfidentialAPIURL,
+  getEnvSystemType,
   isEmptyArray,
   saveData,
   writeToLog,
@@ -334,12 +336,10 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     nextObj = null;
   graph_data.forEach(function (currentMedicationItem, index) {
     let dataPoint = {};
-    let startDate = dateFormat(
-      "",
+    let startDate = extractDateFromGMTDateString(
       currentMedicationItem[startDateFieldName]
     );
-    let endDate = dateFormat(
-      "",
+    let endDate = extractDateFromGMTDateString(
       currentMedicationItem[endDateFieldName]
     );
     let oStartDate = new Date(startDate);
