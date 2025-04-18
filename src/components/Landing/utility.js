@@ -2,10 +2,12 @@ import {
   datishFormat,
   dateFormat,
   dateNumberFormat,
+  extractDateFromGMTDateString,
 } from "../../helpers/formatit";
 import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
 import {
+  getDateObjectInLocalDateTime,
   getDiffDays,
   getEnvConfidentialAPIURL,
   getEnvSystemType,
@@ -334,15 +336,13 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     nextObj = null;
   graph_data.forEach(function (currentMedicationItem, index) {
     let dataPoint = {};
-    let startDate = dateFormat(
-      "",
+    let startDate = extractDateFromGMTDateString(
       currentMedicationItem[startDateFieldName]
     );
-    let endDate = dateFormat(
-      "",
+    let endDate = extractDateFromGMTDateString(
       currentMedicationItem[endDateFieldName]
     );
-    let oStartDate = new Date(startDate);
+    let oStartDate = getDateObjectInLocalDateTime(startDate);
     let diffDays = getDiffDays(startDate, endDate);
     nextObj = index + 1 <= graph_data.length - 1 ? graph_data[index + 1] : null;
     let currentMMEValue = getRealNumber(
