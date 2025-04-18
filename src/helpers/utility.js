@@ -118,11 +118,11 @@ export function daysFromToday(dateInput, todayInput) {
     today =
       todayInput instanceof Date
         ? todayInput
-        : new Date(todayInput);
+        : getDateObjectInLocalDateTime(todayInput);
   let originalDate =
     dateInput instanceof Date
       ? dateInput
-      : new Date(dateInput);
+      : getDateObjectInLocalDateTime(dateInput);
   let dObj = new Date(originalDate.valueOf()); //get copy of date so as not to mutate the original date
   let oneDay = 1000 * 60 * 60 * 24;
   let diff = (today.setHours(0, 0, 0, 0) - dObj.setHours(0, 0, 0, 0)) / oneDay;
