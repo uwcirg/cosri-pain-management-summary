@@ -11,7 +11,7 @@ import { dateCompare } from "../../helpers/sortit";
 import {
   sumArray,
   daysFromToday,
-  getDateObjectInLocalDateTime,
+  toDate,
   getSiteState,
   isEmptyArray,
   renderImageFromSVG,
@@ -430,7 +430,7 @@ export default class MMEGraph extends Component {
     let noEntry = !data || !data.length;
     data = data.filter((d) => d[xFieldName]);
     data = data.map((d) => {
-      d[xFieldName] = getDateObjectInLocalDateTime(d[xFieldName]);
+      d[xFieldName] = toDate(d[xFieldName]);
       return d;
     });
     //get stats for data
