@@ -16,6 +16,7 @@ import valueSetDB from "../cql/valueset-db.json";
 import { fetchEnvData } from "./envConfig";
 import {
   isEnvEpicQueries,
+  getEnvVersionString,
   getReportInstrumentList,
   getReportInstrumentIdByKey,
   isEmptyArray,
@@ -327,13 +328,13 @@ function executeELMForInstruments(patientBundle) {
       const libPrefix = item.useDefaultELMLib
         ? "Default"
         : item.key.toUpperCase();
-      const STORAGE_KEY = `lib_${libPrefix}`;
+      const STORAGE_KEY = `lib_${libPrefix}_${getEnvVersionString()??(new Date()).toISOString()}`;
       if (
         window &&
-        window.sessionStorage &&
-        window.sessionStorage.getItem(STORAGE_KEY)
+        window.localStorage &&
+        window.localStorage.getItem(STORAGE_KEY)
       ) {
-        elmJson = JSON.parse(window.sessionStorage.getItem(STORAGE_KEY));
+        elmJson = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
       } else {
         elmJson = await import(
           `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
@@ -357,8 +358,8 @@ function executeELMForInstruments(patientBundle) {
         }
       }
       console.log("eval result for " + item.key, elmJson);
-      if (window && window.sessionStorage) {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
+      if (window && window.localStorage) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
       }
       const evalResults = await executeELMForInstrument(
         item.key,
