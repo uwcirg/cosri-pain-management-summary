@@ -328,7 +328,9 @@ function executeELMForInstruments(patientBundle) {
       const libPrefix = item.useDefaultELMLib
         ? "Default"
         : item.key.toUpperCase();
-      const STORAGE_KEY = `lib_${libPrefix}_${getEnvVersionString()??(new Date()).toISOString()}`;
+      const STORAGE_KEY = `lib_${libPrefix}_${
+        getEnvVersionString() ?? new Date().toISOString()
+      }`;
       if (
         window &&
         window.localStorage &&
