@@ -98,29 +98,20 @@ async function executeELM(collector, paramResourceTypes) {
         const surveyResources = shouldLoadSurveyResources
           ? [...SURVEY_FHIR_RESOURCES, "Report"]
           : [];
-        const requests = [
-          ...extractResourcesFromELM(library),
-          ...surveyResources,
-        ].map((name) => {
-          resourceTypes[name] = false;
-          if (name === "Report") return true;
-          if (name === "Patient") {
-            resourceTypes[name] = true;
-            return [pt];
-          }
-          let p = doSearch(client, release, name, collector);
-          return p.then((resource) => {
-            resourceTypes[name] = true;
-            return resource;
-          });
-          //return doSearch(client, release, name, collector);
-        });
-        // console.log("resources ", requests);
-        // console.log("collector ", collector);
-        // console.log("resourceTypes ", resourceTypes);
-
         // Don't return until all the requests have been resolved
-        return Promise.allSettled(requests)
+        return Promise.allSettled(
+          [...extractResourcesFromELM(library), ...surveyResources].map(
+            (name) => {
+              resourceTypes[name] = false;
+              if (name === "Report") return null;
+              if (name === "Patient") {
+                resourceTypes[name] = true;
+                return [pt];
+              }
+              return doSearch(client, release, name, collector, resourceTypes);
+            }
+          )
+        )
           .then((requestResults) => {
             const resources = [];
             requestResults.forEach((result) => {
@@ -198,13 +189,12 @@ async function executeELM(collector, paramResourceTypes) {
 
         // return a promise containing survey evaluated data
         return new Promise((resolve, reject) => {
-          const elmResults = executeELMForInstruments(patientBundle);
           if (!evalResults[PATIENT_SUMMARY_KEY]) {
             evalResults[PATIENT_SUMMARY_KEY] = {};
           }
           Promise.allSettled([
             executeELMForReport(patientBundle),
-            ...elmResults,
+            ...executeELMForInstruments(patientBundle),
           ])
             .then(
               (results) => {
@@ -343,27 +333,28 @@ function executeELMForInstruments(patientBundle) {
         window.sessionStorage &&
         window.sessionStorage.getItem(STORAGE_KEY)
       ) {
-        return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY));
-      }
-      elmJson = await import(
-        `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
-      )
-        .then((module) => module.default)
-        .catch((e) => {
-          console.log(
-            "Issue occurred loading ELM lib for " +
-              item.key +
-              ". Will use default lib.",
-            e
-          );
-          elmJson = null;
-        });
-
-      if (!elmJson) {
+        elmJson = JSON.parse(window.sessionStorage.getItem(STORAGE_KEY));
+      } else {
         elmJson = await import(
-          `../cql/r4/survey_resources/Default_LogicLibrary.json`
-        ).then((module) => module.default);
-        console.log("default for " + item.key, elmJson);
+          `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
+        )
+          .then((module) => module.default)
+          .catch((e) => {
+            console.log(
+              "Issue occurred loading ELM lib for " +
+                item.key +
+                ". Will use default lib.",
+              e
+            );
+            elmJson = null;
+          });
+
+        if (!elmJson) {
+          elmJson = await import(
+            `../cql/r4/survey_resources/Default_LogicLibrary.json`
+          ).then((module) => module.default);
+          console.log("default for " + item.key, elmJson);
+        }
       }
       console.log("eval result for " + item.key, elmJson);
       if (window && window.sessionStorage) {
@@ -435,7 +426,7 @@ function getRequestURL(client, uri = "") {
   return serverURL + (!serverURL.endsWith("/") ? "/" : "") + uriToUse;
 }
 
-function doSearch(client, release, type, collector) {
+function doSearch(client, release, type, collector, resourceTypes) {
   const params = new URLSearchParams();
   updateSearchParams(params, release, type);
 
@@ -461,10 +452,12 @@ function doSearch(client, release, type, collector) {
     }
     results
       .then(() => {
+        resourceTypes[type] = true;
         resolve(resources);
       })
       .catch((error) => {
         collector.push({ error: error, url: uri, type: type, data: error });
+        resourceTypes[type] = true;
         // don't return the error as we want partial results if available
         // (and we don't want to halt the Promis.all that wraps this)
         resolve(resources);

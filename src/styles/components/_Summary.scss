@@ -169,8 +169,7 @@
 
   &__nav-wrapper {
     min-height: calc(100vh - 100px);
-    min-width: 64px;
-    width: 64px;
+    width: $summary-nav-base-width;
     background-color: $color-gray-dark;
     transition: all 375ms cubic-bezier(0, 0.52, 0, 1);
     position: relative;
@@ -294,7 +293,7 @@
     max-width: 100%;
     @media (min-width: 768px) {
       & {
-        max-width: calc(100% - 64px);
+        max-width: calc(100% - $summary-nav-base-width);
         margin: auto;
       }
     }
