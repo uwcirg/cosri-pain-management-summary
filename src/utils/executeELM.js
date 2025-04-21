@@ -256,7 +256,7 @@ async function executeELM(collector, paramResourceTypes) {
 
 async function executeELMForReport(bundle) {
   if (!bundle) return null;
-  const STORAGE_KEY = `reportLib_${
+  const STORAGE_KEY = `lib_report_${
     getEnvVersionString() ?? new Date().toISOString()
   }`;
   let r4ReportCommonELM = null;
@@ -274,13 +274,17 @@ async function executeELMForReport(bundle) {
         console.log("Issue occurred loading ELM lib for reoirt", e);
         r4ReportCommonELM = null;
       });
+    if (r4ReportCommonELM) {
+      if (window && window.localStorage) {
+        window.localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(r4ReportCommonELM)
+        );
+      }
+    }
   }
 
   if (!r4ReportCommonELM) return null;
-
-  if (window && window.localStorage) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(r4ReportCommonELM));
-  }
 
   let reportLib = new cql.Library(
     r4ReportCommonELM,
@@ -377,7 +381,7 @@ function executeELMForInstruments(patientBundle) {
         }
       }
       console.log("eval result for " + item.key, elmJson);
-      if (window && window.localStorage) {
+      if (elmJson && window && window.localStorage) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
       }
       const evalResults = await executeELMForInstrument(
