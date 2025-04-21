@@ -1,4 +1,8 @@
-import { isDateInPast, getDiffMonths, getDateObjectInLocalDateTime } from "./utility";
+import {
+  isDateInPast,
+  getDiffMonths,
+  getDateObjectInLocalDateTime,
+} from "./utility";
 const functions = {
   ifAnd,
   ifOr,
@@ -17,7 +21,10 @@ const functions = {
 // returns false if the given entry should not be flagged
 // returns the flag text for an entry that should be flagged
 export default function flagit(entry, subSection, summary) {
-  const flags = subSection && subSection.tables ? subSection?.tables[0]?.flags : subSection.flags;
+  const flags =
+    subSection && subSection.tables
+      ? subSection?.tables[0]?.flags
+      : subSection.flags;
   if (flags == null) return false;
 
   const flagResults = flags.reduce((accumulator, flag) => {
@@ -139,7 +146,8 @@ function ifGreaterThanOrEqualTo(value, entry, subSection, summary) {
   if (Array.isArray(targetEntry) && targetEntry.length) {
     targetEntry = targetEntry[0];
   }
-  const valueToCompare = value.targetValue != null ? value.targetValue : value.value;
+  const valueToCompare =
+    value.targetValue != null ? value.targetValue : value.value;
   return parseInt(targetEntry[value.header], 10) >= valueToCompare;
 }
 /*
@@ -147,7 +155,8 @@ function ifGreaterThanOrEqualTo(value, entry, subSection, summary) {
  */
 function ifEqualTo(value, entry, subSection, summary) {
   if (!entry) return false;
-  if (Array.isArray(entry[value.header])) return entry[value.header].indexOf(value.targetValue) !== -1;
+  if (Array.isArray(entry[value.header]))
+    return entry[value.header].indexOf(value.targetValue) !== -1;
   if (value.type === "boolean") {
     return Boolean(entry[value.header]) === Boolean(value.targetValue);
   }
