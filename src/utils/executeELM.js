@@ -256,7 +256,7 @@ async function executeELM(collector, paramResourceTypes) {
 
 async function executeELMForReport(bundle) {
   if (!bundle) return null;
-  const STORAGE_KEY = `lib_report_${
+  const STORAGE_KEY = `reportLib_${
     getEnvVersionString() ?? new Date().toISOString()
   }`;
   let r4ReportCommonELM = null;
@@ -301,9 +301,6 @@ async function executeELMForReport(bundle) {
   let results;
   try {
     results = reportExecutor.exec(patientSource);
-    // if (results.patientResults)
-    //   results =
-    //     results.patientResults[Object.keys(results.patientResults)[0]].Summary;
   } catch (e) {
     results = null;
     console.log(`Error executing CQL for report `, e);
@@ -379,10 +376,9 @@ function executeELMForInstruments(patientBundle) {
           ).then((module) => module.default);
           console.log("default for " + item.key, elmJson);
         }
-      }
-      console.log("eval result for " + item.key, elmJson);
-      if (elmJson && window && window.localStorage) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
+        if (elmJson && window && window.localStorage) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
+        }
       }
       const evalResults = await executeELMForInstrument(
         item.key,
@@ -450,7 +446,7 @@ function getRequestURL(client, uri = "") {
   return serverURL + (!serverURL.endsWith("/") ? "/" : "") + uriToUse;
 }
 
-function doSearch(client, release, type, collector, resourceTypes) {
+function doSearch(client, release, type, collector, resourceTypes = {}) {
   const params = new URLSearchParams();
   updateSearchParams(params, release, type);
 
@@ -484,6 +480,7 @@ function doSearch(client, release, type, collector, resourceTypes) {
         resourceTypes[type] = true;
         // don't return the error as we want partial results if available
         // (and we don't want to halt the Promis.all that wraps this)
+        resourceTypes[type] = true;
         resolve(resources);
       });
   });
@@ -546,7 +543,7 @@ function updateSearchParams(params, release, type) {
           params.set("_count", 300);
           break;
         default:
-          params.set("_count", 100);
+          params.set("_count", 50);
       }
     }
   }
