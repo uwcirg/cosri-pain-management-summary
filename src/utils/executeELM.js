@@ -208,6 +208,7 @@ async function executeELM(collector, paramResourceTypes) {
           ])
             .then(
               (results) => {
+                resourceTypes["Report"] = true;
                 let reportResults =
                   results[0].status !== "rejected" ? results[0].value : null;
                 if (reportResults && reportResults.patientResults)
@@ -243,7 +244,6 @@ async function executeELM(collector, paramResourceTypes) {
                   "final evaluated CQL results including surveys ",
                   evaluatedSurveyResults
                 );
-                resourceTypes["Report"] = true;
                 resolve(evalResults);
               },
               (e) => {
@@ -337,6 +337,14 @@ function executeELMForInstruments(patientBundle) {
       const libPrefix = item.useDefaultELMLib
         ? "Default"
         : item.key.toUpperCase();
+      const STORAGE_KEY = `lib_${libPrefix}`;
+      if (
+        window &&
+        window.sessionStorage &&
+        window.sessionStorage.getItem(STORAGE_KEY)
+      ) {
+        return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY));
+      }
       elmJson = await import(
         `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
       )
@@ -358,15 +366,15 @@ function executeELMForInstruments(patientBundle) {
         console.log("default for " + item.key, elmJson);
       }
       console.log("eval result for " + item.key, elmJson);
+      if (window && window.sessionStorage) {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
+      }
       const evalResults = await executeELMForInstrument(
         item.key,
         elmJson,
         patientBundle
       );
       return evalResults;
-      // return {
-      //   [item.key]: elmJson,
-      // };
     })()
   );
 }
@@ -521,7 +529,7 @@ function updateSearchParams(params, release, type) {
           params.set("_count", 300);
           break;
         default:
-          params.set("_count", 50);
+          params.set("_count", 100);
       }
     }
   }
