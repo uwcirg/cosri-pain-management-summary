@@ -256,14 +256,31 @@ async function executeELM(collector, paramResourceTypes) {
 
 async function executeELMForReport(bundle) {
   if (!bundle) return null;
-  let r4ReportCommonELM = await import("../cql/r4/Report_LogicLibrary.json")
-    .then((module) => module.default)
-    .catch((e) => {
-      console.log("Issue occurred loading ELM lib for reoirt", e);
-      r4ReportCommonELM = null;
-    });
+  const STORAGE_KEY = `reportLib_${
+    getEnvVersionString() ?? new Date().toISOString()
+  }`;
+  let r4ReportCommonELM = null;
+  if (
+    window &&
+    window.localStorage &&
+    window.localStorage.getItem(STORAGE_KEY)
+  ) {
+    r4ReportCommonELM = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
+  }
+  if (!r4ReportCommonELM) {
+    r4ReportCommonELM = await import("../cql/r4/Report_LogicLibrary.json")
+      .then((module) => module.default)
+      .catch((e) => {
+        console.log("Issue occurred loading ELM lib for reoirt", e);
+        r4ReportCommonELM = null;
+      });
+  }
 
   if (!r4ReportCommonELM) return null;
+
+  if (window && window.localStorage) {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(r4ReportCommonELM));
+  }
 
   let reportLib = new cql.Library(
     r4ReportCommonELM,
