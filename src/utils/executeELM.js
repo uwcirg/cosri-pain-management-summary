@@ -62,13 +62,22 @@ async function executeELM(collector, oResourceTypes) {
         client = clientArg;
         return client.getFhirRelease();
       })
+      .catch((e) => {
+        reject(e);
+      })
       // then remember the release for later and get the release-specific library
       .then((releaseNum) => {
         release = releaseNum;
         library = getLibrary(release);
       })
+      .catch((e) => {
+        reject(e);
+      })
       // then query the FHIR server for the patient, sending it to the next step
       .then(() => client.patient.read())
+      .catch((e) => {
+        reject(e);
+      })
       // then gather all the patient's relevant resource instances and send them in a bundle to the next step
       .then((pt) => {
         collector.push({ data: pt, url: `Patient/${pt.id}` });
@@ -103,6 +112,9 @@ async function executeELM(collector, oResourceTypes) {
             entry: resources.map((r) => ({ resource: r })),
           };
         });
+      })
+      .catch((e) => {
+        reject(e);
       })
       .then((bundle) => {
         patientBundle = bundle;
@@ -159,11 +171,15 @@ async function executeELM(collector, oResourceTypes) {
             console.log("Error processing instrument ELM: ", e);
             reject("error processing instrument ELM. See console for details.");
           });
+      })
+      .catch((e) => {
+        reject(e);
       });
   });
 }
 
 async function executeELMForFactors(bundle, release, library, collector) {
+  if (!bundle) return null;
   const patientSource = getPatientSource(release);
   const codeService = new cql.CodeService(valueSetDB);
   const executor = new cql.Executor(library, codeService);
@@ -238,7 +254,7 @@ async function executeELMForReport(bundle) {
 }
 
 async function executeELMForInstrument(instrumentKey, libraryElm, bundle) {
-  if (!instrumentKey || !libraryElm) return null;
+  if (!instrumentKey || !libraryElm || !bundle) return null;
   let surveyLib = new cql.Library(
     libraryElm,
     new cql.Repository({
@@ -294,6 +310,7 @@ async function getDefaultReportElmLib() {
 function executeELMForInstruments(patientBundle) {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
+  if (!patientBundle) return null;
   return INSTRUMENT_LIST.map((item) =>
     (async () => {
       let elmJson = null;
