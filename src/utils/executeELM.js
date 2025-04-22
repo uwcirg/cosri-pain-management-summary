@@ -16,7 +16,6 @@ import valueSetDB from "../cql/valueset-db.json";
 import { fetchEnvData } from "./envConfig";
 import {
   isEnvEpicQueries,
-  getEnvVersionString,
   getReportInstrumentList,
   getReportInstrumentIdByKey,
   isEmptyArray,
@@ -256,33 +255,13 @@ async function executeELM(collector, paramResourceTypes) {
 
 async function executeELMForReport(bundle) {
   if (!bundle) return null;
-  const STORAGE_KEY = `reportLib_${
-    getEnvVersionString() ?? new Date().toISOString()
-  }`;
-  let r4ReportCommonELM = null;
-  if (
-    window &&
-    window.localStorage &&
-    window.localStorage.getItem(STORAGE_KEY)
-  ) {
-    r4ReportCommonELM = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
-  }
-  if (!r4ReportCommonELM) {
-    r4ReportCommonELM = await import("../cql/r4/Report_LogicLibrary.json")
-      .then((module) => module.default)
-      .catch((e) => {
-        console.log("Issue occurred loading ELM lib for reoirt", e);
-        r4ReportCommonELM = null;
-      });
-    if (r4ReportCommonELM) {
-      if (window && window.localStorage) {
-        window.localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(r4ReportCommonELM)
-        );
-      }
-    }
-  }
+
+  let r4ReportCommonELM = await import("../cql/r4/Report_LogicLibrary.json")
+    .then((module) => module.default)
+    .catch((e) => {
+      console.log("Issue occurred loading ELM lib for reoirt", e);
+      r4ReportCommonELM = null;
+    });
 
   if (!r4ReportCommonELM) return null;
 
@@ -337,6 +316,31 @@ async function executeELMForInstrument(instrumentKey, libraryElm, bundle) {
   return surveyResults;
 }
 
+async function getDefaultReportElmLib() {
+  const STORAGE_KEY = "default_reportLib";
+  if (
+    window &&
+    window.sessionStorage &&
+    window.sessionStorage.getItem(STORAGE_KEY)
+  ) {
+    return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY));
+  }
+  let elmJson = await import(
+    `../cql/r4/survey_resources/Default_LogicLibrary.json`
+  )
+    .then((module) => module.default)
+    .catch((e) => {
+      console.log("Error importing default report library ", e);
+      elmJson = null;
+    });
+  if (elmJson) {
+    if (window && window.sessionStorage) {
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
+    }
+  }
+  return elmJson;
+}
+
 function executeELMForInstruments(patientBundle) {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
@@ -346,15 +350,9 @@ function executeELMForInstruments(patientBundle) {
       const libPrefix = item.useDefaultELMLib
         ? "Default"
         : item.key.toUpperCase();
-      const STORAGE_KEY = `lib_${libPrefix}_${
-        getEnvVersionString() ?? new Date().toISOString()
-      }`;
-      if (
-        window &&
-        window.localStorage &&
-        window.localStorage.getItem(STORAGE_KEY)
-      ) {
-        elmJson = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
+
+      if (libPrefix === "Default") {
+        elmJson = await getDefaultReportElmLib();
       } else {
         elmJson = await import(
           `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
@@ -369,17 +367,13 @@ function executeELMForInstruments(patientBundle) {
             );
             elmJson = null;
           });
-
-        if (!elmJson) {
-          elmJson = await import(
-            `../cql/r4/survey_resources/Default_LogicLibrary.json`
-          ).then((module) => module.default);
-          console.log("default for " + item.key, elmJson);
-        }
-        if (elmJson && window && window.localStorage) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
-        }
       }
+
+      if (!elmJson) {
+        elmJson = await getDefaultReportElmLib();
+        console.log("default for " + item.key, elmJson);
+      }
+
       const evalResults = await executeELMForInstrument(
         item.key,
         elmJson,
