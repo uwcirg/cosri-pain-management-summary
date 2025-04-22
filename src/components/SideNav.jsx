@@ -58,7 +58,7 @@ export default class SideNav extends Component {
   render() {
     const navToggleToolTip = this.state.showNav
       ? "collapse"
-      : "expand";
+      : "open";
     const navId = this.props.id ? this.props.id : "sideNavButton";
     return (
       <>
@@ -72,7 +72,8 @@ export default class SideNav extends Component {
             ref={(ref) => (this.navRef = ref)}
             data-for={navId}
             data-tip={navToggleToolTip}
-            data-place="auto"
+            data-place="bottom-end"
+            data-tooltip-offset={28}
             className={`${this.props.navClassName} summary__nav-button close`}
             title="toggle side navigation menu"
             onClick={(e) => {
@@ -85,20 +86,12 @@ export default class SideNav extends Component {
             tabIndex={0}
             data-tooltip-id={`${navId}_tooltip`}
             data-tooltip-content={navToggleToolTip}
+            globalCloseEvents="scroll resize"
             //data-tooltip-hidden={!this.state.showNav}
           ></div>
-          {/* <Tooltip
-            id={navId}
-            className="summary-tooltip"
-            place="right"
-            style={{ zIndex: 9999 }}
-          >
-            <div>{navToggleToolTip}</div>
-          </Tooltip> */}
           <Tooltip
             id={`${navId}_tooltip`}
-            place="right"
-            style={{ zIndex: 9999 }}
+            style={{ zIndex: 99999 }}
           >
           </Tooltip>
         </div>
