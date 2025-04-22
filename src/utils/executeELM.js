@@ -16,7 +16,6 @@ import valueSetDB from "../cql/valueset-db.json";
 import { fetchEnvData } from "./envConfig";
 import {
   isEnvEpicQueries,
-  getEnvVersionString,
   getReportInstrumentList,
   getReportInstrumentIdByKey,
   isEmptyArray,
@@ -28,7 +27,6 @@ const noCacheHeader = {
 };
 const FHIR_RELEASE_VERSION_2 = 2;
 const FHIR_RELEASE_VERSION_4 = 4;
-const PATIENT_SUMMARY_KEY = "Summary";
 
 async function executeELM(collector, oResourceTypes) {
   fetchEnvData();
@@ -60,22 +58,26 @@ async function executeELM(collector, oResourceTypes) {
         const surveyResources = shouldLoadSurveyResources
           ? SURVEY_FHIR_RESOURCES
           : [];
+        const requests = [
+          ...extractResourcesFromELM(library),
+          ...surveyResources,
+        ].map((name) => {
+          resourceTypes[name] = false;
+          if (name === "Patient") {
+            resourceTypes[name] = true;
+            return [pt];
+          }
+          let p = doSearch(client, release, name, collector);
+          return p.then((resource) => {
+            resourceTypes[name] = true;
+            return resource;
+          });
+        });
         //console.log("collector ", collector);
         //console.log("resourceTypes ", resourceTypes);
 
         // return all the requests have been resolved // rejected
-        return Promise.allSettled(
-          [...extractResourcesFromELM(library), ...surveyResources].map(
-            (name) => {
-              resourceTypes[name] = false;
-              if (name === "Patient") {
-                resourceTypes[name] = true;
-                return [pt];
-              }
-              return doSearch(client, release, name, collector, resourceTypes);
-            }
-          )
-        ).then((requestResults) => {
+        return Promise.allSettled(requests).then((requestResults) => {
           let resources = [];
           requestResults.forEach((result) => {
             const { status, value } = result;
@@ -145,31 +147,20 @@ async function executeELM(collector, oResourceTypes) {
 
         // return a promise containing survey evaluated data
         return new Promise((resolve, reject) => {
+          const elmLibs = getLibraryForInstruments();
+          const PATIENT_SUMMARY_KEY = "Summary";
           if (!evalResults[PATIENT_SUMMARY_KEY]) {
             evalResults[PATIENT_SUMMARY_KEY] = {};
           }
-          Promise.allSettled([
-            executeELMForReport(patientBundle),
-            ...executeELMForInstruments(patientBundle),
-          ])
+          Promise.allSettled([executeELMForReport(patientBundle), ...elmLibs])
             .then(
               (results) => {
                 evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
                   results[0].status !== "rejected" ? results[0].value : null;
-                const surveyLibResults = results
-                  .slice(1)
-                  .filter((result) => !!result.value);
-                if (isEmptyArray(surveyLibResults)) {
-                  resolve(evalResults);
-                }
-                const evaluatedSurveyResults = surveyLibResults
-                  .filter((o) => o.value && o.value.patientResults)
-                  .map(
-                    (o) =>
-                      o.value.patientResults[
-                        Object.keys(o.value.patientResults)[0]
-                      ]
-                  );
+                const evaluatedSurveyResults = executeELMForInstruments(
+                  results.slice(1),
+                  patientBundle
+                );
                 evalResults[PATIENT_SUMMARY_KEY]["SurveySummary"] =
                   evaluatedSurveyResults;
                 //debug
@@ -200,33 +191,12 @@ async function executeELM(collector, oResourceTypes) {
 
 async function executeELMForReport(bundle) {
   if (!bundle) return null;
-  const STORAGE_KEY = `reportLib_${
-    getEnvVersionString() ?? new Date().toISOString()
-  }`;
-  let r4ReportCommonELM = null;
-  if (
-    window &&
-    window.localStorage &&
-    window.localStorage.getItem(STORAGE_KEY)
-  ) {
-    r4ReportCommonELM = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
-  }
-  if (!r4ReportCommonELM) {
-    r4ReportCommonELM = await import("../cql/r4/Report_LogicLibrary.json")
-      .then((module) => module.default)
-      .catch((e) => {
-        console.log("Issue occurred loading ELM lib for reoirt", e);
-        r4ReportCommonELM = null;
-      });
-    if (r4ReportCommonELM) {
-      if (window && window.localStorage) {
-        window.localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(r4ReportCommonELM)
-        );
-      }
-    }
-  }
+  let r4ReportCommonELM = await import("../cql/r4/Report_LogicLibrary.json")
+    .then((module) => module.default)
+    .catch((e) => {
+      console.log("Issue occurred loading ELM lib for reoirt", e);
+      r4ReportCommonELM = null;
+    });
 
   if (!r4ReportCommonELM) return null;
 
@@ -255,36 +225,57 @@ async function executeELMForReport(bundle) {
   return results;
 }
 
-async function executeELMForInstrument(instrumentKey, libraryElm, bundle) {
-  if (!instrumentKey || !libraryElm) return null;
-  let surveyLib = new cql.Library(
-    libraryElm,
-    new cql.Repository({
-      FHIRHelpers: r4HelpersELM,
-      Common_LogicLibrary: r4SurveyCommonELM,
-    })
-  );
-  const surveyExecutor = new cql.Executor(
-    surveyLib,
-    new cql.CodeService(valueSetDB),
-    {
-      dataKey: instrumentKey,
-      id: getReportInstrumentIdByKey(instrumentKey),
+function executeELMForInstruments(arrayElmPromiseResult, bundle) {
+  if (!arrayElmPromiseResult) return [];
+  let evalResults = [];
+  arrayElmPromiseResult.forEach((o) => {
+    if (o.status === "rejected") return true;
+    const entries = Object.entries(o.value);
+    const qKey = entries[0][0];
+    const elm = entries[0][1];
+    if (!elm) {
+      return true;
     }
-  );
-  const surveyPatientSource = getPatientSource(FHIR_RELEASE_VERSION_4);
-  surveyPatientSource.loadBundles([bundle]);
-  let surveyResults;
-  try {
-    surveyResults = surveyExecutor.exec(surveyPatientSource);
-  } catch (e) {
-    surveyResults = null;
-    console.log(`Error executing CQL for ${instrumentKey} `, e);
-  }
-  return surveyResults;
+    let surveyLib = new cql.Library(
+      elm,
+      new cql.Repository({
+        FHIRHelpers: r4HelpersELM,
+        Common_LogicLibrary: r4SurveyCommonELM,
+      })
+    );
+    const surveyExecutor = new cql.Executor(
+      surveyLib,
+      new cql.CodeService(valueSetDB),
+      {
+        dataKey: qKey,
+        id: getReportInstrumentIdByKey(qKey),
+      }
+    );
+    const surveyPatientSource = cqlfhir.PatientSource.FHIRv400();
+    surveyPatientSource.loadBundles([bundle]);
+    let surveyResults;
+    try {
+      surveyResults = surveyExecutor.exec(surveyPatientSource);
+    } catch (e) {
+      surveyResults = null;
+      console.log(`Error executing CQL for ${qKey} `, e);
+    }
+    let evalSurveyResult;
+    if (surveyResults && surveyResults.patientResults) {
+      evalSurveyResult =
+        surveyResults.patientResults[
+          Object.keys(surveyResults.patientResults)[0]
+        ];
+      evalSurveyResult.dataKey = qKey;
+      evalResults.push(evalSurveyResult);
+    }
+    //debugging
+    console.log("evaluated results for ", qKey, evalSurveyResult);
+  });
+  return evalResults;
 }
 
-function executeELMForInstruments(patientBundle) {
+function getLibraryForInstruments() {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
   return INSTRUMENT_LIST.map((item) =>
@@ -293,46 +284,28 @@ function executeELMForInstruments(patientBundle) {
       const libPrefix = item.useDefaultELMLib
         ? "Default"
         : item.key.toUpperCase();
-      const STORAGE_KEY = `lib_${libPrefix}_${
-        getEnvVersionString() ?? new Date().toISOString()
-      }`;
-      if (
-        window &&
-        window.localStorage &&
-        window.localStorage.getItem(STORAGE_KEY)
-      ) {
-        elmJson = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
-      } else {
-        elmJson = await import(
-          `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
-        )
-          .then((module) => module.default)
-          .catch((e) => {
-            console.log(
-              "Issue occurred loading ELM lib for " +
-                item.key +
-                ". Will use default lib.",
-              e
-            );
-            elmJson = null;
-          });
+      elmJson = await import(
+        `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
+      )
+        .then((module) => module.default)
+        .catch((e) => {
+          console.log(
+            "Issue occurred loading ELM lib for " +
+              item.key +
+              ". Will use default lib.",
+            e
+          );
+          elmJson = null;
+        });
 
-        if (!elmJson) {
-          elmJson = await import(
-            `../cql/r4/survey_resources/Default_LogicLibrary.json`
-          ).then((module) => module.default);
-          console.log("default for " + item.key, elmJson);
-        }
-        if (elmJson && window && window.localStorage) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
-        }
+      if (!elmJson) {
+        elmJson = await import(
+          `../cql/r4/survey_resources/Default_LogicLibrary.json`
+        ).then((module) => module.default);
       }
-      const evalResults = await executeELMForInstrument(
-        item.key,
-        elmJson,
-        patientBundle
-      );
-      return evalResults;
+      return {
+        [item.key]: elmJson,
+      };
     })()
   );
 }
@@ -393,7 +366,7 @@ function getRequestURL(client, uri = "") {
   return serverURL + (!serverURL.endsWith("/") ? "/" : "") + uriToUse;
 }
 
-function doSearch(client, release, type, collector, resourceTypes = {}) {
+function doSearch(client, release, type, collector) {
   const params = new URLSearchParams();
   updateSearchParams(params, release, type);
 
@@ -419,14 +392,12 @@ function doSearch(client, release, type, collector, resourceTypes = {}) {
     }
     results
       .then(() => {
-        resourceTypes[type] = true;
         resolve(resources);
       })
       .catch((error) => {
         collector.push({ error: error, url: uri, type: type, data: error });
         // don't return the error as we want partial results if available
         // (and we don't want to halt the Promis.all that wraps this)
-        resourceTypes[type] = true;
         resolve(resources);
       });
   });
@@ -454,8 +425,8 @@ function processPage(client, uri, collector, resources) {
           const requestURL = getRequestURL(client, reuseURL.search);
           if (requestURL) o.url = requestURL;
         }
-        // if (o.relation === "next")
-        //   console.log("Next URL ", o.url)
+          // if (o.relation === "next")
+          //   console.log("Next URL ", o.url)
         return o;
       });
       url = bundle.link.find((l) => l.relation === "self").url;
