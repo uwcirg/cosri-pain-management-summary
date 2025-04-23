@@ -133,28 +133,22 @@ async function executeELM(collector, paramResourceTypes) {
               return doSearch(client, release, name, collector, resourceTypes);
             }
           )
-        ).then((requestResults) => {
-          if (isEmptyArray(requestResults)) {
-            return null;
-          }
-          let resources = [];
-          requestResults.forEach((result) => {
-            const { status, value } = result;
-            if (status === "rejected" || isEmptyArray(value)) return true;
-            resources = [...resources, ...getResourcesFromBundle(value)];
-          });
-          return {
-            resourceType: "Bundle",
-            entry: resources.map((r) => ({ resource: r })),
-          };
+        );
+      })
+      .then((requestResults) => {
+        if (isEmptyArray(requestResults)) {
+          return null;
+        }
+        let resources = [];
+        requestResults.forEach((result) => {
+          const { status, value } = result;
+          if (status === "rejected" || isEmptyArray(value)) return true;
+          resources = [...resources, ...getResourcesFromBundle(value)];
         });
-      })
-      .catch((e) => {
-        console.log(e);
-        throw new Error("Error processing requests");
-      })
-      .then((bundle) => {
-        patientBundle = bundle;
+        patientBundle = {
+          resourceType: "Bundle",
+          entry: resources.map((r) => ({ resource: r })),
+        };
         // return a promise containing survey evaluated data
         return Promise.allSettled([
           // main factors
@@ -164,6 +158,9 @@ async function executeELM(collector, paramResourceTypes) {
           // surey results
           ...(isReportEnabled() ? executeELMForInstruments(patientBundle) : []),
         ]);
+      })
+      .catch((e) => {
+        reject(e);
       })
       .then((results) => {
         resourceTypes["Report"] = true;

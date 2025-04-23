@@ -756,7 +756,7 @@
           }
         }
         .no-entries {
-          padding: 8px 16px 8px;
+          padding: 8px 0 8px;
           font-style: italic;
           color: $color-gray-light;
           margin-left: 24px;
@@ -814,7 +814,7 @@
           display: flex;
           align-items: center;
           border-bottom: 1px solid $color-gray-lighter;
-          padding: 12px 40px;
+          padding: 12px 24px;
           font-weight: 700;
           margin-bottom: 8px;
           .flag-nav {
@@ -823,8 +823,12 @@
         }
 
         .table {
+          padding-left: 8px;
           padding-top: 8px;
           padding-bottom: 12px;
+          &:has(.no-entries) {
+            padding-left: 0;
+          }
           td {
             vertical-align: bottom;
             line-height: 1.6;
