@@ -86,7 +86,6 @@ export default class SideNav extends Component {
             tabIndex={0}
             data-tooltip-id={`${navId}_tooltip`}
             data-tooltip-content={navToggleToolTip}
-            globalCloseEvents="scroll resize"
             //data-tooltip-hidden={!this.state.showNav}
           ></div>
           <Tooltip

@@ -29,6 +29,22 @@ const FHIR_RELEASE_VERSION_2 = 2;
 const FHIR_RELEASE_VERSION_4 = 4;
 const PATIENT_SUMMARY_KEY = "Summary";
 
+const getResourcesFromBundle = (bundle) => {
+  if (isEmptyArray(bundle)) return [];
+  let resources = [];
+  bundle.forEach((item) => {
+    if (String(item.resourceType).toLowerCase() === "bundle") {
+      if (item.entry) {
+        item.entry.forEach((o) => {
+          if (o.resource) resources.push(o.resource);
+          else resources.push(o);
+        });
+      }
+    } else resources.push(item);
+  });
+  return resources;
+};
+
 class VSACAwareCodeService extends cql.CodeService {
   // Override findValueSetsByOid to extract OID from VSAC URLS
   findValueSetsByOid(id) {
@@ -76,29 +92,41 @@ async function executeELM(collector, paramResourceTypes) {
   const INSTRUMENT_LIST = isReportEnabled() ? getReportInstrumentList() : null;
   const SURVEY_FHIR_RESOURCES = ["QuestionnaireResponse", "Questionnaire"];
   console.log("instrument list to be loaded for report: ", INSTRUMENT_LIST);
-  return new Promise((resolve) => {
-    const returnResults = FHIR.oauth2
+  const okayToLoadSurveyResources = () =>
+    FHIR_RELEASE_VERSION_4 && INSTRUMENT_LIST;
+  return new Promise((resolve, reject) => {
+    // First get our authorized client and send the FHIR release to the next step
+    FHIR.oauth2
       .ready()
       .then((clientArg) => {
         client = clientArg;
         return client.getFhirRelease();
+      })
+      .catch((e) => {
+        reject(e);
       })
       // then remember the release for later and get the release-specific library
       .then((releaseNum) => {
         release = releaseNum;
         library = getLibrary(release);
       })
+      .catch((e) => {
+        reject(e);
+      })
       // then query the FHIR server for the patient, sending it to the next step
       .then(() => client.patient.read())
+      .catch((e) => {
+        reject(e);
+      })
       // then gather all the patient's relevant resource instances and send them in a bundle to the next step
       .then((pt) => {
         collector.push({ data: pt, url: `Patient/${pt.id}` });
-        const shouldLoadSurveyResources =
-          FHIR_RELEASE_VERSION_4 && INSTRUMENT_LIST;
-        const surveyResources = shouldLoadSurveyResources
+        const surveyResources = okayToLoadSurveyResources()
           ? [...SURVEY_FHIR_RESOURCES, "Report"]
           : [];
-        // Don't return until all the requests have been resolved
+        //console.log("collector ", collector);
+        //console.log("resourceTypes ", resourceTypes);
+        // return all the requests have been resolved // rejected
         return Promise.allSettled(
           [...extractResourcesFromELM(library), ...surveyResources].map(
             (name) => {
@@ -111,146 +139,122 @@ async function executeELM(collector, paramResourceTypes) {
               return doSearch(client, release, name, collector, resourceTypes);
             }
           )
-        )
-          .then((requestResults) => {
-            const resources = [];
-            requestResults.forEach((result) => {
-              const { status, value } = result;
-              if (status === "rejected") return true;
-              if (!value || !value.length) return true;
-              value.forEach((item) => {
-                if (String(item.resourceType).toLowerCase() === "bundle") {
-                  if (item.entry) {
-                    item.entry.forEach((o) => {
-                      if (o.resource) resources.push(o.resource);
-                      else resources.push(o);
-                    });
-                  }
-                } else resources.push(item);
-              });
-            });
-            return {
-              resourceType: "Bundle",
-              entry: resources.map((r) => ({ resource: r })),
-            };
-          })
+        ).then((requestResults) => {
+          let resources = [];
+          requestResults.forEach((result) => {
+            const { status, value } = result;
+            if (status === "rejected") return true;
+            if (isEmptyArray(value)) return true;
+            resources = [...resources, ...getResourcesFromBundle(value)];
+          });
+          return {
+            resourceType: "Bundle",
+            entry: resources.map((r) => ({ resource: r })),
+          };
+        });
+      })
+      .then((bundle) => {
+        patientBundle = bundle;
+        // return a promise containing survey evaluated data
+        return Promise.allSettled([
+          // main factors
+          executeELMForFactors(patientBundle, release, library, collector),
+          // report
+          isReportEnabled() ? executeELMForReport(patientBundle) : null,
+          // surey results
+          ...(isReportEnabled() ? executeELMForInstruments(patientBundle) : []),
+        ])
+          .then(
+            (results) => {
+              resourceTypes["Report"] = true;
+              const factorsResults =
+                results[0].status !== "rejected" ? results[0].value : {};
+
+              let evalResults =
+                factorsResults && factorsResults.patientResults
+                  ? factorsResults.patientResults[
+                      Object.keys(factorsResults.patientResults)[0]
+                    ]
+                  : {};
+              // let evalResults =
+              //   results[0].status !== "rejected" ? results[0].value : {};
+              if (!evalResults[PATIENT_SUMMARY_KEY]) {
+                evalResults[PATIENT_SUMMARY_KEY] = {};
+              }
+              evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
+                results[1].status !== "rejected" ? results[1].value : null;
+              const surveyLibResults = results
+                .slice(2)
+                .filter((result) => !!result.value);
+              if (isEmptyArray(surveyLibResults)) {
+                resolve(evalResults);
+              }
+              const evaluatedSurveyResults = surveyLibResults
+                .filter((o) => o.value && o.value.patientResults)
+                .map(
+                  (o) =>
+                    o.value.patientResults[
+                      Object.keys(o.value.patientResults)[0]
+                    ]
+                );
+              evalResults[PATIENT_SUMMARY_KEY]["SurveySummary"] =
+                evaluatedSurveyResults;
+              //debug
+              console.log(
+                "final evaluated CQL results including surveys ",
+                evalResults
+              );
+              resolve(evalResults);
+            },
+            (e) => {
+              console.log(e);
+              reject(
+                "Error occurred executing report library logics. See console for detail"
+              );
+            }
+          )
           .catch((e) => {
-            console.log("Error occurred processing data ", e);
+            console.log("Error processing instrument ELM: ", e);
+            reject("error processing instrument ELM. See console for details.");
           });
       })
-      // then execute the library and return the results (wrapped in a Promise)
-      .then((bundle) => {
-        const patientSource = getPatientSource(release);
-        const codeService = new VSACAwareCodeService(valueSetDB);
-        const executor = new cql.Executor(library, codeService);
-        //debugging
-        console.log("bundle loaded? ", bundle);
-        patientSource.loadBundles([bundle]);
-        patientBundle = bundle;
-        let execResults;
-        try {
-          execResults = executor.exec(patientSource);
-        } catch (e) {
-          console.log("Error occurred executing CQL ", e);
-          if (collector) {
-            collector.forEach((item) => {
-              if (
-                item.data &&
-                String(item.data.resourceType).toLowerCase() === "bundle"
-              )
-                item.error =
-                  (item.error ? item.error + " " : "") +
-                  "Unable to process data. CQL execution error. " +
-                  (typeof e?.message === "string"
-                    ? e?.message
-                    : " Please see console for detail.");
-            });
-          }
-          execResults = null;
-        }
-        return execResults;
-      })
-      .then((execResults) => {
-        //debugging
-        console.table("CQL execution results ", execResults);
-        let evalResults =
-          execResults && execResults.patientResults
-            ? execResults.patientResults[
-                Object.keys(execResults.patientResults)[0]
-              ]
-            : {};
-        return evalResults;
-      })
-      .then((evalResults) => {
-        //debugging
-        console.table("CQL execution results ", evalResults);
-
-        if (!isReportEnabled()) return evalResults;
-
-        // return a promise containing survey evaluated data
-        return new Promise((resolve, reject) => {
-          if (!evalResults[PATIENT_SUMMARY_KEY]) {
-            evalResults[PATIENT_SUMMARY_KEY] = {};
-          }
-          Promise.allSettled([
-            executeELMForReport(patientBundle),
-            ...executeELMForInstruments(patientBundle),
-          ])
-            .then(
-              (results) => {
-                resourceTypes["Report"] = true;
-                let reportResults =
-                  results[0].status !== "rejected" ? results[0].value : null;
-                if (reportResults && reportResults.patientResults)
-                  reportResults =
-                    reportResults.patientResults[
-                      Object.keys(reportResults.patientResults)[0]
-                    ].Summary;
-                evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
-                  reportResults;
-                const surveyLibResults = results
-                  .slice(1)
-                  .filter((result) => !!result.value);
-                if (isEmptyArray(surveyLibResults)) {
-                  resolve(evalResults);
-                }
-                const evaluatedSurveyResults = surveyLibResults
-                  .filter((o) => o.value && o.value.patientResults)
-                  .map(
-                    (o) =>
-                      o.value.patientResults[
-                        Object.keys(o.value.patientResults)[0]
-                      ]
-                  );
-                const SURVEY_SUMMARY_KEY = "SurveySummary";
-
-                if (!evalResults[PATIENT_SUMMARY_KEY]) {
-                  evalResults[PATIENT_SUMMARY_KEY] = {};
-                }
-                evalResults[PATIENT_SUMMARY_KEY][SURVEY_SUMMARY_KEY] =
-                  evaluatedSurveyResults;
-                //debug
-                console.log(
-                  "final evaluated CQL results including surveys ",
-                  evaluatedSurveyResults
-                );
-                resolve(evalResults);
-              },
-              (e) => {
-                console.log(e);
-                reject(
-                  "Error occurred executing report library logics. See console for detail"
-                );
-              }
-            )
-            .catch((e) => {
-              console.error("error occurred processing report data ", e);
-              reject(e);
-            });
-        });
-      });
-    resolve(returnResults);
+      .catch((e) => reject(e));
+  }).catch((e) => {
+    reject(e);
   });
+}
+
+async function executeELMForFactors(bundle, release, library, collector) {
+  if (!bundle) return null;
+  const patientSource = getPatientSource(release);
+  const codeService = new cql.CodeService(valueSetDB);
+  const executor = new cql.Executor(library, codeService);
+  //debugging
+  console.log("bundle loaded? ", bundle);
+  patientSource.loadBundles([bundle]);
+  let execResults;
+  try {
+    execResults = executor.exec(patientSource);
+  } catch (e) {
+    console.log("Error occurred executing CQL ", e);
+    if (collector) {
+      collector.forEach((item) => {
+        if (
+          item.data &&
+          String(item.data.resourceType).toLowerCase() === "bundle"
+        )
+          item.error =
+            (item.error ? item.error + " " : "") +
+            "Unable to process data. CQL execution error. " +
+            (typeof e?.message === "string"
+              ? e?.message
+              : " Please see console for detail.");
+      });
+    }
+    execResults = null;
+    throw new Error("Unable to execute CQL due to errors.");
+  }
+  return execResults;
 }
 
 async function executeELMForReport(bundle) {
@@ -279,7 +283,7 @@ async function executeELMForReport(bundle) {
   patientSource.loadBundles([bundle]);
   let results;
   try {
-    results = reportExecutor.exec(patientSource);
+    results = await reportExecutor.exec(patientSource);
   } catch (e) {
     results = null;
     console.log(`Error executing CQL for report `, e);
@@ -288,7 +292,7 @@ async function executeELMForReport(bundle) {
 }
 
 async function executeELMForInstrument(instrumentKey, libraryElm, bundle) {
-  if (!instrumentKey || !libraryElm) return null;
+  if (!instrumentKey || !libraryElm || !bundle) return null;
   let surveyLib = new cql.Library(
     libraryElm,
     new cql.Repository({
