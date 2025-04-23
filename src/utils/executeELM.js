@@ -280,7 +280,7 @@ async function executeELMForReport(bundle) {
   );
   const reportExecutor = new cql.Executor(
     reportLib,
-    new cql.CodeService(valueSetDB)
+    new cql.CodeService({})
   );
   const patientSource = cqlfhir.PatientSource.FHIRv401();
   patientSource.loadBundles([bundle]);
@@ -305,7 +305,7 @@ async function executeELMForInstrument(instrumentKey, libraryElm, bundle) {
   );
   const surveyExecutor = new cql.Executor(
     surveyLib,
-    new VSACAwareCodeService(valueSetDB),
+    new VSACAwareCodeService({}),
     {
       dataKey: instrumentKey,
       id: getReportInstrumentIdByKey(instrumentKey),
