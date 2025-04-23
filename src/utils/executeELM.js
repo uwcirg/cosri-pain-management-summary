@@ -54,36 +54,30 @@ async function executeELM(collector, oResourceTypes) {
   console.log("instrument list to be loaded for report: ", INSTRUMENT_LIST);
   const okayToLoadSurveyResources = () =>
     FHIR_RELEASE_VERSION_4 && INSTRUMENT_LIST;
+  const surveyResources = okayToLoadSurveyResources()
+    ? [...SURVEY_FHIR_RESOURCES, "Report"]
+    : [];
   return new Promise((resolve, reject) => {
     // First get our authorized client and send the FHIR release to the next step
     FHIR.oauth2
       .ready()
       .then((clientArg) => {
         client = clientArg;
-        return client.getFhirRelease();
+        return Promise.all([client.getFhirRelease(), client.patient.read()]);
       })
       .catch((e) => {
-        reject(e);
+        console.log("client requests error ", e);
+        throw new Error("Client requests error.");
       })
       // then remember the release for later and get the release-specific library
-      .then((releaseNum) => {
-        release = releaseNum;
+      .then((clientResults) => {
+        if (isEmptyArray(clientResults)) {
+          throw new Error("No results returned from client requests.");
+        }
+        release = clientResults[0];
         library = getLibrary(release);
-      })
-      .catch((e) => {
-        reject(e);
-      })
-      // then query the FHIR server for the patient, sending it to the next step
-      .then(() => client.patient.read())
-      .catch((e) => {
-        reject(e);
-      })
-      // then gather all the patient's relevant resource instances and send them in a bundle to the next step
-      .then((pt) => {
+        const pt = clientResults[1];
         collector.push({ data: pt, url: `Patient/${pt.id}` });
-        const surveyResources = okayToLoadSurveyResources()
-          ? [...SURVEY_FHIR_RESOURCES, "Report"]
-          : [];
         //console.log("collector ", collector);
         //console.log("resourceTypes ", resourceTypes);
         // return all the requests have been resolved // rejected
@@ -100,11 +94,13 @@ async function executeELM(collector, oResourceTypes) {
             }
           )
         ).then((requestResults) => {
+          if (isEmptyArray(requestResults)) {
+            return null;
+          }
           let resources = [];
           requestResults.forEach((result) => {
             const { status, value } = result;
-            if (status === "rejected") return true;
-            if (isEmptyArray(value)) return true;
+            if (status === "rejected" || isEmptyArray(value)) return true;
             resources = [...resources, ...getResourcesFromBundle(value)];
           });
           return {
@@ -114,7 +110,8 @@ async function executeELM(collector, oResourceTypes) {
         });
       })
       .catch((e) => {
-        reject(e);
+        console.log(e);
+        throw new Error("Error processing requests");
       })
       .then((bundle) => {
         patientBundle = bundle;
@@ -127,49 +124,41 @@ async function executeELM(collector, oResourceTypes) {
           // surey results
           ...(isReportEnabled() ? executeELMForInstruments(patientBundle) : []),
         ])
-          .then(
-            (results) => {
-              resourceTypes["Report"] = true;
-              let evalResults =
-                results[0].status !== "rejected" ? results[0].value : {};
-              if (!evalResults[PATIENT_SUMMARY_KEY]) {
-                evalResults[PATIENT_SUMMARY_KEY] = {};
-              }
-              evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
-                results[1].status !== "rejected" ? results[1].value : null;
-              const surveyLibResults = results
-                .slice(2)
-                .filter((result) => !!result.value);
-              if (isEmptyArray(surveyLibResults)) {
-                resolve(evalResults);
-              }
-              const evaluatedSurveyResults = surveyLibResults
-                .filter((o) => o.value && o.value.patientResults)
-                .map(
-                  (o) =>
-                    o.value.patientResults[
-                      Object.keys(o.value.patientResults)[0]
-                    ]
-                );
-              evalResults[PATIENT_SUMMARY_KEY]["SurveySummary"] =
-                evaluatedSurveyResults;
-              //debug
-              console.log(
-                "final evaluated CQL results including surveys ",
-                evalResults
-              );
-              resolve(evalResults);
-            },
-            (e) => {
-              console.log(e);
-              reject(
-                "Error occurred executing report library logics. See console for detail"
-              );
+          .then((results) => {
+            resourceTypes["Report"] = true;
+            let evalResults =
+              results[0].status !== "rejected" ? results[0].value : {};
+            if (!evalResults[PATIENT_SUMMARY_KEY]) {
+              evalResults[PATIENT_SUMMARY_KEY] = {};
             }
-          )
+            evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
+              results[1].status !== "rejected" ? results[1].value : null;
+            const surveyLibResults = results
+              .slice(2)
+              .filter((result) => !!result.value);
+            if (isEmptyArray(surveyLibResults)) {
+              resolve(evalResults);
+            }
+            const evaluatedSurveyResults = surveyLibResults
+              .filter((o) => o.value && o.value.patientResults)
+              .map(
+                (o) =>
+                  o.value.patientResults[Object.keys(o.value.patientResults)[0]]
+              );
+            evalResults[PATIENT_SUMMARY_KEY]["SurveySummary"] =
+              evaluatedSurveyResults;
+            //debug
+            console.log(
+              "final evaluated CQL results including surveys ",
+              evalResults
+            );
+            resolve(evalResults);
+          })
           .catch((e) => {
             console.log("Error processing instrument ELM: ", e);
-            reject("error processing instrument ELM. See console for details.");
+            throw new Error(
+              "error processing instrument ELM. See console for details."
+            );
           });
       })
       .catch((e) => {
@@ -234,10 +223,7 @@ async function executeELMForReport(bundle) {
       FHIRHelpers: r4HelpersELM,
     })
   );
-  const reportExecutor = new cql.Executor(
-    reportLib,
-    new cql.CodeService(valueSetDB)
-  );
+  const reportExecutor = new cql.Executor(reportLib, new cql.CodeService({}));
   const patientSource = cqlfhir.PatientSource.FHIRv400();
   patientSource.loadBundles([bundle]);
   let results;
@@ -262,14 +248,10 @@ async function executeELMForInstrument(instrumentKey, libraryElm, bundle) {
       Common_LogicLibrary: r4SurveyCommonELM,
     })
   );
-  const surveyExecutor = new cql.Executor(
-    surveyLib,
-    new cql.CodeService(valueSetDB),
-    {
-      dataKey: instrumentKey,
-      id: getReportInstrumentIdByKey(instrumentKey),
-    }
-  );
+  const surveyExecutor = new cql.Executor(surveyLib, new cql.CodeService({}), {
+    dataKey: instrumentKey,
+    id: getReportInstrumentIdByKey(instrumentKey),
+  });
   const surveyPatientSource = getPatientSource(FHIR_RELEASE_VERSION_4);
   surveyPatientSource.loadBundles([bundle]);
   let surveyResults;
