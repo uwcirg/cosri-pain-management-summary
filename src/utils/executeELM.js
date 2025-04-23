@@ -153,6 +153,9 @@ async function executeELM(collector, paramResourceTypes) {
           };
         });
       })
+      .catch((e) => {
+        reject(e);
+      })
       .then((bundle) => {
         patientBundle = bundle;
         // return a promise containing survey evaluated data
@@ -348,6 +351,7 @@ async function getDefaultReportElmLib() {
 function executeELMForInstruments(patientBundle) {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
+  if (!patientBundle) return null;
   return INSTRUMENT_LIST.map((item) =>
     (async () => {
       let elmJson = null;
