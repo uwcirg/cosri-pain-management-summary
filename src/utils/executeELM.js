@@ -167,22 +167,27 @@ async function executeELM(collector, paramResourceTypes) {
       })
       .then((results) => {
         resourceTypes["Report"] = true;
-        const factorsResults =
-          results[0].status !== "rejected" ? results[0].value : {};
-
-        let evalResults =
-          factorsResults && factorsResults.patientResults
-            ? factorsResults.patientResults[
-                Object.keys(factorsResults.patientResults)[0]
-              ]
+        if (results[0].status === "rejected") {
+          console.log("Executing ELM for Factors error ", results[0].reason);
+        }
+        const getPatientResults = (result) =>
+          result && result.patientResults
+            ? result.patientResults[Object.keys(result.patientResults)[0]]
             : {};
-        // let evalResults =
-        //   results[0].status !== "rejected" ? results[0].value : {};
+        let evalResults = getPatientResults(
+          results[0].status !== "rejected" ? results[0].value : {}
+        );
         if (!evalResults[PATIENT_SUMMARY_KEY]) {
           evalResults[PATIENT_SUMMARY_KEY] = {};
         }
+        if (results[1].status == "rejected") {
+          console.log("Executing ELM for Report error ", results[1].reason);
+        }
+        const reportResults = getPatientResults(
+          results[1].status !== "rejected" ? results[1].value : null
+        );
         evalResults[PATIENT_SUMMARY_KEY]["ReportSummary"] =
-          results[1].status !== "rejected" ? results[1].value : null;
+          reportResults.Summary ? reportResults.Summary : null;
         const surveyLibResults = results
           .slice(2)
           .filter((result) => !!result.value);
@@ -245,9 +250,7 @@ async function executeELMForFactors(bundle, release, library, collector) {
 
 async function executeELMForReport(bundle) {
   if (!bundle) return null;
-  let r4ReportCommonELM = await import(
-    "../cql/r4/Report_LogicLibrary.json"
-  )
+  let r4ReportCommonELM = await import("../cql/r4/Report_LogicLibrary.json")
     .then((module) => module.default)
     .catch((e) => {
       console.log("Issue occurred loading ELM lib for report", e);
@@ -256,7 +259,12 @@ async function executeELMForReport(bundle) {
 
   if (!r4ReportCommonELM) return null;
 
-  let reportLib = new cql.Library(r4ReportCommonELM);
+  let reportLib = new cql.Library(
+    r4ReportCommonELM,
+    new cql.Repository({
+      FHIRHelpers: r4HelpersELM,
+    })
+  );
   const reportExecutor = new cql.Executor(
     reportLib,
     new VSACAwareCodeService({})
@@ -265,12 +273,11 @@ async function executeELMForReport(bundle) {
   patientSource.loadBundles([bundle]);
   let results;
   try {
-    results = await reportExecutor.exec(patientSource);
+    results = reportExecutor.exec(patientSource);
   } catch (e) {
     results = null;
     console.log(`Error executing CQL for report `, e);
   }
-  console.log("report results ", results);
   return results;
 }
 
