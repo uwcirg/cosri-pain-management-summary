@@ -43,10 +43,10 @@ export default class Disclaimer extends Component {
           role="button"
           tabIndex={0}
         >
-          <h3 className="title no-margins">
+          <div className="title">
             COSRI development and open source software details
-          </h3>
-          <button className="close-button button-link" title="toggle show/hide">
+          </div>
+          <button className="close-button" title="toggle show/hide">
             [show/hide]
           </button>
           <div className="content">

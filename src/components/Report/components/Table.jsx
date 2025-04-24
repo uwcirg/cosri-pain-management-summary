@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import ReactTable from "react-table";
 import * as formatit from "../../../helpers/formatit";
 import * as sortit from "../../../helpers/sortit";
 import { isEmptyArray } from "../../../helpers/utility";

@@ -213,7 +213,7 @@ export default class Summary extends Component {
           name={`${sectionId}_anchor`}
           href={`#${sectionId}`}
           tabIndex={0}
-          aria-label={`Top of ${sectionId}`}
+          aria-hidden="true"
         ></a>
       </div>
     );
@@ -272,7 +272,6 @@ export default class Summary extends Component {
             <FontAwesomeIcon
               className="flag"
               icon={faExclamationCircle}
-              aria-hidden={false}
               tabIndex={0}
             />{" "}
             <span className="text">{item}</span>
@@ -318,7 +317,7 @@ export default class Summary extends Component {
     let columns = [];
     columns.push({
       id: "flagged",
-      Header: <span className="flag__span"></span>,
+      Header: <span aria-label="flag" className="flag__span"></span>,
       accessor: (entry) =>
         this.getEntryFlagText(section, subSection.dataKey, entry),
       Cell: (props) => {
@@ -334,7 +333,6 @@ export default class Summary extends Component {
             icon={faExclamationCircle}
             title={displayText ? displayText : "flag"}
             tabIndex={0}
-            aria-hidden={false}
           />
         );
       },
@@ -427,6 +425,7 @@ export default class Summary extends Component {
     return (
       <div
         key={`table_wrapper_${index}`}
+        role="table"
         aria-label={subSection.name}
         aria-describedby={customProps.id}
         className={`table`}
@@ -540,7 +539,6 @@ export default class Summary extends Component {
                   id={`alert_icon_${index}`}
                   data-tooltip-id={`alert_summary_${index}_tooltip`}
                   data-tooltip-content={`Go to ${item.name} section`}
-                  aria-hidden={false}
                 />
                 <span className="text">{item.text}</span>
               </a>
@@ -650,7 +648,6 @@ export default class Summary extends Component {
                     icon={faCircle}
                     title="flag"
                     tabIndex={0}
-                    aria-hidden={false}
                   />
                 )}
                 <span
@@ -806,7 +803,6 @@ export default class Summary extends Component {
                   id={`${section}_tooltipicon`}
                   data-tooltip-id={`${section}_tooltip_alert_content`}
                   data-tooltip-content={flaggedText}
-                  aria-hidden={false}
                 />
                 <Tooltip
                   id={`${section}_tooltip_alert_content`}

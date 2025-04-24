@@ -24,13 +24,6 @@ body.fixed {
 }
 h3 {
   font-size: 1.3em;
-  &.title {
-    font-size: 1.15em;
-  }
-  &.no-margins {
-    margin-block-start: 0;
-    margin-block-end: 0;
-  }
 }
 h3:focus {
   outline: none;
