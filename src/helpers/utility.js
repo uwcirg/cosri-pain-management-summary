@@ -142,20 +142,7 @@ export function isEnvEpicQueries() {
   return envVar && String(envVar).toLowerCase() === "true";
 }
 
-export function getEnvInstrumentList() {
-  return getEnv(`${ENV_VAR_PREFIX}_INSTRUMENT_IDS`);
-}
-
 export function getReportInstrumentList() {
-  const envInstrumentList = getEnvInstrumentList();
-  if (envInstrumentList)
-    return envInstrumentList
-      .split(",")
-      .map((item) => item.trim())
-      .map((o) => ({
-        id: o,
-        key: o.replace("CIRG-", ""),
-      }));
   const qList = reportSummarySections
     .filter((section) => section.questionnaires)
     .map((section) => section.questionnaires);

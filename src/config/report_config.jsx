@@ -10,6 +10,15 @@ import RankedResponses from "../components/Report/components/RankedResponses";
 import Procedures from "../components/Report/components/Procedures";
 import Referrals from "../components/Report/components/Referrals";
 import MedicationList from "../components/Report/components/MedicationList";
+import Default_LogicLibrary from "../cql/r4/survey_resources/Default_LogicLibrary.json";
+import BodyDiagram_LogicLibrary from "../cql/r4/survey_resources/PAINTRACKER-LOCATION-BODY-DIAGRAM_LogicLibrary.json";
+import GAD7_LogicLibrary from "../cql/r4/survey_resources/GAD7_LogicLibrary.json";
+import PC_PTSD_5_LogicLibrary from "../cql/r4/survey_resources/PC-PTSD-5_LogicLibrary.json";
+import PEG_LogicLibrary from "../cql/r4/survey_resources/PEG_LogicLibrary.json";
+import PHQ9_LogicLibrary from "../cql/r4/survey_resources/PHQ9_LogicLibrary.json";
+import PHQ4_LogicLibrary from "../cql/r4/survey_resources/PHQ-4_LogicLibrary.json";
+import PROMIS_LogicLibrary from "../cql/r4/survey_resources/PROMIS-GLOBAL_LogicLibrary.json";
+import STOP_LogicLibrary from "../cql/r4/survey_resources/PAINTRACKER-STOP_LogicLibrary.json";
 
 const iconProps = {
   width: 35,
@@ -38,6 +47,7 @@ const reportConfig = [
       {
         id: "CIRG-PainTracker-Location-Body-Diagram",
         key: BODY_DIAGRAM_DATA_KEY,
+        library: BodyDiagram_LogicLibrary
       },
     ],
     icon: (props) => (
@@ -60,7 +70,7 @@ const reportConfig = [
       {
         id: "CIRG-PainTracker-GE",
         key: GE_DATA_KEY,
-        useDefaultELMLib: true
+        library: Default_LogicLibrary
       },
     ],
     //status: "inactive",
@@ -90,6 +100,7 @@ const reportConfig = [
       {
         id: "CIRG-PEG",
         key: PEG_DATA_KEY,
+        library: PEG_LogicLibrary
       },
     ],
     icon: (props) => (
@@ -172,26 +183,32 @@ const reportConfig = [
       {
         id: "CIRG-PHQ9",
         key: PHQ9_DATA_KEY,
+        library: PHQ9_LogicLibrary
       },
       {
         id: "CIRG-GAD7",
         key: GAD7_DATA_KEY,
+        library: GAD7_LogicLibrary
       },
       {
         id: "CIRG-PHQ-4",
         key: PHQ4_DATA_KEY,
+        library: PHQ4_LogicLibrary
       },
       {
         id: "CIRG-PC-PTSD-5",
         key: PCPTSD5_DATA_KEY,
+        library: PC_PTSD_5_LogicLibrary
       },
       {
         id: "CIRG-PROMIS-GLOBAL",
         key: PROMISGLOBAL_DATA_KEY,
+        library: PROMIS_LogicLibrary
       },
       {
         id: "CIRG-PainTracker-STOP",
         key: STOP_DATA_KEY,
+        library: STOP_LogicLibrary
       },
     ],
     icon: (props) => (

@@ -307,67 +307,15 @@ async function executeELMForInstrument(instrumentKey, libraryElm, bundle) {
   return surveyResults;
 }
 
-async function getDefaultSurveyElmLib() {
-  const STORAGE_KEY = "default_reportLib";
-  if (
-    window &&
-    window.sessionStorage &&
-    window.sessionStorage.getItem(STORAGE_KEY)
-  ) {
-    return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY));
-  }
-  let elmJson = await import(
-    `../cql/r4/survey_resources/Default_LogicLibrary.json`
-  )
-    .then((module) => module.default)
-    .catch((e) => {
-      console.log("Error importing default report library ", e);
-      elmJson = null;
-    });
-  if (elmJson) {
-    if (window && window.sessionStorage) {
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(elmJson));
-    }
-  }
-  return elmJson;
-}
-
 function executeELMForInstruments(patientBundle) {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
   if (!patientBundle) return null;
   return INSTRUMENT_LIST.map((item) =>
     (async () => {
-      let elmJson = null;
-      const libPrefix = item.useDefaultELMLib
-        ? "Default"
-        : item.key.toUpperCase();
-
-      if (libPrefix === "Default") {
-        elmJson = await getDefaultSurveyElmLib();
-      } else {
-        elmJson = await import(
-          `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
-        )
-          .then((module) => module.default)
-          .catch((e) => {
-            console.log(
-              "Issue occurred loading ELM lib for " +
-                item.key +
-                ". Will use default lib.",
-              e
-            );
-            elmJson = null;
-          });
-      }
-
-      if (!elmJson) {
-        elmJson = await getDefaultSurveyElmLib();
-      }
-
       const evalResults = await executeELMForInstrument(
         item.key,
-        elmJson,
+        item.library,
         patientBundle
       );
       return evalResults;
