@@ -60,11 +60,17 @@ export default defineConfig({
           ) {
             return "r4";
           }
+          if (id.includes("react")) {
+            return "react-chunk"; //  Group all JSON files into a single chunk named "json-chunk"
+          }
           if (id.includes("node_modules")) {
             return "vendor";
           }
           if (id.includes("Report")) {
             return "report"; // Split report components into their own chunk
+          }
+          if (id.endsWith(".json")) {
+            return "json-chunk"; //  Group all JSON files into a single chunk named "json-chunk"
           }
         },
       },
@@ -83,3 +89,4 @@ export default defineConfig({
     },
   },
 });
+
