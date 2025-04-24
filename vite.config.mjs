@@ -63,8 +63,8 @@ export default defineConfig({
           if (id.includes("node_modules")) {
             return "vendor";
           }
-          if (id.includes("config")) {
-            return "config-chunk";
+          if (/src[/\\]config[/\\]report\_config\.js/.test(id)) {
+            return "report-config-chunk";
           }
         },
       },
