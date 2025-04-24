@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-// import ReactTooltip from "react-tooltip";
 import tocbot from "tocbot";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";

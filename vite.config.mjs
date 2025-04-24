@@ -70,7 +70,7 @@ export default defineConfig({
             return "report"; // Split report components into their own chunk
           }
           if (id.endsWith(".json")) {
-            return "json-chunk"; //  Group all JSON files into a single chunk named "json-chunk"
+            return "logiclib-json-chunk"; //  Group all JSON files into a single chunk named "json-chunk"
           }
         },
       },

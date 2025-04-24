@@ -307,7 +307,7 @@ async function executeELMForInstrument(instrumentKey, libraryElm, bundle) {
   return surveyResults;
 }
 
-async function getDefaultReportElmLib() {
+async function getDefaultSurveyElmLib() {
   const STORAGE_KEY = "default_reportLib";
   if (
     window &&
@@ -344,7 +344,7 @@ function executeELMForInstruments(patientBundle) {
         : item.key.toUpperCase();
 
       if (libPrefix === "Default") {
-        elmJson = await getDefaultReportElmLib();
+        elmJson = await getDefaultSurveyElmLib();
       } else {
         elmJson = await import(
           `../cql/r4/survey_resources/${libPrefix}_LogicLibrary.json`
@@ -362,8 +362,7 @@ function executeELMForInstruments(patientBundle) {
       }
 
       if (!elmJson) {
-        elmJson = await getDefaultReportElmLib();
-        console.log("default for " + item.key, elmJson);
+        elmJson = await getDefaultSurveyElmLib();
       }
 
       const evalResults = await executeELMForInstrument(
