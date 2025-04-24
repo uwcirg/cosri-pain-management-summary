@@ -166,10 +166,10 @@ export default class DevTools extends Component {
 
     return (
       <div className="dev-tools">
-        <h4>
+        <h3 className="title">
           Development Tools{" "}
-          <button onClick={this.toggleDevTools}>[show/hide]</button>
-        </h4>
+          <button className="button-link" onClick={this.toggleDevTools}>[show/hide]</button>
+        </h3>
 
         <div className="dev-tools__disclaimer">
           These development tools are for troubleshooting issues and intended to

@@ -987,7 +987,7 @@
         .close-button {
           position: relative;
           left: 4px;
-          color: $color-blue-darker;
+          color: $link-color;
           cursor: pointer;
           font-weight: 600;
           background-color: transparent;
@@ -1108,10 +1108,10 @@
     }
 
     .dev-tools {
-      margin: 24px;
+      margin: 8px 24px;
 
       &__disclaimer {
-        margin-top: -20px;
+        margin-top: -12px;
       }
 
       button {
