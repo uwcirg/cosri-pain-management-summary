@@ -90,7 +90,7 @@
   },
   "scripts": {
     "start": "vite --port 8000",
-    "build": "vite build",
+    "build": "vite build --mode=production",
     "serve": "vite preview --port 8000",
     "test": "vitest",
     "predeploy": "npm run build",
