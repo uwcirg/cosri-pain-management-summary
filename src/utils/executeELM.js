@@ -43,7 +43,7 @@ const getResourcesFromBundle = (bundle) => {
       }
     } else resources.push(item);
   });
-  return resources;
+  return resources.map((r) => ({ resource: r }));
 };
 
 class VSACAwareCodeService extends cql.CodeService {
@@ -140,15 +140,18 @@ async function executeELM(collector, paramResourceTypes) {
         if (isEmptyArray(requestResults)) {
           return null;
         }
-        let resources = [];
-        requestResults.forEach((result) => {
-          const { status, value } = result;
-          if (status === "rejected" || isEmptyArray(value)) return true;
-          resources = [...resources, ...getResourcesFromBundle(value)];
-        });
+        let resources = requestResults
+          .filter(
+            (result) =>
+              result.state !== "rejected" && !isEmptyArray(result.value)
+          )
+          .map((result) => {
+            return getResourcesFromBundle(result.value);
+          })
+          .flat();
         patientBundle = {
           resourceType: "Bundle",
-          entry: resources.map((r) => ({ resource: r })),
+          entry: resources,
         };
         // return a promise containing survey evaluated data
         return Promise.allSettled([
