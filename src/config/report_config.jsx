@@ -400,7 +400,7 @@ const reportConfig = [
       {
         id: "CIRG-PainTracker-TRT",
         key: TRT_DATA_KEY,
-        useDefaultELMLib: true
+        library: Default_LogicLibrary
       },
     ],
     icon: (props) => (

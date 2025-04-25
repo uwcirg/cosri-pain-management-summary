@@ -38,6 +38,7 @@ export default defineConfig({
     },
   },
   build: {
+    sourcemap: true,
     // default chunk size limit is 500, but that's nearly impossible due to large JSON files
     chunkSizeWarningLimit: 1500,
     // specify rollup options to enable multiple entry points and break chunks up to smaller sizes
@@ -66,7 +67,7 @@ export default defineConfig({
           if (/src[/\\]config[/\\]report\_config\.js/.test(id)) {
             return "report-config-chunk";
           }
-        },
+        }
       },
     },
   },
