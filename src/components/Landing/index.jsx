@@ -509,7 +509,7 @@ export default class Landing extends Component {
                 } ${tabs.length > 1 ? "multi-tabs" : ""}`}
                 key={`tab-panel_${item}`}
               >
-                {item === "overview" &&
+                {item === "overview" && 
                   this.renderSummary(summary, sectionFlags)}
                 {item === "report" && (
                   <Report

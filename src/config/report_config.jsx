@@ -18,6 +18,7 @@ import PEG_LogicLibrary from "../cql/r4/survey_resources/PEG_LogicLibrary.json";
 import PHQ9_LogicLibrary from "../cql/r4/survey_resources/PHQ9_LogicLibrary.json";
 import PHQ4_LogicLibrary from "../cql/r4/survey_resources/PHQ-4_LogicLibrary.json";
 import PROMIS_LogicLibrary from "../cql/r4/survey_resources/PROMIS-GLOBAL_LogicLibrary.json";
+import REPORT_LogicLibrary from "../cql/r4/Report_LogicLibrary.json";
 import STOP_LogicLibrary from "../cql/r4/survey_resources/PAINTRACKER-STOP_LogicLibrary.json";
 
 const iconProps = {
@@ -38,6 +39,7 @@ export const TRT_DATA_KEY = "PAINTRACKER-TRT";
 export const PROCECURE_DATA_KEY = "PROCEDURE_HISTORY";
 export const REFERRAL_DATA_KEY = "REFERRAL_HISTORY";
 export const MEDICATION_LIST_DATA_KEY = "MedicationList";
+export const REPORT_LOGIC_LIBRARY = REPORT_LogicLibrary;
 
 const reportConfig = [
   {

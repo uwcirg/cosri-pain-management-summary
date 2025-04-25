@@ -18,6 +18,7 @@ import {
   isEnvEpicQueries,
   getReportInstrumentList,
   getReportInstrumentIdByKey,
+  getReportLogicLibrary,
   isEmptyArray,
   isReportEnabled,
 } from "../helpers/utility";
@@ -247,13 +248,7 @@ async function executeELMForFactors(bundle, release, library, collector) {
 
 async function executeELMForReport(bundle) {
   if (!bundle) return null;
-  let r4ReportCommonELM = await import("../cql/r4/Report_LogicLibrary.json")
-    .then((module) => module.default)
-    .catch((e) => {
-      console.log("Issue occurred loading ELM lib for report", e);
-      r4ReportCommonELM = null;
-    });
-
+  let r4ReportCommonELM = getReportLogicLibrary();
   if (!r4ReportCommonELM) return null;
 
   let reportLib = new cql.Library(
@@ -311,9 +306,9 @@ function executeELMForInstruments(patientBundle) {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
   if (!patientBundle) return null;
-  return INSTRUMENT_LIST.map((item) =>
+  return INSTRUMENT_LIST.map((item) => 
     (async () => {
-      const evalResults = await executeELMForInstrument(
+      const evalResults = executeELMForInstrument(
         item.key,
         item.library,
         patientBundle
@@ -413,7 +408,6 @@ function doSearch(client, release, type, collector, resourceTypes = {}) {
         resourceTypes[type] = true;
         // don't return the error as we want partial results if available
         // (and we don't want to halt the Promis.all that wraps this)
-        resourceTypes[type] = true;
         resolve(resources);
       });
   });

@@ -1,6 +1,7 @@
 import moment from "moment";
 import { toBlob, toJpeg } from "html-to-image";
 import { getEnv, ENV_VAR_PREFIX } from "../utils/envConfig";
+import { REPORT_LOGIC_LIBRARY } from "../config/report_config";
 import reportSummarySections from "../config/report_config";
 import { shortDateRE, dateREZ } from "./formatit";
 import { getTokenInfoFromStorage } from "./timeout";
@@ -140,6 +141,10 @@ export function isNumber(target) {
 export function isEnvEpicQueries() {
   const envVar = getEnv(`${ENV_VAR_PREFIX}_EPIC_SUPPORTED_QUERIES`);
   return envVar && String(envVar).toLowerCase() === "true";
+}
+
+export function getReportLogicLibrary() {
+  return REPORT_LOGIC_LIBRARY;
 }
 
 export function getReportInstrumentList() {
