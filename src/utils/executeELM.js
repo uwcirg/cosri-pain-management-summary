@@ -164,7 +164,6 @@ async function executeELM(collector, paramResourceTypes) {
         reject(e);
       })
       .then((results) => {
-        resourceTypes["Report"] = true;
         if (results[0].status === "rejected") {
           console.log("Executing ELM for Factors error ", results[0].reason);
         }
@@ -175,6 +174,10 @@ async function executeELM(collector, paramResourceTypes) {
         let evalResults = getPatientResults(
           results[0].status !== "rejected" ? results[0].value : {}
         );
+        console.log("evalResults ", evalResults);
+        if (!isReportEnabled()) resolve(evalResults);
+
+        resourceTypes["Report"] = true;
         if (!evalResults[PATIENT_SUMMARY_KEY]) {
           evalResults[PATIENT_SUMMARY_KEY] = {};
         }
@@ -194,10 +197,7 @@ async function executeELM(collector, paramResourceTypes) {
         }
         const evaluatedSurveyResults = surveyLibResults
           .filter((o) => o.value && o.value.patientResults)
-          .map(
-            (o) =>
-              o.value.patientResults[Object.keys(o.value.patientResults)[0]]
-          );
+          .map((o) => getPatientResults(o.value));
         evalResults[PATIENT_SUMMARY_KEY]["SurveySummary"] =
           evaluatedSurveyResults;
         //debug
@@ -306,7 +306,7 @@ function executeELMForInstruments(patientBundle) {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
   if (!patientBundle) return null;
-  return INSTRUMENT_LIST.map((item) => 
+  return INSTRUMENT_LIST.map((item) =>
     (async () => {
       const evalResults = executeELMForInstrument(
         item.key,
