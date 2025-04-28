@@ -123,17 +123,17 @@ async function executeELM(collector, paramResourceTypes) {
         //console.log("resourceTypes ", resourceTypes);
         // return all the requests have been resolved // rejected
         return Promise.allSettled(
-          [...extractResourcesFromELM(library), ...surveyResources].map(
-            (name) => {
-              resourceTypes[name] = false;
-              if (name === "Report") return null;
-              if (name === "Patient") {
-                resourceTypes[name] = true;
-                return [pt];
-              }
-              return doSearch(client, release, name, collector, resourceTypes);
+          [
+            ...new Set([...extractResourcesFromELM(library), ...surveyResources]),
+          ].map((name) => {
+            resourceTypes[name] = false;
+            if (name === "Report") return null;
+            if (name === "Patient") {
+              resourceTypes[name] = true;
+              return [pt];
             }
-          )
+            return doSearch(client, release, name, collector, resourceTypes);
+          })
         );
       })
       .then((requestResults) => {
@@ -159,9 +159,13 @@ async function executeELM(collector, paramResourceTypes) {
           // main factors
           executeELMForFactors(patientBundle, patientSource, library),
           // report
-          isReportEnabled() ? executeELMForReport(patientBundle, patientSource) : null,
+          isReportEnabled()
+            ? executeELMForReport(patientBundle, patientSource)
+            : null,
           // surey results
-          ...(isReportEnabled() ? executeELMForInstruments(patientBundle, patientSource) : []),
+          ...(isReportEnabled()
+            ? executeELMForInstruments(patientBundle, patientSource)
+            : []),
         ]);
       })
       .catch((e) => {
@@ -260,8 +264,14 @@ async function executeELMForReport(bundle, patientSource) {
   return results;
 }
 
-async function executeELMForInstrument(instrumentKey, library, bundle, surveyPatientSource) {
-  if (!instrumentKey || !library || !bundle || !surveyPatientSource) return null;
+async function executeELMForInstrument(
+  instrumentKey,
+  library,
+  bundle,
+  surveyPatientSource
+) {
+  if (!instrumentKey || !library || !bundle || !surveyPatientSource)
+    return null;
   const surveyExecutor = new cql.Executor(
     library,
     new VSACAwareCodeService({}),
