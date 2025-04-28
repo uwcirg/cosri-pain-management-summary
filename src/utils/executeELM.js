@@ -276,8 +276,8 @@ async function executeELMForReport(bundle) {
   return results;
 }
 
-async function executeELMForInstrument(instrumentKey, library, libraryElm, bundle) {
-  if (!instrumentKey || !libraryElm || !bundle) return null;
+async function executeELMForInstrument(instrumentKey, library, bundle) {
+  if (!instrumentKey || !library || !bundle) return null;
   const surveyExecutor = new cql.Executor(
     library,
     new VSACAwareCodeService({}),
@@ -302,7 +302,7 @@ function executeELMForInstruments(patientBundle) {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
   if (!patientBundle) return null;
-  const library = new cql.Repository({
+  const repository = new cql.Repository({
     FHIRHelpers: r4HelpersELM,
     Common_LogicLibrary: r4SurveyCommonELM,
   });
@@ -310,8 +310,7 @@ function executeELMForInstruments(patientBundle) {
     (async () => {
       const evalResults = executeELMForInstrument(
         item.key,
-        library,
-        item.library,
+        new cql.Library(item.library, repository),
         patientBundle
       );
       return evalResults;

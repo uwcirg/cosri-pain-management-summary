@@ -54,7 +54,7 @@ export default class SideNav extends Component {
     window.addEventListener("resize", this.handleResize);
     setTimeout(() => this.handleResize(), 250);
   }
-
+ 
   render() {
     const navToggleToolTip = this.state.showNav
       ? "collapse"
