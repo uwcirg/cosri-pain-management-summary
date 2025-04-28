@@ -153,14 +153,15 @@ async function executeELM(collector, paramResourceTypes) {
           resourceType: "Bundle",
           entry: resources,
         };
+        const patientSource = getPatientSource(release);
         // return a promise containing survey evaluated data
         return Promise.allSettled([
           // main factors
-          executeELMForFactors(patientBundle, release, library, collector),
+          executeELMForFactors(patientBundle, patientSource, library),
           // report
-          isReportEnabled() ? executeELMForReport(patientBundle) : null,
+          isReportEnabled() ? executeELMForReport(patientBundle, patientSource) : null,
           // surey results
-          ...(isReportEnabled() ? executeELMForInstruments(patientBundle) : []),
+          ...(isReportEnabled() ? executeELMForInstruments(patientBundle, patientSource) : []),
         ]);
       })
       .catch((e) => {
@@ -216,9 +217,8 @@ async function executeELM(collector, paramResourceTypes) {
   });
 }
 
-async function executeELMForFactors(bundle, release, library, collector) {
-  if (!bundle) return null;
-  const patientSource = getPatientSource(release);
+async function executeELMForFactors(bundle, patientSource, library) {
+  if (!bundle || !patientSource) return null;
   const codeService = new VSACAwareCodeService(valueSetDB);
   const executor = new cql.Executor(library, codeService);
   //debugging
@@ -229,31 +229,16 @@ async function executeELMForFactors(bundle, release, library, collector) {
     execResults = executor.exec(patientSource);
   } catch (e) {
     console.log("Error occurred executing CQL ", e);
-    if (collector) {
-      collector.forEach((item) => {
-        if (
-          item.data &&
-          String(item.data.resourceType).toLowerCase() === "bundle"
-        )
-          item.error =
-            (item.error ? item.error + " " : "") +
-            "Unable to process data. CQL execution error. " +
-            (typeof e?.message === "string"
-              ? e?.message
-              : " Please see console for detail.");
-      });
-    }
     execResults = null;
     throw new Error("Unable to execute CQL due to errors.");
   }
   return execResults;
 }
 
-async function executeELMForReport(bundle) {
-  if (!bundle) return null;
+async function executeELMForReport(bundle, patientSource) {
+  if (!bundle || !patientSource) return null;
   let r4ReportCommonELM = getReportLogicLibrary();
   if (!r4ReportCommonELM) return null;
-
   let reportLib = new cql.Library(
     r4ReportCommonELM,
     new cql.Repository({
@@ -264,7 +249,6 @@ async function executeELMForReport(bundle) {
     reportLib,
     new VSACAwareCodeService({})
   );
-  const patientSource = getPatientSource(FHIR_RELEASE_VERSION_4);
   patientSource.loadBundles([bundle]);
   let results;
   try {
@@ -276,8 +260,8 @@ async function executeELMForReport(bundle) {
   return results;
 }
 
-async function executeELMForInstrument(instrumentKey, library, bundle) {
-  if (!instrumentKey || !library || !bundle) return null;
+async function executeELMForInstrument(instrumentKey, library, bundle, surveyPatientSource) {
+  if (!instrumentKey || !library || !bundle || !surveyPatientSource) return null;
   const surveyExecutor = new cql.Executor(
     library,
     new VSACAwareCodeService({}),
@@ -286,7 +270,6 @@ async function executeELMForInstrument(instrumentKey, library, bundle) {
       id: getReportInstrumentIdByKey(instrumentKey),
     }
   );
-  const surveyPatientSource = getPatientSource(FHIR_RELEASE_VERSION_4);
   surveyPatientSource.loadBundles([bundle]);
   let surveyResults;
   try {
@@ -298,10 +281,10 @@ async function executeELMForInstrument(instrumentKey, library, bundle) {
   return surveyResults;
 }
 
-function executeELMForInstruments(patientBundle) {
+function executeELMForInstruments(patientBundle, patientSource) {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
-  if (!patientBundle) return null;
+  if (!patientBundle || !patientSource) return null;
   const repository = new cql.Repository({
     FHIRHelpers: r4HelpersELM,
     Common_LogicLibrary: r4SurveyCommonELM,
@@ -311,7 +294,8 @@ function executeELMForInstruments(patientBundle) {
       const evalResults = executeELMForInstrument(
         item.key,
         new cql.Library(item.library, repository),
-        patientBundle
+        patientBundle,
+        patientSource
       );
       return evalResults;
     })()
