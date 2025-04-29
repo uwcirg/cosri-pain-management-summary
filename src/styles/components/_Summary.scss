@@ -1,4 +1,4 @@
-@use '../elements/variables' as *;
+@use "../elements/variables" as *;
 .summary {
   display: flex;
   min-height: calc(100vh - 100px);
@@ -387,13 +387,22 @@
         position: relative;
         height: 0;
         width: 100%;
+        min-width: 480px;
         padding: 0;
         padding-bottom: 80%;
         margin-bottom: 8px;
       }
-      @media (min-width: 699px) {
+      @media (min-width: $md-media-query-width) {
+        & {
+          .MME-svg-container {
+            width: calc(100% - 120px);
+            min-width: 600px;
+          }
+        }
+      }
+      @media (min-width: 992px) {
         .MME-svg-container {
-          min-width: 560px;
+          width: 100%;
         }
       }
       @media (min-width: 992px) {
@@ -600,7 +609,8 @@
             }
           }
           .alerts-container {
-            a, .no-anchor {
+            a,
+            .no-anchor {
               text-decoration: none;
               font-weight: 600;
               display: flex;
@@ -841,7 +851,7 @@
             .rt-th:nth-child(1),
             .rt-td:nth-child(1),
             td:nth-child(1) {
-              width:0 !important;
+              width: 0 !important;
               border: 0;
             }
             .rt-th:nth-child(2),
@@ -887,7 +897,7 @@
             }
 
             .rt-th:first-child,
-            .rt-td:first-child{
+            .rt-td:first-child {
               max-width: 32px;
               padding: 0;
             }
@@ -897,9 +907,9 @@
               .rt-td:first-child:has(div:empty),
               .rt-th:first-child:empty,
               .rt-td:first-child:empty {
-                width: 0!important;
-                max-width: 0!important;
-              }  
+                width: 0 !important;
+                max-width: 0 !important;
+              }
             }
 
             .rt-th:nth-child(2),
@@ -1153,15 +1163,6 @@
     }
   }
 }
-@media (min-width: 992px) {
-  .summary__display {
-    .sections {
-      .MME-svg-container {
-        width: 100%;
-      }
-    }
-  }
-}
 .summary-tooltip {
   font-size: 1em;
 }
@@ -1182,13 +1183,13 @@
   }
 }
 //.has-tabs {
-  .summary {
-    &__nav {
-      top: 0;
-      bottom: 0;
-      overflow-y: auto;
-    }
+.summary {
+  &__nav {
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
   }
+}
 //}
 .has-tabs {
   .summary__nav-wrapper .is-position-fixed ~ .close {
