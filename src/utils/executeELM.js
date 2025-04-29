@@ -87,24 +87,20 @@ class VSACAwareCodeService extends cql.CodeService {
 }
 
 async function executeELM(collector, paramResourceTypes) {
-  fetchEnvData();
-  let client, release, library, patientBundle;
+  let client, release, library, patientBundle, INSTRUMENT_LIST;
   let resourceTypes = paramResourceTypes || {};
-  const INSTRUMENT_LIST = isReportEnabled() ? getReportInstrumentList() : null;
   const SURVEY_FHIR_RESOURCES = ["QuestionnaireResponse", "Questionnaire"];
-  console.log("instrument list to be loaded for report: ", INSTRUMENT_LIST);
-  const okayToLoadSurveyResources = () =>
-    FHIR_RELEASE_VERSION_4 && INSTRUMENT_LIST;
-  const surveyResources = okayToLoadSurveyResources()
-    ? [...SURVEY_FHIR_RESOURCES, "Report"]
-    : [];
   return new Promise((resolve, reject) => {
     // First get our authorized client and send the FHIR release to the next step
     FHIR.oauth2
       .ready()
       .then((clientArg) => {
         client = clientArg;
-        return Promise.all([client.getFhirRelease(), client.patient.read()]);
+        return Promise.allSettled([
+          fetchEnvData(),
+          client.getFhirRelease(),
+          client.patient.read(),
+        ]);
       })
       .catch((e) => {
         console.log("client requests error ", e);
@@ -115,16 +111,33 @@ async function executeELM(collector, paramResourceTypes) {
         if (isEmptyArray(clientResults)) {
           throw new Error("No results returned from client requests.");
         }
-        release = clientResults[0];
+        if (!clientResults[1] || clientResults[1].status === "rejected")
+          throw new Error("Error fetching FHIR release");
+        if (!clientResults[2] || clientResults[2].status === "rejected")
+          throw new Error("Error reading patient");
+
+        INSTRUMENT_LIST = isReportEnabled() ? getReportInstrumentList() : null;
+        release = clientResults[1].value;
         library = getLibrary(release);
-        const pt = clientResults[1];
+        const pt = clientResults[2].value;
         collector.push({ data: pt, url: `Patient/${pt.id}` });
+        console.log(
+          "instrument list to be loaded for report: ",
+          INSTRUMENT_LIST
+        );
+        const surveyResources =
+          release && INSTRUMENT_LIST
+            ? [...SURVEY_FHIR_RESOURCES, "Report"]
+            : [];
         //console.log("collector ", collector);
         //console.log("resourceTypes ", resourceTypes);
         // return all the requests have been resolved // rejected
         return Promise.allSettled(
           [
-            ...new Set([...extractResourcesFromELM(library), ...surveyResources]),
+            ...new Set([
+              ...extractResourcesFromELM(library),
+              ...surveyResources,
+            ]),
           ].map((name) => {
             resourceTypes[name] = false;
             if (name === "Report") return null;

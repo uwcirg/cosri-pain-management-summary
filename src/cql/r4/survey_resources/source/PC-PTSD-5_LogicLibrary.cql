@@ -84,7 +84,7 @@ define ResponsesSummary:
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
-     totalAnsweredItems: Min({
+      totalAnsweredItems: Min({
         LogicHelper.GetTotalAnsweredItems(I.item, ScoringQuestionId),
         totalItems
       }),

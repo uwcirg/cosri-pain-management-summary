@@ -292,24 +292,25 @@ var Timeout = function () {
   function init() {
     waitForDOMIntervalId = setInterval(function () {
       if (isDOMReady()) {
-        fetchEnvData();
-        //set logout location
-        setLogoutLocation();
-        //get expiration date/time to determine how long a session is?
-        getSessionTokenInfo();
-        //on page load, check if token is not present?
-        if (hasNoToken()) {
-          handleNoToken();
-          return;
-        }
-        //assign id to the specific countdown timer id for this session
-        initTimeoutIdentifier();
-        //set timeout modal
-        initTimeoutModal();
-        //start count down
-        startTimeoutTimer();
-        //initiate user event(s) that will reset timeout countdown
-        //resetTimeoutEvents();
+        fetchEnvData().then(() => {
+          //set logout location
+          setLogoutLocation();
+          //get expiration date/time to determine how long a session is?
+          getSessionTokenInfo();
+          //on page load, check if token is not present?
+          if (hasNoToken()) {
+            handleNoToken();
+            return;
+          }
+          //assign id to the specific countdown timer id for this session
+          initTimeoutIdentifier();
+          //set timeout modal
+          initTimeoutModal();
+          //start count down
+          startTimeoutTimer();
+          //initiate user event(s) that will reset timeout countdown
+          //resetTimeoutEvents();
+        });
       }
     }, 50);
   }

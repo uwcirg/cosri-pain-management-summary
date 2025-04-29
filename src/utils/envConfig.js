@@ -1,53 +1,44 @@
-export function fetchEnvData() {
-  if (window["appConfig"] && Object.keys(window["appConfig"]).length) {
+export async function fetchEnvData() {
+  if (
+    window &&
+    window["appConfig"] &&
+    Object.keys(window["appConfig"]).length
+  ) {
     console.log("Window config variables added. ");
     return;
   }
-  const setConfig = function (xhr) {
-    if (!xhr) return;
-    if (!xhr.readyState === xhr.DONE) {
+  const url = "/env.json";
+  if (window) window["appConfig"] = {};
+  try {
+    const response = await fetch(url).catch((e) => {
+      console.log(e);
+    });
+    if (!response.ok) {
+      console.log(
+        `Error fetching env.json. Rsponse status: ${response.status}`
+      );
       return;
     }
-    if (xhr.status !== 200) {
-      console.log("Request failed! ");
-      return;
-    }
-    var envObj = JSON.parse(xhr.responseText);
-    window["appConfig"] = {};
-    //assign window process env variables for access by app
-    //won't be overridden when Node initializing env variables
-    for (var key in envObj) {
-      if (!window["appConfig"][key]) {
-        window["appConfig"][key] = envObj[key];
+    const envObj = await response.json().catch((e) => {
+      console.log(e);
+    });
+    // assign window process env variables for access by app
+    // won't be overridden when Node initializing env variables
+    if (envObj && window) {
+      for (var key in envObj) {
+        if (!window["appConfig"][key]) {
+          window["appConfig"][key] = envObj[key];
+        }
       }
     }
-  };
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", "/env.json", false);
-  xhr.onreadystatechange = function () {
-    //in the event of a communication error (such as the server going down),
-    //or error happens when parsing data
-    //an exception will be thrown in the onreadystatechange method when accessing the response properties, e.g. status.
-    try {
-      setConfig(xhr);
-    } catch (e) {
-      console.log("Caught exception " + e);
-    }
-  };
-  try {
-    xhr.send();
   } catch (e) {
-    console.log("Request failed to send.  Error: ", e);
+    console.log(e);
   }
-  xhr.ontimeout = function (e) {
-    // XMLHttpRequest timed out.
-    console.log("request to fetch env.json file timed out ", e);
-  };
 }
 
 export function getEnv(key) {
   //window application global variables
-  if (window["appConfig"] && window["appConfig"][key])
+  if (window && window["appConfig"] && window["appConfig"][key])
     return window["appConfig"][key];
   const envDefined = import.meta && import.meta.env;
   //enviroment variables as defined by Node
@@ -58,7 +49,7 @@ export function getEnv(key) {
 export function getEnvs() {
   let arrEnvs = [];
   const blacklist = ["SECRET", "KEY", "TOKEN", "CREDENTIALS"];
-  if (window["appConfig"]) {
+  if (window && window["appConfig"]) {
     const keys = Object.keys(window["appConfig"]);
     keys.forEach((key) => {
       if (blacklist.indexOf(key.toUpperCase()) !== -1) return true;

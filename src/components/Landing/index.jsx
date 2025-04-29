@@ -67,17 +67,13 @@ export default class Landing extends Component {
       !isEmptyArray(this.state.errorCollection)
     )
       return;
-
     // start time out countdown on DOM mounted
     Timeout();
-    // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
-    fetchEnvData();
-    // write out environment variables:
-    getEnvs();
     // display resources loading statuses
     this.initProcessProgressDisplay();
-
     Promise.allSettled([
+      // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
+      fetchEnvData(),
       executeElm(this.state.collector, this.state.resourceTypes),
       landingUtils.getExternalData(summaryMap),
     ])
@@ -87,7 +83,9 @@ export default class Landing extends Component {
           this.handleNoAccessToken();
           return;
         }
-        if (responses[0].status === "rejected" || !this.getPatientId()) {
+        // write out environment variables:
+        getEnvs();
+        if (responses[1].status === "rejected" || !this.getPatientId()) {
           this.clearProcessInterval();
           const rejectReason = responses[0].reason ? responses[0].reason : "";
           console.log(rejectReason);
@@ -103,8 +101,8 @@ export default class Landing extends Component {
         writeToLog("application loaded", "info", this.getPatientLogParams());
         //set FHIR results
         let result = {};
-        let fhirData = responses[0].value;
-        let externalDataSet = responses[1].value;
+        let fhirData = responses[1].value;
+        let externalDataSet = responses[2].value;
         // hide and show section(s) depending on config
         const currentSummaryMap = {
           ...this.state.summaryMap,
@@ -176,7 +174,7 @@ export default class Landing extends Component {
           () => {
             this.initEvents();
             this.clearProcessInterval();
-            //this.savePDMPSummaryData();
+            this.savePDMPSummaryData();
             this.handleSetActiveTab(0);
           }
         );
@@ -509,7 +507,7 @@ export default class Landing extends Component {
                 } ${tabs.length > 1 ? "multi-tabs" : ""}`}
                 key={`tab-panel_${item}`}
               >
-                {item === "overview" && 
+                {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
                 {item === "report" && (
                   <Report
