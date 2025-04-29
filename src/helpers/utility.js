@@ -1,6 +1,7 @@
 import moment from "moment";
 import { toBlob, toJpeg } from "html-to-image";
 import { getEnv, ENV_VAR_PREFIX } from "../utils/envConfig";
+import { REPORT_LOGIC_LIBRARY } from "../config/report_config";
 import reportSummarySections from "../config/report_config";
 import { shortDateRE, dateREZ } from "./formatit";
 import { getTokenInfoFromStorage } from "./timeout";
@@ -142,20 +143,11 @@ export function isEnvEpicQueries() {
   return envVar && String(envVar).toLowerCase() === "true";
 }
 
-export function getEnvInstrumentList() {
-  return getEnv(`${ENV_VAR_PREFIX}_INSTRUMENT_IDS`);
+export function getReportLogicLibrary() {
+  return REPORT_LOGIC_LIBRARY;
 }
 
 export function getReportInstrumentList() {
-  const envInstrumentList = getEnvInstrumentList();
-  if (envInstrumentList)
-    return envInstrumentList
-      .split(",")
-      .map((item) => item.trim())
-      .map((o) => ({
-        id: o,
-        key: o.replace("CIRG-", ""),
-      }));
   const qList = reportSummarySections
     .filter((section) => section.questionnaires)
     .map((section) => section.questionnaires);
@@ -705,6 +697,11 @@ export function isElementOverflown(element, dimension) {
 
 export function getSiteId() {
   return getEnv(`${ENV_VAR_PREFIX}_SITE_ID`);
+}
+export function getSiteState() {
+  const siteState = getEnv(`${ENV_VAR_PREFIX}_SITE_STATE`);
+  if (siteState) return siteState;
+  return "WA";
 }
 
 export function isReportEnabled() {

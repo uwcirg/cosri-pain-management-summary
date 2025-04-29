@@ -3,9 +3,12 @@
     "react-app",
     "plugin:jsx-a11y/recommended"
   ],
+  "globals": {
+    "vi": true
+  },
   "rules": {
     "comma-dangle": 0,
-    "max-len": ["error", { "code": 120, "ignoreUrls": true , "ignoreTrailingComments": true, "ignoreRegExpLiterals": true }],
+    //"max-len": ["error", { "code": 120, "ignoreUrls": true , "ignoreTrailingComments": true, "ignoreRegExpLiterals": true }],
     "no-console": 0,
     "no-param-reassign": ["error", {"props": false}],
     "no-unused-vars": [ "error", { "args": "none" } ],

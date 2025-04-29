@@ -1,3 +1,4 @@
+@use 'variables' as *;
 .button-primary {
   position: relative;
   padding: 14px 20px;
@@ -30,14 +31,15 @@
   padding: 8px 16px;
   cursor: pointer;
   &:hover {
-    background: darken(#444, 10%);
+    background: #353434;
     color: #fff;
   }
 }
 .rounded {
   border-radius: 100vmax;
 }
-button.disabled {
+button.disabled,
+button[disabled] {
   opacity: 0.5;
 }
 .button-secondary {
@@ -142,4 +144,7 @@ button.plain {
     background-color: transparent;
     border:0;
     background-image: none;
+}
+.button-link {
+  font-size: 1rem;
 }

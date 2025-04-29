@@ -1,3 +1,4 @@
+@use 'variables' as *;
 .banner {
   text-align: center;
   padding: 20px;
@@ -9,11 +10,11 @@
 
   &.error {
     background-color: $color-red-lightest;
-    color: darken($color-red, 15%);
+    color: $color-red-darker;
   }
 
   &.warning {
-    background-color: lighten($color-yellow, 25%);
+    background-color: $color-yellow-lighter;
     color: $color-gray-dark;
   }
 
@@ -54,7 +55,7 @@
 
     .warning-inside {
       width: 450px;
-      background-color: lighten($color-orange, 52%);
+      background-color: $color-orange-light;
       color: $color-orange;
       padding: 10px;
       font-weight: 600;

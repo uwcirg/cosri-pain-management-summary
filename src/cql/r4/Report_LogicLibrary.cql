@@ -1,7 +1,7 @@
 library ReportLogicLibrary version '1.0.0'
-using FHIR version '4.0.0'
+using FHIR version '4.0.1'
 // The FHIRHelpers library provides common functions for simplifying interaction w/ the FHIR R4 data model.
-include FHIRHelpers version '4.0.0' called FHIRHelpers
+include FHIRHelpers version '4.0.1' called FHIRHelpers
 
 // -----------------------------------------------------------------------------
 // PATIENT INFORMATION

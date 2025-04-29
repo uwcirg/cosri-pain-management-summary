@@ -8,8 +8,8 @@ import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
 import {
   getDiffDays,
-  getEnvSystemType,
   getEnvConfidentialAPIURL,
+  getEnvSystemType,
   isEmptyArray,
   saveData,
   writeToLog,
@@ -283,17 +283,23 @@ export function getSummaryGraphDataSet(graphConfig, summaryData) {
   });
   if (Object.keys(graphDataSet).length === 0) {
     const defaultConfig = graphConfig.defaultDataSource;
-    graphDataSet[defaultConfig.key] = {
-      ...defaultConfig,
-      data: getProcessedGraphData(
-        graphConfig,
-        JSON.parse(
-          JSON.stringify(
-            summaryData[defaultConfig.section_key][defaultConfig.subSection_key]
+    if (
+      summaryData[defaultConfig.section_key] &&
+      summaryData[defaultConfig.section_key][defaultConfig.subSection_key]
+    )
+      graphDataSet[defaultConfig.key] = {
+        ...defaultConfig,
+        data: getProcessedGraphData(
+          graphConfig,
+          JSON.parse(
+            JSON.stringify(
+              summaryData[defaultConfig.section_key][
+                defaultConfig.subSection_key
+              ]
+            )
           )
-        )
-      ),
-    };
+        ),
+      };
   }
   console.log("graphData Set ", graphDataSet);
   return graphDataSet;

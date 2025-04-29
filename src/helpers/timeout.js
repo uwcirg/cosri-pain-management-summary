@@ -72,7 +72,8 @@ var Timeout = function () {
   function setLogoutLocation() {
     if (!getEnvDashboardURL()) {
       printDebugStatement(
-        "No environment variable available. logout location " + logoutLocation
+        "No environment dashboard URL variable available. logout location " +
+          logoutLocation
       );
       return;
     }
@@ -170,8 +171,8 @@ var Timeout = function () {
       openModal();
       //back to patient search
       setTimeout(function () {
-        if (getEnvDashboardURL())
-          window.location = getEnvDashboardURL() + "/clear_session";
+        const dashboardURL = getEnvDashboardURL();
+        if (dashboardURL) window.location = dashboardURL + "/clear_session";
         else window.location = "/";
       }, 5000);
       printDebugStatement(
@@ -249,8 +250,9 @@ var Timeout = function () {
     getSessionTokenInfo();
     if (hasNoToken()) {
       //back to dashboard
-      if (getEnvDashboardURL()) {
-        window.location = getEnvDashboardURL() + "/home";
+      const dashboardURL = getEnvDashboardURL();
+      if (dashboardURL) {
+        window.location = dashboardURL + "/home";
       }
       clearInterval(waitForDOMIntervalId);
     }
@@ -290,24 +292,25 @@ var Timeout = function () {
   function init() {
     waitForDOMIntervalId = setInterval(function () {
       if (isDOMReady()) {
-        fetchEnvData();
-        //set logout location
-        setLogoutLocation();
-        //get expiration date/time to determine how long a session is?
-        getSessionTokenInfo();
-        //on page load, check if token is not present?
-        if (hasNoToken()) {
-          handleNoToken();
-          return;
-        }
-        //assign id to the specific countdown timer id for this session
-        initTimeoutIdentifier();
-        //set timeout modal
-        initTimeoutModal();
-        //start count down
-        startTimeoutTimer();
-        //initiate user event(s) that will reset timeout countdown
-        //resetTimeoutEvents();
+        fetchEnvData().then(() => {
+          //set logout location
+          setLogoutLocation();
+          //get expiration date/time to determine how long a session is?
+          getSessionTokenInfo();
+          //on page load, check if token is not present?
+          if (hasNoToken()) {
+            handleNoToken();
+            return;
+          }
+          //assign id to the specific countdown timer id for this session
+          initTimeoutIdentifier();
+          //set timeout modal
+          initTimeoutModal();
+          //start count down
+          startTimeoutTimer();
+          //initiate user event(s) that will reset timeout countdown
+          //resetTimeoutEvents();
+        });
       }
     }, 50);
   }

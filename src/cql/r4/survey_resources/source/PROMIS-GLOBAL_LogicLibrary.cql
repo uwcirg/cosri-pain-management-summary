@@ -1,6 +1,6 @@
 library PromisGlobalLogicLibrary version '1.0.0'
-using FHIR version '4.0.0'
-include "FHIRHelpers" version '4.0.0' called FHIRHelpers
+using FHIR version '4.0.1'
+include "FHIRHelpers" version '4.0.1' called FHIRHelpers
 include "Common_LogicLibrary" version '1.0.0' called LogicHelper
 
 parameter dataKey default 'promis-global'
@@ -74,7 +74,7 @@ define ResponsesSummary:
       score: score,
       minScore: ScoreParams.minScore,
       maxScore: ScoreParams.maxScore,
-     totalAnsweredItems: Min({
+      totalAnsweredItems: Min({
         LogicHelper.GetTotalAnsweredItems(I.item, ScoringQuestionId),
         totalItems
       }),
