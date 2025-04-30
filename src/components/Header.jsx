@@ -117,13 +117,15 @@ export default class Header extends Component {
                 />
               </div>
             )}
-            <div className="entries left">
-              <img
-                src={"/assets/images/doh_logo.png"}
-                alt="doh logo"
-                className="default-logo"
-              />
-            </div>
+            {!siteID && (
+                <div className="entries left">
+                  <img
+                    src={"/assets/images/doh_logo.png"}
+                    alt="doh logo"
+                    className="default-logo"
+                  />
+                </div>
+            )}
           </div>
         </div>
       </header>
