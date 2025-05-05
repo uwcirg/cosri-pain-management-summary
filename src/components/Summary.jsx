@@ -36,7 +36,10 @@ import SideNav from "./SideNav";
 import Table from "./Table";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
-import { initTocBot, destroyTocBot } from "../config/tocbot_config";
+import {
+  initTocBot,
+  destroyTocBot,
+} from "../config/tocbot_config";
 import Version from "../elements/Version";
 import {
   getErrorMessageString,
@@ -46,6 +49,7 @@ import {
   isReportEnabled,
 } from "../helpers/utility";
 import { getScoringData } from "./Report/utility";
+import tocbot from "tocbot";
 
 export default class Summary extends Component {
   constructor() {
@@ -54,7 +58,6 @@ export default class Summary extends Component {
     this.state = {
       showModal: false,
       modalSubSection: null,
-      activeTab: 0,
     };
 
     this.elementRef = React.createRef();
@@ -65,20 +68,26 @@ export default class Summary extends Component {
     ReactModal.setAppElement("body");
   }
   componentDidMount() {
-    const MIN_HEADER_HEIGHT = this.parentContainerRef.current.closest(".active")
-      ? 180
-      : 100;
-    initTocBot({
-      tocSelector: `.overview .summary__nav`, // where to render the table of contents
-      contentSelector: `.overview .summary__display`, // where to grab the headings to build the table of contents
-     // positionFixedSelector: `.overview .summary__nav`, // element to add the positionFixedClass to
-      headingsOffset: 1 * MIN_HEADER_HEIGHT,
-      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-    });
+    this.initializeTocBot();
   }
 
   componentWillUnmount() {
     destroyTocBot();
+  }
+
+  initializeTocBot() {
+    if (!document.querySelector("nav")) return;
+    const isActiveTab = this.parentContainerRef.current.closest(".active");
+    const MIN_HEADER_HEIGHT = isActiveTab ? 180 : 100;
+    const parentSelector = isActiveTab ? ".active": ".overview";
+    destroyTocBot();
+    initTocBot({
+      tocSelector: `${parentSelector} .summary__nav`, // where to render the table of contents
+      contentSelector: `${parentSelector} .summary__display`, // where to grab the headings to build the table of contents
+      positionFixedSelector: `${parentSelector} .summary__nav`, // element to add the positionFixedClass to
+      headingsOffset: 1 * MIN_HEADER_HEIGHT,
+      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+    });
   }
 
   handleOpenModal = (modalSubSection, event) => {

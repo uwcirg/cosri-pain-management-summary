@@ -4,16 +4,17 @@ let tocbotTntervalId = 0;
 
 export const defautTocBotOptions = {
   //tocSelector: ".active .summary__nav", // where to render the table of contents
-  tocSelector: `.summary__nav`.trim(), // where to render the table of contents
-  contentSelector: `.summary__display`.trim(), // where to grab the headings to build the table of contents
+  tocSelector: `.summary__nav`, // where to render the table of contents
+  contentSelector: `.summary__display`, // where to grab the headings to build the table of contents
   headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
-  positionFixedSelector: `.summary__nav`.trim(), // element to add the positionFixedClass to
-  ignoreSelector: "h3.panel-title",
+  positionFixedSelector: `.summary__nav`, // element to add the positionFixedClass to
+  ignoreSelector: "h3.panel-title, .js-toc-ignore",
   collapseDepth: 0, // how many heading levels should not be collpased
   includeHtml: true, // include the HTML markup from the heading node, not just the text,
   headingsOffset: 1 * MIN_HEADER_HEIGHT,
   scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
   hasInnerContainers: true,
+  fixedSidebarOffset: "auto",
   onClick: (e) => {
     e.preventDefault();
     const sectionIdAttr = "datasectionid";
@@ -53,13 +54,20 @@ export const defautTocBotOptions = {
 };
 
 export const initTocBot = (options) => {
-    tocbot.init({
-        ...defautTocBotOptions,
-        ...options
-    });
-}
+  tocbot.init({
+    ...defautTocBotOptions,
+    ...options,
+  });
+};
 
 export const destroyTocBot = () => {
-    clearTimeout(tocbotTntervalId);
-    tocbot.destroy();
-}
+  clearTimeout(tocbotTntervalId);
+  tocbot.destroy();
+};
+
+export const refreshTocBot = (options) => {
+  tocbot.refresh({
+    ...defautTocBotOptions,
+    ...options,
+  });
+};

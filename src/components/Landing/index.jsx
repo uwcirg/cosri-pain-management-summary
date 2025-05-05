@@ -249,7 +249,6 @@ export default class Landing extends Component {
 
   getPatientId() {
     if (this.state.patientId) return this.state.patientId;
-    if (!this.state.collector) return "";
     const patientResource = this.getPatientResource();
     if (patientResource) return patientResource.id;
     return "";
@@ -348,11 +347,6 @@ export default class Landing extends Component {
         activeTab: index,
       },
       () => {
-        //this.initTocBot();
-        // writeToLog(index >= 1 ? "report tab" : "overview tab", "info", {
-        //   tags: ["tab", "analytics"],
-        //   ...this.getPatientLogParams(),
-        // });
         window.scrollTo(0, 1);
       }
     );

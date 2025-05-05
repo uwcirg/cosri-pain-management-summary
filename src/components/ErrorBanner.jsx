@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import ChevronDownIcon from "../icons/ChevronDownIcon";
+import { isEmptyArray } from "../helpers/utility";
 
 export default class ErrorBanner extends Component {
   constructor() {
@@ -26,6 +27,7 @@ export default class ErrorBanner extends Component {
   }
 
   render() {
+    if (isEmptyArray(this.props.errors)) return null;
     const conditionalClass = this.state.displayed ? "" : "close";
     return (
       <div

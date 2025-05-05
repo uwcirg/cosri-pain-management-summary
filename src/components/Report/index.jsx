@@ -3,13 +3,17 @@ import ReactModal from "react-modal";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Collapsible from "react-collapsible";
+import ErrorBanner from "../ErrorBanner";
 import InfoModal from "../InfoModal";
 import SideNav from "../SideNav";
 import Spinner from "../../elements/Spinner";
 import Version from "../../elements/Version";
 import executeReportELM from "../../utils/executeReportELM";
 import reportSummarySections from "../../config/report_config";
-import { initTocBot, destroyTocBot } from "../../config/tocbot_config";
+import {
+  initTocBot,
+  destroyTocBot,
+} from "../../config/tocbot_config";
 import {
   dedupArrObjects,
   getQuestionnaireDescription,
@@ -28,6 +32,7 @@ export default class Report extends Component {
       loading: true,
       collector: [],
       resourceTypes: {},
+      errors: [],
       showModal: false,
       modalSubSection: null,
     };
@@ -38,13 +43,12 @@ export default class Report extends Component {
   componentWillUnmount() {
     destroyTocBot();
   }
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log("next state ", nextState);
-  //   return nextState.summaryData !== this.state.summaryData;
-  // }
 
   componentDidMount() {
-    if (!this.state.loading || this.state.summaryData) return;
+    if (!this.state.loading || this.state.summaryData) {
+      this.initializeTocBot();
+      return;
+    }
     executeReportELM(
       this.props.patientBundle,
       this.state.collector,
@@ -59,16 +63,10 @@ export default class Report extends Component {
               survey: results?.SurveySummary,
             },
             loading: false,
+            errors: [...this.state.errors, ...this.getErrorsFromCollector()],
           },
           () => {
-            const MIN_HEADER_HEIGHT = 180;
-            initTocBot({
-              tocSelector: `.report .summary__nav`, // where to render the table of contents
-              contentSelector: `.report .summary__display`, // where to grab the headings to build the table of contents
-              positionFixedSelector: `.report .summary__nav`, // element to add the positionFixedClass to
-              headingsOffset: 1 * MIN_HEADER_HEIGHT,
-              scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-            });
+            this.initializeTocBot();
           }
         );
       })
@@ -76,8 +74,30 @@ export default class Report extends Component {
         console.log(e);
         this.setState({
           loading: false,
+          errors: [...this.state.errors, e],
         });
       });
+  }
+
+  initializeTocBot() {
+    if (!document.querySelector("nav")) return;
+    destroyTocBot();
+    const MIN_HEADER_HEIGHT = 180;
+    initTocBot({
+      tocSelector: `.active .summary__nav`, // where to render the table of contents
+      contentSelector: `.active .summary__display`, // where to grab the headings to build the table of contents
+      positionFixedSelector: `.active .summary__nav`, // element to add the positionFixedClass to
+      headingsOffset: 1 * MIN_HEADER_HEIGHT,
+      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+      fixedSidebarOffset: "auto",
+    });
+  }
+
+  getErrorsFromCollector() {
+    if (isEmptyArray(this.state.collector)) return [];
+    return this.state.collector
+      .filter((item) => !!item.error)
+      .map((item) => `${item.type ?? ""}${item.type ? ": " : ""}${item.error}`);
   }
 
   handleOpenModal = (modalSubSection, event) => {
@@ -415,6 +435,7 @@ export default class Report extends Component {
           {!this.state.loading && hasNoData && this.renderNoDataNotice()}
           {!this.state.loading && (
             <div className="sections">
+              <ErrorBanner errors={this.state.errors}></ErrorBanner>
               {this.renderSections(summaryData)}
               <Version />
               {this.renderInfoModal()}

@@ -44,10 +44,6 @@ async function executeReportELM(
           [...new Set([...resourcesToLoad, ...SURVEY_FHIR_RESOURCES])].map(
             (name) => {
               resourceTypes[name] = false;
-              if (name === "Patient") {
-                resourceTypes[name] = true;
-                return [pt];
-              }
               return doSearch(client, release, name, collector, resourceTypes);
             }
           )
@@ -80,12 +76,18 @@ async function executeReportELM(
           ],
         };
         const patientSource = getPatientSource(release);
+        try {
+          patientSource.loadBundles(patientBundle);
+        } catch(e) {
+          console.log(e);
+          throw new Error("Unable to load patient resource bundle.");
+        }
         // return a promise containing survey evaluated data
         return Promise.allSettled([
           // report
-          executeELMForReport(patientBundle, patientSource),
+          executeELMForReport(patientSource),
           // surey results
-          ...executeELMForInstruments(patientBundle, patientSource),
+          ...executeELMForInstruments(patientSource),
         ]);
       })
       .catch((e) => {
@@ -140,15 +142,15 @@ function getReportLibrary() {
   );
 }
 
-async function executeELMForReport(bundle, patientSource) {
-  if (!bundle || !patientSource) return null;
+async function executeELMForReport(patientSource) {
+  if (!patientSource) return null;
   let reportLib = getReportLibrary();
   if (!reportLib) return null;
   const reportExecutor = new cql.Executor(
     reportLib,
     new VSACAwareCodeService({})
   );
-  patientSource.loadBundles([bundle]);
+  // patientSource.loadBundles([bundle]);
   let results;
   try {
     results = reportExecutor.exec(patientSource);
@@ -162,10 +164,9 @@ async function executeELMForReport(bundle, patientSource) {
 async function executeELMForInstrument(
   instrumentKey,
   library,
-  bundle,
   surveyPatientSource
 ) {
-  if (!instrumentKey || !library || !bundle || !surveyPatientSource)
+  if (!instrumentKey || !library || !surveyPatientSource)
     return null;
   const surveyExecutor = new cql.Executor(
     library,
@@ -175,7 +176,7 @@ async function executeELMForInstrument(
       id: getReportInstrumentIdByKey(instrumentKey),
     }
   );
-  surveyPatientSource.loadBundles([bundle]);
+  // surveyPatientSource.loadBundles([bundle]);
   let surveyResults;
   try {
     surveyResults = surveyExecutor.exec(surveyPatientSource);
@@ -186,10 +187,10 @@ async function executeELMForInstrument(
   return surveyResults;
 }
 
-function executeELMForInstruments(patientBundle, patientSource) {
+function executeELMForInstruments(patientSource) {
   const INSTRUMENT_LIST = getReportInstrumentList();
   if (!INSTRUMENT_LIST) return null;
-  if (!patientBundle || !patientSource) return null;
+  if (!patientSource) return null;
   const repository = new cql.Repository({
     FHIRHelpers: r4HelpersELM,
     Common_LogicLibrary: r4SurveyCommonELM,
@@ -199,7 +200,6 @@ function executeELMForInstruments(patientBundle, patientSource) {
       const evalResults = executeELMForInstrument(
         item.key,
         new cql.Library(item.library, repository),
-        patientBundle,
         patientSource
       );
       return evalResults;
