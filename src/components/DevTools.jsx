@@ -166,7 +166,7 @@ export default class DevTools extends Component {
 
     return (
       <div className="dev-tools">
-        <h3 className="title">
+        <h3 className="title js-toc-ignore">
           Development Tools{" "}
           <button className="button-link" onClick={this.toggleDevTools}>[show/hide]</button>
         </h3>

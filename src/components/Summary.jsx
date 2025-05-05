@@ -36,6 +36,7 @@ import SideNav from "./SideNav";
 import Table from "./Table";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
+import { initTocBot, destroyTocBot } from "../config/tocbot_config";
 import Version from "../elements/Version";
 import {
   getErrorMessageString,
@@ -62,6 +63,22 @@ export default class Summary extends Component {
     this.subsectionTableProps = { id: "react_sub-section__table" };
 
     ReactModal.setAppElement("body");
+  }
+  componentDidMount() {
+    const MIN_HEADER_HEIGHT = this.parentContainerRef.current.closest(".active")
+      ? 180
+      : 100;
+    initTocBot({
+      tocSelector: `.overview .summary__nav`, // where to render the table of contents
+      contentSelector: `.overview .summary__display`, // where to grab the headings to build the table of contents
+     // positionFixedSelector: `.overview .summary__nav`, // element to add the positionFixedClass to
+      headingsOffset: 1 * MIN_HEADER_HEIGHT,
+      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+    });
+  }
+
+  componentWillUnmount() {
+    destroyTocBot();
   }
 
   handleOpenModal = (modalSubSection, event) => {
@@ -435,8 +452,10 @@ export default class Summary extends Component {
           tableKey={tableID}
           tableClass={`${
             columns.length <= 2
-              ? `single-column sub-section__table ${subSection.tableClass??""}`
-              : `sub-section__table ${subSection.tableClass??""}`
+              ? `single-column sub-section__table ${
+                  subSection.tableClass ?? ""
+                }`
+              : `sub-section__table ${subSection.tableClass ?? ""}`
           }`}
           columns={columns}
           data={filteredEntries}

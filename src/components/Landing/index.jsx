@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import tocbot from "tocbot";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import executeElm from "../../utils/executeELM";
+import executeElm, {extractPatientResourceFromFHIRBundle} from "../../utils/executePainFactorsELM";
 import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
@@ -45,11 +44,11 @@ export default class Landing extends Component {
       resourceTypes: {},
       patientId: "",
       activeTab: 0,
+      tabsActivated: [0],
       loadingMessage: "Resources are being loaded...",
       hasMmeErrors: false,
       mmeErrors: [],
       errorCollection: [],
-      tocInitialized: false,
       summaryMap: summaryMap,
     };
 
@@ -85,9 +84,11 @@ export default class Landing extends Component {
         }
         // write out environment variables:
         getEnvs();
-        if (responses[1].status === "rejected" || !this.getPatientId()) {
+        if (responses[1].status === "rejected") {
           this.clearProcessInterval();
-          const rejectReason = responses[0].reason ? responses[0].reason : "";
+          const rejectReason = responses[0].reason
+            ? responses[0].reason
+            : "Error retrieving patient data.";
           console.log(rejectReason);
           this.logError(rejectReason);
           this.setState({
@@ -110,6 +111,7 @@ export default class Landing extends Component {
             this.state.summaryMap
           ),
         };
+        result["bundle"] = fhirData?.bundle;
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         result["Summary"] = {
           ...result["Summary"],
@@ -189,7 +191,6 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate() {
-    if (!this.state.tocInitialized) this.initTocBot();
     //page title
     document.title = "COSRI";
     if (this.shouldShowTabs()) {
@@ -242,81 +243,8 @@ export default class Landing extends Component {
     });
   }
 
-  getTocBotOptions() {
-    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 180 : 100;
-    const selectorClass = this.shouldShowTabs() ? ".active" : "";
-    return {
-      //tocSelector: ".active .summary__nav", // where to render the table of contents
-      tocSelector: `${selectorClass} .summary__nav`.trim(), // where to render the table of contents
-      contentSelector: `${selectorClass} .summary__display`.trim(), // where to grab the headings to build the table of contents
-      headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
-      positionFixedSelector: `${selectorClass} .summary__nav`.trim(), // element to add the positionFixedClass to
-      ignoreSelector: "h3.panel-title",
-      collapseDepth: 0, // how many heading levels should not be collpased
-      includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
-      headingsOffset: 1 * MIN_HEADER_HEIGHT,
-      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-      hasInnerContainers: true,
-      onClick: (e) => {
-        e.preventDefault();
-        const sectionIdAttr = "datasectionid";
-        const containgElement = e.target.closest(`[${sectionIdAttr}]`);
-        const sectionId = containgElement
-          ? containgElement.getAttribute(sectionIdAttr)
-          : e.target.getAttribute(sectionIdAttr);
-        //e.stopPropagation();
-        const anchorElement = document.querySelector(`#${sectionId}__anchor`);
-        const listItems = document.querySelectorAll(".toc-list-item");
-        const activeListItem = e.target.closest(".toc-list-item");
-        const tocLinks = document.querySelectorAll(".toc-link");
-        const activeLink = e.target.closest(".toc-link");
-        if (anchorElement) {
-          anchorElement.scrollIntoView(true);
-        } else {
-          e.target.scrollIntoView(true);
-        }
-        clearTimeout(tocbotTntervalId);
-        tocbotTntervalId = setTimeout(() => {
-          tocLinks.forEach((el) => {
-            if (el.isEqualNode(activeLink)) {
-              el.classList.add("is-active-link");
-              return true;
-            }
-            el.classList.remove("is-active-link");
-          });
-          listItems.forEach((el) => {
-            if (el.isEqualNode(activeListItem)) {
-              el.classList.add("is-active-li");
-              return true;
-            }
-            el.classList.remove("is-active-li");
-          });
-        }, 50);
-      },
-    };
-  }
-
-  initTocBot() {
-    if (!this.state || !this.state.result || !document.querySelector("nav"))
-      return;
-    tocbot.destroy();
-    tocbot.init(this.getTocBotOptions());
-    this.setState({
-      tocInitialized: true,
-    });
-  }
-
   getPatientResource() {
-    if (!this.state.collector) return null;
-    const patientResource = this.state.collector.find(
-      (item) =>
-        item.data &&
-        item.data.resourceType &&
-        item.data.resourceType.toLowerCase() === "patient"
-    );
-    if (patientResource) return patientResource.data;
-    return null;
+    return extractPatientResourceFromFHIRBundle(this.state.result?.bundle);
   }
 
   getPatientId() {
@@ -408,20 +336,32 @@ export default class Landing extends Component {
   }
 
   handleSetActiveTab(index) {
+    writeToLog(index >= 1 ? "report tab" : "overview tab", "info", {
+      tags: ["tab", "analytics"],
+      ...this.getPatientLogParams(),
+    });
+    if (this.state.activeTab === index) {
+      return;
+    }
     this.setState(
       {
         activeTab: index,
       },
       () => {
-        this.initTocBot();
-        writeToLog(index >= 1 ? "report tab" : "overview tab", "info", {
-          tags: ["tab", "analytics"],
-          ...this.getPatientLogParams(),
-        });
-
+        //this.initTocBot();
+        // writeToLog(index >= 1 ? "report tab" : "overview tab", "info", {
+        //   tags: ["tab", "analytics"],
+        //   ...this.getPatientLogParams(),
+        // });
         window.scrollTo(0, 1);
       }
     );
+    if (this.isTabActivated(index)) {
+      return;
+    }
+    this.setState({
+      tabsActivated: [...this.state.tabsActivated, index],
+    });
   }
 
   shouldShowTabs() {
@@ -433,6 +373,9 @@ export default class Landing extends Component {
     let tabs = ["overview"];
     if (isReportEnabled()) tabs.push("report");
     return tabs;
+  }
+  isTabActivated(index) {
+    return this.state.tabsActivated.indexOf(index) !== -1;
   }
 
   renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
@@ -509,12 +452,13 @@ export default class Landing extends Component {
               >
                 {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
-                {item === "report" && (
+                {item === "report" && this.isTabActivated(index) && (
                   <Report
-                    summaryData={{
-                      report: summary.ReportSummary,
-                      survey: summary.SurveySummary,
-                    }}
+                    // summaryData={{
+                    //   report: summary.ReportSummary,
+                    //   survey: summary.SurveySummary,
+                    // }}
+                    patientBundle={this.state.result?.bundle}
                     sectionFlags={sectionFlags}
                   ></Report>
                 )}

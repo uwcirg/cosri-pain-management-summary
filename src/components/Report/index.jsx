@@ -5,8 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Collapsible from "react-collapsible";
 import InfoModal from "../InfoModal";
 import SideNav from "../SideNav";
+import Spinner from "../../elements/Spinner";
 import Version from "../../elements/Version";
+import executeReportELM from "../../utils/executeReportELM";
 import reportSummarySections from "../../config/report_config";
+import { initTocBot, destroyTocBot } from "../../config/tocbot_config";
 import {
   dedupArrObjects,
   getQuestionnaireDescription,
@@ -21,11 +24,60 @@ export default class Report extends Component {
     super(...arguments);
 
     this.state = {
+      summaryData: null,
+      loading: true,
+      collector: [],
+      resourceTypes: {},
       showModal: false,
       modalSubSection: null,
     };
 
     ReactModal.setAppElement("body");
+  }
+
+  componentWillUnmount() {
+    destroyTocBot();
+  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   console.log("next state ", nextState);
+  //   return nextState.summaryData !== this.state.summaryData;
+  // }
+
+  componentDidMount() {
+    if (!this.state.loading || this.state.summaryData) return;
+    executeReportELM(
+      this.props.patientBundle,
+      this.state.collector,
+      this.state.resourceTypes
+    )
+      .then((results) => {
+        console.log("query result for report ", results);
+        this.setState(
+          {
+            summaryData: {
+              report: results?.ReportSummary,
+              survey: results?.SurveySummary,
+            },
+            loading: false,
+          },
+          () => {
+            const MIN_HEADER_HEIGHT = 180;
+            initTocBot({
+              tocSelector: `.report .summary__nav`, // where to render the table of contents
+              contentSelector: `.report .summary__display`, // where to grab the headings to build the table of contents
+              positionFixedSelector: `.report .summary__nav`, // element to add the positionFixedClass to
+              headingsOffset: 1 * MIN_HEADER_HEIGHT,
+              scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+            });
+          }
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+        this.setState({
+          loading: false,
+        });
+      });
   }
 
   handleOpenModal = (modalSubSection, event) => {
@@ -351,18 +403,23 @@ export default class Report extends Component {
   }
 
   render() {
-    const { summaryData } = this.props;
+    const summaryData = this.state.summaryData;
     const hasNoData = !this.hasSummaryData(summaryData);
     return (
       <div className="summary report">
-        <SideNav id="reportSideNavButton"></SideNav>
+        {!this.state.loading && <SideNav id="reportSideNavButton"></SideNav>}
         <div className="summary__display">
-          {hasNoData && this.renderNoDataNotice()}
-          <div className="sections">
-            {this.renderSections(summaryData)}
-            <Version />
-          </div>
-          {this.renderInfoModal()}
+          {this.state.loading && (
+            <Spinner loadingMessage="<strong>Loading report data ....</strong>"></Spinner>
+          )}
+          {!this.state.loading && hasNoData && this.renderNoDataNotice()}
+          {!this.state.loading && (
+            <div className="sections">
+              {this.renderSections(summaryData)}
+              <Version />
+              {this.renderInfoModal()}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -372,4 +429,5 @@ export default class Report extends Component {
 Report.propTypes = {
   summaryData: PropTypes.object,
   sectionFlags: PropTypes.object,
+  onReportLoaded: PropTypes.func,
 };

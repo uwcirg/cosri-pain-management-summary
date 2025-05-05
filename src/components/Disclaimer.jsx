@@ -43,7 +43,7 @@ export default class Disclaimer extends Component {
           role="button"
           tabIndex={0}
         >
-          <h3 className="title no-margins">
+          <h3 className="title no-margins js-toc-ignore">
             COSRI development and open source software details
           </h3>
           <button className="close-button button-link" title="toggle show/hide">

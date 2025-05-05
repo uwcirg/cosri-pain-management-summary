@@ -3,6 +3,18 @@ $selector-box-shadow: 0 2px 2px #383e40;
 .report {
   padding: 0;
   margin: auto;
+  .spinner-container {
+    position: absolute;
+    left: 50%;
+    top: 25%;
+    transform: translate(-25%, -50%);
+    .loading-message {
+      position: relative;
+      top: 32px;
+      left: 50%;
+      font-size: 1.1rem;
+    }
+  }
   &.summary {
     height: 100%;
     background-color: $color-gray-lightest;
