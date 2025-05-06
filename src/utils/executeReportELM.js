@@ -150,7 +150,6 @@ async function executeELMForReport(patientSource) {
     reportLib,
     new VSACAwareCodeService({})
   );
-  // patientSource.loadBundles([bundle]);
   let results;
   try {
     results = reportExecutor.exec(patientSource);
@@ -176,7 +175,6 @@ async function executeELMForInstrument(
       id: getReportInstrumentIdByKey(instrumentKey),
     }
   );
-  // surveyPatientSource.loadBundles([bundle]);
   let surveyResults;
   try {
     surveyResults = surveyExecutor.exec(surveyPatientSource);

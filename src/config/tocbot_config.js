@@ -54,10 +54,14 @@ export const defautTocBotOptions = {
 };
 
 export const initTocBot = (options) => {
-  tocbot.init({
-    ...defautTocBotOptions,
-    ...options,
-  });
+  try {
+    tocbot.init({
+      ...defautTocBotOptions,
+      ...options,
+    });
+  } catch (e) {
+    console.log("Error initializing tocbot ", e);
+  }
 };
 
 export const destroyTocBot = () => {
@@ -65,9 +69,10 @@ export const destroyTocBot = () => {
   tocbot.destroy();
 };
 
-export const refreshTocBot = (options) => {
-  tocbot.refresh({
-    ...defautTocBotOptions,
-    ...options,
-  });
+export const refreshTocBot = () => {
+  try {
+    tocbot.refresh();
+  } catch(e) {
+    console.log("tocbot refresh error ", e);
+  }
 };

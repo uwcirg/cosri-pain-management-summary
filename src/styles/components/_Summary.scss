@@ -686,6 +686,7 @@
         .sub-section__panel {
           display: flex;
           flex-wrap: nowrap;
+          overflow: hidden;
           .panel-overview {
             margin-left: 24px;
           }

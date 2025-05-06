@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import executeElm, {extractPatientResourceFromFHIRBundle} from "../../utils/executePainFactorsELM";
+import executeElm, {
+  extractPatientResourceFromFHIRBundle,
+} from "../../utils/executePainFactorsELM";
 import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
@@ -21,6 +23,7 @@ import {
 import Timeout from "../../helpers/timeout";
 import { getTokenInfoFromStorage } from "../../helpers/timeout";
 import summaryMap from "../../config/summary_config.json";
+import { refreshTocBot } from "../../config/tocbot_config";
 
 import { getEnvs, fetchEnvData } from "../../utils/envConfig";
 import SystemBanner from "../SystemBanner";
@@ -32,7 +35,6 @@ import Spinner from "../../elements/Spinner";
 
 let processIntervalId = 0;
 let scrollHeaderIntervalId = 0;
-let tocbotTntervalId = 0;
 
 export default class Landing extends Component {
   constructor() {
@@ -44,7 +46,7 @@ export default class Landing extends Component {
       resourceTypes: {},
       patientId: "",
       activeTab: 0,
-      tabsActivated: [0],
+      tabsActivated: [],
       loadingMessage: "Resources are being loaded...",
       hasMmeErrors: false,
       mmeErrors: [],
@@ -55,6 +57,11 @@ export default class Landing extends Component {
     // This binding is necessary to make `this` work in the callback
     this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
     this.handleHeaderPos = this.handleHeaderPos.bind(this);
+    this.headerPosEvent = this.headerPosEvent.bind(this);
+    this.handleAccessToEducationMaterial =
+      this.handleAccessToEducationMaterial.bind(this);
+
+    this.containerRef = React.createRef();
     this.anchorTopRef = React.createRef();
   }
 
@@ -190,12 +197,24 @@ export default class Landing extends Component {
       });
   }
 
-  componentDidUpdate() {
+  componentWillUnmount() {
+    this.clearProcessInterval();
+    this.removeEvents();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
     //page title
     document.title = "COSRI";
     if (this.shouldShowTabs()) {
       // for styling purpose
       document.querySelector("body").classList.add("has-tabs");
+    }
+
+    if (
+      prevState.activeTab !== this.state.activeTab &&
+      this.isTabActivated(this.state.activeTab)
+    ) {
+      refreshTocBot();
     }
   }
 
@@ -212,35 +231,56 @@ export default class Landing extends Component {
   }
 
   initEvents() {
-    const logParams = this.getPatientLogParams();
-    // education material links
-    document.querySelectorAll(".education").forEach((item) => {
-      item.addEventListener("click", (e) => {
-        writeToLog(`Education material: ${e.target.title}`, "info", {
-          tags: ["education"],
-          ...logParams,
-        });
-      });
-    });
+    //const logParams = this.getPatientLogParams();
+    this.containerRef.current.addEventListener(
+      "click",
+      this.handleAccessToEducationMaterial
+    );
     this.handleHeaderPos();
     // support other events if need to
   }
 
+  removeEvents() {
+    document.removeEventListener("scroll", this.headerPosEvent);
+    this.containerRef.current.removeEventListener(
+      "click",
+      this.handleAccessToEducationMaterial
+    );
+  }
+
+  handleAccessToEducationMaterial(event) {
+    const logParams = this.getPatientLogParams();
+    if (
+      event.target.classList.contains(".education") ||
+      event.target.closest(".education")
+    ) {
+      const title =
+        event.target?.innerText ?? event.target?.getAttribute("href");
+      if (!title) return;
+      writeToLog(`Education material: ${title}`, "info", {
+        tags: ["education"],
+        ...logParams,
+      });
+    }
+  }
+
+  headerPosEvent() {
+    clearTimeout(scrollHeaderIntervalId);
+    scrollHeaderIntervalId = setTimeout(
+      function () {
+        if (!isInViewport(this.anchorTopRef.current)) {
+          document.querySelector("body").classList.add("fixed");
+          return;
+        }
+        document.querySelector("body").classList.remove("fixed");
+      }.bind(this),
+      250
+    );
+  }
+
   // fixed header when scrolling in the event that it is not within viewport
   handleHeaderPos() {
-    document.addEventListener("scroll", () => {
-      clearTimeout(scrollHeaderIntervalId);
-      scrollHeaderIntervalId = setTimeout(
-        function () {
-          if (!isInViewport(this.anchorTopRef.current)) {
-            document.querySelector("body").classList.add("fixed");
-            return;
-          }
-          document.querySelector("body").classList.remove("fixed");
-        }.bind(this),
-        250
-      );
-    });
+    document.addEventListener("scroll", this.headerPosEvent);
   }
 
   getPatientResource() {
@@ -350,7 +390,7 @@ export default class Landing extends Component {
         window.scrollTo(0, 1);
       }
     );
-    if (this.isTabActivated(index)) {
+    if (this.isTabActivated[index]) {
       return;
     }
     this.setState({
@@ -448,10 +488,6 @@ export default class Landing extends Component {
                   this.renderSummary(summary, sectionFlags)}
                 {item === "report" && this.isTabActivated(index) && (
                   <Report
-                    // summaryData={{
-                    //   report: summary.ReportSummary,
-                    //   survey: summary.SurveySummary,
-                    // }}
                     patientBundle={this.state.result?.bundle}
                     sectionFlags={sectionFlags}
                   ></Report>
@@ -500,7 +536,7 @@ export default class Landing extends Component {
     const { sectionFlags } = this.state;
 
     return (
-      <div className="landing">
+      <div className="landing" ref={this.containerRef}>
         <div id="anchorTop" ref={this.anchorTopRef}></div>
         <div id="skiptocontent"></div>
         {isNotProduction() && (
@@ -511,7 +547,6 @@ export default class Landing extends Component {
           {this.renderTabs()}
           {this.renderTabPanels(summary, sectionFlags)}
         </div>
-        {/* <ReactTooltip className="summary-tooltip" id="summaryTooltip" /> */}
       </div>
     );
   }

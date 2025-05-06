@@ -10,10 +10,8 @@ import Spinner from "../../elements/Spinner";
 import Version from "../../elements/Version";
 import executeReportELM from "../../utils/executeReportELM";
 import reportSummarySections from "../../config/report_config";
-import {
-  initTocBot,
-  destroyTocBot,
-} from "../../config/tocbot_config";
+import { initTocBot, destroyTocBot } from "../../config/tocbot_config";
+import { getProcessProgressDisplay } from "../Landing/utility";
 import {
   dedupArrObjects,
   getQuestionnaireDescription,
@@ -23,6 +21,8 @@ import {
 } from "../../helpers/utility";
 import * as reportUtil from "./utility";
 
+let progressIntervalId = 0;
+
 export default class Report extends Component {
   constructor() {
     super(...arguments);
@@ -30,6 +30,7 @@ export default class Report extends Component {
     this.state = {
       summaryData: null,
       loading: true,
+      loadingMessage: "Loading report data",
       collector: [],
       resourceTypes: {},
       errors: [],
@@ -42,6 +43,7 @@ export default class Report extends Component {
 
   componentWillUnmount() {
     destroyTocBot();
+    clearProcessInterval();
   }
 
   componentDidMount() {
@@ -49,6 +51,7 @@ export default class Report extends Component {
       this.initializeTocBot();
       return;
     }
+    this.initProcessProgressDisplay();
     executeReportELM(
       this.props.patientBundle,
       this.state.collector,
@@ -66,12 +69,14 @@ export default class Report extends Component {
             errors: [...this.state.errors, ...this.getErrorsFromCollector()],
           },
           () => {
+            this.clearProcessInterval();
             this.initializeTocBot();
           }
         );
       })
       .catch((e) => {
         console.log(e);
+        this.clearProcessInterval();
         this.setState({
           loading: false,
           errors: [...this.state.errors, e],
@@ -79,8 +84,22 @@ export default class Report extends Component {
       });
   }
 
+  initProcessProgressDisplay() {
+    this.clearProcessInterval();
+    progressIntervalId = setInterval(() => {
+      this.setState({
+        loadingMessage: getProcessProgressDisplay(
+          this.state.resourceTypes
+        ),
+      });
+    }, 30);
+  }
+  clearProcessInterval() {
+    clearInterval(progressIntervalId);
+  }
+
   initializeTocBot() {
-    if (!document.querySelector("nav")) return;
+    if (!document.querySelector(".active nav")) return;
     destroyTocBot();
     const MIN_HEADER_HEIGHT = 180;
     initTocBot({
@@ -89,7 +108,6 @@ export default class Report extends Component {
       positionFixedSelector: `.active .summary__nav`, // element to add the positionFixedClass to
       headingsOffset: 1 * MIN_HEADER_HEIGHT,
       scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-      fixedSidebarOffset: "auto",
     });
   }
 
@@ -427,10 +445,10 @@ export default class Report extends Component {
     const hasNoData = !this.hasSummaryData(summaryData);
     return (
       <div className="summary report">
-        {!this.state.loading && <SideNav id="reportSideNavButton"></SideNav>}
+        <SideNav id="reportSideNavButton"></SideNav>
         <div className="summary__display">
           {this.state.loading && (
-            <Spinner loadingMessage="<strong>Loading report data ....</strong>"></Spinner>
+            <Spinner loadingMessage={this.state.loadingMessage}></Spinner>
           )}
           {!this.state.loading && hasNoData && this.renderNoDataNotice()}
           {!this.state.loading && (
