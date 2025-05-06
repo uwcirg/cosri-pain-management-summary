@@ -5,13 +5,17 @@ $selector-box-shadow: 0 2px 2px #383e40;
   margin: auto;
   .spinner-container {
     position: absolute;
-    left: 48%;
+    left: 40%;
     top: 25%;
-    transform: translate(-25%, -48%);
+    transform: translate(-25%, -25%);
     .loading-message {
       position: relative;
-      top: 40px;
-      left: 62%;
+      top: 48px;
+      left: 25%;
+      transform: translateX(-25%);
+    }
+    .spinner {
+      left: 25%;
     }
   }
   &.summary {
