@@ -43,7 +43,7 @@ export default class Report extends Component {
 
   componentWillUnmount() {
     destroyTocBot();
-    clearProcessInterval();
+    this.clearProcessInterval();
   }
 
   componentDidMount() {
