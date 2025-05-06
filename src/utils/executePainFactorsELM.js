@@ -184,11 +184,11 @@ async function executeELMForFactors(bundle, patientSource, library) {
   const codeService = new VSACAwareCodeService(valueSetDB);
   const executor = new cql.Executor(library, codeService);
   //debugging
-  console.log("bundle loaded? ", bundle);
-  console.log(
-    "resource types",
-    getResourceTypesFromPatientBundle(bundle?.entry)
-  );
+  // console.log("bundle loaded? ", bundle);
+  // console.log(
+  //   "resource types",
+  //   getResourceTypesFromPatientBundle(bundle?.entry)
+  // );
   patientSource.loadBundles([bundle]);
   let execResults;
   try {
