@@ -131,7 +131,7 @@ async function executeELM(collector = [], paramResourceTypes = {}) {
         library = getLibrary(release);
         // return all the requests that have been resolved // rejected
         return Promise.allSettled(
-          [...new Set([...extractResourcesFromELM(library)])].map((name) => {
+          [...new Set([...extractResourcesFromELM(library)].sort())].map((name) => {
             resourceTypes[name] = false;
             return doSearch(client, release, name, collector, resourceTypes);
           })

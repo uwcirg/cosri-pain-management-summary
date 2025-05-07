@@ -285,12 +285,12 @@
     }
   }
 
-  &__display,
   &__display {
     flex: 1;
     background-color: $color-gray-lightest;
     z-index: 10;
     max-width: 100%;
+    min-height: 70vh;
     @media (min-width: 768px) {
       & {
         max-width: calc(100% - $summary-nav-base-width);
