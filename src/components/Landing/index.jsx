@@ -78,10 +78,10 @@ export default class Landing extends Component {
     // display resources loading statuses
     this.initProcessProgressDisplay();
     Promise.allSettled([
-      // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
-      fetchEnvData(),
       executeElm(this.state.collector, this.state.resourceTypes),
       landingUtils.getExternalData(summaryMap),
+      // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
+      fetchEnvData(),
     ])
       .then((responses) => {
         if (!getTokenInfoFromStorage()) {
@@ -109,8 +109,8 @@ export default class Landing extends Component {
         writeToLog("application loaded", "info", this.getPatientLogParams());
         //set FHIR results
         let result = {};
-        let fhirData = responses[1].value;
-        let externalDataSet = responses[2].value;
+        let fhirData = responses[0]?.value;
+        let externalDataSet = responses[1]?.value;
         // hide and show section(s) depending on config
         const currentSummaryMap = {
           ...this.state.summaryMap,
@@ -486,10 +486,19 @@ export default class Landing extends Component {
               >
                 {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
-                {item === "report" && this.isTabActivated(index) && (
+                {item === "report" &&  (
                   <Report
                     patientBundle={this.state.result?.bundle}
                     sectionFlags={sectionFlags}
+                    onReportLoaded={(data) => this.setState({
+                      result: {
+                        ...this.state.result,
+                        Summary: {
+                          ...this.state.result.Summary,
+                          ...data
+                        }
+                      }
+                    })}
                   ></Report>
                 )}
                 {/* other tab panel as specified here */}

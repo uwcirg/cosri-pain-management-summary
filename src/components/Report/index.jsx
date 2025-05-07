@@ -71,6 +71,9 @@ export default class Report extends Component {
           () => {
             this.clearProcessInterval();
             this.initializeTocBot();
+            if (this.props.onReportLoaded) {
+              this.props.onReportLoaded(this.state.summaryData);
+            }
           }
         );
       })
@@ -88,9 +91,7 @@ export default class Report extends Component {
     this.clearProcessInterval();
     progressIntervalId = setInterval(() => {
       this.setState({
-        loadingMessage: getProcessProgressDisplay(
-          this.state.resourceTypes
-        ),
+        loadingMessage: getProcessProgressDisplay(this.state.resourceTypes),
       });
     }, 30);
   }
