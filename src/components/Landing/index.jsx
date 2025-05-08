@@ -382,20 +382,21 @@ export default class Landing extends Component {
     if (this.state.activeTab === index) {
       return;
     }
-    this.setState(
-      {
-        activeTab: index,
-      },
-      () => {
+    if (!this.isTabActivated(index)) {
+      this.setState(
+        (prevState) => ({
+          activeTab: index,
+          tabsActivated: [...prevState.tabsActivated, index],
+        }),
+        () => {
+          window.scrollTo(0, 1);
+        }
+      );
+    } else {
+      this.setState({ activeTab: index }, () => {
         window.scrollTo(0, 1);
-      }
-    );
-    if (this.isTabActivated[index]) {
-      return;
+      });
     }
-    this.setState({
-      tabsActivated: [...this.state.tabsActivated, index],
-    });
   }
 
   shouldShowTabs() {
