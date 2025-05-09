@@ -3,10 +3,15 @@ import ReactModal from "react-modal";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Collapsible from "react-collapsible";
+import ErrorBanner from "../ErrorBanner";
 import InfoModal from "../InfoModal";
 import SideNav from "../SideNav";
+import Spinner from "../../elements/Spinner";
 import Version from "../../elements/Version";
+import executeReportELM from "../../utils/executeReportELM";
 import reportSummarySections from "../../config/report_config";
+import { initTocBot, destroyTocBot } from "../../config/tocbot_config";
+import { getProcessProgressDisplay } from "../Landing/utility";
 import {
   dedupArrObjects,
   getQuestionnaireDescription,
@@ -16,16 +21,102 @@ import {
 } from "../../helpers/utility";
 import * as reportUtil from "./utility";
 
+let progressIntervalId = 0;
+
 export default class Report extends Component {
   constructor() {
     super(...arguments);
 
     this.state = {
+      summaryData: null,
+      loading: true,
+      loadingMessage: "Loading report data",
+      collector: [],
+      resourceTypes: {},
+      errors: [],
       showModal: false,
       modalSubSection: null,
     };
 
     ReactModal.setAppElement("body");
+  }
+
+  componentWillUnmount() {
+    destroyTocBot();
+    this.clearProcessInterval();
+  }
+
+  componentDidMount() {
+    if (!this.state.loading || this.state.summaryData) {
+      this.initializeTocBot();
+      return;
+    }
+    this.initProcessProgressDisplay();
+    executeReportELM(
+      this.props.patientBundle,
+      this.state.collector,
+      this.state.resourceTypes
+    )
+      .then((results) => {
+        console.log("query result for report ", results);
+        this.setState(
+          {
+            summaryData: {
+              report: results?.ReportSummary,
+              survey: results?.SurveySummary,
+            },
+            loading: false,
+            errors: [...this.state.errors, ...this.getErrorsFromCollector()],
+          },
+          () => {
+            this.clearProcessInterval();
+            this.initializeTocBot();
+            if (this.props.onReportLoaded) {
+              this.props.onReportLoaded(this.state.summaryData);
+            }
+          }
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+        this.clearProcessInterval();
+        this.setState({
+          loading: false,
+          errors: [...this.state.errors, e],
+        });
+      });
+  }
+
+  initProcessProgressDisplay() {
+    this.clearProcessInterval();
+    progressIntervalId = setInterval(() => {
+      this.setState({
+        loadingMessage: getProcessProgressDisplay(this.state.resourceTypes),
+      });
+    }, 30);
+  }
+  clearProcessInterval() {
+    clearInterval(progressIntervalId);
+  }
+
+  initializeTocBot() {
+    if (!document.querySelector(".active nav")) return;
+    destroyTocBot();
+    const MIN_HEADER_HEIGHT = 180;
+    initTocBot({
+      tocSelector: `.active .summary__nav`, // where to render the table of contents
+      contentSelector: `.active .summary__display`, // where to grab the headings to build the table of contents
+      positionFixedSelector: `.active .summary__nav`, // element to add the positionFixedClass to
+      headingsOffset: 1 * MIN_HEADER_HEIGHT,
+      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
+    });
+  }
+
+  getErrorsFromCollector() {
+    if (isEmptyArray(this.state.collector)) return [];
+    return this.state.collector
+      .filter((item) => !!item.error)
+      .map((item) => `${item.type ?? ""}${item.type ? ": " : ""}${item.error}`);
   }
 
   handleOpenModal = (modalSubSection, event) => {
@@ -351,18 +442,24 @@ export default class Report extends Component {
   }
 
   render() {
-    const { summaryData } = this.props;
+    const summaryData = this.state.summaryData;
     const hasNoData = !this.hasSummaryData(summaryData);
     return (
       <div className="summary report">
         <SideNav id="reportSideNavButton"></SideNav>
         <div className="summary__display">
-          {hasNoData && this.renderNoDataNotice()}
-          <div className="sections">
-            {this.renderSections(summaryData)}
-            <Version />
-          </div>
-          {this.renderInfoModal()}
+          {this.state.loading && (
+            <Spinner loadingMessage={this.state.loadingMessage}></Spinner>
+          )}
+          {!this.state.loading && hasNoData && this.renderNoDataNotice()}
+          {!this.state.loading && (
+            <div className="sections">
+              <ErrorBanner errors={this.state.errors}></ErrorBanner>
+              {this.renderSections(summaryData)}
+              <Version />
+              {this.renderInfoModal()}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -372,4 +469,5 @@ export default class Report extends Component {
 Report.propTypes = {
   summaryData: PropTypes.object,
   sectionFlags: PropTypes.object,
+  onReportLoaded: PropTypes.func,
 };

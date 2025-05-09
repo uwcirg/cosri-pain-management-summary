@@ -30,6 +30,7 @@ $tab-polygon: polygon(4.5% 5%, 94.5% 5%, 100% 100%, 0% 100%);
   border-top: 1px solid $tab-inactive-background-color;
   border-left: 1px solid $tab-inactive-background-color;
   border-right: 1px solid $tab-inactive-background-color;
+
   &:not(.active):hover {
     background-color: $color-blue-darker;
     color: #FFF;
@@ -98,8 +99,5 @@ $tab-polygon: polygon(4.5% 5%, 94.5% 5%, 100% 100%, 0% 100%);
   display: none;
   &.active {
     display: block;
-    // &.multi-tabs {
-    //   border-top: 4px solid $color-blue;
-    // }
   }
 }
