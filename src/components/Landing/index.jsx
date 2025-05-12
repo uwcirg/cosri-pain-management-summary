@@ -451,7 +451,12 @@ export default class Landing extends Component {
               className={`tab ${
                 this.state.activeTab === index ? "active" : ""
               }`}
-              onClick={() => this.handleSetActiveTab(index)}
+              onClick={(e) => {
+                const parentTab = e.target.closest(".tab");
+                if (parentTab)
+                  parentTab.classList.add("active");
+                this.handleSetActiveTab(index);
+              }}
               role="presentation"
               key={`tab_${index}`}
             >
