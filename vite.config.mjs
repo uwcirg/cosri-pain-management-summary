@@ -9,6 +9,14 @@ export default defineConfig({
   base: "/",
   envPrefix: "REACT_",
 
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: "modern-compiler",
+      },
+    },
+  },
+
   plugins: [
     react(),
     nodePolyfills({
@@ -67,7 +75,7 @@ export default defineConfig({
           if (/src[/\\]config[/\\]report\_config\.js/.test(id)) {
             return "report-config-chunk";
           }
-        }
+        },
       },
     },
   },
@@ -84,4 +92,3 @@ export default defineConfig({
     },
   },
 });
-

@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import tocbot from "tocbot";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import executeElm from "../../utils/executeELM";
+import executeElm, {
+  extractPatientResourceFromFHIRBundle,
+} from "../../utils/executePainFactorsELM";
 import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
 import {
@@ -22,6 +23,7 @@ import {
 import Timeout from "../../helpers/timeout";
 import { getTokenInfoFromStorage } from "../../helpers/timeout";
 import summaryMap from "../../config/summary_config.json";
+import { refreshTocBot } from "../../config/tocbot_config";
 
 import { getEnvs, fetchEnvData } from "../../utils/envConfig";
 import SystemBanner from "../SystemBanner";
@@ -33,7 +35,6 @@ import Spinner from "../../elements/Spinner";
 
 let processIntervalId = 0;
 let scrollHeaderIntervalId = 0;
-let tocbotTntervalId = 0;
 
 export default class Landing extends Component {
   constructor() {
@@ -45,17 +46,22 @@ export default class Landing extends Component {
       resourceTypes: {},
       patientId: "",
       activeTab: 0,
+      tabsActivated: [],
       loadingMessage: "Resources are being loaded...",
       hasMmeErrors: false,
       mmeErrors: [],
       errorCollection: [],
-      tocInitialized: false,
       summaryMap: summaryMap,
     };
 
     // This binding is necessary to make `this` work in the callback
     this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
     this.handleHeaderPos = this.handleHeaderPos.bind(this);
+    this.headerPosEvent = this.headerPosEvent.bind(this);
+    this.handleAccessToEducationMaterial =
+      this.handleAccessToEducationMaterial.bind(this);
+
+    this.containerRef = React.createRef();
     this.anchorTopRef = React.createRef();
   }
 
@@ -72,10 +78,10 @@ export default class Landing extends Component {
     // display resources loading statuses
     this.initProcessProgressDisplay();
     Promise.allSettled([
-      // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
-      fetchEnvData(),
       executeElm(this.state.collector, this.state.resourceTypes),
       landingUtils.getExternalData(summaryMap),
+      // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
+      fetchEnvData(),
     ])
       .then((responses) => {
         if (!getTokenInfoFromStorage()) {
@@ -85,9 +91,11 @@ export default class Landing extends Component {
         }
         // write out environment variables:
         getEnvs();
-        if (responses[1].status === "rejected" || !this.getPatientId()) {
+        if (responses[1].status === "rejected") {
           this.clearProcessInterval();
-          const rejectReason = responses[0].reason ? responses[0].reason : "";
+          const rejectReason = responses[0].reason
+            ? responses[0].reason
+            : "Error retrieving patient data.";
           console.log(rejectReason);
           this.logError(rejectReason);
           this.setState({
@@ -101,8 +109,8 @@ export default class Landing extends Component {
         writeToLog("application loaded", "info", this.getPatientLogParams());
         //set FHIR results
         let result = {};
-        let fhirData = responses[1].value;
-        let externalDataSet = responses[2].value;
+        let fhirData = responses[0]?.value;
+        let externalDataSet = responses[1]?.value;
         // hide and show section(s) depending on config
         const currentSummaryMap = {
           ...this.state.summaryMap,
@@ -110,6 +118,7 @@ export default class Landing extends Component {
             this.state.summaryMap
           ),
         };
+        result["bundle"] = fhirData?.bundle;
         result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
         result["Summary"] = {
           ...result["Summary"],
@@ -188,13 +197,24 @@ export default class Landing extends Component {
       });
   }
 
-  componentDidUpdate() {
-    if (!this.state.tocInitialized) this.initTocBot();
+  componentWillUnmount() {
+    this.clearProcessInterval();
+    this.removeEvents();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
     //page title
     document.title = "COSRI";
     if (this.shouldShowTabs()) {
       // for styling purpose
       document.querySelector("body").classList.add("has-tabs");
+    }
+
+    if (
+      prevState.activeTab !== this.state.activeTab &&
+      this.isTabActivated(this.state.activeTab)
+    ) {
+      refreshTocBot();
     }
   }
 
@@ -211,117 +231,64 @@ export default class Landing extends Component {
   }
 
   initEvents() {
-    const logParams = this.getPatientLogParams();
-    // education material links
-    document.querySelectorAll(".education").forEach((item) => {
-      item.addEventListener("click", (e) => {
-        writeToLog(`Education material: ${e.target.title}`, "info", {
-          tags: ["education"],
-          ...logParams,
-        });
-      });
-    });
+    //const logParams = this.getPatientLogParams();
+    this.containerRef.current.addEventListener(
+      "click",
+      this.handleAccessToEducationMaterial
+    );
     this.handleHeaderPos();
     // support other events if need to
   }
 
+  removeEvents() {
+    document.removeEventListener("scroll", this.headerPosEvent);
+    this.containerRef.current.removeEventListener(
+      "click",
+      this.handleAccessToEducationMaterial
+    );
+  }
+
+  handleAccessToEducationMaterial(event) {
+    const logParams = this.getPatientLogParams();
+    if (
+      event.target.classList.contains(".education") ||
+      event.target.closest(".education")
+    ) {
+      const title =
+        event.target?.innerText ?? event.target?.getAttribute("href");
+      if (!title) return;
+      writeToLog(`Education material: ${title}`, "info", {
+        tags: ["education"],
+        ...logParams,
+      });
+    }
+  }
+
+  headerPosEvent() {
+    clearTimeout(scrollHeaderIntervalId);
+    scrollHeaderIntervalId = setTimeout(
+      function () {
+        if (!isInViewport(this.anchorTopRef.current)) {
+          document.querySelector("body").classList.add("fixed");
+          return;
+        }
+        document.querySelector("body").classList.remove("fixed");
+      }.bind(this),
+      250
+    );
+  }
+
   // fixed header when scrolling in the event that it is not within viewport
   handleHeaderPos() {
-    document.addEventListener("scroll", () => {
-      clearTimeout(scrollHeaderIntervalId);
-      scrollHeaderIntervalId = setTimeout(
-        function () {
-          if (!isInViewport(this.anchorTopRef.current)) {
-            document.querySelector("body").classList.add("fixed");
-            return;
-          }
-          document.querySelector("body").classList.remove("fixed");
-        }.bind(this),
-        250
-      );
-    });
-  }
-
-  getTocBotOptions() {
-    const MIN_HEADER_HEIGHT = this.shouldShowTabs() ? 180 : 100;
-    const selectorClass = this.shouldShowTabs() ? ".active" : "";
-    return {
-      //tocSelector: ".active .summary__nav", // where to render the table of contents
-      tocSelector: `${selectorClass} .summary__nav`.trim(), // where to render the table of contents
-      contentSelector: `${selectorClass} .summary__display`.trim(), // where to grab the headings to build the table of contents
-      headingSelector: "h2, h3", // which headings to grab inside of the contentSelector element
-      positionFixedSelector: `${selectorClass} .summary__nav`.trim(), // element to add the positionFixedClass to
-      ignoreSelector: "h3.panel-title",
-      collapseDepth: 0, // how many heading levels should not be collpased
-      includeHtml: true, // include the HTML markup from the heading node, not just the text,
-      // fixedSidebarOffset: this.shouldShowTabs() ? -1 * MIN_HEADER_HEIGHT : "auto",
-      headingsOffset: 1 * MIN_HEADER_HEIGHT,
-      scrollSmoothOffset: -1 * MIN_HEADER_HEIGHT,
-      hasInnerContainers: true,
-      onClick: (e) => {
-        e.preventDefault();
-        const sectionIdAttr = "datasectionid";
-        const containgElement = e.target.closest(`[${sectionIdAttr}]`);
-        const sectionId = containgElement
-          ? containgElement.getAttribute(sectionIdAttr)
-          : e.target.getAttribute(sectionIdAttr);
-        //e.stopPropagation();
-        const anchorElement = document.querySelector(`#${sectionId}__anchor`);
-        const listItems = document.querySelectorAll(".toc-list-item");
-        const activeListItem = e.target.closest(".toc-list-item");
-        const tocLinks = document.querySelectorAll(".toc-link");
-        const activeLink = e.target.closest(".toc-link");
-        if (anchorElement) {
-          anchorElement.scrollIntoView(true);
-        } else {
-          e.target.scrollIntoView(true);
-        }
-        clearTimeout(tocbotTntervalId);
-        tocbotTntervalId = setTimeout(() => {
-          tocLinks.forEach((el) => {
-            if (el.isEqualNode(activeLink)) {
-              el.classList.add("is-active-link");
-              return true;
-            }
-            el.classList.remove("is-active-link");
-          });
-          listItems.forEach((el) => {
-            if (el.isEqualNode(activeListItem)) {
-              el.classList.add("is-active-li");
-              return true;
-            }
-            el.classList.remove("is-active-li");
-          });
-        }, 50);
-      },
-    };
-  }
-
-  initTocBot() {
-    if (!this.state || !this.state.result || !document.querySelector("nav"))
-      return;
-    tocbot.destroy();
-    tocbot.init(this.getTocBotOptions());
-    this.setState({
-      tocInitialized: true,
-    });
+    document.addEventListener("scroll", this.headerPosEvent);
   }
 
   getPatientResource() {
-    if (!this.state.collector) return null;
-    const patientResource = this.state.collector.find(
-      (item) =>
-        item.data &&
-        item.data.resourceType &&
-        item.data.resourceType.toLowerCase() === "patient"
-    );
-    if (patientResource) return patientResource.data;
-    return null;
+    return extractPatientResourceFromFHIRBundle(this.state.result?.bundle);
   }
 
   getPatientId() {
     if (this.state.patientId) return this.state.patientId;
-    if (!this.state.collector) return "";
     const patientResource = this.getPatientResource();
     if (patientResource) return patientResource.id;
     return "";
@@ -408,20 +375,28 @@ export default class Landing extends Component {
   }
 
   handleSetActiveTab(index) {
-    this.setState(
-      {
-        activeTab: index,
-      },
-      () => {
-        this.initTocBot();
-        writeToLog(index >= 1 ? "report tab" : "overview tab", "info", {
-          tags: ["tab", "analytics"],
-          ...this.getPatientLogParams(),
-        });
-
+    writeToLog(index >= 1 ? "report tab" : "overview tab", "info", {
+      tags: ["tab", "analytics"],
+      ...this.getPatientLogParams(),
+    });
+    if (this.state.activeTab === index) {
+      return;
+    }
+    if (!this.isTabActivated(index)) {
+      this.setState(
+        (prevState) => ({
+          activeTab: index,
+          tabsActivated: [...prevState.tabsActivated, index],
+        }),
+        () => {
+          window.scrollTo(0, 1);
+        }
+      );
+    } else {
+      this.setState({ activeTab: index }, () => {
         window.scrollTo(0, 1);
-      }
-    );
+      });
+    }
   }
 
   shouldShowTabs() {
@@ -433,6 +408,9 @@ export default class Landing extends Component {
     let tabs = ["overview"];
     if (isReportEnabled()) tabs.push("report");
     return tabs;
+  }
+  isTabActivated(index) {
+    return this.state.tabsActivated.indexOf(index) !== -1;
   }
 
   renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
@@ -473,7 +451,12 @@ export default class Landing extends Component {
               className={`tab ${
                 this.state.activeTab === index ? "active" : ""
               }`}
-              onClick={() => this.handleSetActiveTab(index)}
+              onClick={(e) => {
+                const parentTab = e.target.closest(".tab");
+                if (parentTab)
+                  parentTab.classList.add("active");
+                this.handleSetActiveTab(index);
+              }}
               role="presentation"
               key={`tab_${index}`}
             >
@@ -509,13 +492,19 @@ export default class Landing extends Component {
               >
                 {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
-                {item === "report" && (
+                {item === "report" &&  (
                   <Report
-                    summaryData={{
-                      report: summary.ReportSummary,
-                      survey: summary.SurveySummary,
-                    }}
+                    patientBundle={this.state.result?.bundle}
                     sectionFlags={sectionFlags}
+                    onReportLoaded={(data) => this.setState({
+                      result: {
+                        ...this.state.result,
+                        Summary: {
+                          ...this.state.result.Summary,
+                          ...data
+                        }
+                      }
+                    })}
                   ></Report>
                 )}
                 {/* other tab panel as specified here */}
@@ -562,7 +551,7 @@ export default class Landing extends Component {
     const { sectionFlags } = this.state;
 
     return (
-      <div className="landing">
+      <div className="landing" ref={this.containerRef}>
         <div id="anchorTop" ref={this.anchorTopRef}></div>
         <div id="skiptocontent"></div>
         {isNotProduction() && (
@@ -573,7 +562,6 @@ export default class Landing extends Component {
           {this.renderTabs()}
           {this.renderTabPanels(summary, sectionFlags)}
         </div>
-        {/* <ReactTooltip className="summary-tooltip" id="summaryTooltip" /> */}
       </div>
     );
   }
