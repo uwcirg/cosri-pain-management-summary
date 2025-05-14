@@ -905,7 +905,7 @@ export default class Summary extends Component {
           {meetsInclusionCriteria && <ExclusionBanner />}
           {
             <AlertBanner
-              alertText="Naloxone is recommended for every patient receiving opioids, please review that patient has naloxone."
+              alertText="Naloxone is recommended for every patient receiving opioids. Please review that patient has naloxone."
               dataParams={{
                 conceptCode: "HZ85ZZZ",
                 conceptName:
@@ -916,7 +916,7 @@ export default class Summary extends Component {
           }
           {
             <AlertBanner
-              alertText="This patient's MME has recently increased to 50 or more, they are at higher risk of overdose, please review that patient has naloxone."
+              alertText="This patient's MME has recently increased to 50 or more. They are at higher risk of overdose. Please review that patient has naloxone."
               dataParams={{
                 conceptCode: "F11.929",
                 conceptName: "Opioid use, unspecified with intoxication, unspecified"
