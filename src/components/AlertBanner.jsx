@@ -128,7 +128,6 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
       role="presentation"
       style={{
         paddingTop: "8px",
-        marginTop: "2px",
       }}
       // onClick={handleCloseToggle}
       // onKeyDown={handleCloseToggle}

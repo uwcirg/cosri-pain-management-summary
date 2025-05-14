@@ -17,6 +17,10 @@
     background-color: $color-yellow-lighter;
     color: $color-gray-dark;
   }
+  
+  &.alert-banner:not(:first-of-type) {
+    border-top: 1px solid #edebeb;
+  }
 
   &.inclusion-banner,
   &.exclusion-banner,
@@ -51,7 +55,10 @@
       }
     }
     .title {
-      margin-right: 4px
+      margin-right: 4px;
+      svg {
+        font-size: 1.1rem;
+      }
     }
 
     .warning-inside {
@@ -97,7 +104,7 @@
     .input {
       font-size: 0.95em;
       margin-top: 4px;
-      margin-left: 16px;
+      margin-left: 20px;
     }
     .close-button {
       margin-right: 12px;
