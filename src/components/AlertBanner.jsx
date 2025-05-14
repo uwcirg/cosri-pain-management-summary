@@ -8,6 +8,8 @@ import {
   isEmptyArray,
   getDiffMonths,
   getDateObjectInLocalDateTime,
+  getDisplayDateFromISOString,
+  getUserIdFromAccessToken,
 } from "../helpers/utility";
 import { extractDateFromGMTDateString } from "../helpers/formatit";
 
@@ -16,7 +18,13 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
   const { client, patient } = context;
   const conceptCode = dataParams.conceptCode;
   const conceptName = dataParams.conceptName;
-  const todayDate = extractDateFromGMTDateString(new Date().toISOString());
+  const todayDate = getDisplayDateFromISOString(new Date().toISOString(), {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
   // const loinCode = "F11.929";
   const getPostFHIRData = () => ({
     date: todayDate,
@@ -122,6 +130,7 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
     return <div className="banner alert-banner">Loading alert data...</div>;
 
   const conditionalClass = contextState.display ? "" : "close";
+  const userId = getUserIdFromAccessToken();
   return (
     <div
       className={`banner alert-banner ${conditionalClass}`}
@@ -147,7 +156,9 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
         <div
           className="muted-text"
           style={{ marginTop: "4px", fontSize: "0.9rem", marginLeft: "24px" }}
-        >{`Reviewed on ${contextState.viewedDate}`}</div>
+        >{`Last acknowledged on ${contextState.viewedDate}${
+          userId ? " by " + userId : ""
+        }`}</div>
       )}
       {!contextState.viewedDate && (
         <div className="input flex flex-start">
@@ -160,14 +171,13 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
           ></input>
           <span>Check here if you have reviewed.</span> */}
 
-          <label
-            className="checkbox-container"
-            aria-label="review checkbox"
-          >
-            {contextState.savingInProgress ? "Saving ... " : "Check if you have reviewed."}
+          <label className="checkbox-container" aria-label="review checkbox">
+            {contextState.savingInProgress
+              ? "Saving ... "
+              : "Check to acknowledge this alert."}
             <input
               type="checkbox"
-            //  checked={contextState.viewedDate}
+              //  checked={contextState.viewedDate}
               aria-label="hidden checkbox"
               onClick={handleInputClick}
             />
