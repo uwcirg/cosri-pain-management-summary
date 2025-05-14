@@ -25,9 +25,9 @@
   &.inclusion-banner,
   &.exclusion-banner,
   &.alert-banner {
-    padding: 12px 56px 12px 24px;
+    padding: 10px 56px 10px 20px;
     text-align: left;
-    background-color: $color-beige;
+    background-color: $color-beige-light;
     position: relative;
     .info-icon {
       color: $link-color;
