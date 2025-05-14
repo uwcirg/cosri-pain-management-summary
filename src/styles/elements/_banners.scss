@@ -57,6 +57,11 @@
         color: #FFF;
       }
     }
+    &.alert-banner {
+      strong {
+        color: $color-red-darkest;
+      }
+    }
     .title {
       margin-right: 4px;
       svg {
