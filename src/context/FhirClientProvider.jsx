@@ -31,14 +31,17 @@ export default function FhirClientProvider(props) {
       return client.request("/Patient/" + queryPatientId);
     }
     // Get the Patient resource
-    const id =  await client.patient.read().catch((e) => {
+    const id = await client.patient.read().catch((e) => {
       throw new Error(e);
     });
     return id;
   };
 
   useEffect(() => {
-    Promise.allSettled([FHIR.oauth2.ready(), fetchEnvData()]).then(
+    Promise.allSettled([
+      FHIR?.oauth2 ? FHIR?.oauth2?.ready() : () => ({}),
+      fetchEnvData(),
+    ]).then(
       (results) => {
         if (results[0].status === "rejected") {
           dispatch({
@@ -49,7 +52,7 @@ export default function FhirClientProvider(props) {
         console.log("Auth complete, client ready.");
         const client = results[0].value;
 
-        console.log("patient? ", client)
+        console.log("patient? ", client);
 
         getPatient(client)
           .then((result) => {

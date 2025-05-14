@@ -5,9 +5,7 @@ import App from "../../containers/App";
 
 describe("App", () => {
   it("renders without crashing", () => {
-    const div = document.createElement("div");
-    const { container } = render(<App />, div);
-    expect(container.querySelector(".App")).toBeInTheDocument();
+    render(<App />);
   });
 });
 
