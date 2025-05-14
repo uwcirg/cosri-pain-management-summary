@@ -25,6 +25,7 @@ import ProviderIcon from "../icons/ProviderIcon";
 import UserIcon from "../icons/UserIcon";
 import FlaskIcon from "../icons/FlaskIcon";
 import ErrorBanner from "./ErrorBanner";
+import AlertBanner from "./AlertBanner";
 import InclusionBanner from "./InclusionBanner";
 import ExclusionBanner from "./ExclusionBanner";
 import DataInfo from "./DataInfo";
@@ -36,10 +37,7 @@ import SideNav from "./SideNav";
 import Table from "./Table";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
-import {
-  initTocBot,
-  destroyTocBot,
-} from "../config/tocbot_config";
+import { initTocBot, destroyTocBot } from "../config/tocbot_config";
 import Version from "../elements/Version";
 import {
   getErrorMessageString,
@@ -48,8 +46,8 @@ import {
   isNumber,
   isReportEnabled,
 } from "../helpers/utility";
+import { getDailyMMEData, hasActiveOpioidMed, hasHighRiskMME } from "./Landing/utility";
 import { getScoringData } from "./Report/utility";
-import tocbot from "tocbot";
 
 export default class Summary extends Component {
   constructor() {
@@ -79,7 +77,7 @@ export default class Summary extends Component {
     if (!document.querySelector("nav")) return;
     const isActiveTab = this.parentContainerRef.current.closest(".active");
     const MIN_HEADER_HEIGHT = isActiveTab ? 180 : 100;
-    const parentSelector = isActiveTab ? ".active": ".overview";
+    const parentSelector = isActiveTab ? ".active" : ".overview";
     destroyTocBot();
     initTocBot({
       tocSelector: `${parentSelector} .summary__nav`, // where to render the table of contents
@@ -905,6 +903,27 @@ export default class Summary extends Component {
           </h1>
           {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
           {meetsInclusionCriteria && <ExclusionBanner />}
+          {
+            <AlertBanner
+              alertText="Naloxone is recommended for every patient receiving opioids, please review that patient has naloxone."
+              dataParams={{
+                conceptCode: "HZ85ZZZ",
+                conceptName:
+                  "Medication Management for Substance Abuse Treatment, Naloxone",
+              }}
+              display={hasActiveOpioidMed(getDailyMMEData(summary))}
+            ></AlertBanner>
+          }
+          {
+            <AlertBanner
+              alertText="This patient's MME has recently increased to 50 or more, they are at higher risk of overdose, please review that patient has naloxone."
+              dataParams={{
+                conceptCode: "F11.929",
+                conceptName: "Opioid use, unspecified with intoxication, unspecified"
+              }}
+              display={hasHighRiskMME(getDailyMMEData(summary))}
+            ></AlertBanner>
+          }
           {!hasErrors && !meetsInclusionCriteria && (
             <InclusionBanner dismissible={meetsInclusionCriteria} />
           )}

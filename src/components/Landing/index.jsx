@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { FhirClientContext } from "../../context/FhirClientContext";
 import executeElm, {
   extractPatientResourceFromFHIRBundle,
 } from "../../utils/executePainFactorsELM";
@@ -37,6 +38,7 @@ let processIntervalId = 0;
 let scrollHeaderIntervalId = 0;
 
 export default class Landing extends Component {
+  static contextType = FhirClientContext;
   constructor() {
     super(...arguments);
     this.state = {
@@ -77,8 +79,19 @@ export default class Landing extends Component {
     Timeout();
     // display resources loading statuses
     this.initProcessProgressDisplay();
+    const { client, patient, error } = this.context;
+
+    if (error) {
+      this.setError(err);
+      return;
+    }
     Promise.allSettled([
-      executeElm(this.state.collector, this.state.resourceTypes),
+      executeElm(
+        client,
+        patient,
+        this.state.collector,
+        this.state.resourceTypes
+      ),
       landingUtils.getExternalData(summaryMap),
       // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
       fetchEnvData(),
@@ -284,14 +297,13 @@ export default class Landing extends Component {
   }
 
   getPatientResource() {
+    if (this.context.patient) return this.context.patient;
     return extractPatientResourceFromFHIRBundle(this.state.result?.bundle);
   }
 
   getPatientId() {
     if (this.state.patientId) return this.state.patientId;
-    const patientResource = this.getPatientResource();
-    if (patientResource) return patientResource.id;
-    return "";
+    return this.context.patient?.id;
   }
   getPatientName() {
     const summary = this.state.result ? this.state.result.Summary : null;
@@ -453,8 +465,7 @@ export default class Landing extends Component {
               }`}
               onClick={(e) => {
                 const parentTab = e.target.closest(".tab");
-                if (parentTab)
-                  parentTab.classList.add("active");
+                if (parentTab) parentTab.classList.add("active");
                 this.handleSetActiveTab(index);
               }}
               role="presentation"
@@ -492,19 +503,21 @@ export default class Landing extends Component {
               >
                 {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
-                {item === "report" &&  (
+                {item === "report" && (
                   <Report
                     patientBundle={this.state.result?.bundle}
                     sectionFlags={sectionFlags}
-                    onReportLoaded={(data) => this.setState({
-                      result: {
-                        ...this.state.result,
-                        Summary: {
-                          ...this.state.result.Summary,
-                          ...data
-                        }
-                      }
-                    })}
+                    onReportLoaded={(data) =>
+                      this.setState({
+                        result: {
+                          ...this.state.result,
+                          Summary: {
+                            ...this.state.result.Summary,
+                            ...data,
+                          },
+                        },
+                      })
+                    }
                   ></Report>
                 )}
                 {/* other tab panel as specified here */}

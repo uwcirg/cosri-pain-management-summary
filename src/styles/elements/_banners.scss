@@ -19,7 +19,8 @@
   }
 
   &.inclusion-banner,
-  &.exclusion-banner {
+  &.exclusion-banner,
+  &.alert-banner {
     padding: 12px 56px 12px 24px;
     text-align: left;
     background-color: $color-beige;
@@ -90,15 +91,22 @@
     }
   }
 
+  &.alert-banner,
   &.exclusion-banner {
     font-size: 1.1em;
+    .input {
+      font-size: 0.95em;
+      margin-top: 4px;
+      margin-left: 16px;
+    }
     .close-button {
       margin-right: 12px;
     }
   }
 
   .exclusion-banner,
-  .inclusion-banner {
+  .inclusion-banner,
+  .alert-banner {
     &__description {
       color: $color-black;
       &.warning {

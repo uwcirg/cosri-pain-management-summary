@@ -7,14 +7,18 @@ import {
 import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
 import {
+  getDateObjectInLocalDateTime,
   getDiffDays,
+  getDiffMonths,
   getEnvConfidentialAPIURL,
   getEnvSystemType,
+  isDateInPast,
   isEmptyArray,
   saveData,
   writeToLog,
 } from "../../helpers/utility";
 import { getEnv, ENV_VAR_PREFIX } from "../../utils/envConfig";
+import { sum } from "d3-array";
 
 let uuid = 0;
 
@@ -599,6 +603,56 @@ export function getProcessedAlerts(sectionFlags, logParams) {
     (item, index, thisRef) =>
       thisRef.findIndex((t) => t.text === item.text) === index
   );
+}
+
+export function getDailyMMEData(summaryData) {
+  if (!summaryData) return null;
+  const dailyMMEGraphDataSet = summaryData["PatientRiskOverview_graph"];
+  if (!dailyMMEGraphDataSet || !dailyMMEGraphDataSet.default) return null;
+  return dailyMMEGraphDataSet.default["data"];
+}
+
+export function hasMMEData(summaryData) {
+  return (
+    !isEmptyArray(summaryData) && summaryData.find((item) => item.MMEValue > 0)
+  );
+}
+
+export function hasActiveOpioidMed(summaryData) {
+  return (
+    hasMMEData(summaryData) &&
+    summaryData.find(
+      (item) =>
+        item.date === extractDateFromGMTDateString(new Date().toISOString())
+    )
+  );
+}
+
+export function getFirstIndexOfNormalMME(summaryData) {
+  if (isEmptyArray(summaryData)) return -1;
+  return summaryData.findIndex((item) => item.MMEValue < 50);
+}
+
+export function getFirstIndexOfHighRiskMME(summaryData) {
+  if (isEmptyArray(summaryData)) return -1;
+  return summaryData.findIndex((item) => item.MMEValue >= 50);
+}
+
+export function hasHighRiskMME(summaryData) {
+  if (isEmptyArray(summaryData)) return false;
+  const lastYearData = summaryData.filter(
+    (item) => {
+      const itemDate = getDateObjectInLocalDateTime(item.date);
+      const diffMonths = getDiffMonths(itemDate, new Date());
+      return diffMonths >= 0 && diffMonths <= 12;
+    }
+  );
+  const normalMMEIndex = getFirstIndexOfNormalMME(lastYearData);
+  const highRiskMMEIndex = getFirstIndexOfHighRiskMME(lastYearData);
+  console.log("normal mme index ", normalMMEIndex);
+  console.log("high risk mme index ", highRiskMMEIndex);
+  if (normalMMEIndex === -1) return highRiskMMEIndex >= 0;
+  return normalMMEIndex < highRiskMMEIndex;
 }
 
 export function getProcessedStatsData(statsConfig, summaryData) {
