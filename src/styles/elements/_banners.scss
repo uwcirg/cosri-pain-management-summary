@@ -60,6 +60,9 @@
     &.alert-banner {
       strong {
         color: $color-red-darkest;
+        svg {
+          color: $color-red-darker;
+        }
       }
     }
     .title {

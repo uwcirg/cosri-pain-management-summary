@@ -12,7 +12,7 @@ import {
   getDiffMonths,
   getEnvConfidentialAPIURL,
   getEnvSystemType,
-  isDateInPast,
+  getMMEConsultationThreshold,
   isEmptyArray,
   saveData,
   writeToLog,
@@ -630,12 +630,14 @@ export function hasActiveOpioidMed(summaryData) {
 
 export function getFirstIndexOfNormalMME(summaryData) {
   if (isEmptyArray(summaryData)) return -1;
-  return summaryData.findIndex((item) => item.MMEValue <= 50);
+  const consultationThreshold = getMMEConsultationThreshold();
+  return summaryData.findIndex((item) => item.MMEValue <= consultationThreshold);
 }
 
 export function getFirstIndexOfHighRiskMME(summaryData) {
   if (isEmptyArray(summaryData)) return -1;
-  return summaryData.findIndex((item) => item.MMEValue > 50);
+  const consultationThreshold = getMMEConsultationThreshold();
+  return summaryData.findIndex((item) => item.MMEValue > consultationThreshold);
 }
 
 export function hasHighRiskMME(summaryData) {
