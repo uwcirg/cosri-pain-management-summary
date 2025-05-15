@@ -1,4 +1,3 @@
-import FHIR from "fhirclient";
 import cql from "cql-execution";
 import cqlfhir from "cql-exec-fhir";
 import extractResourcesFromELM from "./extractResourcesFromELM";
@@ -100,25 +99,24 @@ export class VSACAwareCodeService extends cql.CodeService {
   }
 }
 
-async function executeELM(collector = [], paramResourceTypes = {}) {
-  let client, release, library, patientBundle, INSTRUMENT_LIST;
+async function executeELM(
+  client,
+  patient,
+  collector = [],
+  paramResourceTypes = {}
+) {
+  let release, library, patientBundle;
   let resourceTypes = paramResourceTypes || {};
+  if (!client) {
+    throw new Error("Invalid FHIR client.");
+  }
   return new Promise((resolve, reject) => {
     // First get our authorized client and send the FHIR release to the next step
-    FHIR.oauth2
-      .ready()
-      .then((clientArg) => {
-        client = clientArg;
-        return Promise.allSettled([
-          fetchEnvData(),
-          client.getFhirRelease(),
-          //client.patient.read(),
-        ]);
-      })
-      .catch((e) => {
-        console.log("client requests error ", e);
-        throw new Error("Client requests error.");
-      })
+    Promise.allSettled([
+      fetchEnvData(),
+      client.getFhirRelease(),
+      //client.patient.read(),
+    ])
       // then remember the release for later and get the release-specific library
       .then((clientResults) => {
         if (isEmptyArray(clientResults)) {
@@ -126,15 +124,21 @@ async function executeELM(collector = [], paramResourceTypes = {}) {
         }
         if (!clientResults[1] || clientResults[1].status === "rejected")
           throw new Error("Error fetching FHIR release");
-  
+
         release = clientResults[1].value;
         library = getLibrary(release);
         // return all the requests that have been resolved // rejected
         return Promise.allSettled(
-          [...new Set([...extractResourcesFromELM(library)].sort())].map((name) => {
-            resourceTypes[name] = false;
-            return doSearch(client, release, name, collector, resourceTypes);
-          })
+          [...new Set([...extractResourcesFromELM(library)].sort())].map(
+            (name) => {
+              if (String(name).toLowerCase() === "patient" && patient) {
+                resourceTypes[name] = true;
+                return [patient];
+              }
+              resourceTypes[name] = false;
+              return doSearch(client, release, name, collector, resourceTypes);
+            }
+          )
         );
       })
       .then((requestResults) => {
@@ -154,7 +158,11 @@ async function executeELM(collector = [], paramResourceTypes = {}) {
           resourceType: "Bundle",
           entry: resources,
         };
-        return executeELMForFactors(patientBundle, getPatientSource(release), library);
+        return executeELMForFactors(
+          patientBundle,
+          getPatientSource(release),
+          library
+        );
       })
       .catch((e) => {
         reject(e);

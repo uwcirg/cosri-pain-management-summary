@@ -579,6 +579,7 @@ export function isProduction() {
 export function getEnvConfidentialAPIURL() {
   return getEnv(`${ENV_VAR_PREFIX}_CONF_API_URL`);
 }
+
 // write to audit log
 export function writeToLog(message, level, params) {
   if (!getEnvConfidentialAPIURL()) return;
@@ -775,4 +776,10 @@ export function addMatomoTracking() {
   g.setAttribute("src", u + "matomo.js");
   g.setAttribute("id", "matomoScript");
   headElement.appendChild(g);
+}
+
+export function getMMEConsultationThreshold() {
+  const envThreshold = getEnv(`${ENV_VAR_PREFIX}_MME_CONSULTATION_THRESHOLD`);
+  if (envThreshold) return envThreshold;
+  return 50;
 }

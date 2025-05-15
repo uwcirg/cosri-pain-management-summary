@@ -401,7 +401,7 @@ export default class MMEGraph extends Component {
     const parentWidth = 488;
     const parentHeight = 344;
     const SITE_CONSULTATION_MAX_VALUE = siteConsultationAttributes?.yValue;
-    const CDC_SECONDARY_MAX_VALUE = 50;
+    // const CDC_SECONDARY_MAX_VALUE = 50;
     const xIntervals = 12;
     let lineParamsSet = [xIntervals, xFieldName, yFieldName];
     const hasError = this.props.showError;
@@ -521,12 +521,12 @@ export default class MMEGraph extends Component {
     //   maxDate,
     //   ...lineParamsSet
     // );
-    let CDCSecondaryData = this.getDefaultDataValueSet(
-      CDC_SECONDARY_MAX_VALUE,
-      xScale.domain()[0],
-      maxDate,
-      ...lineParamsSet
-    );
+    // let CDCSecondaryData = this.getDefaultDataValueSet(
+    //   CDC_SECONDARY_MAX_VALUE,
+    //   xScale.domain()[0],
+    //   maxDate,
+    //   ...lineParamsSet
+    // );
 
     const lineGenerator = line()
       .x((d) => xScale(d[xFieldName]))
@@ -581,12 +581,12 @@ export default class MMEGraph extends Component {
     };
 
     const SITE_COLOR = siteGraphAttributes?.color ?? "#a75454";
-    const CDC_COLOR = "#c57829";
+    // const CDC_COLOR = "#c57829";
     const textMargin = 4;
-    const CDCLegendSettings = {
-      fill: CDC_COLOR,
-      ...defaultLegendSettings,
-    };
+    // const CDCLegendSettings = {
+    //   fill: CDC_COLOR,
+    //   ...defaultLegendSettings,
+    // };
 
     const defaultLineProps = { ...defaultProps, ...additionalProps };
     const defaultMarkerProps = additionalProps["dataPointsProps"];
@@ -673,6 +673,7 @@ export default class MMEGraph extends Component {
                       {...defaultProps}
                     />
                   )}
+                  {/*** 
                   <Line
                     lineID="CDCSecondaryLine"
                     strokeColor={CDC_COLOR}
@@ -683,6 +684,7 @@ export default class MMEGraph extends Component {
                     style={{ opacity: 0.4 }}
                     {...defaultProps}
                   />
+                  ***/}
                   {SITE_CONSULTATION_MAX_VALUE &&
                     siteConsultationAttributes?.text && (
                       <text
@@ -695,9 +697,9 @@ export default class MMEGraph extends Component {
                         {siteConsultationAttributes.text}
                       </text>
                     )}
-                  <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>
+                  {/* <text {...CDCLegendSettings} y={yScale(50 + textMargin)}>
                     CDC: Consider offering naloxone
-                  </text>
+                  </text> */}
                   {this.arrLineObj.map(
                     (o) =>
                       this.isInGraph(o.key) &&

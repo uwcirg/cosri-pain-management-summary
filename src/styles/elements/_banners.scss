@@ -17,12 +17,20 @@
     background-color: $color-yellow-lighter;
     color: $color-gray-dark;
   }
+  
+  &.alert-banner:not(:first-of-type) {
+    border-top: 1px solid #edebeb;
+  }
 
   &.inclusion-banner,
-  &.exclusion-banner {
-    padding: 12px 56px 12px 24px;
+  &.exclusion-banner,
+  &.alert-banner {
+    padding: 10px 56px 10px 20px;
     text-align: left;
-    background-color: $color-beige;
+    background-color: $color-beige-light;
+    &.alert-banner {
+      background-color: $color-red-bg-color;
+    }
     position: relative;
     .info-icon {
       color: $link-color;
@@ -49,8 +57,19 @@
         color: #FFF;
       }
     }
+    &.alert-banner {
+      strong {
+        color: $color-red-darkest;
+        svg {
+          color: $color-red-darker;
+        }
+      }
+    }
     .title {
-      margin-right: 4px
+      margin-right: 4px;
+      svg {
+        font-size: 1.1rem;
+      }
     }
 
     .warning-inside {
@@ -90,15 +109,22 @@
     }
   }
 
+  &.alert-banner,
   &.exclusion-banner {
-    font-size: 1.1em;
+    font-size: 1rem;
+    .input {
+      font-size: 0.95em;
+      margin-top: 4px;
+      margin-left: 20px;
+    }
     .close-button {
       margin-right: 12px;
     }
   }
 
   .exclusion-banner,
-  .inclusion-banner {
+  .inclusion-banner,
+  .alert-banner {
     &__description {
       color: $color-black;
       &.warning {
