@@ -225,6 +225,7 @@ export default function AlertBanner({ type, summaryData }) {
               contextStateDispatch({
                 error:
                   "Unable to create resource data for alert. See console for detail.",
+                loading: false
               });
             });
         } else {
