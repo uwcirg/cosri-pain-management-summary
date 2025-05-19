@@ -49,6 +49,7 @@ export default function AlertBanner({ type, summaryData }) {
     status: "na",
     dueDate: null,
     lastAcknowledgedDate: null,
+    error: null,
   });
 
   const alertType = type ?? "naloxone";
@@ -90,7 +91,13 @@ export default function AlertBanner({ type, summaryData }) {
       .then((result) => {
         if (result && result.sent) {
           contextState.currentCommunicationRequest.status = "completed";
-          client.update(contextState.currentCommunicationRequest);
+          client.update(contextState.currentCommunicationRequest).catch((e) => {
+            console.log("Unable to mark CommunicationRequest as completed ", e);
+            contextStateDispatch({
+              error:
+                "Unable to complete saving of acknowledgement data. See console for detail.",
+            });
+          });
           setTimeout(() => {
             contextStateDispatch({
               lastAcknowledgedDate: getDisplayDate(result.sent),
@@ -101,6 +108,12 @@ export default function AlertBanner({ type, summaryData }) {
             });
           }, 250);
         }
+      })
+      .catch((e) => {
+        console.log("Error creating communication ", e);
+        contextStateDispatch({
+          error: "Unable to save acknowledgement data. See console for detail.",
+        });
       });
     // setTimeout(() => {
     //   contextStateDispatch({
@@ -190,7 +203,12 @@ export default function AlertBanner({ type, summaryData }) {
                   JSON.stringify(currentCommunicationRequest)
                 );
                 prevCR.status = "revoked";
-                client.update(prevCR);
+                client.update(prevCR).catch((e) => {
+                  console.log(
+                    "Error occurred updating previous CommunicationRequest ",
+                    e
+                  );
+                });
               }
               contextStateDispatch({
                 loading: false,
@@ -200,6 +218,13 @@ export default function AlertBanner({ type, summaryData }) {
                 dueDate: getEndDateFromCommunicationRequest(result),
                 currentCommunication: currentCommunication,
                 currentCommunicationRequest: result,
+              });
+            })
+            .catch((e) => {
+              console.log("Error creating CommunicationRequest ", e);
+              contextStateDispatch({
+                error:
+                  "Unable to create resource data for alert. See console for detail.",
               });
             });
         } else {
@@ -314,6 +339,11 @@ export default function AlertBanner({ type, summaryData }) {
         height="25"
       />
       <div className="content">{getExpandedView()}</div>
+      {contextState.error && (
+        <div className="error" style={{ marginLeft: "24px", marginTop: "4px" }}>
+          {contextState.error}
+        </div>
+      )}
     </div>
   );
 }
