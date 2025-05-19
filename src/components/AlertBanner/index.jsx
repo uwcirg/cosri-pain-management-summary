@@ -15,8 +15,10 @@ import {
   alertProps,
   getCommunicationPayload,
   getCommunicationRequestPayload,
-  isOverDue,
+  getEndDateFromCommunicationRequest,
   isAboutDue,
+  isOverDue,
+  isNotDueYet,
   shouldDisplayAlert,
 } from "./utility";
 
@@ -143,12 +145,10 @@ export default function AlertBanner({ type, summaryData }) {
           ? currentCommunication.sent
           : null;
 
-        const isNotDueYet =
-          lastAcknowledgedDate &&
-          !isAboutDue(lastAcknowledgedDate) &&
-          !isOverDue(lastAcknowledgedDate);
+        const isNotDue =
+          lastAcknowledgedDate && isNotDueYet(lastAcknowledgedDate);
         const crEndDate = currentCommunicationRequest
-          ? currentCommunicationRequest.occurrencePeriod?.end
+          ? getEndDateFromCommunicationRequest(currentCommunicationRequest)
           : null;
         const shouldCreateCR =
           (lastAcknowledgedDate &&
@@ -159,7 +159,7 @@ export default function AlertBanner({ type, summaryData }) {
           isOverDue(crEndDate);
 
         // acknowledged and alert not due yet
-        if (isNotDueYet) {
+        if (isNotDue) {
           contextStateDispatch({
             loading: false,
             status: "completed",
@@ -197,7 +197,7 @@ export default function AlertBanner({ type, summaryData }) {
                 status: "due",
                 expanded: true,
                 lastAcknowledgedDate: lastAcknowledgedDate,
-                dueDate: result.occurrencePeriod.end,
+                dueDate: getEndDateFromCommunicationRequest(result),
                 currentCommunication: currentCommunication,
                 currentCommunicationRequest: result,
               });
@@ -230,13 +230,14 @@ export default function AlertBanner({ type, summaryData }) {
   };
 
   const getAlertDisplayText = () => {
+    const byDate = addMonthsToDate(contextState.lastAcknowledgedDate, 12);
     return isOverDue(contextState.lastAcknowledgedDate)
       ? `This alert is overdue as of ${getDisplayDate(
-          addMonthsToDate(contextState.lastAcknowledgedDate, 12)
+          byDate
         )}.  Please acknowledge.`
       : isAboutDue(contextState.lastAcknowledgedDate)
       ? `This alert should be acknowledged by ${getDisplayDate(
-          contextState.dueDate
+          byDate
         )}.  Please acknowledge.`
       : "Please acknowledge this alert";
   };

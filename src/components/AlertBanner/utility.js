@@ -200,6 +200,14 @@ export function isAboutDue(dateString) {
     getDateObjectInLocalDateTime(dateString),
     new Date()
   );
-  console.log("date ", dateString, " diff ", diffMonths)
-  return diffMonths >= 10 && diffMonths <= 12;
+  return diffMonths > 10 && diffMonths <= 12;
+}
+
+export function isNotDueYet(dateString) {
+  if (!dateString) return false;
+  const diffMonths = getDiffMonths(
+    getDateObjectInLocalDateTime(dateString),
+    new Date()
+  );
+  return diffMonths >= 0 && diffMonths <= 10;
 }
