@@ -16,11 +16,9 @@ import {
   isEnvEpicQueries,
   getReportInstrumentList,
   isEmptyArray,
+  noCacheHeader
 } from "../helpers/utility";
 
-export const noCacheHeader = {
-  "Cache-Control": "no-cache",
-};
 export const FHIR_RELEASE_VERSION_2 = 2;
 export const FHIR_RELEASE_VERSION_4 = 4;
 export const PATIENT_SUMMARY_KEY = "Summary";

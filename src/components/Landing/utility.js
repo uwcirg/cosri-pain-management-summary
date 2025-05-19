@@ -12,7 +12,7 @@ import {
   getDiffMonths,
   getEnvConfidentialAPIURL,
   getEnvSystemType,
-  getMMEConsultationThreshold,
+  getHighRiskMMEThreshold,
   isEmptyArray,
   saveData,
   writeToLog,
@@ -605,56 +605,10 @@ export function getProcessedAlerts(sectionFlags, logParams) {
   );
 }
 
-export function getDailyMMEData(summaryData) {
-  if (!summaryData) return null;
-  const dailyMMEGraphDataSet = summaryData["PatientRiskOverview_graph"];
-  if (!dailyMMEGraphDataSet || !dailyMMEGraphDataSet.default) return null;
-  return dailyMMEGraphDataSet.default["data"];
-}
-
-export function hasMMEData(summaryData) {
-  return (
-    !isEmptyArray(summaryData) && summaryData.find((item) => item.MMEValue > 0)
-  );
-}
-
-export function hasActiveOpioidMed(summaryData) {
-  return (
-    hasMMEData(summaryData) &&
-    summaryData.find(
-      (item) =>
-        item.date === extractDateFromGMTDateString(new Date().toISOString())
-    )
-  );
-}
-
-export function getFirstIndexOfNormalMME(summaryData) {
-  if (isEmptyArray(summaryData)) return -1;
-  const consultationThreshold = getMMEConsultationThreshold();
-  return summaryData.findIndex((item) => item.MMEValue <= consultationThreshold);
-}
-
-export function getFirstIndexOfHighRiskMME(summaryData) {
-  if (isEmptyArray(summaryData)) return -1;
-  const consultationThreshold = getMMEConsultationThreshold();
-  return summaryData.findIndex((item) => item.MMEValue > consultationThreshold);
-}
-
-export function hasHighRiskMME(summaryData) {
-  if (isEmptyArray(summaryData)) return false;
-  const lastYearData = summaryData.filter(
-    (item) => {
-      const itemDate = getDateObjectInLocalDateTime(item.date);
-      const diffMonths = getDiffMonths(itemDate, new Date());
-      return diffMonths >= 0 && diffMonths <= 12;
-    }
-  );
-  const normalMMEIndex = getFirstIndexOfNormalMME(lastYearData);
-  const highRiskMMEIndex = getFirstIndexOfHighRiskMME(lastYearData);
-  console.log("normal mme index ", normalMMEIndex);
-  console.log("high risk mme index ", highRiskMMEIndex);
-  if (normalMMEIndex === -1) return highRiskMMEIndex >= 0;
-  return normalMMEIndex < highRiskMMEIndex;
+export function getDailyMMEData(mmeData) {
+  if (!mmeData) return null;
+  if (!mmeData.default) return null;
+  return mmeData.default["data"];
 }
 
 export function getProcessedStatsData(statsConfig, summaryData) {

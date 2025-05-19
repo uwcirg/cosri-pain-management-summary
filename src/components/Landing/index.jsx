@@ -372,8 +372,9 @@ export default class Landing extends Component {
     if (!this.hasOverviewSection()) return;
     //process graph data
     const overviewSection = summaryMap[this.getOverviewSectionKey()];
-    summary[this.getOverviewSectionKey() + "_graph"] =
-      landingUtils.getSummaryGraphDataSet(overviewSection.graphConfig, summary);
+    const mmeData = landingUtils.getSummaryGraphDataSet(overviewSection.graphConfig, summary);
+    summary[this.getOverviewSectionKey() + "_graph"] = mmeData;
+    summary["dailyMMEData"] = landingUtils.getDailyMMEData(mmeData);
   }
 
   setSummaryOverviewStatsData(summary) {

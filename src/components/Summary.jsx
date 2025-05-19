@@ -46,7 +46,6 @@ import {
   isNumber,
   isReportEnabled,
 } from "../helpers/utility";
-import { getDailyMMEData, hasActiveOpioidMed, hasHighRiskMME } from "./Landing/utility";
 import { getScoringData } from "./Report/utility";
 
 export default class Summary extends Component {
@@ -881,6 +880,7 @@ export default class Summary extends Component {
       PatientRiskOverview_graph,
       PatientRiskOverview_alerts,
       PatientRiskOverview_stats,
+      dailyMMEData,
       ...CQLSummary
     } = summary;
     if (!summary) {
@@ -905,23 +905,14 @@ export default class Summary extends Component {
           {meetsInclusionCriteria && <ExclusionBanner />}
           {
             <AlertBanner
-              alertText="Naloxone is recommended for every patient receiving opioids. Please review that patient has naloxone."
-              dataParams={{
-                conceptCode: "HZ85ZZZ",
-                conceptName:
-                  "Medication Management for Substance Abuse Treatment, Naloxone",
-              }}
-              display={hasActiveOpioidMed(getDailyMMEData(summary))}
+              type="naloxone"
+              summaryData={dailyMMEData}
             ></AlertBanner>
           }
           {
             <AlertBanner
-              alertText="This patient's MME has recently increased to 50 or more. They are at higher risk of overdose. Please review that patient has naloxone."
-              dataParams={{
-                conceptCode: "F11.929",
-                conceptName: "Opioid use, unspecified with intoxication, unspecified"
-              }}
-              display={hasHighRiskMME(getDailyMMEData(summary))}
+              type="highRiskMME"
+              summaryData={dailyMMEData}
             ></AlertBanner>
           }
           {!hasErrors && !meetsInclusionCriteria && (

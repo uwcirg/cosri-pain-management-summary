@@ -1,4 +1,4 @@
-@use 'variables' as *;
+@use "variables" as *;
 .banner {
   text-align: center;
   padding: 20px;
@@ -17,7 +17,7 @@
     background-color: $color-yellow-lighter;
     color: $color-gray-dark;
   }
-  
+
   &.alert-banner:not(:first-of-type) {
     border-top: 1px solid #edebeb;
   }
@@ -28,11 +28,12 @@
     padding: 10px 56px 10px 20px;
     text-align: left;
     background-color: $color-beige-light;
-    &.alert-banner {
-      background-color: $color-red-bg-color;
-    }
+    // &.alert-banner {
+    //   background-color: $color-red-bg-color;
+    // }
     position: relative;
-    .info-icon {
+    .info-icon,
+    .info-text {
       color: $link-color;
       cursor: pointer;
       font-size: 0.95rem;
@@ -51,10 +52,16 @@
 
     strong {
       color: $color-orange;
+      .note {
+        color: #444;
+        font-weight: normal;
+        margin-left: 8px;
+        font-size: 0.95rem;
+      }
     }
     &.warning {
       strong {
-        color: #FFF;
+        color: #fff;
       }
     }
     &.alert-banner {
@@ -74,8 +81,8 @@
 
     .warning-inside {
       width: 450px;
-      background-color:  $color-orange;
-      color: #FFF;
+      background-color: $color-orange;
+      color: #fff;
       padding: 10px;
       font-weight: 600;
     }
@@ -93,7 +100,7 @@
       overflow-y: hidden;
       line-height: 1.45;
       transition-property: all;
-      transition-duration: .5s;
+      transition-duration: 0.5s;
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
       strong {
         color: #444;
@@ -106,6 +113,12 @@
       .content {
         max-height: 0;
       }
+    }
+  }
+
+  &.alert-banner {
+    .close-button {
+      top: 8px;
     }
   }
 
@@ -128,7 +141,7 @@
     &__description {
       color: $color-black;
       &.warning {
-        color: #FFF;
+        color: #fff;
         font-weight: 600;
       }
     }
@@ -137,7 +150,7 @@
 
 .error-banner {
   background-color: $color-red-darker;
-  color: #FFF;
+  color: #fff;
   position: relative;
   padding: 8px 24px 8px;
   font-weight: 600;

@@ -1,5 +1,4 @@
 import React, { useEffect, useContext, useReducer } from "react";
-import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ChevronDownIcon from "../icons/ChevronDownIcon";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
@@ -8,26 +7,15 @@ import {
   isEmptyArray,
   getDiffMonths,
   getDateObjectInLocalDateTime,
-  getDisplayDateFromISOString,
-  getUserIdFromAccessToken,
 } from "../helpers/utility";
 import { extractDateFromGMTDateString } from "../helpers/formatit";
 
-export default function AlertBanner({ dataParams = {}, display, alertText }) {
+export default function NaloxoneAlert({ summaryData }) {
   const context = useContext(FhirClientContext);
   const { client, patient } = context;
-  const conceptCode = dataParams.conceptCode;
-  const conceptName = dataParams.conceptName;
-  const todayDate = getDisplayDateFromISOString(new Date().toISOString(), {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  // const loinCode = "F11.929";
+  const loinCode = "HZ85ZZZ";
   const getPostFHIRData = () => ({
-    date: todayDate,
+    date: extractDateFromGMTDateString(new Date().toISOString()),
     resourceType: "DocumentReference",
     subject: {
       reference: `Patient/${patient?.id}`,
@@ -35,8 +23,9 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
     type: {
       coding: [
         {
-          code: conceptCode,
-          display: conceptName,
+          code: loinCode,
+          display:
+            "Medication Management for Substance Abuse Treatment, Naloxone",
           system: "https://loinc.org",
         },
       ],
@@ -56,11 +45,12 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
     };
   };
   const [contextState, contextStateDispatch] = useReducer(contextReducer, {
-    display: display,
+    display:
+      !isEmptyArray(summaryData) &&
+      summaryData.find((item) => item.MMEValue > 0),
     viewedDate: null,
     // loading: true,
-    loading: false,
-    savingInProgress: false,
+    loading: false
   });
   const handleClose = (e) => {
     e.stopPropagation();
@@ -76,23 +66,13 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
 
   const handleInputClick = (e) => {
     if (e) e.stopPropagation();
-    contextStateDispatch({
-      savingInProgress: true,
+    client.create(getPostFHIRData()).then((result) => {
+      if (result && result.date) {
+        contextStateDispatch({
+          viewedDate: result.date,
+        });
+      }
     });
-    // client.create(getPostFHIRData()).then((result) => {
-    //   if (result && result.date) {
-    //     contextStateDispatch({
-    //       viewedDate: result.date,
-    //       savingInProgress: false,
-    //     });
-    //   }
-    // });
-    setTimeout(() => {
-      contextStateDispatch({
-        viewedDate: todayDate,
-        savingInProgress: false,
-      });
-    }, 350);
   };
 
   // useEffect(() => {
@@ -130,20 +110,21 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
     return <div className="banner alert-banner">Loading alert data...</div>;
 
   const conditionalClass = contextState.display ? "" : "close";
-  const userId = getUserIdFromAccessToken();
   return (
     <div
       className={`banner alert-banner ${conditionalClass}`}
       role="presentation"
       style={{
         paddingTop: "8px",
+        marginTop: "2px"
       }}
       // onClick={handleCloseToggle}
       // onKeyDown={handleCloseToggle}
     >
-      <strong className="title flex flex-start flex-align-start">
-        <FontAwesomeIcon icon={faExclamationCircle} title="notice" />
-        {alertText}
+      <strong className="title">
+        <FontAwesomeIcon icon={faExclamationCircle} title="notice" /> Naloxone
+        is recommended for every patient receiving opioids, please review that
+        patient has naloxone.
       </strong>
       {/* <ChevronDownIcon
         className="close-button"
@@ -155,43 +136,21 @@ export default function AlertBanner({ dataParams = {}, display, alertText }) {
       {contextState.viewedDate && (
         <div
           className="muted-text"
-          style={{ marginTop: "4px", fontSize: "0.9rem", marginLeft: "24px" }}
-        >{`Last acknowledged on ${contextState.viewedDate}${
-          userId ? " by " + userId : ""
-        }`}</div>
+          style={{ marginTop: "4px", fontSize: "0.8em", marginLeft: "24px" }}
+        >{`Reviewed on ${contextState.viewedDate}`}</div>
       )}
       {!contextState.viewedDate && (
         <div className="input flex flex-start">
-          {/* <input
+          <input
             type="checkbox"
             aria-label="review checkbox"
             onClick={handleInputClick}
             checked={contextState.viewedDate}
             disabled={contextState.viewedDate}
           ></input>
-          <span>Check here if you have reviewed.</span> */}
-
-          <label className="checkbox-container" aria-label="review checkbox">
-            {contextState.savingInProgress
-              ? "Saving ... "
-              : "Check to acknowledge this alert."}
-            <input
-              type="checkbox"
-              //  checked={contextState.viewedDate}
-              aria-label="hidden checkbox"
-              onClick={handleInputClick}
-            />
-            <span className="checkmark"></span>
-          </label>
+          <span>Check here if you have reviewed.</span>
         </div>
       )}
     </div>
   );
 }
-
-AlertBanner.propTypes = {
-  //summaryData: PropTypes.array.isRequired,
-  alertText: PropTypes.string.isRequired,
-  dataParams: PropTypes.object,
-  display: PropTypes.bool,
-};

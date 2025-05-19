@@ -87,7 +87,7 @@ export default function FhirClientProvider(props) {
               <div className="banner error root-error">
                 <div>
                   <FontAwesomeIcon icon={faExclamationCircle} title="error" />{" "}
-                  Authentication error: See console for details.
+                  Application error: See console for details.
                 </div>
                 <div className="banner__linkContainer">
                   <a href={getPatientSearchURL(true)}>Back to Patient Search</a>

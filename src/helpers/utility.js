@@ -6,6 +6,11 @@ import reportSummarySections from "../config/report_config";
 import { shortDateRE, dateREZ } from "./formatit";
 import { getTokenInfoFromStorage } from "./timeout";
 
+
+export const noCacheHeader = {
+  "Cache-Control": "no-cache",
+};
+
 /*
  * return number of days between two dates
  * @params dateString1 date #1 to be compared
@@ -55,10 +60,20 @@ export function getDiffMonths(startDate, endDate) {
  * @params firstDate, secondDate of type Date object
  */
 export function isDateInPast(firstDate, secondDate) {
-  if (firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)) {
+  if (firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0)) {
     return true;
   }
   return false;
+}
+
+/*
+ * return computed date in string
+ * @param date - date string to add number of Months to
+ * @param numMonths - the number of months to add in integer
+ */
+export function addMonthsToDate(date, numMonths) {
+  if (!date) return moment().add(numMonths, "month").toISOString();;
+  return moment(date).add(numMonths, "month").toISOString();
 }
 /*
  * check if an image has completed loading
@@ -778,8 +793,8 @@ export function addMatomoTracking() {
   headElement.appendChild(g);
 }
 
-export function getMMEConsultationThreshold() {
-  const envThreshold = getEnv(`${ENV_VAR_PREFIX}_MME_CONSULTATION_THRESHOLD`);
+export function getHighRiskMMEThreshold() {
+  const envThreshold = getEnv(`${ENV_VAR_PREFIX}_HIGH_RISK_MME_THRESHOLD`);
   if (envThreshold) return envThreshold;
   return 50;
 }
