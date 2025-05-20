@@ -123,8 +123,9 @@ export default function AlertBanner({ type, summaryData }) {
     // }, 350);
   };
 
+  const shouldShowAlert = shouldDisplayAlert(alertType, summaryData);
+
   useEffect(() => {
-    const shouldShowAlert = shouldDisplayAlert(alertType, summaryData);
     if (!shouldShowAlert) {
       contextStateDispatch({
         loading: false,
@@ -246,7 +247,7 @@ export default function AlertBanner({ type, summaryData }) {
           loading: false,
         });
       });
-  }, [client, patient, alertType, summaryData]);
+  }, [client, patient, shouldShowAlert]);
 
   const getAcknowledgedText = () => {
     if (!contextState.lastAcknowledgedDate) return "";
@@ -313,7 +314,7 @@ export default function AlertBanner({ type, summaryData }) {
 
   if (contextState.loading)
     return <div className="banner alert-banner">Loading ...</div>;
-  if (contextState.status === "na") return null;
+  if (!shouldShowAlert) return null;
 
   const conditionalClass = contextState.expanded ? "" : "close";
 
