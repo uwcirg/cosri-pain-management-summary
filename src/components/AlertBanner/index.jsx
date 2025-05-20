@@ -312,6 +312,7 @@ export default function AlertBanner({ type, summaryData }) {
           {getAcknowledgedText()}
         </div>
       );
+    if (contextState.error) return null;
     const alertDisplayText = getAlertDisplayText();
     return (
       <div className="input flex flex-start">
