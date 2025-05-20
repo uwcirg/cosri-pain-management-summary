@@ -16,6 +16,8 @@ import {
   getCommunicationPayload,
   getCommunicationRequestPayload,
   getEndDateFromCommunicationRequest,
+  getMostRecentCommunicationBySentFromBundle,
+  getMostRecentCommunicationRequestByEndDateFromBundle,
   isAboutDue,
   isOverDue,
   isNotDueYet,
@@ -42,11 +44,11 @@ export default function AlertBanner({ type, summaryData }) {
   const [contextState, contextStateDispatch] = useReducer(contextReducer, {
     loading: true,
     expanded: false,
-    //loading: false,
     savingInProgress: false,
     currentCommunicationRequest: null,
     currentCommunication: null,
-    status: "na",
+    // possible values : due, completed
+    status: null,
     dueDate: null,
     lastAcknowledgedDate: null,
     error: null,
@@ -90,14 +92,21 @@ export default function AlertBanner({ type, summaryData }) {
       )
       .then((result) => {
         if (result && result.sent) {
-          contextState.currentCommunicationRequest.status = "completed";
-          client.update(contextState.currentCommunicationRequest).catch((e) => {
-            console.log("Unable to mark CommunicationRequest as completed ", e);
-            contextStateDispatch({
-              error:
-                "Unable to complete saving of acknowledgement data. See console for detail.",
-            });
-          });
+          if (contextState.currentCommunicationRequest) {
+            contextState.currentCommunicationRequest.status = "completed";
+            client
+              .update(contextState.currentCommunicationRequest)
+              .catch((e) => {
+                console.log(
+                  "Unable to mark CommunicationRequest as completed ",
+                  e
+                );
+                contextStateDispatch({
+                  error:
+                    "Unable to complete saving of acknowledgement data. See console for detail.",
+                });
+              });
+          }
           setTimeout(() => {
             contextStateDispatch({
               lastAcknowledgedDate: getDisplayDate(result.sent),
@@ -106,7 +115,7 @@ export default function AlertBanner({ type, summaryData }) {
               currentCommunication: result,
               status: "completed",
             });
-          }, 250);
+          }, 350);
         }
       })
       .catch((e) => {
@@ -148,22 +157,16 @@ export default function AlertBanner({ type, summaryData }) {
         const commResults = results[0].value;
         const crResults = results[1].value;
         let currentCommunication =
-          commResults && !isEmptyArray(commResults.entry)
-            ? commResults.entry.map((item) => item.resource)[0]
-            : null;
+          getMostRecentCommunicationBySentFromBundle(commResults);
         let currentCommunicationRequest =
-          crResults && !isEmptyArray(crResults.entry)
-            ? crResults.entry.map((item) => item.resource)[0]
-            : null;
-        let lastAcknowledgedDate = currentCommunication
-          ? currentCommunication.sent
-          : null;
+          getMostRecentCommunicationRequestByEndDateFromBundle(crResults);
+        let lastAcknowledgedDate = currentCommunication?.sent;
 
-        const isNotDue =
-          lastAcknowledgedDate && isNotDueYet(lastAcknowledgedDate);
-        const crEndDate = currentCommunicationRequest
-          ? getEndDateFromCommunicationRequest(currentCommunicationRequest)
-          : null;
+        const isNotDue = isNotDueYet(lastAcknowledgedDate);
+        const crEndDate = getEndDateFromCommunicationRequest(
+          currentCommunicationRequest
+        );
+        console.log("crEndDate ", isOverDue(crEndDate))
         const shouldCreateCR =
           (lastAcknowledgedDate &&
             isOverDue(crEndDate) &&
@@ -188,13 +191,16 @@ export default function AlertBanner({ type, summaryData }) {
             .create(
               getCommunicationRequestPayload({
                 ...dataParams,
+                startDate: isAboutDue(lastAcknowledgedDate)
+                  ? lastAcknowledgedDate
+                  : null,
                 endDate: isAboutDue(lastAcknowledgedDate)
                   ? addMonthsToDate(lastAcknowledgedDate, 12)
                   : addMonthsToDate(null, 12),
                 noteText: isAboutDue(lastAcknowledgedDate)
-                  ? "alert acknowledgement is about due"
+                  ? `Alert acknowledgement is about due. Last acknowledged on ${lastAcknowledgedDate}`
                   : isOverDue(lastAcknowledgedDate)
-                  ? "created due to last acknowledgement is overdue"
+                  ? `Last acknowledgement was overdue. Last acknowledged on ${lastAcknowledgedDate}`
                   : null,
               })
             )
@@ -226,7 +232,7 @@ export default function AlertBanner({ type, summaryData }) {
               contextStateDispatch({
                 error:
                   "Unable to create resource data for alert. See console for detail.",
-                loading: false
+                loading: false,
               });
             });
         } else {
@@ -243,8 +249,10 @@ export default function AlertBanner({ type, summaryData }) {
         }
       })
       .catch((e) => {
+        console.log(e);
         contextStateDispatch({
           loading: false,
+          error: "Error occurred retrieving alert data.",
         });
       });
   }, [client, patient, shouldShowAlert]);
@@ -257,22 +265,29 @@ export default function AlertBanner({ type, summaryData }) {
   };
 
   const getAlertDisplayText = () => {
+    if (!contextState.lastAcknowledgedDate)
+      return "Please acknowledge this alert.";
     const byDate = addMonthsToDate(contextState.lastAcknowledgedDate, 12);
-    return isOverDue(contextState.lastAcknowledgedDate)
-      ? `This alert is overdue as of ${getDisplayDate(
-          byDate
-        )}.  Please acknowledge.`
-      : isAboutDue(contextState.lastAcknowledgedDate)
-      ? `This alert should be acknowledged by ${getDisplayDate(
-          byDate
-        )}.  Please acknowledge.`
-      : "Please acknowledge this alert";
+    if (isOverDue(contextState.lastAcknowledgedDate)) {
+      return `This alert is overdue as of ${getDisplayDate(
+        byDate
+      )}.  Please acknowledge.`;
+    }
+    if (isAboutDue(contextState.lastAcknowledgedDate)) {
+      return `This alert should be acknowledged by ${getDisplayDate(
+        byDate
+      )}.  Please acknowledge.`;
+    }
+    return "";
   };
 
   const getFoldedView = () => {
     return (
       <div className="flex flex-start">
         <span>{currentAlertProps.title}</span>
+        {contextState.savingInProgress && (
+          <span className="note">Saving ...</span>
+        )}
         {!contextState.savingInProgress &&
           contextState.status !== "completed" && (
             <span className="info-text">(click arrow to see pending task)</span>
@@ -302,7 +317,6 @@ export default function AlertBanner({ type, summaryData }) {
           {contextState.savingInProgress ? "Saving ... " : alertDisplayText}
           <input
             type="checkbox"
-            // checked={contextState.status === "completed"}
             aria-label="hidden checkbox"
             onClick={handleInputClick}
           />
@@ -312,9 +326,24 @@ export default function AlertBanner({ type, summaryData }) {
     );
   };
 
-  if (contextState.loading)
-    return <div className="banner alert-banner">Loading ...</div>;
+  const renderError = () => {
+    if (!contextState.error) return null;
+    const errorStyle = {
+      marginLeft: "24px",
+      marginTop: "4px",
+      fontWeight: "normal",
+    };
+    return (
+      <div className="error" style={errorStyle}>
+        {contextState.error}
+      </div>
+    );
+  };
+
   if (!shouldShowAlert) return null;
+  if (contextState.loading) {
+    return <div className="banner alert-banner">Loading ...</div>;
+  }
 
   const conditionalClass = contextState.expanded ? "" : "close";
 
@@ -322,9 +351,6 @@ export default function AlertBanner({ type, summaryData }) {
     <div
       className={`banner alert-banner ${conditionalClass}`}
       role="presentation"
-      style={{
-        paddingTop: "8px",
-      }}
       onClick={handleCloseToggle}
       onKeyDown={handleCloseToggle}
     >
@@ -341,11 +367,7 @@ export default function AlertBanner({ type, summaryData }) {
         height="25"
       />
       <div className="content">{getExpandedView()}</div>
-      {contextState.error && (
-        <div className="error" style={{ marginLeft: "24px", marginTop: "4px", fontWeight: "normal"}}>
-          {contextState.error}
-        </div>
-      )}
+      {renderError()}
     </div>
   );
 }

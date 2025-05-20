@@ -89,6 +89,28 @@ export function hasHighRiskMME(summaryData) {
   // return normalMMEIndex <= highRiskMMEIndex;
 }
 
+export const getMostRecentCommunicationBySentFromBundle = (bundle) => {
+  return bundle && !isEmptyArray(bundle.entry)
+    ? bundle.entry
+        .sort((a, b) => new Date(b.resource.sent) - new Date(a.resource.sent))
+        .map((item) => item.resource)[0]
+    : null;
+};
+
+export const getMostRecentCommunicationRequestByEndDateFromBundle = (
+  bundle
+) => {
+  return bundle && !isEmptyArray(bundle.entry)
+    ? bundle.entry
+        .sort(
+          (a, b) =>
+            new Date(b.resource.occurrencePeriod?.end) -
+            new Date(a.resource.occurrencePeriod?.end)
+        )
+        .map((item) => item.resource)[0]
+    : null;
+};
+
 export const getCommunicationPayload = (params = {}, crId) => {
   const { patient, userId, acknowledgedConceptCode, codeSystem, title, id } =
     params;
@@ -181,17 +203,18 @@ export function getReferencedCommunicationRequest(communication) {
 }
 
 export function getEndDateFromCommunicationRequest(item) {
-  if (!item) return false;
+  if (!item) return null;
   if (item.resource) return item.resource.occurrencePeriod?.end;
   return item.occurrencePeriod?.end;
 }
 
-
 export function isOverDue(dateString) {
   if (!dateString) return false;
-  return (
-    getDiffMonths(getDateObjectInLocalDateTime(dateString), new Date()) > 12
+  const diffMonths = getDiffMonths(
+    getDateObjectInLocalDateTime(dateString),
+    new Date()
   );
+  return diffMonths > 12;
 }
 
 export function isAboutDue(dateString) {
