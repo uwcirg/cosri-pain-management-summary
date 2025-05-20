@@ -106,12 +106,18 @@ export default function AlertBanner({ type, summaryData }) {
               status: "completed",
             });
           }, 350);
+        } else {
+          contextStateDispatch({
+            error: "Unable to complete saving",
+            savingInProgress: false,
+          });
         }
       })
       .catch((e) => {
         console.log("Error creating communication ", e);
         contextStateDispatch({
           error: "Unable to save acknowledgement data. See console for detail.",
+          savingInProgress: false,
         });
       });
     // setTimeout(() => {
@@ -321,7 +327,7 @@ export default function AlertBanner({ type, summaryData }) {
       marginLeft: "24px",
       marginTop: "4px",
       fontWeight: "normal",
-      fontSize: "0.95rem"
+      fontSize: "0.95rem",
     };
     return (
       <div className="error" style={errorStyle}>
