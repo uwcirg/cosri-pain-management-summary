@@ -342,7 +342,7 @@ export default function AlertBanner({ type, summaryData }) {
       />
       <div className="content">{getExpandedView()}</div>
       {contextState.error && (
-        <div className="error" style={{ marginLeft: "24px", marginTop: "4px" }}>
+        <div className="error" style={{ marginLeft: "24px", marginTop: "4px", fontWeight: "normal"}}>
           {contextState.error}
         </div>
       )}
