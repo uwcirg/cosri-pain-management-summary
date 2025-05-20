@@ -6,8 +6,6 @@ import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FhirClientContext } from "../../context/FhirClientContext";
 import {
   addMonthsToDate,
-  isEmptyArray,
-  getDisplayDateFromISOString,
   getUserIdFromAccessToken,
   noCacheHeader,
 } from "../../helpers/utility";
@@ -15,6 +13,7 @@ import {
   alertProps,
   getCommunicationPayload,
   getCommunicationRequestPayload,
+  getDisplayDate,
   getEndDateFromCommunicationRequest,
   getMostRecentCommunicationBySentFromBundle,
   getMostRecentCommunicationRequestByEndDateFromBundle,
@@ -62,15 +61,6 @@ export default function AlertBanner({ type, summaryData }) {
     patient: patient,
     ...currentAlertProps,
   };
-
-  const getDisplayDate = (date) =>
-    getDisplayDateFromISOString(date, {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
 
   const handleCloseToggle = () => {
     contextStateDispatch({
@@ -166,7 +156,6 @@ export default function AlertBanner({ type, summaryData }) {
         const crEndDate = getEndDateFromCommunicationRequest(
           currentCommunicationRequest
         );
-        console.log("crEndDate ", isOverDue(crEndDate))
         const shouldCreateCR =
           (lastAcknowledgedDate &&
             isOverDue(crEndDate) &&
@@ -332,6 +321,7 @@ export default function AlertBanner({ type, summaryData }) {
       marginLeft: "24px",
       marginTop: "4px",
       fontWeight: "normal",
+      fontSize: "0.95rem"
     };
     return (
       <div className="error" style={errorStyle}>

@@ -1,6 +1,7 @@
 import {
   addMonthsToDate,
   getDateObjectInLocalDateTime,
+  getDisplayDateFromISOString,
   getDiffDays,
   getDiffMonths,
   getHighRiskMMEThreshold,
@@ -37,6 +38,16 @@ export function hasMMEData(summaryData) {
     !isEmptyArray(summaryData) && summaryData.find((item) => item.MMEValue > 0)
   );
 }
+export const getDisplayDate = (date) =>
+  date
+    ? getDisplayDateFromISOString(date, {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
 export function getTodayDateString() {
   const hoy = new Date();
   const month = hoy.getMonth() + 1;
