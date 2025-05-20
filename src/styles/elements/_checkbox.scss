@@ -3,7 +3,7 @@
 .checkbox-container {
   display: block;
   position: relative;
-  padding-left: 22px;
+  padding-left: 24px;
   margin-top: 4px;
   cursor: pointer;
   font-size: 0.9rem;
@@ -25,8 +25,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 12px;
-    width: 12px;
+    height: 14px;
+    width: 14px;
     background-color: #eee;
     border: 2px solid $link-color;
   }
@@ -57,7 +57,7 @@
   .checkmark:after {
     left: 3px;
     top: 0;
-    width: 5px;
+    width: 6px;
     height: 8px;
     border: solid white;
     border-width: 0 2px 2px 0;
