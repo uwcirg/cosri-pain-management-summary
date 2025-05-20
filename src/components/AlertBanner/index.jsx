@@ -200,6 +200,13 @@ export default function AlertBanner({ type, summaryData }) {
               })
             )
             .then((result) => {
+              if (!result || !result.id) {
+                contextStateDispatch({
+                  loading: false,
+                  error: "Unable to create resource for alert.",
+                });
+                return;
+              }
               if (currentCommunicationRequest) {
                 let prevCR = JSON.parse(
                   JSON.stringify(currentCommunicationRequest)
