@@ -100,7 +100,9 @@ export function hasHighRiskMME(summaryData) {
   // return normalMMEIndex <= highRiskMMEIndex;
 }
 
-export const getMostRecentCommunicationBySentFromBundle = (bundle) => {
+export const getMostRecentCommunicationBySentFromBundle = (
+  bundle
+) => {
   return bundle && !isEmptyArray(bundle.entry)
     ? bundle.entry
         .sort((a, b) => new Date(b.resource.sent) - new Date(a.resource.sent))
@@ -109,10 +111,13 @@ export const getMostRecentCommunicationBySentFromBundle = (bundle) => {
 };
 
 export const getMostRecentCommunicationRequestByEndDateFromBundle = (
-  bundle
+  bundle,
+  excludeIds = []
 ) => {
-  return bundle && !isEmptyArray(bundle.entry)
+  const IdsToExclude = !isEmptyArray(excludeIds) ? excludeIds : [];
+  return bundle && !isEmptyArray(bundle.entry, excludeIds)
     ? bundle.entry
+        .filter((item) => IdsToExclude.indexOf(item.resource.id) === -1)
         .sort(
           (a, b) =>
             new Date(b.resource.occurrencePeriod?.end) -
@@ -207,10 +212,17 @@ export function getSentDateFromCommunication(item) {
   return item.sent;
 }
 
-export function getReferencedCommunicationRequest(communication) {
+export function getReferencedCRIdsFromBundle(bundle) {
+  return bundle && !isEmptyArray(bundle.entry)
+    ? bundle.entry.map((item) =>
+        getReferencedCommunicationRequestId(item.resource)
+      )
+    : null;
+}
+export function getReferencedCommunicationRequestId(communication) {
   if (!communication) return null;
   if (isEmptyArray(communication.basedOn)) return null;
-  return communication.basedOn[0].reference;
+  return communication.basedOn[0].reference?.split("/").slice(-1)[0];
 }
 
 export function getEndDateFromCommunicationRequest(item) {

@@ -15,6 +15,7 @@ import {
   getCommunicationRequestPayload,
   getDisplayDate,
   getEndDateFromCommunicationRequest,
+  getReferencedCRIdsFromBundle,
   getMostRecentCommunicationBySentFromBundle,
   getMostRecentCommunicationRequestByEndDateFromBundle,
   isAboutDue,
@@ -155,7 +156,10 @@ export default function AlertBanner({ type, summaryData }) {
         let currentCommunication =
           getMostRecentCommunicationBySentFromBundle(commResults);
         let currentCommunicationRequest =
-          getMostRecentCommunicationRequestByEndDateFromBundle(crResults);
+          getMostRecentCommunicationRequestByEndDateFromBundle(
+            crResults,
+            getReferencedCRIdsFromBundle(commResults)
+          );
         let lastAcknowledgedDate = currentCommunication?.sent;
 
         const isNotDue = isNotDueYet(lastAcknowledgedDate);
