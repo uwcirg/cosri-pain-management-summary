@@ -51,9 +51,6 @@ export default function FhirClientProvider(props) {
         }
         console.log("Auth complete, client ready.");
         const client = results[0].value;
-
-        console.log("patient? ", client);
-
         getPatient(client)
           .then((result) => {
             console.log("Patient loaded.");
