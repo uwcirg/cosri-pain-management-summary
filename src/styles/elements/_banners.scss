@@ -107,6 +107,18 @@
         color: #444;
       }
     }
+    .error {
+      margin-left: 24px;
+      margin-top: 4px;
+      font-weight: normal;
+      font-size: 0.95rem;
+    }
+    .side-note {
+      color: #444;
+      margin-top: 4px;
+      font-size: 0.95rem;
+      margin-left: 20px;
+    }
     &.close {
       .close-button {
         transform: rotate(-90deg);

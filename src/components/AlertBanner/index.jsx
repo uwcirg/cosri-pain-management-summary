@@ -50,6 +50,7 @@ export default function AlertBanner({ type, summaryData }) {
     status: null,
     dueDate: null,
     lastAcknowledgedDate: null,
+    expiredAsOfDate: null,
     error: null,
   });
   const alertType = type ?? "naloxone";
@@ -82,19 +83,19 @@ export default function AlertBanner({ type, summaryData }) {
       .then((result) => {
         if (result && result.sent) {
           if (contextState.currentCommunicationRequest) {
-            contextState.currentCommunicationRequest.status = "completed";
-            client
-              .update(contextState.currentCommunicationRequest)
-              .catch((e) => {
-                console.log(
-                  "Unable to mark CommunicationRequest as completed ",
-                  e
-                );
-                contextStateDispatch({
-                  error:
-                    "Unable to complete saving. See console for detail.",
-                });
+            let payload = JSON.parse(
+              JSON.stringify(contextState.currentCommunicationRequest)
+            );
+            payload.status = "completed";
+            client.update(payload).catch((e) => {
+              console.log(
+                "Unable to mark CommunicationRequest as completed ",
+                e
+              );
+              contextStateDispatch({
+                error: "Unable to complete saving. See console for detail.",
               });
+            });
           }
           setTimeout(() => {
             contextStateDispatch({
@@ -151,26 +152,18 @@ export default function AlertBanner({ type, summaryData }) {
       .then((results) => {
         const commResults = results[0].value;
         const crResults = results[1].value;
-        let currentCommunication =
+        const currentCommunication =
           getMostRecentCommunicationBySentFromBundle(commResults);
-        let currentCommunicationRequest =
+        const lastAcknowledgedDate = currentCommunication?.sent;
+        const currentCommunicationRequest =
           getMostRecentCommunicationRequestByEndDateFromBundle(
             crResults,
             getReferencedCRIdsFromBundle(commResults)
           );
-        let lastAcknowledgedDate = currentCommunication?.sent;
-
         const isNotDue = isNotDueYet(lastAcknowledgedDate);
         const crEndDate = getEndDateFromCommunicationRequest(
           currentCommunicationRequest
         );
-        const shouldCreateCR =
-          (lastAcknowledgedDate &&
-            isOverDue(crEndDate) &&
-            (isAboutDue(lastAcknowledgedDate) ||
-              isOverDue(lastAcknowledgedDate))) ||
-          !crEndDate ||
-          isOverDue(crEndDate);
 
         // acknowledged and alert not due yet
         if (isNotDue) {
@@ -182,18 +175,26 @@ export default function AlertBanner({ type, summaryData }) {
           });
           return;
         }
+
+        const shouldCreateCR = !crEndDate || isOverDue(crEndDate);
+        const expiredAsOfDate = isOverDue(lastAcknowledgedDate)
+          ? addMonthsToDate(lastAcknowledgedDate, 12)
+          : null;
+
         if (shouldCreateCR) {
           // existing CR expired, create new CR
+          const crStartDate = isAboutDue(lastAcknowledgedDate)
+            ? lastAcknowledgedDate
+            : new Date().toISOString();
+          const crEndDate = isAboutDue(lastAcknowledgedDate)
+            ? addMonthsToDate(lastAcknowledgedDate, 12)
+            : addMonthsToDate(null, 12);
           client
             .create(
               getCommunicationRequestPayload({
                 ...dataParams,
-                startDate: isAboutDue(lastAcknowledgedDate)
-                  ? lastAcknowledgedDate
-                  : null,
-                endDate: isAboutDue(lastAcknowledgedDate)
-                  ? addMonthsToDate(lastAcknowledgedDate, 12)
-                  : addMonthsToDate(null, 12),
+                startDate: crStartDate,
+                endDate: crEndDate,
                 noteText: isAboutDue(lastAcknowledgedDate)
                   ? `Acknowlegement is due in 2 months. Last acknowledged on ${lastAcknowledgedDate}`
                   : isOverDue(lastAcknowledgedDate)
@@ -227,6 +228,7 @@ export default function AlertBanner({ type, summaryData }) {
                 expanded: true,
                 lastAcknowledgedDate: lastAcknowledgedDate,
                 dueDate: getEndDateFromCommunicationRequest(result),
+                expiredAsOfDate: expiredAsOfDate,
                 currentCommunication: currentCommunication,
                 currentCommunicationRequest: result,
               });
@@ -271,18 +273,17 @@ export default function AlertBanner({ type, summaryData }) {
   const getAlertDisplayText = () => {
     if (!contextState.lastAcknowledgedDate)
       return "Please acknowledge this alert.";
-    const byDate = addMonthsToDate(contextState.lastAcknowledgedDate, 12);
-    if (isOverDue(contextState.lastAcknowledgedDate)) {
+    if (contextState.lastAcknowledgedDate && contextState.expiredAsOfDate) {
       return `This alert is overdue as of ${getDisplayDate(
-        byDate
+        contextState.expiredAsOfDate
       )}.  Please acknowledge.`;
     }
     if (isAboutDue(contextState.lastAcknowledgedDate)) {
       return `This alert should be acknowledged by ${getDisplayDate(
-        byDate
+        contextState.dueDate
       )}.  Please acknowledge.`;
     }
-    return "";
+    return "Please acknowledge this alert.";
   };
 
   const getFoldedView = () => {
@@ -292,10 +293,9 @@ export default function AlertBanner({ type, summaryData }) {
         {contextState.savingInProgress && (
           <span className="note">Saving ...</span>
         )}
-        {!contextState.savingInProgress &&
-          contextState.status !== "completed" && (
-            <span className="info-text">(click arrow to see pending task)</span>
-          )}
+        {!contextState.savingInProgress && contextState.status === "due" && (
+          <span className="info-text">(click arrow to see pending task)</span>
+        )}
         {!contextState.savingInProgress &&
           contextState.status === "completed" && (
             <span className="note">{getAcknowledgedText()}</span>
@@ -305,15 +305,11 @@ export default function AlertBanner({ type, summaryData }) {
   };
 
   const getExpandedView = () => {
-    if (contextState.status == "completed")
+    if (contextState.status === "completed") {
       return (
-        <div
-          className="muted-text"
-          style={{ marginTop: "4px", fontSize: "0.9rem", marginLeft: "24px" }}
-        >
-          {getAcknowledgedText()}
-        </div>
+        <div className="side-note muted-text">{getAcknowledgedText()}</div>
       );
+    }
     if (contextState.error) return null;
     const alertDisplayText = getAlertDisplayText();
     return (
@@ -333,17 +329,7 @@ export default function AlertBanner({ type, summaryData }) {
 
   const renderError = () => {
     if (!contextState.error) return null;
-    const errorStyle = {
-      marginLeft: "24px",
-      marginTop: "4px",
-      fontWeight: "normal",
-      fontSize: "0.95rem",
-    };
-    return (
-      <div className="error" style={errorStyle}>
-        {contextState.error}
-      </div>
-    );
+    return <div className="error">{contextState.error}</div>;
   };
 
   if (!shouldShowAlert) return null;
