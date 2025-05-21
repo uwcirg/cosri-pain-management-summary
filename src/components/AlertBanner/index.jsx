@@ -27,7 +27,6 @@ import {
 export default function AlertBanner({ type, summaryData }) {
   const context = useContext(FhirClientContext);
   const { client, patient } = context;
-
   const contextReducer = (contextState, action) => {
     if (!action) return contextState;
     const keys = Object.keys(action);
@@ -53,7 +52,6 @@ export default function AlertBanner({ type, summaryData }) {
     lastAcknowledgedDate: null,
     error: null,
   });
-
   const alertType = type ?? "naloxone";
   const currentAlertProps = alertProps[alertType];
   const userId = getUserIdFromAccessToken();
@@ -94,7 +92,7 @@ export default function AlertBanner({ type, summaryData }) {
                 );
                 contextStateDispatch({
                   error:
-                    "Unable to complete saving of acknowledgement data. See console for detail.",
+                    "Unable to complete saving. See console for detail.",
                 });
               });
           }
@@ -109,7 +107,7 @@ export default function AlertBanner({ type, summaryData }) {
           }, 350);
         } else {
           contextStateDispatch({
-            error: "Unable to complete saving",
+            error: "Unable to complete saving. No saving result.",
             savingInProgress: false,
           });
         }
@@ -197,7 +195,7 @@ export default function AlertBanner({ type, summaryData }) {
                   ? addMonthsToDate(lastAcknowledgedDate, 12)
                   : addMonthsToDate(null, 12),
                 noteText: isAboutDue(lastAcknowledgedDate)
-                  ? `Alert acknowledgement is about due. Last acknowledged on ${lastAcknowledgedDate}`
+                  ? `Acknowlegement is due in 2 months. Last acknowledged on ${lastAcknowledgedDate}`
                   : isOverDue(lastAcknowledgedDate)
                   ? `Last acknowledgement was overdue. Last acknowledged on ${lastAcknowledgedDate}`
                   : null,
@@ -218,7 +216,7 @@ export default function AlertBanner({ type, summaryData }) {
                 prevCR.status = "revoked";
                 client.update(prevCR).catch((e) => {
                   console.log(
-                    "Error occurred updating previous CommunicationRequest ",
+                    "Error occurred updating previous CommunicationRequest: ",
                     e
                   );
                 });
