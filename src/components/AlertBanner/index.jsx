@@ -164,6 +164,9 @@ export default function AlertBanner({ type, summaryData }) {
         const crEndDate = getEndDateFromCommunicationRequest(
           currentCommunicationRequest
         );
+        const expiredAsOfDate = isOverDue(lastAcknowledgedDate)
+          ? addMonthsToDate(lastAcknowledgedDate, 12)
+          : null;
 
         // acknowledged and alert not due yet
         if (isNotDue) {
@@ -177,9 +180,6 @@ export default function AlertBanner({ type, summaryData }) {
         }
 
         const shouldCreateCR = !crEndDate || isOverDue(crEndDate);
-        const expiredAsOfDate = isOverDue(lastAcknowledgedDate)
-          ? addMonthsToDate(lastAcknowledgedDate, 12)
-          : null;
 
         if (shouldCreateCR) {
           // existing CR expired, create new CR
@@ -249,6 +249,7 @@ export default function AlertBanner({ type, summaryData }) {
             expanded: true,
             lastAcknowledgedDate: lastAcknowledgedDate,
             dueDate: crEndDate,
+            expiredAsOfDate: expiredAsOfDate,
             currentCommunication: currentCommunication,
             currentCommunicationRequest: currentCommunicationRequest,
           });
