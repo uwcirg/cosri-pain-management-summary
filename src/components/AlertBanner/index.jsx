@@ -7,6 +7,7 @@ import { FhirClientContext } from "../../context/FhirClientContext";
 import {
   addMonthsToDate,
   getUserIdFromAccessToken,
+  isDateTimeInPast,
   noCacheHeader,
 } from "../../helpers/utility";
 import {
@@ -166,7 +167,7 @@ export default function AlertBanner({ type, summaryData }) {
         );
         const expiredAsOfDate = isOverDue(lastAcknowledgedDate)
           ? addMonthsToDate(lastAcknowledgedDate, 12)
-          : null;
+          : crEndDate;
 
         // acknowledged and alert not due yet
         if (isNotDue) {
@@ -274,7 +275,7 @@ export default function AlertBanner({ type, summaryData }) {
   const getAlertDisplayText = () => {
     if (!contextState.lastAcknowledgedDate)
       return "Please acknowledge this alert.";
-    if (contextState.lastAcknowledgedDate && contextState.expiredAsOfDate) {
+    if (isDateTimeInPast(contextState.expiredAsOfDate)) {
       return `This alert is overdue as of ${getDisplayDate(
         contextState.expiredAsOfDate
       )}.  Please acknowledge.`;

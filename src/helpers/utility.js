@@ -6,26 +6,9 @@ import reportSummarySections from "../config/report_config";
 import { shortDateRE, dateREZ } from "./formatit";
 import { getTokenInfoFromStorage } from "./timeout";
 
-
 export const noCacheHeader = {
   "Cache-Control": "no-cache",
 };
-
-/*
- * return number of days between two dates
- * @params dateString1 date #1 to be compared
- *         dateString2 date #2 to be compared
- */
-export function getDiffDays(dateString1, dateString2) {
-  if (!dateString1 || !dateString2) return 0;
-  //set two date variables
-  let date1 = new Date(dateString1),
-    date2 = new Date(dateString2);
-  // To calculate the time difference of two dates
-  var diffInTime = date2.getTime() - date1.getTime();
-  // To calculate the no. of days between two dates
-  return Math.ceil(diffInTime / (1000 * 3600 * 24));
-}
 
 /*
  * return Date object for a given input date string
@@ -43,6 +26,20 @@ export function getDateObjectInLocalDateTime(input) {
     return new Date(input);
   }
   return new Date(input);
+}
+
+export function isDateTimeInPast(dateString1, dateString2) {
+  return moment(dateString1).isBefore(moment(dateString2));
+}
+
+/*
+ * return number of days between two dates
+ * @params dateString1 date #1 to be compared
+ *         dateString2 date #2 to be compared
+ */
+export function getDiffDays(dateString1, dateString2) {
+  if (!dateString1 || !dateString2) return 0;
+  return moment(dateString2).diff(dateString1, "days", true);
 }
 
 /*
@@ -72,7 +69,7 @@ export function isDateInPast(firstDate, secondDate) {
  * @param numMonths - the number of months to add in integer
  */
 export function addMonthsToDate(date, numMonths) {
-  if (!date) return moment().add(numMonths, "month").toISOString();;
+  if (!date) return moment().add(numMonths, "month").toISOString();
   return moment(date).add(numMonths, "month").toISOString();
 }
 /*
