@@ -7,12 +7,12 @@ import { FhirClientContext } from "../../context/FhirClientContext";
 import {
   addMonthsToDate,
   getUserIdFromAccessToken,
-  isDateTimeInPast,
   isEmptyArray,
   noCacheHeader,
 } from "../../helpers/utility";
 import {
   alertProps,
+  getAlertType,
   getCommunicationPayload,
   getCommunicationRequestPayload,
   getDisplayDate,
@@ -55,8 +55,9 @@ export default function AlertBanner({ type, summaryData }) {
     expiredAsOfDate: null,
     error: null,
   });
-  const alertType = type ?? "naloxone";
+  const alertType = type ?? getAlertType(summaryData);
   const currentAlertProps = alertProps[alertType];
+  const counselingAlertProps = alertProps["couseling"];
   const userId = getUserIdFromAccessToken();
   const dataParams = {
     userId: userId,
@@ -138,12 +139,6 @@ export default function AlertBanner({ type, summaryData }) {
   const shouldShowAlert = shouldDisplayAlert(alertType, summaryData);
 
   useEffect(() => {
-    if (!shouldShowAlert) {
-      contextStateDispatch({
-        loading: false,
-      });
-      return;
-    }
     if (!client || !patient || !contextState.loading) return;
 
     Promise.allSettled([
@@ -182,6 +177,7 @@ export default function AlertBanner({ type, summaryData }) {
             status: "completed",
             lastAcknowledgedDate: lastAcknowledgedDate,
             currentCommunication: currentCommunication,
+            dueDate: crEndDate,
           });
           return;
         }
@@ -232,7 +228,7 @@ export default function AlertBanner({ type, summaryData }) {
               contextStateDispatch({
                 loading: false,
                 status: "due",
-                expanded: true,
+                expanded: shouldShowAlert,
                 lastAcknowledgedDate: lastAcknowledgedDate,
                 dueDate: getEndDateFromCommunicationRequest(result),
                 expiredAsOfDate: expiredAsOfDate,
@@ -253,7 +249,7 @@ export default function AlertBanner({ type, summaryData }) {
           contextStateDispatch({
             loading: false,
             status: "due",
-            expanded: true,
+            expanded: shouldShowAlert,
             lastAcknowledgedDate: lastAcknowledgedDate,
             dueDate: crEndDate,
             expiredAsOfDate: expiredAsOfDate,
@@ -274,9 +270,10 @@ export default function AlertBanner({ type, summaryData }) {
   const getAcknowledgedText = () => {
     if (!contextState.lastAcknowledgedDate) return "";
     const commNote = contextState.currentCommunication?.note;
-    const noteText = commNote && !isEmptyArray(commNote)
-      ? contextState.currentCommunication.note[0].text
-      : "";
+    const noteText =
+      commNote && !isEmptyArray(commNote)
+        ? contextState.currentCommunication.note[0].text
+        : "";
     return noteText
       ? noteText
       : `last acknowledged on ${getDisplayDate(
@@ -284,35 +281,61 @@ export default function AlertBanner({ type, summaryData }) {
         )}`;
   };
 
+  const renderAlertTitle = () => (
+    <span>
+      {contextState.status === "completed" && currentAlertProps.acknowledgedText
+        ? currentAlertProps.acknowledgedText
+        : currentAlertProps.text}
+    </span>
+  );
+
   const getAlertDisplayText = () => {
-    if (!contextState.lastAcknowledgedDate)
-      return "Please acknowledge this alert.";
-    if (isDateTimeInPast(contextState.expiredAsOfDate)) {
-      return `This alert is overdue as of ${getDisplayDate(
-        contextState.expiredAsOfDate
-      )}.  Please acknowledge.`;
+    if (!shouldDisplayAlert) {
+      return "Click here if Naloxone access verified, for any reason.";
     }
+    if (!contextState.lastAcknowledgedDate)
+      return "Please verify access and acknowledge this alert.";
+    // if (isDateTimeInPast(contextState.expiredAsOfDate)) {
+    //   return `This alert is overdue as of ${getDisplayDate(
+    //     contextState.expiredAsOfDate
+    //   )}.  Please acknowledge.`;
+    // }
     if (isAboutDue(contextState.lastAcknowledgedDate)) {
       return `This alert should be acknowledged by ${getDisplayDate(
         contextState.dueDate
       )}.  Please acknowledge.`;
     }
-    return "Please acknowledge this alert.";
+    return "Please verify access and acknowledge this alert.";
   };
 
   const getFoldedView = () => {
     return (
       <div className="flex flex-start">
-        <span>{currentAlertProps.title}</span>
+        <span>{currentAlertProps.title ?? "Naloxone recommendation"}</span>
         {contextState.savingInProgress && (
           <span className="note">Saving ...</span>
         )}
-        {!contextState.savingInProgress && contextState.status === "due" && (
-          <span className="info-text">(click arrow to see pending task)</span>
+        {!contextState.savingInProgress && !shouldShowAlert && (
+          <span className="info-text">
+            (no opioids currently dispensed, click here if counseling)
+          </span>
         )}
+        {/* {!contextState.savingInProgress &&
+          shouldShowAlert &&
+          contextState.status === "due" && (
+            <span className="info-text">(click arrow to see pending task)</span>
+          )} */}
         {!contextState.savingInProgress &&
-          contextState.status === "completed" && (
+          shouldShowAlert &&
+          contextState.lastAcknowledgedDate && (
             <span className="note">{getAcknowledgedText()}</span>
+          )}
+
+        {!contextState.savingInProgress &&
+          shouldShowAlert &&
+          contextState.status === "due" &&
+          !contextState.lastAcknowledgedDate && (
+            <span className="info-text">(access never verified, click here)</span>
           )}
       </div>
     );
@@ -321,7 +344,9 @@ export default function AlertBanner({ type, summaryData }) {
   const getExpandedView = () => {
     if (contextState.status === "completed") {
       return (
-        <div className="side-note muted-text">{getAcknowledgedText()}</div>
+        <div className="side-note muted-text">{`This alert should next be acknowledged after ${getDisplayDate(
+          addMonthsToDate(contextState.lastAcknowledgedDate, 10)
+        )}.`}</div>
       );
     }
     if (contextState.error) return null;
@@ -346,7 +371,7 @@ export default function AlertBanner({ type, summaryData }) {
     return <div className="error">{contextState.error}</div>;
   };
 
-  if (!shouldShowAlert) return null;
+  //if (!shouldShowAlert) return null;
   if (contextState.loading) {
     return <div className="banner alert-banner">Loading ...</div>;
   }
@@ -362,7 +387,7 @@ export default function AlertBanner({ type, summaryData }) {
     >
       <strong className="title flex flex-start flex-align-start">
         <FontAwesomeIcon icon={faExclamationCircle} title="notice" />
-        {contextState.expanded && <span>{currentAlertProps.text}</span>}
+        {contextState.expanded && renderAlertTitle()}
         {!contextState.expanded && getFoldedView()}
       </strong>
       <ChevronDownIcon
@@ -380,5 +405,5 @@ export default function AlertBanner({ type, summaryData }) {
 
 AlertBanner.propTypes = {
   summaryData: PropTypes.array.isRequired,
-  type: PropTypes.string.isRequired,
+  type: PropTypes.string,
 };

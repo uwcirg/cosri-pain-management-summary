@@ -10,28 +10,47 @@ import {
 
 export const HIGH_RISK_MME_THRESHOLD = getHighRiskMMEThreshold();
 export const COSRI_ALERTS_SYSTEM_URI = "https://cosri.app/alerts";
+export const HIGH_RISK_MME_ALERT_TYPE = "highRiskMME";
+export const NALOXONE_ALERT_TYPE = "naloxone";
+export const COUNSELING_ALERT_TYPE = "counseling";
+
 export const alertProps = {
-  naloxone: {
-    title: "Naloxone - all patients",
+  [NALOXONE_ALERT_TYPE]: {
+    title: "Naloxone - any dose",
     text: "Naloxone is recommended for every patient receiving opioids. Please verify access annually.",
     alertConceptCode: "cosri_naloxone_alert",
     acknowledgedConceptCode: "cosri_naloxone_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
-  highRiskMME: {
+  [HIGH_RISK_MME_ALERT_TYPE]: {
     title: `Naloxone ≥ ${HIGH_RISK_MME_THRESHOLD} MME`,
     text: `Patient's MME is greater than ${HIGH_RISK_MME_THRESHOLD} so higher risk of overdose. Please verify naloxone access.`,
     alertConceptCode: "cosri_high_risk_mme_alert",
     acknowledgedConceptCode: "cosri_high_risk_mme_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
+  [COUNSELING_ALERT_TYPE]: {
+    title: "Naloxone recommendation",
+    acknowledgedText: "Naloxone is recommended for every patient receiving opioids.  Counseled in past.",
+    text: "Naloxone is recommended for every patient receiving opioids.  Consider counseling.",
+    alertConceptCode: "cosri_naloxone_counseling_alert",
+    acknowledgedConceptCode: "cosri_naloxone_counseling_alert_acknowledgement",
+    codeSystem: COSRI_ALERTS_SYSTEM_URI,
+  },
 };
 
-export function shouldDisplayAlert(alertType, summaryData) {
-  if (alertType === "highRiskMME") {
+export const getAlertType = (summaryData) => {
+  if (hasHighRiskMME(summaryData)) return HIGH_RISK_MME_ALERT_TYPE;
+  if (hasActiveOpioidMed(summaryData)) return NALOXONE_ALERT_TYPE;
+  return COUNSELING_ALERT_TYPE;
+}
+
+export const shouldDisplayAlert = (alertType, summaryData) => {
+  if (alertType === HIGH_RISK_MME_ALERT_TYPE) {
     return hasHighRiskMME(summaryData);
   }
-  return hasActiveOpioidMed(summaryData);
+  if (alertType === NALOXONE_ALERT_TYPE) return hasActiveOpioidMed(summaryData);
+  return false;
 }
 export function hasMMEData(summaryData) {
   return (

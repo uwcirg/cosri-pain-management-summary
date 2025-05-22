@@ -903,18 +903,13 @@ export default class Summary extends Component {
           </h1>
           {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
           {meetsInclusionCriteria && <ExclusionBanner />}
-          {
-            <AlertBanner
-              type="naloxone"
-              summaryData={dailyMMEData}
-            ></AlertBanner>
-          }
-          {
+          {<AlertBanner summaryData={dailyMMEData}></AlertBanner>}
+          {/* {
             <AlertBanner
               type="highRiskMME"
               summaryData={dailyMMEData}
             ></AlertBanner>
-          }
+          } */}
           {!hasErrors && !meetsInclusionCriteria && (
             <InclusionBanner dismissible={meetsInclusionCriteria} />
           )}
