@@ -77,7 +77,12 @@ export default function AlertBanner({ type, summaryData }) {
     client
       .create(
         getCommunicationPayload(
-          dataParams,
+          {
+            ...dataParams,
+            noteText: `last acknowledged on ${getDisplayDate(
+              new Date().toISOString()
+            )}${userId ? " by " + userId : ""}`,
+          },
           contextState.currentCommunicationRequest?.id
         )
       )
@@ -266,10 +271,15 @@ export default function AlertBanner({ type, summaryData }) {
   }, [client, patient, shouldShowAlert]);
 
   const getAcknowledgedText = () => {
+    const noteText = contextState.currentCommunication?.note
+      ? contextState.currentCommunication.note[0].text
+      : "";
     if (!contextState.lastAcknowledgedDate) return "";
-    return `last acknowledged on ${getDisplayDate(
-      contextState.lastAcknowledgedDate
-    )}${userId ? " by " + userId : ""}`;
+    return noteText
+      ? noteText
+      : `last acknowledged on ${getDisplayDate(
+          contextState.lastAcknowledgedDate
+        )}`;
   };
 
   const getAlertDisplayText = () => {

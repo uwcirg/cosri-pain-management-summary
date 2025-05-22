@@ -100,9 +100,7 @@ export function hasHighRiskMME(summaryData) {
   // return normalMMEIndex <= highRiskMMEIndex;
 }
 
-export const getMostRecentCommunicationBySentFromBundle = (
-  bundle
-) => {
+export const getMostRecentCommunicationBySentFromBundle = (bundle) => {
   return bundle && !isEmptyArray(bundle.entry)
     ? bundle.entry
         .sort((a, b) => new Date(b.resource.sent) - new Date(a.resource.sent))
@@ -128,7 +126,7 @@ export const getMostRecentCommunicationRequestByEndDateFromBundle = (
 };
 
 export const getCommunicationPayload = (params = {}, crId) => {
-  const { patient, userId, acknowledgedConceptCode, codeSystem, title, id } =
+  const { patient, noteText, acknowledgedConceptCode, codeSystem, title, id } =
     params;
   return {
     resourceType: "Communication",
@@ -148,7 +146,7 @@ export const getCommunicationPayload = (params = {}, crId) => {
         contentString: `${title} alert acknowledgement`,
       },
     ],
-    note: userId ? [{ text: " acknowledged by " + userId }] : null,
+    note: noteText ? [{ text: noteText }] : null,
     sent: new Date().toISOString(),
     basedOn: crId
       ? [
