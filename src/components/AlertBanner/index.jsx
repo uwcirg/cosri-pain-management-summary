@@ -8,6 +8,7 @@ import {
   addMonthsToDate,
   getUserIdFromAccessToken,
   isDateTimeInPast,
+  isEmptyArray,
   noCacheHeader,
 } from "../../helpers/utility";
 import {
@@ -271,10 +272,11 @@ export default function AlertBanner({ type, summaryData }) {
   }, [client, patient, shouldShowAlert]);
 
   const getAcknowledgedText = () => {
-    const noteText = contextState.currentCommunication?.note
+    if (!contextState.lastAcknowledgedDate) return "";
+    const commNote = contextState.currentCommunication?.note;
+    const noteText = commNote && !isEmptyArray(commNote)
       ? contextState.currentCommunication.note[0].text
       : "";
-    if (!contextState.lastAcknowledgedDate) return "";
     return noteText
       ? noteText
       : `last acknowledged on ${getDisplayDate(
