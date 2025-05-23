@@ -16,7 +16,7 @@ export const COUNSELING_ALERT_TYPE = "counseling";
 
 export const alertProps = {
   [NALOXONE_ALERT_TYPE]: {
-    title: "Naloxone - any dose",
+    foldedTitle: "Naloxone - any dose",
     expandedTitle: "Naloxone is recommended for every patient receiving opioids. Please verify access annually.",
     foldedText: "Access never verified. Click here.",
     expandedText_aboutdue: "This alert should be acknowledged by {date}.  Please verify access and acknowledge.",
@@ -27,7 +27,7 @@ export const alertProps = {
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
   [HIGH_RISK_MME_ALERT_TYPE]: {
-    title: `Naloxone ≥ ${HIGH_RISK_MME_THRESHOLD} MME`,
+    foldedTitle: `Naloxone ≥ ${HIGH_RISK_MME_THRESHOLD} MME`,
     expandedTitle: `Patient's MME is greater than ${HIGH_RISK_MME_THRESHOLD} so higher risk of overdose. Please verify naloxone access.`,
     foldedText: "Access never verified. Click here.",
     expandedText_aboutdue: "This alert should be acknowledged by {date}.  Please verify access and acknowledge.",
@@ -38,7 +38,7 @@ export const alertProps = {
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
   [COUNSELING_ALERT_TYPE]: {
-    title: "Naloxone recommendation",
+    foldedTitle: "Naloxone recommendation",
     expandedTitle: "Naloxone is recommended for every patient receiving opioids.  Consider counseling.",
     expandedTitle_acknowledged: "Naloxone is recommended for every patient receiving opioids.  Counseled in past.",
     foldedText: "No opioids currently dispensed. Click here if counseling.",
@@ -155,7 +155,7 @@ export const getMostRecentCommunicationRequestByEndDateFromBundle = (
 };
 
 export const getCommunicationPayload = (params = {}, crId) => {
-  const { patient, noteText, acknowledgedConceptCode, codeSystem, title, id } =
+  const { patient, noteText, acknowledgedConceptCode, codeSystem, foldedTitle, id } =
     params;
   return {
     resourceType: "Communication",
@@ -172,7 +172,7 @@ export const getCommunicationPayload = (params = {}, crId) => {
     ],
     payload: [
       {
-        contentString: `${title} alert acknowledgement`,
+        contentString: `${foldedTitle} alert acknowledgement`,
       },
     ],
     note: noteText ? [{ text: noteText }] : null,

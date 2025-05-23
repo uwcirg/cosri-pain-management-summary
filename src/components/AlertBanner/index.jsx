@@ -80,9 +80,7 @@ export default function AlertBanner({ type, summaryData }) {
         getCommunicationPayload(
           {
             ...dataParams,
-            noteText: `last acknowledged on ${getDisplayDate(
-              new Date().toISOString()
-            )}${userId ? " by " + userId : ""}`,
+            noteText: userId ? `user=${userId}` : "",
           },
           contextState.currentCommunicationRequest?.id
         )
@@ -260,20 +258,6 @@ export default function AlertBanner({ type, summaryData }) {
       });
   }, [client, patient, shouldShowAlert]);
 
-  const getAcknowledgedText = () => {
-    if (!contextState.lastAcknowledgedDate) return "";
-    const commNote = contextState.currentCommunication?.note;
-    const noteText =
-      commNote && !isEmptyArray(commNote)
-        ? contextState.currentCommunication.note[0].text
-        : "";
-    return noteText
-      ? noteText
-      : `last acknowledged on ${getDisplayDate(
-          contextState.lastAcknowledgedDate
-        )}`;
-  };
-
   const renderAlertExpandedTitle = () => (
     <span>
       {contextState.status === "completed" &&
@@ -283,17 +267,23 @@ export default function AlertBanner({ type, summaryData }) {
     </span>
   );
 
+  const getAcknowledgedText = () => {
+    if (!contextState.lastAcknowledgedDate) return "";
+    const commNote = contextState.currentCommunication?.note;
+    const noteText =
+      commNote && !isEmptyArray(commNote)
+        ? contextState.currentCommunication.note[0].text
+        : "";
+    //exampe: user=test
+    const arrText = noteText.split("=");
+    const acknowledgedDate = getDisplayDate(contextState.lastAcknowledgedDate);
+    const acknowledgedUser = arrText[1] ? arrText[1] : "";
+    return `last acknowledged on ${acknowledgedDate} ${
+      acknowledgedUser ? " by " + acknowledgedUser : ""
+    }`;
+  };
+
   const getDueExpandedText = () => {
-    // if (!shouldDisplayAlert) {
-    //   return "Click here if Naloxone access verified, for any reason.";
-    // }
-    // if (!contextState.lastAcknowledgedDate)
-    //   return "Please verify access and acknowledge this alert.";
-    // if (isAboutDue(contextState.lastAcknowledgedDate)) {
-    //   return `This alert should be acknowledged by ${getDisplayDate(
-    //     contextState.dueDate
-    //   )}.  Please acknowledge.`;
-    // }
     const defaultText = "Please verify access and acknowledge this alert.";
     if (isAboutDue(contextState.lastAcknowledgedDate)) {
       if (currentAlertProps.expandedText_aboutdue) {
@@ -308,21 +298,22 @@ export default function AlertBanner({ type, summaryData }) {
   };
 
   const getFoldedView = () => {
+    const soonDue = isAboutDue(contextState.lastAcknowledgedDate);
     return (
       <div className="flex flex-start">
-        <span>{currentAlertProps.title ?? "Naloxone recommendation"}</span>
+        <span>
+          {currentAlertProps.foldedTitle ?? "Naloxone recommendation"}
+        </span>
         {contextState.savingInProgress && (
           <span className="note">Saving ...</span>
         )}
         {!contextState.savingInProgress &&
           contextState.status === "due" &&
-          !contextState.lastAcknowledgedDate && (
-            <span className="info-text">{currentAlertProps.foldedText}</span>
-          )}
+          soonDue && <span className="note">{getAcknowledgedText()}</span>}
         {!contextState.savingInProgress &&
           contextState.status === "due" &&
-          contextState.lastAcknowledgedDate && (
-            <span className="note">{getAcknowledgedText()}</span>
+          !soonDue && (
+            <span className="info-text">{currentAlertProps.foldedText}</span>
           )}
         {!contextState.savingInProgress &&
           contextState.status === "completed" && (
