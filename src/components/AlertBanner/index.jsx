@@ -334,7 +334,7 @@ export default function AlertBanner({ type, summaryData }) {
         {!contextState.savingInProgress &&
           shouldShowAlert &&
           contextState.status === "due" &&
-          !contextState.lastAcknowledgedDate && (
+          isOverDue(contextState.lastAcknowledgedDate) && (
             <span className="info-text">(access never verified, click here)</span>
           )}
       </div>
