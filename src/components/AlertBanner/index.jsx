@@ -57,7 +57,6 @@ export default function AlertBanner({ type, summaryData }) {
   });
   const alertType = type ?? getAlertType(summaryData);
   const currentAlertProps = alertProps[alertType];
-  const counselingAlertProps = alertProps["couseling"];
   const userId = getUserIdFromAccessToken();
   const dataParams = {
     userId: userId,
@@ -97,7 +96,7 @@ export default function AlertBanner({ type, summaryData }) {
             payload.status = "completed";
             client.update(payload).catch((e) => {
               console.log(
-                "Unable to mark CommunicationRequest as completed ",
+                "Unable to mark CommunicationRequest as completed. ",
                 e
               );
               contextStateDispatch({
@@ -128,12 +127,6 @@ export default function AlertBanner({ type, summaryData }) {
           savingInProgress: false,
         });
       });
-    // setTimeout(() => {
-    //   contextStateDispatch({
-    //     viewedDate: todayDate,
-    //     savingInProgress: false,
-    //   });
-    // }, 350);
   };
 
   const shouldShowAlert = shouldDisplayAlert(alertType, summaryData);
@@ -281,31 +274,37 @@ export default function AlertBanner({ type, summaryData }) {
         )}`;
   };
 
-  const renderAlertTitle = () => (
+  const renderAlertExpandedTitle = () => (
     <span>
-      {contextState.status === "completed" && currentAlertProps.acknowledgedText
-        ? currentAlertProps.acknowledgedText
-        : currentAlertProps.text}
+      {contextState.status === "completed" &&
+      currentAlertProps.expandedTitle_acknowledged
+        ? currentAlertProps.expandedTitle_acknowledged
+        : currentAlertProps.expandedTitle}
     </span>
   );
 
-  const getAlertDisplayText = () => {
-    if (!shouldDisplayAlert) {
-      return "Click here if Naloxone access verified, for any reason.";
-    }
-    if (!contextState.lastAcknowledgedDate)
-      return "Please verify access and acknowledge this alert.";
-    // if (isDateTimeInPast(contextState.expiredAsOfDate)) {
-    //   return `This alert is overdue as of ${getDisplayDate(
-    //     contextState.expiredAsOfDate
+  const getDueExpandedText = () => {
+    // if (!shouldDisplayAlert) {
+    //   return "Click here if Naloxone access verified, for any reason.";
+    // }
+    // if (!contextState.lastAcknowledgedDate)
+    //   return "Please verify access and acknowledge this alert.";
+    // if (isAboutDue(contextState.lastAcknowledgedDate)) {
+    //   return `This alert should be acknowledged by ${getDisplayDate(
+    //     contextState.dueDate
     //   )}.  Please acknowledge.`;
     // }
+    const defaultText = "Please verify access and acknowledge this alert.";
     if (isAboutDue(contextState.lastAcknowledgedDate)) {
-      return `This alert should be acknowledged by ${getDisplayDate(
-        contextState.dueDate
-      )}.  Please acknowledge.`;
+      if (currentAlertProps.expandedText_aboutdue) {
+        return currentAlertProps.expandedText_aboutdue.replace(
+          "{date}",
+          getDisplayDate(contextState.dueDate)
+        );
+      }
+      return currentAlertProps.expandedText_aboutdue ?? defaultText;
     }
-    return "Please verify access and acknowledge this alert.";
+    return currentAlertProps.expandedText_due ?? defaultText;
   };
 
   const getFoldedView = () => {
@@ -315,27 +314,19 @@ export default function AlertBanner({ type, summaryData }) {
         {contextState.savingInProgress && (
           <span className="note">Saving ...</span>
         )}
-        {!contextState.savingInProgress && !shouldShowAlert && (
-          <span className="info-text">
-            (no opioids currently dispensed, click here if counseling)
-          </span>
-        )}
-        {/* {!contextState.savingInProgress &&
-          shouldShowAlert &&
-          contextState.status === "due" && (
-            <span className="info-text">(click arrow to see pending task)</span>
-          )} */}
         {!contextState.savingInProgress &&
-          shouldShowAlert &&
+          contextState.status === "due" &&
+          !contextState.lastAcknowledgedDate && (
+            <span className="info-text">{currentAlertProps.foldedText}</span>
+          )}
+        {!contextState.savingInProgress &&
+          contextState.status === "due" &&
           contextState.lastAcknowledgedDate && (
             <span className="note">{getAcknowledgedText()}</span>
           )}
-
         {!contextState.savingInProgress &&
-          shouldShowAlert &&
-          contextState.status === "due" &&
-          (
-            <span className="info-text">(access never verified, click here)</span>
+          contextState.status === "completed" && (
+            <span className="note">{getAcknowledgedText()}</span>
           )}
       </div>
     );
@@ -343,18 +334,26 @@ export default function AlertBanner({ type, summaryData }) {
 
   const getExpandedView = () => {
     if (contextState.status === "completed") {
+      const displayText =
+        currentAlertProps.expandedText_acknowledged ??
+        "This alert should next be acknowledged after {date}.";
       return (
-        <div className="side-note muted-text">{`This alert should next be acknowledged after ${getDisplayDate(
-          addMonthsToDate(contextState.lastAcknowledgedDate, 10)
-        )}.`}</div>
+        <div className="side-note muted-text">
+          {displayText.replace(
+            "{date}",
+            getDisplayDate(
+              addMonthsToDate(contextState.lastAcknowledgedDate, 10)
+            )
+          )}
+        </div>
       );
     }
     if (contextState.error) return null;
-    const alertDisplayText = getAlertDisplayText();
+    const alertCheckboxText = getDueExpandedText();
     return (
       <div className="input flex flex-start">
         <label className="checkbox-container" aria-label="review checkbox">
-          {contextState.savingInProgress ? "Saving ... " : alertDisplayText}
+          {contextState.savingInProgress ? "Saving ... " : alertCheckboxText}
           <input
             type="checkbox"
             aria-label="hidden checkbox"
@@ -371,7 +370,6 @@ export default function AlertBanner({ type, summaryData }) {
     return <div className="error">{contextState.error}</div>;
   };
 
-  //if (!shouldShowAlert) return null;
   if (contextState.loading) {
     return <div className="banner alert-banner">Loading ...</div>;
   }
@@ -387,7 +385,7 @@ export default function AlertBanner({ type, summaryData }) {
     >
       <strong className="title flex flex-start flex-align-start">
         <FontAwesomeIcon icon={faExclamationCircle} title="notice" />
-        {contextState.expanded && renderAlertTitle()}
+        {contextState.expanded && renderAlertExpandedTitle()}
         {!contextState.expanded && getFoldedView()}
       </strong>
       <ChevronDownIcon

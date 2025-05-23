@@ -42,6 +42,9 @@
         color: $link-color-dark;
       }
     }
+    .info-text {
+      margin-left: 8px;
+    }
     &.warning {
       background-color: $color-red-darker;
     }
