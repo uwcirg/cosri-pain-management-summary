@@ -808,11 +808,16 @@ export async function deleteFHIRResourcesByType(type, client, patientId) {
       const resource = item.resource;
       const resourceId = resource?.id;
       if (resourceId) {
-        (async () =>
-          await client.delete(`${type}/${resourceId}`).catch((e) => {
-            console.log(e);
-            throw new Error("Unable to remove resource.");
-          }))();
+        try {
+          (async () =>
+            await client.delete(`${type}/${resourceId}`).catch((e) => {
+              console.log(e);
+              throw new Error("Unable to remove resource.");
+            }))();
+        } catch (e) {
+          console.log(e);
+          throw new Error(e);
+        }
       }
     });
   }
