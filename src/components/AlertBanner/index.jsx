@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useReducer } from "react";
+import { useEffect, useContext, useReducer } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ChevronDownIcon from "../../icons/ChevronDownIcon";
@@ -6,6 +6,7 @@ import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FhirClientContext } from "../../context/FhirClientContext";
 import {
   addMonthsToDate,
+  getEnvSystemType,
   getUserIdFromAccessToken,
   isEmptyArray,
   noCacheHeader,
@@ -23,6 +24,8 @@ import {
   isAboutDue,
   isOverDue,
   isNotDueYet,
+  removeAllResources,
+  resetComms,
   shouldDisplayAlert,
 } from "./utility";
 
@@ -299,6 +302,8 @@ export default function AlertBanner({ type, summaryData }) {
 
   const getFoldedView = () => {
     const soonDue = isAboutDue(contextState.lastAcknowledgedDate);
+    const shouldShowAcknowledgement =
+      soonDue || contextState.lastAcknowledgedDate;
     return (
       <div className="flex flex-start">
         <span>
@@ -309,10 +314,12 @@ export default function AlertBanner({ type, summaryData }) {
         )}
         {!contextState.savingInProgress &&
           contextState.status === "due" &&
-          soonDue && <span className="note">{getAcknowledgedText()}</span>}
+          shouldShowAcknowledgement && (
+            <span className="note">{getAcknowledgedText()}</span>
+          )}
         {!contextState.savingInProgress &&
           contextState.status === "due" &&
-          !soonDue && (
+          !shouldShowAcknowledgement && (
             <span className="info-text">{currentAlertProps.foldedText}</span>
           )}
         {!contextState.savingInProgress &&
@@ -361,34 +368,144 @@ export default function AlertBanner({ type, summaryData }) {
     return <div className="error">{contextState.error}</div>;
   };
 
+  const renderDebugView = () => {
+    return (
+      <div
+        style={{
+          padding: "8px 16px",
+          marginBottom: "16px",
+          borderTop: "1px solid #ececec"
+        }}
+      >
+        <h4>For debugging</h4>
+        <div className="small flex flex-start" style={{ marginTop: "8px" }}>
+          Reset acknowledged date to{" "}
+          <input
+            id="customSentDate"
+            type="text"
+            placeholder="YYYY-MM-DD"
+            aria-label="acknowledged date input field"
+            maxLength={10}
+            size={12}
+            onKeyUp={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          ></input>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const inputVal = document.querySelector("#customSentDate").value;
+              console.log("input val ", inputVal);
+              resetComms(
+                client,
+                patient?.id,
+                {
+                  ...dataParams,
+                  sentDate: inputVal,
+                  startDate: inputVal,
+                  endDate: addMonthsToDate(inputVal, 12),
+                  noteText: "user=test",
+                  status: "completed",
+                },
+                contextState.currentCommunicationRequest?.id,
+                contextState.currentCommunication?.id
+              )
+                .then((results) => {
+                  if (results) {
+                    e.target.innerText = "Done. Reloading...";
+                    setTimeout(() => window.location.reload(), 350);
+                    return;
+                  }
+                  e.target.innerText = "Update";
+                })
+                .catch((e) => {
+                  // e.target.innerText = "Update";
+                  alert(e);
+                });
+            }}
+          >
+            Update
+          </button>
+        </div>
+        <div className="small" style={{ marginTop: "8px" }}>
+          <strong>OR</strong>
+        </div>
+        <div
+          className="flex flex-start small radio-container"
+          style={{ marginTop: "8px" }}
+        >
+          <input
+            type="radio"
+            onClick={(e) => {
+              const radioElement = e.target
+                .closest(".radio-container")
+                .querySelector(".radio-label");
+              let originalText = "";
+              if (radioElement) {
+                originalText = radioElement.innerText;
+                radioElement.innerText = "Please wait....";
+              }
+              removeAllResources(client, patient?.id)
+                .then((results) => {
+                  if (results) {
+                    if (radioElement)
+                      radioElement.innerText = "Done. Reloading...";
+                    setTimeout(() => window.location.reload(), 250);
+                    return;
+                  }
+                  if (radioElement) radioElement.innerText = originalText;
+                })
+                .catch((e) => {
+                  if (radioElement) radioElement.innerText = originalText;
+                  alert(e);
+                });
+            }}
+            aria-label="delete all radio"
+          ></input>
+          <span className="radio-label">
+            Reset all (This will remove all Communication & CommunicationRequest
+            resources for this patient)
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   if (contextState.loading) {
     return <div className="banner alert-banner">Loading ...</div>;
   }
 
-  const conditionalClass = contextState.expanded ? "" : "close";
+  const expandedClass = contextState.expanded ? "" : "close";
+  const alertClass = contextState.status === "completed" ? "info" : "";
 
   return (
-    <div
-      className={`banner alert-banner ${conditionalClass}`}
-      role="presentation"
-      onClick={handleCloseToggle}
-      onKeyDown={handleCloseToggle}
-    >
-      <strong className="title flex flex-start flex-align-start">
-        <FontAwesomeIcon icon={faExclamationCircle} title="notice" />
-        {contextState.expanded && renderAlertExpandedTitle()}
-        {!contextState.expanded && getFoldedView()}
-      </strong>
-      <ChevronDownIcon
-        className="close-button"
-        icon="times"
-        title="close"
-        width="25"
-        height="25"
-      />
-      <div className="content">{getExpandedView()}</div>
-      {renderError()}
-    </div>
+    <>
+      <div
+        className={`banner alert-banner ${expandedClass} ${alertClass}`}
+        role="presentation"
+        onClick={handleCloseToggle}
+        onKeyDown={handleCloseToggle}
+      >
+        <strong className="title flex flex-start flex-align-start">
+          <FontAwesomeIcon icon={faExclamationCircle} title="notice" />
+          {contextState.expanded && renderAlertExpandedTitle()}
+          {!contextState.expanded && getFoldedView()}
+        </strong>
+        <ChevronDownIcon
+          className="close-button"
+          icon="times"
+          title="close"
+          width="25"
+          height="25"
+        />
+        <div className="content">{getExpandedView()}</div>
+        {renderError()}
+      </div>
+      {getEnvSystemType() === "development" &&
+        !contextState.loading &&
+        renderDebugView()}
+    </>
   );
 }
 

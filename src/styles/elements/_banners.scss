@@ -75,6 +75,14 @@
           color: $color-red-darker;
         }
       }
+      // &.info {
+      //   strong {
+      //     color: $link-color-dark;
+      //     svg {
+      //       color: $link-color-dark;
+      //     }
+      //   }
+      // }
     }
     .title {
       margin-right: 4px;
@@ -134,7 +142,7 @@
 
   &.alert-banner {
     .close-button {
-      top: 8px;
+      top: 6px;
     }
   }
 

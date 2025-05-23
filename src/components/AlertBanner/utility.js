@@ -6,6 +6,7 @@ import {
   getDiffMonths,
   getHighRiskMMEThreshold,
   isEmptyArray,
+  deleteFHIRResourcesByType,
 } from "../../helpers/utility";
 
 export const HIGH_RISK_MME_THRESHOLD = getHighRiskMMEThreshold();
@@ -17,11 +18,14 @@ export const COUNSELING_ALERT_TYPE = "counseling";
 export const alertProps = {
   [NALOXONE_ALERT_TYPE]: {
     foldedTitle: "Naloxone - any dose",
-    expandedTitle: "Naloxone is recommended for every patient receiving opioids. Please verify access annually.",
+    expandedTitle:
+      "Naloxone is recommended for every patient receiving opioids. Please verify access annually.",
     foldedText: "Access never verified. Click here.",
-    expandedText_aboutdue: "This alert should be acknowledged by {date}.  Please verify access and acknowledge.",
+    expandedText_aboutdue:
+      "This alert should be acknowledged by {date}.  Please verify access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
-    expandedText_acknowledged: "This alert should next be acknowledged after {date}.",
+    expandedText_acknowledged:
+      "This alert should next be acknowledged after {date}.",
     alertConceptCode: "cosri_naloxone_alert",
     acknowledgedConceptCode: "cosri_naloxone_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
@@ -30,17 +34,21 @@ export const alertProps = {
     foldedTitle: `Naloxone ≥ ${HIGH_RISK_MME_THRESHOLD} MME`,
     expandedTitle: `Patient's MME is greater than ${HIGH_RISK_MME_THRESHOLD} so higher risk of overdose. Please verify naloxone access.`,
     foldedText: "Access never verified. Click here.",
-    expandedText_aboutdue: "This alert should be acknowledged by {date}.  Please verify access and acknowledge.",
+    expandedText_aboutdue:
+      "This alert should be acknowledged by {date}.  Please verify access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
-    expandedText_acknowledged: "This alert should next be acknowledged after {date}.",
+    expandedText_acknowledged:
+      "This alert should next be acknowledged after {date}.",
     alertConceptCode: "cosri_high_risk_mme_alert",
     acknowledgedConceptCode: "cosri_high_risk_mme_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
   [COUNSELING_ALERT_TYPE]: {
     foldedTitle: "Naloxone recommendation",
-    expandedTitle: "Naloxone is recommended for every patient receiving opioids.  Consider counseling.",
-    expandedTitle_acknowledged: "Naloxone is recommended for every patient receiving opioids.  Counseled in past.",
+    expandedTitle:
+      "Naloxone is recommended for every patient receiving opioids.  Consider counseling.",
+    expandedTitle_acknowledged:
+      "Naloxone is recommended for every patient receiving opioids.  Counseled in past.",
     foldedText: "No opioids currently dispensed. Click here if counseling.",
     expandedText_due: "Click here if Naloxone access verified, for any reason.",
     alertConceptCode: "cosri_naloxone_counseling_alert",
@@ -53,7 +61,7 @@ export const getAlertType = (summaryData) => {
   if (hasHighRiskMME(summaryData)) return HIGH_RISK_MME_ALERT_TYPE;
   if (hasActiveOpioidMed(summaryData)) return NALOXONE_ALERT_TYPE;
   return COUNSELING_ALERT_TYPE;
-}
+};
 
 export const shouldDisplayAlert = (alertType, summaryData) => {
   if (alertType === HIGH_RISK_MME_ALERT_TYPE) {
@@ -61,7 +69,7 @@ export const shouldDisplayAlert = (alertType, summaryData) => {
   }
   if (alertType === NALOXONE_ALERT_TYPE) return hasActiveOpioidMed(summaryData);
   return false;
-}
+};
 export function hasMMEData(summaryData) {
   return (
     !isEmptyArray(summaryData) && summaryData.find((item) => item.MMEValue > 0)
@@ -155,8 +163,15 @@ export const getMostRecentCommunicationRequestByEndDateFromBundle = (
 };
 
 export const getCommunicationPayload = (params = {}, crId) => {
-  const { patient, noteText, acknowledgedConceptCode, codeSystem, foldedTitle, id } =
-    params;
+  const {
+    patient,
+    noteText,
+    sentDate,
+    acknowledgedConceptCode,
+    codeSystem,
+    foldedTitle,
+    id,
+  } = params;
   return {
     resourceType: "Communication",
     id: id ? id : null,
@@ -176,7 +191,7 @@ export const getCommunicationPayload = (params = {}, crId) => {
       },
     ],
     note: noteText ? [{ text: noteText }] : null,
-    sent: new Date().toISOString(),
+    sent: sentDate ? sentDate : new Date().toISOString(),
     basedOn: crId
       ? [
           {
@@ -283,4 +298,86 @@ export function isNotDueYet(dateString) {
     new Date()
   );
   return diffMonths >= 0 && diffMonths <= 10;
+}
+
+export async function removeAllResources(client, patientId) {
+  return new Promise((resolve, reject) => {
+    Promise.allSettled([
+      deleteFHIRResourcesByType("Communication", client, patientId),
+      deleteFHIRResourcesByType("CommunicationRequest", client, patientId),
+    ])
+      .then((results) => {
+        if (results[0].status === "rejected") {
+          reject("Unable to remove all Communication resources");
+          return;
+        }
+        if (results[1].status === "rejected") {
+          reject("Unable to remove all CommunicationRequest resources");
+          return;
+        }
+        resolve(results);
+      })
+      .catch((e) => reject(e));
+  });
+}
+
+export async function createComms(client, params = {}, crId, cId) {
+  if (!client) return;
+  const communicationRequestPayLoad = getCommunicationRequestPayload({
+    ...params,
+    id: crId,
+  });
+  const crMethod = crId ? "update" : "create";
+  return new Promise((resolve, reject) => {
+    client[crMethod](communicationRequestPayLoad)
+      .then((result) => {
+        console.log("communicationRequest created ", result);
+        if (result && result.id) {
+          const cMethod = cId ? "update" : "create";
+          const communicationPayload = getCommunicationPayload(
+            {
+              ...params,
+              id: cId
+            },
+            result.id
+          );
+          client[cMethod](communicationPayload)
+            .then((result) => {
+              console.log("Communication created result ", result);
+              if (result && result.id) {
+                resolve(result);
+              } else reject("Unable to create Communication resource.");
+            })
+            .catch((e) => reject(e));
+        } else {
+          reject("Unable to create CommunicationRequest resource.");
+        }
+      })
+      .catch((e) => reject(e));
+  });
+}
+
+export async function resetComms(client, patientId, params, crId, cId) {
+  return new Promise((resolve, reject) => {
+    Promise.allSettled([
+    //  removeAllResources(client, patientId),
+      createComms(client, params, crId, cId),
+    ])
+      .then((results) => {
+        if (results[0].status === "rejected") {
+          reject("Error creating resources.");
+          return;
+        }
+        // if (results[1].status === "rejected") {
+        //   reject(
+        //     results[1].reason
+        //       ? results[1].reason
+        //       : "Error creating new resources"
+        //   );
+        //   return;
+        // }
+        resolve(results);
+      })
+      .catch((e) => reject(e));
+  });
 }

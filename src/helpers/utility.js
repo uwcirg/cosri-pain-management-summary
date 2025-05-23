@@ -795,3 +795,19 @@ export function getHighRiskMMEThreshold() {
   if (envThreshold) return envThreshold;
   return 50;
 }
+
+export async function deleteFHIRResourcesByType(type, client, patientId) {
+  if (!type || !client || !patientId) return;
+  const results = await client.request(
+    `${type}?patient=${patientId}&_count=1000`
+  );
+  if (results && !isEmptyArray(results.entry)) {
+    results.entry.forEach((item) => {
+      const resource = item.resource;
+      const resourceId = resource?.id;
+      if (resourceId) {
+        (async() => await client.delete(`${type}/${resourceId}`))();
+      }
+    });
+  }
+}
