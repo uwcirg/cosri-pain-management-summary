@@ -56,7 +56,6 @@ export default function AlertBanner({ type, summaryData }) {
     status: null,
     dueDate: null,
     lastAcknowledgedDate: null,
-    expiredAsOfDate: null,
     error: null,
   });
   const urlParams = new URLSearchParams(window.location.search);
@@ -164,9 +163,6 @@ export default function AlertBanner({ type, summaryData }) {
         const crEndDate = getEndDateFromCommunicationRequest(
           currentCommunicationRequest
         );
-        const expiredAsOfDate = isOverDue(lastAcknowledgedDate)
-          ? addMonthsToDate(lastAcknowledgedDate, 12)
-          : crEndDate;
 
         // acknowledged and alert not due yet
         if (isNotDue) {
@@ -229,7 +225,6 @@ export default function AlertBanner({ type, summaryData }) {
                 expanded: shouldShowAlert,
                 lastAcknowledgedDate: lastAcknowledgedDate,
                 dueDate: getEndDateFromCommunicationRequest(result),
-                expiredAsOfDate: expiredAsOfDate,
                 currentCommunication: currentCommunication,
                 currentCommunicationRequest: result,
               });
@@ -250,7 +245,6 @@ export default function AlertBanner({ type, summaryData }) {
             expanded: shouldShowAlert,
             lastAcknowledgedDate: lastAcknowledgedDate,
             dueDate: crEndDate,
-            expiredAsOfDate: expiredAsOfDate,
             currentCommunication: currentCommunication,
             currentCommunicationRequest: currentCommunicationRequest,
           });
@@ -299,7 +293,7 @@ export default function AlertBanner({ type, summaryData }) {
           getDisplayDate(contextState.dueDate)
         );
       }
-      return currentAlertProps.expandedText_aboutdue ?? defaultText;
+      return currentAlertProps.expandedText_due ?? defaultText;
     }
     return currentAlertProps.expandedText_due ?? defaultText;
   };
@@ -381,7 +375,7 @@ export default function AlertBanner({ type, summaryData }) {
           borderTop: "1px solid #ececec",
         }}
       >
-        <h4>FOR TESTING ONLY</h4>
+        <h4>FOR TESTING ( development only ) </h4>
         <div className="small flex flex-start">
           <span>Current MME value</span>{" "}
           <input
@@ -428,7 +422,7 @@ export default function AlertBanner({ type, summaryData }) {
                   sentDate: inputVal,
                   startDate: inputVal,
                   endDate: addMonthsToDate(inputVal, 12),
-                  noteText: "user=test",
+                  noteText: "user="+(userId?userId:"test"),
                   status: "completed",
                 },
                 contextState.currentCommunicationRequest?.id,
