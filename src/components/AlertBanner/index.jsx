@@ -383,7 +383,7 @@ export default function AlertBanner({ type, summaryData }) {
       >
         <h4>For debugging</h4>
         <div className="small flex flex-start">
-          <span>MME value</span>{" "}
+          <span>Current MME value</span>{" "}
           <input
             type="text"
             aria-label="MME value"
