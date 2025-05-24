@@ -7,14 +7,18 @@ import {
 import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
 import {
+  getDateObjectInLocalDateTime,
   getDiffDays,
+  getDiffMonths,
   getEnvConfidentialAPIURL,
   getEnvSystemType,
+  getHighRiskMMEThreshold,
   isEmptyArray,
   saveData,
   writeToLog,
 } from "../../helpers/utility";
 import { getEnv, ENV_VAR_PREFIX } from "../../utils/envConfig";
+import { sum } from "d3-array";
 
 let uuid = 0;
 
@@ -599,6 +603,12 @@ export function getProcessedAlerts(sectionFlags, logParams) {
     (item, index, thisRef) =>
       thisRef.findIndex((t) => t.text === item.text) === index
   );
+}
+
+export function getDailyMMEData(mmeData) {
+  if (!mmeData) return null;
+  if (!mmeData.default) return null;
+  return mmeData.default["data"];
 }
 
 export function getProcessedStatsData(statsConfig, summaryData) {

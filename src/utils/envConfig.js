@@ -13,9 +13,9 @@ export async function fetchEnvData() {
     const response = await fetch(url).catch((e) => {
       console.log(e);
     });
-    if (!response.ok) {
+    if (!response?.ok) {
       console.log(
-        `Error fetching env.json. Rsponse status: ${response.status}`
+        `Error fetching env.json. Rsponse status: ${response?.status}`
       );
       return;
     }

@@ -1,5 +1,9 @@
-import React from "react";
+import FhirClientProvider from "../context/FhirClientProvider";
 
 export default function App(props) {
-  return <div className="App">{props.children}</div>;
+  return (
+    <FhirClientProvider>
+      <div className="App">{props.children}</div>
+    </FhirClientProvider>
+  );
 }

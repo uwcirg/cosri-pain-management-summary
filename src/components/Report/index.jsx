@@ -8,6 +8,7 @@ import InfoModal from "../InfoModal";
 import SideNav from "../SideNav";
 import Spinner from "../../elements/Spinner";
 import Version from "../../elements/Version";
+import { FhirClientContext } from "../../context/FhirClientContext";
 import executeReportELM from "../../utils/executeReportELM";
 import reportSummarySections from "../../config/report_config";
 import { initTocBot, destroyTocBot } from "../../config/tocbot_config";
@@ -24,9 +25,9 @@ import * as reportUtil from "./utility";
 let progressIntervalId = 0;
 
 export default class Report extends Component {
+  static contextType = FhirClientContext;
   constructor() {
     super(...arguments);
-
     this.state = {
       summaryData: null,
       loading: true,
@@ -52,7 +53,18 @@ export default class Report extends Component {
       return;
     }
     this.initProcessProgressDisplay();
+
+    const { client, error } = this.context;
+
+    if (error) {
+      this.setState({
+        loading: false,
+        errors: [error],
+      });
+      return;
+    }
     executeReportELM(
+      client,
       this.props.patientBundle,
       this.state.collector,
       this.state.resourceTypes
