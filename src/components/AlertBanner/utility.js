@@ -1,3 +1,4 @@
+import { dateFormat } from "../../helpers/formatit";
 import {
   addMonthsToDate,
   getDateObjectInLocalDateTime,
@@ -7,6 +8,7 @@ import {
   getHighRiskMMEThreshold,
   isEmptyArray,
   deleteFHIRResourcesByType,
+  getArrayOfDatesFromToday,
 } from "../../helpers/utility";
 
 export const HIGH_RISK_MME_THRESHOLD = getHighRiskMMEThreshold();
@@ -308,11 +310,15 @@ export async function removeAllResources(client, patientId) {
     ])
       .then((results) => {
         if (results[0].status === "rejected") {
-          reject("Unable to remove all Communication resources. See console for detail.");
+          reject(
+            "Unable to remove all Communication resources. See console for detail."
+          );
           return;
         }
         if (results[1].status === "rejected") {
-          reject("Unable to remove all CommunicationRequest resources. See console for detail.");
+          reject(
+            "Unable to remove all CommunicationRequest resources. See console for detail."
+          );
           return;
         }
         resolve(results);
@@ -337,7 +343,7 @@ export async function createComms(client, params = {}, crId, cId) {
           const communicationPayload = getCommunicationPayload(
             {
               ...params,
-              id: cId
+              id: cId,
             },
             result.id
           );
@@ -359,25 +365,23 @@ export async function createComms(client, params = {}, crId, cId) {
 
 export async function resetComms(client, patientId, params, crId, cId) {
   return new Promise((resolve, reject) => {
-    Promise.allSettled([
-    //  removeAllResources(client, patientId),
-      createComms(client, params, crId, cId),
-    ])
+    Promise.allSettled([createComms(client, params, crId, cId)])
       .then((results) => {
         if (results[0].status === "rejected") {
           reject("Error creating resources.");
           return;
         }
-        // if (results[1].status === "rejected") {
-        //   reject(
-        //     results[1].reason
-        //       ? results[1].reason
-        //       : "Error creating new resources"
-        //   );
-        //   return;
-        // }
         resolve(results);
       })
       .catch((e) => reject(e));
   });
+}
+
+export function getDebugMMEData() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const debugValue = urlParams.get("mmeValue") ?? 0;
+  return getArrayOfDatesFromToday(5).map((item) => ({
+    date: dateFormat("", item, "YYYY-MM-DD"),
+    MMEValue: debugValue,
+  }));
 }

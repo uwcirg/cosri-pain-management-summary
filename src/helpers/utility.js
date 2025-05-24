@@ -72,6 +72,22 @@ export function addMonthsToDate(date, numMonths) {
   if (!date) return moment().add(numMonths, "month").toISOString();
   return moment(date).add(numMonths, "month").toISOString();
 }
+
+export function getArrayOfDatesFromToday(numberOfDays = 0) {
+  const today = new Date();
+  const datesArray = [];
+
+  for (let i = 0; i < numberOfDays; i++) {
+    const currentDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + i
+    );
+    datesArray.push(currentDate);
+  }
+
+  return datesArray;
+}
 /*
  * check if an image has completed loading
  */
@@ -801,7 +817,7 @@ export async function deleteFHIRResourcesByType(type, client, patientId) {
   const results = await client
     .request({
       url: `${type}?patient=${patientId}&_count=1000`,
-      headers: noCacheHeader
+      headers: noCacheHeader,
     })
     .catch((e) => {
       throw new Error(e);

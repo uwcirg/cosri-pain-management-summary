@@ -16,6 +16,7 @@ import {
   getAlertType,
   getCommunicationPayload,
   getCommunicationRequestPayload,
+  getDebugMMEData,
   getDisplayDate,
   getEndDateFromCommunicationRequest,
   getReferencedCRIdsFromBundle,
@@ -58,7 +59,10 @@ export default function AlertBanner({ type, summaryData }) {
     expiredAsOfDate: null,
     error: null,
   });
-  const alertType = type ?? getAlertType(summaryData);
+  const urlParams = new URLSearchParams(window.location.search);
+  const isDebug = !!urlParams.get("debugging");
+  const alertType =
+    type ?? getAlertType(isDebug ? getDebugMMEData() : summaryData);
   const currentAlertProps = alertProps[alertType];
   const userId = getUserIdFromAccessToken();
   const dataParams = {
@@ -374,11 +378,30 @@ export default function AlertBanner({ type, summaryData }) {
         style={{
           padding: "8px 16px",
           marginBottom: "16px",
-          borderTop: "1px solid #ececec"
+          borderTop: "1px solid #ececec",
         }}
       >
         <h4>For debugging</h4>
-        <div className="small flex flex-start" style={{ marginTop: "8px" }}>
+        <div className="small flex flex-start">
+          <span>MME value</span>{" "}
+          <input
+            type="text"
+            aria-label="MME value"
+            size="4"
+            id="debugMMEValue"
+          ></input>
+          <button
+            onClick={() =>
+              (window.location =
+                window.location.origin +
+                "?debugging=true&mmeValue=" +
+                document.querySelector("#debugMMEValue").value)
+            }
+          >
+            Update
+          </button>
+        </div>
+        <div className="small flex flex-start" style={{ marginTop: "12px" }}>
           Reset acknowledged date to{" "}
           <input
             id="customSentDate"
@@ -414,7 +437,7 @@ export default function AlertBanner({ type, summaryData }) {
                 .then((results) => {
                   if (results) {
                     e.target.innerText = "Done. Reloading...";
-                    setTimeout(() => window.location.reload(), 350);
+                    setTimeout(() => window.location = window.location.origin, 350);
                     return;
                   }
                   e.target.innerText = "Update";
@@ -471,6 +494,8 @@ export default function AlertBanner({ type, summaryData }) {
       </div>
     );
   };
+
+  console.log("data ", summaryData);
 
   if (contextState.loading) {
     return <div className="banner alert-banner">Loading ...</div>;
