@@ -381,7 +381,7 @@ export default function AlertBanner({ type, summaryData }) {
           borderTop: "1px solid #ececec",
         }}
       >
-        <h4>For debugging</h4>
+        <h4>FOR TESTING ONLY</h4>
         <div className="small flex flex-start">
           <span>Current MME value</span>{" "}
           <input
