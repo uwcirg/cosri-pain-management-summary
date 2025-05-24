@@ -451,7 +451,7 @@ export default function AlertBanner({ type, summaryData }) {
                   if (results) {
                     if (radioElement)
                       radioElement.innerText = "Done. Reloading...";
-                    setTimeout(() => window.location.reload(), 250);
+                    setTimeout(() => window.location.reload(), 350);
                     return;
                   }
                   if (radioElement) radioElement.innerText = originalText;

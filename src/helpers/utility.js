@@ -799,26 +799,27 @@ export function getHighRiskMMEThreshold() {
 export async function deleteFHIRResourcesByType(type, client, patientId) {
   if (!type || !client || !patientId) return;
   const results = await client
-    .request(`${type}?patient=${patientId}&_count=1000`)
+    .request({
+      url: `${type}?patient=${patientId}&_count=1000`,
+      headers: noCacheHeader
+    })
     .catch((e) => {
       throw new Error(e);
     });
   if (results && !isEmptyArray(results.entry)) {
-    results.entry.forEach((item) => {
-      const resource = item.resource;
-      const resourceId = resource?.id;
-      if (resourceId) {
-        try {
-          (async () =>
-            await client.delete(`${type}/${resourceId}`).catch((e) => {
-              console.log(e);
-              throw new Error("Unable to remove resource.");
-            }))();
-        } catch (e) {
-          console.log(e);
-          throw new Error(e);
-        }
-      }
-    });
+    return Promise.all(
+      results.entry.map((item) => {
+        const resource = item.resource;
+        const resourceId = resource?.id;
+        return client.delete(`${type}/${resourceId}`);
+      })
+    )
+      .then((results) => {
+        if (!results) throw new Error("no results returned.");
+      })
+      .catch((e) => {
+        console.log(e);
+        throw new Error(e);
+      });
   }
 }

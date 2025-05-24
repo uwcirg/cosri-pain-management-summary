@@ -308,11 +308,11 @@ export async function removeAllResources(client, patientId) {
     ])
       .then((results) => {
         if (results[0].status === "rejected") {
-          reject("Unable to remove all Communication resources");
+          reject("Unable to remove all Communication resources. See console for detail.");
           return;
         }
         if (results[1].status === "rejected") {
-          reject("Unable to remove all CommunicationRequest resources");
+          reject("Unable to remove all CommunicationRequest resources. See console for detail.");
           return;
         }
         resolve(results);
