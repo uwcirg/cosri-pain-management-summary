@@ -11,24 +11,7 @@ import {
   isEmptyArray,
   noCacheHeader,
 } from "../../helpers/utility";
-import {
-  alertProps,
-  getAlertType,
-  getCommunicationPayload,
-  getCommunicationRequestPayload,
-  getDebugMMEData,
-  getDisplayDate,
-  getEndDateFromCommunicationRequest,
-  getReferencedCRIdsFromBundle,
-  getMostRecentCommunicationBySentFromBundle,
-  getMostRecentCommunicationRequestByEndDateFromBundle,
-  isAboutDue,
-  isOverDue,
-  isNotDueYet,
-  removeAllResources,
-  resetComms,
-  shouldDisplayAlert,
-} from "./utility";
+import * as alertUtil from "./utility.js";
 
 export default function AlertBanner({ type, summaryData }) {
   const context = useContext(FhirClientContext);
@@ -52,17 +35,20 @@ export default function AlertBanner({ type, summaryData }) {
     savingInProgress: false,
     currentCommunicationRequest: null,
     currentCommunication: null,
-    // possible values : due, completed
+    // possible values : due, pending, completed
     status: null,
     dueDate: null,
     lastAcknowledgedDate: null,
     error: null,
   });
-  const urlParams = new URLSearchParams(window.location.search);
-  const isDebug = !!urlParams.get("debugging");
-  const alertType =
-    type ?? getAlertType(isDebug ? getDebugMMEData() : summaryData);
-  const currentAlertProps = alertProps[alertType];
+
+  const isDebugging = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return !!urlParams.get("debugging");
+  };
+  const dataToUse = isDebugging() ? alertUtil.getDebugMMEData() : summaryData;
+  const alertType = alertUtil.getAlertType(dataToUse);
+  const currentAlertProps = alertUtil.alertProps[alertType];
   const userId = getUserIdFromAccessToken();
   const dataParams = {
     userId: userId,
@@ -83,7 +69,7 @@ export default function AlertBanner({ type, summaryData }) {
     });
     client
       .create(
-        getCommunicationPayload(
+        alertUtil.getCommunicationPayload(
           {
             ...dataParams,
             noteText: userId ? `user=${userId}` : "",
@@ -110,7 +96,7 @@ export default function AlertBanner({ type, summaryData }) {
           }
           setTimeout(() => {
             contextStateDispatch({
-              lastAcknowledgedDate: getDisplayDate(result.sent),
+              lastAcknowledgedDate: alertUtil.getDisplayDate(result.sent),
               savingInProgress: false,
               expanded: false,
               currentCommunication: result,
@@ -133,7 +119,7 @@ export default function AlertBanner({ type, summaryData }) {
       });
   };
 
-  const shouldShowAlert = shouldDisplayAlert(alertType, summaryData);
+  const shouldShowAlert = alertUtil.shouldDisplayAlert(alertType, dataToUse);
 
   useEffect(() => {
     if (!client || !patient || !contextState.loading) return;
@@ -152,15 +138,15 @@ export default function AlertBanner({ type, summaryData }) {
         const commResults = results[0].value;
         const crResults = results[1].value;
         const currentCommunication =
-          getMostRecentCommunicationBySentFromBundle(commResults);
+          alertUtil.getMostRecentCommunicationBySentFromBundle(commResults);
         const lastAcknowledgedDate = currentCommunication?.sent;
         const currentCommunicationRequest =
-          getMostRecentCommunicationRequestByEndDateFromBundle(
+          alertUtil.getMostRecentCommunicationRequestByEndDateFromBundle(
             crResults,
-            getReferencedCRIdsFromBundle(commResults)
+            alertUtil.getReferencedCRIdsFromBundle(commResults)
           );
-        const isNotDue = isNotDueYet(lastAcknowledgedDate);
-        const crEndDate = getEndDateFromCommunicationRequest(
+        const isNotDue = alertUtil.isNotDueYet(lastAcknowledgedDate);
+        const crEndDate = alertUtil.getEndDateFromCommunicationRequest(
           currentCommunicationRequest
         );
 
@@ -176,25 +162,25 @@ export default function AlertBanner({ type, summaryData }) {
           return;
         }
 
-        const shouldCreateCR = !crEndDate || isOverDue(crEndDate);
+        const shouldCreateCR = !crEndDate || alertUtil.isOverDue(crEndDate);
 
         if (shouldCreateCR) {
           // existing CR expired, create new CR
-          const crStartDate = isAboutDue(lastAcknowledgedDate)
+          const crStartDate = alertUtil.isAboutDue(lastAcknowledgedDate)
             ? lastAcknowledgedDate
             : new Date().toISOString();
-          const crEndDate = isAboutDue(lastAcknowledgedDate)
+          const crEndDate = alertUtil.isAboutDue(lastAcknowledgedDate)
             ? addMonthsToDate(lastAcknowledgedDate, 12)
             : addMonthsToDate(null, 12);
           client
             .create(
-              getCommunicationRequestPayload({
+              alertUtil.getCommunicationRequestPayload({
                 ...dataParams,
                 startDate: crStartDate,
                 endDate: crEndDate,
-                noteText: isAboutDue(lastAcknowledgedDate)
+                noteText: alertUtil.isAboutDue(lastAcknowledgedDate)
                   ? `Acknowlegement is due in 2 months. Last acknowledged on ${lastAcknowledgedDate}`
-                  : isOverDue(lastAcknowledgedDate)
+                  : alertUtil.isOverDue(lastAcknowledgedDate)
                   ? `Last acknowledgement was overdue. Last acknowledged on ${lastAcknowledgedDate}`
                   : null,
               })
@@ -221,10 +207,12 @@ export default function AlertBanner({ type, summaryData }) {
               }
               contextStateDispatch({
                 loading: false,
-                status: "due",
+                status: alertUtil.isAboutDue(lastAcknowledgedDate)
+                  ? "pending"
+                  : "due",
                 expanded: shouldShowAlert,
                 lastAcknowledgedDate: lastAcknowledgedDate,
-                dueDate: getEndDateFromCommunicationRequest(result),
+                dueDate: alertUtil.getEndDateFromCommunicationRequest(result),
                 currentCommunication: currentCommunication,
                 currentCommunicationRequest: result,
               });
@@ -241,7 +229,9 @@ export default function AlertBanner({ type, summaryData }) {
           // current CR has not expired yet
           contextStateDispatch({
             loading: false,
-            status: "due",
+            status: alertUtil.isAboutDue(lastAcknowledgedDate)
+              ? "pending"
+              : "due",
             expanded: shouldShowAlert,
             lastAcknowledgedDate: lastAcknowledgedDate,
             dueDate: crEndDate,
@@ -277,7 +267,9 @@ export default function AlertBanner({ type, summaryData }) {
         : "";
     //exampe: user=test
     const arrText = noteText.split("=");
-    const acknowledgedDate = getDisplayDate(contextState.lastAcknowledgedDate);
+    const acknowledgedDate = alertUtil.getDisplayDate(
+      contextState.lastAcknowledgedDate
+    );
     const acknowledgedUser = arrText[1] ? arrText[1] : "";
     return `last acknowledged on ${acknowledgedDate} ${
       acknowledgedUser ? " by " + acknowledgedUser : ""
@@ -286,11 +278,11 @@ export default function AlertBanner({ type, summaryData }) {
 
   const getDueExpandedText = () => {
     const defaultText = "Please verify access and acknowledge this alert.";
-    if (isAboutDue(contextState.lastAcknowledgedDate)) {
-      if (currentAlertProps.expandedText_aboutdue) {
+    if (contextState.status === "pending") {
+      if (!!currentAlertProps.expandedText_aboutdue) {
         return currentAlertProps.expandedText_aboutdue.replace(
           "{date}",
-          getDisplayDate(contextState.dueDate)
+          alertUtil.getDisplayDate(contextState.dueDate)
         );
       }
       return currentAlertProps.expandedText_due ?? defaultText;
@@ -299,9 +291,8 @@ export default function AlertBanner({ type, summaryData }) {
   };
 
   const getFoldedView = () => {
-    const soonDue = isAboutDue(contextState.lastAcknowledgedDate);
     const shouldShowAcknowledgement =
-      soonDue || contextState.lastAcknowledgedDate;
+      contextState.status === "pending" || contextState.lastAcknowledgedDate;
     return (
       <div className="flex flex-start">
         <span>
@@ -310,20 +301,12 @@ export default function AlertBanner({ type, summaryData }) {
         {contextState.savingInProgress && (
           <span className="note">Saving ...</span>
         )}
-        {!contextState.savingInProgress &&
-          contextState.status === "due" &&
-          shouldShowAcknowledgement && (
-            <span className="note">{getAcknowledgedText()}</span>
-          )}
-        {!contextState.savingInProgress &&
-          contextState.status === "due" &&
-          !shouldShowAcknowledgement && (
-            <span className="info-text">{currentAlertProps.foldedText}</span>
-          )}
-        {!contextState.savingInProgress &&
-          contextState.status === "completed" && (
-            <span className="note">{getAcknowledgedText()}</span>
-          )}
+        {!contextState.savingInProgress && shouldShowAcknowledgement && (
+          <span className="note">{getAcknowledgedText()}</span>
+        )}
+        {!contextState.savingInProgress && !shouldShowAcknowledgement && (
+          <span className="info-text">{currentAlertProps.foldedText}</span>
+        )}
       </div>
     );
   };
@@ -337,7 +320,7 @@ export default function AlertBanner({ type, summaryData }) {
         <div className="side-note muted-text">
           {displayText.replace(
             "{date}",
-            getDisplayDate(
+            alertUtil.getDisplayDate(
               addMonthsToDate(contextState.lastAcknowledgedDate, 10)
             )
           )}
@@ -367,6 +350,7 @@ export default function AlertBanner({ type, summaryData }) {
   };
 
   const renderDebugView = () => {
+    const currentMME = alertUtil.getCurrentMME(dataToUse);
     return (
       <div
         style={{
@@ -376,26 +360,39 @@ export default function AlertBanner({ type, summaryData }) {
         }}
       >
         <h4>FOR TESTING ( development only ) </h4>
-        <div className="small flex flex-start">
-          <span>Current MME value</span>{" "}
-          <input
-            type="text"
-            aria-label="MME value"
-            size="4"
-            id="debugMMEValue"
-          ></input>
-          <button
-            onClick={() =>
-              (window.location =
-                window.location.origin +
-                "?debugging=true&mmeValue=" +
-                document.querySelector("#debugMMEValue").value)
-            }
-          >
-            Update
-          </button>
+        <div className="small">
+          <div style={{ marginBottom: "8px" }}>
+            Current MME value:{" "}
+            <strong
+              className={`${
+                currentMME >= 50 ? "text-warning" : "text-success"
+              }`}
+            >{`${currentMME}`}</strong>
+          </div>
+          <div className="small flex flex-start">
+            <div>
+              Change to{" "}
+              <input
+                type="text"
+                aria-label="MME value"
+                size="4"
+                id="debugMMEValue"
+              ></input>
+            </div>
+            <button
+              className="btn"
+              onClick={() =>
+                (window.location =
+                  window.location.origin +
+                  "?debugging=true&mmeValue=" +
+                  document.querySelector("#debugMMEValue").value)
+              }
+            >
+              Update
+            </button>
+          </div>
         </div>
-        <div className="small flex flex-start" style={{ marginTop: "12px" }}>
+        <div className="small flex flex-start" style={{ marginTop: "20px" }}>
           Reset acknowledged date to{" "}
           <input
             id="customSentDate"
@@ -414,24 +411,25 @@ export default function AlertBanner({ type, summaryData }) {
               e.stopPropagation();
               const inputVal = document.querySelector("#customSentDate").value;
               console.log("input val ", inputVal);
-              resetComms(
-                client,
-                patient?.id,
-                {
-                  ...dataParams,
-                  sentDate: inputVal,
-                  startDate: inputVal,
-                  endDate: addMonthsToDate(inputVal, 12),
-                  noteText: "user="+(userId?userId:"test"),
-                  status: "completed",
-                },
-                contextState.currentCommunicationRequest?.id,
-                contextState.currentCommunication?.id
-              )
+              alertUtil
+                .resetComms(
+                  client,
+                  patient?.id,
+                  {
+                    ...dataParams,
+                    sentDate: inputVal,
+                    startDate: inputVal,
+                    endDate: addMonthsToDate(inputVal, 12),
+                    noteText: "user=" + (userId ? userId : "test"),
+                    status: "completed",
+                  },
+                  contextState.currentCommunicationRequest?.id,
+                  contextState.currentCommunication?.id
+                )
                 .then((results) => {
                   if (results) {
                     e.target.innerText = "Done. Reloading...";
-                    setTimeout(() => window.location = window.location.origin, 350);
+                    setTimeout(() => window.location.reload(), 350);
                     return;
                   }
                   e.target.innerText = "Update";
@@ -445,12 +443,11 @@ export default function AlertBanner({ type, summaryData }) {
             Update
           </button>
         </div>
-        <div className="small" style={{ marginTop: "8px" }}>
-          <strong>OR</strong>
-        </div>
+        <br />
+        <hr />
         <div
           className="flex flex-start small radio-container"
-          style={{ marginTop: "8px" }}
+          style={{ marginTop: "12px" }}
         >
           <input
             type="radio"
@@ -463,12 +460,16 @@ export default function AlertBanner({ type, summaryData }) {
                 originalText = radioElement.innerText;
                 radioElement.innerText = "Please wait....";
               }
-              removeAllResources(client, patient?.id)
+              alertUtil
+                .removeAllResources(client, patient?.id)
                 .then((results) => {
                   if (results) {
                     if (radioElement)
                       radioElement.innerText = "Done. Reloading...";
-                    setTimeout(() => window.location.reload(), 350);
+                    setTimeout(
+                      () => (window.location = window.location.origin),
+                      350
+                    );
                     return;
                   }
                   if (radioElement) radioElement.innerText = originalText;
@@ -481,7 +482,7 @@ export default function AlertBanner({ type, summaryData }) {
             aria-label="delete all radio"
           ></input>
           <span className="radio-label">
-            Reset all (This will remove all Communication & CommunicationRequest
+            Reset all (This will clear all Communication & CommunicationRequest
             resources for this patient)
           </span>
         </div>
@@ -489,7 +490,7 @@ export default function AlertBanner({ type, summaryData }) {
     );
   };
 
-  console.log("data ", summaryData);
+  console.log("data ", dataToUse);
 
   if (contextState.loading) {
     return <div className="banner alert-banner">Loading ...</div>;

@@ -77,6 +77,16 @@ export function hasMMEData(summaryData) {
     !isEmptyArray(summaryData) && summaryData.find((item) => item.MMEValue > 0)
   );
 }
+export function getCurrentMME(summaryData) {
+  if (!summaryData) return 0;
+  let todayObj = new Date();
+  let today = dateFormat("", todayObj, "YYYY-MM-DD");
+  const match = summaryData.find(
+    (item) => dateFormat("", item.date, "YYYY-MM-DD") === today
+  );
+  if (match) return match.MMEValue ? match.MMEValue : 0;
+  return 0;
+}
 export const getDisplayDate = (date) =>
   date
     ? getDisplayDateFromISOString(date, {
@@ -379,7 +389,8 @@ export async function resetComms(client, patientId, params, crId, cId) {
 
 export function getDebugMMEData() {
   const urlParams = new URLSearchParams(window.location.search);
-  const debugValue = urlParams.get("mmeValue") ?? 0;
+  const mmeValue = parseInt(urlParams.get("mmeValue"));
+  const debugValue = !isNaN(mmeValue) ? mmeValue: 0;
   return getArrayOfDatesFromToday(5).map((item) => ({
     date: dateFormat("", item, "YYYY-MM-DD"),
     MMEValue: debugValue,
