@@ -1,11 +1,13 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { dateFormat } from "../../helpers/formatit";
 import { addMonthsToDate, getEnvSystemType } from "../../helpers/utility";
 import * as alertUtil from "./utility.js";
 
 const Debug = ({ summaryData, params }) => {
+  let keysPressed = {};
   const currentMME = alertUtil.getCurrentMME(summaryData);
+  const parentRef = useRef();
   const mmeInputRef = useRef();
   const dateInputRef = useRef();
   const radioParentRef = useRef();
@@ -158,6 +160,33 @@ const Debug = ({ summaryData, params }) => {
     );
   };
 
+  const handleKeyDown = (event) => {
+    event.preventDefault;
+    keysPressed[event.key.toLowerCase()] = true;
+    if (keysPressed["control"] && keysPressed["shift"] && keysPressed["a"]) {
+      parentRef.current.style.display = "block";
+    }
+    if (keysPressed["control"] && keysPressed["shift"] && keysPressed["h"]) {
+      parentRef.current.style.display = "none";
+    }
+  };
+
+  const handleKeyUp = (event) => {
+    event.preventDefault;
+    delete keysPressed[event.key.toLowerCase()];
+  };
+
+  const removeEventListeners = () => {
+    window.removeEventListener("keydown", handleKeyDown);
+    window.removeEventListener("keyup", handleKeyUp);
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => removeEventListeners();
+  }, []);
+
   if (getEnvSystemType() !== "development") return null;
   return (
     <div
@@ -165,6 +194,7 @@ const Debug = ({ summaryData, params }) => {
         padding: "8px 16px",
         borderTop: "1px solid #ececec",
       }}
+      ref={parentRef}
     >
       <div className="input flex flex-end">
         <label
@@ -175,8 +205,8 @@ const Debug = ({ summaryData, params }) => {
           <input
             type="checkbox"
             aria-label="hidden checkbox"
-            onClick={handleInputClick}
-            checked={show}
+            defaultChecked={show}
+            onChange={handleInputClick}
           />
           <span className="checkmark"></span>
         </label>
