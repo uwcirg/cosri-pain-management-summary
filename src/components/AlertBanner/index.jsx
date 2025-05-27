@@ -1,4 +1,5 @@
 import { useEffect, useContext, useReducer } from "react";
+import moment from "moment";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ChevronDownIcon from "../../icons/ChevronDownIcon";
@@ -139,12 +140,12 @@ export default function AlertBanner({ type, summaryData }) {
         const crResults = results[1].value;
         const currentCommunication =
           alertUtil.getMostRecentCommunicationBySentFromBundle(commResults);
-        const lastAcknowledgedDate = currentCommunication?.sent;
         const currentCommunicationRequest =
           alertUtil.getMostRecentCommunicationRequestByEndDateFromBundle(
             crResults,
             alertUtil.getReferencedCRIdsFromBundle(commResults)
           );
+        const lastAcknowledgedDate = currentCommunication?.sent;
         const isNotDue = alertUtil.isNotDueYet(lastAcknowledgedDate);
         const crEndDate = alertUtil.getEndDateFromCommunicationRequest(
           currentCommunicationRequest
@@ -171,7 +172,7 @@ export default function AlertBanner({ type, summaryData }) {
           // existing CR expired, create new CR
           const crStartDate = alertUtil.isAboutDue(lastAcknowledgedDate)
             ? lastAcknowledgedDate
-            : new Date().toISOString();
+            : moment().toISOString();
           const crEndDate = alertUtil.isAboutDue(lastAcknowledgedDate)
             ? addMonthsToDate(lastAcknowledgedDate, 12)
             : addMonthsToDate(null, 12);
@@ -182,9 +183,9 @@ export default function AlertBanner({ type, summaryData }) {
                 startDate: crStartDate,
                 endDate: crEndDate,
                 noteText: alertUtil.isAboutDue(lastAcknowledgedDate)
-                  ? `Acknowlegement is due in 2 months. Last acknowledged on ${lastAcknowledgedDate}`
+                  ? `Acknowlegement is due in 2 months. Last acknowledged on ${lastAcknowledgedDate}.`
                   : alertUtil.isOverDue(lastAcknowledgedDate)
-                  ? `Last acknowledgement was overdue. Last acknowledged on ${lastAcknowledgedDate}`
+                  ? `Last acknowledgement was overdue. Last acknowledged on ${lastAcknowledgedDate}.`
                   : null,
               })
             )

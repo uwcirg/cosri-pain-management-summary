@@ -1,3 +1,4 @@
+import moment from "moment";
 import { dateFormat } from "../../helpers/formatit";
 import {
   addMonthsToDate,
@@ -203,7 +204,7 @@ export const getCommunicationPayload = (params = {}, crId) => {
       },
     ],
     note: noteText ? [{ text: noteText }] : null,
-    sent: sentDate ? sentDate : new Date().toISOString(),
+    sent: sentDate ? sentDate : moment().toISOString(),
     basedOn: crId
       ? [
           {
@@ -249,7 +250,7 @@ export const getCommunicationRequestPayload = (params = {}) => {
       },
     ],
     occurrencePeriod: {
-      start: startDate ? startDate : new Date().toISOString(),
+      start: startDate ? startDate : moment().toISOString(),
       end: endDate ? endDate : addMonthsToDate(null, 12),
     },
     note: noteText ? [{ text: noteText }] : null,

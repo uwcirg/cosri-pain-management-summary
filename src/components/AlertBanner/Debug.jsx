@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import PropTypes from "prop-types";
+import { dateFormat } from "../../helpers/formatit";
 import { addMonthsToDate, getEnvSystemType } from "../../helpers/utility";
 import * as alertUtil from "./utility.js";
 
@@ -60,10 +61,11 @@ const Debug = ({ summaryData, params }) => {
         Reset acknowledged date to{" "}
         <input
           ref={dateInputRef}
-          type="text"
+          type="date"
           placeholder="YYYY-MM-DD"
           aria-label="acknowledged date input field"
           maxLength={10}
+          max={dateFormat("", new Date(), "YYYY-MM-DD")}
           size={12}
           onKeyUp={(e) => {
             e.preventDefault();
@@ -75,6 +77,7 @@ const Debug = ({ summaryData, params }) => {
           onClick={(e) => {
             e.stopPropagation();
             const inputVal = dateInputRef.current.value;
+            if (!inputVal) return false;
             alertUtil
               .resetComms(
                 client,
@@ -193,3 +196,8 @@ const Debug = ({ summaryData, params }) => {
 };
 
 export default Debug;
+
+Debug.propTypes = {
+  params: PropTypes.object,
+  summaryData: PropTypes.array,
+};
