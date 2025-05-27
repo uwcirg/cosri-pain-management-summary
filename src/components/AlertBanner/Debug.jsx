@@ -46,6 +46,9 @@ const Debug = ({ summaryData, params }) => {
           <button
             className="button-default button-outlined button-small"
             onClick={() => {
+              if (mmeInputRef.current.value === "") {
+                return false;
+              }
               window.location =
                 window.location.origin +
                 "?debugging=true&mmeValue=" +
@@ -200,7 +203,9 @@ const Debug = ({ summaryData, params }) => {
     >
       {show && (
         <div style={{ marginBottom: "16px" }}>
-          <h4>FOR TESTING ( development only ) </h4>
+          <h4 style={{ marginTop: "8px" }}>
+            FOR TESTING ( development only ){" "}
+          </h4>
           {renderMMEInputView()}
           {renderResetDateView()}
           <br />
@@ -208,7 +213,7 @@ const Debug = ({ summaryData, params }) => {
           {renderResetAllView()}
         </div>
       )}
-          <div>
+      <div>
         <div className="input flex flex-end">
           <label
             className="checkbox-container"

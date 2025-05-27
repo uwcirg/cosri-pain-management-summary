@@ -813,7 +813,7 @@ export function getHighRiskMMEThreshold() {
 }
 
 export async function deleteFHIRResourcesByType(type, client, patientId) {
-  if (!type || !client || !patientId) return;
+  if (!type || !client || !patientId) return null;
   const results = await client
     .request({
       url: `${type}?patient=${patientId}&_count=1000`,
@@ -838,4 +838,5 @@ export async function deleteFHIRResourcesByType(type, client, patientId) {
         throw new Error(e);
       });
   }
+  return null;
 }
