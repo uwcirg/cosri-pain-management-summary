@@ -39,17 +39,18 @@ const Debug = ({ summaryData, params }) => {
               type="number"
               aria-label="MME value"
               style={{ width: "40px" }}
+              min={0}
               ref={mmeInputRef}
             ></input>
           </div>
           <button
             className="button-default button-outlined button-small"
-            onClick={() =>
-              (window.location =
+            onClick={() => {
+              window.location =
                 window.location.origin +
                 "?debugging=true&mmeValue=" +
-                mmeInputRef.current.value)
-            }
+                mmeInputRef.current.value;
+            }}
           >
             Update
           </button>
@@ -190,27 +191,13 @@ const Debug = ({ summaryData, params }) => {
   if (getEnvSystemType() !== "development") return null;
   return (
     <div
+      className="flex flex-align-start"
       style={{
         padding: "8px 16px",
         borderTop: "1px solid #ececec",
       }}
       ref={parentRef}
     >
-      <div className="input flex flex-end">
-        <label
-          className="checkbox-container"
-          aria-label="show debugger checkbox"
-        >
-          Show alert debugger?
-          <input
-            type="checkbox"
-            aria-label="hidden checkbox"
-            defaultChecked={show}
-            onChange={handleInputClick}
-          />
-          <span className="checkmark"></span>
-        </label>
-      </div>
       {show && (
         <div style={{ marginBottom: "16px" }}>
           <h4>FOR TESTING ( development only ) </h4>
@@ -221,6 +208,29 @@ const Debug = ({ summaryData, params }) => {
           {renderResetAllView()}
         </div>
       )}
+          <div>
+        <div className="input flex flex-end">
+          <label
+            className="checkbox-container"
+            aria-label="show debugger checkbox"
+          >
+            Show alert debugger?
+            <input
+              type="checkbox"
+              aria-label="hidden checkbox"
+              defaultChecked={show}
+              onChange={handleInputClick}
+            />
+            <span className="checkmark"></span>
+          </label>
+        </div>
+        <div
+          className="flex flex-end text-muted x-small"
+          style={{ marginTop: "12px" }}
+        >
+          Ctrl + Shift + H to hide debugger
+        </div>
+      </div>
     </div>
   );
 };
