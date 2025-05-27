@@ -75,14 +75,14 @@
           color: $color-red-darker;
         }
       }
-      // &.info {
-      //   strong {
-      //     color: $link-color-dark;
-      //     svg {
-      //       color: $link-color-dark;
-      //     }
-      //   }
-      // }
+      &.info {
+        strong {
+          color: $link-color-dark;
+          svg {
+            color: $link-color-dark;
+          }
+        }
+      }
     }
     .title {
       margin-right: 4px;
