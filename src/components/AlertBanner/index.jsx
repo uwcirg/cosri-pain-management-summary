@@ -6,11 +6,11 @@ import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FhirClientContext } from "../../context/FhirClientContext";
 import {
   addMonthsToDate,
-  getEnvSystemType,
   getUserIdFromAccessToken,
   isEmptyArray,
   noCacheHeader,
 } from "../../helpers/utility";
+import Debug from "./Debug";
 import * as alertUtil from "./utility.js";
 
 export default function AlertBanner({ type, summaryData }) {
@@ -47,7 +47,7 @@ export default function AlertBanner({ type, summaryData }) {
     return !!urlParams.get("debugging");
   };
   const dataToUse = isDebugging() ? alertUtil.getDebugMMEData() : summaryData;
-  const alertType = alertUtil.getAlertType(dataToUse);
+  const alertType = type ? type : alertUtil.getAlertType(dataToUse);
   const currentAlertProps = alertUtil.alertProps[alertType];
   const userId = getUserIdFromAccessToken();
   const dataParams = {
@@ -163,6 +163,9 @@ export default function AlertBanner({ type, summaryData }) {
         }
 
         const shouldCreateCR = !crEndDate || alertUtil.isOverDue(crEndDate);
+        const currentStatus = alertUtil.isAboutDue(lastAcknowledgedDate)
+          ? "pending"
+          : "due";
 
         if (shouldCreateCR) {
           // existing CR expired, create new CR
@@ -207,9 +210,7 @@ export default function AlertBanner({ type, summaryData }) {
               }
               contextStateDispatch({
                 loading: false,
-                status: alertUtil.isAboutDue(lastAcknowledgedDate)
-                  ? "pending"
-                  : "due",
+                status: currentStatus,
                 expanded: shouldShowAlert,
                 lastAcknowledgedDate: lastAcknowledgedDate,
                 dueDate: alertUtil.getEndDateFromCommunicationRequest(result),
@@ -229,9 +230,7 @@ export default function AlertBanner({ type, summaryData }) {
           // current CR has not expired yet
           contextStateDispatch({
             loading: false,
-            status: alertUtil.isAboutDue(lastAcknowledgedDate)
-              ? "pending"
-              : "due",
+            status: currentStatus,
             expanded: shouldShowAlert,
             lastAcknowledgedDate: lastAcknowledgedDate,
             dueDate: crEndDate,
@@ -349,149 +348,6 @@ export default function AlertBanner({ type, summaryData }) {
     return <div className="error">{contextState.error}</div>;
   };
 
-  const renderDebugView = () => {
-    const currentMME = alertUtil.getCurrentMME(dataToUse);
-    return (
-      <div
-        style={{
-          padding: "8px 16px",
-          marginBottom: "16px",
-          borderTop: "1px solid #ececec",
-        }}
-      >
-        <h4>FOR TESTING ( development only ) </h4>
-        <div className="small">
-          <div style={{ marginBottom: "8px" }}>
-            Current MME value:{" "}
-            <strong
-              className={`${
-                currentMME >= 50 ? "text-warning" : "text-success"
-              }`}
-            >{`${currentMME}`}</strong>
-          </div>
-          <div className="small flex flex-start">
-            <div>
-              Change to{" "}
-              <input
-                type="text"
-                aria-label="MME value"
-                size="4"
-                id="debugMMEValue"
-              ></input>
-            </div>
-            <button
-              className="btn"
-              onClick={() =>
-                (window.location =
-                  window.location.origin +
-                  "?debugging=true&mmeValue=" +
-                  document.querySelector("#debugMMEValue").value)
-              }
-            >
-              Update
-            </button>
-          </div>
-        </div>
-        <div className="small flex flex-start" style={{ marginTop: "20px" }}>
-          Reset acknowledged date to{" "}
-          <input
-            id="customSentDate"
-            type="text"
-            placeholder="YYYY-MM-DD"
-            aria-label="acknowledged date input field"
-            maxLength={10}
-            size={12}
-            onKeyUp={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-          ></input>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              const inputVal = document.querySelector("#customSentDate").value;
-              console.log("input val ", inputVal);
-              alertUtil
-                .resetComms(
-                  client,
-                  patient?.id,
-                  {
-                    ...dataParams,
-                    sentDate: inputVal,
-                    startDate: inputVal,
-                    endDate: addMonthsToDate(inputVal, 12),
-                    noteText: "user=" + (userId ? userId : "test"),
-                    status: "completed",
-                  },
-                  contextState.currentCommunicationRequest?.id,
-                  contextState.currentCommunication?.id
-                )
-                .then((results) => {
-                  if (results) {
-                    e.target.innerText = "Done. Reloading...";
-                    setTimeout(() => window.location.reload(), 350);
-                    return;
-                  }
-                  e.target.innerText = "Update";
-                })
-                .catch((e) => {
-                  // e.target.innerText = "Update";
-                  alert(e);
-                });
-            }}
-          >
-            Update
-          </button>
-        </div>
-        <br />
-        <hr />
-        <div
-          className="flex flex-start small radio-container"
-          style={{ marginTop: "12px" }}
-        >
-          <input
-            type="radio"
-            onClick={(e) => {
-              const radioElement = e.target
-                .closest(".radio-container")
-                .querySelector(".radio-label");
-              let originalText = "";
-              if (radioElement) {
-                originalText = radioElement.innerText;
-                radioElement.innerText = "Please wait....";
-              }
-              alertUtil
-                .removeAllResources(client, patient?.id)
-                .then((results) => {
-                  if (results) {
-                    if (radioElement)
-                      radioElement.innerText = "Done. Reloading...";
-                    setTimeout(
-                      () => (window.location = window.location.origin),
-                      350
-                    );
-                    return;
-                  }
-                  if (radioElement) radioElement.innerText = originalText;
-                })
-                .catch((e) => {
-                  if (radioElement) radioElement.innerText = originalText;
-                  alert(e);
-                });
-            }}
-            aria-label="delete all radio"
-          ></input>
-          <span className="radio-label">
-            Reset all (This will clear all Communication & CommunicationRequest
-            resources for this patient)
-          </span>
-        </div>
-      </div>
-    );
-  };
-
-  console.log("data ", dataToUse);
-
   if (contextState.loading) {
     return <div className="banner alert-banner">Loading ...</div>;
   }
@@ -522,9 +378,20 @@ export default function AlertBanner({ type, summaryData }) {
         <div className="content">{getExpandedView()}</div>
         {renderError()}
       </div>
-      {getEnvSystemType() === "development" &&
-        !contextState.loading &&
-        renderDebugView()}
+      {!contextState.loading && (
+        <Debug
+          params={{
+            client: client,
+            patient: patient,
+            userId: userId,
+            dataParams: dataParams,
+            currentCommunication: contextState.currentCommunication,
+            currentCommunicationRequest:
+              contextState.currentCommunicationRequest,
+          }}
+          summaryData={dataToUse}
+        ></Debug>
+      )}
     </>
   );
 }
