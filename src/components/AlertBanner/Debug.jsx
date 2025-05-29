@@ -10,7 +10,7 @@ const Debug = ({ summaryData, params, display }) => {
   const parentRef = useRef();
   const mmeInputRef = useRef();
   const dateInputRef = useRef();
-  const radioParentRef = useRef();
+  const resetButtonRef = useRef();
   const {
     client,
     patient,
@@ -121,43 +121,42 @@ const Debug = ({ summaryData, params, display }) => {
   const renderResetAllView = () => {
     return (
       <div
-        ref={radioParentRef}
         className="flex flex-start small radio-container"
         style={{ marginTop: "12px" }}
       >
-        <input
-          type="radio"
+        <button
+          className="button-default button-outlined button-small"
+          ref={resetButtonRef}
           onClick={(e) => {
-            const radioElement =
-              radioParentRef.current.querySelector(".radio-label");
+            const btnElement = resetButtonRef.current;
             let originalText = "";
-            if (radioElement) {
-              originalText = radioElement.innerText;
-              radioElement.innerText = "Please wait....";
+            if (btnElement) {
+              originalText = btnElement.innerText;
+              btnElement.innerText = "Please wait....";
             }
             alertUtil
               .removeAllResources(client, patient?.id)
               .then((results) => {
                 if (results) {
-                  if (radioElement)
-                    radioElement.innerText = "Done. Reloading...";
+                  if (btnElement)
+                    btnElement.innerText = "Done. Reloading...";
                   setTimeout(
                     () => (window.location = window.location.origin),
                     350
                   );
                   return;
                 }
-                if (radioElement) radioElement.innerText = originalText;
+                if (btnElement) btnElement.innerText = originalText;
               })
               .catch((e) => {
-                if (radioElement) radioElement.innerText = originalText;
+                if (btnElement) btnElement.innerText = originalText;
                 alert(e);
               });
           }}
-          aria-label="delete all radio"
-        ></input>
+          aria-label="delete all button"
+        > Reset All </button>
         <span className="radio-label">
-          Reset all (This will clear all Communication & CommunicationRequest
+          (This will clear all Communication & CommunicationRequest
           resources for this patient)
         </span>
       </div>

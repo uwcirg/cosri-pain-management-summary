@@ -68,9 +68,9 @@ export function isDateInPast(firstDate, secondDate) {
  * @param date - date string to add number of Months to
  * @param numMonths - the number of months to add in integer
  */
-export function addMonthsToDate(date, numMonths) {
-  if (!date) return moment().add(numMonths, "month").toISOString();
-  return moment(date).add(numMonths, "month").toISOString();
+export function addMonthsToDate(dateString, numMonths) {
+  if (!dateString) return moment().add(numMonths, "month").toISOString();
+  return moment(dateString).add(numMonths, "month").toISOString();
 }
 
 export function getArrayOfDatesFromToday(numberOfDays = 0) {
