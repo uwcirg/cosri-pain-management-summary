@@ -155,7 +155,7 @@ const Debug = ({ summaryData, params, display }) => {
           }}
           aria-label="delete all button"
         > Reset All </button>
-        <span className="radio-label">
+        <span className="small">
           (This will clear all Communication & CommunicationRequest
           resources for this patient)
         </span>
