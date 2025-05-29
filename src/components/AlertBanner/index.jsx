@@ -281,7 +281,7 @@ export default function AlertBanner({ type, summaryData }) {
     if (contextState.status === "pending") {
       if (!!currentAlertProps.expandedText_aboutdue) {
         return currentAlertProps.expandedText_aboutdue.replace(
-          "{date}",
+          "{duedate}",
           alertUtil.getDisplayDate(contextState.dueDate)
         );
       }
@@ -390,6 +390,7 @@ export default function AlertBanner({ type, summaryData }) {
             currentCommunicationRequest:
               contextState.currentCommunicationRequest,
           }}
+          display={isDebugging()}
           summaryData={dataToUse}
         ></Debug>
       )}

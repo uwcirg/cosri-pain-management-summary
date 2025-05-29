@@ -4,7 +4,7 @@ import { dateFormat } from "../../helpers/formatit";
 import { addMonthsToDate, getEnvSystemType } from "../../helpers/utility";
 import * as alertUtil from "./utility.js";
 
-const Debug = ({ summaryData, params }) => {
+const Debug = ({ summaryData, params, display }) => {
   let keysPressed = {};
   const currentMME = alertUtil.getCurrentMME(summaryData);
   const parentRef = useRef();
@@ -19,7 +19,7 @@ const Debug = ({ summaryData, params }) => {
     currentCommunication,
     currentCommunicationRequest,
   } = params;
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(display);
   const handleInputClick = () => {
     setShow(!show);
   };
@@ -213,13 +213,13 @@ const Debug = ({ summaryData, params }) => {
           {renderResetAllView()}
         </div>
       )}
-      <div>
+      <div className="flex-align-start flex-column">
         <div className="input flex flex-end">
           <label
             className="checkbox-container"
             aria-label="show debugger checkbox"
           >
-            Show alert debugger?
+            Test Naloxone alert?
             <input
               type="checkbox"
               aria-label="hidden checkbox"
@@ -233,7 +233,7 @@ const Debug = ({ summaryData, params }) => {
           className="flex flex-end text-muted x-small"
           style={{ marginTop: "12px" }}
         >
-          Ctrl + Shift + H to hide debugger
+          Ctrl + Shift + H to hide
         </div>
       </div>
     </div>
