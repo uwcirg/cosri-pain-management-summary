@@ -19,7 +19,7 @@ const Debug = ({ summaryData, params }) => {
     currentCommunication,
     currentCommunicationRequest,
   } = params;
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
   const handleInputClick = () => {
     setShow(!show);
   };
