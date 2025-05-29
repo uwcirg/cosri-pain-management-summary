@@ -315,26 +315,23 @@ export function isNotDueYet(dateString) {
 
 export async function removeAllResources(client, patientId) {
   return new Promise((resolve, reject) => {
-    Promise.allSettled([
-      deleteFHIRResourcesByType("Communication", client, patientId),
-      deleteFHIRResourcesByType("CommunicationRequest", client, patientId),
-    ])
-      .then((results) => {
-        if (results[0].status === "rejected") {
-          reject(
-            "Unable to remove all Communication resources. See console for detail."
-          );
-          return;
-        }
-        if (results[1].status === "rejected") {
-          reject(
-            "Unable to remove all CommunicationRequest resources. See console for detail."
-          );
-          return;
-        }
-        resolve(results);
+    deleteFHIRResourcesByType("Communication", client, patientId)
+      .then(() => {
+        deleteFHIRResourcesByType("CommunicationRequest", client, patientId)
+          .then((results) => resolve(results))
+          .catch((e) => {
+            console.log(e);
+            reject(
+              "Unable to remove all CommunicationRequest resources. See console for detail."
+            );
+          });
       })
-      .catch((e) => reject(e));
+      .catch((e) => {
+        console.log(e);
+        reject(
+          "Unable to remove all Communication resources. See console for detail."
+        );
+      });
   });
 }
 
@@ -391,7 +388,7 @@ export async function resetComms(client, patientId, params, crId, cId) {
 export function getDebugMMEData() {
   const urlParams = new URLSearchParams(window.location.search);
   const mmeValue = parseInt(urlParams.get("mmeValue"));
-  const debugValue = !isNaN(mmeValue) ? mmeValue: 0;
+  const debugValue = !isNaN(mmeValue) ? mmeValue : 0;
   return getArrayOfDatesFromToday(5).map((item) => ({
     date: dateFormat("", item, "YYYY-MM-DD"),
     MMEValue: debugValue,

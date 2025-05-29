@@ -72,7 +72,7 @@ const Debug = ({ summaryData, params, display }) => {
           aria-label="acknowledged date input field"
           maxLength={10}
           max={dateFormat("", new Date(), "YYYY-MM-DD")}
-          size={12}
+          style={{ minWidth: "104px" }}
           onKeyUp={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -136,17 +136,12 @@ const Debug = ({ summaryData, params, display }) => {
             }
             alertUtil
               .removeAllResources(client, patient?.id)
-              .then((results) => {
-                if (results) {
-                  if (btnElement)
-                    btnElement.innerText = "Done. Reloading...";
-                  setTimeout(
-                    () => (window.location = window.location.origin),
-                    350
-                  );
-                  return;
-                }
-                if (btnElement) btnElement.innerText = originalText;
+              .then(() => {
+                if (btnElement) btnElement.innerText = "Done. Reloading...";
+                setTimeout(
+                  () => (window.location = window.location.origin),
+                  350
+                );
               })
               .catch((e) => {
                 if (btnElement) btnElement.innerText = originalText;
@@ -154,10 +149,13 @@ const Debug = ({ summaryData, params, display }) => {
               });
           }}
           aria-label="delete all button"
-        > Reset All </button>
+        >
+          {" "}
+          Reset All{" "}
+        </button>
         <span className="small">
-          (This will clear all Communication & CommunicationRequest
-          resources for this patient)
+          (This will clear all Communication & CommunicationRequest resources
+          for this patient)
         </span>
       </div>
     );
@@ -195,7 +193,7 @@ const Debug = ({ summaryData, params, display }) => {
     <div
       className="flex flex-align-start"
       style={{
-        padding: "8px 16px",
+        padding: "8px 24px",
         borderTop: "1px solid #ececec",
       }}
       ref={parentRef}
