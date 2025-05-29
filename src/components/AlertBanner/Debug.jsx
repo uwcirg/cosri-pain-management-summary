@@ -233,7 +233,7 @@ const Debug = ({ summaryData, params, display }) => {
           className="flex flex-end text-muted x-small"
           style={{ marginTop: "12px" }}
         >
-          Ctrl + Shift + H to hide
+          Ctrl + Shift + H to hide testing
         </div>
       </div>
     </div>
