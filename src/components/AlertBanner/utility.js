@@ -21,6 +21,7 @@ export const COUNSELING_ALERT_TYPE = "counseling";
 export const alertProps = {
   [NALOXONE_ALERT_TYPE]: {
     foldedTitle: "Naloxone - any dose",
+    foldedTitle_acknowledged: "Naloxone",
     expandedTitle:
       "Naloxone is recommended for every patient receiving opioids. Please verify access annually.",
     foldedText: "Access never verified. Click here.",
@@ -35,6 +36,7 @@ export const alertProps = {
   },
   [HIGH_RISK_MME_ALERT_TYPE]: {
     foldedTitle: `Naloxone ≥ ${HIGH_RISK_MME_THRESHOLD} MME`,
+    foldedTitle_acknowledged: "Naloxone",
     expandedTitle: `Patient's MME is greater than ${HIGH_RISK_MME_THRESHOLD} so higher risk of overdose. Please verify Naloxone access.`,
     foldedText: "Access never verified. Click here.",
     expandedText_aboutdue:

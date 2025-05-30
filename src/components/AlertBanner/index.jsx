@@ -296,7 +296,10 @@ export default function AlertBanner({ type, summaryData }) {
     return (
       <div className="flex flex-start">
         <span>
-          {currentAlertProps.foldedTitle ?? "Naloxone recommendation"}
+          {shouldShowAcknowledgement
+            ? currentAlertProps.foldedTitle_acknowledged ??
+              currentAlertProps.foldedTitle
+            : currentAlertProps.foldedTitle}
         </span>
         {contextState.savingInProgress && (
           <span className="note">Saving ...</span>
