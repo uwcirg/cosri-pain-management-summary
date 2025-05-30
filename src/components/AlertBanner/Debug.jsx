@@ -46,7 +46,10 @@ const Debug = ({ summaryData, params, display }) => {
           <button
             className="button-default button-outlined button-small"
             onClick={() => {
-              if (mmeInputRef.current.value === "") {
+              if (
+                mmeInputRef.current.value === "" &&
+                parseInt(mmeInputRef.current.value) !== 0
+              ) {
                 return false;
               }
               window.location =
