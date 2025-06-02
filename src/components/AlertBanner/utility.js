@@ -20,41 +20,42 @@ export const COUNSELING_ALERT_TYPE = "counseling";
 
 export const alertProps = {
   [NALOXONE_ALERT_TYPE]: {
-    foldedTitle: "Naloxone - any dose",
+    foldedTitle_default: "Naloxone - any dose",
     foldedTitle_acknowledged: "Naloxone",
+    foldedText: "Access never verified. Click here.",
     expandedTitle:
       "Naloxone is recommended for every patient receiving opioids. Please verify access annually.",
-    foldedText: "Access never verified. Click here.",
     expandedText_aboutdue:
       "This alert should be acknowledged by {duedate}.  Please verify access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
     expandedText_acknowledged:
-      "This alert should next be acknowledged after {date}.",
+      "This alert should next be acknowledged after {duedate}.",
     alertConceptCode: "cosri_naloxone_alert",
     acknowledgedConceptCode: "cosri_naloxone_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
   [HIGH_RISK_MME_ALERT_TYPE]: {
-    foldedTitle: `Naloxone ≥ ${HIGH_RISK_MME_THRESHOLD} MME`,
+    foldedTitle_default: `Naloxone ≥ ${HIGH_RISK_MME_THRESHOLD} MME`,
     foldedTitle_acknowledged: "Naloxone",
-    expandedTitle: `Patient's MME is greater than ${HIGH_RISK_MME_THRESHOLD} so higher risk of overdose. Please verify Naloxone access.`,
     foldedText: "Access never verified. Click here.",
+    expandedTitle: `Patient's MME is greater than ${HIGH_RISK_MME_THRESHOLD} so higher risk of overdose. Please verify Naloxone access.`,
     expandedText_aboutdue:
       "This alert should be acknowledged by {duedate}.  Please verify access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
     expandedText_acknowledged:
-      "This alert should next be acknowledged after {date}.",
+      "This alert should next be acknowledged after {duedate}.",
     alertConceptCode: "cosri_high_risk_mme_alert",
     acknowledgedConceptCode: "cosri_high_risk_mme_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
   [COUNSELING_ALERT_TYPE]: {
-    foldedTitle: "Naloxone recommendation",
+    foldedTitle_default: "Naloxone recommendation",
+    foldedTitle_acknowledged: "Naloxone",
+    foldedText: "No opioids currently dispensed. Click here if counseling.",
     expandedTitle:
       "Naloxone is recommended for every patient receiving opioids.  Consider counseling.",
     expandedTitle_acknowledged:
       "Naloxone is recommended for every patient receiving opioids.  Counseled in past.",
-    foldedText: "No opioids currently dispensed. Click here if counseling.",
     expandedText_due: "Click here if Naloxone access verified, for any reason.",
     alertConceptCode: "cosri_naloxone_counseling_alert",
     acknowledgedConceptCode: "cosri_naloxone_counseling_alert_acknowledgement",

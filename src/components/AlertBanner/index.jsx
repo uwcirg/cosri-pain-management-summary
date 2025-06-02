@@ -173,9 +173,7 @@ export default function AlertBanner({ type, summaryData }) {
           const crStartDate = alertUtil.isAboutDue(lastAcknowledgedDate)
             ? lastAcknowledgedDate
             : moment().toISOString();
-          const crEndDate = alertUtil.isAboutDue(lastAcknowledgedDate)
-            ? addMonthsToDate(lastAcknowledgedDate, 12)
-            : addMonthsToDate(null, 12);
+          const crEndDate = addMonthsToDate(crStartDate, 12);
           client
             .create(
               alertUtil.getCommunicationRequestPayload({
@@ -185,7 +183,7 @@ export default function AlertBanner({ type, summaryData }) {
                 noteText: alertUtil.isAboutDue(lastAcknowledgedDate)
                   ? `Acknowlegement is due in 2 months. Last acknowledged on ${lastAcknowledgedDate}.`
                   : alertUtil.isOverDue(lastAcknowledgedDate)
-                  ? `Last acknowledgement was overdue. Last acknowledged on ${lastAcknowledgedDate}.`
+                  ? `Acknowledgement is overdue. Last acknowledged on ${lastAcknowledgedDate}.`
                   : null,
               })
             )
@@ -278,6 +276,7 @@ export default function AlertBanner({ type, summaryData }) {
 
   const getDueExpandedText = () => {
     const defaultText = "Please verify access and acknowledge this alert.";
+    const displayText = currentAlertProps.expandedText_due ?? defaultText;
     if (contextState.status === "pending") {
       if (!!currentAlertProps.expandedText_aboutdue) {
         return currentAlertProps.expandedText_aboutdue.replace(
@@ -285,9 +284,9 @@ export default function AlertBanner({ type, summaryData }) {
           alertUtil.getDisplayDate(contextState.dueDate)
         );
       }
-      return currentAlertProps.expandedText_due ?? defaultText;
+      return displayText;
     }
-    return currentAlertProps.expandedText_due ?? defaultText;
+    return displayText;
   };
 
   const getFoldedView = () => {
@@ -297,9 +296,8 @@ export default function AlertBanner({ type, summaryData }) {
       <div className="flex flex-start">
         <span>
           {shouldShowAcknowledgement
-            ? currentAlertProps.foldedTitle_acknowledged ??
-              currentAlertProps.foldedTitle
-            : currentAlertProps.foldedTitle}
+            ? currentAlertProps.foldedTitle_acknowledged
+            : currentAlertProps.foldedTitle_default}
         </span>
         {contextState.savingInProgress && (
           <span className="note">Saving ...</span>
@@ -318,11 +316,11 @@ export default function AlertBanner({ type, summaryData }) {
     if (contextState.status === "completed") {
       const displayText =
         currentAlertProps.expandedText_acknowledged ??
-        "This alert should next be acknowledged after {date}.";
+        "This alert should next be acknowledged after {duedate}.";
       return (
         <div className="side-note muted-text">
           {displayText.replace(
-            "{date}",
+            "{duedate}",
             alertUtil.getDisplayDate(
               addMonthsToDate(contextState.lastAcknowledgedDate, 10)
             )
