@@ -9,6 +9,7 @@ const Debug = ({ summaryData, params, display }) => {
   const currentMME = alertUtil.getCurrentMME(summaryData);
   const parentRef = useRef();
   const mmeInputRef = useRef();
+  const mmePastInputRef = useRef();
   const dateInputRef = useRef();
   const resetButtonRef = useRef();
   const {
@@ -34,12 +35,13 @@ const Debug = ({ summaryData, params, display }) => {
         </div>
         <div className="small flex flex-start">
           <div>
-            Change MME value to{" "}
+            Change current MME value to{" "}
             <input
               type="number"
               aria-label="MME value"
               style={{ width: "40px" }}
               min={0}
+              defaultValue={0}
               ref={mmeInputRef}
             ></input>
           </div>
@@ -55,12 +57,37 @@ const Debug = ({ summaryData, params, display }) => {
               window.location =
                 window.location.origin +
                 "?debugging=true&mmeValue=" +
-                mmeInputRef.current.value;
+                mmeInputRef.current.value +
+                (mmePastInputRef.current.checked
+                  ? "&mmeInPast=true"
+                  : "");
             }}
           >
             Update
           </button>
         </div>
+      </div>
+    );
+  };
+  const renderPastMMEView = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mmeInPast = urlParams.get("mmeInPast");
+    return (
+      <div className="small">
+        {" "}
+        <label
+          className="checkbox-container small"
+          aria-label="has MME in past checkbox"
+        >
+          Has MME in last 2 years?
+          <input
+            type="checkbox"
+            aria-label="hidden checkbox"
+            defaultChecked={!!mmeInPast}
+            ref={mmePastInputRef}
+          />
+          <span className="checkmark"></span>
+        </label>
       </div>
     );
   };
@@ -207,6 +234,7 @@ const Debug = ({ summaryData, params, display }) => {
             FOR TESTING ( development only ){" "}
           </h4>
           {renderMMEInputView()}
+          {renderPastMMEView()}
           {renderResetDateView()}
           <br />
           <hr />

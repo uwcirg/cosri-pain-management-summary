@@ -269,6 +269,11 @@ export default function AlertBanner({ type, summaryData }) {
       contextState.lastAcknowledgedDate
     );
     const acknowledgedUser = arrText[1] ? arrText[1] : "";
+    if (currentAlertProps.foldedText_completed) {
+      return currentAlertProps.foldedText_completed
+        .replace("{date}", acknowledgedDate)
+        .replace("{user}", acknowledgedUser ? ` by ${acknowledgedUser}` : "");
+    }
     return `last acknowledged on ${acknowledgedDate} ${
       acknowledgedUser ? " by " + acknowledgedUser : ""
     }`;
@@ -276,7 +281,9 @@ export default function AlertBanner({ type, summaryData }) {
 
   const getDueExpandedText = () => {
     const defaultText = "Please verify access and acknowledge this alert.";
-    const displayText = currentAlertProps.expandedText_due ?? defaultText;
+    const displayText = (
+      currentAlertProps.expandedText_due ?? defaultText
+    ).replace("{again}", contextState.lastAcknowledgedDate ? " again" : "");
     if (contextState.status === "pending") {
       if (!!currentAlertProps.expandedText_aboutdue) {
         return currentAlertProps.expandedText_aboutdue.replace(
@@ -292,12 +299,15 @@ export default function AlertBanner({ type, summaryData }) {
   const getFoldedView = () => {
     const shouldShowAcknowledgement =
       contextState.status === "pending" || contextState.lastAcknowledgedDate;
+    const displayPastAcknowledgedDate = alertUtil.getDisplayDate(
+      contextState.lastAcknowledgedDate
+    );
     return (
       <div className="flex flex-start">
         <span>
-          {shouldShowAcknowledgement
-            ? currentAlertProps.foldedTitle_acknowledged
-            : currentAlertProps.foldedTitle_default}
+          {contextState.status === "completed"
+            ? currentAlertProps.foldedTitle_completed
+            : currentAlertProps.foldedTitle_due}
         </span>
         {contextState.savingInProgress && (
           <span className="note">Saving ...</span>
@@ -305,8 +315,17 @@ export default function AlertBanner({ type, summaryData }) {
         {!contextState.savingInProgress && shouldShowAcknowledgement && (
           <span className="note">{getAcknowledgedText()}</span>
         )}
+
         {!contextState.savingInProgress && !shouldShowAcknowledgement && (
-          <span className="info-text">{currentAlertProps.foldedText}</span>
+          <span className="info-text">
+            {displayPastAcknowledgedDate &&
+            currentAlertProps.foldedText_due_completed_in_past
+              ? currentAlertProps.foldedText_due_completed_in_past.replace(
+                  "{acknowledged_text}",
+                  getAcknowledgedText()
+                )
+              : currentAlertProps.foldedText_due}
+          </span>
         )}
       </div>
     );
@@ -314,9 +333,7 @@ export default function AlertBanner({ type, summaryData }) {
 
   const getExpandedView = () => {
     if (contextState.status === "completed") {
-      const displayText =
-        currentAlertProps.expandedText_acknowledged ??
-        "This alert should next be acknowledged after {duedate}.";
+      const displayText = currentAlertProps.expandedText_completed ?? "";
       return (
         <div className="side-note muted-text">
           {displayText.replace(
@@ -356,6 +373,9 @@ export default function AlertBanner({ type, summaryData }) {
 
   const expandedClass = contextState.expanded ? "" : "close";
   const alertClass = contextState.status === "completed" ? "info" : "";
+
+  console.log("alert data set:  ", dataToUse);
+  console.log("alert type: ", alertUtil.hasActiveOpioidMed(dataToUse));
 
   return (
     <>

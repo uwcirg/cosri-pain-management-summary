@@ -16,47 +16,67 @@ export const HIGH_RISK_MME_THRESHOLD = getHighRiskMMEThreshold();
 export const COSRI_ALERTS_SYSTEM_URI = "https://cosri.app/alerts";
 export const HIGH_RISK_MME_ALERT_TYPE = "highRiskMME";
 export const NALOXONE_ALERT_TYPE = "naloxone";
-export const COUNSELING_ALERT_TYPE = "counseling";
+export const COUNSELING_NO_RX_ALERT_TYPE = "counselingNoRx";
+export const COUNSELING_PAST_RX_ALERT_TYPE = "counselingPastRx";
 
 export const alertProps = {
   [NALOXONE_ALERT_TYPE]: {
-    foldedTitle_default: "Naloxone - any dose",
-    foldedTitle_acknowledged: "Naloxone",
-    foldedText: "Access never verified. Click here.",
+    foldedTitle_due: "Naloxone - any opioid Rx",
+    foldedTitle_completed: "Naloxone",
+    foldedText_due: "Access never verified. Click here.",
+    foldedText_completed: "Last acknowledged on {date}{user}.",
     expandedTitle:
       "Naloxone is recommended for every patient receiving opioids. Please verify access annually.",
     expandedText_aboutdue:
       "This alert should be acknowledged by {duedate}.  Please verify access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
-    expandedText_acknowledged:
+    expandedText_completed:
       "This alert should next be acknowledged after {duedate}.",
     alertConceptCode: "cosri_naloxone_alert",
     acknowledgedConceptCode: "cosri_naloxone_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
   [HIGH_RISK_MME_ALERT_TYPE]: {
-    foldedTitle_default: `Naloxone ≥ ${HIGH_RISK_MME_THRESHOLD} MME`,
-    foldedTitle_acknowledged: "Naloxone",
-    foldedText: "Access never verified. Click here.",
+    foldedTitle_due: `Naloxone ≥ ${HIGH_RISK_MME_THRESHOLD} MME`,
+    foldedTitle_completed: "Naloxone",
+    foldedText_due: "Access never verified. Click here.",
+    foldedText_completed: "Last acknowledged on {date}{user}.",
     expandedTitle: `Patient's MME is greater than ${HIGH_RISK_MME_THRESHOLD} so higher risk of overdose. Please verify Naloxone access.`,
     expandedText_aboutdue:
       "This alert should be acknowledged by {duedate}.  Please verify access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
-    expandedText_acknowledged:
+    expandedText_completed:
       "This alert should next be acknowledged after {duedate}.",
     alertConceptCode: "cosri_high_risk_mme_alert",
     acknowledgedConceptCode: "cosri_high_risk_mme_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
-  [COUNSELING_ALERT_TYPE]: {
-    foldedTitle_default: "Naloxone recommendation",
-    foldedTitle_acknowledged: "Naloxone",
-    foldedText: "No opioids currently dispensed. Click here if counseling.",
+  [COUNSELING_NO_RX_ALERT_TYPE]: {
+    foldedTitle_due: "Naloxone (No Rx)",
+    foldedTitle_completed: "Naloxone",
+    foldedText_due: "No opioids currently dispensed. Click here if counseled.",
+    foldedText_due_completed_in_past:
+      "{acknowledged_text}. Click here if counseling.",
+    foldedText_completed: "Last acknowledged on {date}{user}.",
     expandedTitle:
-      "Naloxone is recommended for every patient receiving opioids.  Consider counseling.",
-    expandedTitle_acknowledged:
-      "Naloxone is recommended for every patient receiving opioids.  Counseled in past.",
-    expandedText_due: "Click here if Naloxone access verified, for any reason.",
+      "No Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
+    expandedText_due:
+      "Click here if Naloxone access verified{again}, for any reason.",
+    alertConceptCode: "cosri_naloxone_counseling_alert",
+    acknowledgedConceptCode: "cosri_naloxone_counseling_alert_acknowledgement",
+    codeSystem: COSRI_ALERTS_SYSTEM_URI,
+  },
+  [COUNSELING_PAST_RX_ALERT_TYPE]: {
+    foldedTitle_due: "Naloxone (Past Rx)",
+    foldedTitle_completed: "Naloxone",
+    foldedText_due: "No opioids currently dispensed. Click here if counseled.",
+    foldedText_due_completed_in_past:
+      "{acknowledged_text}. Consider counseling.",
+    foldedText_completed: "Last acknowledged on {date}{user}.",
+    expandedTitle:
+      "No current Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
+    expandedText_due:
+      "Click here if Naloxone access verified{again}, for any reason.",
     alertConceptCode: "cosri_naloxone_counseling_alert",
     acknowledgedConceptCode: "cosri_naloxone_counseling_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
@@ -66,7 +86,8 @@ export const alertProps = {
 export const getAlertType = (summaryData) => {
   if (hasHighRiskMME(summaryData)) return HIGH_RISK_MME_ALERT_TYPE;
   if (hasActiveOpioidMed(summaryData)) return NALOXONE_ALERT_TYPE;
-  return COUNSELING_ALERT_TYPE;
+  if (hasPastMME(summaryData)) return COUNSELING_PAST_RX_ALERT_TYPE;
+  return COUNSELING_NO_RX_ALERT_TYPE;
 };
 
 export const shouldDisplayAlert = (alertType, summaryData) => {
@@ -81,6 +102,16 @@ export function hasMMEData(summaryData) {
     !isEmptyArray(summaryData) && summaryData.find((item) => item.MMEValue > 0)
   );
 }
+export function hasPastMME(summaryData) {
+  if (!hasMMEData(summaryData)) return false;
+  return summaryData.find((item) => {
+    const daysDiff = getDiffDays(
+      getDateObjectInLocalDateTime(item.date),
+      new Date()
+    );
+    return item.MMEValue > 0 && daysDiff > 1;
+  });
+}
 export function getCurrentMME(summaryData) {
   if (!summaryData) return 0;
   let todayObj = new Date();
@@ -91,27 +122,7 @@ export function getCurrentMME(summaryData) {
   if (match) return match.MMEValue ? match.MMEValue : 0;
   return 0;
 }
-export const getDisplayDate = (date) =>
-  date
-    ? getDisplayDateFromISOString(date, {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "";
-export function getTodayDateString() {
-  const hoy = new Date();
-  const month = hoy.getMonth() + 1;
-  const pad = function (n) {
-    n = parseInt(n);
-    return n < 10 ? "0" + n : n;
-  };
-  const hoyDate =
-    hoy.getFullYear() + "-" + pad(month) + "-" + pad(hoy.getDate());
-  return hoyDate;
-}
+
 export function hasActiveOpioidMed(summaryData) {
   return (
     hasMMEData(summaryData) &&
@@ -120,7 +131,7 @@ export function hasActiveOpioidMed(summaryData) {
         getDateObjectInLocalDateTime(item.date),
         new Date()
       );
-      return daysDiff >= 0 && daysDiff <= 1;
+      return item.MMEValue > 0 && daysDiff >= 0 && daysDiff <= 1;
     })
   );
 }
@@ -289,6 +300,28 @@ export function getEndDateFromCommunicationRequest(item) {
   return item.occurrencePeriod?.end;
 }
 
+export const getDisplayDate = (date) =>
+  date
+    ? getDisplayDateFromISOString(date, {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
+export function getTodayDateString() {
+  const hoy = new Date();
+  const month = hoy.getMonth() + 1;
+  const pad = function (n) {
+    n = parseInt(n);
+    return n < 10 ? "0" + n : n;
+  };
+  const hoyDate =
+    hoy.getFullYear() + "-" + pad(month) + "-" + pad(hoy.getDate());
+  return hoyDate;
+}
+
 export function isOverDue(dateString) {
   if (!dateString) return false;
   const diffMonths = getDiffMonths(
@@ -391,7 +424,27 @@ export async function resetComms(client, patientId, params, crId, cId) {
 export function getDebugMMEData() {
   const urlParams = new URLSearchParams(window.location.search);
   const mmeValue = parseInt(urlParams.get("mmeValue"));
+  const mmeInPast = urlParams.get("mmeInPast");
   const debugValue = !isNaN(mmeValue) ? mmeValue : 0;
+  if (mmeInPast) {
+    // set up dummy past data
+    const today = new Date();
+    const daysAgo = 7; // Calculate 7 days in the past
+    const pastDate = new Date(today); // Create a copy to avoid modifying the original
+    pastDate.setDate(today.getDate() - daysAgo);
+    return [
+      ...[
+        {
+          date: dateFormat("", pastDate, "YYYY-MM-DD"),
+          MMEValue: 10,
+        },
+      ],
+      ...getArrayOfDatesFromToday(5).map((item) => ({
+        date: dateFormat("", item, "YYYY-MM-DD"),
+        MMEValue: debugValue,
+      })),
+    ];
+  }
   return getArrayOfDatesFromToday(5).map((item) => ({
     date: dateFormat("", item, "YYYY-MM-DD"),
     MMEValue: debugValue,
