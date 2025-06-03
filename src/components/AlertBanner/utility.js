@@ -62,8 +62,8 @@ export const alertProps = {
       "No Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
     expandedText_due:
       "Click here if Naloxone access verified{again}, for any reason.",
-    alertConceptCode: "cosri_naloxone_counseling_alert",
-    acknowledgedConceptCode: "cosri_naloxone_counseling_alert_acknowledgement",
+    alertConceptCode: "cosri_naloxone_norx_counseling_alert",
+    acknowledgedConceptCode: "cosri_naloxone_norx_counseling_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
   [COUNSELING_PAST_RX_ALERT_TYPE]: {
@@ -77,8 +77,8 @@ export const alertProps = {
       "No current Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
     expandedText_due:
       "Click here if Naloxone access verified{again}, for any reason.",
-    alertConceptCode: "cosri_naloxone_counseling_alert",
-    acknowledgedConceptCode: "cosri_naloxone_counseling_alert_acknowledgement",
+    alertConceptCode: "cosri_naloxone_pastrx_counseling_alert",
+    acknowledgedConceptCode: "cosri_naloxone_pastrx_counseling_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
 };
@@ -89,6 +89,10 @@ export const getAlertType = (summaryData) => {
   if (hasPastMME(summaryData)) return COUNSELING_PAST_RX_ALERT_TYPE;
   return COUNSELING_NO_RX_ALERT_TYPE;
 };
+
+export const isCounselingAlertType = (alertType) =>
+  alertType == COUNSELING_NO_RX_ALERT_TYPE ||
+  alertType === COUNSELING_PAST_RX_ALERT_TYPE;
 
 export const shouldDisplayAlert = (alertType, summaryData) => {
   if (alertType === HIGH_RISK_MME_ALERT_TYPE) {
