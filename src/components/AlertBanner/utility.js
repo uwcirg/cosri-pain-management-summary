@@ -61,7 +61,9 @@ export const alertProps = {
     expandedTitle:
       "No Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
     expandedText_due:
-      "Click here if Naloxone access verified{again}, for any reason.",
+      "Click here if Naloxone access verified, for any reason.",
+    expandedText_due_completed_in_past:
+      "Click here if Naloxone access verified again, for any reason.",
     alertConceptCode: "cosri_naloxone_norx_counseling_alert",
     acknowledgedConceptCode: "cosri_naloxone_norx_counseling_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
@@ -76,7 +78,9 @@ export const alertProps = {
     expandedTitle:
       "No current Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
     expandedText_due:
-      "Click here if Naloxone access verified{again}, for any reason.",
+      "Click here if Naloxone access verified, for any reason.",
+    expandedText_due_completed_in_past:
+      "Click here if Naloxone access verified again, for any reason.",
     alertConceptCode: "cosri_naloxone_pastrx_counseling_alert",
     acknowledgedConceptCode: "cosri_naloxone_pastrx_counseling_alert_acknowledgement",
     codeSystem: COSRI_ALERTS_SYSTEM_URI,

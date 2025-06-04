@@ -281,9 +281,9 @@ export default function AlertBanner({ type, summaryData }) {
 
   const getDueExpandedText = () => {
     const defaultText = "Please verify access and acknowledge this alert.";
-    const displayText = (
-      currentAlertProps.expandedText_due ?? defaultText
-    ).replace("{again}", contextState.lastAcknowledgedDate ? " again" : "");
+    const displayText = contextState.lastAcknowledgedDate
+      ? currentAlertProps.expandedText_due_completed_in_past ?? defaultText
+      : currentAlertProps.expandedText_due ?? defaultText;
     if (contextState.status === "pending") {
       if (!!currentAlertProps.expandedText_aboutdue) {
         return currentAlertProps.expandedText_aboutdue.replace(

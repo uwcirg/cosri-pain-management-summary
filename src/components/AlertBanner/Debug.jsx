@@ -33,20 +33,24 @@ const Debug = ({ summaryData, params, display }) => {
             className={`${currentMME >= 50 ? "text-warning" : "text-success"}`}
           >{`${currentMME}`}</strong>
         </div>
-        <div className="small flex flex-start">
+        <div className="small flex flex-start flex-gap-1">
           <div>
-            Change current MME value to{" "}
-            <input
-              type="number"
-              aria-label="MME value"
-              style={{ width: "40px" }}
-              min={0}
-              defaultValue={0}
-              ref={mmeInputRef}
-            ></input>
+            <div>
+              Change current MME value to{" "}
+              <input
+                type="number"
+                aria-label="MME value"
+                style={{ width: "40px" }}
+                min={0}
+                defaultValue={0}
+                ref={mmeInputRef}
+              ></input>
+            </div>
+            {renderPastMMEView()}
           </div>
           <button
             className="button-default button-outlined button-small"
+            style={{ alignSelf: "stretch" }}
             onClick={() => {
               if (
                 mmeInputRef.current.value === "" &&
@@ -58,9 +62,7 @@ const Debug = ({ summaryData, params, display }) => {
                 window.location.origin +
                 "?debugging=true&mmeValue=" +
                 mmeInputRef.current.value +
-                (mmePastInputRef.current.checked
-                  ? "&mmeInPast=true"
-                  : "");
+                (mmePastInputRef.current.checked ? "&mmeInPast=true" : "");
             }}
           >
             Update
@@ -234,7 +236,6 @@ const Debug = ({ summaryData, params, display }) => {
             FOR TESTING ( development only ){" "}
           </h4>
           {renderMMEInputView()}
-          {renderPastMMEView()}
           {renderResetDateView()}
           <br />
           <hr />
