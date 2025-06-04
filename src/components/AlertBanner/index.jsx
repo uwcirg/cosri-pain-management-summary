@@ -8,6 +8,7 @@ import { FhirClientContext } from "../../context/FhirClientContext";
 import {
   addMonthsToDate,
   getUserIdFromAccessToken,
+  isDebugging,
   isEmptyArray,
   noCacheHeader,
 } from "../../helpers/utility";
@@ -43,10 +44,6 @@ export default function AlertBanner({ type, summaryData }) {
     error: null,
   });
 
-  const isDebugging = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return !!urlParams.get("debugging");
-  };
   const dataToUse = isDebugging() ? alertUtil.getDebugMMEData() : summaryData;
   const alertType = type ? type : alertUtil.getAlertType(dataToUse);
   const currentAlertProps = alertUtil.alertProps[alertType];

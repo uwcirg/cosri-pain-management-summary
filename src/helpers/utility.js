@@ -840,3 +840,8 @@ export async function deleteFHIRResourcesByType(type, client, patientId) {
   }
   return null;
 }
+
+export const isDebugging = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return !!urlParams.get("debugging");
+};
