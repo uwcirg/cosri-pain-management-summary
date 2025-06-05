@@ -134,7 +134,14 @@ const Debug = ({ summaryData, params, display }) => {
               .then((results) => {
                 if (results) {
                   e.target.innerText = "Done. Reloading...";
-                  setTimeout(() => window.location.reload(), 350);
+                  setTimeout(
+                    () =>
+                      (window.location =
+                        window.location.origin +
+                        "?debugging=true&mmeValue=" +
+                        currentMME),
+                    350
+                  );
                   return;
                 }
                 e.target.innerText = "Update";
@@ -236,7 +243,7 @@ const Debug = ({ summaryData, params, display }) => {
             FOR TESTING ( development only ){" "}
           </h4>
           {renderMMEInputView()}
-          {renderResetDateView()}
+          {currentCommunication && renderResetDateView()}
           <br />
           <hr />
           {renderResetAllView()}
