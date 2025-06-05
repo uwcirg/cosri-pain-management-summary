@@ -301,7 +301,7 @@ export default function AlertBanner({ type, summaryData }) {
     );
     return (
       <div className="flex flex-start">
-        <span>
+        <span className="title-text">
           {contextState.status === "completed"
             ? currentAlertProps.foldedTitle_completed
             : currentAlertProps.foldedTitle_due}

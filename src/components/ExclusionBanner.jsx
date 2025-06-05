@@ -50,7 +50,7 @@ export default class ExclusionBanner extends Component {
           </strong>{" "}
           Guidance for adult pain except...{" "}
           <span className="info-icon" role="button">
-            (click here)
+            Click here
           </span>
           .
           <div className="content">

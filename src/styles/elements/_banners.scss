@@ -28,10 +28,10 @@
     padding: 10px 56px 10px 20px;
     text-align: left;
     background-color: $color-beige-light;
-    // &.alert-banner {
-    //   background-color: $color-red-bg-color;
-    // }
     position: relative;
+    .title-text {
+      text-transform: uppercase;
+    }
     .info-icon,
     .info-text {
       color: $link-color;
