@@ -41,7 +41,7 @@ export const alertProps = {
     foldedTitle_completed: "Naloxone",
     foldedText_due: "Access never verified. Click here.",
     foldedText_completed: "Last acknowledged on {date}{user}.",
-    expandedTitle: `Patient's MME is >= ${HIGH_RISK_MME_THRESHOLD} and is therefore at higher risk of overdose. Please verify Naloxone access and acknowledge annually.`,
+    expandedTitle: `Patient's MME is >= ${HIGH_RISK_MME_THRESHOLD} and so is at higher risk of overdosing. Please verify Naloxone access annually.`,
     expandedText_aboutdue:
       "This alert should be acknowledged by {duedate}.  Please verify access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
