@@ -372,7 +372,7 @@ export default function AlertBanner({ type, summaryData }) {
   const alertClass = contextState.status === "completed" ? "info" : "";
 
   console.log("alert data set:  ", dataToUse);
-  console.log("alert type: ", alertUtil.hasActiveOpioidMed(dataToUse));
+  console.log("alert type: ", alertUtil.getAlertType(dataToUse));
 
   return (
     <>

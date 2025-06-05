@@ -116,6 +116,7 @@ const Debug = ({ summaryData, params, display }) => {
             e.stopPropagation();
             const inputVal = dateInputRef.current.value;
             if (!inputVal) return false;
+            e.target.innerText = "Please wait. Processing data...";
             alertUtil
               .resetComms(
                 client,
