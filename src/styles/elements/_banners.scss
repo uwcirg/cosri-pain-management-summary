@@ -29,9 +29,6 @@
     text-align: left;
     background-color: $color-beige-light;
     position: relative;
-    .title-text {
-      text-transform: uppercase;
-    }
     .info-icon,
     .info-text {
       color: $link-color;
@@ -114,6 +111,7 @@
       transition-property: all;
       transition-duration: 0.5s;
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+      font-size: 0.95rem;
       strong {
         color: #444;
       }
@@ -164,6 +162,9 @@
   .alert-banner {
     &__description {
       color: $color-black;
+      .text {
+        font-size: 0.9rem;
+      }
       &.warning {
         color: #fff;
         font-weight: 600;
