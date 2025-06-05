@@ -41,7 +41,7 @@ export const alertProps = {
     foldedTitle_completed: "Naloxone",
     foldedText_due: "Access never verified. Click here.",
     foldedText_completed: "Last acknowledged on {date}{user}.",
-    expandedTitle: `Patient's MME is greater than ${HIGH_RISK_MME_THRESHOLD} so higher risk of overdose. Please verify Naloxone access.`,
+    expandedTitle: `Patient's MME is >= ${HIGH_RISK_MME_THRESHOLD} and is therefore at higher risk of overdose. Please verify Naloxone access.`,
     expandedText_aboutdue:
       "This alert should be acknowledged by {duedate}.  Please verify access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
@@ -52,14 +52,14 @@ export const alertProps = {
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
   [COUNSELING_NO_RX_ALERT_TYPE]: {
-    foldedTitle_due: "Naloxone (No Rx)",
+    foldedTitle_due: "Naloxone (No opioid Rx)",
     foldedTitle_completed: "Naloxone",
     foldedText_due: "No opioids currently dispensed. Click here if counseled.",
     foldedText_due_completed_in_past:
       "{acknowledged_text}. Click here if counseling.",
     foldedText_completed: "Last acknowledged on {date}{user}.",
     expandedTitle:
-      "No Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
+      "No opioid Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
     expandedText_due:
       "Click here if Naloxone access verified, for any reason.",
     expandedText_due_completed_in_past:
@@ -69,14 +69,14 @@ export const alertProps = {
     codeSystem: COSRI_ALERTS_SYSTEM_URI,
   },
   [COUNSELING_PAST_RX_ALERT_TYPE]: {
-    foldedTitle_due: "Naloxone (Past Rx)",
+    foldedTitle_due: "Naloxone (Past opioid Rx)",
     foldedTitle_completed: "Naloxone",
     foldedText_due: "No opioids currently dispensed. Click here if counseled.",
     foldedText_due_completed_in_past:
       "{acknowledged_text}. Consider counseling.",
     foldedText_completed: "Last acknowledged on {date}{user}.",
     expandedTitle:
-      "No current Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
+      "No current opioid Rx. Naloxone may be appropriate for some individuals. Counsel if appropriate.",
     expandedText_due:
       "Click here if Naloxone access verified, for any reason.",
     expandedText_due_completed_in_past:
