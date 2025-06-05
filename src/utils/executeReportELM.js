@@ -1,4 +1,3 @@
-import FHIR from "fhirclient";
 import cql from "cql-execution";
 import extractResourcesFromELM from "./extractResourcesFromELM";
 import r4HelpersELM from "../cql/r4/FHIRHelpers.json";
@@ -19,12 +18,15 @@ import {
 } from "./executePainFactorsELM";
 
 async function executeReportELM(
+  client,
   paramPatientBundle,
   collector = [],
   paramResourceTypes = {}
 ) {
-  let client,
-    release = FHIR_RELEASE_VERSION_4,
+  if (!client) {
+    throw new Error("Invalid FHIR client.");
+  }
+  let release = FHIR_RELEASE_VERSION_4,
     patientBundle = paramPatientBundle;
   let resourceTypes = paramResourceTypes || {};
   const resourceLoaded = getResourceTypesFromPatientBundle(
@@ -36,23 +38,14 @@ async function executeReportELM(
     const resourcesToLoad = reportResources.filter(
       (resource) => resourceLoaded.indexOf(resource) === -1
     );
-    FHIR.oauth2
-      .ready()
-      .then((clientArg) => {
-        client = clientArg;
-        return Promise.allSettled(
-          [...new Set([...resourcesToLoad, ...SURVEY_FHIR_RESOURCES])].map(
-            (name) => {
-              resourceTypes[name] = false;
-              return doSearch(client, release, name, collector, resourceTypes);
-            }
-          )
-        );
-      })
-      .catch((e) => {
-        console.log("client requests error ", e);
-        throw new Error("Client requests error.");
-      })
+    Promise.allSettled(
+      [...new Set([...resourcesToLoad, ...SURVEY_FHIR_RESOURCES])].map(
+        (name) => {
+          resourceTypes[name] = false;
+          return doSearch(client, release, name, collector, resourceTypes);
+        }
+      )
+    )
       .then((requestResults) => {
         if (isEmptyArray(requestResults)) {
           return null;
@@ -78,7 +71,7 @@ async function executeReportELM(
         const patientSource = getPatientSource(release);
         try {
           patientSource.loadBundles(patientBundle);
-        } catch(e) {
+        } catch (e) {
           console.log(e);
           throw new Error("Unable to load patient resource bundle.");
         }
@@ -165,8 +158,7 @@ async function executeELMForInstrument(
   library,
   surveyPatientSource
 ) {
-  if (!instrumentKey || !library || !surveyPatientSource)
-    return null;
+  if (!instrumentKey || !library || !surveyPatientSource) return null;
   const surveyExecutor = new cql.Executor(
     library,
     new VSACAwareCodeService({}),

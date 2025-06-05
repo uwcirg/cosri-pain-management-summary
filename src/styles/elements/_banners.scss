@@ -1,4 +1,4 @@
-@use 'variables' as *;
+@use "variables" as *;
 .banner {
   text-align: center;
   padding: 20px;
@@ -18,20 +18,29 @@
     color: $color-gray-dark;
   }
 
+  &.alert-banner:not(:first-of-type) {
+    border-top: 1px solid #edebeb;
+  }
+
   &.inclusion-banner,
-  &.exclusion-banner {
-    padding: 12px 56px 12px 24px;
+  &.exclusion-banner,
+  &.alert-banner {
+    padding: 10px 56px 10px 20px;
     text-align: left;
-    background-color: $color-beige;
+    background-color: $color-beige-light;
     position: relative;
-    .info-icon {
+    .info-icon,
+    .info-text {
       color: $link-color;
       cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 900;
+      font-size: 0.9rem;
+      font-weight: 500;
       &:hover {
         color: $link-color-dark;
       }
+    }
+    .info-text {
+      margin-left: 8px;
     }
     &.warning {
       background-color: $color-red-darker;
@@ -43,27 +52,53 @@
 
     strong {
       color: $color-orange;
+      .note {
+        color: #444;
+        font-weight: normal;
+        margin-left: 8px;
+        font-size: 0.9rem;
+      }
     }
     &.warning {
       strong {
-        color: #FFF;
+        color: #fff;
+      }
+    }
+    &.alert-banner {
+      padding-top: 8px;
+      strong {
+        color: $color-red-darkest;
+        svg {
+          color: $color-red-darker;
+        }
+      }
+      &.info {
+        strong {
+          color: $link-color-dark;
+          svg {
+            color: $link-color-dark;
+          }
+        }
       }
     }
     .title {
-      margin-right: 4px
+      margin-right: 4px;
+      svg {
+        font-size: 1.1rem;
+      }
     }
 
     .warning-inside {
       width: 450px;
-      background-color:  $color-orange;
-      color: #FFF;
+      background-color: $color-orange;
+      color: #fff;
       padding: 10px;
       font-weight: 600;
     }
     .close-button {
       position: absolute;
       right: 24px;
-      color: $color-gold-light;
+      color: $color-gold-dark;
       font-size: 1.2em;
       cursor: pointer;
       transition: transform 350ms ease;
@@ -74,11 +109,24 @@
       overflow-y: hidden;
       line-height: 1.45;
       transition-property: all;
-      transition-duration: .5s;
+      transition-duration: 0.5s;
       transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+      font-size: 0.95rem;
       strong {
         color: #444;
       }
+    }
+    .error {
+      margin-left: 24px;
+      margin-top: 4px;
+      font-weight: normal;
+      font-size: 0.95rem;
+    }
+    .side-note {
+      color: #444;
+      margin-top: 4px;
+      font-size: 0.95rem;
+      margin-left: 20px;
     }
     &.close {
       .close-button {
@@ -90,19 +138,35 @@
     }
   }
 
+  &.alert-banner {
+    .close-button {
+      top: 6px;
+    }
+  }
+
+  &.alert-banner,
   &.exclusion-banner {
-    font-size: 1.1em;
+    font-size: 1rem;
+    .input {
+      font-size: 0.95em;
+      margin-top: 4px;
+      margin-left: 20px;
+    }
     .close-button {
       margin-right: 12px;
     }
   }
 
   .exclusion-banner,
-  .inclusion-banner {
+  .inclusion-banner,
+  .alert-banner {
     &__description {
       color: $color-black;
+      .text {
+        font-size: 0.9rem;
+      }
       &.warning {
-        color: #FFF;
+        color: #fff;
         font-weight: 600;
       }
     }
@@ -111,7 +175,7 @@
 
 .error-banner {
   background-color: $color-red-darker;
-  color: #FFF;
+  color: #fff;
   position: relative;
   padding: 8px 24px 8px;
   font-weight: 600;

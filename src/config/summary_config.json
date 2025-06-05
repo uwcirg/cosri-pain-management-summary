@@ -387,40 +387,6 @@
                   }
                 },
                 "flagText": "Caution for opioid prescribing, patient has been prescribed Benzodiazepine medication."
-              },
-              {
-                "flag": {
-                  "ifAnd": [
-                    {
-                      "ifEqualTo": {
-                        "header": "Class",
-                        "targetValue": "opioid"
-                      }
-                    },
-                    {
-                      "ifGreaterThanOrEqualTo": {
-                        "header": "MME",
-                        "targetValue": 50
-                      }
-                    },
-                    {
-                      "ifEqualTo": {
-                        "header": "isActive",
-                        "type": "boolean",
-                        "targetValue": true
-                      }
-                    },
-                    {
-                      "ifEqualTo": {
-                        "header": "isBup",
-                        "type": "boolean",
-                        "targetValue": false
-                      }
-                    }
-                  ]
-                },
-                "flagText": "Current MME 50 or more, consider prescribing Naloxone",
-                "flagClass": "info"
               }
             ]
           }
