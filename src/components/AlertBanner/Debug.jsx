@@ -244,7 +244,7 @@ const Debug = ({ summaryData, params, display }) => {
             FOR TESTING ( development only ){" "}
           </h4>
           {renderMMEInputView()}
-          {currentCommunication && renderResetDateView()}
+          {renderResetDateView()}
           <br />
           <hr />
           {renderResetAllView()}
