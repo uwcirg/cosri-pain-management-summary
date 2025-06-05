@@ -28,7 +28,7 @@ export const alertProps = {
     expandedTitle:
       "Naloxone is recommended for every patient receiving opioids. Please verify access annually.",
     expandedText_aboutdue:
-      "This alert should be acknowledged by {duedate}.  Please verify access and acknowledge.",
+      "This alert should be acknowledged by {duedate}.  Please verify Naloxone access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
     expandedText_completed:
       "This alert should next be acknowledged after {duedate}.",
@@ -41,9 +41,9 @@ export const alertProps = {
     foldedTitle_completed: "Naloxone",
     foldedText_due: "Access never verified. Click here.",
     foldedText_completed: "Last acknowledged on {date}{user}.",
-    expandedTitle: `Patient's MME is >= ${HIGH_RISK_MME_THRESHOLD} and is therefore at higher risk of overdose. Please verify Naloxone access.`,
+    expandedTitle: `Patient's MME is >= ${HIGH_RISK_MME_THRESHOLD} and is therefore at higher risk of overdose. Please verify Naloxone access and acknowledge annually.`,
     expandedText_aboutdue:
-      "This alert should be acknowledged by {duedate}.  Please verify access and acknowledge.",
+      "This alert should be acknowledged by {duedate}.  Please verify Naloxone access and acknowledge.",
     expandedText_due: "Please verify access and acknowledge this alert.",
     expandedText_completed:
       "This alert should next be acknowledged after {duedate}.",
