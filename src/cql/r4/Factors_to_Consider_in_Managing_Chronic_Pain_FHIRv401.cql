@@ -76,6 +76,8 @@
 //  Buprenorphine related changes, see ReportBuprenorphineMedicationRequests, GetBuprenorphineMMEListByDates,GetNoNBuprenorphineMMEListByDates,
 //  ReportDailyMMEByDateWithoutBuprenorphine, ReportDailyMMEByDateWithBuprenorphineOnly
 //  update alert check for MedicationRequestsForNaloxoneConsideration to consider Non-Bup MedicationRequests only, see NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
+// Update 20250613
+// Use UW lab identifier URL to consume relevant urine lab ServiceRequest resources
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -292,6 +294,7 @@ define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.c
 define UWMC_UDS_SYSTEM_URL:'https://fakelab.com/cdsr3'
 //lab panel test order code from lab corp and quest diagnostics, TODO: replace UWMC code, abc123, when real one is available
 define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428', 'abc123'}
+define UWMC_LAB_SYSTEM_IDENTIFIER_URL: 'http://www.uwmedicine.org/lab_order_id'
 
 //CS agreement concept code
 define CS_AGREEMENT_CODE: '94136-9'
@@ -1151,12 +1154,19 @@ define ReportUrineLabServiceRequestsByCustomCode:
   [ServiceRequest] O
   let c: O.code as FHIR.CodeableConcept
   where (
-    c is not null and
-    c.coding is not null and
-    (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
-    (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
-     c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
-     c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+    (
+      O.identifier is not null and
+      O.identifier[0].system ~ UWMC_LAB_SYSTEM_IDENTIFIER_URL
+    )
+    or 
+    (
+      c is not null and
+      c.coding is not null and
+      (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
+      (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
+      c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
+      c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+      )
     )
   )
   return {

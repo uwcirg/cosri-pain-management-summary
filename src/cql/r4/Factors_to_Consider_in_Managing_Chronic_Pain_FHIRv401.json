@@ -459,6 +459,15 @@
                } ]
             }
          }, {
+            "name" : "UWMC_LAB_SYSTEM_IDENTIFIER_URL",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "http://www.uwmedicine.org/lab_order_id",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "CS_AGREEMENT_CODE",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -8882,126 +8891,19 @@
                } ],
                "relationship" : [ ],
                "where" : {
-                  "type" : "And",
+                  "type" : "Or",
                   "operand" : [ {
                      "type" : "And",
                      "operand" : [ {
-                        "type" : "And",
-                        "operand" : [ {
-                           "type" : "Not",
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
                            "operand" : {
-                              "type" : "IsNull",
-                              "operand" : {
-                                 "name" : "c",
-                                 "type" : "QueryLetRef"
-                              }
+                              "path" : "identifier",
+                              "scope" : "O",
+                              "type" : "Property"
                            }
-                        }, {
-                           "type" : "Not",
-                           "operand" : {
-                              "type" : "IsNull",
-                              "operand" : {
-                                 "path" : "coding",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "name" : "c",
-                                    "type" : "QueryLetRef"
-                                 }
-                              }
-                           }
-                        } ]
-                     }, {
-                        "type" : "Contains",
-                        "operand" : [ {
-                           "name" : "Urine_Screen_Panel_Test_Order_Codes",
-                           "type" : "ExpressionRef"
-                        }, {
-                           "path" : "value",
-                           "type" : "Property",
-                           "source" : {
-                              "path" : "code",
-                              "type" : "Property",
-                              "source" : {
-                                 "type" : "Indexer",
-                                 "operand" : [ {
-                                    "path" : "coding",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "c",
-                                       "type" : "QueryLetRef"
-                                    }
-                                 }, {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                    "value" : "0",
-                                    "type" : "Literal"
-                                 } ]
-                              }
-                           }
-                        } ]
-                     } ]
-                  }, {
-                     "type" : "Or",
-                     "operand" : [ {
-                        "type" : "Or",
-                        "operand" : [ {
-                           "type" : "Equivalent",
-                           "operand" : [ {
-                              "name" : "ToString",
-                              "libraryName" : "FHIRHelpers",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "path" : "system",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "type" : "Indexer",
-                                    "operand" : [ {
-                                       "path" : "coding",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "name" : "c",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }, {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "0",
-                                       "type" : "Literal"
-                                    } ]
-                                 }
-                              } ]
-                           }, {
-                              "name" : "LAB_CORP_SYSTEM_VALUE",
-                              "type" : "ExpressionRef"
-                           } ]
-                        }, {
-                           "type" : "Equivalent",
-                           "operand" : [ {
-                              "name" : "ToString",
-                              "libraryName" : "FHIRHelpers",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "path" : "system",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "type" : "Indexer",
-                                    "operand" : [ {
-                                       "path" : "coding",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "name" : "c",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }, {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "0",
-                                       "type" : "Literal"
-                                    } ]
-                                 }
-                              } ]
-                           }, {
-                              "name" : "QUEST_DIAGNOSTICS_SYSTEM_VALUE",
-                              "type" : "ExpressionRef"
-                           } ]
-                        } ]
+                        }
                      }, {
                         "type" : "Equivalent",
                         "operand" : [ {
@@ -9014,12 +8916,9 @@
                               "source" : {
                                  "type" : "Indexer",
                                  "operand" : [ {
-                                    "path" : "coding",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "name" : "c",
-                                       "type" : "QueryLetRef"
-                                    }
+                                    "path" : "identifier",
+                                    "scope" : "O",
+                                    "type" : "Property"
                                  }, {
                                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                                     "value" : "0",
@@ -9028,8 +8927,160 @@
                               }
                            } ]
                         }, {
-                           "name" : "UWMC_UDS_SYSTEM_URL",
+                           "name" : "UWMC_LAB_SYSTEM_IDENTIFIER_URL",
                            "type" : "ExpressionRef"
+                        } ]
+                     } ]
+                  }, {
+                     "type" : "And",
+                     "operand" : [ {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "And",
+                           "operand" : [ {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "c",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }, {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "coding",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "c",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              }
+                           } ]
+                        }, {
+                           "type" : "Contains",
+                           "operand" : [ {
+                              "name" : "Urine_Screen_Panel_Test_Order_Codes",
+                              "type" : "ExpressionRef"
+                           }, {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "code",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "type" : "Indexer",
+                                    "operand" : [ {
+                                       "path" : "coding",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "c",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "value" : "0",
+                                       "type" : "Literal"
+                                    } ]
+                                 }
+                              }
+                           } ]
+                        } ]
+                     }, {
+                        "type" : "Or",
+                        "operand" : [ {
+                           "type" : "Or",
+                           "operand" : [ {
+                              "type" : "Equivalent",
+                              "operand" : [ {
+                                 "name" : "ToString",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "system",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "type" : "Indexer",
+                                       "operand" : [ {
+                                          "path" : "coding",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "c",
+                                             "type" : "QueryLetRef"
+                                          }
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
+                                       } ]
+                                    }
+                                 } ]
+                              }, {
+                                 "name" : "LAB_CORP_SYSTEM_VALUE",
+                                 "type" : "ExpressionRef"
+                              } ]
+                           }, {
+                              "type" : "Equivalent",
+                              "operand" : [ {
+                                 "name" : "ToString",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "system",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "type" : "Indexer",
+                                       "operand" : [ {
+                                          "path" : "coding",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "c",
+                                             "type" : "QueryLetRef"
+                                          }
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
+                                       } ]
+                                    }
+                                 } ]
+                              }, {
+                                 "name" : "QUEST_DIAGNOSTICS_SYSTEM_VALUE",
+                                 "type" : "ExpressionRef"
+                              } ]
+                           } ]
+                        }, {
+                           "type" : "Equivalent",
+                           "operand" : [ {
+                              "name" : "ToString",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "system",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "type" : "Indexer",
+                                    "operand" : [ {
+                                       "path" : "coding",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "c",
+                                          "type" : "QueryLetRef"
+                                       }
+                                    }, {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                       "value" : "0",
+                                       "type" : "Literal"
+                                    } ]
+                                 }
+                              } ]
+                           }, {
+                              "name" : "UWMC_UDS_SYSTEM_URL",
+                              "type" : "ExpressionRef"
+                           } ]
                         } ]
                      } ]
                   } ]
