@@ -292,6 +292,7 @@ define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.c
 define UWMC_UDS_SYSTEM_URL:'https://fakelab.com/cdsr3'
 //lab panel test order code from lab corp and quest diagnostics, TODO: replace UWMC code, abc123, when real one is available
 define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428', 'abc123'}
+define UWMC_LAB_SYSTEM_IDENTIFIER_URL: 'http://www.uwmedicine.org/lab_order_id'
 
 //CS agreement concept code
 define CS_AGREEMENT_CODE: '94136-9'
@@ -1151,12 +1152,19 @@ define ReportUrineLabServiceRequestsByCustomCode:
   [ServiceRequest] O
   let c: O.code as FHIR.CodeableConcept
   where (
-    c is not null and
-    c.coding is not null and
-    (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
-    (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
-     c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
-     c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+    (
+      O.identifier is not null and
+      O.identifier[0].system ~ UWMC_LAB_SYSTEM_IDENTIFIER_URL
+    )
+    or 
+    (
+      c is not null and
+      c.coding is not null and
+      (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
+      (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
+      c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
+      c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+      )
     )
   )
   return {
