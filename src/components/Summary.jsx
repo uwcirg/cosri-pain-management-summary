@@ -25,6 +25,7 @@ import ProviderIcon from "../icons/ProviderIcon";
 import UserIcon from "../icons/UserIcon";
 import FlaskIcon from "../icons/FlaskIcon";
 import ErrorBanner from "./ErrorBanner";
+import AlertBanner from "./AlertBanner";
 import InclusionBanner from "./InclusionBanner";
 import ExclusionBanner from "./ExclusionBanner";
 import DataInfo from "./DataInfo";
@@ -36,10 +37,7 @@ import SideNav from "./SideNav";
 import Table from "./Table";
 import Warning from "./Warning";
 import MMEGraph from "./graph/MMEGraph";
-import {
-  initTocBot,
-  destroyTocBot,
-} from "../config/tocbot_config";
+import { initTocBot, destroyTocBot } from "../config/tocbot_config";
 import Version from "../elements/Version";
 import {
   getErrorMessageString,
@@ -49,7 +47,6 @@ import {
   isReportEnabled,
 } from "../helpers/utility";
 import { getScoringData } from "./Report/utility";
-import tocbot from "tocbot";
 
 export default class Summary extends Component {
   constructor() {
@@ -79,7 +76,7 @@ export default class Summary extends Component {
     if (!document.querySelector("nav")) return;
     const isActiveTab = this.parentContainerRef.current.closest(".active");
     const MIN_HEADER_HEIGHT = isActiveTab ? 180 : 100;
-    const parentSelector = isActiveTab ? ".active": ".overview";
+    const parentSelector = isActiveTab ? ".active" : ".overview";
     destroyTocBot();
     initTocBot({
       tocSelector: `${parentSelector} .summary__nav`, // where to render the table of contents
@@ -883,6 +880,7 @@ export default class Summary extends Component {
       PatientRiskOverview_graph,
       PatientRiskOverview_alerts,
       PatientRiskOverview_stats,
+      dailyMMEData,
       ...CQLSummary
     } = summary;
     if (!summary) {
@@ -905,6 +903,13 @@ export default class Summary extends Component {
           </h1>
           {hasErrors && <ErrorBanner errors={this.props.errorCollection} />}
           {meetsInclusionCriteria && <ExclusionBanner />}
+          {<AlertBanner summaryData={dailyMMEData}></AlertBanner>}
+          {/* {
+            <AlertBanner
+              type="highRiskMME"
+              summaryData={dailyMMEData}
+            ></AlertBanner>
+          } */}
           {!hasErrors && !meetsInclusionCriteria && (
             <InclusionBanner dismissible={meetsInclusionCriteria} />
           )}
