@@ -46,11 +46,11 @@ export default class ExclusionBanner extends Component {
         <div className="exclusion-banner__description">
           <strong className="title">
             <FontAwesomeIcon icon={faExclamationCircle} title="notice" />{" "}
-            LIMITATIONS
+            Limitations
           </strong>{" "}
-          Guidance for adult pain except...{" "}
+          <span className="text">Guidance for adult pain except...{" "}</span>
           <span className="info-icon" role="button">
-            (click here)
+            Click here
           </span>
           .
           <div className="content">

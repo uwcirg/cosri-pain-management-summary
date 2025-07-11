@@ -6,21 +6,9 @@ import reportSummarySections from "../config/report_config";
 import { shortDateRE, dateREZ } from "./formatit";
 import { getTokenInfoFromStorage } from "./timeout";
 
-/*
- * return number of days between two dates
- * @params dateString1 date #1 to be compared
- *         dateString2 date #2 to be compared
- */
-export function getDiffDays(dateString1, dateString2) {
-  if (!dateString1 || !dateString2) return 0;
-  //set two date variables
-  let date1 = new Date(dateString1),
-    date2 = new Date(dateString2);
-  // To calculate the time difference of two dates
-  var diffInTime = date2.getTime() - date1.getTime();
-  // To calculate the no. of days between two dates
-  return Math.ceil(diffInTime / (1000 * 3600 * 24));
-}
+export const noCacheHeader = {
+  "Cache-Control": "no-cache",
+};
 
 /*
  * return Date object for a given input date string
@@ -40,6 +28,20 @@ export function getDateObjectInLocalDateTime(input) {
   return new Date(input);
 }
 
+export function isDateTimeInPast(dateString1, dateString2) {
+  return moment(dateString1).isBefore(moment(dateString2));
+}
+
+/*
+ * return number of days between two dates
+ * @params dateString1 date #1 to be compared
+ *         dateString2 date #2 to be compared
+ */
+export function getDiffDays(dateString1, dateString2) {
+  if (!dateString1 || !dateString2) return 0;
+  return moment(dateString2).diff(dateString1, "days", true);
+}
+
 /*
  * return number of months difference
  * @params startDate, endDate of type Date
@@ -55,10 +57,36 @@ export function getDiffMonths(startDate, endDate) {
  * @params firstDate, secondDate of type Date object
  */
 export function isDateInPast(firstDate, secondDate) {
-  if (firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)) {
+  if (firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0)) {
     return true;
   }
   return false;
+}
+
+/*
+ * return computed date in string
+ * @param date - date string to add number of Months to
+ * @param numMonths - the number of months to add in integer
+ */
+export function addMonthsToDate(dateString, numMonths) {
+  if (!dateString) return moment().add(numMonths, "month").toISOString();
+  return moment(dateString).add(numMonths, "month").toISOString();
+}
+
+export function getArrayOfDatesFromToday(numberOfDays = 0) {
+  const today = new Date();
+  const datesArray = [];
+
+  for (let i = 0; i < numberOfDays; i++) {
+    const currentDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + i
+    );
+    datesArray.push(currentDate);
+  }
+
+  return datesArray;
 }
 /*
  * check if an image has completed loading
@@ -579,6 +607,7 @@ export function isProduction() {
 export function getEnvConfidentialAPIURL() {
   return getEnv(`${ENV_VAR_PREFIX}_CONF_API_URL`);
 }
+
 // write to audit log
 export function writeToLog(message, level, params) {
   if (!getEnvConfidentialAPIURL()) return;
@@ -776,3 +805,43 @@ export function addMatomoTracking() {
   g.setAttribute("id", "matomoScript");
   headElement.appendChild(g);
 }
+
+export function getHighRiskMMEThreshold() {
+  const envThreshold = getEnv(`${ENV_VAR_PREFIX}_HIGH_RISK_MME_THRESHOLD`);
+  if (envThreshold) return envThreshold;
+  return 50;
+}
+
+export async function deleteFHIRResourcesByType(type, client, patientId) {
+  if (!type || !client || !patientId) return null;
+  const results = await client
+    .request({
+      url: `${type}?patient=${patientId}&_count=1000`,
+      headers: noCacheHeader,
+    })
+    .catch((e) => {
+      throw new Error(e);
+    });
+  if (results && !isEmptyArray(results.entry)) {
+    return Promise.all(
+      results.entry.map((item) => {
+        const resource = item.resource;
+        const resourceId = resource?.id;
+        return client.delete(`${type}/${resourceId}`);
+      })
+    )
+      .then((results) => {
+        if (!results) throw new Error("no results returned.");
+      })
+      .catch((e) => {
+        console.log(e);
+        throw new Error(e);
+      });
+  }
+  return null;
+}
+
+export const isDebugging = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return !!urlParams.get("debugging");
+};
