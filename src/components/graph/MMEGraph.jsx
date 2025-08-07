@@ -26,6 +26,7 @@ const defaultFields = {
 const xFieldName = defaultFields.x;
 const yFieldName = defaultFields.y;
 const Y_FIELD_LABEL = "MME";
+const Y_LONG_TITLE = "Morphine Milligram Equivalents";
 const DEFAULT_STROKE_COLOR = "#168698";
 export default class MMEGraph extends Component {
   constructor() {
@@ -390,6 +391,10 @@ export default class MMEGraph extends Component {
     return siteGraphAttributes.consultationLine;
   }
 
+  renderTitle() {
+    return <div className="title">{`${Y_LONG_TITLE} (${Y_FIELD_LABEL})`}</div>;
+  }
+
   render() {
     /*
      *  example data format: [{"dateWritten":"2019-04-15","MMEValue":40},
@@ -597,7 +602,7 @@ export default class MMEGraph extends Component {
     if (hasError) {
       return (
         <div className="MMEgraph no-entry">
-          <div className="title">{`Morphine Equivalent Dose (${Y_FIELD_LABEL})`}</div>
+          {this.renderTitle()}
           <div className="no-entry error">
             {`Graph not shown. One or more of this patient's opioid medications
               was not found in RxNav, therefore the ${Y_FIELD_LABEL} could not be calculated
@@ -612,7 +617,7 @@ export default class MMEGraph extends Component {
     if (noEntry) {
       return (
         <div className="MMEgraph no-entry">
-          <div className="title">{`Morphine Equivalent Dose (${Y_FIELD_LABEL})`}</div>
+          {this.renderTitle()}
           <div className="no-entry">
             No opioid Rx found for this patient in the PMP
           </div>
@@ -628,7 +633,7 @@ export default class MMEGraph extends Component {
           className={`MMEgraph ${shouldShowSwitches ? "contain-switches" : ""}`}
         >
           <div className="flex">
-            <div className="title">{`Morphine Equivalent Dose (${Y_FIELD_LABEL})`}</div>
+            {this.renderTitle()}
             <div>{this.renderCopyButton()}</div>
           </div>
           <div className="flex">
