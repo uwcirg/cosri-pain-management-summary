@@ -1127,6 +1127,7 @@ define UrineDrugScreens:
 define ReportUrineDrugScreensByObservation:
   (UrineDrugScreens) S
   return {
+    ID: S.id,
     Name:           ConceptText(S.code),
     Result:         Coalesce(
       QuantityText(S.value as FHIR.Quantity),
@@ -1144,6 +1145,7 @@ define ReportUrineLabServiceRequests:
   ([ServiceRequest: "Urine drug screen for pain management"]) O
   let c: O.code as FHIR.CodeableConcept
   return {
+    ID: O.id,
     Name: ConceptText(c),
     Date: DateTimeText(O.authoredOn)
   }
@@ -1170,6 +1172,7 @@ define ReportUrineLabServiceRequestsByCustomCode:
     )
   )
   return {
+    ID: O.id,
     Name: ConceptText(c),
     Date: DateTimeText(O.authoredOn),
     Next_Screen_Date: O.authoredOn + 12 months
