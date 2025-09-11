@@ -591,6 +591,10 @@ export function addButtonErrorStateTransition(buttonRef, transitionDuration) {
   }, transitionDuration || 1000);
 }
 
+export function getEnvEnableDebugTesting() {
+  return getEnv(`${ENV_VAR_PREFIX}_ENABLE_DEBUG_TESTING`);
+}
+
 export function getEnvSystemType() {
   return getEnv(`${ENV_VAR_PREFIX}_SYSTEM_TYPE`);
 }
@@ -601,7 +605,11 @@ export function isNotProduction() {
 }
 
 export function isProduction() {
-  return String(getEnvSystemType()).toLowerCase() !== "development";
+  return String(getEnvSystemType()).toLowerCase() === "production";
+}
+
+export function isDevelopment() {
+  return String(getEnvSystemType()).toLowerCase() === "development";
 }
 
 export function getEnvConfidentialAPIURL() {

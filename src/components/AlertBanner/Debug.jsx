@@ -1,7 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { dateFormat } from "../../helpers/formatit";
-import { addMonthsToDate, getEnvSystemType } from "../../helpers/utility";
+import {
+  addMonthsToDate,
+  getEnvEnableDebugTesting,
+  isDevelopment,
+  isProduction,
+} from "../../helpers/utility";
 import * as alertUtil from "./utility.js";
 
 const Debug = ({ summaryData, params, display }) => {
@@ -228,7 +233,15 @@ const Debug = ({ summaryData, params, display }) => {
     return () => removeEventListeners();
   }, []);
 
-  if (getEnvSystemType() !== "development") return null;
+  const shouldShow = () => {
+    // WILL NOT SHOW THIS IN PROD
+    if (isProduction()) return false;
+    if (isDevelopment()) return true;
+    // enable via config
+    return !!getEnvEnableDebugTesting();
+  };
+
+  if (!shouldShow()) return null;
   return (
     <div
       className="flex flex-align-start"
