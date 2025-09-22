@@ -76,6 +76,8 @@
 //  Buprenorphine related changes, see ReportBuprenorphineMedicationRequests, GetBuprenorphineMMEListByDates,GetNoNBuprenorphineMMEListByDates,
 //  ReportDailyMMEByDateWithoutBuprenorphine, ReportDailyMMEByDateWithBuprenorphineOnly
 //  update alert check for MedicationRequestsForNaloxoneConsideration to consider Non-Bup MedicationRequests only, see NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
+// Update 20250613
+// Use UW lab identifier URL to consume relevant urine lab ServiceRequest resources
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -292,6 +294,7 @@ define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.c
 define UWMC_UDS_SYSTEM_URL:'https://fakelab.com/cdsr3'
 //lab panel test order code from lab corp and quest diagnostics, TODO: replace UWMC code, abc123, when real one is available
 define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428', 'abc123'}
+define UWMC_LAB_SYSTEM_IDENTIFIER_URL: 'http://www.uwmedicine.org/lab_order_id'
 
 //CS agreement concept code
 define CS_AGREEMENT_CODE: '94136-9'
@@ -933,23 +936,27 @@ define ReportNonPharmacologicTreatmentProcedures:
   }
   sort by Date desc
 
-define NonPharmacologicTreatmentServiceRequests:
-  C3F.ServiceRequestActiveOrCompleted(
-    C3F.ServiceRequestLookBack([ServiceRequest: "Non pharmacologic treatments for chronic pain"], 2 years)
-  )
+// TODO check these for accuracy, not currently used  
 
-define ReportNonPharmacologicTreatmentServiceRequests:
-  (NonPharmacologicTreatmentServiceRequests) P
-  return {
-    Type: 'ServiceRequest',
-    Name: ConceptText(P.code),
-    Date: DateTimeText(P.authoredOn)
-  }
-  sort by Date desc
+// define NonPharmacologicTreatmentServiceRequests:
+//   [ServiceRequest: "Non pharmacologic treatments for chronic pain"]
+
+// define RecentNonPharmacologicTreatmentServiceRequests:
+//   C3F.ServiceRequestActiveOrCompleted(
+//     C3F.ServiceRequestLookBack(NonPharmacologicTreatmentServiceRequests, 2 years)
+//   )
+
+// define ReportNonPharmacologicTreatmentServiceRequests:
+//   (RecentNonPharmacologicTreatmentServiceRequests) P
+//   return {
+//     Type: 'ServiceRequest',
+//     Name: ConceptText(P.code),
+//     Date: DateTimeText(P.authoredOn)
+//   }
+//   sort by Date desc
 
 define ReportNonPharmacologicTreatments:
-  (ReportNonPharmacologicTreatmentProcedures
-    union ReportNonPharmacologicTreatmentServiceRequests) M
+  (ReportNonPharmacologicTreatmentProcedures) M
   sort by Date desc
 
 
@@ -1124,6 +1131,7 @@ define UrineDrugScreens:
 define ReportUrineDrugScreensByObservation:
   (UrineDrugScreens) S
   return {
+    ID: S.id,
     Name:           ConceptText(S.code),
     Result:         Coalesce(
       QuantityText(S.value as FHIR.Quantity),
@@ -1138,28 +1146,47 @@ define ReportUrineDrugScreensByObservation:
 
 // Urine drug screen from service request,  matching on LOINC code and system = http://loinc.org
 define ReportUrineLabServiceRequests:
-  ([ServiceRequest: "Urine drug screen for pain management"]) O
-  let c: O.code as FHIR.CodeableConcept
-  return {
-    Name: ConceptText(c),
-    Date: DateTimeText(O.authoredOn)
-  }
-  sort by Date desc
+  ([ServiceRequest] S
+    let c: if S.code is not null then S.code as FHIR.CodeableConcept else null
+    where (
+      c is not null and
+      c.coding is not null and
+      c.coding[0] is not null and 
+      c.coding[0].code is not null and
+      c.coding[0].code.value in "Urine drug screen for pain management"
+    )) O
+    let c: O.code as FHIR.CodeableConcept
+    return {
+      ID: O.id,
+      Name: ConceptText(c),
+      Date: DateTimeText(O.authoredOn)
+    }
+    sort by Date desc
 
 // Urine drug screen from service request,  matching on custom system and concept code, e.g. sites using labcorp for testing
 define ReportUrineLabServiceRequestsByCustomCode:
   [ServiceRequest] O
   let c: O.code as FHIR.CodeableConcept
   where (
-    c is not null and
-    c.coding is not null and
-    (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
-    (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
-     c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
-     c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+    (
+      O.identifier is not null and
+      O.identifier[0].system ~ UWMC_LAB_SYSTEM_IDENTIFIER_URL
+    )
+    or 
+    (
+      c is not null and
+      c.coding is not null and
+      c.coding[0] is not null and 
+      c.coding[0].code is not null and 
+      (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
+      (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
+      c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
+      c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+      )
     )
   )
   return {
+    ID: O.id,
     Name: ConceptText(c),
     Date: DateTimeText(O.authoredOn),
     Next_Screen_Date: O.authoredOn + 12 months
