@@ -78,6 +78,9 @@
 //  update alert check for MedicationRequestsForNaloxoneConsideration to consider Non-Bup MedicationRequests only, see NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
 // Update 20250613
 // Use UW lab identifier URL to consume relevant urine lab ServiceRequest resources
+// Update 20250922
+// Commented out NonPharmacologicTreatmentServiceRequests code as it is not currently used and it needs to be checked for accuracy
+
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -936,23 +939,30 @@ define ReportNonPharmacologicTreatmentProcedures:
   }
   sort by Date desc
 
-define NonPharmacologicTreatmentServiceRequests:
-  C3F.ServiceRequestActiveOrCompleted(
-    C3F.ServiceRequestLookBack([ServiceRequest: "Non pharmacologic treatments for chronic pain"], 2 years)
-  )
+// TODO check these for accuracy, not currently used  
+// "Non pharmacologic treatments for chronic pain" seems to match valuesets of multiple versions
 
-define ReportNonPharmacologicTreatmentServiceRequests:
-  (NonPharmacologicTreatmentServiceRequests) P
-  return {
-    Type: 'ServiceRequest',
-    Name: ConceptText(P.code),
-    Date: DateTimeText(P.authoredOn)
-  }
-  sort by Date desc
+// define NonPharmacologicTreatmentServiceRequests:
+//   C3F.ServiceRequestActiveOrCompleted(
+//     C3F.ServiceRequestLookBack([ServiceRequest: "Non pharmacologic treatments for chronic pain"], 2 years)
+//   )
+
+// define ReportNonPharmacologicTreatmentServiceRequests:
+//   (NonPharmacologicTreatmentServiceRequests) P
+//   return {
+//     Type: 'ServiceRequest',
+//     Name: ConceptText(P.code),
+//     Date: DateTimeText(P.authoredOn)
+//   }
+//   sort by Date desc
+
+// define ReportNonPharmacologicTreatments:
+//   (ReportNonPharmacologicTreatmentProcedures
+//     union ReportNonPharmacologicTreatmentServiceRequests) M
+//   sort by Date desc
 
 define ReportNonPharmacologicTreatments:
-  (ReportNonPharmacologicTreatmentProcedures
-    union ReportNonPharmacologicTreatmentServiceRequests) M
+  (ReportNonPharmacologicTreatmentProcedures) M
   sort by Date desc
 
 
@@ -1142,14 +1152,22 @@ define ReportUrineDrugScreensByObservation:
 
 // Urine drug screen from service request,  matching on LOINC code and system = http://loinc.org
 define ReportUrineLabServiceRequests:
-  ([ServiceRequest: "Urine drug screen for pain management"]) O
-  let c: O.code as FHIR.CodeableConcept
-  return {
-    ID: O.id,
-    Name: ConceptText(c),
-    Date: DateTimeText(O.authoredOn)
-  }
-  sort by Date desc
+  ([ServiceRequest] S
+    let c: if S.code is not null then S.code as FHIR.CodeableConcept else null
+    where (
+      c is not null and
+      c.coding is not null and
+      c.coding[0] is not null and 
+      c.coding[0].code is not null and
+      c.coding[0].code.value in "Urine drug screen for pain management"
+    )) O
+    let c: O.code as FHIR.CodeableConcept
+    return {
+      ID: O.id,
+      Name: ConceptText(c),
+      Date: DateTimeText(O.authoredOn)
+    }
+    sort by Date desc
 
 // Urine drug screen from service request,  matching on custom system and concept code, e.g. sites using labcorp for testing
 define ReportUrineLabServiceRequestsByCustomCode:
@@ -1164,6 +1182,8 @@ define ReportUrineLabServiceRequestsByCustomCode:
     (
       c is not null and
       c.coding is not null and
+      c.coding[0] is not null and 
+      c.coding[0].code is not null and 
       (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
       (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
       c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or

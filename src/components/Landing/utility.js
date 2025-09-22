@@ -171,15 +171,16 @@ export function getProcessedSummaryData(summary, summaryMap) {
     summaryMap[sectionKey]["sections"].forEach((subSection) => {
       // for each sub section
       if (!subSection) return true;
-      //don't process flags for sub section that will be hidden
-      if (subSection["hideSection"]) {
-        summary[subSection.dataKeySource][subSection.dataKey] = [];
-        return true;
-      }
       const keySource = summary[subSection.dataKeySource];
       if (!keySource) {
         return true;
       }
+      //don't process flags for sub section that will be hidden
+      if (subSection["hideSection"]) {
+        keySource[subSection.dataKey] = [];
+        return true;
+      }
+
       const data = keySource[subSection.dataKey];
       const entries = (Array.isArray(data) ? data : [data]).filter(
         (r) => r != null
