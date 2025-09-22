@@ -295,16 +295,13 @@ export function getSummaryGraphDataSet(graphConfig, summaryData) {
         ...defaultConfig,
         data: getProcessedGraphData(
           graphConfig,
-          summaryData[defaultConfig.section_key] &&
-            summaryData[defaultConfig.section_key][defaultConfig.subSection_key]
-            ? JSON.parse(
-                JSON.stringify(
-                  summaryData[defaultConfig.section_key][
-                    defaultConfig.subSection_key
-                  ]
-                )
-              )
-            : null
+          JSON.parse(
+            JSON.stringify(
+              summaryData[defaultConfig.section_key][
+                defaultConfig.subSection_key
+              ]
+            )
+          )
         ),
       };
   }
@@ -619,7 +616,7 @@ export function getProcessedStatsData(statsConfig, summaryData) {
   if (!statsConfig || isEmptyArray(statsConfig.data)) return stats;
   const statsFields = statsConfig.data;
   const dataSource = summaryData[statsConfig.dataKeySource]
-    ? summaryData[statsConfig.dataKeySource][statsConfig.dataKey] ?? []
+    ? summaryData[statsConfig.dataKeySource][statsConfig.dataKey]
     : [];
 
   //compile tally of source identified by a key
@@ -636,13 +633,13 @@ export function getProcessedStatsData(statsConfig, summaryData) {
         matchItem.data = [];
         /* get matching data for each key */
         subitem.keys.forEach((key) => {
-          let matchedData = dataSource?.filter((d) => {
+          let matchedData = dataSource.filter((d) => {
             if (Array.isArray(d[keyMatch])) {
               return d[keyMatch].indexOf(key) !== -1;
             }
             return d[keyMatch] === key;
           });
-          matchItem.data = [...matchItem.data, ...(matchedData ?? [])];
+          matchItem.data = [...matchItem.data, ...matchedData];
         });
         summaryFields.forEach((summaryField) => {
           if (summaryField.key === "total") {
@@ -667,11 +664,11 @@ export function getProcessedStatsData(statsConfig, summaryData) {
       stats[item.title] = statItem;
     } //end if keyMatch & matchSet
     else if (keyMatch) {
-      let filteredStatsSource = dataSource?.filter(
+      let filteredStatsSource = dataSource.filter(
         (element) => element[item.keyMatch]
       );
       filteredStatsSource = Array.from(
-        new Set(filteredStatsSource?.map((subitem) => subitem[item.keyMatch]))
+        new Set(filteredStatsSource.map((subitem) => subitem[item.keyMatch]))
       );
       statItem[item.title] = filteredStatsSource.length;
       stats.push(statItem);

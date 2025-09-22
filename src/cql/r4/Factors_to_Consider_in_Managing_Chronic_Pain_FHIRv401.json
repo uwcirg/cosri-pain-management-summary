@@ -459,15 +459,6 @@
                } ]
             }
          }, {
-            "name" : "UWMC_LAB_SYSTEM_IDENTIFIER_URL",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "valueType" : "{urn:hl7-org:elm-types:r1}String",
-               "value" : "http://www.uwmedicine.org/lab_order_id",
-               "type" : "Literal"
-            }
-         }, {
             "name" : "CS_AGREEMENT_CODE",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -7581,6 +7572,93 @@
                }
             }
          }, {
+            "name" : "NonPharmacologicTreatmentServiceRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "name" : "ServiceRequestActiveOrCompleted",
+               "libraryName" : "C3F",
+               "type" : "FunctionRef",
+               "operand" : [ {
+                  "name" : "ServiceRequestLookBack",
+                  "libraryName" : "C3F",
+                  "type" : "FunctionRef",
+                  "operand" : [ {
+                     "dataType" : "{http://hl7.org/fhir}ServiceRequest",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/ServiceRequest",
+                     "codeProperty" : "code",
+                     "codeComparator" : "in",
+                     "type" : "Retrieve",
+                     "codes" : {
+                        "name" : "Non pharmacologic treatments for chronic pain",
+                        "preserve" : true,
+                        "type" : "ValueSetRef"
+                     }
+                  }, {
+                     "value" : 2,
+                     "unit" : "years",
+                     "type" : "Quantity"
+                  } ]
+               } ]
+            }
+         }, {
+            "name" : "ReportNonPharmacologicTreatmentServiceRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "P",
+                  "expression" : {
+                     "name" : "NonPharmacologicTreatmentServiceRequests",
+                     "type" : "ExpressionRef"
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Type",
+                        "value" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "ServiceRequest",
+                           "type" : "Literal"
+                        }
+                     }, {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "code",
+                              "scope" : "P",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Date",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "P",
+                              "type" : "Property"
+                           } ]
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
+                     "direction" : "desc",
+                     "path" : "Date",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
             "name" : "ReportNonPharmacologicTreatments",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -7589,8 +7667,14 @@
                "source" : [ {
                   "alias" : "M",
                   "expression" : {
-                     "name" : "ReportNonPharmacologicTreatmentProcedures",
-                     "type" : "ExpressionRef"
+                     "type" : "Union",
+                     "operand" : [ {
+                        "name" : "ReportNonPharmacologicTreatmentProcedures",
+                        "type" : "ExpressionRef"
+                     }, {
+                        "name" : "ReportNonPharmacologicTreatmentServiceRequests",
+                        "type" : "ExpressionRef"
+                     } ]
                   }
                } ],
                "relationship" : [ ],
@@ -8594,13 +8678,6 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
-                        "name" : "ID",
-                        "value" : {
-                           "path" : "id",
-                           "scope" : "S",
-                           "type" : "Property"
-                        }
-                     }, {
                         "name" : "Name",
                         "value" : {
                            "name" : "ConceptText",
@@ -8709,160 +8786,15 @@
                "source" : [ {
                   "alias" : "O",
                   "expression" : {
-                     "type" : "Query",
-                     "source" : [ {
-                        "alias" : "S",
-                        "expression" : {
-                           "dataType" : "{http://hl7.org/fhir}ServiceRequest",
-                           "templateId" : "http://hl7.org/fhir/StructureDefinition/ServiceRequest",
-                           "type" : "Retrieve"
-                        }
-                     } ],
-                     "let" : [ {
-                        "identifier" : "c",
-                        "expression" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "path" : "code",
-                                    "scope" : "S",
-                                    "type" : "Property"
-                                 }
-                              }
-                           },
-                           "then" : {
-                              "strict" : false,
-                              "type" : "As",
-                              "operand" : {
-                                 "path" : "code",
-                                 "scope" : "S",
-                                 "type" : "Property"
-                              },
-                              "asTypeSpecifier" : {
-                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
-                                 "type" : "NamedTypeSpecifier"
-                              }
-                           },
-                           "else" : {
-                              "asType" : "{http://hl7.org/fhir}CodeableConcept",
-                              "type" : "As",
-                              "operand" : {
-                                 "type" : "Null"
-                              }
-                           }
-                        }
-                     } ],
-                     "relationship" : [ ],
-                     "where" : {
-                        "type" : "And",
-                        "operand" : [ {
-                           "type" : "And",
-                           "operand" : [ {
-                              "type" : "And",
-                              "operand" : [ {
-                                 "type" : "And",
-                                 "operand" : [ {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "name" : "c",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }
-                                 }, {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "c",
-                                             "type" : "QueryLetRef"
-                                          }
-                                       }
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "type" : "Indexer",
-                                       "operand" : [ {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "c",
-                                             "type" : "QueryLetRef"
-                                          }
-                                       }, {
-                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                          "value" : "0",
-                                          "type" : "Literal"
-                                       } ]
-                                    }
-                                 }
-                              } ]
-                           }, {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "path" : "code",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "type" : "Indexer",
-                                       "operand" : [ {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "c",
-                                             "type" : "QueryLetRef"
-                                          }
-                                       }, {
-                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                          "value" : "0",
-                                          "type" : "Literal"
-                                       } ]
-                                    }
-                                 }
-                              }
-                           } ]
-                        }, {
-                           "type" : "InValueSet",
-                           "code" : {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "code",
-                                 "type" : "Property",
-                                 "source" : {
-                                    "type" : "Indexer",
-                                    "operand" : [ {
-                                       "path" : "coding",
-                                       "type" : "Property",
-                                       "source" : {
-                                          "name" : "c",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }, {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                       "value" : "0",
-                                       "type" : "Literal"
-                                    } ]
-                                 }
-                              }
-                           },
-                           "valueset" : {
-                              "name" : "Urine drug screen for pain management",
-                              "preserve" : true
-                           }
-                        } ]
+                     "dataType" : "{http://hl7.org/fhir}ServiceRequest",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/ServiceRequest",
+                     "codeProperty" : "code",
+                     "codeComparator" : "in",
+                     "type" : "Retrieve",
+                     "codes" : {
+                        "name" : "Urine drug screen for pain management",
+                        "preserve" : true,
+                        "type" : "ValueSetRef"
                      }
                   }
                } ],
@@ -8887,13 +8819,6 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
-                        "name" : "ID",
-                        "value" : {
-                           "path" : "id",
-                           "scope" : "O",
-                           "type" : "Property"
-                        }
-                     }, {
                         "name" : "Name",
                         "value" : {
                            "name" : "ConceptText",
@@ -8957,135 +8882,75 @@
                } ],
                "relationship" : [ ],
                "where" : {
-                  "type" : "Or",
+                  "type" : "And",
                   "operand" : [ {
                      "type" : "And",
                      "operand" : [ {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
-                           "operand" : {
-                              "path" : "identifier",
-                              "scope" : "O",
-                              "type" : "Property"
-                           }
-                        }
-                     }, {
-                        "type" : "Equivalent",
+                        "type" : "And",
                         "operand" : [ {
-                           "name" : "ToString",
-                           "libraryName" : "FHIRHelpers",
-                           "type" : "FunctionRef",
-                           "operand" : [ {
-                              "path" : "system",
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "name" : "c",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "coding",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "name" : "c",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           }
+                        } ]
+                     }, {
+                        "type" : "Contains",
+                        "operand" : [ {
+                           "name" : "Urine_Screen_Panel_Test_Order_Codes",
+                           "type" : "ExpressionRef"
+                        }, {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "code",
                               "type" : "Property",
                               "source" : {
                                  "type" : "Indexer",
                                  "operand" : [ {
-                                    "path" : "identifier",
-                                    "scope" : "O",
-                                    "type" : "Property"
+                                    "path" : "coding",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "c",
+                                       "type" : "QueryLetRef"
+                                    }
                                  }, {
                                     "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
                                     "value" : "0",
                                     "type" : "Literal"
                                  } ]
                               }
-                           } ]
-                        }, {
-                           "name" : "UWMC_LAB_SYSTEM_IDENTIFIER_URL",
-                           "type" : "ExpressionRef"
+                           }
                         } ]
                      } ]
                   }, {
-                     "type" : "And",
+                     "type" : "Or",
                      "operand" : [ {
-                        "type" : "And",
+                        "type" : "Or",
                         "operand" : [ {
-                           "type" : "And",
+                           "type" : "Equivalent",
                            "operand" : [ {
-                              "type" : "And",
+                              "name" : "ToString",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
                               "operand" : [ {
-                                 "type" : "And",
-                                 "operand" : [ {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "name" : "c",
-                                          "type" : "QueryLetRef"
-                                       }
-                                    }
-                                 }, {
-                                    "type" : "Not",
-                                    "operand" : {
-                                       "type" : "IsNull",
-                                       "operand" : {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "c",
-                                             "type" : "QueryLetRef"
-                                          }
-                                       }
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "Not",
-                                 "operand" : {
-                                    "type" : "IsNull",
-                                    "operand" : {
-                                       "type" : "Indexer",
-                                       "operand" : [ {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "c",
-                                             "type" : "QueryLetRef"
-                                          }
-                                       }, {
-                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                          "value" : "0",
-                                          "type" : "Literal"
-                                       } ]
-                                    }
-                                 }
-                              } ]
-                           }, {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "path" : "code",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "type" : "Indexer",
-                                       "operand" : [ {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "c",
-                                             "type" : "QueryLetRef"
-                                          }
-                                       }, {
-                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                          "value" : "0",
-                                          "type" : "Literal"
-                                       } ]
-                                    }
-                                 }
-                              }
-                           } ]
-                        }, {
-                           "type" : "Contains",
-                           "operand" : [ {
-                              "name" : "Urine_Screen_Panel_Test_Order_Codes",
-                              "type" : "ExpressionRef"
-                           }, {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "code",
+                                 "path" : "system",
                                  "type" : "Property",
                                  "source" : {
                                     "type" : "Indexer",
@@ -9102,71 +8967,10 @@
                                        "type" : "Literal"
                                     } ]
                                  }
-                              }
-                           } ]
-                        } ]
-                     }, {
-                        "type" : "Or",
-                        "operand" : [ {
-                           "type" : "Or",
-                           "operand" : [ {
-                              "type" : "Equivalent",
-                              "operand" : [ {
-                                 "name" : "ToString",
-                                 "libraryName" : "FHIRHelpers",
-                                 "type" : "FunctionRef",
-                                 "operand" : [ {
-                                    "path" : "system",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "type" : "Indexer",
-                                       "operand" : [ {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "c",
-                                             "type" : "QueryLetRef"
-                                          }
-                                       }, {
-                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                          "value" : "0",
-                                          "type" : "Literal"
-                                       } ]
-                                    }
-                                 } ]
-                              }, {
-                                 "name" : "LAB_CORP_SYSTEM_VALUE",
-                                 "type" : "ExpressionRef"
                               } ]
                            }, {
-                              "type" : "Equivalent",
-                              "operand" : [ {
-                                 "name" : "ToString",
-                                 "libraryName" : "FHIRHelpers",
-                                 "type" : "FunctionRef",
-                                 "operand" : [ {
-                                    "path" : "system",
-                                    "type" : "Property",
-                                    "source" : {
-                                       "type" : "Indexer",
-                                       "operand" : [ {
-                                          "path" : "coding",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "name" : "c",
-                                             "type" : "QueryLetRef"
-                                          }
-                                       }, {
-                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
-                                          "value" : "0",
-                                          "type" : "Literal"
-                                       } ]
-                                    }
-                                 } ]
-                              }, {
-                                 "name" : "QUEST_DIAGNOSTICS_SYSTEM_VALUE",
-                                 "type" : "ExpressionRef"
-                              } ]
+                              "name" : "LAB_CORP_SYSTEM_VALUE",
+                              "type" : "ExpressionRef"
                            } ]
                         }, {
                            "type" : "Equivalent",
@@ -9194,9 +8998,38 @@
                                  }
                               } ]
                            }, {
-                              "name" : "UWMC_UDS_SYSTEM_URL",
+                              "name" : "QUEST_DIAGNOSTICS_SYSTEM_VALUE",
                               "type" : "ExpressionRef"
                            } ]
+                        } ]
+                     }, {
+                        "type" : "Equivalent",
+                        "operand" : [ {
+                           "name" : "ToString",
+                           "libraryName" : "FHIRHelpers",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "system",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "path" : "coding",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "c",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
+                              }
+                           } ]
+                        }, {
+                           "name" : "UWMC_UDS_SYSTEM_URL",
+                           "type" : "ExpressionRef"
                         } ]
                      } ]
                   } ]
@@ -9205,13 +9038,6 @@
                   "expression" : {
                      "type" : "Tuple",
                      "element" : [ {
-                        "name" : "ID",
-                        "value" : {
-                           "path" : "id",
-                           "scope" : "O",
-                           "type" : "Property"
-                        }
-                     }, {
                         "name" : "Name",
                         "value" : {
                            "name" : "ConceptText",
@@ -9289,12 +9115,6 @@
                                     "choice" : [ {
                                        "type" : "TupleTypeSpecifier",
                                        "element" : [ {
-                                          "name" : "ID",
-                                          "elementType" : {
-                                             "name" : "{http://hl7.org/fhir}id",
-                                             "type" : "NamedTypeSpecifier"
-                                          }
-                                       }, {
                                           "name" : "Name",
                                           "elementType" : {
                                              "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -9322,12 +9142,6 @@
                                     }, {
                                        "type" : "TupleTypeSpecifier",
                                        "element" : [ {
-                                          "name" : "ID",
-                                          "elementType" : {
-                                             "name" : "{http://hl7.org/fhir}id",
-                                             "type" : "NamedTypeSpecifier"
-                                          }
-                                       }, {
                                           "name" : "Name",
                                           "elementType" : {
                                              "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -9356,12 +9170,6 @@
                                     "choice" : [ {
                                        "type" : "TupleTypeSpecifier",
                                        "element" : [ {
-                                          "name" : "ID",
-                                          "elementType" : {
-                                             "name" : "{http://hl7.org/fhir}id",
-                                             "type" : "NamedTypeSpecifier"
-                                          }
-                                       }, {
                                           "name" : "Name",
                                           "elementType" : {
                                              "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -9389,12 +9197,6 @@
                                     }, {
                                        "type" : "TupleTypeSpecifier",
                                        "element" : [ {
-                                          "name" : "ID",
-                                          "elementType" : {
-                                             "name" : "{http://hl7.org/fhir}id",
-                                             "type" : "NamedTypeSpecifier"
-                                          }
-                                       }, {
                                           "name" : "Name",
                                           "elementType" : {
                                              "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -9419,12 +9221,6 @@
                               "choice" : [ {
                                  "type" : "TupleTypeSpecifier",
                                  "element" : [ {
-                                    "name" : "ID",
-                                    "elementType" : {
-                                       "name" : "{http://hl7.org/fhir}id",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
                                     "name" : "Name",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -9452,33 +9248,6 @@
                               }, {
                                  "type" : "TupleTypeSpecifier",
                                  "element" : [ {
-                                    "name" : "ID",
-                                    "elementType" : {
-                                       "name" : "{http://hl7.org/fhir}id",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Name",
-                                    "elementType" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Date",
-                                    "elementType" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "TupleTypeSpecifier",
-                                 "element" : [ {
-                                    "name" : "ID",
-                                    "elementType" : {
-                                       "name" : "{http://hl7.org/fhir}id",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
                                     "name" : "Name",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -9494,6 +9263,21 @@
                                     "name" : "Next_Screen_Date",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Name",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Date",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  } ]
@@ -9513,12 +9297,6 @@
                               "choice" : [ {
                                  "type" : "TupleTypeSpecifier",
                                  "element" : [ {
-                                    "name" : "ID",
-                                    "elementType" : {
-                                       "name" : "{http://hl7.org/fhir}id",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
                                     "name" : "Name",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -9546,33 +9324,6 @@
                               }, {
                                  "type" : "TupleTypeSpecifier",
                                  "element" : [ {
-                                    "name" : "ID",
-                                    "elementType" : {
-                                       "name" : "{http://hl7.org/fhir}id",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Name",
-                                    "elementType" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
-                                    "name" : "Date",
-                                    "elementType" : {
-                                       "name" : "{urn:hl7-org:elm-types:r1}String",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 } ]
-                              }, {
-                                 "type" : "TupleTypeSpecifier",
-                                 "element" : [ {
-                                    "name" : "ID",
-                                    "elementType" : {
-                                       "name" : "{http://hl7.org/fhir}id",
-                                       "type" : "NamedTypeSpecifier"
-                                    }
-                                 }, {
                                     "name" : "Name",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
@@ -9588,6 +9339,21 @@
                                     "name" : "Next_Screen_Date",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}DateTime",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 } ]
+                              }, {
+                                 "type" : "TupleTypeSpecifier",
+                                 "element" : [ {
+                                    "name" : "Name",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Date",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  } ]
