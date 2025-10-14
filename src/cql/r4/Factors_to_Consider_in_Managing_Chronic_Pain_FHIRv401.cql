@@ -1172,32 +1172,43 @@ define ReportUrineLabServiceRequests:
 // Urine drug screen from service request,  matching on custom system and concept code, e.g. sites using labcorp for testing
 define ReportUrineLabServiceRequestsByCustomCode:
   [ServiceRequest] O
-  let c: O.code as FHIR.CodeableConcept
-  where (
-    (
-      O.identifier is not null and
-      O.identifier[0].system ~ UWMC_LAB_SYSTEM_IDENTIFIER_URL
-    )
-    or 
-    (
-      c is not null and
-      c.coding is not null and
-      c.coding[0] is not null and 
-      c.coding[0].code is not null and 
-      (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
-      (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
-      c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
-      c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+  let
+    requester: O.requester.display,
+    c: O.code as FHIR.CodeableConcept
+    where (
+      (
+        O.identifier is not null and
+        O.identifier[0].system ~ UWMC_LAB_SYSTEM_IDENTIFIER_URL
+      )
+      or 
+      (
+        c is not null and
+        c.coding is not null and
+        c.coding[0] is not null and 
+        c.coding[0].code is not null and 
+        (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
+        (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
+        c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
+        c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+        )
       )
     )
-  )
-  return {
-    ID: O.id,
-    Name: ConceptText(c),
-    Date: DateTimeText(O.authoredOn),
-    Next_Screen_Date: O.authoredOn + 12 months
-  }
-  sort by Date desc
+    return {
+      ID: O.id,
+      Name: ConceptText(c),
+      Date: DateTimeText(O.authoredOn),
+      Source: if O.identifier[0].system ~ UWMC_LAB_SYSTEM_IDENTIFIER_URL then
+          if requester is not null then
+            'UW lab order (placed by ' + O.requester.display + ')' 
+          else 'UW lab order'
+        else
+          if requester is not null then 
+            'manually entered (placed by ' + O.requester.display + ')'
+          else
+            'manually entered',
+      Next_Screen_Date: O.authoredOn + 12 months
+    }
+    sort by Date desc
 
 // Report urine drug screen from observations and service requests
 define ReportAllUrineScreens:

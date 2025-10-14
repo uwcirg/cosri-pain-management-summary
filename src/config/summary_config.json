@@ -1330,6 +1330,9 @@
                 "key": "Date",
                 "formatter": "datishFormat",
                 "minWidth": "150px"
+              },
+              "Source": {
+                "key": "Source"
               }
             },
             "flags": [

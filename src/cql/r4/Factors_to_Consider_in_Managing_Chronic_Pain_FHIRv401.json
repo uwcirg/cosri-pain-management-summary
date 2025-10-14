@@ -8940,6 +8940,17 @@
                   }
                } ],
                "let" : [ {
+                  "identifier" : "requester",
+                  "expression" : {
+                     "path" : "display",
+                     "type" : "Property",
+                     "source" : {
+                        "path" : "requester",
+                        "scope" : "O",
+                        "type" : "Property"
+                     }
+                  }
+               }, {
                   "identifier" : "c",
                   "expression" : {
                      "strict" : false,
@@ -9233,6 +9244,130 @@
                            } ]
                         }
                      }, {
+                        "name" : "Source",
+                        "value" : {
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Equivalent",
+                              "operand" : [ {
+                                 "name" : "ToString",
+                                 "libraryName" : "FHIRHelpers",
+                                 "type" : "FunctionRef",
+                                 "operand" : [ {
+                                    "path" : "system",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "type" : "Indexer",
+                                       "operand" : [ {
+                                          "path" : "identifier",
+                                          "scope" : "O",
+                                          "type" : "Property"
+                                       }, {
+                                          "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                          "value" : "0",
+                                          "type" : "Literal"
+                                       } ]
+                                    }
+                                 } ]
+                              }, {
+                                 "name" : "UWMC_LAB_SYSTEM_IDENTIFIER_URL",
+                                 "type" : "ExpressionRef"
+                              } ]
+                           },
+                           "then" : {
+                              "type" : "If",
+                              "condition" : {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "IsNull",
+                                    "operand" : {
+                                       "name" : "requester",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              },
+                              "then" : {
+                                 "type" : "Concatenate",
+                                 "operand" : [ {
+                                    "type" : "Concatenate",
+                                    "operand" : [ {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "UW lab order (placed by ",
+                                       "type" : "Literal"
+                                    }, {
+                                       "name" : "ToString",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "display",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "path" : "requester",
+                                             "scope" : "O",
+                                             "type" : "Property"
+                                          }
+                                       } ]
+                                    } ]
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                    "value" : ")",
+                                    "type" : "Literal"
+                                 } ]
+                              },
+                              "else" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "UW lab order",
+                                 "type" : "Literal"
+                              }
+                           },
+                           "else" : {
+                              "type" : "If",
+                              "condition" : {
+                                 "type" : "Not",
+                                 "operand" : {
+                                    "type" : "IsNull",
+                                    "operand" : {
+                                       "name" : "requester",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              },
+                              "then" : {
+                                 "type" : "Concatenate",
+                                 "operand" : [ {
+                                    "type" : "Concatenate",
+                                    "operand" : [ {
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : "manually entered (placed by ",
+                                       "type" : "Literal"
+                                    }, {
+                                       "name" : "ToString",
+                                       "libraryName" : "FHIRHelpers",
+                                       "type" : "FunctionRef",
+                                       "operand" : [ {
+                                          "path" : "display",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "path" : "requester",
+                                             "scope" : "O",
+                                             "type" : "Property"
+                                          }
+                                       } ]
+                                    } ]
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                    "value" : ")",
+                                    "type" : "Literal"
+                                 } ]
+                              },
+                              "else" : {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                 "value" : "manually entered",
+                                 "type" : "Literal"
+                              }
+                           }
+                        }
+                     }, {
                         "name" : "Next_Screen_Date",
                         "value" : {
                            "type" : "Add",
@@ -9491,6 +9626,12 @@
                                        "type" : "NamedTypeSpecifier"
                                     }
                                  }, {
+                                    "name" : "Source",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
                                     "name" : "Next_Screen_Date",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}DateTime",
@@ -9580,6 +9721,12 @@
                                     }
                                  }, {
                                     "name" : "Date",
+                                    "elementType" : {
+                                       "name" : "{urn:hl7-org:elm-types:r1}String",
+                                       "type" : "NamedTypeSpecifier"
+                                    }
+                                 }, {
+                                    "name" : "Source",
                                     "elementType" : {
                                        "name" : "{urn:hl7-org:elm-types:r1}String",
                                        "type" : "NamedTypeSpecifier"
