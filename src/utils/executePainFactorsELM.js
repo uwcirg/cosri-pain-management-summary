@@ -16,7 +16,7 @@ import {
   isEnvEpicQueries,
   getReportInstrumentList,
   isEmptyArray,
-  noCacheHeader
+  noCacheHeader,
 } from "../helpers/utility";
 
 export const FHIR_RELEASE_VERSION_2 = 2;
@@ -123,11 +123,12 @@ async function executeELM(
         if (!clientResults[1] || clientResults[1].status === "rejected")
           throw new Error("Error fetching FHIR release");
 
-        release = clientResults[1].value;
-        library = getLibrary(release);
+       release = clientResults[1].value;
+       library = getLibrary(release);
+
         // return all the requests that have been resolved // rejected
         return Promise.allSettled(
-          [...new Set([...extractResourcesFromELM(library)].sort())].map(
+          [...new Set([...extractResourcesFromELM(library)])].map(
             (name) => {
               if (String(name).toLowerCase() === "patient" && patient) {
                 resourceTypes[name] = true;
