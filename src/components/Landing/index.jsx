@@ -433,6 +433,7 @@ export default class Landing extends Component {
         patientName={this.getPatientName()}
         patientDOB={datishFormat(this.state.result, patientResource?.birthDate)}
         patientGender={summaryPatient?.Gender}
+        patientMRN={summaryPatient?.MRN}
         meetsInclusionCriteria={summaryPatient?.MeetsInclusionCriteria}
         patientSearchURL={PATIENT_SEARCH_URL}
         siteID={getSiteId()}
