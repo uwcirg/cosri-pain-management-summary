@@ -76,6 +76,12 @@
 //  Buprenorphine related changes, see ReportBuprenorphineMedicationRequests, GetBuprenorphineMMEListByDates,GetNoNBuprenorphineMMEListByDates,
 //  ReportDailyMMEByDateWithoutBuprenorphine, ReportDailyMMEByDateWithBuprenorphineOnly
 //  update alert check for MedicationRequestsForNaloxoneConsideration to consider Non-Bup MedicationRequests only, see NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
+// Update 20250613
+// Use UW lab identifier URL to consume relevant urine lab ServiceRequest resources
+// Update 20250922
+// Commented out NonPharmacologicTreatmentServiceRequests code as it is not currently used and it needs to be checked for accuracy
+// Update 20251015
+// Commented out define statements for sections that aren't currently displayed
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -292,6 +298,7 @@ define QUEST_DIAGNOSTICS_SYSTEM_VALUE: 'https://testdirectory.questdiagnostics.c
 define UWMC_UDS_SYSTEM_URL:'https://fakelab.com/cdsr3'
 //lab panel test order code from lab corp and quest diagnostics, TODO: replace UWMC code, abc123, when real one is available
 define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428', 'abc123'}
+define UWMC_LAB_SYSTEM_IDENTIFIER_URL: 'http://www.uwmedicine.org/lab_order_id'
 
 //CS agreement concept code
 define CS_AGREEMENT_CODE: '94136-9'
@@ -610,14 +617,14 @@ define PregnancyConditions:
     42 weeks
   ))
 
-define PregnancyObservations:
-  C3F.Verified(C3F.ObservationLookBack([Observation: "Pregnancy status"], 42 weeks))
+// define PregnancyObservations:
+//   C3F.Verified(C3F.ObservationLookBack([Observation: "Pregnancy status"], 42 weeks))
 
-define MostRecentPregnancyObservation:
-  C3F.MostRecent(PregnancyObservations)
+// define MostRecentPregnancyObservation:
+//   C3F.MostRecent(PregnancyObservations)
 
-define MostRecentPregnancyObservationIsPositive:
-  C3F.ConceptValue(MostRecentPregnancyObservation) ~ "Pregnant"
+// define MostRecentPregnancyObservationIsPositive:
+//   C3F.ConceptValue(MostRecentPregnancyObservation) ~ "Pregnant"
 
 define Is65orOlder:
   AgeInYears() >= 65
@@ -706,22 +713,22 @@ define ReportEncounterRiskFactorsForOpioidRelatedHarms:
 
 // Shape the pregnancy Observation as a Condition, since this is the backup approach for detecting a pregnancy in case
 // there are no active Conditions found.
-define ReportMostRecentPositivePregnancyObservation:
-  if MostRecentPregnancyObservationIsPositive then
-    {
-      Name: ConceptText(MostRecentPregnancyObservation.code),
-      Status: ConceptText(MostRecentPregnancyObservation.value as FHIR.CodeableConcept),
-      Onset: ToString(Coalesce(
-        (MostRecentPregnancyObservation.effective as FHIR.dateTime).value,
-        (MostRecentPregnancyObservation.effective as FHIR.instant).value,
-        (MostRecentPregnancyObservation.effective as FHIR.Period)."start".value
-      )),
-      DateRecorded: ToString(MostRecentPregnancyObservation.issued.value),
-      Abatement: null as String,
-      Visit: null as Tuple{ Start String, End String }
-    }
-  else
-    null
+// define ReportMostRecentPositivePregnancyObservation:
+//   if MostRecentPregnancyObservationIsPositive then
+//     {
+//       Name: ConceptText(MostRecentPregnancyObservation.code),
+//       Status: ConceptText(MostRecentPregnancyObservation.value as FHIR.CodeableConcept),
+//       Onset: ToString(Coalesce(
+//         (MostRecentPregnancyObservation.effective as FHIR.dateTime).value,
+//         (MostRecentPregnancyObservation.effective as FHIR.instant).value,
+//         (MostRecentPregnancyObservation.effective as FHIR.Period)."start".value
+//       )),
+//       DateRecorded: ToString(MostRecentPregnancyObservation.issued.value),
+//       Abatement: null as String,
+//       Visit: null as Tuple{ Start String, End String }
+//     }
+//   else
+//     null
 
 // Shape the case of being 65 or older as a Condition for the purposes of building the summary.
 define ReportOlderThan65:
@@ -747,8 +754,8 @@ define ReportRiskFactorsForOpioidRelatedHarms:
   else
     (ReportConditionRiskFactorsForOpioidRelatedHarms
       union ReportEncounterRiskFactorsForOpioidRelatedHarms
-      union ReportOlderThan65
-      union ReportMostRecentPositivePregnancyObservation) C
+      union ReportOlderThan65 ) C
+   //   union ReportMostRecentPositivePregnancyObservation) C
   sort by (if Onset is not null then Onset as String else Visit.Start) desc, Visit.End desc, (Abatement as String) desc
 
 // HISTORICAL TREATMENTS
@@ -760,11 +767,11 @@ define OpioidMedicationRequests:
     100 years
   )
 
-define OpioidMedicationStatements:
-  C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Opioid Pain Medications"], //remove consideration for the status field
-    100 years
-  )
+// define OpioidMedicationStatements:
+//   C3F.MedicationStatementLookBack(
+//     [MedicationStatement: "Opioid Pain Medications"], //remove consideration for the status field
+//     100 years
+//   )
 
 define ReportOpioidMedicationRequests:
   ( OpioidMedicationRequests M
@@ -787,20 +794,21 @@ define ReportOpioidMedicationRequests:
   }
   sort by Start desc, End desc
 
-define ReportOpioidMedicationStatements:
-  (OpioidMedicationStatements) S
-  return {
-    Type:  'Statement',
-    Name:  ConceptText(S.medication as FHIR.CodeableConcept),
-    Start: MedicationStatementDate(S),
-    End:   DateTimeText((S.effective as FHIR.Period)."end"),
-    Status: S.status.value
-  }
-  sort by Start desc, End desc
+// define ReportOpioidMedicationStatements:
+//   (OpioidMedicationStatements) S
+//   return {
+//     Type:  'Statement',
+//     Name:  ConceptText(S.medication as FHIR.CodeableConcept),
+//     Start: MedicationStatementDate(S),
+//     End:   DateTimeText((S.effective as FHIR.Period)."end"),
+//     Status: S.status.value
+//   }
+//   sort by Start desc, End desc
 
 define ReportOpioidMedications:
-  (ReportOpioidMedicationRequests union ReportOpioidMedicationStatements) M
-  sort by Start desc, End desc
+  // (ReportOpioidMedicationRequests union ReportOpioidMedicationStatements) M
+  (ReportOpioidMedicationRequests) M
+    sort by Start desc, End desc
 
 //a list of MedicationRequest FHIR resources for Buprenorphine
 define ReportBuprenorphineMedicationRequests:
@@ -871,127 +879,134 @@ define MedicationRequestsForNaloxoneConsideration:
 
 
 // Non-opioid medication orders and statements with dates
-define NonOpioidMedicationRequests:
-  C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Non opiod pain medications"], //remove consideration for the status field
-    100 years
-  )
+// define NonOpioidMedicationRequests:
+//   C3F.MedicationRequestLookBack(
+//     [MedicationRequest: "Non opiod pain medications"], //remove consideration for the status field
+//     100 years
+//   )
 
-define NonOpioidMedicationStatements:
-  C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Non opiod pain medications"], //remove consideration for the status field
-    100 years
-  )
+// define NonOpioidMedicationStatements:
+//   C3F.MedicationStatementLookBack(
+//     [MedicationStatement: "Non opiod pain medications"], //remove consideration for the status field
+//     100 years
+//   )
 
-define ReportNonOpioidMedicationRequests:
-  (NonOpioidMedicationRequests) O
-  let CalculatedEnd: GetMedicationRequestEndDate(O)
-  return {
-    Type:  'Request',
-    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-    Start: DateTimeText(O.authoredOn),
-    DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
-    CalculatedEnd: CalculatedEnd,
-    End: ToString(CalculatedEnd),
-    Quantity: GetMedicationRequestDispensedQuantity(O),
-    Prescriber: O.requester.display.value,
-    Pharmacy: GetMedicationRequestPharmacy(O),
-    Status: O.status.value
-  }
-  sort by Start desc, End desc
+// define ReportNonOpioidMedicationRequests:
+//   (NonOpioidMedicationRequests) O
+//   let CalculatedEnd: GetMedicationRequestEndDate(O)
+//   return {
+//     Type:  'Request',
+//     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+//     Start: DateTimeText(O.authoredOn),
+//     DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+//     CalculatedEnd: CalculatedEnd,
+//     End: ToString(CalculatedEnd),
+//     Quantity: GetMedicationRequestDispensedQuantity(O),
+//     Prescriber: O.requester.display.value,
+//     Pharmacy: GetMedicationRequestPharmacy(O),
+//     Status: O.status.value
+//   }
+//   sort by Start desc, End desc
 
-define ReportNonOpioidMedicationStatements:
-  (NonOpioidMedicationStatements) S
-  return {
-    Type:  'Statement',
-    Name:  ConceptText(S.medication as FHIR.CodeableConcept),
-    Start: MedicationStatementDate(S),
-    End:   DateTimeText((S.effective as FHIR.Period)."end"),
-    //Quantity: QuantityText(S.value as FHIR.Quantity),
-    Status: S.status.value
-  }
-  sort by Start desc, End desc
+// define ReportNonOpioidMedicationStatements:
+//   (NonOpioidMedicationStatements) S
+//   return {
+//     Type:  'Statement',
+//     Name:  ConceptText(S.medication as FHIR.CodeableConcept),
+//     Start: MedicationStatementDate(S),
+//     End:   DateTimeText((S.effective as FHIR.Period)."end"),
+//     //Quantity: QuantityText(S.value as FHIR.Quantity),
+//     Status: S.status.value
+//   }
+//   sort by Start desc, End desc
 
-define ReportNonOpioidMedications:
-  (ReportNonOpioidMedicationRequests union ReportNonOpioidMedicationStatements) M
-  sort by Start desc, End desc
+// define ReportNonOpioidMedications:
+//   (ReportNonOpioidMedicationRequests union ReportNonOpioidMedicationStatements) M
+//   sort by Start desc, End desc
 
 
 // Non-pharmacologic treatments, orders, and referrals with dates (lookback 2 years)
-define NonPharmacologicTreatmentProcedures:
-  C3F.ProcedurePerformance(C3F.ProcedureLookBack([Procedure: "Non pharmacologic treatments for chronic pain"], 2 years))
+// define NonPharmacologicTreatmentProcedures:
+//   C3F.ProcedurePerformance(C3F.ProcedureLookBack([Procedure: "Non pharmacologic treatments for chronic pain"], 2 years))
 
-define ReportNonPharmacologicTreatmentProcedures:
-  (NonPharmacologicTreatmentProcedures) P
-  return {
-    Type: 'Procedure',
-    Name: ConceptText(P.code),
-    Date: Coalesce(
-      DateTimeText(P.performed as FHIR.dateTime),
-      DateTimeText((P.performed as FHIR.Period)."start")
-    )
-  }
-  sort by Date desc
+// define ReportNonPharmacologicTreatmentProcedures:
+//   (NonPharmacologicTreatmentProcedures) P
+//   return {
+//     Type: 'Procedure',
+//     Name: ConceptText(P.code),
+//     Date: Coalesce(
+//       DateTimeText(P.performed as FHIR.dateTime),
+//       DateTimeText((P.performed as FHIR.Period)."start")
+//     )
+//   }
+//   sort by Date desc
 
-define NonPharmacologicTreatmentServiceRequests:
-  C3F.ServiceRequestActiveOrCompleted(
-    C3F.ServiceRequestLookBack([ServiceRequest: "Non pharmacologic treatments for chronic pain"], 2 years)
-  )
+// TODO check these for accuracy, not currently used  
+// "Non pharmacologic treatments for chronic pain" seems to match valuesets of multiple versions
 
-define ReportNonPharmacologicTreatmentServiceRequests:
-  (NonPharmacologicTreatmentServiceRequests) P
-  return {
-    Type: 'ServiceRequest',
-    Name: ConceptText(P.code),
-    Date: DateTimeText(P.authoredOn)
-  }
-  sort by Date desc
+// define NonPharmacologicTreatmentServiceRequests:
+//   C3F.ServiceRequestActiveOrCompleted(
+//     C3F.ServiceRequestLookBack([ServiceRequest: "Non pharmacologic treatments for chronic pain"], 2 years)
+//   )
 
-define ReportNonPharmacologicTreatments:
-  (ReportNonPharmacologicTreatmentProcedures
-    union ReportNonPharmacologicTreatmentServiceRequests) M
-  sort by Date desc
+// define ReportNonPharmacologicTreatmentServiceRequests:
+//   (NonPharmacologicTreatmentServiceRequests) P
+//   return {
+//     Type: 'ServiceRequest',
+//     Name: ConceptText(P.code),
+//     Date: DateTimeText(P.authoredOn)
+//   }
+//   sort by Date desc
+
+// define ReportNonPharmacologicTreatments:
+//   (ReportNonPharmacologicTreatmentProcedures
+//     union ReportNonPharmacologicTreatmentServiceRequests) M
+//   sort by Date desc
+
+// define ReportNonPharmacologicTreatments:
+//   (ReportNonPharmacologicTreatmentProcedures) M
+//   sort by Date desc
 
 
 // Stool softeners and laxatives - orders and statements with dates (lookback 6 months)
-define StoolSoftenersAndLaxativesRequests:
-  C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Stool softeners and laxatives"], //remove consideration for status field
-    6 months
-  )
+// define StoolSoftenersAndLaxativesRequests:
+//   C3F.MedicationRequestLookBack(
+//     [MedicationRequest: "Stool softeners and laxatives"], //remove consideration for status field
+//     6 months
+//   )
 
-define StoolSoftenersAndLaxativesStatements:
-  C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Stool softeners and laxatives"], //remove consideration for status field
-    6 months
-  )
+// define StoolSoftenersAndLaxativesStatements:
+//   C3F.MedicationStatementLookBack(
+//     [MedicationStatement: "Stool softeners and laxatives"], //remove consideration for status field
+//     6 months
+//   )
 
-define ReportStoolSoftenersAndLaxativesRequests:
-  (StoolSoftenersAndLaxativesRequests) O
-  return {
-    Type:  'Request',
-    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-    Start: DateTimeText(O.authoredOn),
-    DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
-    End:   null as String, // MedicationRequest end date not supported in R4,
-    Status: O.status.value
-  }
-  sort by Start desc, End desc
+// define ReportStoolSoftenersAndLaxativesRequests:
+//   (StoolSoftenersAndLaxativesRequests) O
+//   return {
+//     Type:  'Request',
+//     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+//     Start: DateTimeText(O.authoredOn),
+//     DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+//     End:   null as String, // MedicationRequest end date not supported in R4,
+//     Status: O.status.value
+//   }
+//   sort by Start desc, End desc
 
-define ReportStoolSoftenersAndLaxativesStatements:
-  (StoolSoftenersAndLaxativesStatements) S
-  return {
-    Type:  'Statement',
-    Name:  ConceptText(S.medication as FHIR.CodeableConcept),
-    Start: MedicationStatementDate(S),
-    End:   DateTimeText((S.effective as FHIR.Period)."end"),
-    Status: S.status.value
-  }
-  sort by Start desc, End desc
+// define ReportStoolSoftenersAndLaxativesStatements:
+//   (StoolSoftenersAndLaxativesStatements) S
+//   return {
+//     Type:  'Statement',
+//     Name:  ConceptText(S.medication as FHIR.CodeableConcept),
+//     Start: MedicationStatementDate(S),
+//     End:   DateTimeText((S.effective as FHIR.Period)."end"),
+//     Status: S.status.value
+//   }
+//   sort by Start desc, End desc
 
-define ReportStoolSoftenersAndLaxatives:
-  (ReportStoolSoftenersAndLaxativesRequests union ReportStoolSoftenersAndLaxativesStatements) M
-  sort by Start desc, End desc
+// define ReportStoolSoftenersAndLaxatives:
+//   (ReportStoolSoftenersAndLaxativesRequests union ReportStoolSoftenersAndLaxativesStatements) M
+//   sort by Start desc, End desc
 
 
 
@@ -1117,58 +1132,91 @@ define ReportPrescriptions:
 
 
 // Urine drug screen from observations - dates and results (all screens w/ lookback of 1 year)
-define UrineDrugScreens:
-  C3F.Verified(C3F.ObservationLookBack([Observation: "Urine drug screen for pain management"], 1 year))
+// define UrineDrugScreens:
+  // C3F.Verified(C3F.ObservationLookBack([Observation: "Urine drug screen for pain management"], 1 year))
 
 // Urine drug screen from observations
-define ReportUrineDrugScreensByObservation:
-  (UrineDrugScreens) S
-  return {
-    Name:           ConceptText(S.code),
-    Result:         Coalesce(
-      QuantityText(S.value as FHIR.Quantity),
-      (S.value as FHIR.string).value,
-      ConceptText(S.value as FHIR.CodeableConcept)
-    ),
-    Interpretation: ConceptText(First(S.interpretation)),
-    Date:           ObservationDate(S)
-  }
-  sort by Date desc
+// define ReportUrineDrugScreensByObservation:
+//   (UrineDrugScreens) S
+//   return {
+//     ID: S.id,
+//     Name:           ConceptText(S.code),
+//     Result:         Coalesce(
+//       QuantityText(S.value as FHIR.Quantity),
+//       (S.value as FHIR.string).value,
+//       ConceptText(S.value as FHIR.CodeableConcept)
+//     ),
+//     Interpretation: ConceptText(First(S.interpretation)),
+//     Date:           ObservationDate(S)
+//   }
+//   sort by Date desc
 
 
 // Urine drug screen from service request,  matching on LOINC code and system = http://loinc.org
 define ReportUrineLabServiceRequests:
-  ([ServiceRequest: "Urine drug screen for pain management"]) O
-  let c: O.code as FHIR.CodeableConcept
-  return {
-    Name: ConceptText(c),
-    Date: DateTimeText(O.authoredOn)
-  }
-  sort by Date desc
+  ([ServiceRequest] S
+    let c: if S.code is not null then S.code as FHIR.CodeableConcept else null
+    where (
+      c is not null and
+      c.coding is not null and
+      c.coding[0] is not null and 
+      c.coding[0].code is not null and
+      c.coding[0].code.value in "Urine drug screen for pain management"
+    )) O
+    let c: O.code as FHIR.CodeableConcept
+    return {
+      ID: O.id,
+      Name: ConceptText(c),
+      Date: DateTimeText(O.authoredOn)
+    }
+    sort by Date desc
 
 // Urine drug screen from service request,  matching on custom system and concept code, e.g. sites using labcorp for testing
 define ReportUrineLabServiceRequestsByCustomCode:
   [ServiceRequest] O
-  let c: O.code as FHIR.CodeableConcept
-  where (
-    c is not null and
-    c.coding is not null and
-    (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
-    (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
-     c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
-     c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+  let
+    requester: O.requester.display,
+    c: O.code as FHIR.CodeableConcept
+    where (
+      (
+        O.identifier is not null and
+        O.identifier[0].system ~ UWMC_LAB_SYSTEM_IDENTIFIER_URL
+      )
+      or 
+      (
+        c is not null and
+        c.coding is not null and
+        c.coding[0] is not null and 
+        c.coding[0].code is not null and 
+        (Urine_Screen_Panel_Test_Order_Codes contains c.coding[0].code.value) and
+        (c.coding[0].system ~ LAB_CORP_SYSTEM_VALUE or
+        c.coding[0].system ~ QUEST_DIAGNOSTICS_SYSTEM_VALUE or
+        c.coding[0].system ~ UWMC_UDS_SYSTEM_URL
+        )
+      )
     )
-  )
-  return {
-    Name: ConceptText(c),
-    Date: DateTimeText(O.authoredOn),
-    Next_Screen_Date: O.authoredOn + 12 months
-  }
-  sort by Date desc
+    return {
+      ID: O.id,
+      Name: ConceptText(c),
+      Date: DateTimeText(O.authoredOn),
+      Source: if O.identifier[0].system ~ UWMC_LAB_SYSTEM_IDENTIFIER_URL then
+          if requester is not null then
+            'UW lab order (placed by ' + O.requester.display + ')' 
+          else 'UW lab order'
+        else
+          if requester is not null then 
+            'manually entered (placed by ' + O.requester.display + ')'
+          else
+            'manually entered',
+      Next_Screen_Date: O.authoredOn + 12 months
+    }
+    sort by Date desc
 
 // Report urine drug screen from observations and service requests
 define ReportAllUrineScreens:
-  (ReportUrineDrugScreensByObservation union ReportUrineLabServiceRequests union ReportUrineLabServiceRequestsByCustomCode) M
+  // (ReportUrineDrugScreensByObservation union ReportUrineLabServiceRequests union ReportUrineLabServiceRequestsByCustomCode) M
+  // sort by Date desc
+  (ReportUrineLabServiceRequests union ReportUrineLabServiceRequestsByCustomCode) M
   sort by Date desc
 
 
@@ -1179,11 +1227,11 @@ define BenzodiazepineMedicationRequests:
     100 years
   )
 
-define BenzodiazepineMedicationStatements:
-  C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Benzodiazepine medications"], //remove consideration for status field
-    100 years
-  )
+// define BenzodiazepineMedicationStatements:
+//   C3F.MedicationStatementLookBack(
+//     [MedicationStatement: "Benzodiazepine medications"], //remove consideration for status field
+//     100 years
+//   )
 
 //Benzodiazepine MedicationRequests identified via valueset
 define ReportBenzodiazepineMedicationRequests:
@@ -1224,21 +1272,24 @@ define ReportBenzodiazepineMedicationRequestsByDrugClass:
   }
   sort by Start desc, End desc
 
-define ReportBenzodiazepineMedicationStatements:
-  (BenzodiazepineMedicationStatements) S
-  return {
-    Type:  'Statement',
-    Name:  ConceptText(S.medication as FHIR.CodeableConcept),
-    Start: MedicationStatementDate(S),
-    End:   DateTimeText((S.effective as FHIR.Period)."end"),
-    Status: S.status.value
-  }
-  sort by Start desc, End desc
+// define ReportBenzodiazepineMedicationStatements:
+//   (BenzodiazepineMedicationStatements) S
+//   return {
+//     Type:  'Statement',
+//     Name:  ConceptText(S.medication as FHIR.CodeableConcept),
+//     Start: MedicationStatementDate(S),
+//     End:   DateTimeText((S.effective as FHIR.Period)."end"),
+//     Status: S.status.value
+//   }
+//   sort by Start desc, End desc
 
 define ReportBenzodiazepineMedications:
+  // (ReportBenzodiazepineMedicationRequests union
+  //  ReportBenzodiazepineMedicationRequestsByDrugClass union
+  // ReportBenzodiazepineMedicationStatements) M
+  // sort by Start desc, End desc
   (ReportBenzodiazepineMedicationRequests union
-   ReportBenzodiazepineMedicationRequestsByDrugClass union
-  ReportBenzodiazepineMedicationStatements) M
+   ReportBenzodiazepineMedicationRequestsByDrugClass) M
   sort by Start desc, End desc
 
 
@@ -1249,11 +1300,11 @@ define CarisoprodolMedicationRequests:
     [MedicationRequest: "Carisoprodol"] union [MedicationRequest: "Aspirin / Carisoprodol"]
   , 100 years)
 
-define CarisoprodolMedicationStatements:
-  //remove consideration for status field
-  C3F.MedicationStatementLookBack(
-    [MedicationStatement: "Carisoprodol"]
-  , 100 years)
+// define CarisoprodolMedicationStatements:
+//   //remove consideration for status field
+//   C3F.MedicationStatementLookBack(
+//     [MedicationStatement: "Carisoprodol"]
+//   , 100 years)
 
 define ReportCarisoprodolMedicationRequests:
   (CarisoprodolMedicationRequests) O
@@ -1273,19 +1324,21 @@ define ReportCarisoprodolMedicationRequests:
   }
   sort by Start desc, End desc
 
-define ReportCarisoprodolMedicationStatements:
-  (CarisoprodolMedicationStatements) S
-  return {
-    Type:  'Statement',
-    Name:  ConceptText(S.medication as FHIR.CodeableConcept),
-    Start: MedicationStatementDate(S),
-    End:   DateTimeText((S.effective as FHIR.Period)."end"),
-    Status: S.status.value
-  }
-  sort by Start desc, End desc
+// define ReportCarisoprodolMedicationStatements:
+//   (CarisoprodolMedicationStatements) S
+//   return {
+//     Type:  'Statement',
+//     Name:  ConceptText(S.medication as FHIR.CodeableConcept),
+//     Start: MedicationStatementDate(S),
+//     End:   DateTimeText((S.effective as FHIR.Period)."end"),
+//     Status: S.status.value
+//   }
+//   sort by Start desc, End desc
 
 define ReportCarisoprodolMedications:
-  (ReportCarisoprodolMedicationRequests union ReportCarisoprodolMedicationStatements) M
+  // (ReportCarisoprodolMedicationRequests union ReportCarisoprodolMedicationStatements) M
+  // sort by Start desc, End desc
+  (ReportCarisoprodolMedicationRequests) M
   sort by Start desc, End desc
 
 //seditive medication requests identified via drug class
@@ -1333,9 +1386,9 @@ define NaloxoneMedicationRequests:
   //remove consideration for status
   [MedicationRequest: "Naloxone medications"]
 
-define NaloxoneMedicationStatements:
-  //remove consideration for status
-  [MedicationStatement: "Naloxone medications"]
+// define NaloxoneMedicationStatements:
+//   //remove consideration for status
+//   [MedicationStatement: "Naloxone medications"]
 
 define ReportNaloxoneMedicationRequests:
   (NaloxoneMedicationRequests) O
@@ -1350,19 +1403,21 @@ define ReportNaloxoneMedicationRequests:
   }
   sort by Start desc, End desc
 
-define ReportNaloxoneMedicationStatements:
-  (NaloxoneMedicationStatements) S
-  return {
-    Type:  'Statement',
-    Name:  ConceptText(S.medication as FHIR.CodeableConcept),
-    Start: MedicationStatementDate(S),
-    End:   DateTimeText((S.effective as FHIR.Period)."end"),
-    Status: S.status.value
-  }
-  sort by Start desc, End desc
+// define ReportNaloxoneMedicationStatements:
+//   (NaloxoneMedicationStatements) S
+//   return {
+//     Type:  'Statement',
+//     Name:  ConceptText(S.medication as FHIR.CodeableConcept),
+//     Start: MedicationStatementDate(S),
+//     End:   DateTimeText((S.effective as FHIR.Period)."end"),
+//     Status: S.status.value
+//   }
+//   sort by Start desc, End desc
 
 define ReportNaloxoneMedications:
-  (ReportNaloxoneMedicationRequests union ReportNaloxoneMedicationStatements) M
+  // (ReportNaloxoneMedicationRequests union ReportNaloxoneMedicationStatements) M
+  // sort by Start desc, End desc
+  (ReportNaloxoneMedicationRequests) M
   sort by Start desc, End desc
 
 //Controlled substance agreement
@@ -1414,12 +1469,12 @@ define Summary: {
   CSAgreement: {
     ReportCSAgreement: ReportCSAgreement
   },
-  HistoricalTreatments: {
-    OpioidMedications: ReportOpioidMedications,
-    NonOpioidMedications: ReportNonOpioidMedications,
-    NonPharmacologicTreatments: ReportNonPharmacologicTreatments,
-    StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
-  },
+//   HistoricalTreatments: {
+//     OpioidMedications: ReportOpioidMedications
+//     NonOpioidMedications: ReportNonOpioidMedications,
+//     NonPharmacologicTreatments: ReportNonPharmacologicTreatments,
+//     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
+//   },
   RiskConsiderations: {
     ReportMME: ReportMME,
     ReportMMEByDates: ReportMMEByDates,
