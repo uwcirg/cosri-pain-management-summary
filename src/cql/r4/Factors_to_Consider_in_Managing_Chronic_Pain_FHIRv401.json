@@ -468,6 +468,24 @@
                "type" : "Literal"
             }
          }, {
+            "name" : "UWMC_MRN_SYSTEM_IDENTIFIER_URL",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "http://www.uwmedicine.org/mrn",
+               "type" : "Literal"
+            }
+         }, {
+            "name" : "DEFAULT_MRN_SYSTEM_IDENTIFIER_URL",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "valueType" : "{urn:hl7-org:elm-types:r1}String",
+               "value" : "http://terminology.hl7.org/CodeSystem/v2-0203",
+               "type" : "Literal"
+            }
+         }, {
             "name" : "CS_AGREEMENT_CODE",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -1936,6 +1954,85 @@
                "name" : "c",
                "operandTypeSpecifier" : {
                   "name" : "{http://hl7.org/fhir}Condition",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
+            "name" : "PatientMRN",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "I",
+                        "expression" : {
+                           "path" : "identifier",
+                           "type" : "Property",
+                           "source" : {
+                              "name" : "p",
+                              "type" : "OperandRef"
+                           }
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "where" : {
+                        "type" : "Or",
+                        "operand" : [ {
+                           "type" : "Equivalent",
+                           "operand" : [ {
+                              "name" : "ToString",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "system",
+                                 "scope" : "I",
+                                 "type" : "Property"
+                              } ]
+                           }, {
+                              "name" : "UWMC_MRN_SYSTEM_IDENTIFIER_URL",
+                              "type" : "ExpressionRef"
+                           } ]
+                        }, {
+                           "type" : "Equivalent",
+                           "operand" : [ {
+                              "name" : "ToString",
+                              "libraryName" : "FHIRHelpers",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "path" : "system",
+                                 "scope" : "I",
+                                 "type" : "Property"
+                              } ]
+                           }, {
+                              "name" : "DEFAULT_MRN_SYSTEM_IDENTIFIER_URL",
+                              "type" : "ExpressionRef"
+                           } ]
+                        } ]
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "path" : "value",
+                     "type" : "Property",
+                     "source" : {
+                        "path" : "value",
+                        "scope" : "O",
+                        "type" : "Property"
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "p",
+               "operandTypeSpecifier" : {
+                  "name" : "{http://hl7.org/fhir}Patient",
                   "type" : "NamedTypeSpecifier"
                }
             } ]
@@ -9139,6 +9236,19 @@
                                  "name" : "Patient",
                                  "type" : "ExpressionRef"
                               }
+                           }
+                        }
+                     }, {
+                        "name" : "MRN",
+                        "value" : {
+                           "type" : "First",
+                           "source" : {
+                              "name" : "PatientMRN",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "name" : "Patient",
+                                 "type" : "ExpressionRef"
+                              } ]
                            }
                         }
                      }, {

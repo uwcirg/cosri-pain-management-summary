@@ -82,6 +82,8 @@
 // Commented out NonPharmacologicTreatmentServiceRequests code as it is not currently used and it needs to be checked for accuracy
 // Update 20251015
 // Commented out define statements for sections that aren't currently displayed
+// Update 20251016
+// Add patient MRN
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -299,6 +301,8 @@ define UWMC_UDS_SYSTEM_URL:'https://fakelab.com/cdsr3'
 //lab panel test order code from lab corp and quest diagnostics, TODO: replace UWMC code, abc123, when real one is available
 define Urine_Screen_Panel_Test_Order_Codes: {'733727', '763824', '39428', 'abc123'}
 define UWMC_LAB_SYSTEM_IDENTIFIER_URL: 'http://www.uwmedicine.org/lab_order_id'
+define UWMC_MRN_SYSTEM_IDENTIFIER_URL: 'http://www.uwmedicine.org/mrn'
+define DEFAULT_MRN_SYSTEM_IDENTIFIER_URL: 'http://terminology.hl7.org/CodeSystem/v2-0203'
 
 //CS agreement concept code
 define CS_AGREEMENT_CODE: '94136-9'
@@ -460,6 +464,9 @@ define function Abatement(c FHIR.Condition):
     (c.abatement as FHIR.string).value
   })
 
+define function PatientMRN(p FHIR.Patient):
+  ((p.identifier) I where I.system ~ UWMC_MRN_SYSTEM_IDENTIFIER_URL or I.system ~ DEFAULT_MRN_SYSTEM_IDENTIFIER_URL) O
+  return O.value.value
 
 // @return dispensed quantity of type SimpleQuantity
 // @param MedicationRequest FHIR object
@@ -1455,6 +1462,7 @@ define Summary: {
     Name: Combine(Patient.name.given G return G.value, ' ') + ' ' + Combine(Patient.name.family F return F.value, ' '),
     Gender: Patient.gender.value,
     Age: AgeInYears(),
+    MRN: First(PatientMRN(Patient)),
     MeetsInclusionCriteria: MeetsInclusionCriteria,
     Documents: ReportDocumentReferenceData
   },
