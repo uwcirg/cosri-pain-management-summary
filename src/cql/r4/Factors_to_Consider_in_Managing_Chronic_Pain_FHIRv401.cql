@@ -82,6 +82,8 @@
 // Commented out NonPharmacologicTreatmentServiceRequests code as it is not currently used and it needs to be checked for accuracy
 // Update 20251015
 // Commented out define statements for sections that aren't currently displayed
+// Update 20251016
+// Add patient MRN
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
