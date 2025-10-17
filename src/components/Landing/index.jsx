@@ -88,7 +88,7 @@ export default class Landing extends Component {
       !isEmptyArray(this.state.errorCollection)
     )
       return;
-      
+
     if (this._initStarted) return; // <-- prevents StrictMode duplicate run
     this._initStarted = true;
 
@@ -598,7 +598,6 @@ export default class Landing extends Component {
   }
 
   render() {
-    console.log("loading? ", this.state.loading);
     if (this.state.loading) {
       return <Spinner loadingMessage={this.state.loadingMessage} />;
     }

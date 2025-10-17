@@ -461,7 +461,7 @@ export default class Report extends Component {
         <SideNav id="reportSideNavButton"></SideNav>
         <div className="summary__display">
           {this.state.loading && (
-            <div>Loading...</div>
+            <Spinner loadingMessage={this.state.loadingMessage}></Spinner>
           )}
           {!this.state.loading && hasNoData && this.renderNoDataNotice()}
           {!this.state.loading && (
