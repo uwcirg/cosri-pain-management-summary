@@ -101,18 +101,6 @@ function neededTypesFromELM(library) {
   return new Set([...extractResourcesFromELM(library)]);
 }
 
-function stripHeavyFields(r) {
-  // remove obviously unused heavy fields;
-  delete r.contained;
-  delete r.text;
-  if (r.meta) {
-    delete r.meta.tag;
-    delete r.meta.security;
-  }
-  if (Array.isArray(r.note) && r.note.length > 2) r.note = r.note.slice(0, 2);
-  return r;
-}
-
 /**
  * Extract matching ValueSets from a ValueSet collection
  * @param {Object} lookup - object keyed by name with { name, id }
@@ -157,103 +145,6 @@ function minifyBundleForCQL(bundle, library, keepPredicate = null) {
   };
 }
 
-async function executeELM(
-  client,
-  patient,
-  collector = [],
-  paramResourceTypes = {}
-) {
-  let release, library, patientBundle;
-  let resourceTypes = paramResourceTypes || {};
-  if (!client) {
-    throw new Error("Invalid FHIR client.");
-  }
-  const startTime = Date.now();
-  let cqlStartTime = Date.now(),
-    cqlEndTime = Date.now();
-  return new Promise((resolve, reject) => {
-    // First get our authorized client and send the FHIR release to the next step
-    Promise.allSettled([
-      fetchEnvData(),
-      client.getFhirRelease(),
-      //client.patient.read(),
-    ])
-      // then remember the release for later and get the release-specific library
-      .then((clientResults) => {
-        if (isEmptyArray(clientResults)) {
-          throw new Error("No results returned from client requests.");
-        }
-        if (!clientResults[1] || clientResults[1].status === "rejected")
-          throw new Error("Error fetching FHIR release");
-
-        release = clientResults[1].value;
-        library = getLibrary(release);
-
-        // return all the requests that have been resolved // rejected
-        return Promise.allSettled(
-          [...new Set([...neededTypesFromELM(library)])].map((name) => {
-            if (String(name).toLowerCase() === "patient" && patient) {
-              resourceTypes[name] = true;
-              return [patient];
-            }
-            resourceTypes[name] = false;
-            return doSearch(client, release, name, collector, resourceTypes);
-          })
-        );
-      })
-      .then((requestResults) => {
-        const endTime = Date.now();
-        const executionTime = endTime - startTime;
-        console.log(`Requests total execution time: ${executionTime} ms`);
-        if (isEmptyArray(requestResults)) {
-          return null;
-        }
-        let resources = requestResults
-          .filter(
-            (result) =>
-              result.state !== "rejected" && !isEmptyArray(result.value)
-          )
-          .map((result) => {
-            return getResourcesFromBundle(result.value);
-          })
-          .flat();
-        patientBundle = {
-          resourceType: "Bundle",
-          entry: resources,
-        };
-        cqlStartTime = Date.now();
-        return executeELMForFactors(
-          patientBundle,
-          getPatientSource(release),
-          library
-        );
-      })
-      .catch((e) => {
-        reject(e);
-      })
-      .then((results) => {
-        cqlEndTime = Date.now();
-        const executeCQLTime = cqlEndTime - cqlStartTime;
-        console.log("CQL execution total time: ", executeCQLTime);
-        if (!results) {
-          console.log("No results from executing ELM for Factors.");
-        }
-        const getPatientResults = (result) =>
-          result && result.patientResults
-            ? result.patientResults[Object.keys(result.patientResults)[0]]
-            : {};
-        let evalResults = getPatientResults(results);
-        if (evalResults) {
-          evalResults.bundle = patientBundle;
-        }
-        resolve(evalResults);
-      })
-      .catch((e) => {
-        reject(e);
-      });
-  });
-}
-
 export async function executeRequests(
   client,
   patient,
@@ -286,7 +177,7 @@ export async function executeRequests(
 
         // return all the requests that have been resolved // rejected
         return Promise.allSettled(
-          [...new Set([...neededTypesFromELM(library)])].map((name) => {
+          [...neededTypesFromELM(library)].map((name) => {
             if (String(name).toLowerCase() === "patient" && patient) {
               resourceTypes[name] = true;
               return [patient];
@@ -628,5 +519,3 @@ export function updateSearchParams(params, release, type) {
     }
   }
 }
-
-export default executeELM;

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FhirClientContext } from "../../context/FhirClientContext";
-import executeElm, {
+import {
   extractPatientResourceFromFHIRBundle,
   executeRequests,
   executeELMForFactors,
@@ -39,6 +39,8 @@ import Spinner from "../../elements/Spinner";
 let processIntervalId = 0;
 let scrollHeaderIntervalId = 0;
 let landingFinishedOnce = false;
+let bootstrapPromise = null;        // shared first-phase promise
+let bootstrapResult = null;         // optional cache of the settled result
 
 export default class Landing extends Component {
   static contextType = FhirClientContext;
@@ -78,173 +80,173 @@ export default class Landing extends Component {
   }
 
   async componentDidMount() {
-    if (landingFinishedOnce) {
+    if (landingFinishedOnce) return;
+
+    if (!getTokenInfoFromStorage()) {
+      this.handleNoAccessToken();
       return;
     }
-    if (
-      !this.state ||
-      !this.state.loading ||
-      this.state.result ||
-      !isEmptyArray(this.state.errorCollection)
-    )
-      return;
 
-    if (this._initStarted) return; // <-- prevents StrictMode duplicate run
-    this._initStarted = true;
-
-    // start time out countdown on DOM mounted
-    Timeout();
-    // display resources loading statuses
+    // show progress UI (interval already debounced)
     if (!this.state.requestsDone) this.initProcessProgressDisplay();
-    const { client, patient, error } = this.context;
 
+    const { client, patient, error } = this.context;
     if (error) {
       this.setError(error);
       return;
     }
-    const startTime = Date.now();
-    let result = {},
-      externalDataSet;
-    //fetch all data first
-    Promise.allSettled([
-      executeRequests(
-        client,
-        patient,
-        this.state.collector,
-        this.state.resourceTypes
-      ),
-      landingUtils.getExternalData(summaryMap),
-      // fetch env data where necessary, i.e. env.json, to ensure REACT env variables are available
-      fetchEnvData(),
-    ])
-      .then((responses) => {
-        const endTime = Date.now();
-        console.log("total requests fetch time ", endTime - startTime);
-        if (!getTokenInfoFromStorage()) {
-          console.log("No access token found");
-          this.handleNoAccessToken();
-          return;
-        }
-        // write out environment variables:
+
+    // ===== SHARED PHASE-1 START =====
+    const startPhase1 = () =>
+      Promise.allSettled([
+        executeRequests(
+          client,
+          patient,
+          this.state.collector,
+          this.state.resourceTypes
+        ),
+        landingUtils.getExternalData(summaryMap),
+        fetchEnvData(),
+      ]).then((responses) => {
+        // side effects that are safe to run once:
         getEnvs();
-        // add PIWIK tracking
         addMatomoTracking();
         writeToLog("application loaded", "info", this.getPatientLogParams());
-        if (responses[0].status === "rejected") {
-         this.handleFinish();
-          const rejectReason = responses[0].reason
-            ? responses[0].reason
-            : "Error fetching patient data.";
-          console.log(rejectReason);
-          this.logError(rejectReason);
-          this.setState({
-            loading: false,
-            errorCollection: [rejectReason],
-            activeTab: 0,
-          });
-          return;
-        }
-        let { patientBundle, library, patientSource } = responses[0]?.value;
-        externalDataSet = responses[1]?.value;
-        console.log("patient bundle ", patientBundle);
-        result["bundle"] = patientBundle;
-        result["Summary"] = {
-          ...(externalDataSet ? externalDataSet["data"] : {}),
-        };
-
-        const hasExternalDataError =
-          externalDataSet && externalDataSet["errors"];
-        const externalDataErrors = hasExternalDataError
-          ? Object.values(externalDataSet["errors"])
-          : [];
-        this.setState(
-          {
-            requestsDone: true,
-            loading: false,
-            errorCollection: [
-              ...landingUtils.getResponseErrors(responses),
-              ...externalDataErrors,
-            ].flat(),
-          },
-          () => {
-            this.handleFinish();
-          }
-        );
-        return executeELMForFactors(patientBundle, patientSource, library);
-      })
-      .then((results) => {
-        result["Summary"] = {
-          ...result["Summary"],
-          ...results?.Summary,
-        };
-        const currentSummaryMap = {
-          ...this.state.summaryMap,
-          ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
-            this.state.summaryMap
-          ),
-        };
-        const { sectionFlags, flaggedCount } =
-          landingUtils.getProcessedSummaryData(
-            result.Summary,
-            currentSummaryMap
-          );
-        this.setSummaryOverviewStatsData(result["Summary"]);
-        this.setSummaryAlerts(result["Summary"], sectionFlags);
-        this.setSummaryGraphData(result["Summary"]);
-        const collectorErrors = landingUtils.getCollectorErrors(
-          this.state.collector
-        );
-        const { errors, hasMmeErrors, mmeErrors } =
-          landingUtils.getSummaryErrors(result.Summary);
-        landingUtils.logMMEEntries(result.Summary, {
-          tags: ["mme-calc"],
-          ...this.getPatientLogParams(),
-        });
-        // console.log(
-        //   "errors ",
-        //   errors,
-        //   " hasMmeError ",
-        //   hasMmeErrors,
-        //   " mmeErrors ",
-        //   mmeErrors
-        // );
-        // log errors
-        [...collectorErrors].forEach((e) => this.logError(e));
-        this.setState(
-          {
-            result,
-            sectionFlags,
-            flaggedCount,
-            activeTab: 0,
-            patientId: this.getPatientId(),
-            hasMmeErrors: hasMmeErrors,
-            mmeErrors: mmeErrors,
-            errorCollection: [
-              ...this.state.errorCollection,
-              ...collectorErrors,
-              ...errors,
-            ],
-            summaryMap: landingUtils.getUpdatedSummaryMapWithErrors(
-              currentSummaryMap,
-              externalDataSet?.error
-            ),
-            loading: false,
-          },
-          () => {
-            this.handleFinish();
-            this.initEvents();
-            this.savePDMPSummaryData();
-            this.handleSetActiveTab(0);
-          }
-        );
-        console.log("Query results ", result);
-      })
-      .catch((err) => {
-        console.error(err);
-        this.handleFinish();
-        this.setState({ loading: false });
-        this.setError(err);
+        return responses;
       });
+
+    if (!bootstrapPromise) {
+      bootstrapPromise = startPhase1()
+        .then((res) => {
+          bootstrapResult = res;
+          return res;
+        })
+        .catch((e) => {
+          bootstrapResult = { __error: e };
+          throw e;
+        });
+    }
+
+    let responses;
+    try {
+      responses = bootstrapResult ?? (await bootstrapPromise);
+    } catch (e) {
+      this.handleFinish();
+      this.setState({ loading: false });
+      this.setError(e);
+      return;
+    }
+    // ===== SHARED PHASE-1 END =====
+
+    this.handleFinish(); // clears interval
+
+    if (responses.__error) {
+      this.setState({ loading: false });
+      this.setError(responses.__error);
+      return;
+    }
+
+    // phase-1 postprocessing:
+    const [reqRes, externalRes] = responses;
+    const externalDataSet = externalRes?.value;
+    const collectorErrors = landingUtils.getCollectorErrors(
+      this.state.collector
+    );
+    const externalDataErrors = externalDataSet?.errors
+      ? Object.values(externalDataSet.errors)
+      : [];
+
+    if (reqRes.status === "rejected") {
+      const reason = reqRes.reason ?? "Error fetching patient data.";
+      this.logError(reason);
+      this.setState({
+        loading: false,
+        requestsDone: true,
+        errorCollection: [
+          reason,
+          ...collectorErrors,
+          ...externalDataErrors,
+        ].flat(),
+        activeTab: 0,
+      });
+      return;
+    }
+
+    const { patientBundle, library, patientSource } = reqRes.value;
+    const result = {
+      bundle: patientBundle,
+      Summary: { ...(externalDataSet ? externalDataSet.data : {}) },
+    };
+
+    // turn spinner off as soon as phase-1 ends (keep going for phase-2)
+    this.setState({
+      loading: false,
+      requestsDone: true,
+      errorCollection: [
+        ...landingUtils.getResponseErrors(responses),
+        ...collectorErrors,
+        ...externalDataErrors,
+      ].flat(),
+    });
+
+    // Phase-2 (ELM) — this can finish after the spinner is gone
+    try {
+      const evalResults = await executeELMForFactors(
+        patientBundle,
+        patientSource,
+        library
+      );
+      result.Summary = { ...result.Summary, ...evalResults?.Summary };
+
+      const currentSummaryMap = {
+        ...this.state.summaryMap,
+        ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
+          this.state.summaryMap
+        ),
+      };
+
+      const { sectionFlags, flaggedCount } =
+        landingUtils.getProcessedSummaryData(result.Summary, currentSummaryMap);
+
+      this.setSummaryOverviewStatsData(result.Summary);
+      this.setSummaryAlerts(result.Summary, sectionFlags);
+      this.setSummaryGraphData(result.Summary);
+
+      const { errors, hasMmeErrors, mmeErrors } = landingUtils.getSummaryErrors(
+        result.Summary
+      );
+
+      landingUtils.logMMEEntries(result.Summary, {
+        tags: ["mme-calc"],
+        ...this.getPatientLogParams(),
+      });
+
+      this.setState(
+        {
+          result,
+          sectionFlags,
+          flaggedCount,
+          activeTab: 0,
+          patientId: this.getPatientId(),
+          hasMmeErrors,
+          mmeErrors,
+          errorCollection: [...this.state.errorCollection, ...errors],
+          summaryMap: landingUtils.getUpdatedSummaryMapWithErrors(
+            currentSummaryMap,
+            externalDataSet?.error
+          ),
+          // loading already false
+        },
+        () => {
+          this.initEvents();
+          this.savePDMPSummaryData();
+          this.handleSetActiveTab(0);
+        }
+      );
+    } catch (e) {
+      this.setState({ loading: false });
+      this.setError(e);
+    }
   }
 
   componentWillUnmount() {
@@ -349,7 +351,6 @@ export default class Landing extends Component {
     return getPatientNameFromSource(this.getPatientResource());
   }
   initProcessProgressDisplay() {
-    console.log("WTF");
     this.clearProcessInterval();
     processIntervalId = setInterval(() => {
       this.setState({
@@ -360,10 +361,10 @@ export default class Landing extends Component {
     }, 350);
   }
   clearProcessInterval() {
-    // if (processIntervalId) {
-    clearInterval(processIntervalId);
-    processIntervalId = null;
-    // }
+    if (processIntervalId) {
+      clearInterval(processIntervalId);
+      processIntervalId = null;
+    }
   }
   getOverviewSectionKey() {
     return "PatientRiskOverview";
