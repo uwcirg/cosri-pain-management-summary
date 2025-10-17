@@ -82,9 +82,10 @@ export default class Landing extends Component {
     const { client, patient, error } = this.context;
 
     if (error) {
-      this.setError(err);
+      this.setError(error);
       return;
     }
+    const startTime = Date.now();
     Promise.allSettled([
       executeElm(
         client,
@@ -104,7 +105,7 @@ export default class Landing extends Component {
         }
         // write out environment variables:
         getEnvs();
-        if (responses[1].status === "rejected") {
+        if (responses[0].status === "rejected") {
           this.clearProcessInterval();
           const rejectReason = responses[0].reason
             ? responses[0].reason
@@ -171,6 +172,8 @@ export default class Landing extends Component {
         [...collectorErrors, externalDataErrors].forEach((e) =>
           this.logError(e)
         );
+        const endTime = Date.now();
+        console.log("total execution time ", endTime - startTime);
         this.setState(
           {
             result,
