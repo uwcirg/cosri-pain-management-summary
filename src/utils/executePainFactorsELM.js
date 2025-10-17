@@ -254,8 +254,90 @@ async function executeELM(
   });
 }
 
-async function executeELMForFactors(bundle, patientSource, library) {
+export async function executeRequests(
+  client,
+  patient,
+  collector = [],
+  paramResourceTypes = {}
+) {
+  let release, library, patientBundle;
+  let resourceTypes = paramResourceTypes || {};
+  if (!client) {
+    throw new Error("Invalid FHIR client.");
+  }
+  const startTime = Date.now();
+  return new Promise((resolve, reject) => {
+    // First get our authorized client and send the FHIR release to the next step
+    Promise.allSettled([
+      fetchEnvData(),
+      client.getFhirRelease(),
+      //client.patient.read(),
+    ])
+      // then remember the release for later and get the release-specific library
+      .then((clientResults) => {
+        if (isEmptyArray(clientResults)) {
+          throw new Error("No results returned from client requests.");
+        }
+        if (!clientResults[1] || clientResults[1].status === "rejected")
+          throw new Error("Error fetching FHIR release");
+
+        release = clientResults[1].value;
+        library = getLibrary(release);
+
+        // return all the requests that have been resolved // rejected
+        return Promise.allSettled(
+          [...new Set([...neededTypesFromELM(library)])].map((name) => {
+            if (String(name).toLowerCase() === "patient" && patient) {
+              resourceTypes[name] = true;
+              return [patient];
+            }
+            resourceTypes[name] = false;
+            return doSearch(client, release, name, collector, resourceTypes);
+          })
+        );
+      })
+      .then((requestResults) => {
+        const endTime = Date.now();
+        const executionTime = endTime - startTime;
+        console.log(`Requests total execution time: ${executionTime} ms`);
+        if (isEmptyArray(requestResults)) {
+          return null;
+        }
+        let resources = requestResults
+          .filter(
+            (result) =>
+              result.state !== "rejected" && !isEmptyArray(result.value)
+          )
+          .map((result) => {
+            return getResourcesFromBundle(result.value);
+          })
+          .flat();
+        patientBundle = {
+          resourceType: "Bundle",
+          entry: resources,
+        };
+        const patientSource = getPatientSource(release);
+        resolve({
+          patientBundle,
+          library,
+          patientSource,
+        });
+        // return executeELMForFactors(
+        //   patientBundle,
+        //   getPatientSource(release),
+        //   library
+        // );
+      })
+      .catch((e) => {
+        reject(e);
+      });
+  });
+}
+
+export async function executeELMForFactors(bundle, patientSource, library) {
   if (!bundle || !patientSource) return null;
+   let cqlStartTime = Date.now(),
+    cqlEndTime = Date.now();
   console.log("library ", library);
   const codeService = new VSACAwareCodeService(
     extractMatchingValueSets(library?.valuesets, valueSetDB)
@@ -283,11 +365,8 @@ async function executeELMForFactors(bundle, patientSource, library) {
     throw new Error("Unable to execute CQL due to errors.");
   }
 
-  // const t4 = Date.now();
-  // const expressionResult = await executor.exec_expression("Summary", patientSource);
-  console.log("evalu results ", execResults);
-  //console.log("expression result ", expressionResult)
-  // const t5 = Date.now();
+  cqlEndTime = Date.now();
+  console.log("CQL execution results ", execResults);
   console.log({
     "In execute ELM: minify patient bundle (ms)": (t1 - t0).toFixed(1),
     "In execute ELM: load patient bundle (ms)": (t2 - t1).toFixed(1),
@@ -295,7 +374,17 @@ async function executeELMForFactors(bundle, patientSource, library) {
     "total (ms)": (t3 - t0).toFixed(1),
     // expressionMs: (t5- t4).toFixed(1)
   });
-  return execResults;
+  console.log("CQL execution time ", (cqlEndTime - cqlStartTime).toFixed(1))
+  //return execResults;
+  const getPatientResults = (result) =>
+    result && result.patientResults
+      ? result.patientResults[Object.keys(result.patientResults)[0]]
+      : {};
+  let evalResults = getPatientResults(execResults);
+  if (evalResults) {
+    evalResults.bundle = bundle;
+  }
+  return evalResults;
 }
 
 function getLibrary(release) {

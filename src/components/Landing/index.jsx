@@ -4,6 +4,8 @@ import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FhirClientContext } from "../../context/FhirClientContext";
 import executeElm, {
   extractPatientResourceFromFHIRBundle,
+  executeRequests,
+  executeELMForFactors,
 } from "../../utils/executePainFactorsELM";
 import * as landingUtils from "./utility";
 import { datishFormat } from "../../helpers/formatit";
@@ -36,6 +38,7 @@ import Spinner from "../../elements/Spinner";
 
 let processIntervalId = 0;
 let scrollHeaderIntervalId = 0;
+let landingFinishedOnce = false;
 
 export default class Landing extends Component {
   static contextType = FhirClientContext;
@@ -43,7 +46,8 @@ export default class Landing extends Component {
     super(...arguments);
     this.state = {
       result: null,
-      loading: true,
+      loading: !landingFinishedOnce,
+      requestsDone: false,
       collector: [],
       resourceTypes: {},
       patientId: "",
@@ -55,6 +59,7 @@ export default class Landing extends Component {
       errorCollection: [],
       summaryMap: summaryMap,
     };
+    this._initStarted = false;
 
     // This binding is necessary to make `this` work in the callback
     this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
@@ -67,7 +72,15 @@ export default class Landing extends Component {
     this.anchorTopRef = React.createRef();
   }
 
-  componentDidMount() {
+  handleFinish() {
+    landingFinishedOnce = true;
+    this.clearProcessInterval();
+  }
+
+  async componentDidMount() {
+    if (landingFinishedOnce) {
+      return;
+    }
     if (
       !this.state ||
       !this.state.loading ||
@@ -75,10 +88,14 @@ export default class Landing extends Component {
       !isEmptyArray(this.state.errorCollection)
     )
       return;
+      
+    if (this._initStarted) return; // <-- prevents StrictMode duplicate run
+    this._initStarted = true;
+
     // start time out countdown on DOM mounted
     Timeout();
     // display resources loading statuses
-    this.initProcessProgressDisplay();
+    if (!this.state.requestsDone) this.initProcessProgressDisplay();
     const { client, patient, error } = this.context;
 
     if (error) {
@@ -86,8 +103,11 @@ export default class Landing extends Component {
       return;
     }
     const startTime = Date.now();
+    let result = {},
+      externalDataSet;
+    //fetch all data first
     Promise.allSettled([
-      executeElm(
+      executeRequests(
         client,
         patient,
         this.state.collector,
@@ -98,6 +118,8 @@ export default class Landing extends Component {
       fetchEnvData(),
     ])
       .then((responses) => {
+        const endTime = Date.now();
+        console.log("total requests fetch time ", endTime - startTime);
         if (!getTokenInfoFromStorage()) {
           console.log("No access token found");
           this.handleNoAccessToken();
@@ -105,38 +127,61 @@ export default class Landing extends Component {
         }
         // write out environment variables:
         getEnvs();
+        // add PIWIK tracking
+        addMatomoTracking();
+        writeToLog("application loaded", "info", this.getPatientLogParams());
         if (responses[0].status === "rejected") {
-          this.clearProcessInterval();
+         this.handleFinish();
           const rejectReason = responses[0].reason
             ? responses[0].reason
-            : "Error retrieving patient data.";
+            : "Error fetching patient data.";
           console.log(rejectReason);
           this.logError(rejectReason);
           this.setState({
             loading: false,
             errorCollection: [rejectReason],
+            activeTab: 0,
           });
           return;
         }
-        // add PIWIK tracking
-        addMatomoTracking();
-        writeToLog("application loaded", "info", this.getPatientLogParams());
-        //set FHIR results
-        let result = {};
-        let fhirData = responses[0]?.value;
-        let externalDataSet = responses[1]?.value;
-        // hide and show section(s) depending on config
+        let { patientBundle, library, patientSource } = responses[0]?.value;
+        externalDataSet = responses[1]?.value;
+        console.log("patient bundle ", patientBundle);
+        result["bundle"] = patientBundle;
+        result["Summary"] = {
+          ...(externalDataSet ? externalDataSet["data"] : {}),
+        };
+
+        const hasExternalDataError =
+          externalDataSet && externalDataSet["errors"];
+        const externalDataErrors = hasExternalDataError
+          ? Object.values(externalDataSet["errors"])
+          : [];
+        this.setState(
+          {
+            requestsDone: true,
+            loading: false,
+            errorCollection: [
+              ...landingUtils.getResponseErrors(responses),
+              ...externalDataErrors,
+            ].flat(),
+          },
+          () => {
+            this.handleFinish();
+          }
+        );
+        return executeELMForFactors(patientBundle, patientSource, library);
+      })
+      .then((results) => {
+        result["Summary"] = {
+          ...result["Summary"],
+          ...results?.Summary,
+        };
         const currentSummaryMap = {
           ...this.state.summaryMap,
           ...landingUtils.getSummaryMapWithUpdatedSectionsVis(
             this.state.summaryMap
           ),
-        };
-        result["bundle"] = fhirData?.bundle;
-        result["Summary"] = fhirData ? { ...fhirData["Summary"] } : {};
-        result["Summary"] = {
-          ...result["Summary"],
-          ...(externalDataSet ? externalDataSet["data"] : {}),
         };
         const { sectionFlags, flaggedCount } =
           landingUtils.getProcessedSummaryData(
@@ -163,17 +208,8 @@ export default class Landing extends Component {
         //   " mmeErrors ",
         //   mmeErrors
         // );
-        const hasExternalDataError =
-          externalDataSet && externalDataSet["errors"];
-        const externalDataErrors = hasExternalDataError
-          ? Object.values(externalDataSet["errors"])
-          : [];
         // log errors
-        [...collectorErrors, externalDataErrors].forEach((e) =>
-          this.logError(e)
-        );
-        const endTime = Date.now();
-        console.log("total execution time ", endTime - startTime);
+        [...collectorErrors].forEach((e) => this.logError(e));
         this.setState(
           {
             result,
@@ -186,18 +222,16 @@ export default class Landing extends Component {
             errorCollection: [
               ...this.state.errorCollection,
               ...collectorErrors,
-              ...externalDataErrors,
-              ...landingUtils.getResponseErrors(responses),
               ...errors,
             ],
             summaryMap: landingUtils.getUpdatedSummaryMapWithErrors(
               currentSummaryMap,
-              hasExternalDataError ? externalDataSet["error"] : null
+              externalDataSet?.error
             ),
             loading: false,
           },
           () => {
-            this.clearProcessInterval();
+            this.handleFinish();
             this.initEvents();
             this.savePDMPSummaryData();
             this.handleSetActiveTab(0);
@@ -207,7 +241,7 @@ export default class Landing extends Component {
       })
       .catch((err) => {
         console.error(err);
-        this.clearProcessInterval();
+        this.handleFinish();
         this.setState({ loading: false });
         this.setError(err);
       });
@@ -315,6 +349,7 @@ export default class Landing extends Component {
     return getPatientNameFromSource(this.getPatientResource());
   }
   initProcessProgressDisplay() {
+    console.log("WTF");
     this.clearProcessInterval();
     processIntervalId = setInterval(() => {
       this.setState({
@@ -322,10 +357,13 @@ export default class Landing extends Component {
           this.state.resourceTypes
         ),
       });
-    }, 30);
+    }, 350);
   }
   clearProcessInterval() {
+    // if (processIntervalId) {
     clearInterval(processIntervalId);
+    processIntervalId = null;
+    // }
   }
   getOverviewSectionKey() {
     return "PatientRiskOverview";
@@ -375,7 +413,10 @@ export default class Landing extends Component {
     if (!this.hasOverviewSection()) return;
     //process graph data
     const overviewSection = summaryMap[this.getOverviewSectionKey()];
-    const mmeData = landingUtils.getSummaryGraphDataSet(overviewSection.graphConfig, summary);
+    const mmeData = landingUtils.getSummaryGraphDataSet(
+      overviewSection.graphConfig,
+      summary
+    );
     summary[this.getOverviewSectionKey() + "_graph"] = mmeData;
     summary["dailyMMEData"] = landingUtils.getDailyMMEData(mmeData);
   }
@@ -557,6 +598,7 @@ export default class Landing extends Component {
   }
 
   render() {
+    console.log("loading? ", this.state.loading);
     if (this.state.loading) {
       return <Spinner loadingMessage={this.state.loadingMessage} />;
     }
