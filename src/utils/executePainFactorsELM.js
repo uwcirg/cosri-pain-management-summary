@@ -213,11 +213,6 @@ export async function executeRequests(
           library,
           patientSource,
         });
-        // return executeELMForFactors(
-        //   patientBundle,
-        //   getPatientSource(release),
-        //   library
-        // );
       })
       .catch((e) => {
         reject(e);
@@ -229,7 +224,6 @@ export async function executeELMForFactors(bundle, patientSource, library) {
   if (!bundle || !patientSource) return null;
    let cqlStartTime = Date.now(),
     cqlEndTime = Date.now();
-  console.log("library ", library);
   const codeService = new VSACAwareCodeService(
     extractMatchingValueSets(library?.valuesets, valueSetDB)
   );
