@@ -189,7 +189,7 @@ export async function executeRequests(
       })
       .then((requestResults) => {
         const endTime = Date.now();
-        const executionTime = endTime - startTime;
+        const executionTime = (endTime - startTime).toFixed(2);
         console.log(`Requests total execution time: ${executionTime} ms`);
         if (isEmptyArray(requestResults)) {
           return null;
