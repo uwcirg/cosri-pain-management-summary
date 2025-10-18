@@ -371,8 +371,8 @@ export default function AlertBanner({ type, summaryData }) {
   const expandedClass = contextState.expanded ? "" : "close";
   const alertClass = contextState.status === "completed" ? "info" : "";
 
-  console.log("alert data set:  ", dataToUse);
-  console.log("alert type: ", alertUtil.getAlertType(dataToUse));
+  // console.log("alert data set:  ", dataToUse);
+  // console.log("alert type: ", alertUtil.getAlertType(dataToUse));
 
   return (
     <>
@@ -417,6 +417,6 @@ export default function AlertBanner({ type, summaryData }) {
 }
 
 AlertBanner.propTypes = {
-  summaryData: PropTypes.array.isRequired,
+  summaryData: PropTypes.array,
   type: PropTypes.string,
 };

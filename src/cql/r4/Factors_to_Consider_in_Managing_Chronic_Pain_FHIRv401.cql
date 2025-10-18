@@ -134,7 +134,7 @@ valueset "Conditions associated with chronic pain": 'https://cts.nlm.nih.gov/fhi
 valueset "Opioid Pain Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.34'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.54/expansion)
-valueset "Adjuvant Analgesic Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.54'
+//valueset "Adjuvant Analgesic Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.54'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.105.12.1007/expansion)
 valueset "Major Depression": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.105.12.1007'
@@ -184,10 +184,10 @@ valueset "Pregnancy (New ICD10 codes published in 2018 and 2019)": 'https://cts.
 valueset "Non opiod pain medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.26'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.36/expansion)
-valueset "Non pharmacologic treatments for chronic pain": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.36'
+//valueset "Non pharmacologic treatments for chronic pain": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.36'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.55/expansion)
-valueset "Risk assessments relevant to pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.55'
+//valueset "Risk assessments relevant to pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.55'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.43/expansion)
 valueset "Benzodiazepine medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.43'
@@ -201,10 +201,10 @@ valueset "Aspirin / Carisoprodol": '2.16.840.1.113883.3.464.1003.196.11.1314'
 valueset "Naloxone medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.42'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.28/expansion)
-valueset "Urine drug screen for pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.28'
+//valueset "Urine drug screen for pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.28'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.44/expansion)
-valueset "Stool softeners and laxatives": '2.16.840.1.113762.1.4.1032.44'
+//valueset "Stool softeners and laxatives": '2.16.840.1.113762.1.4.1032.44'
 
 // [custom set for buprenorphine]
 valueset "Buprenorphine medications": '2.16.840.1.buprenorphine.custom'
@@ -1160,23 +1160,23 @@ define ReportPrescriptions:
 
 
 // Urine drug screen from service request,  matching on LOINC code and system = http://loinc.org
-define ReportUrineLabServiceRequests:
-  ([ServiceRequest] S
-    let c: if S.code is not null then S.code as FHIR.CodeableConcept else null
-    where (
-      c is not null and
-      c.coding is not null and
-      c.coding[0] is not null and 
-      c.coding[0].code is not null and
-      c.coding[0].code.value in "Urine drug screen for pain management"
-    )) O
-    let c: O.code as FHIR.CodeableConcept
-    return {
-      ID: O.id,
-      Name: ConceptText(c),
-      Date: DateTimeText(O.authoredOn)
-    }
-    sort by Date desc
+// define ReportUrineLabServiceRequests:
+//   ([ServiceRequest] S
+//     let c: if S.code is not null then S.code as FHIR.CodeableConcept else null
+//     where (
+//       c is not null and
+//       c.coding is not null and
+//       c.coding[0] is not null and 
+//       c.coding[0].code is not null and
+//       c.coding[0].code.value in "Urine drug screen for pain management"
+//     )) O
+//     let c: O.code as FHIR.CodeableConcept
+//     return {
+//       ID: O.id,
+//       Name: ConceptText(c),
+//       Date: DateTimeText(O.authoredOn)
+//     }
+//     sort by Date desc
 
 // Urine drug screen from service request,  matching on custom system and concept code, e.g. sites using labcorp for testing
 define ReportUrineLabServiceRequestsByCustomCode:
@@ -1223,7 +1223,7 @@ define ReportUrineLabServiceRequestsByCustomCode:
 define ReportAllUrineScreens:
   // (ReportUrineDrugScreensByObservation union ReportUrineLabServiceRequests union ReportUrineLabServiceRequestsByCustomCode) M
   // sort by Date desc
-  (ReportUrineLabServiceRequests union ReportUrineLabServiceRequestsByCustomCode) M
+  (ReportUrineLabServiceRequestsByCustomCode) M
   sort by Date desc
 
 

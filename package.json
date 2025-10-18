@@ -11,7 +11,7 @@
     "commonmark": "^0.31.1",
     "core-js": "^3.30.1",
     "cql-exec-fhir": "^2.1.5",
-    "cql-execution": "^3.1.0",
+    "cql-execution": "^3.3.0",
     "d3": "^5.16.0",
     "d3-array": "^2.4.0",
     "d3-axis": "^1.0.12",

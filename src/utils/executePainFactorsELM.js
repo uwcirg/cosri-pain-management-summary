@@ -97,7 +97,55 @@ export class VSACAwareCodeService extends cql.CodeService {
   }
 }
 
-async function executeELM(
+function neededTypesFromELM(library) {
+  return new Set([...extractResourcesFromELM(library)]);
+}
+
+/**
+ * Extract matching ValueSets from a ValueSet collection
+ * @param {Object} lookup - object keyed by name with { name, id }
+ * @param {Object} valueSetJSON - object keyed by OID with date/version/code info
+ * @returns {Object} subset of valueSetJSON with matching IDs
+ */
+function extractMatchingValueSets(lookup, valueSetJSON) {
+  if (!lookup) return {};
+  const matches = {};
+
+  // Normalize all lookup IDs (strip prefix and make consistent)
+  // example: { "Conditions associated with chronic pain": { "name": "Conditions associated with chronic pain", "id": "https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.37" }, "Opioid Pain Medications": { "name": "Opioid Pain Medications", "id": "https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.34" }
+  const lookupIds = Object.values(lookup)
+    .map((v) => (v.id.includes("/") ? v.id.split("/").pop() : v.id))
+    .reduce((acc, id) => {
+      acc[id] = true;
+      return acc;
+    }, {});
+
+  for (const [oid, details] of Object.entries(valueSetJSON ?? {})) {
+    if (lookupIds[oid]) {
+      matches[oid] = details;
+    }
+  }
+
+  return matches;
+}
+
+function minifyBundleForCQL(bundle, library, keepPredicate = null) {
+  const needed = neededTypesFromELM(library);
+  const minimizedEntries = [];
+  for (const e of bundle.entry || []) {
+    const r = e.resource || e;
+    if (!r || !needed.has(r.resourceType)) continue;
+    if (keepPredicate && !keepPredicate(r)) continue;
+    minimizedEntries.push({ resource: r });
+  }
+  return {
+    resourceType: "Bundle",
+    type: "collection",
+    entry: minimizedEntries,
+  };
+}
+
+export async function executeRequests(
   client,
   patient,
   collector = [],
@@ -108,6 +156,7 @@ async function executeELM(
   if (!client) {
     throw new Error("Invalid FHIR client.");
   }
+  const startTime = Date.now();
   return new Promise((resolve, reject) => {
     // First get our authorized client and send the FHIR release to the next step
     Promise.allSettled([
@@ -123,24 +172,25 @@ async function executeELM(
         if (!clientResults[1] || clientResults[1].status === "rejected")
           throw new Error("Error fetching FHIR release");
 
-       release = clientResults[1].value;
-       library = getLibrary(release);
+        release = clientResults[1].value;
+        library = getLibrary(release);
 
         // return all the requests that have been resolved // rejected
         return Promise.allSettled(
-          [...new Set([...extractResourcesFromELM(library)])].map(
-            (name) => {
-              if (String(name).toLowerCase() === "patient" && patient) {
-                resourceTypes[name] = true;
-                return [patient];
-              }
-              resourceTypes[name] = false;
-              return doSearch(client, release, name, collector, resourceTypes);
+          [...neededTypesFromELM(library)].map((name) => {
+            if (String(name).toLowerCase() === "patient" && patient) {
+              resourceTypes[name] = true;
+              return [patient];
             }
-          )
+            resourceTypes[name] = false;
+            return doSearch(client, release, name, collector, resourceTypes);
+          })
         );
       })
       .then((requestResults) => {
+        const endTime = Date.now();
+        const executionTime = (endTime - startTime).toFixed(2);
+        console.log(`Requests total execution time: ${executionTime} ms`);
         if (isEmptyArray(requestResults)) {
           return null;
         }
@@ -157,28 +207,12 @@ async function executeELM(
           resourceType: "Bundle",
           entry: resources,
         };
-        return executeELMForFactors(
+        const patientSource = getPatientSource(release);
+        resolve({
           patientBundle,
-          getPatientSource(release),
-          library
-        );
-      })
-      .catch((e) => {
-        reject(e);
-      })
-      .then((results) => {
-        if (!results) {
-          console.log("No results from executing ELM for Factors.");
-        }
-        const getPatientResults = (result) =>
-          result && result.patientResults
-            ? result.patientResults[Object.keys(result.patientResults)[0]]
-            : {};
-        let evalResults = getPatientResults(results);
-        if (evalResults) {
-          evalResults.bundle = patientBundle;
-        }
-        resolve(evalResults);
+          library,
+          patientSource,
+        });
       })
       .catch((e) => {
         reject(e);
@@ -186,9 +220,13 @@ async function executeELM(
   });
 }
 
-async function executeELMForFactors(bundle, patientSource, library) {
+export async function executeELMForFactors(bundle, patientSource, library) {
   if (!bundle || !patientSource) return null;
-  const codeService = new VSACAwareCodeService(valueSetDB);
+   let cqlStartTime = Date.now(),
+    cqlEndTime = Date.now();
+  const codeService = new VSACAwareCodeService(
+    extractMatchingValueSets(library?.valuesets, valueSetDB)
+  );
   const executor = new cql.Executor(library, codeService);
   //debugging
   // console.log("bundle loaded? ", bundle);
@@ -196,16 +234,42 @@ async function executeELMForFactors(bundle, patientSource, library) {
   //   "resource types",
   //   getResourceTypesFromPatientBundle(bundle?.entry)
   // );
-  patientSource.loadBundles([bundle]);
+  const t0 = Date.now();
+  const minBundle = minifyBundleForCQL(bundle, library);
+  const t1 = Date.now();
+  patientSource.loadBundles([minBundle]);
+  const t2 = Date.now();
   let execResults;
+  let t3;
   try {
-    execResults = executor.exec(patientSource);
+    execResults = await executor.exec(patientSource);
+    t3 = Date.now();
   } catch (e) {
     console.log("Error occurred executing CQL ", e);
     execResults = null;
     throw new Error("Unable to execute CQL due to errors.");
   }
-  return execResults;
+
+  cqlEndTime = Date.now();
+  console.log("CQL execution results ", execResults);
+  console.log({
+    "In execute ELM: minify patient bundle (ms)": (t1 - t0).toFixed(1),
+    "In execute ELM: load patient bundle (ms)": (t2 - t1).toFixed(1),
+    "In execute ELM: execute CQL (ms)": (t3 - t2).toFixed(1),
+    "total (ms)": (t3 - t0).toFixed(1),
+    // expressionMs: (t5- t4).toFixed(1)
+  });
+  console.log("CQL execution time ", (cqlEndTime - cqlStartTime).toFixed(1), " ms")
+  //return execResults;
+  const getPatientResults = (result) =>
+    result && result.patientResults
+      ? result.patientResults[Object.keys(result.patientResults)[0]]
+      : {};
+  let evalResults = getPatientResults(execResults);
+  if (evalResults) {
+    evalResults.bundle = bundle;
+  }
+  return evalResults;
 }
 
 function getLibrary(release) {
@@ -260,7 +324,7 @@ export function getRequestURL(client, uri = "") {
   }
   if (!serverURL) return "";
   let uriToUse = uri;
-  if (uriToUse.startsWith("/")) uriToUse = uri.slice(1);
+  if (uriToUse.startsWith("/")) uriToUse = uriToUse.slice(1);
   return serverURL + (!serverURL.endsWith("/") ? "/" : "") + uriToUse;
 }
 
@@ -270,37 +334,30 @@ export function doSearch(client, release, type, collector, resourceTypes = {}) {
 
   const resources = [];
   const uri = `${type}?${params}`;
-  const nonPatientResourceTypes = ["questionnaire"];
-  const isNotPatientResourceType =
-    nonPatientResourceTypes.indexOf(type.toLowerCase()) !== -1;
-  const options = {
-    url: uri,
-    headers: noCacheHeader,
-  };
+  const isNotPatientResourceType = ["questionnaire"].includes(
+    type.toLowerCase()
+  );
+
+  const options = { url: uri, headers: noCacheHeader };
   const fhirOptions = {
-    pageLimit: 0, // unlimited pages
+    pageLimit: 0,
     onPage: processPage(client, uri, collector, resources),
   };
-  return new Promise((resolve) => {
-    let results;
-    if (isNotPatientResourceType) {
-      results = client.request(options, fhirOptions);
-    } else {
-      results = client.patient.request(options, fhirOptions);
-    }
-    results
-      .then(() => {
-        resourceTypes[type] = true;
-        resolve(resources);
-      })
-      .catch((error) => {
-        collector.push({ error: error, url: uri, type: type, data: error });
-        resourceTypes[type] = true;
-        // don't return the error as we want partial results if available
-        // (and we don't want to halt the Promis.all that wraps this)
-        resolve(resources);
-      });
-  });
+
+  const req = isNotPatientResourceType
+    ? client.request(options, fhirOptions)
+    : client.patient.request(options, fhirOptions);
+
+  return req
+    .then(() => {
+      resourceTypes[type] = true;
+      return resources;
+    })
+    .catch((error) => {
+      collector.push({ error, url: uri, type, data: error });
+      resourceTypes[type] = true;
+      return resources; // keep partials; don't reject
+    });
 }
 
 export function processPage(client, uri, collector, resources) {
@@ -456,5 +513,3 @@ export function updateSearchParams(params, release, type) {
     }
   }
 }
-
-export default executeELM;
