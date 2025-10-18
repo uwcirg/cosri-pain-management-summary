@@ -16,7 +16,6 @@ import {
   getPatientNameFromSource,
   getPatientSearchURL,
   getSiteId,
-  isEmptyArray,
   isInViewport,
   isNotProduction,
   isProduction,
@@ -39,8 +38,8 @@ import Spinner from "../../elements/Spinner";
 let processIntervalId = 0;
 let scrollHeaderIntervalId = 0;
 let landingFinishedOnce = false;
-let bootstrapPromise = null;        // shared first-phase promise
-let bootstrapResult = null;         // optional cache of the settled result
+let bootstrapPromise = null;        // first-phase fetch resources
+let bootstrapResult = null;      
 
 export default class Landing extends Component {
   static contextType = FhirClientContext;
@@ -87,6 +86,8 @@ export default class Landing extends Component {
       return;
     }
 
+    Timeout();
+
     // show progress UI (interval already debounced)
     if (!this.state.requestsDone) this.initProcessProgressDisplay();
 
@@ -96,7 +97,7 @@ export default class Landing extends Component {
       return;
     }
 
-    // ===== SHARED PHASE-1 START =====
+    //======= phase-1 fetch resources =======
     const startPhase1 = () =>
       Promise.allSettled([
         executeRequests(
@@ -136,9 +137,6 @@ export default class Landing extends Component {
       this.setError(e);
       return;
     }
-    // ===== SHARED PHASE-1 END =====
-
-    this.handleFinish(); // clears interval
 
     if (responses.__error) {
       this.setState({ loading: false });
@@ -156,6 +154,7 @@ export default class Landing extends Component {
       ? Object.values(externalDataSet.errors)
       : [];
 
+    // phase-1 error
     if (reqRes.status === "rejected") {
       const reason = reqRes.reason ?? "Error fetching patient data.";
       this.logError(reason);
@@ -178,18 +177,21 @@ export default class Landing extends Component {
       Summary: { ...(externalDataSet ? externalDataSet.data : {}) },
     };
 
+    this.handleFinish();
+
     // turn spinner off as soon as phase-1 ends (keep going for phase-2)
     this.setState({
-      loading: false,
       requestsDone: true,
+      loading: false,
+      result: result,
       errorCollection: [
         ...landingUtils.getResponseErrors(responses),
         ...collectorErrors,
         ...externalDataErrors,
-      ].flat(),
+      ],
     });
 
-    // Phase-2 (ELM) — this can finish after the spinner is gone
+    //===== Phase-2 (ELM) — this can finish after the spinner is gone
     try {
       const evalResults = await executeELMForFactors(
         patientBundle,
