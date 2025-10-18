@@ -73,7 +73,7 @@ export default class Landing extends Component {
     this.anchorTopRef = React.createRef();
   }
 
-  handleFinish() {
+  handleFetchFinish() {
     landingFinishedOnce = true;
     this.clearProcessInterval();
   }
@@ -132,13 +132,14 @@ export default class Landing extends Component {
     try {
       responses = bootstrapResult ?? (await bootstrapPromise);
     } catch (e) {
-      this.handleFinish();
+      this.handleFetchFinish();
       this.setState({ loading: false });
       this.setError(e);
       return;
     }
 
     if (responses.__error) {
+      this.handleFetchFinish();
       this.setState({ loading: false });
       this.setError(responses.__error);
       return;
@@ -177,9 +178,8 @@ export default class Landing extends Component {
       Summary: { ...(externalDataSet ? externalDataSet.data : {}) },
     };
 
-    this.handleFinish();
+    this.handleFetchFinish();
 
-    // turn spinner off as soon as phase-1 ends (keep going for phase-2)
     this.setState({
       requestsDone: true,
       loading: false,
@@ -191,7 +191,7 @@ export default class Landing extends Component {
       ],
     });
 
-    //===== Phase-2 (ELM) — this can finish after the spinner is gone
+    //===== Phase-2 (ELM) — executing CQL
     try {
       const evalResults = await executeELMForFactors(
         patientBundle,
@@ -252,7 +252,7 @@ export default class Landing extends Component {
   }
 
   componentWillUnmount() {
-    this.clearProcessInterval();
+    this.handleFetchFinish();
     this.removeEvents();
   }
 
