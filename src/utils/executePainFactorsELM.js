@@ -259,7 +259,7 @@ export async function executeELMForFactors(bundle, patientSource, library) {
     "total (ms)": (t3 - t0).toFixed(1),
     // expressionMs: (t5- t4).toFixed(1)
   });
-  console.log("CQL execution time ", (cqlEndTime - cqlStartTime).toFixed(1))
+  console.log("CQL execution time ", (cqlEndTime - cqlStartTime).toFixed(1), " ms")
   //return execResults;
   const getPatientResults = (result) =>
     result && result.patientResults
