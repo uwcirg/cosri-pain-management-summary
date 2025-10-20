@@ -683,7 +683,8 @@ export function saveData(queryParams) {
   })
     .then((response) => {
       if (!response.ok) {
-        throw Error(response.statusText);
+        // throw Error(response.statusText);
+        console.log("Save data failed. Error status: ", response.status);
       }
       return response.json();
     })

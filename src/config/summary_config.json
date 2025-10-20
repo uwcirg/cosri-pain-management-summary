@@ -1359,7 +1359,7 @@
                     }
                   ]
                 },
-                "flagText": "No urine drug screen date found for this patient. Please check the first controlled substance prescription to determine if they are due for their 12 month drug screen."
+                "flagText": "No urine drug screen date found for this patient. Please check the last controlled substance prescription to determine if they are due for their 12 month drug screen."
               },
               {
                 "flag": {

@@ -49,8 +49,14 @@ export default class Header extends Component {
     }
   }
   render() {
-    const { patientName, patientDOB, patientGender, patientSearchURL, siteID } =
-      this.props;
+    const {
+      patientName,
+      patientDOB,
+      patientGender,
+      patientMRN,
+      patientSearchURL,
+      siteID,
+    } = this.props;
 
     return (
       <header className="header">
@@ -65,7 +71,10 @@ export default class Header extends Component {
           <div className="header__summary-patient">
             {(patientName || patientDOB) && (
               <div className="patient-info">
-                <div className="flex flex-gap-1" style={{ alignItems: "flex-start" }}>
+                <div
+                  className="flex flex-gap-1"
+                  style={{ alignItems: "flex-start" }}
+                >
                   {patientName && (
                     <FontAwesomeIcon
                       className="patient-icon"
@@ -86,7 +95,13 @@ export default class Header extends Component {
                           DOB: {patientDOB}
                         </span>
                       )}
-                      <span className="patient-gender">{patientGender}</span>
+                      <div className="flex">
+                        <span className="patient-gender">
+                          {patientGender}
+                          {patientMRN && <span>,</span>}
+                        </span>
+                        {patientMRN && <span>MRN: {patientMRN}</span>}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -118,13 +133,13 @@ export default class Header extends Component {
               </div>
             )}
             {!siteID && (
-                <div className="entries left">
-                  <img
-                    src={"/assets/images/doh_logo.png"}
-                    alt="doh logo"
-                    className="default-logo"
-                  />
-                </div>
+              <div className="entries left">
+                <img
+                  src={"/assets/images/doh_logo.png"}
+                  alt="doh logo"
+                  className="default-logo"
+                />
+              </div>
             )}
           </div>
         </div>
@@ -137,6 +152,7 @@ Header.propTypes = {
   patientName: PropTypes.string.isRequired,
   patientDOB: PropTypes.string.isRequired,
   patientGender: PropTypes.string,
+  patientMRN: PropTypes.string,
   patientSearchURL: PropTypes.string,
   siteID: PropTypes.string,
 };

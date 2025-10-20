@@ -11,8 +11,9 @@ const booleanRE = /^(true|false)$/; // matches 'true' or 'false'
 export function dateFormat(result, input, format) {
   if (input == null) return '';
   const formatToUse = format ? format : 'YYYY-MMM-DD';
-  if (dateREZ.test(input)) return timeZonedDateFormat(input, format);
-  return moment.parseZone(input).format(formatToUse);
+  const inputToUse = typeof input === "object" ? input.toString() : input;
+  if (dateREZ.test(inputToUse)) return timeZonedDateFormat(inputToUse, format);
+  return moment.parseZone(inputToUse).format(formatToUse);
 }
 
 export function timeZonedDateFormat(input, format) {
