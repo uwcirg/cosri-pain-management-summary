@@ -166,7 +166,7 @@ export default class Summary extends Component {
 
   getSectionFlagCount(section) {
     const { sectionFlags } = this.props;
-    const subSections = sectionFlags[section]
+    const subSections = sectionFlags?.section
       ? Object.keys(sectionFlags[section])
       : null;
 
@@ -200,10 +200,8 @@ export default class Summary extends Component {
   }
 
   // if flagged, returns flag text, else returns empty text
-  getEntryFlagText(section, subSection, entry) {
+  getDelimitedEntryFlagTextClassString(section, subSection, entry) {
     const { sectionFlags } = this.props;
-
-    let flagText = "";
     if (
       !sectionFlags ||
       !sectionFlags[section] ||
@@ -211,13 +209,20 @@ export default class Summary extends Component {
       !entry
     )
       return "";
+    let flagText = "";
+    let flagClass = "";
     sectionFlags[section][subSection].forEach((flag) => {
       if (flag.entryId === entry._id) {
-        flagText = flag.flagText + (flag.flagClass ? "|" + flag.flagClass : "");
+        if (flag.flagText) {
+          flagText += "\r\n" + flag.flagText;
+           if (flag.flagClass) {
+              flagClass += " " + flagClass;
+           }
+        }
       }
     });
 
-    return flagText;
+    return flagText + (flagClass ? "|" + flagClass: "");
   }
 
   renderSectionAnchor(sectionId) {
@@ -274,35 +279,56 @@ export default class Summary extends Component {
     return guidelineContent;
   }
 
-  renderNoEntries(section, subSection) {
+  renderFlagEntries(section, subSection) {
+    const flagEntries = this.getSubSectionFlagEntries(section, subSection);
+    if (isEmptyArray(flagEntries)) return null;
+    const flagContent = flagEntries.map((item, index) => {
+      return (
+        <div
+          key={`flag_${index}`}
+          className="flex flex-gap-1 flex-start"
+        >
+          <FontAwesomeIcon
+            className={`flag ${item.flagClass}`}
+            icon={faExclamationCircle}
+            aria-hidden={false}
+            tabIndex={0}
+          />{" "}
+          <span className="text">{item.flagText}</span>
+        </div>
+      );
+    });
+    return flagContent;
+  }
+
+  getSubSectionFlagEntries(section, subSection) {
     const { sectionFlags } = this.props;
-    let subSectionFlags =
-      sectionFlags && sectionFlags[section]
-        ? sectionFlags[section][subSection.dataKey]
-        : null;
+    if (!sectionFlags) return [];
+    if (!section || !subSection) return [];
+    let subSectionFlags = sectionFlags[section]
+      ? sectionFlags[section][subSection.dataKey]
+      : null;
     let flagEntries = [];
-    let flagContent = "";
-    let guidelineContent = this.renderGuideLine(subSection);
     if (subSectionFlags) {
-      flagEntries = subSectionFlags.map((flag) => {
-        return flag.flagText;
+      flagEntries = subSectionFlags
+        .filter((flag) => flag.flagText)
+        .map((flag) => {
+          return flag;
+        });
+      const seen = new Set();
+      return flagEntries.filter((f) => {
+        const key = f.flagText?.trim().toLowerCase();
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
       });
     }
-    if (flagEntries.length) {
-      flagContent = flagEntries.map((item, index) => {
-        return (
-          <div key={`flag_${index}`}>
-            <FontAwesomeIcon
-              className="flag"
-              icon={faExclamationCircle}
-              aria-hidden={false}
-              tabIndex={0}
-            />{" "}
-            <span className="text">{item}</span>
-          </div>
-        );
-      });
-    }
+    return flagEntries;
+  }
+
+  renderNoEntries(section, subSection) {
+    let flagContent = this.renderFlagEntries(section, subSection) ?? "";
+    let guidelineContent = this.renderGuideLine(subSection);
     return (
       <div id={`${subSection.dataKey}_table`} className={`table`}>
         <div className="no-entries">
@@ -336,14 +362,14 @@ export default class Summary extends Component {
 
     const headers = Object.keys(table.headers);
     const hasFlaggedEntries = filteredEntries.some(
-      (entry) => !!this.getEntryFlagText(section, subSection.dataKey, entry)
+      (entry) => !!this.getDelimitedEntryFlagTextClassString(section, subSection.dataKey, entry)
     );
     let columns = [];
     columns.push({
       id: "flagged",
       Header: <span className="flag__span"></span>,
       accessor: (entry) =>
-        this.getEntryFlagText(section, subSection.dataKey, entry),
+        this.getDelimitedEntryFlagTextClassString(section, subSection.dataKey, entry),
       Cell: (props) => {
         let arrDisplay = props.value ? props.value.split("|") : null;
         let displayText = arrDisplay && arrDisplay[0] ? arrDisplay[0] : "";
@@ -472,6 +498,11 @@ export default class Summary extends Component {
             tableProps: customProps,
           }}
         ></Table>
+        {subSection.showAlertWithEntries && (
+          <div className="flag-entries-container">
+            {this.renderFlagEntries(section, subSection)}
+          </div>
+        )}
       </div>
     );
   }
