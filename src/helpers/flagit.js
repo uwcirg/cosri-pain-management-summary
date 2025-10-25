@@ -1,7 +1,9 @@
 import {
   isDateInPast,
+  isEmptyArray,
   getDiffMonths,
   getDateObjectInLocalDateTime,
+  getSiteId
 } from "./utility";
 const functions = {
   ifAnd,
@@ -18,65 +20,115 @@ const functions = {
   ifAdult,
 };
 
+// helpers
+const toArray = (x) => (Array.isArray(x) ? x : x ? [x] : []);
+const getFlagClass = (item) => (item.flagClass ? item.flagClass : "");
+const getFlagDateField = (item) => (item.flagDateField ? item.flagDateField : "");
+
+// Build display text for a single flag item
+function buildDisplayText(flagItem, entry) {
+  if (!flagItem) return "";
+
+  const siteId = getSiteId?.();
+  const elementText =
+    entry && flagItem.key && entry[flagItem.key] ? entry[flagItem.key] : "";
+
+  // choose flag text w/ site override if present
+  let displayText = "";
+  if (flagItem.flagTextBySite && siteId) {
+    const siteKey = siteId.toLowerCase();
+    displayText = flagItem.flagTextBySite[siteKey] ?? flagItem.flagText ?? "";
+  } else {
+    displayText = flagItem.flagText ?? "";
+  }
+
+  // substitute {name}
+  if (displayText) {
+    displayText = displayText.replace("{name}", `- ${elementText}`);
+  }
+
+  // mapping (pattern -> friendly display name)
+  if (displayText && flagItem.flagTextMapping) {
+    for (const map of flagItem.flagTextMapping) {
+      const regex = new RegExp(map.pattern, "gi");
+      if (regex.test(displayText)) {
+        displayText = map.name;
+        break;
+      }
+    }
+  }
+
+  return displayText;
+}
+
 // returns false if the given entry should not be flagged
-// returns the flag text for an entry that should be flagged
+// returns an array of { text, class, date } for all matched flags (or a string array if you prefer)
+// NOTE: Now collects ALL flags, and supports a flag item being an array.
 export default function flagit(entry, subSection, summary) {
   const flags =
     subSection && subSection.tables
       ? subSection?.tables[0]?.flags
-      : subSection.flags;
-  if (flags == null) return false;
+      : subSection?.flags;
 
-  const flagResults = flags.reduce((accumulator, flag) => {
-    const flagRule = flag.flag;
-    const flagClass = flag.flagClass ? flag.flagClass : "";
-    const flagDate = flag.flagDateField ? flag.flagDateField : "";
-    let elementText = "";
-    if (entry && flag.key && entry[flag.key]) {
-      elementText = entry[flag.key];
-    }
-    let displayText = flag.flagText.replace("{name}", `- ${elementText}`);
-    if (displayText && flag.flagTextMapping) {
-      //specific mapping specified for each flag text
-      //convert text when matching pattern found
-      for (const item of flag.flagTextMapping) {
-        let regex = RegExp(item.pattern, "gi");
-        if (regex.test(displayText)) {
-          displayText = item.name;
-          break;
-        }
-      }
-    }
-    if (flagRule === "always") {
-      if (entry != null) {
-        accumulator.push(displayText);
-      }
-    } else if (
-      flagRule === "ifNone" &&
-      (entry == null || (Array.isArray(entry) && entry.length === 0))
-    ) {
-      accumulator.push(displayText);
-    } else if (typeof flagRule === "string") {
-      if (functions[flagRule](entry, entry, subSection, summary)) {
-        accumulator.push(displayText);
-      }
-    } else if (typeof flagRule === "object") {
-      const rule = Object.keys(flagRule)[0];
-      if (functions[rule](flagRule[rule], entry, subSection, summary)) {
+  if (!flags) return false;
+
+  let results = [];
+
+  // iterate each top-level flag record
+  for (const rawFlagItem of flags) {
+    // normalize: a "flag item" itself might be an array; handle each
+    const flagItems = toArray(rawFlagItem);
+
+    for (const flagItem of flagItems) {
+      // guard: some entries might be primitives or malformed
+      if (!flagItem || typeof flagItem !== "object") continue;
+
+      const flagRule = flagItem.flag;
+      const flagClass = getFlagClass(flagItem);
+      const flagDate = getFlagDateField(flagItem);
+      const displayText = buildDisplayText(flagItem, entry);
+      const pushResult = () => {
         if (displayText) {
-          accumulator.push({
-            text: displayText,
-            class: flagClass,
-            date: flagDate,
-          });
+          results.push({ text: displayText, class: flagClass, date: flagDate });
         }
+      };
+
+      // Evaluate rule types
+      if (flagRule === "always") {
+        if (entry != null) pushResult();
+        continue;
       }
+
+      if (
+        flagRule === "ifNone" &&
+        (entry == null || (Array.isArray(entry) && entry.length === 0))
+      ) {
+        pushResult();
+        continue;
+      }
+
+      if (typeof flagRule === "string") {
+        // e.g., "ifOneOrMore"
+        if (functions[flagRule]?.(entry, entry, subSection, summary)) {
+          pushResult();
+        }
+        continue;
+      }
+
+      if (flagRule && typeof flagRule === "object") {
+        const ruleKey = Object.keys(flagRule)[0]; // e.g., "ifAnd", "ifMostRecent", etc.
+        const ruleArg = flagRule[ruleKey];
+        if (functions[ruleKey]?.(ruleArg, entry, subSection, summary)) {
+          pushResult();
+        }
+        continue;
+      }
+
+      // If we reach here: no usable rule; do nothing.
     }
-
-    return accumulator;
-  }, []);
-
-  return flagResults.length === 0 ? false : flagResults[0];
+  }
+  // an array of all flagTexts
+  return results.length ? results : false;
 }
 
 function ifAnd(flagRulesArray, entry, subSection, summary) {

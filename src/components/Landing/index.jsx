@@ -223,6 +223,8 @@ export default class Landing extends Component {
         ...this.getPatientLogParams(),
       });
 
+      // console.log("summary ", result);
+
       this.setState(
         {
           result,
