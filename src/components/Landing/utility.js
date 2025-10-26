@@ -333,34 +333,49 @@ function todayYMDUTC() {
 // Daily cumulative MME, starting from the day BEFORE the earliest start (0 value)
 // and extending through today (zeros when no meds are active).
 export function getProcessedGraphData(graphConfig, graphDataSource) {
+  if (isEmptyArray(graphDataSource)) return [];
   const startDateFieldName = graphConfig.startDateField;
-  const endDateFieldName = graphConfig.endDateField;
-  const MMEValueFieldName = graphConfig.mmeField;
+  const endDateFieldName   = graphConfig.endDateField;
+  const MMEValueFieldName  = graphConfig.mmeField;
   const graphDateFieldName = graphConfig.graphDateField;
-
-  if (isEmptyArray(graphDataSource)) {
-    return [];
-  }
 
   const PLACEHOLDER_FIELD_NAME = "placeholder";
   const START_DELIMITER_FIELD_NAME = "start_delimiter";
   const FINAL_CALCULATED_FIELD_FLAG = "final";
 
   const inclusiveEnd = graphConfig.endInclusive !== false; // default: true
-  const capAtToday = graphConfig.capAtToday !== false; // default: true
+  const capAtToday   = graphConfig.capAtToday !== false;   // default: true
+
+  // ==== UTC-safe helpers (prevent 1-day shifts) ====
   const DAY_MS = 24 * 60 * 60 * 1000;
+  const parseYMD = (ymd) => {
+    const s = typeof extractDateFromGMTDateString === "function"
+      ? extractDateFromGMTDateString(ymd)
+      : ymd;
+    const [y, m, d] = s.split("-").map(Number);
+    return { y, m, d };
+  };
+  const toMsUTC = (ymd) => {
+    const { y, m, d } = parseYMD(ymd);
+    return Date.UTC(y, m - 1, d);
+  };
+  const toYMDUTC = (msUTC) => {
+    const dt = new Date(msUTC);
+    const y = dt.getUTCFullYear();
+    const m = String(dt.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(dt.getUTCDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+  const todayYMDUTC = () => {
+    const now = new Date();
+    return toYMDUTC(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  };
+  const getRealNumber = (o) => (o !== null && !isNaN(o) && o >= 0 ? Number(o) : 0);
 
-  // Helpers
-  const toMs = toMsUTC;
-  const toYMD = toYMDUTC;
-  const todayYMD = todayYMDUTC();
-  const todayMs = toMsUTC(todayYMD);
-  const getRealNumber = (o) =>
-    o !== null && !isNaN(o) && o >= 0 ? Number(o) : 0;
 
-  // Build delta map and track start days
-  const delta = new Map(); // Map<ms, number>
-  const startDays = new Set(); // Set<"YYYY-MM-DD">
+  // Build delta map (+ at Start, − at End+1 when inclusive) and mark start days
+  const delta = new Map();      // Map<msUTC, number>
+  const startDays = new Set();  // Set<"YYYY-MM-DD">
   let minMs = Infinity;
   let maxMs = -Infinity;
 
@@ -369,17 +384,17 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     const eRaw = item?.[endDateFieldName];
     if (!sRaw || !eRaw) continue;
 
-    const sMs = toMs(sRaw);
-    const eMs = toMs(eRaw);
+    const sMs = toMsUTC(sRaw);
+    const eMs = toMsUTC(eRaw);
     if (!Number.isFinite(sMs) || !Number.isFinite(eMs) || eMs < sMs) continue;
 
     const mme = getRealNumber(item?.[MMEValueFieldName]);
     if (mme === 0) continue;
 
     delta.set(sMs, (delta.get(sMs) ?? 0) + mme);
-    startDays.add(toYMD(sMs));
+    startDays.add(toYMDUTC(sMs));
 
-    const dropMs = inclusiveEnd ? eMs + DAY_MS : eMs; // end inclusive by default
+    const dropMs = inclusiveEnd ? (eMs + DAY_MS) : eMs;
     delta.set(dropMs, (delta.get(dropMs) ?? 0) - mme);
 
     if (sMs < minMs) minMs = sMs;
@@ -388,35 +403,40 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
 
   if (!Number.isFinite(minMs)) {
     return capAtToday
-      ? emitZerosThroughToday(graphDateFieldName, FINAL_CALCULATED_FIELD_FLAG)
+      ? [{
+          [graphDateFieldName]: todayYMDUTC(),
+          [MMEValueFieldName]: 0,
+          [PLACEHOLDER_FIELD_NAME]: true,
+          [FINAL_CALCULATED_FIELD_FLAG]: true,
+        }]
       : [];
   }
 
-  // One day BEFORE the earliest start (must be emitted with 0)
-  const seriesStartMs = minMs - DAY_MS;
+  // Start one day BEFORE the earliest start (force a leading 0)
+  const preStartMs = minMs - DAY_MS;
 
-  // Determine end bound (today or latest end, then ensure we include today if capAtToday)
-  // const todayYMD = dateFormat("", new Date(), "YYYY-MM-DD");
-  // const todayMs = new Date(todayYMD).getTime();
+  // Determine end bound (include today if capAtToday)
+  const todayYMD = todayYMDUTC();
+  const todayMs = toMsUTC(todayYMD);
   const endLimitMs = capAtToday ? Math.min(maxMs, todayMs) : maxMs;
   const finalEndMs = capAtToday ? Math.max(endLimitMs, todayMs) : endLimitMs;
 
   const out = [];
-  let cum = 0;
 
-  // Emit the pre-start day explicitly at 0 (always placeholder)
+  // Leading zero day (always placeholder)
   out.push({
-    [graphDateFieldName]: toYMD(seriesStartMs),
+    [graphDateFieldName]: toYMDUTC(preStartMs),
     [MMEValueFieldName]: 0,
     [PLACEHOLDER_FIELD_NAME]: true,
   });
 
-  // Walk each day from earliest start through final end (usually today)
+  // Daily walk: if a med ends on day D and next starts on D+1, cum transitions directly (no 0 in-between)
+  let cum = 0;
   for (let t = minMs; t <= finalEndMs; t += DAY_MS) {
     if (delta.has(t)) cum += delta.get(t);
     if (cum < 0) cum = 0; // safety clamp
 
-    const ymd = toYMD(t);
+    const ymd = toYMDUTC(t);
     const isStart = startDays.has(ymd);
 
     const row = {
@@ -424,33 +444,19 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
       [MMEValueFieldName]: Math.round(getRealNumber(cum)),
     };
 
-    if (isStart) {
-      row[START_DELIMITER_FIELD_NAME] = true; // non-placeholder → show dot
-    } else {
-      row[PLACEHOLDER_FIELD_NAME] = true; // placeholder → hide dot
-    }
+    // Dots only on start days
+    if (isStart) row[START_DELIMITER_FIELD_NAME] = true;
+    else row[PLACEHOLDER_FIELD_NAME] = true;
 
     out.push(row);
   }
 
-  // Mark final on the last emitted day (today when capAtToday is true)
+  // mark final
   out[out.length - 1][FINAL_CALCULATED_FIELD_FLAG] = true;
 
   return out;
-
-  // ---- helpers ----
-  function emitZerosThroughToday(dateField, finalFlag) {
-    const todayYmd = dateFormat("", new Date(), "YYYY-MM-DD");
-    return [
-      {
-        [dateField]: todayYmd,
-        MMEValue: 0,
-        placeholder: true,
-        [finalFlag]: true,
-      },
-    ];
-  }
 }
+
 
 export function getProcessedAlerts(sectionFlags, logParams) {
   let alerts = [];
