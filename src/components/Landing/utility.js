@@ -373,17 +373,6 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     return toYMDUTC(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
   }
 
-  // if (!Array.isArray(graphDataSource) || graphDataSource.length === 0) {
-  //   if (!capAtToday) return [];
-  //   const tYMD = todayYMDUTC();
-  //   return [{
-  //     [graphDateFieldName]: tYMD,
-  //     [MMEValueFieldName]: 0,
-  //     [PLACEHOLDER_FIELD_NAME]: true,
-  //     [FINAL_CALCULATED_FIELD_FLAG]: true,
-  //   }];
-  // }
-
   // Build deltas and track first/last boundaries
   const delta = new Map();     // Map<msUTC, number>
   const startDays = new Set(); // Set<"YYYY-MM-DD">
@@ -480,8 +469,6 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
 
   return out;
 }
-
-
 
 export function getProcessedAlerts(sectionFlags, logParams) {
   let alerts = [];
