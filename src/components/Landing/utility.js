@@ -255,58 +255,48 @@ export function getProcessedSummaryData(summary, summaryMap) {
 }
 
 export function getSummaryGraphDataSet(graphConfig, summaryData) {
-  if (!summaryData) return null;
-  if (!(graphConfig && graphConfig.summaryDataSource)) {
-    return null;
+  if (!summaryData || !graphConfig?.summaryDataSource) return null;
+
+  // Demo path short-circuit
+  if (graphConfig.demoConfigKey && getEnv(graphConfig.demoConfigKey)) {
+    return graphConfig.demoData ?? null;
   }
-  //demo config set to on, then draw just the demo graph data
-  if (getEnv(graphConfig.demoConfigKey)) {
-    return graphConfig.demoData;
-  }
-  //get the data from summary data
-  let sections = graphConfig.summaryDataSource;
-  let graphDataSet = {};
-  sections.forEach((item) => {
-    if (
-      summaryData[item.section_key] &&
-      summaryData[item.section_key][item.subSection_key] &&
-      !isEmptyArray(summaryData[item.section_key][item.subSection_key])
-    ) {
-      const sectionKey =
-        item.key ?? `${item.section_key}_${item.subSection_key}`;
-      graphDataSet[sectionKey] = {
-        ...item,
-        data: getProcessedGraphData(
-          graphConfig,
-          JSON.parse(
-            JSON.stringify(summaryData[item.section_key][item.subSection_key])
-          )
-        ),
-      };
+
+  const sections = Array.isArray(graphConfig.summaryDataSource)
+    ? graphConfig.summaryDataSource
+    : [];
+
+  const graphDataSet = {};
+  let hasAny = false;
+
+  // Build from configured sections
+  for (const cfg of sections) {
+    const s = summaryData?.[cfg.section_key]?.[cfg.subSection_key];
+    if (Array.isArray(s) && s.length) {
+      const sectionKey = cfg.key ?? `${cfg.section_key}_${cfg.subSection_key}`;
+      const processed = getProcessedGraphData(graphConfig, s); // no deep clone
+      if (processed && processed.length) {
+        graphDataSet[sectionKey] = { ...cfg, data: processed };
+        hasAny = true;
+      }
     }
-  });
-  if (Object.keys(graphDataSet).length === 0) {
-    const defaultConfig = graphConfig.defaultDataSource;
-    if (
-      summaryData[defaultConfig.section_key] &&
-      summaryData[defaultConfig.section_key][defaultConfig.subSection_key]
-    )
-      graphDataSet[defaultConfig.key] = {
-        ...defaultConfig,
-        data: getProcessedGraphData(
-          graphConfig,
-          JSON.parse(
-            JSON.stringify(
-              summaryData[defaultConfig.section_key][
-                defaultConfig.subSection_key
-              ]
-            )
-          )
-        ),
-      };
   }
-  console.log("graphData Set ", graphDataSet);
-  return graphDataSet;
+
+  // Fallback to default only if nothing found above
+  if (!hasAny) {
+    const d = graphConfig.defaultDataSource;
+    const s = d && summaryData?.[d.section_key]?.[d.subSection_key];
+    if (Array.isArray(s) && s.length) {
+      const processed = getProcessedGraphData(graphConfig, s);
+      if (processed && processed.length) {
+        graphDataSet[d.key] = { ...d, data: processed };
+        hasAny = true;
+      }
+    }
+  }
+
+  // Avoid returning a large empty object and skip console noise in production
+  return hasAny ? graphDataSet : null;
 }
 
 export function getProcessedGraphData(graphConfig, graphDataSource) {
