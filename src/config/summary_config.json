@@ -71,7 +71,7 @@
       "mmeField": "MMEValue",
       "startDateField": "Start",
       "endDateField": "End",
-      "endInclusive": true,
+      "endInclusive": false,
       "capAtToday": false,
       "demoData": [
         { "date": "2020-09-30", "MMEValue": 0, "placeholder": true },

@@ -299,229 +299,130 @@ export function getSummaryGraphDataSet(graphConfig, summaryData) {
   return hasAny ? graphDataSet : null;
 }
 
+// Daily cumulative MME, starting from the day BEFORE the earliest start (0 value)
+// and extending through today (zeros when no meds are active).
 export function getProcessedGraphData(graphConfig, graphDataSource) {
-  const [
-    startDateFieldName,
-    endDateFieldName,
-    MMEValueFieldName,
-    graphDateFieldName,
-  ] = [
-    graphConfig.startDateField,
-    graphConfig.endDateField,
-    graphConfig.mmeField,
-    graphConfig.graphDateField,
-  ];
-  const START_DELIMITER_FIELD_NAME = "start_delimiter";
-  const END_DELIMITER_FIELD_NAME = "end_delimiter";
+  const startDateFieldName = graphConfig.startDateField;
+  const endDateFieldName = graphConfig.endDateField;
+  const MMEValueFieldName = graphConfig.mmeField;
+  const graphDateFieldName = graphConfig.graphDateField;
+
+  if (isEmptyArray(graphDataSource)) {
+    return [];
+  }
+
   const PLACEHOLDER_FIELD_NAME = "placeholder";
+  const START_DELIMITER_FIELD_NAME = "start_delimiter";
   const FINAL_CALCULATED_FIELD_FLAG = "final";
 
-  //sort data by start date
-  let graph_data = !isEmptyArray(graphDataSource)
-    ? graphDataSource
-        .filter(function (item) {
-          return item[startDateFieldName] && item[endDateFieldName];
-        })
-        .sort(function (a, b) {
-          return dateCompare(a[startDateFieldName], b[startDateFieldName]);
-        })
-    : [];
-  /*
-   * 'NaN' is the value for null when coerced into number, need to make sure that is not included
-   */
-  const getRealNumber = (o) => (o !== null && !isNaN(o) && o >= 0 ? o : 0);
-  let dataPoints = [];
-  let prevObj = null,
-    nextObj = null;
-  graph_data.forEach(function (currentMedicationItem, index) {
-    let dataPoint = {};
-    let startDate = extractDateFromGMTDateString(
-      currentMedicationItem[startDateFieldName]
-    );
-    let endDate = extractDateFromGMTDateString(
-      currentMedicationItem[endDateFieldName]
-    );
-    let oStartDate = new Date(startDate);
-    let diffDays = getDiffDays(startDate, endDate);
-    nextObj = index + 1 <= graph_data.length - 1 ? graph_data[index + 1] : null;
-    let currentMMEValue = getRealNumber(
-      currentMedicationItem[MMEValueFieldName]
-    );
-    //add start date data point
-    dataPoint = {};
-    dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
-    dataPoint[MMEValueFieldName] = currentMMEValue;
-    dataPoint[START_DELIMITER_FIELD_NAME] = true;
-    dataPoint = { ...dataPoint, ...currentMedicationItem };
-    dataPoints.push(dataPoint);
+  const inclusiveEnd = graphConfig.endInclusive !== false; // default: true
+  const capAtToday = graphConfig.capAtToday !== false; // default: true
+  const DAY_MS = 24 * 60 * 60 * 1000;
 
-    //add intermediate data points between start and end dates
-    if (diffDays >= 2) {
-      for (let index = 2; index <= diffDays; index++) {
-        let dataDate = new Date(oStartDate.valueOf());
-        dataDate.setTime(dataDate.getTime() + index * 24 * 60 * 60 * 1000);
-        dataDate = dateFormat("", dataDate, "YYYY-MM-DD");
-        dataPoint = {};
-        dataPoint[graphDateFieldName] = dataDate;
-        dataPoint[MMEValueFieldName] = currentMMEValue;
-        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        dataPoint[startDateFieldName] = dataDate;
-        dataPoint = { ...dataPoint, ...currentMedicationItem };
-        dataPoints.push(dataPoint);
-      }
-    }
+  // Helpers
+  const toMs = (d) => {
+    const ymd = extractDateFromGMTDateString(d); // "YYYY-MM-DD"
+    const ms = new Date(ymd).getTime();
+    return Number.isFinite(ms) ? ms : NaN;
+  };
+  const toYMD = (ms) => dateFormat("", new Date(ms), "YYYY-MM-DD");
+  const getRealNumber = (o) =>
+    o !== null && !isNaN(o) && o >= 0 ? Number(o) : 0;
 
-    //add end Date data point
-    dataPoint = {};
-    dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
-    dataPoint[MMEValueFieldName] = currentMMEValue;
-    dataPoint[END_DELIMITER_FIELD_NAME] = true;
-    dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-    dataPoint = { ...dataPoint, ...currentMedicationItem };
-    dataPoints.push(dataPoint);
-    prevObj = currentMedicationItem;
+  // Build delta map and track start days
+  const delta = new Map(); // Map<ms, number>
+  const startDays = new Set(); // Set<"YYYY-MM-DD">
+  let minMs = Infinity;
+  let maxMs = -Infinity;
+
+  for (const item of graphDataSource) {
+    const sRaw = item?.[startDateFieldName];
+    const eRaw = item?.[endDateFieldName];
+    if (!sRaw || !eRaw) continue;
+
+    const sMs = toMs(sRaw);
+    const eMs = toMs(eRaw);
+    if (!Number.isFinite(sMs) || !Number.isFinite(eMs) || eMs < sMs) continue;
+
+    const mme = getRealNumber(item?.[MMEValueFieldName]);
+    if (mme === 0) continue;
+
+    delta.set(sMs, (delta.get(sMs) ?? 0) + mme);
+    startDays.add(toYMD(sMs));
+
+    const dropMs = inclusiveEnd ? eMs + DAY_MS : eMs; // end inclusive by default
+    delta.set(dropMs, (delta.get(dropMs) ?? 0) - mme);
+
+    if (sMs < minMs) minMs = sMs;
+    if (eMs > maxMs) maxMs = eMs;
+  }
+
+  if (!Number.isFinite(minMs)) {
+    return capAtToday
+      ? emitZerosThroughToday(graphDateFieldName, FINAL_CALCULATED_FIELD_FLAG)
+      : [];
+  }
+
+  // One day BEFORE the earliest start (must be emitted with 0)
+  const seriesStartMs = minMs - DAY_MS;
+
+  // Determine end bound (today or latest end, then ensure we include today if capAtToday)
+  const todayYMD = dateFormat("", new Date(), "YYYY-MM-DD");
+  const todayMs = new Date(todayYMD).getTime();
+  const endLimitMs = capAtToday ? Math.min(maxMs, todayMs) : maxMs;
+  const finalEndMs = capAtToday ? Math.max(endLimitMs, todayMs) : endLimitMs;
+
+  const out = [];
+  let cum = 0;
+
+  // Emit the pre-start day explicitly at 0 (always placeholder)
+  out.push({
+    [graphDateFieldName]: toYMD(seriesStartMs),
+    [MMEValueFieldName]: 0,
+    [PLACEHOLDER_FIELD_NAME]: true,
   });
 
-  //sort data by date
-  dataPoints = dataPoints.sort(function (a, b) {
-    return dateCompare(a[graphDateFieldName], b[graphDateFieldName]);
-  });
+  // Walk each day from earliest start through final end (usually today)
+  for (let t = minMs; t <= finalEndMs; t += DAY_MS) {
+    if (delta.has(t)) cum += delta.get(t);
+    if (cum < 0) cum = 0; // safety clamp
 
-  //get all available dates
-  let arrDates = dataPoints.map((item) => item.date);
-  arrDates = arrDates.filter((d, index) => {
-    return arrDates.indexOf(d) === index;
-  });
+    const ymd = toYMD(t);
+    const isStart = startDays.has(ymd);
 
-  //loop through graph data to ADD MME values for the ones occurring on the same date
-  let cumMMEValue = 0;
-  arrDates.forEach((pointDate) => {
-    cumMMEValue = 0;
-    let matchedItems = dataPoints.filter((d) => {
-      return d.date === pointDate;
-    });
-    if (matchedItems.length <= 1) return true;
-    matchedItems.forEach((o) => {
-      cumMMEValue += getRealNumber(o[MMEValueFieldName]);
-    });
-    dataPoints.forEach((dataPoint) => {
-      if (dataPoint.date === pointDate) {
-        dataPoint[MMEValueFieldName] = cumMMEValue;
-      }
-    });
-  });
-  prevObj = null;
-  let finalDataPoints = [];
-  dataPoints.forEach(function (currentDataPoint, index) {
-    let dataPoint = {};
-    nextObj = dataPoints[index + 1] ? dataPoints[index + 1] : null;
+    const row = {
+      [graphDateFieldName]: ymd,
+      [MMEValueFieldName]: Math.round(getRealNumber(cum)),
+    };
 
-    if (!prevObj) {
-      //add starting graph point
-      dataPoint = {};
-      dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-      dataPoint[MMEValueFieldName] = 0;
-      dataPoint[START_DELIMITER_FIELD_NAME] = true;
-      dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-      finalDataPoints.push(dataPoint);
-    }
-    //overlapping data points
-    if (
-      prevObj &&
-      prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]
-    ) {
-      //add data point with MME value for the previous med as the connecting data point
-      dataPoint = {};
-      dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-      dataPoint[MMEValueFieldName] = getRealNumber(prevObj[MMEValueFieldName]);
-      dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-      finalDataPoints.push(dataPoint);
-      finalDataPoints.push(currentDataPoint);
-    } else if (
-      prevObj &&
-      currentDataPoint[START_DELIMITER_FIELD_NAME] &&
-      dateNumberFormat(currentDataPoint[startDateFieldName]) >
-        dateNumberFormat(prevObj[endDateFieldName])
-    ) {
-      //a new data point as med starts after the previous med ends
-      if (
-        getDiffDays(
-          prevObj[endDateFieldName],
-          currentDataPoint[startDateFieldName]
-        ) > 1
-      ) {
-        dataPoint = {};
-        dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-        //add 0 value dummy data point to denote start of med where applicable
-        dataPoint[MMEValueFieldName] = 0;
-        //dataPoint[START_DELIMITER_FIELD_NAME] = true;
-        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        finalDataPoints.push(dataPoint);
-      }
-      //add current data point
-      finalDataPoints.push(currentDataPoint);
-    } else if (
-      nextObj &&
-      currentDataPoint[END_DELIMITER_FIELD_NAME] &&
-      dateNumberFormat(currentDataPoint[endDateFieldName]) <
-        dateNumberFormat(nextObj[startDateFieldName])
-    ) {
-      //add current data point
-      finalDataPoints.push(currentDataPoint);
-      if (
-        getDiffDays(
-          currentDataPoint[endDateFieldName],
-          nextObj[startDateFieldName]
-        ) > 1
-      ) {
-        dataPoint = {};
-        dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-        //add 0 value dummy data point to denote end of med where applicable
-        dataPoint[MMEValueFieldName] = 0;
-        dataPoint[END_DELIMITER_FIELD_NAME] = true;
-        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        finalDataPoints.push(dataPoint);
-      }
+    if (isStart) {
+      row[START_DELIMITER_FIELD_NAME] = true; // non-placeholder → show dot
     } else {
-      if (!nextObj) currentDataPoint[FINAL_CALCULATED_FIELD_FLAG] = true;
-      finalDataPoints.push(currentDataPoint);
+      row[PLACEHOLDER_FIELD_NAME] = true; // placeholder → hide dot
     }
 
-    if (!nextObj) {
-      //add ending graph point
-      dataPoint = {};
-      dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-      dataPoint[MMEValueFieldName] = 0;
-      dataPoint[END_DELIMITER_FIELD_NAME] = true;
-      dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-      finalDataPoints.push(dataPoint);
-    }
-    prevObj = finalDataPoints[finalDataPoints.length - 1];
-  });
-  let formattedData = JSON.parse(JSON.stringify(finalDataPoints))
-    .map((point) => {
-      let o = {};
-      o[graphDateFieldName] = point[graphDateFieldName];
-      o[MMEValueFieldName] = Math.round(
-        getRealNumber(point[MMEValueFieldName])
-      );
-      if (point[PLACEHOLDER_FIELD_NAME]) {
-        o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
-      }
-      if (point[FINAL_CALCULATED_FIELD_FLAG]) {
-        o[FINAL_CALCULATED_FIELD_FLAG] = true;
-      }
-      return o;
-    })
-    .filter(
-      (item, index, ref) =>
-        ref.findIndex(
-          (target) => JSON.stringify(target) === JSON.stringify(item)
-        ) === index
-    );
+    out.push(row);
+  }
 
-  return formattedData;
+  // Mark final on the last emitted day (today when capAtToday is true)
+  out[out.length - 1][FINAL_CALCULATED_FIELD_FLAG] = true;
+
+  return out;
+
+  // ---- helpers ----
+  function emitZerosThroughToday(dateField, finalFlag) {
+    const todayYmd = dateFormat("", new Date(), "YYYY-MM-DD");
+    return [
+      {
+        [dateField]: todayYmd,
+        MMEValue: 0,
+        placeholder: true,
+        [finalFlag]: true,
+      },
+    ];
+  }
 }
+
 export function getProcessedAlerts(sectionFlags, logParams) {
   let alerts = [];
   if (!sectionFlags) {
