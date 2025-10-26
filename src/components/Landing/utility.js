@@ -299,6 +299,37 @@ export function getSummaryGraphDataSet(graphConfig, summaryData) {
   return hasAny ? graphDataSet : null;
 }
 
+function parseYMD(ymd /* "YYYY-MM-DD" */) {
+  // Be tolerant of your existing helper; ensure we end with "YYYY-MM-DD"
+  const s = extractDateFromGMTDateString
+    ? extractDateFromGMTDateString(ymd)
+    : ymd;
+  const [y, m, d] = s.split("-").map(Number);
+  return { y, m, d };
+}
+function toMsUTC(ymd) {
+  const { y, m, d } = parseYMD(ymd);
+  // UTC midnight for the calendar date (no local TZ applied)
+  return Date.UTC(y, m - 1, d);
+}
+function toYMDUTC(msUTC) {
+  const dt = new Date(msUTC); // interpret as UTC instant
+  const y = dt.getUTCFullYear();
+  const m = String(dt.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(dt.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+function todayYMDUTC() {
+  // "Today" as a UTC calendar day; if you prefer local 'today', compute with local getters consistently
+  return toYMDUTC(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate()
+    )
+  );
+}
+
 // Daily cumulative MME, starting from the day BEFORE the earliest start (0 value)
 // and extending through today (zeros when no meds are active).
 export function getProcessedGraphData(graphConfig, graphDataSource) {
@@ -320,12 +351,10 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   const DAY_MS = 24 * 60 * 60 * 1000;
 
   // Helpers
-  const toMs = (d) => {
-    const ymd = extractDateFromGMTDateString(d); // "YYYY-MM-DD"
-    const ms = new Date(ymd).getTime();
-    return Number.isFinite(ms) ? ms : NaN;
-  };
-  const toYMD = (ms) => dateFormat("", new Date(ms), "YYYY-MM-DD");
+  const toMs = toMsUTC;
+  const toYMD = toYMDUTC;
+  const todayYMD = todayYMDUTC();
+  const todayMs = toMsUTC(todayYMD);
   const getRealNumber = (o) =>
     o !== null && !isNaN(o) && o >= 0 ? Number(o) : 0;
 
@@ -367,8 +396,8 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   const seriesStartMs = minMs - DAY_MS;
 
   // Determine end bound (today or latest end, then ensure we include today if capAtToday)
-  const todayYMD = dateFormat("", new Date(), "YYYY-MM-DD");
-  const todayMs = new Date(todayYMD).getTime();
+  // const todayYMD = dateFormat("", new Date(), "YYYY-MM-DD");
+  // const todayMs = new Date(todayYMD).getTime();
   const endLimitMs = capAtToday ? Math.min(maxMs, todayMs) : maxMs;
   const finalEndMs = capAtToday ? Math.max(endLimitMs, todayMs) : endLimitMs;
 
