@@ -339,123 +339,148 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   const MMEValueFieldName  = graphConfig.mmeField;
   const graphDateFieldName = graphConfig.graphDateField;
 
-  const PLACEHOLDER_FIELD_NAME = "placeholder";
-  const START_DELIMITER_FIELD_NAME = "start_delimiter";
+  const PLACEHOLDER_FIELD_NAME      = "placeholder";
+  const START_DELIMITER_FIELD_NAME  = "start_delimiter";
   const FINAL_CALCULATED_FIELD_FLAG = "final";
 
   const inclusiveEnd = graphConfig.endInclusive !== false; // default: true
   const capAtToday   = graphConfig.capAtToday !== false;   // default: true
 
-  // ==== UTC-safe helpers (prevent 1-day shifts) ====
+  // ===== UTC-safe helpers =====
   const DAY_MS = 24 * 60 * 60 * 1000;
-  const parseYMD = (ymd) => {
-    const s = typeof extractDateFromGMTDateString === "function"
-      ? extractDateFromGMTDateString(ymd)
-      : ymd;
+  const clamp0 = (n) => (n < 0 ? 0 : n);
+  const getNum = (v) => (v !== null && !isNaN(v) ? Number(v) : 0);
+
+  function normalizeYMD(input) {
+    const s = String(input || "").slice(0, 10);
+    return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : "";
+  }
+  function toMsUTC(ymd) {
+    const s = normalizeYMD(ymd);
+    if (!s) return NaN;
     const [y, m, d] = s.split("-").map(Number);
-    return { y, m, d };
-  };
-  const toMsUTC = (ymd) => {
-    const { y, m, d } = parseYMD(ymd);
     return Date.UTC(y, m - 1, d);
-  };
-  const toYMDUTC = (msUTC) => {
+  }
+  function toYMDUTC(msUTC) {
     const dt = new Date(msUTC);
     const y = dt.getUTCFullYear();
     const m = String(dt.getUTCMonth() + 1).padStart(2, "0");
     const d = String(dt.getUTCDate()).padStart(2, "0");
     return `${y}-${m}-${d}`;
-  };
-  const todayYMDUTC = () => {
+  }
+  function todayYMDUTC() {
     const now = new Date();
     return toYMDUTC(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  };
-  const getRealNumber = (o) => (o !== null && !isNaN(o) && o >= 0 ? Number(o) : 0);
+  }
 
+  // if (!Array.isArray(graphDataSource) || graphDataSource.length === 0) {
+  //   if (!capAtToday) return [];
+  //   const tYMD = todayYMDUTC();
+  //   return [{
+  //     [graphDateFieldName]: tYMD,
+  //     [MMEValueFieldName]: 0,
+  //     [PLACEHOLDER_FIELD_NAME]: true,
+  //     [FINAL_CALCULATED_FIELD_FLAG]: true,
+  //   }];
+  // }
 
-  // Build delta map (+ at Start, − at End+1 when inclusive) and mark start days
-  const delta = new Map();      // Map<msUTC, number>
-  const startDays = new Set();  // Set<"YYYY-MM-DD">
+  // Build deltas and track first/last boundaries
+  const delta = new Map();     // Map<msUTC, number>
+  const startDays = new Set(); // Set<"YYYY-MM-DD">
   let minMs = Infinity;
-  let maxMs = -Infinity;
+  let maxEndMs = -Infinity; // last course's end (inclusive day)
 
   for (const item of graphDataSource) {
-    const sRaw = item?.[startDateFieldName];
-    const eRaw = item?.[endDateFieldName];
-    if (!sRaw || !eRaw) continue;
-
-    const sMs = toMsUTC(sRaw);
-    const eMs = toMsUTC(eRaw);
+    const sMs = toMsUTC(item?.[startDateFieldName]);
+    const eMs = toMsUTC(item?.[endDateFieldName]);
     if (!Number.isFinite(sMs) || !Number.isFinite(eMs) || eMs < sMs) continue;
 
-    const mme = getRealNumber(item?.[MMEValueFieldName]);
+    const mme = clamp0(getNum(item?.[MMEValueFieldName]));
     if (mme === 0) continue;
 
+    // + on start day
     delta.set(sMs, (delta.get(sMs) ?? 0) + mme);
     startDays.add(toYMDUTC(sMs));
 
+    // drop on day after end (inclusive), or on end day if exclusive
     const dropMs = inclusiveEnd ? (eMs + DAY_MS) : eMs;
     delta.set(dropMs, (delta.get(dropMs) ?? 0) - mme);
 
     if (sMs < minMs) minMs = sMs;
-    if (eMs > maxMs) maxMs = eMs;
+    if (eMs > maxEndMs) maxEndMs = eMs;
   }
 
   if (!Number.isFinite(minMs)) {
-    return capAtToday
-      ? [{
-          [graphDateFieldName]: todayYMDUTC(),
-          [MMEValueFieldName]: 0,
-          [PLACEHOLDER_FIELD_NAME]: true,
-          [FINAL_CALCULATED_FIELD_FLAG]: true,
-        }]
-      : [];
+    if (!capAtToday) return [];
+    const tYMD = todayYMDUTC();
+    return [{
+      [graphDateFieldName]: tYMD,
+      [MMEValueFieldName]: 0,
+      [PLACEHOLDER_FIELD_NAME]: true,
+      [FINAL_CALCULATED_FIELD_FLAG]: true,
+    }];
   }
 
-  // Start one day BEFORE the earliest start (force a leading 0)
+  // We want:
+  // - a pre-start zero at minMs - 1 day
+  // - days from minMs through endMs
+  // - ensure the "trailing zero" day (lastEnd+1) is included when appropriate
   const preStartMs = minMs - DAY_MS;
+  const todayMs    = toMsUTC(todayYMDUTC());
+  const lastDropMs = inclusiveEnd ? (maxEndMs + DAY_MS) : maxEndMs;
 
-  // Determine end bound (include today if capAtToday)
-  const todayYMD = todayYMDUTC();
-  const todayMs = toMsUTC(todayYMD);
-  const endLimitMs = capAtToday ? Math.min(maxMs, todayMs) : maxMs;
-  const finalEndMs = capAtToday ? Math.max(endLimitMs, todayMs) : endLimitMs;
+  let endMs;
+  if (capAtToday) {
+    // cap at today; include trailing zero day only if it is <= today
+    endMs = todayMs;
+  } else {
+    // not capped => ensure we include the trailing zero day
+    endMs = Math.max(maxEndMs, lastDropMs);
+  }
 
   const out = [];
-
-  // Leading zero day (always placeholder)
-  out.push({
-    [graphDateFieldName]: toYMDUTC(preStartMs),
-    [MMEValueFieldName]: 0,
-    [PLACEHOLDER_FIELD_NAME]: true,
-  });
-
-  // Daily walk: if a med ends on day D and next starts on D+1, cum transitions directly (no 0 in-between)
   let cum = 0;
-  for (let t = minMs; t <= finalEndMs; t += DAY_MS) {
-    if (delta.has(t)) cum += delta.get(t);
-    if (cum < 0) cum = 0; // safety clamp
 
+  // Pre-start 0
+  if (preStartMs <= endMs) {
+    out.push({
+      [graphDateFieldName]: toYMDUTC(preStartMs),
+      [MMEValueFieldName]: 0,
+      [PLACEHOLDER_FIELD_NAME]: true,
+    });
+  }
+
+  // Walk each day through endMs
+  for (let t = minMs; t <= endMs; t += DAY_MS) {
+    if (delta.has(t)) cum += delta.get(t);
+    cum = clamp0(cum);
     const ymd = toYMDUTC(t);
     const isStart = startDays.has(ymd);
-
     const row = {
       [graphDateFieldName]: ymd,
-      [MMEValueFieldName]: Math.round(getRealNumber(cum)),
+      [MMEValueFieldName]: Math.round(cum),
     };
-
-    // Dots only on start days
-    if (isStart) row[START_DELIMITER_FIELD_NAME] = true;
-    else row[PLACEHOLDER_FIELD_NAME] = true;
-
+    if (isStart) row[START_DELIMITER_FIELD_NAME] = true; else row[PLACEHOLDER_FIELD_NAME] = true;
     out.push(row);
   }
 
-  // mark final
+  // If capped at today AND today is after the trailing zero day, it's already included.
+  // If capped before trailing zero day, we *should not* imply finish; do nothing.
+  // If NOT capped, ensure the trailing zero day (lastDropMs) exists (it may already if endMs >= lastDropMs).
+  if (!capAtToday && lastDropMs > endMs) {
+    out.push({
+      [graphDateFieldName]: toYMDUTC(lastDropMs),
+      [MMEValueFieldName]: 0,
+      [PLACEHOLDER_FIELD_NAME]: true,
+    });
+  }
+
+  // Final flag on last row
   out[out.length - 1][FINAL_CALCULATED_FIELD_FLAG] = true;
 
   return out;
 }
+
 
 
 export function getProcessedAlerts(sectionFlags, logParams) {
