@@ -255,283 +255,226 @@ export function getProcessedSummaryData(summary, summaryMap) {
 }
 
 export function getSummaryGraphDataSet(graphConfig, summaryData) {
-  if (!summaryData) return null;
-  if (!(graphConfig && graphConfig.summaryDataSource)) {
-    return null;
+  if (!summaryData || !graphConfig?.summaryDataSource) return null;
+
+  // Demo path short-circuit
+  if (graphConfig.demoConfigKey && getEnv(graphConfig.demoConfigKey)) {
+    return graphConfig.demoData ?? null;
   }
-  //demo config set to on, then draw just the demo graph data
-  if (getEnv(graphConfig.demoConfigKey)) {
-    return graphConfig.demoData;
-  }
-  //get the data from summary data
-  let sections = graphConfig.summaryDataSource;
-  let graphDataSet = {};
-  sections.forEach((item) => {
-    if (
-      summaryData[item.section_key] &&
-      summaryData[item.section_key][item.subSection_key] &&
-      !isEmptyArray(summaryData[item.section_key][item.subSection_key])
-    ) {
-      const sectionKey =
-        item.key ?? `${item.section_key}_${item.subSection_key}`;
-      graphDataSet[sectionKey] = {
-        ...item,
-        data: getProcessedGraphData(
-          graphConfig,
-          JSON.parse(
-            JSON.stringify(summaryData[item.section_key][item.subSection_key])
-          )
-        ),
-      };
+
+  const sections = Array.isArray(graphConfig.summaryDataSource)
+    ? graphConfig.summaryDataSource
+    : [];
+
+  const graphDataSet = {};
+  let hasAny = false;
+
+  // Build from configured sections
+  for (const cfg of sections) {
+    const s = summaryData?.[cfg.section_key]?.[cfg.subSection_key];
+    if (Array.isArray(s) && s.length) {
+      const sectionKey = cfg.key ?? `${cfg.section_key}_${cfg.subSection_key}`;
+      const processed = getProcessedGraphData(graphConfig, s); // no deep clone
+      if (processed && processed.length) {
+        graphDataSet[sectionKey] = { ...cfg, data: processed };
+        hasAny = true;
+      }
     }
-  });
-  if (Object.keys(graphDataSet).length === 0) {
-    const defaultConfig = graphConfig.defaultDataSource;
-    if (
-      summaryData[defaultConfig.section_key] &&
-      summaryData[defaultConfig.section_key][defaultConfig.subSection_key]
-    )
-      graphDataSet[defaultConfig.key] = {
-        ...defaultConfig,
-        data: getProcessedGraphData(
-          graphConfig,
-          JSON.parse(
-            JSON.stringify(
-              summaryData[defaultConfig.section_key][
-                defaultConfig.subSection_key
-              ]
-            )
-          )
-        ),
-      };
   }
-  console.log("graphData Set ", graphDataSet);
-  return graphDataSet;
+
+  // Fallback to default only if nothing found above
+  if (!hasAny) {
+    const d = graphConfig.defaultDataSource;
+    const s = d && summaryData?.[d.section_key]?.[d.subSection_key];
+    if (Array.isArray(s) && s.length) {
+      const processed = getProcessedGraphData(graphConfig, s);
+      if (processed && processed.length) {
+        graphDataSet[d.key] = { ...d, data: processed };
+        hasAny = true;
+      }
+    }
+  }
+
+  // Avoid returning a large empty object and skip console noise in production
+  return hasAny ? graphDataSet : null;
 }
 
+function parseYMD(ymd /* "YYYY-MM-DD" */) {
+  // Be tolerant of your existing helper; ensure we end with "YYYY-MM-DD"
+  const s = extractDateFromGMTDateString
+    ? extractDateFromGMTDateString(ymd)
+    : ymd;
+  const [y, m, d] = s.split("-").map(Number);
+  return { y, m, d };
+}
+function toMsUTC(ymd) {
+  const { y, m, d } = parseYMD(ymd);
+  // UTC midnight for the calendar date (no local TZ applied)
+  return Date.UTC(y, m - 1, d);
+}
+function toYMDUTC(msUTC) {
+  const dt = new Date(msUTC); // interpret as UTC instant
+  const y = dt.getUTCFullYear();
+  const m = String(dt.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(dt.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+function todayYMDUTC() {
+  // "Today" as a UTC calendar day; if you prefer local 'today', compute with local getters consistently
+  return toYMDUTC(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate()
+    )
+  );
+}
+
+// Daily cumulative MME, starting from the day BEFORE the earliest start (0 value)
+// and extending through today (zeros when no meds are active).
 export function getProcessedGraphData(graphConfig, graphDataSource) {
-  const [
-    startDateFieldName,
-    endDateFieldName,
-    MMEValueFieldName,
-    graphDateFieldName,
-  ] = [
-    graphConfig.startDateField,
-    graphConfig.endDateField,
-    graphConfig.mmeField,
-    graphConfig.graphDateField,
-  ];
-  const START_DELIMITER_FIELD_NAME = "start_delimiter";
-  const END_DELIMITER_FIELD_NAME = "end_delimiter";
+  if (isEmptyArray(graphDataSource)) return [];
+  const startDateFieldName = graphConfig.startDateField;
+  const endDateFieldName = graphConfig.endDateField;
+  const MMEValueFieldName = graphConfig.mmeField;
+  const graphDateFieldName = graphConfig.graphDateField;
+
   const PLACEHOLDER_FIELD_NAME = "placeholder";
+  const START_DELIMITER_FIELD_NAME = "start_delimiter";
   const FINAL_CALCULATED_FIELD_FLAG = "final";
 
-  //sort data by start date
-  let graph_data = !isEmptyArray(graphDataSource)
-    ? graphDataSource
-        .filter(function (item) {
-          return item[startDateFieldName] && item[endDateFieldName];
-        })
-        .sort(function (a, b) {
-          return dateCompare(a[startDateFieldName], b[startDateFieldName]);
-        })
-    : [];
-  /*
-   * 'NaN' is the value for null when coerced into number, need to make sure that is not included
-   */
-  const getRealNumber = (o) => (o !== null && !isNaN(o) && o >= 0 ? o : 0);
-  let dataPoints = [];
-  let prevObj = null,
-    nextObj = null;
-  graph_data.forEach(function (currentMedicationItem, index) {
-    let dataPoint = {};
-    let startDate = extractDateFromGMTDateString(
-      currentMedicationItem[startDateFieldName]
+  const inclusiveEnd = graphConfig.endInclusive !== false; // default: true
+  const capAtToday = graphConfig.capAtToday !== false; // default: true
+
+  // ===== UTC-safe helpers =====
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const clamp0 = (n) => (n < 0 ? 0 : n);
+  const getNum = (v) => (v !== null && !isNaN(v) ? Number(v) : 0);
+
+  function normalizeYMD(input) {
+    const s = String(input || "").slice(0, 10);
+    return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : "";
+  }
+  function toMsUTC(ymd) {
+    const s = normalizeYMD(ymd);
+    if (!s) return NaN;
+    const [y, m, d] = s.split("-").map(Number);
+    return Date.UTC(y, m - 1, d);
+  }
+  function toYMDUTC(msUTC) {
+    const dt = new Date(msUTC);
+    const y = dt.getUTCFullYear();
+    const m = String(dt.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(dt.getUTCDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  function todayYMDUTC() {
+    const now = new Date();
+    return toYMDUTC(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
     );
-    let endDate = extractDateFromGMTDateString(
-      currentMedicationItem[endDateFieldName]
-    );
-    let oStartDate = new Date(startDate);
-    let diffDays = getDiffDays(startDate, endDate);
-    nextObj = index + 1 <= graph_data.length - 1 ? graph_data[index + 1] : null;
-    let currentMMEValue = getRealNumber(
-      currentMedicationItem[MMEValueFieldName]
-    );
-    //add start date data point
-    dataPoint = {};
-    dataPoint[graphDateFieldName] = currentMedicationItem[startDateFieldName];
-    dataPoint[MMEValueFieldName] = currentMMEValue;
-    dataPoint[START_DELIMITER_FIELD_NAME] = true;
-    dataPoint = { ...dataPoint, ...currentMedicationItem };
-    dataPoints.push(dataPoint);
+  }
 
-    //add intermediate data points between start and end dates
-    if (diffDays >= 2) {
-      for (let index = 2; index <= diffDays; index++) {
-        let dataDate = new Date(oStartDate.valueOf());
-        dataDate.setTime(dataDate.getTime() + index * 24 * 60 * 60 * 1000);
-        dataDate = dateFormat("", dataDate, "YYYY-MM-DD");
-        dataPoint = {};
-        dataPoint[graphDateFieldName] = dataDate;
-        dataPoint[MMEValueFieldName] = currentMMEValue;
-        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        dataPoint[startDateFieldName] = dataDate;
-        dataPoint = { ...dataPoint, ...currentMedicationItem };
-        dataPoints.push(dataPoint);
-      }
-    }
+  // Build deltas and track first/last boundaries
+  const delta = new Map(); // Map<msUTC, number>
+  const startDays = new Set(); // Set<"YYYY-MM-DD">
+  let minMs = Infinity;
+  let maxEndMs = -Infinity; // last course's end (inclusive day)
 
-    //add end Date data point
-    dataPoint = {};
-    dataPoint[graphDateFieldName] = currentMedicationItem[endDateFieldName];
-    dataPoint[MMEValueFieldName] = currentMMEValue;
-    dataPoint[END_DELIMITER_FIELD_NAME] = true;
-    dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-    dataPoint = { ...dataPoint, ...currentMedicationItem };
-    dataPoints.push(dataPoint);
-    prevObj = currentMedicationItem;
-  });
+  for (const item of graphDataSource) {
+    const sMs = toMsUTC(item?.[startDateFieldName]);
+    const eMs = toMsUTC(item?.[endDateFieldName]);
+    if (!Number.isFinite(sMs) || !Number.isFinite(eMs) || eMs < sMs) continue;
 
-  //sort data by date
-  dataPoints = dataPoints.sort(function (a, b) {
-    return dateCompare(a[graphDateFieldName], b[graphDateFieldName]);
-  });
+    const mme = clamp0(getNum(item?.[MMEValueFieldName]));
+    if (mme === 0) continue;
 
-  //get all available dates
-  let arrDates = dataPoints.map((item) => item.date);
-  arrDates = arrDates.filter((d, index) => {
-    return arrDates.indexOf(d) === index;
-  });
+    // + on start day
+    delta.set(sMs, (delta.get(sMs) ?? 0) + mme);
+    startDays.add(toYMDUTC(sMs));
 
-  //loop through graph data to ADD MME values for the ones occurring on the same date
-  let cumMMEValue = 0;
-  arrDates.forEach((pointDate) => {
-    cumMMEValue = 0;
-    let matchedItems = dataPoints.filter((d) => {
-      return d.date === pointDate;
+    // drop on day after end (inclusive), or on end day if exclusive
+    const dropMs = inclusiveEnd ? eMs + DAY_MS : eMs;
+    delta.set(dropMs, (delta.get(dropMs) ?? 0) - mme);
+
+    if (sMs < minMs) minMs = sMs;
+    if (eMs > maxEndMs) maxEndMs = eMs;
+  }
+
+  if (!Number.isFinite(minMs)) {
+    if (!capAtToday) return [];
+    const tYMD = todayYMDUTC();
+    return [
+      {
+        [graphDateFieldName]: tYMD,
+        [MMEValueFieldName]: 0,
+        [PLACEHOLDER_FIELD_NAME]: true,
+        [FINAL_CALCULATED_FIELD_FLAG]: true,
+      },
+    ];
+  }
+
+  // We want:
+  // - a pre-start zero at minMs - 1 day
+  // - days from minMs through endMs
+  // - ensure the "trailing zero" day (lastEnd+1) is included when appropriate
+  const preStartMs = minMs - DAY_MS;
+  const todayMs = toMsUTC(todayYMDUTC());
+  const lastDropMs = inclusiveEnd ? maxEndMs + DAY_MS : maxEndMs;
+
+  let endMs;
+  if (capAtToday) {
+    // cap at today; include trailing zero day only if it is <= today
+    endMs = todayMs;
+  } else {
+    // not capped => ensure we include the trailing zero day
+    endMs = Math.max(maxEndMs, lastDropMs);
+  }
+
+  const out = [];
+  let cum = 0;
+
+  // Pre-start 0
+  if (preStartMs <= endMs) {
+    out.push({
+      [graphDateFieldName]: toYMDUTC(preStartMs),
+      [MMEValueFieldName]: 0,
+      [PLACEHOLDER_FIELD_NAME]: true,
     });
-    if (matchedItems.length <= 1) return true;
-    matchedItems.forEach((o) => {
-      cumMMEValue += getRealNumber(o[MMEValueFieldName]);
+  }
+
+  // Walk each day through endMs
+  for (let t = minMs; t <= endMs; t += DAY_MS) {
+    if (delta.has(t)) cum += delta.get(t);
+    cum = clamp0(cum);
+    const ymd = toYMDUTC(t);
+    const isStart = startDays.has(ymd);
+    const row = {
+      [graphDateFieldName]: ymd,
+      [MMEValueFieldName]: Math.round(cum),
+    };
+    if (isStart) row[START_DELIMITER_FIELD_NAME] = true;
+    else row[PLACEHOLDER_FIELD_NAME] = true;
+    out.push(row);
+  }
+
+  // If capped at today AND today is after the trailing zero day, it's already included.
+  // If capped before trailing zero day, we *should not* imply finish; do nothing.
+  // If NOT capped, ensure the trailing zero day (lastDropMs) exists (it may already if endMs >= lastDropMs).
+  if (!capAtToday && lastDropMs > endMs) {
+    out.push({
+      [graphDateFieldName]: toYMDUTC(lastDropMs),
+      [MMEValueFieldName]: 0,
+      [PLACEHOLDER_FIELD_NAME]: true,
     });
-    dataPoints.forEach((dataPoint) => {
-      if (dataPoint.date === pointDate) {
-        dataPoint[MMEValueFieldName] = cumMMEValue;
-      }
-    });
-  });
-  prevObj = null;
-  let finalDataPoints = [];
-  dataPoints.forEach(function (currentDataPoint, index) {
-    let dataPoint = {};
-    nextObj = dataPoints[index + 1] ? dataPoints[index + 1] : null;
+  }
 
-    if (!prevObj) {
-      //add starting graph point
-      dataPoint = {};
-      dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-      dataPoint[MMEValueFieldName] = 0;
-      dataPoint[START_DELIMITER_FIELD_NAME] = true;
-      dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-      finalDataPoints.push(dataPoint);
-    }
-    //overlapping data points
-    if (
-      prevObj &&
-      prevObj[MMEValueFieldName] !== currentDataPoint[MMEValueFieldName]
-    ) {
-      //add data point with MME value for the previous med as the connecting data point
-      dataPoint = {};
-      dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-      dataPoint[MMEValueFieldName] = getRealNumber(prevObj[MMEValueFieldName]);
-      dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-      finalDataPoints.push(dataPoint);
-      finalDataPoints.push(currentDataPoint);
-    } else if (
-      prevObj &&
-      currentDataPoint[START_DELIMITER_FIELD_NAME] &&
-      dateNumberFormat(currentDataPoint[startDateFieldName]) >
-        dateNumberFormat(prevObj[endDateFieldName])
-    ) {
-      //a new data point as med starts after the previous med ends
-      if (
-        getDiffDays(
-          prevObj[endDateFieldName],
-          currentDataPoint[startDateFieldName]
-        ) > 1
-      ) {
-        dataPoint = {};
-        dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-        //add 0 value dummy data point to denote start of med where applicable
-        dataPoint[MMEValueFieldName] = 0;
-        //dataPoint[START_DELIMITER_FIELD_NAME] = true;
-        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        finalDataPoints.push(dataPoint);
-      }
-      //add current data point
-      finalDataPoints.push(currentDataPoint);
-    } else if (
-      nextObj &&
-      currentDataPoint[END_DELIMITER_FIELD_NAME] &&
-      dateNumberFormat(currentDataPoint[endDateFieldName]) <
-        dateNumberFormat(nextObj[startDateFieldName])
-    ) {
-      //add current data point
-      finalDataPoints.push(currentDataPoint);
-      if (
-        getDiffDays(
-          currentDataPoint[endDateFieldName],
-          nextObj[startDateFieldName]
-        ) > 1
-      ) {
-        dataPoint = {};
-        dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-        //add 0 value dummy data point to denote end of med where applicable
-        dataPoint[MMEValueFieldName] = 0;
-        dataPoint[END_DELIMITER_FIELD_NAME] = true;
-        dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-        finalDataPoints.push(dataPoint);
-      }
-    } else {
-      if (!nextObj) currentDataPoint[FINAL_CALCULATED_FIELD_FLAG] = true;
-      finalDataPoints.push(currentDataPoint);
-    }
+  // Final flag on last row
+  out[out.length - 1][FINAL_CALCULATED_FIELD_FLAG] = true;
 
-    if (!nextObj) {
-      //add ending graph point
-      dataPoint = {};
-      dataPoint[graphDateFieldName] = currentDataPoint[graphDateFieldName];
-      dataPoint[MMEValueFieldName] = 0;
-      dataPoint[END_DELIMITER_FIELD_NAME] = true;
-      dataPoint[PLACEHOLDER_FIELD_NAME] = true;
-      finalDataPoints.push(dataPoint);
-    }
-    prevObj = finalDataPoints[finalDataPoints.length - 1];
-  });
-  let formattedData = JSON.parse(JSON.stringify(finalDataPoints))
-    .map((point) => {
-      let o = {};
-      o[graphDateFieldName] = point[graphDateFieldName];
-      o[MMEValueFieldName] = Math.round(
-        getRealNumber(point[MMEValueFieldName])
-      );
-      if (point[PLACEHOLDER_FIELD_NAME]) {
-        o[PLACEHOLDER_FIELD_NAME] = point[PLACEHOLDER_FIELD_NAME];
-      }
-      if (point[FINAL_CALCULATED_FIELD_FLAG]) {
-        o[FINAL_CALCULATED_FIELD_FLAG] = true;
-      }
-      return o;
-    })
-    .filter(
-      (item, index, ref) =>
-        ref.findIndex(
-          (target) => JSON.stringify(target) === JSON.stringify(item)
-        ) === index
-    );
-
-  return formattedData;
+  return out;
 }
+
 export function getProcessedAlerts(sectionFlags, logParams) {
   let alerts = [];
   if (!sectionFlags) {

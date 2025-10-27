@@ -251,7 +251,7 @@ export async function executeELMForFactors(bundle, patientSource, library) {
   }
 
   cqlEndTime = Date.now();
-  console.log("CQL execution results ", execResults);
+  //console.log("CQL execution results ", execResults);
   console.log({
     "In execute ELM: minify patient bundle (ms)": (t1 - t0).toFixed(1),
     "In execute ELM: load patient bundle (ms)": (t2 - t1).toFixed(1),
