@@ -335,16 +335,16 @@ function todayYMDUTC() {
 export function getProcessedGraphData(graphConfig, graphDataSource) {
   if (isEmptyArray(graphDataSource)) return [];
   const startDateFieldName = graphConfig.startDateField;
-  const endDateFieldName   = graphConfig.endDateField;
-  const MMEValueFieldName  = graphConfig.mmeField;
+  const endDateFieldName = graphConfig.endDateField;
+  const MMEValueFieldName = graphConfig.mmeField;
   const graphDateFieldName = graphConfig.graphDateField;
 
-  const PLACEHOLDER_FIELD_NAME      = "placeholder";
-  const START_DELIMITER_FIELD_NAME  = "start_delimiter";
+  const PLACEHOLDER_FIELD_NAME = "placeholder";
+  const START_DELIMITER_FIELD_NAME = "start_delimiter";
   const FINAL_CALCULATED_FIELD_FLAG = "final";
 
   const inclusiveEnd = graphConfig.endInclusive !== false; // default: true
-  const capAtToday   = graphConfig.capAtToday !== false;   // default: true
+  const capAtToday = graphConfig.capAtToday !== false; // default: true
 
   // ===== UTC-safe helpers =====
   const DAY_MS = 24 * 60 * 60 * 1000;
@@ -370,11 +370,13 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   }
   function todayYMDUTC() {
     const now = new Date();
-    return toYMDUTC(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    return toYMDUTC(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+    );
   }
 
   // Build deltas and track first/last boundaries
-  const delta = new Map();     // Map<msUTC, number>
+  const delta = new Map(); // Map<msUTC, number>
   const startDays = new Set(); // Set<"YYYY-MM-DD">
   let minMs = Infinity;
   let maxEndMs = -Infinity; // last course's end (inclusive day)
@@ -392,7 +394,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
     startDays.add(toYMDUTC(sMs));
 
     // drop on day after end (inclusive), or on end day if exclusive
-    const dropMs = inclusiveEnd ? (eMs + DAY_MS) : eMs;
+    const dropMs = inclusiveEnd ? eMs + DAY_MS : eMs;
     delta.set(dropMs, (delta.get(dropMs) ?? 0) - mme);
 
     if (sMs < minMs) minMs = sMs;
@@ -402,12 +404,14 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   if (!Number.isFinite(minMs)) {
     if (!capAtToday) return [];
     const tYMD = todayYMDUTC();
-    return [{
-      [graphDateFieldName]: tYMD,
-      [MMEValueFieldName]: 0,
-      [PLACEHOLDER_FIELD_NAME]: true,
-      [FINAL_CALCULATED_FIELD_FLAG]: true,
-    }];
+    return [
+      {
+        [graphDateFieldName]: tYMD,
+        [MMEValueFieldName]: 0,
+        [PLACEHOLDER_FIELD_NAME]: true,
+        [FINAL_CALCULATED_FIELD_FLAG]: true,
+      },
+    ];
   }
 
   // We want:
@@ -415,8 +419,8 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   // - days from minMs through endMs
   // - ensure the "trailing zero" day (lastEnd+1) is included when appropriate
   const preStartMs = minMs - DAY_MS;
-  const todayMs    = toMsUTC(todayYMDUTC());
-  const lastDropMs = inclusiveEnd ? (maxEndMs + DAY_MS) : maxEndMs;
+  const todayMs = toMsUTC(todayYMDUTC());
+  const lastDropMs = inclusiveEnd ? maxEndMs + DAY_MS : maxEndMs;
 
   let endMs;
   if (capAtToday) {
@@ -449,7 +453,8 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
       [graphDateFieldName]: ymd,
       [MMEValueFieldName]: Math.round(cum),
     };
-    if (isStart) row[START_DELIMITER_FIELD_NAME] = true; else row[PLACEHOLDER_FIELD_NAME] = true;
+    if (isStart) row[START_DELIMITER_FIELD_NAME] = true;
+    else row[PLACEHOLDER_FIELD_NAME] = true;
     out.push(row);
   }
 
