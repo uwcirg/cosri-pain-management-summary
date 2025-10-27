@@ -112,10 +112,10 @@ async function executeReportELM(
           .map((o) => getPatientResults(o.value));
         evalResults["SurveySummary"] = evaluatedSurveyResults;
         //debug
-        console.log(
-          "final evaluated CQL results including surveys ",
-          evalResults
-        );
+        // console.log(
+        //   "final evaluated CQL results including surveys ",
+        //   evalResults
+        // );
         resolve(evalResults);
       })
       .catch((e) => {

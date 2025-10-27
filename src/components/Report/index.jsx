@@ -70,7 +70,7 @@ export default class Report extends Component {
       this.state.resourceTypes
     )
       .then((results) => {
-        console.log("query result for report ", results);
+        //console.log("query result for report ", results);
         this.setState(
           {
             summaryData: {
