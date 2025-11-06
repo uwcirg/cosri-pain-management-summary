@@ -1218,7 +1218,6 @@ define ReportUrineLabServiceRequestsByCustomCode:
       Next_Screen_Date: O.authoredOn + 12 months
     }
     sort by Date desc
-
 // Report urine drug screen from observations and service requests
 define ReportAllUrineScreens:
   // (ReportUrineDrugScreensByObservation union ReportUrineLabServiceRequests union ReportUrineLabServiceRequestsByCustomCode) M

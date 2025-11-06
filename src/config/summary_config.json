@@ -149,7 +149,6 @@
             "strokeColor": "#dc6bab",
             "strokeWidth": "2",
             "strokeFill": "#dc6bab"
-    
           },
           "markerProps": {
             "id": "dataLine_bup_only_markers",
@@ -1332,6 +1331,9 @@
                 "key": "Date",
                 "formatter": "datishFormat",
                 "minWidth": "150px"
+              },
+              "Source": {
+                "key": "Source"
               }
             },
             "flags": [
@@ -1358,7 +1360,10 @@
                     }
                   ]
                 },
-                "flagText": "No urine drug screen date found for this patient. Please check the last controlled substance prescription to determine if they are due for their 12 month drug screen."
+                "flagText": "No urine drug screen date found for this patient. Please check the last controlled substance prescription to determine if they are due for their 12 month drug screen.",
+                "flagTextBySite": {
+                  "uwmc": "No urine drug screen date found for this patient. We are currently in the process of identifying all of the UDS tests from Epic, which will be available soon. Please double check Epic for UDS."
+                }
               },
               {
                 "flag": {
@@ -1418,10 +1423,45 @@
                 },
                 "flagText": "It has been more than 12 months since this patient's last urine drug screen.",
                 "flagDateField": "Date"
+              },
+              {
+                "flag": {
+                  "ifAnd": [
+                    "ifAdult",
+                    {
+                     "ifOneOrMore": {
+                          "table": "ReportAllUrineScreens",
+                          "source": "UrineDrugScreens"
+                      }
+                    },
+                    {
+                      "ifOr": [
+                        {
+                          "ifOneOrMore": {
+                            "table": "OpioidMedications",
+                            "source": "HistoricalTreatments"
+                          }
+                        },
+                        {
+                          "ifOneOrMore": {
+                            "table": "PDMPMedications",
+                            "source": "PDMPMedications"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "flagText": "",
+                "flagClass": "info",
+                "flagTextBySite": {
+                  "uwmc": "We are currently in the process of identifying all of the UDS tests from Epic, which will be available soon. Please double check Epic for UDS."
+                }
               }
             ]
           }
-        ]
+        ],
+        "showAlertWithEntries": true
       }
     ]
   },

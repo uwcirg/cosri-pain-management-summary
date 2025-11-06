@@ -58,16 +58,6 @@
             margin-right: 10px;
             position: relative;
             top: 6px;
-
-            &.flagged {
-              color: $color-red;
-            }
-            &.warning {
-              color: $color-warning;
-            }
-            &.warning-light {
-              color: $color-warning-light;
-            }
           }
         }
       }
@@ -151,12 +141,6 @@
             font-size: 0.9em;
             color: $color-red;
             vertical-align: middle;
-            &.warning {
-              color: $color-warning;
-            }
-            &.warning-light {
-              color: $color-warning-light;
-            }
           }
 
           .chevron {
@@ -370,12 +354,6 @@
             margin-left: 5px;
             color: $color-red;
             vertical-align: middle;
-            &.warning {
-              color: $color-warning;
-            }
-            &.warning-light {
-              color: $color-warning-light;
-            }
           }
 
           .chevron {
@@ -626,26 +604,8 @@
               }
             }
             .flag {
-              color: $color-red-darker;
               font-size: 28px;
               min-width: 28px;
-              &.info {
-                color: $color-info;
-              }
-              &.warning {
-                color: $color-warning;
-              }
-              &.warning-light {
-                color: $color-warning-light;
-              }
-              &:hover {
-                color: $color-red;
-                cursor: pointer;
-              }
-              &.info:hover {
-                color: $color-info;
-                cursor: auto;
-              }
             }
           }
         }
@@ -773,6 +733,7 @@
           font-style: italic;
           color: $color-gray-light;
           margin-left: 24px;
+          line-height: 1.4;
 
           .flag-text {
             font-style: normal;
@@ -789,9 +750,6 @@
           }
           .flag-guideline-content {
             margin-top: 12px;
-            .flag {
-              color: $color-red;
-            }
             .guideline-content {
               margin-top: 12px;
               font-style: normal;
@@ -938,12 +896,15 @@
               cursor: default;
 
               &.flagged {
-                color: $color-red;
+                color: $color-red-darker;
                 &.warning {
                   color: $color-warning;
                 }
                 &.warning-light {
                   color: $color-warning-light;
+                }
+                &.info {
+                  color: $color-info;
                 }
               }
             }
@@ -968,7 +929,7 @@
     }
     .sub-section {
       .guideline-wrapper {
-        margin-left: 40px;
+        margin-left: 32px;
         padding-bottom: 20px;
         font-size: 0.95em;
         line-height: 1.5;
@@ -1217,3 +1178,23 @@
     }
   }
 }
+
+.flag,
+.flag-header {
+  color: $color-red-darker;
+  &.warning {
+    color: $color-warning;
+  }
+  &.warning-light {
+    color: $color-warning-light;
+  }
+  &.info {
+    color: $color-info;
+  }
+}
+.flag-entries-container {
+  line-height: 1.4;
+  margin-top: 12px;
+  margin-left: 20px;
+}
+

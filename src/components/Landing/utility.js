@@ -7,12 +7,10 @@ import {
 import flagit from "../../helpers/flagit";
 import { dateCompare } from "../../helpers/sortit";
 import {
-  getDateObjectInLocalDateTime,
   getDiffDays,
-  getDiffMonths,
   getEnvConfidentialAPIURL,
   getEnvSystemType,
-  getHighRiskMMEThreshold,
+  getSiteId,
   isEmptyArray,
   saveData,
   writeToLog,
@@ -155,97 +153,113 @@ export function getDemoData(section, params) {
   return fetch(processEndPoint(section["demoData"]["endpoint"], params));
 }
 
+// helper: normalize anything flagit returns into [{ text, class, date }]
+function normalizeFlagResults(flagResult, alertMapping) {
+  if (!flagResult) return [];
+  const asArray = Array.isArray(flagResult) ? flagResult : [flagResult];
+
+  return asArray
+    .filter(Boolean)
+    .map((f) => {
+      if (typeof f === "string") {
+        return { text: f, class: "", date: alertMapping?.dateField ?? null };
+      }
+      // object from flagit: { text, class, date }
+      const text = f.text ?? "";
+      const cls = f.class ?? "";
+      const date = f.date != null ? f.date : alertMapping?.dateField ?? null;
+      return { text, class: cls, date };
+    })
+    .filter((f) => f.text); // must have text to display
+}
+
+// helper: deduplicate by flagText (case-insensitive, trimmed)
+function dedupeFlags(flags) {
+  const seen = new Set();
+  return flags.filter((f) => {
+    const key = f.text?.trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export function getProcessedSummaryData(summary, summaryMap) {
   let sectionFlags = {};
   const sectionKeys = Object.keys(summaryMap || {});
   let flaggedCount = 0;
 
-  sectionKeys.forEach((sectionKey, i) => {
-    // for each section
+  sectionKeys.forEach((sectionKey) => {
     sectionFlags[sectionKey] = {};
-    //don't process flags for section that will be hidden
-    if (summaryMap[sectionKey]["hideSection"]) {
+
+    if (summaryMap[sectionKey]?.hideSection) {
       summary[sectionKey] = [];
-      return true;
+      return;
     }
-    summaryMap[sectionKey]["sections"].forEach((subSection) => {
-      // for each sub section
-      if (!subSection) return true;
-      //don't process flags for sub section that will be hidden
-      if (subSection["hideSection"]) {
-        summary[subSection.dataKeySource][subSection.dataKey] = [];
-        return true;
-      }
+
+    (summaryMap[sectionKey]?.sections || []).forEach((subSection) => {
+      if (!subSection) return;
       const keySource = summary[subSection.dataKeySource];
-      if (!keySource) {
-        return true;
+      if (!keySource) return;
+
+      if (subSection.hideSection) {
+        keySource[subSection.dataKey] = [];
+        return;
       }
+
       const data = keySource[subSection.dataKey];
-      const entries = (Array.isArray(data) ? data : [data]).filter(
-        (r) => r != null
-      );
+      const entries = (Array.isArray(data) ? data : [data]).filter(Boolean);
       const alertMapping = subSection.alertMapping || {};
 
       if (entries.length > 0) {
-        sectionFlags[sectionKey][subSection.dataKey] = entries.reduce(
-          (flaggedEntries, entry) => {
-            if (entry._id == null) {
-              entry._id = generateUuid();
-            }
-            const entryFlag = flagit(entry, subSection, summary);
-            if (entryFlag) {
-              flaggedCount += 1;
-              let flagText =
-                typeof entryFlag === "object" ? entryFlag["text"] : entryFlag;
-              let flagClass =
-                typeof entryFlag === "object" ? entryFlag["class"] : "";
-              let flagDateField =
-                typeof entryFlag === "object"
-                  ? entryFlag["date"]
-                  : alertMapping.dateField
-                  ? alertMapping.dateField
-                  : null;
+        let flaggedEntries = [];
 
-              flaggedEntries.push({
-                entryId: entry._id,
-                entry: entry,
-                subSection: subSection,
-                flagText: flagText,
-                flagClass: flagClass,
-                flagCount: flaggedCount,
-                flagDateText:
-                  entry && entry[flagDateField]
-                    ? dateFormat("", entry[flagDateField])
-                    : "",
-                priority:
-                  flagClass === "info"
-                    ? 1000
-                    : alertMapping.priority
-                    ? alertMapping.priority
-                    : 0,
-              });
-            }
+        for (const entry of entries) {
+          if (entry._id == null) entry._id = generateUuid();
 
-            return flaggedEntries;
-          },
-          []
-        );
-      } else {
-        const sectionFlagged = flagit(null, subSection, summary);
-        // console.log("subSection? ", subSection, " flagged? ", sectionFlagged)
-        if (sectionFlagged) {
-          flaggedCount += 1;
-          sectionFlags[sectionKey][subSection.dataKey] = [
-            {
-              flagText:
-                typeof sectionFlagged === "object"
-                  ? sectionFlagged["text"]
-                  : sectionFlagged,
+          const flagResult = flagit(entry, subSection, summary);
+          const normalized = dedupeFlags(normalizeFlagResults(flagResult, alertMapping));
+
+          for (const f of normalized) {
+            flaggedCount += 1;
+            const flagDateField = f.date ?? alertMapping?.dateField ?? null;
+            const flagDateText =
+              entry && flagDateField && entry[flagDateField]
+                ? dateFormat("", entry[flagDateField])
+                : "";
+
+            flaggedEntries.push({
+              entryId: entry._id,
+              entry,
+              subSection,
+              flagText: f.text,
+              flagClass: f.class || "",
               flagCount: flaggedCount,
-              subSection: subSection,
-              priority: alertMapping.priority ? alertMapping.priority : 0,
-            },
-          ];
+              flagDateText,
+              priority:
+                (f.class === "info" && 1000) ||
+                alertMapping.priority ||
+                0,
+            });
+          }
+        }
+        sectionFlags[sectionKey][subSection.dataKey] = flaggedEntries;
+      } else {
+        const sectionFlagResult = flagit(null, subSection, summary);
+        const normalized = normalizeFlagResults(sectionFlagResult, alertMapping);
+        const unique = dedupeFlags(normalized);
+
+        if (unique.length) {
+          sectionFlags[sectionKey][subSection.dataKey] = unique.map((f) => {
+            flaggedCount += 1;
+            return {
+              flagText: f.text,
+              flagCount: flaggedCount,
+              flagClass: f.class,
+              subSection,
+              priority: alertMapping.priority || 0,
+            };
+          });
         }
       }
     });
@@ -474,7 +488,18 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
 
   return out;
 }
-
+export function getFlagTextByItem(flagItem) {
+  if (!flagItem) return "";
+  if (flagItem.flagTextBySite) {
+    const siteId = getSiteId();
+    const siteKey = siteId ? siteId.toLowerCase() : "";
+    if (siteKey && flagItem.flagTextBySite[siteKey])
+      return flagItem.flagTextBySite[siteKey];
+    return flagItem.flagText ?? "";
+  }
+  if (flagItem.flagText) return flagItem.flagText;
+  return "";
+}
 export function getProcessedAlerts(sectionFlags, logParams) {
   let alerts = [];
   if (!sectionFlags) {
@@ -488,30 +513,34 @@ export function getProcessedAlerts(sectionFlags, logParams) {
           alerts.push(subsection[1]);
         }
         if (typeof subsection[1] === "object") {
+          const subSectionFlagText = getFlagTextByItem(subsection[1]);
           if (Array.isArray(subsection[1])) {
             subsection[1].forEach((subitem) => {
+              const subItemFlagText = getFlagTextByItem(subitem);
               //this prevents addition of duplicate alert text
-              let alertTextExist = alerts.filter(
-                (item) =>
-                  String(item.flagText).toLowerCase() ===
-                  String(subitem.flagText).toLowerCase()
-              );
-              if (!alertTextExist.length && subitem.flagText) {
+              let alertTextExist = alerts.filter((item) => {
+                const itemFlagText = getFlagTextByItem(item);
+                return (
+                  String(itemFlagText).toLowerCase() ===
+                  String(subItemFlagText).toLowerCase()
+                );
+              });
+              if (!alertTextExist.length && subItemFlagText) {
                 let flagDateText = subitem.flagDateText
                   ? subitem.flagDateText
                   : "";
                 alerts.push({
                   id: subitem.subSection.dataKey,
                   name: subitem.subSection.name,
-                  flagText: subitem.flagText,
+                  flagText: subItemFlagText,
                   className: subitem.flagClass,
                   text:
-                    subitem.flagText.indexOf("[DATE]") >= 0
-                      ? subitem.flagText.replace(
+                    subItemFlagText.indexOf("[DATE]") >= 0
+                      ? subItemFlagText.replace(
                           "[DATE]",
                           datishFormat("", flagDateText)
                         )
-                      : subitem.flagText +
+                      : subItemFlagText +
                         (subitem.flagDateText
                           ? ` (${datishFormat("", flagDateText)})`
                           : ""),
@@ -520,17 +549,17 @@ export function getProcessedAlerts(sectionFlags, logParams) {
                 //log alert
                 if (logParams)
                   writeToLog(
-                    "alert flag: " + subitem.flagText,
+                    "alert flag: " + subItemFlagText,
                     "warn",
                     logParams
                   );
               }
             });
-          } else if (subsection[1].flagText) {
+          } else if (subSectionFlagText) {
             alerts.push({
               id: subsection[1].subSection.dataKey,
               name: subsection[1].subSection.name,
-              text: subsection[1].flagText,
+              text: subSectionFlagText,
               className: subsection[1].flagClass,
               priority: subsection[1].priority || 100,
             });
