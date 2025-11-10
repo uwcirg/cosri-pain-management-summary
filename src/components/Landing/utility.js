@@ -270,35 +270,40 @@ export function getProcessedMMEData(summaryData) {
   if (!summaryData) return [];
   if (!summaryData["RiskConsiderations"])
     summaryData["RiskConsiderations"] = {};
-  const mmeData = summaryData["RiskConsiderations"][
-    "AllOpioidMedicationRequests"
-  ]
-    ?.map((med) => {
-      const mmeResult = MMECalculator.mme([med.medicationRequest]);
-      const resultObject = !isEmptyArray(mmeResult) ? mmeResult[0]: {};
-      const {
-        mme,
-        rxNormCode,
-        doseQuantity,
-        dosesPerDay,
-        strength,
-        conversionFactor,
-      } = resultObject;
-      return {
-        ...med,
-        rxNormCode,
-        rxCUI: rxNormCode?.code,
-        doseQuantity,
-        dosesPerDay,
-        strength,
-        conversionFactor,
-        MME: mme,
-      };
-    })
-
-    .sort((a, b) => new Date(a.End) - new Date(b.End));
+  const allOpioidMedSections =
+    summaryData["RiskConsiderations"]["AllOpioidMedicationRequests"] ?? [];
+  const mmeData = allOpioidMedSections?.map((med) => {
+    const mmeResult = MMECalculator.mme([med.medicationRequest]);
+    const resultObject = !isEmptyArray(mmeResult) ? mmeResult[0] : {};
+    const {
+      mme,
+      rxNormCode,
+      doseQuantity,
+      dosesPerDay,
+      strength,
+      conversionFactor,
+    } = resultObject;
+    return {
+      ...med,
+      rxNormCode,
+      rxCUI: rxNormCode?.code,
+      doseQuantity,
+      dosesPerDay,
+      strength,
+      conversionFactor,
+      MME: mme,
+    };
+  });
   summaryData["RiskConsiderations"]["ReportMME"] = mmeData;
-  summaryData["PDMPMedications"]["PDMPMedications"] = mmeData;
+  const PDMPMeds =
+    summaryData["PDMPMedications"] &&
+    summaryData["PDMPMedications"]["PDMPMedications"]
+      ? summaryData["PDMPMedications"]["PDMPMedications"]
+      : [];
+  summaryData["PDMPMedications"]["PDMPMedications"] = PDMPMeds.map((med) => {
+    med.MME = mmeData.find((m) => m.ID === med.ID)?.MME;
+    return med;
+  });
   summaryData["RiskConsiderations"]["ReportMMEByDates"] = Array.from(
     mmeData
       .filter((med) => isNumber(med.MME) && med.End && med.IsLastTwoYears)

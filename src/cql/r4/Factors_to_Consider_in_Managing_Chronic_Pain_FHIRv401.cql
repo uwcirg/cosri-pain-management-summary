@@ -841,15 +841,17 @@ define ReportPDMPMedicationRequests:
   let
     CalculatedEnd: GetMedicationRequestEndDate(O),
     dispenseRequest:  O.dispenseRequest,
+    dispensedDateObj: GetMedicationRequestDispensedDate(O),
    // MME_Object: MMECalculator.MME(O),
     c: (O.medication as FHIR.CodeableConcept),
     RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
     return {
       Type:  'Request',
-      ID: O.id,
+      ID: O.id.value,
       Name:  ConceptText(c),
       Start: DateTimeText(O.authoredOn),
-      DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+      DispensedDate: DateText(dispensedDateObj),
+      oDispensedDate: dispensedDateObj,
       CalculatedEnd: CalculatedEnd, //of date type
       End: ToString(CalculatedEnd), //of string type
       Quantity: GetMedicationRequestDispensedQuantity(O),
@@ -870,7 +872,7 @@ define ReportPDMPMedicationRequests:
       AuthoredOn: O.authoredOn,
       medicationRequest: O
     }
-    sort by DispensedDate desc, End desc
+    sort by Start desc, End desc
 
 // define HasNaloxoneInLastYear:
 //   Length(
@@ -1035,7 +1037,7 @@ define AllOpioidMedicationRequests:
     RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
       return {
           Type:  'Request',
-          ID: O.id,
+          ID: O.id.value,
           Name:  ConceptText(c),
           Start: DateTimeText(O.authoredOn),
           DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),

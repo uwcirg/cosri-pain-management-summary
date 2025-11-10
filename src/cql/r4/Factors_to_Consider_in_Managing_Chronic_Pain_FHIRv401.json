@@ -5008,6 +5008,16 @@
                      "type" : "Property"
                   }
                }, {
+                  "identifier" : "dispensedDateObj",
+                  "expression" : {
+                     "name" : "GetMedicationRequestDispensedDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               }, {
                   "identifier" : "c",
                   "expression" : {
                      "strict" : false,
@@ -5084,9 +5094,13 @@
                      }, {
                         "name" : "ID",
                         "value" : {
-                           "path" : "id",
-                           "scope" : "O",
-                           "type" : "Property"
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "id",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
                         }
                      }, {
                         "name" : "Name",
@@ -5115,13 +5129,15 @@
                            "name" : "DateText",
                            "type" : "FunctionRef",
                            "operand" : [ {
-                              "name" : "GetMedicationRequestDispensedDate",
-                              "type" : "FunctionRef",
-                              "operand" : [ {
-                                 "name" : "O",
-                                 "type" : "AliasRef"
-                              } ]
+                              "name" : "dispensedDateObj",
+                              "type" : "QueryLetRef"
                            } ]
+                        }
+                     }, {
+                        "name" : "oDispensedDate",
+                        "value" : {
+                           "name" : "dispensedDateObj",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "CalculatedEnd",
@@ -5319,7 +5335,7 @@
                "sort" : {
                   "by" : [ {
                      "direction" : "desc",
-                     "path" : "DispensedDate",
+                     "path" : "Start",
                      "type" : "ByColumn"
                   }, {
                      "direction" : "desc",
@@ -5500,9 +5516,13 @@
                      }, {
                         "name" : "ID",
                         "value" : {
-                           "path" : "id",
-                           "scope" : "O",
-                           "type" : "Property"
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "id",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
                         }
                      }, {
                         "name" : "Name",
