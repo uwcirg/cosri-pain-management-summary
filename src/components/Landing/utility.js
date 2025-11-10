@@ -296,9 +296,7 @@ export function getProcessedMMEData(summaryData) {
         MME: mme,
       };
     })
-    .filter(
-      (med) => isNumber(med.MME) && med.End && isWithinPastYears(med.End, 2)
-    )
+
     .sort((a, b) => new Date(a.End) - new Date(b.End));
   summaryData["RiskConsiderations"]["ReportMME"] = mmeData;
   summaryData["PDMPMedications"]["PDMPMedications"] = mmeData;
@@ -313,6 +311,8 @@ export function getProcessedMMEData(summaryData) {
         return map;
       }, new Map())
       .values()
+  ).filter(
+    (med) => isNumber(med.MME) && med.End && isWithinPastYears(med.End, 2)
   );
   return summaryData;
 }
