@@ -1,23 +1,18 @@
-import {
-  datishFormat,
-  dateFormat,
-  dateNumberFormat,
-  extractDateFromGMTDateString,
-} from "../../helpers/formatit";
+import { datishFormat, dateFormat } from "../../helpers/formatit";
 import flagit from "../../helpers/flagit";
-import { dateCompare } from "../../helpers/sortit";
 import {
-  getDiffDays,
   getEnvConfidentialAPIURL,
   getEnvSystemType,
   getSiteId,
   isEmptyArray,
+  isNumber,
+  isWithinPastYears,
   saveData,
   writeToLog,
 } from "../../helpers/utility";
+import MMECalculator from "../../utils/MMECalculator";
+import OMTKLogic from "../../utils/MMECalculator/OMTKLogic";
 import { getEnv, ENV_VAR_PREFIX } from "../../utils/envConfig";
-import { sum } from "d3-array";
-
 let uuid = 0;
 
 export function generateUuid() {
@@ -218,7 +213,9 @@ export function getProcessedSummaryData(summary, summaryMap) {
           if (entry._id == null) entry._id = generateUuid();
 
           const flagResult = flagit(entry, subSection, summary);
-          const normalized = dedupeFlags(normalizeFlagResults(flagResult, alertMapping));
+          const normalized = dedupeFlags(
+            normalizeFlagResults(flagResult, alertMapping)
+          );
 
           for (const f of normalized) {
             flaggedCount += 1;
@@ -237,16 +234,17 @@ export function getProcessedSummaryData(summary, summaryMap) {
               flagCount: flaggedCount,
               flagDateText,
               priority:
-                (f.class === "info" && 1000) ||
-                alertMapping.priority ||
-                0,
+                (f.class === "info" && 1000) || alertMapping.priority || 0,
             });
           }
         }
         sectionFlags[sectionKey][subSection.dataKey] = flaggedEntries;
       } else {
         const sectionFlagResult = flagit(null, subSection, summary);
-        const normalized = normalizeFlagResults(sectionFlagResult, alertMapping);
+        const normalized = normalizeFlagResults(
+          sectionFlagResult,
+          alertMapping
+        );
         const unique = dedupeFlags(normalized);
 
         if (unique.length) {
@@ -266,6 +264,204 @@ export function getProcessedSummaryData(summary, summaryMap) {
   });
 
   return { sectionFlags, flaggedCount };
+}
+
+export function getProcessedMMEData(summaryData) {
+  if (!summaryData) return [];
+  if (!summaryData["RiskConsiderations"])
+    summaryData["RiskConsiderations"] = {};
+  const mmeData = summaryData["RiskConsiderations"][
+    "ReportPDMPMedicationRequests"
+  ]
+    ?.map((med) => {
+      const {
+        mme,
+        rxNormCode,
+        doseQuantity,
+        dosesPerDay,
+        strength,
+        conversionFactor,
+      } = MMECalculator.mme([med.medicationRequest])[0] ?? {};
+      const { Start, End } = med;
+      return {
+        ...med,
+        Start,
+        End,
+        rxNormCode,
+        rxCUI: rxNormCode?.code,
+        doseQuantity,
+        dosesPerDay,
+        strength,
+        conversionFactor,
+        MME: mme,
+      };
+    })
+    .filter(
+      (med) => isNumber(med.MME) && med.End && isWithinPastYears(med.End, 2)
+    )
+    .sort((a, b) => new Date(a.End) - new Date(b.End));
+  summaryData["RiskConsiderations"]["ReportMME"] = mmeData;
+  summaryData["PDMPMedications"]["PDMPMedications"] = mmeData;
+  summaryData["RiskConsiderations"]["ReportMMEByDates"] = Array.from(
+    mmeData
+      .reduce((map, med) => {
+        const key = `${med.Start}|${med.End}|${med.rxCUI}|${med.MME}`;
+        if (!map.has(key)) {
+          const { Start, End, rxNormCode, rxCUI, MME } = med;
+          map.set(key, { Start, End, rxNormCode, rxCUI, MME, MMEValue: MME });
+        }
+        return map;
+      }, new Map())
+      .values()
+  );
+  return summaryData;
+}
+
+export function debugMME() {
+  /**
+   * Debug test for MME Calculator
+   * This will help trace through the calculation step-by-step
+   */
+
+  // Test with your MS Contin 30mg medication
+  const testMedication = {
+    medication: {
+      coding: [
+        {
+          system: { value: "http://www.nlm.nih.gov/research/umls/rxnorm" },
+          code: { value: "891888" },
+          display: { value: "MS Cotin 30 MG Oral Tablet" },
+        },
+      ],
+    },
+    status: { value: "active" },
+    dispenseRequest: {
+      quantity: {
+        value: { value: 60 },
+      },
+      expectedSupplyDuration: {
+        value: { value: 30 },
+        unit: { value: "days" },
+      },
+    },
+  };
+
+  console.log("=== MME Calculation Debug ===\n");
+
+  // Extract RxNorm Code
+  console.log("Step 1: Extract RxNorm Code");
+  const rxNormCode = OMTKLogic.getMedicationCode(testMedication.medication);
+  console.log("RxNorm Code:", rxNormCode);
+  console.log("");
+
+  // Get Ingredients
+  console.log("Step 2: Get Drug Ingredients");
+  const ingredients = OMTKLogic.getIngredients(rxNormCode);
+  console.log("Ingredients:", JSON.stringify(ingredients, null, 2));
+  console.log("");
+
+  // Extract prescription data
+  console.log("Step 3: Extract Prescription Data");
+  const prescriptions = MMECalculator.prescriptions([testMedication]);
+  console.log("Prescription Data:", JSON.stringify(prescriptions, null, 2));
+  console.log("");
+
+  // Calculate MME
+  console.log("Step 4: Calculate MME");
+
+  // Manual calculation to verify
+  const supplyQuantity = 60;
+  const supplyDuration = 30;
+  const dosesPerDay = supplyQuantity / supplyDuration; // Should be 2
+  const strength = 30; // mg
+  const conversionFactor = 1; // morphine
+  const expectedMME = dosesPerDay * strength * conversionFactor; // Should be 60
+
+  console.log("Manual Calculation:");
+  console.log(`  Supply Quantity: ${supplyQuantity} tablets`);
+  console.log(`  Supply Duration: ${supplyDuration} days`);
+  console.log(
+    `  Doses Per Day: ${supplyQuantity} / ${supplyDuration} = ${dosesPerDay}`
+  );
+  console.log(`  Strength: ${strength} mg`);
+  console.log(`  Conversion Factor: ${conversionFactor}`);
+  console.log(
+    `  Expected MME: ${dosesPerDay} * ${strength} * ${conversionFactor} = ${expectedMME} mg/day`
+  );
+  console.log("");
+
+  // Actual calculation using library
+  const mmeResults = MMECalculator.mme([testMedication]);
+  console.log("Library Calculation:");
+  console.log("MME Results:", JSON.stringify(mmeResults, null, 2));
+  console.log("");
+
+  // Detailed breakdown
+  if (mmeResults && mmeResults.length > 0) {
+    const result = mmeResults[0];
+    console.log("Detailed Breakdown:");
+    console.log(`  Doses Per Day: ${result.dosesPerDay}`);
+    console.log(`  Dose Quantity: ${JSON.stringify(result.doseQuantity)}`);
+    console.log(`  Strength: ${JSON.stringify(result.strength)}`);
+    console.log(`  Daily Dose: ${result.dailyDose}`);
+    console.log(`  Conversion Factor: ${result.conversionFactor}`);
+    console.log(`  MME: ${result.mme} mg/day`);
+    console.log("");
+
+    if (result.mme !== expectedMME) {
+      console.log("ERROR: MME does not match expected value!");
+      console.log(`  Expected: ${expectedMME} mg/day`);
+      console.log(`  Actual: ${result.mme} mg/day`);
+    } else {
+      console.log("SUCCESS: MME matches expected value!");
+    }
+  }
+
+  // Test the OMTKLogic.calculateMMEs directly
+  console.log("\n=== Direct OMTKLogic.calculateMMEs Test ===\n");
+
+  const directInput = [
+    {
+      rxNormCode: rxNormCode,
+      doseQuantity: { value: 1, unit: null }, // 1 tablet
+      dosesPerDay: 2, // 60 tablets / 30 days
+      supplyQuantity: 60,
+      supplyDuration: 30,
+    },
+  ];
+
+  console.log("Input to calculateMMEs:", JSON.stringify(directInput, null, 2));
+  const directResults = OMTKLogic.calculateMMEs(directInput);
+  console.log("Direct Results:", JSON.stringify(directResults, null, 2));
+
+  if (directResults && directResults.length > 0) {
+    const mmeValue = directResults[0].mme?.value;
+    console.log(`\nDirect MME Value: ${mmeValue}`);
+    console.log(`Expected: ${expectedMME}`);
+
+    if (mmeValue === expectedMME) {
+      console.log("Direct calculation is CORRECT!");
+    } else {
+      console.log("Direct calculation is WRONG!");
+      console.log("Debugging daily dose calculation:");
+      const ingredient = ingredients[0];
+      console.log("  Ingredient Code:", ingredient.ingredientCode.code);
+      console.log("  Strength:", ingredient.strength);
+      console.log("  Dose Form Code:", ingredient.doseFormCode.code);
+      console.log("  Dose Quantity:", directInput[0].doseQuantity);
+      console.log("  Doses Per Day:", directInput[0].dosesPerDay);
+
+      const dailyDose = OMTKLogic.getDailyDose(
+        ingredient.ingredientCode,
+        ingredient.strength,
+        ingredient.doseFormCode,
+        directInput[0].doseQuantity,
+        directInput[0].dosesPerDay
+      );
+      console.log("  Calculated Daily Dose:", dailyDose);
+      console.log("  Expected Daily Dose: 60 mg");
+    }
+  }
 }
 
 export function getSummaryGraphDataSet(graphConfig, summaryData) {
@@ -311,37 +507,6 @@ export function getSummaryGraphDataSet(graphConfig, summaryData) {
 
   // Avoid returning a large empty object and skip console noise in production
   return hasAny ? graphDataSet : null;
-}
-
-function parseYMD(ymd /* "YYYY-MM-DD" */) {
-  // Be tolerant of your existing helper; ensure we end with "YYYY-MM-DD"
-  const s = extractDateFromGMTDateString
-    ? extractDateFromGMTDateString(ymd)
-    : ymd;
-  const [y, m, d] = s.split("-").map(Number);
-  return { y, m, d };
-}
-function toMsUTC(ymd) {
-  const { y, m, d } = parseYMD(ymd);
-  // UTC midnight for the calendar date (no local TZ applied)
-  return Date.UTC(y, m - 1, d);
-}
-function toYMDUTC(msUTC) {
-  const dt = new Date(msUTC); // interpret as UTC instant
-  const y = dt.getUTCFullYear();
-  const m = String(dt.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(dt.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-function todayYMDUTC() {
-  // "Today" as a UTC calendar day; if you prefer local 'today', compute with local getters consistently
-  return toYMDUTC(
-    Date.UTC(
-      new Date().getUTCFullYear(),
-      new Date().getUTCMonth(),
-      new Date().getUTCDate()
-    )
-  );
 }
 
 // Daily cumulative MME, starting from the day BEFORE the earliest start (0 value)
@@ -581,6 +746,161 @@ export function getDailyMMEData(mmeData) {
   if (!mmeData) return null;
   if (!mmeData.default) return null;
   return mmeData.default["data"];
+}
+
+//NaloxoneMedications
+export function HasNaloxoneInLastYear(summaryData) {
+  if (
+    !summaryData ||
+    !summaryData["RiskConsiderations"] ||
+    !summaryData["RiskConsiderations"]["NaloxoneMedications"]
+  )
+    return null;
+  const naxList = summaryData["RiskConsiderations"]["NaloxoneMedications"];
+  return !!naxList.find((M) => isWithinPastYears(M.AuthoredOn, 1));
+}
+
+export function MedicationRequestsForNaloxoneConsideration(summaryData) {
+  if (HasNaloxoneInLastYear(summaryData)) return null;
+  return NonBupMedRequestsForNaloxoneConsiderationLastTwoYears(summaryData);
+}
+
+export function NonBupMedRequestsForNaloxoneConsiderationLastTwoYears(
+  summaryData
+) {
+  const nonBupMedList = GetNonBuprenorphineMMEListByDates(summaryData);
+  if (isEmptyArray(nonBupMedList)) return null;
+  return nonBupMedList
+    .filter((M) => M.MMEValue >= 50 && isWithinPastYears(M.End, 2))
+    .sort((a, b) => new Date(b.End) - new Date(a.End));
+}
+
+export function GetBuprenorphineMMEListByDates(summaryData) {
+  if (
+    !summaryData ||
+    !summaryData["RiskConsiderations"] ||
+    !summaryData["RiskConsiderations"]["ReportMMEByDates"]
+  )
+    return [];
+  if (isEmptyArray(summaryData["RiskConsiderations"]["ReportMMEByDates"]))
+    return [];
+  const mmeList = summaryData["RiskConsiderations"]["ReportMMEByDates"];
+  const bupRxCuis = getBupRXCUIs(summaryData);
+  if (isEmptyArray(bupRxCuis)) return [];
+  return mmeList
+    .filter((o) => bupRxCuis.find((item) => item === o.rxCUI))
+    .map((o) => {
+      return {
+        Start: o.Start,
+        End: o.End,
+        rxNormCode: o.rxNormCode,
+        rxCUI: o.rxNormCode.code,
+        MMEValue: o.MMEValue,
+      };
+    });
+}
+
+export function GetNonBuprenorphineMMEListByDates(summaryData) {
+  if (
+    !summaryData ||
+    !summaryData["RiskConsiderations"] ||
+    !summaryData["RiskConsiderations"]["ReportMMEByDates"]
+  )
+    return [];
+  if (isEmptyArray(summaryData["RiskConsiderations"]["ReportMMEByDates"]))
+    return [];
+  const mmeList = summaryData["RiskConsiderations"]["ReportMMEByDates"];
+  const bupRxCuis = getBupRXCUIs(summaryData);
+  if (isEmptyArray(bupRxCuis)) return mmeList ?? [];
+  return mmeList
+    .filter((o) => bupRxCuis.find((item) => item !== o.rxCUI))
+    .map((o) => {
+      return {
+        Start: o.Start,
+        End: o.End,
+        rxNormCode: o.rxNormCode,
+        rxCUI: o.rxNormCode.code,
+        MMEValue: o.MMEValue,
+      };
+    });
+}
+
+export function ReportDailyMMEByDateWithoutBuprenorphine(summaryData) {
+  if (isEmptyArray(GetBuprenorphineMMEListByDates(summaryData))) return [];
+  if (isEmptyArray(GetNonBuprenorphineMMEListByDates(summaryData))) return [];
+  const mmeList = summaryData["RiskConsiderations"]["ReportMMEByDates"];
+  const bupRxcuis = getBupRXCUIs(summaryData);
+  return mmeList.map((R) => {
+    return {
+      Start: R.Start,
+      End: R.End,
+      rxNormCode: R.rxNormCode,
+      rxCUI: R.rxNormCode.code,
+      //miniscule value for displaying on graph above x-axis
+      MMEValue: bupRxcuis.find((rxcui) => rxcui === R.rxCUI)
+        ? 0.000000001
+        : R.MMEValue,
+      category: "wo_buprenorphine",
+    };
+  });
+}
+
+export function ReportDailyMMEByDateWithBuprenorphineOnly(summaryData) {
+  if (isEmptyArray(GetBuprenorphineMMEListByDates(summaryData))) return null;
+  const mmeList = summaryData["RiskConsiderations"]["ReportMMEByDates"];
+  const bupRxcuis = getBupRXCUIs(summaryData);
+  return mmeList.map((R) => {
+    return {
+      Start: R.Start,
+      End: R.End,
+      rxNormCode: R.rxNormCode,
+      rxCUI: R.rxNormCode.code,
+      //miniscule value for displaying on graph above x-axis
+      MMEValue: !bupRxcuis.find((rxcui) => rxcui === R.rxCUI)
+        ? 0.000000001
+        : R.MMEValue,
+      category: "buprenorphine_onl",
+    };
+  });
+}
+
+export function getBupRXCUIs(summaryData) {
+  if (
+    !summaryData ||
+    !summaryData["RiskConsiderations"] ||
+    !summaryData["RiskConsiderations"]["ReportBuprenorphineMedicationRequests"]
+  )
+    return [];
+
+  const bupMeds =
+    summaryData["RiskConsiderations"]["ReportBuprenorphineMedicationRequests"];
+  if (isEmptyArray(bupMeds)) return [];
+  return bupMeds.flatMap((med) => {
+    const medConcept = med.medication;
+    const match = medConcept?.coding?.find(
+      (item) =>
+        item.system?.value === "http://www.nlm.nih.gov/research/umls/rxnorm"
+    );
+    if (!match) return [];
+    return match.code?.value;
+  });
+}
+
+export function getProcessedBupData(summaryData) {
+  if (!summaryData) return null;
+  if (!summaryData["RiskConsiderations"]) {
+    summaryData["RiskConsiderations"] = {};
+  }
+  summaryData["RiskConsiderations"][
+    "ReportDailyMMEByDateWithBuprenorphineOnly"
+  ] = ReportDailyMMEByDateWithBuprenorphineOnly(summaryData);
+  summaryData["RiskConsiderations"][
+    "ReportDailyMMEByDateWithoutBuprenorphine"
+  ] = ReportDailyMMEByDateWithoutBuprenorphine(summaryData);
+  summaryData["MedicationRequestsForNaloxoneConsideration"] =
+    MedicationRequestsForNaloxoneConsideration(summaryData);
+  console.log("in processed ", summaryData);
+  return summaryData;
 }
 
 export function getProcessedStatsData(statsConfig, summaryData) {

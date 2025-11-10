@@ -38,8 +38,8 @@ import Spinner from "../../elements/Spinner";
 let processIntervalId = 0;
 let scrollHeaderIntervalId = 0;
 let landingFinishedOnce = false;
-let bootstrapPromise = null;        // first-phase fetch resources
-let bootstrapResult = null;      
+let bootstrapPromise = null; // first-phase fetch resources
+let bootstrapResult = null;
 
 export default class Landing extends Component {
   static contextType = FhirClientContext;
@@ -173,7 +173,7 @@ export default class Landing extends Component {
     }
 
     const { patientBundle, library, patientSource } = reqRes.value;
-    const result = {
+    let result = {
       bundle: patientBundle,
       Summary: { ...(externalDataSet ? externalDataSet.data : {}) },
     };
@@ -207,23 +207,63 @@ export default class Landing extends Component {
         ),
       };
 
-      const { sectionFlags, flaggedCount } =
-        landingUtils.getProcessedSummaryData(result.Summary, currentSummaryMap);
+      const { sectionFlags, flaggedCount } = landingUtils.getProcessedSummaryData(result.Summary, currentSummaryMap);
+
+      //   if (result["Summary"] && result["Summary"]["RiskConsiderations"]) {
+      //   result["Summary"]["RiskConsiderations"][
+      //     "ReportDailyMMEByDateWithBuprenorphineOnly"
+      //   ] = landingUtils.ReportDailyMMEByDateWithBuprenorphineOnly(
+      //     result["Summary"]
+      //   );
+      //   result["Summary"]["RiskConsiderations"][
+      //     "ReportDailyMMEByDateWithoutBuprenorphine"
+      //   ] = landingUtils.ReportDailyMMEByDateWithoutBuprenorphine(
+      //     result["Summary"]
+      //   );
+      //   result["Summary"]["MedicationRequestsForNaloxoneConsideration"] = landingUtils.MedicationRequestsForNaloxoneConsideration(result["Summary"])
+      // }
 
       this.setSummaryOverviewStatsData(result.Summary);
       this.setSummaryAlerts(result.Summary, sectionFlags);
+      result.Summary = landingUtils.getProcessedMMEData(result.Summary);
+      result.Summary = landingUtils.getProcessedBupData(result.Summary);
+
+      //console.log("mme data ", landingUtils.getProcessedMMEData(result.Summary))
+      //landingUtils.debugMME();
+      console.log("result summary ", result.Summary)
       this.setSummaryGraphData(result.Summary);
 
       const { errors, hasMmeErrors, mmeErrors } = landingUtils.getSummaryErrors(
         result.Summary
       );
 
+      console.log("result ", result)
+
       landingUtils.logMMEEntries(result.Summary, {
         tags: ["mme-calc"],
         ...this.getPatientLogParams(),
       });
 
-      // console.log("summary ", result);
+      
+
+      // console.log("summary data ", result);
+      // console.log(
+      //   "nax med list ",
+      //   landingUtils.MedicationRequestsForNaloxoneConsideration(
+      //     result["Summary"]
+      //   )
+      // );
+      // console.log("rxcuids ", landingUtils.getBupRXCUIs(result["Summary"]));
+      // console.log(
+      //   "wo bup mmed list ",
+      //   landingUtils.ReportDailyMMEByDateWithoutBuprenorphine(result["Summary"])
+      // );
+      // console.log(
+      //   "w bup mmed list ",
+      //   landingUtils.ReportDailyMMEByDateWithBuprenorphineOnly(
+      //     result["Summary"]
+      //   )
+      // );
 
       this.setState(
         {

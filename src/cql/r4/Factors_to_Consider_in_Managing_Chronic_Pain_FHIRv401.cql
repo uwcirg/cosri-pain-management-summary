@@ -84,6 +84,8 @@
 // Commented out define statements for sections that aren't currently displayed
 // Update 20251016
 // Add patient MRN
+// Update 20251110
+// Remove MME Calculations, Bupronorephine meds functions, to be implemented in JS
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -105,7 +107,7 @@ include CDS_Connect_Commons_for_FHIRv401 version '1.0.0' called C3F
 // The FHIRHelpers library provides common functions for simplifying interaction w/ the FHIR R4 data model.
 include FHIRHelpers version '4.0.1' called FHIRHelpers
 // The MMECalculator library is used to compute the patient's MME/MED
-include MMECalculator version '3.0.0' called MMECalculator
+//include MMECalculator version '3.0.0' called MMECalculator
 
 
 
@@ -134,7 +136,7 @@ valueset "Conditions associated with chronic pain": 'https://cts.nlm.nih.gov/fhi
 valueset "Opioid Pain Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.34'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.54/expansion)
-//valueset "Adjuvant Analgesic Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.54'
+valueset "Adjuvant Analgesic Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.54'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.105.12.1007/expansion)
 valueset "Major Depression": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.105.12.1007'
@@ -184,10 +186,10 @@ valueset "Pregnancy (New ICD10 codes published in 2018 and 2019)": 'https://cts.
 valueset "Non opiod pain medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.26'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.36/expansion)
-//valueset "Non pharmacologic treatments for chronic pain": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.36'
+valueset "Non pharmacologic treatments for chronic pain": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.36'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.55/expansion)
-//valueset "Risk assessments relevant to pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.55'
+valueset "Risk assessments relevant to pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.55'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.43/expansion)
 valueset "Benzodiazepine medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.43'
@@ -201,10 +203,10 @@ valueset "Aspirin / Carisoprodol": '2.16.840.1.113883.3.464.1003.196.11.1314'
 valueset "Naloxone medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.42'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.28/expansion)
-//valueset "Urine drug screen for pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.28'
+valueset "Urine drug screen for pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.28'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.44/expansion)
-//valueset "Stool softeners and laxatives": '2.16.840.1.113762.1.4.1032.44'
+valueset "Stool softeners and laxatives": '2.16.840.1.113762.1.4.1032.44'
 
 // [custom set for buprenorphine]
 valueset "Buprenorphine medications": '2.16.840.1.buprenorphine.custom'
@@ -624,14 +626,14 @@ define PregnancyConditions:
     42 weeks
   ))
 
-// define PregnancyObservations:
-//   C3F.Verified(C3F.ObservationLookBack([Observation: "Pregnancy status"], 42 weeks))
+define PregnancyObservations:
+  C3F.Verified(C3F.ObservationLookBack([Observation: "Pregnancy status"], 42 weeks))
 
-// define MostRecentPregnancyObservation:
-//   C3F.MostRecent(PregnancyObservations)
+define MostRecentPregnancyObservation:
+   C3F.MostRecent(PregnancyObservations)
 
-// define MostRecentPregnancyObservationIsPositive:
-//   C3F.ConceptValue(MostRecentPregnancyObservation) ~ "Pregnant"
+define MostRecentPregnancyObservationIsPositive:
+   C3F.ConceptValue(MostRecentPregnancyObservation) ~ "Pregnant"
 
 define Is65orOlder:
   AgeInYears() >= 65
@@ -718,24 +720,24 @@ define ReportEncounterRiskFactorsForOpioidRelatedHarms:
   return GetEncounterDiagnosesRiskFactorsForOpioidRelatedHarms(E))) D
   sort by Visit.Start desc, Visit.End desc
 
-// Shape the pregnancy Observation as a Condition, since this is the backup approach for detecting a pregnancy in case
-// there are no active Conditions found.
-// define ReportMostRecentPositivePregnancyObservation:
-//   if MostRecentPregnancyObservationIsPositive then
-//     {
-//       Name: ConceptText(MostRecentPregnancyObservation.code),
-//       Status: ConceptText(MostRecentPregnancyObservation.value as FHIR.CodeableConcept),
-//       Onset: ToString(Coalesce(
-//         (MostRecentPregnancyObservation.effective as FHIR.dateTime).value,
-//         (MostRecentPregnancyObservation.effective as FHIR.instant).value,
-//         (MostRecentPregnancyObservation.effective as FHIR.Period)."start".value
-//       )),
-//       DateRecorded: ToString(MostRecentPregnancyObservation.issued.value),
-//       Abatement: null as String,
-//       Visit: null as Tuple{ Start String, End String }
-//     }
-//   else
-//     null
+//Shape the pregnancy Observation as a Condition, since this is the backup approach for detecting a pregnancy in case
+//there are no active Conditions found.
+define ReportMostRecentPositivePregnancyObservation:
+  if MostRecentPregnancyObservationIsPositive then
+    {
+      Name: ConceptText(MostRecentPregnancyObservation.code),
+      Status: ConceptText(MostRecentPregnancyObservation.value as FHIR.CodeableConcept),
+      Onset: ToString(Coalesce(
+        (MostRecentPregnancyObservation.effective as FHIR.dateTime).value,
+        (MostRecentPregnancyObservation.effective as FHIR.instant).value,
+        (MostRecentPregnancyObservation.effective as FHIR.Period)."start".value
+      )),
+      DateRecorded: ToString(MostRecentPregnancyObservation.issued.value),
+      Abatement: null as String,
+      Visit: null as Tuple{ Start String, End String }
+    }
+  else
+    null
 
 // Shape the case of being 65 or older as a Condition for the purposes of building the summary.
 define ReportOlderThan65:
@@ -769,10 +771,11 @@ define ReportRiskFactorsForOpioidRelatedHarms:
 
 // Opioid medication orders and statements with dates
 define OpioidMedicationRequests:
-  C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
-    100 years
-  )
+  // C3F.MedicationRequestLookBack(
+  //   [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
+  //   100 years
+  // )
+  [MedicationRequest: "Opioid Pain Medications"]
 
 // define OpioidMedicationStatements:
 //   C3F.MedicationStatementLookBack(
@@ -839,7 +842,7 @@ define ReportPDMPMedicationRequests:
   let
     CalculatedEnd: GetMedicationRequestEndDate(O),
     dispenseRequest:  O.dispenseRequest,
-    MME_Object: MMECalculator.MME(O),
+   // MME_Object: MMECalculator.MME(O),
     c: (O.medication as FHIR.CodeableConcept),
     RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
     return {
@@ -851,38 +854,39 @@ define ReportPDMPMedicationRequests:
       End: ToString(CalculatedEnd), //of string type
       Quantity: GetMedicationRequestDispensedQuantity(O),
       Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
-      doseQuantity: MME_Object[0].doseQuantity,
-      dosesPerDay: MME_Object[0].dosesPerDay,
-      strength: MME_Object[0].strength,
-      factor: MME_Object[0].conversionFactor,
-      MME: MME_Object[0].mme.value,
+      // doseQuantity: MME_Object[0].doseQuantity,
+      // dosesPerDay: MME_Object[0].dosesPerDay,
+      // strength: MME_Object[0].strength,
+      // factor: MME_Object[0].conversionFactor,
+      // MME: MME_Object[0].mme.value,
       Prescriber: O.requester.display.value,
       Pharmacy: GetMedicationRequestPharmacy(O),
       NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
       RXNorm_Code: RxnormCode,
-      isBup: RxnormCode in BuprenorphineRxCUIs,
+      //isBup: RxnormCode in BuprenorphineRxCUIs,
       isActive: CalculatedEnd same or after Today(),
       Status: O.status.value,
       Class: getMedicationRequestDrugClass(O),
-      AuthoredOn: O.authoredOn
+      AuthoredOn: O.authoredOn,
+      medicationRequest: O
     }
     sort by DispensedDate desc, End desc
 
-define HasNaloxoneInLastYear:
-  Length(
-    (ReportNaloxoneMedicationRequests) M 
-    where M.AuthoredOn <= Today() and M.AuthoredOn >= (Today() - 1 year)
-  ) > 0
+// define HasNaloxoneInLastYear:
+//   Length(
+//     (ReportNaloxoneMedicationRequests) M 
+//     where M.AuthoredOn <= Today() and M.AuthoredOn >= (Today() - 1 year)
+//   ) > 0
 
-define NonBupMedRequestsForNaloxoneConsiderationLastTwoYears:
-  (GetNonBuprenorphineMMEListByDates) M
-  where M.MMEValue >= 50 and ((year from Today() - year from ToDate(M.End)) <= 2)
+// define NonBupMedRequestsForNaloxoneConsiderationLastTwoYears:
+//   (GetNonBuprenorphineMMEListByDates) M
+//   where M.MMEValue >= 50 and ((year from Today() - year from ToDate(M.End)) <= 2)
 
-define MedicationRequestsForNaloxoneConsideration:
-  if HasNaloxoneInLastYear then
-    null
-  else
-    NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
+// define MedicationRequestsForNaloxoneConsideration:
+//   if HasNaloxoneInLastYear then
+//     null
+//   else
+//     NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
 
 
 // Non-opioid medication orders and statements with dates
@@ -1019,123 +1023,176 @@ define MedicationRequestsForNaloxoneConsideration:
 
 // RISK CONSIDERATIONS
 
-define ReportMME:
+define ReportAllMedicationRequests:
   (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
   let
-    MME_Object: MMECalculator.MME(O),
-    AuthoredDate: DateTimeText(O.authoredOn),
-    DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
     CalculatedEnd: GetMedicationRequestEndDate(O),
-    CalculatedStatus:
-      if CalculatedEnd same or after Today() then 'active' else null
-  return {
-    Type:  'Request',
-    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-    CalculatedEnd: CalculatedEnd,
-    Written: DateTimeText(O.authoredOn),
-    Start: if DispensedDate is not null then DispensedDate else AuthoredDate,
-    End: ToString(CalculatedEnd),
-    Status: CalculatedStatus,
-    doseQuantity: MME_Object[0].doseQuantity,
-    dosesPerDay: MME_Object[0].dosesPerDay,
-    strength: MME_Object[0].strength,
-    supplyQuantity: MME_Object[0].supplyQuantity,
-    supplyDuration: MME_Object[0].supplyDuration,
-    factor: MME_Object[0].conversionFactor,
-    MMEValue: MME_Object[0].mme.value,
-    rxNormCode: MME_Object[0].rxNormCode
-  }
-  sort by End desc
+    dispenseRequest:  O.dispenseRequest,
+    c: (O.medication as FHIR.CodeableConcept),
+    RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
+    return {
+      Type:  'Request',
+      Name:  ConceptText(c),
+      Start: DateTimeText(O.authoredOn),
+      DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+      CalculatedEnd: CalculatedEnd, //of date type
+      End: ToString(CalculatedEnd), //of string type
+      Quantity: GetMedicationRequestDispensedQuantity(O),
+      Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
+      // doseQuantity: MME_Object[0].doseQuantity,
+      // dosesPerDay: MME_Object[0].dosesPerDay,
+      // strength: MME_Object[0].strength,
+      // factor: MME_Object[0].conversionFactor,
+      // MME: MME_Object[0].mme.value,
+      Prescriber: O.requester.display.value,
+      Pharmacy: GetMedicationRequestPharmacy(O),
+      NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
+      RXNorm_Code: RxnormCode,
+      //isBup: RxnormCode in BuprenorphineRxCUIs,
+      isActive: CalculatedEnd same or after Today(),
+      Status: O.status.value,
+      Class: getMedicationRequestDrugClass(O),
+      AuthoredOn: O.authoredOn,
+      medicationRequest: O
+    }
+    sort by DispensedDate desc, End desc
+
+  // let
+  //   AuthoredDate: DateTimeText(O.authoredOn),
+  //   DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+  //   CalculatedEnd: GetMedicationRequestEndDate(O),
+  //   CalculatedStatus:
+  //     if CalculatedEnd same or after Today() then 'active' else null
+  // return {
+  //   Type:  'Request',
+  //   Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+  //   CalculatedEnd: CalculatedEnd,
+  //   Written: DateTimeText(O.authoredOn),
+  //   Start: if DispensedDate is not null then DispensedDate else AuthoredDate,
+  //   End: ToString(CalculatedEnd),
+  //   Status: CalculatedStatus
+  // }
+  //sort by End desc
+
+
+// define ReportMME:
+//   (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
+//   let
+//     MME_Object: MMECalculator.MME(O),
+//     AuthoredDate: DateTimeText(O.authoredOn),
+//     DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+//     CalculatedEnd: GetMedicationRequestEndDate(O),
+//     CalculatedStatus:
+//       if CalculatedEnd same or after Today() then 'active' else null
+//   return {
+//     Type:  'Request',
+//     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+//     CalculatedEnd: CalculatedEnd,
+//     Written: DateTimeText(O.authoredOn),
+//     Start: if DispensedDate is not null then DispensedDate else AuthoredDate,
+//     End: ToString(CalculatedEnd),
+//     Status: CalculatedStatus,
+//     doseQuantity: MME_Object[0].doseQuantity,
+//     dosesPerDay: MME_Object[0].dosesPerDay,
+//     strength: MME_Object[0].strength,
+//     supplyQuantity: MME_Object[0].supplyQuantity,
+//     supplyDuration: MME_Object[0].supplyDuration,
+//     factor: MME_Object[0].conversionFactor,
+//     MMEValue: MME_Object[0].mme.value,
+//     rxNormCode: MME_Object[0].rxNormCode,
+//     medicationRequest: O
+//   }
+//   sort by End desc
 
 //return a list of tuples containing MME value for each MedicationRequest that happends in the last two years
-define ReportMMEByDates:
-  (ReportMME) R
-  where
-    //make sure not to include null MME value
-    R.End is not null and 
-    R.MMEValue is not null and 
-    ((year from Today() - year from R.CalculatedEnd) <= 2)
-  return {
-    Start: R.Start,
-    End: R.End,
-    rxNormCode: R.rxNormCode,
-    rxCUI: R.rxNormCode.code,
-    MMEValue: R.MMEValue,
-    isBup: R.rxNormCode.code in BuprenorphineRxCUIs,
-    category: 'default'
-  }
-  sort by End
+// define ReportMMEByDates:
+//   (ReportMME) R
+//   where
+//     //make sure not to include null MME value
+//     R.End is not null and 
+//     R.MMEValue is not null and 
+//     ((year from Today() - year from R.CalculatedEnd) <= 2)
+//   return {
+//     Start: R.Start,
+//     End: R.End,
+//     rxNormCode: R.rxNormCode,
+//     rxCUI: R.rxNormCode.code,
+//     MMEValue: R.MMEValue,
+//     //isBup: R.rxNormCode.code in BuprenorphineRxCUIs,
+//     category: 'default'
+//   }
+//   sort by End
 
 //a list including non-null MME value for non - Buprenorphine
-define GetNonBuprenorphineMMEListByDates:
-  ((ReportMMEByDates) O
-    where not (O.rxCUI in BuprenorphineRxCUIs)
-  ) R 
-  return {
-    Start: R.Start,
-    End: R.End,
-    rxNormCode: R.rxNormCode,
-    rxCUI: R.rxNormCode.code,
-    MMEValue: R.MMEValue
-  }
-  sort by End desc
+// define GetNonBuprenorphineMMEListByDates:
+//   ((ReportMMEByDates) O
+//     where not (O.rxCUI in BuprenorphineRxCUIs)
+//   ) R 
+//   return {
+//     Start: R.Start,
+//     End: R.End,
+//     rxNormCode: R.rxNormCode,
+//     rxCUI: R.rxNormCode.code,
+//     MMEValue: R.MMEValue
+//   }
+//   sort by End desc
 
 //a list including non-null MME value for Buprenorphine
-define GetBuprenorphineMMEListByDates:
-  ((ReportMMEByDates) O
-    where O.rxCUI in BuprenorphineRxCUIs
-  ) R 
-  return {
-    Start: R.Start,
-    End: R.End,
-    rxNormCode: R.rxNormCode,
-    rxCUI: R.rxNormCode.code,
-    MMEValue: R.MMEValue
-  }
-  sort by End
+// define GetBuprenorphineMMEListByDates:
+//   ((ReportMMEByDates) O
+//     where O.rxCUI in BuprenorphineRxCUIs
+//   ) R 
+//   return {
+//     Start: R.Start,
+//     End: R.End,
+//     rxNormCode: R.rxNormCode,
+//     rxCUI: R.rxNormCode.code,
+//     MMEValue: R.MMEValue
+//   }
+//   sort by End
 
 // a list of daily total MME values without Buprenorphine
-define ReportDailyMMEByDateWithoutBuprenorphine:
-if First(GetBuprenorphineMMEListByDates) is null then
-  null
-else if First(GetNonBuprenorphineMMEListByDates) is null then
-  null
-else
-  (ReportMMEByDates) R
-  return 
-  {
-    Start: R.Start,
-    End: R.End,
-    rxNormCode: R.rxNormCode,
-    rxCUI: R.rxNormCode.code,
-    //miniscule value for displaying on graph above x-axis
-    MMEValue: if R.rxCUI in BuprenorphineRxCUIs then 0.000000001 else R.MMEValue,
-    category: 'wo_buprenorphine'
-  }
-  sort by End
+// define ReportDailyMMEByDateWithoutBuprenorphine:
+// if First(GetBuprenorphineMMEListByDates) is null then
+//   null
+// else if First(GetNonBuprenorphineMMEListByDates) is null then
+//   null
+// else
+//   (ReportMMEByDates) R
+//   return 
+//   {
+//     Start: R.Start,
+//     End: R.End,
+//     rxNormCode: R.rxNormCode,
+//     rxCUI: R.rxNormCode.code,
+//     //miniscule value for displaying on graph above x-axis
+//     MMEValue: if R.rxCUI in BuprenorphineRxCUIs then 0.000000001 else R.MMEValue,
+//     category: 'wo_buprenorphine'
+//   }
+//   sort by End
 
 // a list of daily total MME values with Buprenorphine ONLY
-define ReportDailyMMEByDateWithBuprenorphineOnly:
-  if First(GetBuprenorphineMMEListByDates) is null then
-    null
-  else
-    (ReportMMEByDates) R
-    return 
-    {
-      Start: R.Start,
-      End: R.End,
-      rxNormCode: R.rxNormCode,
-      rxCUI: R.rxNormCode.code,
-      //miniscule value for displaying on graph above x-axis
-      MMEValue: if not (R.rxCUI in BuprenorphineRxCUIs) then 0.000000001 else R.MMEValue,
-      category: 'buprenorphine_only'
-    }
-    sort by End
+// define ReportDailyMMEByDateWithBuprenorphineOnly:
+//   if First(GetBuprenorphineMMEListByDates) is null then
+//     null
+//   else
+//     (ReportMMEByDates) R
+//     return 
+//     {
+//       Start: R.Start,
+//       End: R.End,
+//       rxNormCode: R.rxNormCode,
+//       rxCUI: R.rxNormCode.code,
+//       //miniscule value for displaying on graph above x-axis
+//       MMEValue: if not (R.rxCUI in BuprenorphineRxCUIs) then 0.000000001 else R.MMEValue,
+//       category: 'buprenorphine_only'
+//     }
+//     sort by End
   
 
-define ReportPrescriptions:
-  (OpioidMedicationRequests) M
-  return MMECalculator.Prescriptions(M)
+// define ReportPrescriptions:
+//   (OpioidMedicationRequests) M
+//   return MMECalculator.Prescriptions(M)
 
 
 // Urine drug screen from observations - dates and results (all screens w/ lookback of 1 year)
@@ -1483,18 +1540,20 @@ define Summary: {
 //     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
 //   },
   RiskConsiderations: {
-    ReportMME: ReportMME,
-    ReportMMEByDates: ReportMMEByDates,
-    ReportDailyMMEByDateWithoutBuprenorphine: ReportDailyMMEByDateWithoutBuprenorphine,
-    ReportDailyMMEByDateWithBuprenorphineOnly: ReportDailyMMEByDateWithBuprenorphineOnly,
+    //ReportMME: ReportMME,
+    //ReportMMEByDates: ReportMMEByDates,
+    ReportPDMPMedicationRequests: ReportPDMPMedicationRequests,
+    ReportBuprenorphineMedicationRequests: ReportBuprenorphineMedicationRequests,
+    // ReportDailyMMEByDateWithoutBuprenorphine: ReportDailyMMEByDateWithoutBuprenorphine,
+    // ReportDailyMMEByDateWithBuprenorphineOnly: ReportDailyMMEByDateWithBuprenorphineOnly,
     //for debugging, uncomment to test
     //ReportPrescriptions: ReportPrescriptions,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     SedativeMedications: ReportSedativeMedicationRequests,
     BarbiturateMedications: ReportBarbiturateMedicationRequests,
     CarisoprodolMedications: ReportCarisoprodolMedications,
-    NaloxoneMedications: ReportNaloxoneMedications,
-    MedicationRequestsForNaloxoneConsideration: MedicationRequestsForNaloxoneConsideration
+    NaloxoneMedications: ReportNaloxoneMedications
+    //MedicationRequestsForNaloxoneConsideration: MedicationRequestsForNaloxoneConsideration
   },
   PDMPMedications: {
     PDMPMedications: ReportPDMPMedicationRequests
