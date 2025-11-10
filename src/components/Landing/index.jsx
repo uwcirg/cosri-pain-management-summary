@@ -213,14 +213,13 @@ export default class Landing extends Component {
       result.Summary = landingUtils.getProcessedMMEData(result.Summary);
       result.Summary = landingUtils.getProcessedBupData(result.Summary);
       //landingUtils.debugMME();
-      console.log("result summary ", result.Summary)
       this.setSummaryGraphData(result.Summary);
 
       const { errors, hasMmeErrors, mmeErrors } = landingUtils.getSummaryErrors(
         result.Summary
       );
 
-      console.log("result ", result)
+      console.log("Summary result ", result);
 
       landingUtils.logMMEEntries(result.Summary, {
         tags: ["mme-calc"],

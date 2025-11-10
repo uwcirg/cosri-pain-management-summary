@@ -748,7 +748,6 @@ export function getDailyMMEData(mmeData) {
   return mmeData.default["data"];
 }
 
-//NaloxoneMedications
 export function HasNaloxoneInLastYear(summaryData) {
   if (
     !summaryData ||
@@ -899,7 +898,6 @@ export function getProcessedBupData(summaryData) {
   ] = ReportDailyMMEByDateWithoutBuprenorphine(summaryData);
   summaryData["MedicationRequestsForNaloxoneConsideration"] =
     MedicationRequestsForNaloxoneConsideration(summaryData);
-  console.log("in processed ", summaryData);
   return summaryData;
 }
 
