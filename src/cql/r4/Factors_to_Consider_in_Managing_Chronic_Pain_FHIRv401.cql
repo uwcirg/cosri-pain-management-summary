@@ -1029,20 +1029,32 @@ define AllOpioidMedicationRequests:
     AuthoredDate: DateTimeText(O.authoredOn),
     DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
     CalculatedEnd: GetMedicationRequestEndDate(O),
-    CalculatedStatus:
-      if CalculatedEnd same or after Today() then 'active' else null
-  return {
-    Type:  'Request',
-    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-    CalculatedEnd: CalculatedEnd,
-    Written: DateTimeText(O.authoredOn),
-    Start: if DispensedDate is not null then DispensedDate else AuthoredDate,
-    End: ToString(CalculatedEnd),
-    Status: CalculatedStatus,
-    IsLastTwoYears: ((year from Today() - year from CalculatedEnd) <= 2),
-    medicationRequest: O
-  }
-  sort by End desc
+    CalculatedStatus: if CalculatedEnd same or after Today() then 'active' else null,
+    dispenseRequest:  O.dispenseRequest,
+    c: (O.medication as FHIR.CodeableConcept),
+    RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
+      return {
+          Type:  'Request',
+          ID: O.id,
+          Name:  ConceptText(c),
+          Start: DateTimeText(O.authoredOn),
+          DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+          CalculatedEnd: CalculatedEnd, //of date type
+          End: ToString(CalculatedEnd), //of string type
+          Quantity: GetMedicationRequestDispensedQuantity(O),
+          Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
+          Prescriber: O.requester.display.value,
+          Pharmacy: GetMedicationRequestPharmacy(O),
+          NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
+          RXNorm_Code: RxnormCode,
+          isActive: CalculatedEnd same or after Today(),
+          Status: O.status.value,
+          Class: getMedicationRequestDrugClass(O),
+          AuthoredOn: O.authoredOn,
+          IsLastTwoYears: ((year from Today() - year from CalculatedEnd) <= 2),
+          medicationRequest: O
+      }
+      sort by End desc
 
 //return a list of tuples containing MME value for each MedicationRequest that happends in the last two years
 // define ReportMMEByDates:

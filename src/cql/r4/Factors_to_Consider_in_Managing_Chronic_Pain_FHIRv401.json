@@ -5416,6 +5416,75 @@
                         }
                      }
                   }
+               }, {
+                  "identifier" : "dispenseRequest",
+                  "expression" : {
+                     "path" : "dispenseRequest",
+                     "scope" : "O",
+                     "type" : "Property"
+                  }
+               }, {
+                  "identifier" : "c",
+                  "expression" : {
+                     "strict" : false,
+                     "type" : "As",
+                     "operand" : {
+                        "path" : "medication",
+                        "scope" : "O",
+                        "type" : "Property"
+                     },
+                     "asTypeSpecifier" : {
+                        "name" : "{http://hl7.org/fhir}CodeableConcept",
+                        "type" : "NamedTypeSpecifier"
+                     }
+                  }
+               }, {
+                  "identifier" : "RxnormCode",
+                  "expression" : {
+                     "type" : "Coalesce",
+                     "operand" : [ {
+                        "type" : "Query",
+                        "source" : [ {
+                           "alias" : "c2",
+                           "expression" : {
+                              "path" : "coding",
+                              "type" : "Property",
+                              "source" : {
+                                 "name" : "c",
+                                 "type" : "QueryLetRef"
+                              }
+                           }
+                        } ],
+                        "relationship" : [ ],
+                        "where" : {
+                           "type" : "Equivalent",
+                           "operand" : [ {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "system",
+                                 "scope" : "c2",
+                                 "type" : "Property"
+                              }
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                              "value" : "http://www.nlm.nih.gov/research/umls/rxnorm",
+                              "type" : "Literal"
+                           } ]
+                        },
+                        "return" : {
+                           "expression" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "code",
+                                 "scope" : "c2",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     } ]
+                  }
                } ],
                "relationship" : [ ],
                "return" : {
@@ -5429,32 +5498,24 @@
                            "type" : "Literal"
                         }
                      }, {
+                        "name" : "ID",
+                        "value" : {
+                           "path" : "id",
+                           "scope" : "O",
+                           "type" : "Property"
+                        }
+                     }, {
                         "name" : "Name",
                         "value" : {
                            "name" : "ConceptText",
                            "type" : "FunctionRef",
                            "operand" : [ {
-                              "strict" : false,
-                              "type" : "As",
-                              "operand" : {
-                                 "path" : "medication",
-                                 "scope" : "O",
-                                 "type" : "Property"
-                              },
-                              "asTypeSpecifier" : {
-                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
-                                 "type" : "NamedTypeSpecifier"
-                              }
+                              "name" : "c",
+                              "type" : "QueryLetRef"
                            } ]
                         }
                      }, {
-                        "name" : "CalculatedEnd",
-                        "value" : {
-                           "name" : "CalculatedEnd",
-                           "type" : "QueryLetRef"
-                        }
-                     }, {
-                        "name" : "Written",
+                        "name" : "Start",
                         "value" : {
                            "name" : "DateTimeText",
                            "type" : "FunctionRef",
@@ -5465,27 +5526,24 @@
                            } ]
                         }
                      }, {
-                        "name" : "Start",
+                        "name" : "DispensedDate",
                         "value" : {
-                           "type" : "If",
-                           "condition" : {
-                              "type" : "Not",
-                              "operand" : {
-                                 "type" : "IsNull",
-                                 "operand" : {
-                                    "name" : "DispensedDate",
-                                    "type" : "QueryLetRef"
-                                 }
-                              }
-                           },
-                           "then" : {
-                              "name" : "DispensedDate",
-                              "type" : "QueryLetRef"
-                           },
-                           "else" : {
-                              "name" : "AuthoredDate",
-                              "type" : "QueryLetRef"
-                           }
+                           "name" : "DateText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "GetMedicationRequestDispensedDate",
+                              "type" : "FunctionRef",
+                              "operand" : [ {
+                                 "name" : "O",
+                                 "type" : "AliasRef"
+                              } ]
+                           } ]
+                        }
+                     }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "End",
@@ -5497,10 +5555,173 @@
                            }
                         }
                      }, {
+                        "name" : "Quantity",
+                        "value" : {
+                           "name" : "GetMedicationRequestDispensedQuantity",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Duration",
+                        "value" : {
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "path" : "expectedSupplyDuration",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "dispenseRequest",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "path" : "value",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "value",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "expectedSupplyDuration",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "dispenseRequest",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              }
+                           },
+                           "else" : {
+                              "asType" : "{urn:hl7-org:elm-types:r1}Decimal",
+                              "type" : "As",
+                              "operand" : {
+                                 "type" : "Null"
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Prescriber",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "display",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "requester",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Pharmacy",
+                        "value" : {
+                           "name" : "GetMedicationRequestPharmacy",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "NDC_Code",
+                        "value" : {
+                           "type" : "Coalesce",
+                           "operand" : [ {
+                              "type" : "Query",
+                              "source" : [ {
+                                 "alias" : "c2",
+                                 "expression" : {
+                                    "path" : "coding",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "name" : "c",
+                                       "type" : "QueryLetRef"
+                                    }
+                                 }
+                              } ],
+                              "relationship" : [ ],
+                              "where" : {
+                                 "type" : "Equivalent",
+                                 "operand" : [ {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "system",
+                                       "scope" : "c2",
+                                       "type" : "Property"
+                                    }
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                    "value" : "http://hl7.org/fhir/sid/ndc",
+                                    "type" : "Literal"
+                                 } ]
+                              },
+                              "return" : {
+                                 "expression" : {
+                                    "path" : "value",
+                                    "type" : "Property",
+                                    "source" : {
+                                       "path" : "code",
+                                       "scope" : "c2",
+                                       "type" : "Property"
+                                    }
+                                 }
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "RXNorm_Code",
+                        "value" : {
+                           "name" : "RxnormCode",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "isActive",
+                        "value" : {
+                           "type" : "SameOrAfter",
+                           "operand" : [ {
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
+                           }, {
+                              "type" : "Today"
+                           } ]
+                        }
+                     }, {
                         "name" : "Status",
                         "value" : {
-                           "name" : "CalculatedStatus",
-                           "type" : "QueryLetRef"
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "status",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     }, {
+                        "name" : "Class",
+                        "value" : {
+                           "name" : "getMedicationRequestDrugClass",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
+                        "name" : "AuthoredOn",
+                        "value" : {
+                           "path" : "authoredOn",
+                           "scope" : "O",
+                           "type" : "Property"
                         }
                      }, {
                         "name" : "IsLastTwoYears",
