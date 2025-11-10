@@ -397,9 +397,9 @@ const MMECalculator = {
         .filter(Boolean)
         .join("\r\n");
 
-      const totalMME = Math.round(
+      const totalMME = (
         mmePerIngredient.reduce((sum, x) => sum + (x.mme?.value || 0), 0)
-      );
+      ).toFixed(1);
 
       return {
         rxNormCode: p.rxNormCode,
