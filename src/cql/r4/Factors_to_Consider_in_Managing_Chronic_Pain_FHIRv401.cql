@@ -1029,29 +1029,20 @@ define AllOpioidMedicationRequests:
   (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
   let
     AuthoredDate: DateTimeText(O.authoredOn),
-    DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
     CalculatedEnd: GetMedicationRequestEndDate(O),
     CalculatedStatus: if CalculatedEnd same or after Today() then 'active' else null,
-    dispenseRequest:  O.dispenseRequest,
-    c: (O.medication as FHIR.CodeableConcept),
-    RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
+    c: (O.medication as FHIR.CodeableConcept)
       return {
           Type:  'Request',
           ID: O.id.value,
           Name:  ConceptText(c),
           Start: DateTimeText(O.authoredOn),
-          DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
           CalculatedEnd: CalculatedEnd, //of date type
           End: ToString(CalculatedEnd), //of string type
-          Quantity: GetMedicationRequestDispensedQuantity(O),
-          Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
           Prescriber: O.requester.display.value,
-          Pharmacy: GetMedicationRequestPharmacy(O),
-          NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
-          RXNorm_Code: RxnormCode,
           isActive: CalculatedEnd same or after Today(),
-          Status: O.status.value,
-          Class: getMedicationRequestDrugClass(O),
+          Status:  CalculatedStatus,
+          AuthoredDate: AuthoredDate,
           AuthoredOn: O.authoredOn,
           IsLastTwoYears: ((year from Today() - year from CalculatedEnd) <= 2),
           medicationRequest: O
