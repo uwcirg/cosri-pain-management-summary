@@ -846,6 +846,7 @@ define ReportPDMPMedicationRequests:
     RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
     return {
       Type:  'Request',
+      ID: O.id,
       Name:  ConceptText(c),
       Start: DateTimeText(O.authoredOn),
       DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
@@ -1022,52 +1023,26 @@ define ReportPDMPMedicationRequests:
 
 // RISK CONSIDERATIONS
 
-  // let
-  //   AuthoredDate: DateTimeText(O.authoredOn),
-  //   DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
-  //   CalculatedEnd: GetMedicationRequestEndDate(O),
-  //   CalculatedStatus:
-  //     if CalculatedEnd same or after Today() then 'active' else null
-  // return {
-  //   Type:  'Request',
-  //   Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-  //   CalculatedEnd: CalculatedEnd,
-  //   Written: DateTimeText(O.authoredOn),
-  //   Start: if DispensedDate is not null then DispensedDate else AuthoredDate,
-  //   End: ToString(CalculatedEnd),
-  //   Status: CalculatedStatus
-  // }
-  //sort by End desc
-
-
-// define ReportMME:
-//   (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
-//   let
-//     MME_Object: MMECalculator.MME(O),
-//     AuthoredDate: DateTimeText(O.authoredOn),
-//     DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
-//     CalculatedEnd: GetMedicationRequestEndDate(O),
-//     CalculatedStatus:
-//       if CalculatedEnd same or after Today() then 'active' else null
-//   return {
-//     Type:  'Request',
-//     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-//     CalculatedEnd: CalculatedEnd,
-//     Written: DateTimeText(O.authoredOn),
-//     Start: if DispensedDate is not null then DispensedDate else AuthoredDate,
-//     End: ToString(CalculatedEnd),
-//     Status: CalculatedStatus,
-//     doseQuantity: MME_Object[0].doseQuantity,
-//     dosesPerDay: MME_Object[0].dosesPerDay,
-//     strength: MME_Object[0].strength,
-//     supplyQuantity: MME_Object[0].supplyQuantity,
-//     supplyDuration: MME_Object[0].supplyDuration,
-//     factor: MME_Object[0].conversionFactor,
-//     MMEValue: MME_Object[0].mme.value,
-//     rxNormCode: MME_Object[0].rxNormCode,
-//     medicationRequest: O
-//   }
-//   sort by End desc
+define AllOpioidMedicationRequests:
+  (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
+  let
+    AuthoredDate: DateTimeText(O.authoredOn),
+    DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+    CalculatedEnd: GetMedicationRequestEndDate(O),
+    CalculatedStatus:
+      if CalculatedEnd same or after Today() then 'active' else null
+  return {
+    Type:  'Request',
+    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
+    CalculatedEnd: CalculatedEnd,
+    Written: DateTimeText(O.authoredOn),
+    Start: if DispensedDate is not null then DispensedDate else AuthoredDate,
+    End: ToString(CalculatedEnd),
+    Status: CalculatedStatus,
+    IsLastTwoYears: ((year from Today() - year from CalculatedEnd) <= 2),
+    medicationRequest: O
+  }
+  sort by End desc
 
 //return a list of tuples containing MME value for each MedicationRequest that happends in the last two years
 // define ReportMMEByDates:
@@ -1507,6 +1482,7 @@ define Summary: {
   RiskConsiderations: {
     //ReportMME: ReportMME,
     //ReportMMEByDates: ReportMMEByDates,
+    AllOpioidMedicationRequests: AllOpioidMedicationRequests,
     ReportPDMPMedicationRequests: ReportPDMPMedicationRequests,
     ReportBuprenorphineMedicationRequests: ReportBuprenorphineMedicationRequests,
     // ReportDailyMMEByDateWithoutBuprenorphine: ReportDailyMMEByDateWithoutBuprenorphine,

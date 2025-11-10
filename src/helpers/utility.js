@@ -683,7 +683,7 @@ export function writeToLog(message, level, params) {
       return response.json();
     })
     .then(function (data) {
-     // console.log("audit request succeeded with response ", data);
+      // console.log("audit request succeeded with response ", data);
     })
     .catch(function (error) {
       console.log("Request failed", error);

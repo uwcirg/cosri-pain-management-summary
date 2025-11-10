@@ -5082,6 +5082,13 @@
                            "type" : "Literal"
                         }
                      }, {
+                        "name" : "ID",
+                        "value" : {
+                           "path" : "id",
+                           "scope" : "O",
+                           "type" : "Property"
+                        }
+                     }, {
                         "name" : "Name",
                         "value" : {
                            "name" : "ConceptText",
@@ -5315,6 +5322,223 @@
                      "path" : "DispensedDate",
                      "type" : "ByColumn"
                   }, {
+                     "direction" : "desc",
+                     "path" : "End",
+                     "type" : "ByColumn"
+                  } ]
+               }
+            }
+         }, {
+            "name" : "AllOpioidMedicationRequests",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "O",
+                  "expression" : {
+                     "type" : "Union",
+                     "operand" : [ {
+                        "name" : "PDMPMedicationRequests",
+                        "type" : "ExpressionRef"
+                     }, {
+                        "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                        "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+                        "codeProperty" : "medication",
+                        "codeComparator" : "in",
+                        "type" : "Retrieve",
+                        "codes" : {
+                           "name" : "Opioid Pain Medications",
+                           "preserve" : true,
+                           "type" : "ValueSetRef"
+                        }
+                     } ]
+                  }
+               } ],
+               "let" : [ {
+                  "identifier" : "AuthoredDate",
+                  "expression" : {
+                     "name" : "DateTimeText",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "path" : "authoredOn",
+                        "scope" : "O",
+                        "type" : "Property"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "DispensedDate",
+                  "expression" : {
+                     "name" : "DateText",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "GetMedicationRequestDispensedDate",
+                        "type" : "FunctionRef",
+                        "operand" : [ {
+                           "name" : "O",
+                           "type" : "AliasRef"
+                        } ]
+                     } ]
+                  }
+               }, {
+                  "identifier" : "CalculatedEnd",
+                  "expression" : {
+                     "name" : "GetMedicationRequestEndDate",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "name" : "O",
+                        "type" : "AliasRef"
+                     } ]
+                  }
+               }, {
+                  "identifier" : "CalculatedStatus",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "SameOrAfter",
+                        "operand" : [ {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }, {
+                           "type" : "Today"
+                        } ]
+                     },
+                     "then" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "active",
+                        "type" : "Literal"
+                     },
+                     "else" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}String",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "Tuple",
+                     "element" : [ {
+                        "name" : "Type",
+                        "value" : {
+                           "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                           "value" : "Request",
+                           "type" : "Literal"
+                        }
+                     }, {
+                        "name" : "Name",
+                        "value" : {
+                           "name" : "ConceptText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "strict" : false,
+                              "type" : "As",
+                              "operand" : {
+                                 "path" : "medication",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              },
+                              "asTypeSpecifier" : {
+                                 "name" : "{http://hl7.org/fhir}CodeableConcept",
+                                 "type" : "NamedTypeSpecifier"
+                              }
+                           } ]
+                        }
+                     }, {
+                        "name" : "CalculatedEnd",
+                        "value" : {
+                           "name" : "CalculatedEnd",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "Written",
+                        "value" : {
+                           "name" : "DateTimeText",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "authoredOn",
+                              "scope" : "O",
+                              "type" : "Property"
+                           } ]
+                        }
+                     }, {
+                        "name" : "Start",
+                        "value" : {
+                           "type" : "If",
+                           "condition" : {
+                              "type" : "Not",
+                              "operand" : {
+                                 "type" : "IsNull",
+                                 "operand" : {
+                                    "name" : "DispensedDate",
+                                    "type" : "QueryLetRef"
+                                 }
+                              }
+                           },
+                           "then" : {
+                              "name" : "DispensedDate",
+                              "type" : "QueryLetRef"
+                           },
+                           "else" : {
+                              "name" : "AuthoredDate",
+                              "type" : "QueryLetRef"
+                           }
+                        }
+                     }, {
+                        "name" : "End",
+                        "value" : {
+                           "type" : "ToString",
+                           "operand" : {
+                              "name" : "CalculatedEnd",
+                              "type" : "QueryLetRef"
+                           }
+                        }
+                     }, {
+                        "name" : "Status",
+                        "value" : {
+                           "name" : "CalculatedStatus",
+                           "type" : "QueryLetRef"
+                        }
+                     }, {
+                        "name" : "IsLastTwoYears",
+                        "value" : {
+                           "type" : "LessOrEqual",
+                           "operand" : [ {
+                              "type" : "Subtract",
+                              "operand" : [ {
+                                 "precision" : "Year",
+                                 "type" : "DateTimeComponentFrom",
+                                 "operand" : {
+                                    "type" : "Today"
+                                 }
+                              }, {
+                                 "precision" : "Year",
+                                 "type" : "DateTimeComponentFrom",
+                                 "operand" : {
+                                    "name" : "CalculatedEnd",
+                                    "type" : "QueryLetRef"
+                                 }
+                              } ]
+                           }, {
+                              "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                              "value" : "2",
+                              "type" : "Literal"
+                           } ]
+                        }
+                     }, {
+                        "name" : "medicationRequest",
+                        "value" : {
+                           "name" : "O",
+                           "type" : "AliasRef"
+                        }
+                     } ]
+                  }
+               },
+               "sort" : {
+                  "by" : [ {
                      "direction" : "desc",
                      "path" : "End",
                      "type" : "ByColumn"
@@ -7584,6 +7808,12 @@
                   "value" : {
                      "type" : "Tuple",
                      "element" : [ {
+                        "name" : "AllOpioidMedicationRequests",
+                        "value" : {
+                           "name" : "AllOpioidMedicationRequests",
+                           "type" : "ExpressionRef"
+                        }
+                     }, {
                         "name" : "ReportPDMPMedicationRequests",
                         "value" : {
                            "name" : "ReportPDMPMedicationRequests",

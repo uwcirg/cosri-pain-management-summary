@@ -271,9 +271,11 @@ export function getProcessedMMEData(summaryData) {
   if (!summaryData["RiskConsiderations"])
     summaryData["RiskConsiderations"] = {};
   const mmeData = summaryData["RiskConsiderations"][
-    "ReportPDMPMedicationRequests"
+    "AllOpioidMedicationRequests"
   ]
     ?.map((med) => {
+      const mmeResult = MMECalculator.mme([med.medicationRequest]);
+      const resultObject = !isEmptyArray(mmeResult) ? mmeResult[0]: {};
       const {
         mme,
         rxNormCode,
@@ -281,12 +283,9 @@ export function getProcessedMMEData(summaryData) {
         dosesPerDay,
         strength,
         conversionFactor,
-      } = MMECalculator.mme([med.medicationRequest])[0] ?? {};
-      const { Start, End } = med;
+      } = resultObject;
       return {
         ...med,
-        Start,
-        End,
         rxNormCode,
         rxCUI: rxNormCode?.code,
         doseQuantity,
@@ -302,6 +301,7 @@ export function getProcessedMMEData(summaryData) {
   summaryData["PDMPMedications"]["PDMPMedications"] = mmeData;
   summaryData["RiskConsiderations"]["ReportMMEByDates"] = Array.from(
     mmeData
+      .filter((med) => isNumber(med.MME) && med.End && med.IsLastTwoYears)
       .reduce((map, med) => {
         const key = `${med.Start}|${med.End}|${med.rxCUI}|${med.MME}`;
         if (!map.has(key)) {
@@ -311,8 +311,6 @@ export function getProcessedMMEData(summaryData) {
         return map;
       }, new Map())
       .values()
-  ).filter(
-    (med) => isNumber(med.MME) && med.End && isWithinPastYears(med.End, 2)
   );
   return summaryData;
 }
@@ -559,6 +557,8 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   const startDays = new Set(); // Set<"YYYY-MM-DD">
   let minMs = Infinity;
   let maxEndMs = -Infinity; // last course's end (inclusive day)
+
+  //console.log("graphDataSource ", graphDataSource)
 
   for (const item of graphDataSource) {
     const sMs = toMsUTC(item?.[startDateFieldName]);
