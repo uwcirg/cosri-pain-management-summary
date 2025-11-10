@@ -136,7 +136,7 @@ valueset "Conditions associated with chronic pain": 'https://cts.nlm.nih.gov/fhi
 valueset "Opioid Pain Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.34'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.54/expansion)
-valueset "Adjuvant Analgesic Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.54'
+//valueset "Adjuvant Analgesic Medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.54'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113883.3.464.1003.105.12.1007/expansion)
 valueset "Major Depression": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.105.12.1007'
@@ -186,10 +186,10 @@ valueset "Pregnancy (New ICD10 codes published in 2018 and 2019)": 'https://cts.
 valueset "Non opiod pain medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.26'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.36/expansion)
-valueset "Non pharmacologic treatments for chronic pain": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.36'
+//valueset "Non pharmacologic treatments for chronic pain": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.36'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.55/expansion)
-valueset "Risk assessments relevant to pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.55'
+//valueset "Risk assessments relevant to pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.55'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.43/expansion)
 valueset "Benzodiazepine medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.43'
@@ -203,10 +203,10 @@ valueset "Aspirin / Carisoprodol": '2.16.840.1.113883.3.464.1003.196.11.1314'
 valueset "Naloxone medications": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.42'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.28/expansion)
-valueset "Urine drug screen for pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.28'
+//valueset "Urine drug screen for pain management": 'https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1032.28'
 
 // [See value set in VSAC](https://vsac.nlm.nih.gov/valueset/2.16.840.1.113762.1.4.1032.44/expansion)
-valueset "Stool softeners and laxatives": '2.16.840.1.113762.1.4.1032.44'
+//valueset "Stool softeners and laxatives": '2.16.840.1.113762.1.4.1032.44'
 
 // [custom set for buprenorphine]
 valueset "Buprenorphine medications": '2.16.840.1.buprenorphine.custom'
@@ -626,14 +626,14 @@ define PregnancyConditions:
     42 weeks
   ))
 
-define PregnancyObservations:
-  C3F.Verified(C3F.ObservationLookBack([Observation: "Pregnancy status"], 42 weeks))
+// define PregnancyObservations:
+//   C3F.Verified(C3F.ObservationLookBack([Observation: "Pregnancy status"], 42 weeks))
 
-define MostRecentPregnancyObservation:
-   C3F.MostRecent(PregnancyObservations)
+// define MostRecentPregnancyObservation:
+//    C3F.MostRecent(PregnancyObservations)
 
-define MostRecentPregnancyObservationIsPositive:
-   C3F.ConceptValue(MostRecentPregnancyObservation) ~ "Pregnant"
+// define MostRecentPregnancyObservationIsPositive:
+//    C3F.ConceptValue(MostRecentPregnancyObservation) ~ "Pregnant"
 
 define Is65orOlder:
   AgeInYears() >= 65
@@ -722,22 +722,22 @@ define ReportEncounterRiskFactorsForOpioidRelatedHarms:
 
 //Shape the pregnancy Observation as a Condition, since this is the backup approach for detecting a pregnancy in case
 //there are no active Conditions found.
-define ReportMostRecentPositivePregnancyObservation:
-  if MostRecentPregnancyObservationIsPositive then
-    {
-      Name: ConceptText(MostRecentPregnancyObservation.code),
-      Status: ConceptText(MostRecentPregnancyObservation.value as FHIR.CodeableConcept),
-      Onset: ToString(Coalesce(
-        (MostRecentPregnancyObservation.effective as FHIR.dateTime).value,
-        (MostRecentPregnancyObservation.effective as FHIR.instant).value,
-        (MostRecentPregnancyObservation.effective as FHIR.Period)."start".value
-      )),
-      DateRecorded: ToString(MostRecentPregnancyObservation.issued.value),
-      Abatement: null as String,
-      Visit: null as Tuple{ Start String, End String }
-    }
-  else
-    null
+// define ReportMostRecentPositivePregnancyObservation:
+//   if MostRecentPregnancyObservationIsPositive then
+//     {
+//       Name: ConceptText(MostRecentPregnancyObservation.code),
+//       Status: ConceptText(MostRecentPregnancyObservation.value as FHIR.CodeableConcept),
+//       Onset: ToString(Coalesce(
+//         (MostRecentPregnancyObservation.effective as FHIR.dateTime).value,
+//         (MostRecentPregnancyObservation.effective as FHIR.instant).value,
+//         (MostRecentPregnancyObservation.effective as FHIR.Period)."start".value
+//       )),
+//       DateRecorded: ToString(MostRecentPregnancyObservation.issued.value),
+//       Abatement: null as String,
+//       Visit: null as Tuple{ Start String, End String }
+//     }
+//   else
+//     null
 
 // Shape the case of being 65 or older as a Condition for the purposes of building the summary.
 define ReportOlderThan65:
@@ -771,11 +771,10 @@ define ReportRiskFactorsForOpioidRelatedHarms:
 
 // Opioid medication orders and statements with dates
 define OpioidMedicationRequests:
-  // C3F.MedicationRequestLookBack(
-  //   [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
-  //   100 years
-  // )
-  [MedicationRequest: "Opioid Pain Medications"]
+  C3F.MedicationRequestLookBack(
+    [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
+    100 years
+  )
 
 // define OpioidMedicationStatements:
 //   C3F.MedicationStatementLookBack(
@@ -1022,40 +1021,6 @@ define ReportPDMPMedicationRequests:
 
 
 // RISK CONSIDERATIONS
-
-define ReportAllMedicationRequests:
-  (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
-  let
-    CalculatedEnd: GetMedicationRequestEndDate(O),
-    dispenseRequest:  O.dispenseRequest,
-    c: (O.medication as FHIR.CodeableConcept),
-    RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
-    return {
-      Type:  'Request',
-      Name:  ConceptText(c),
-      Start: DateTimeText(O.authoredOn),
-      DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
-      CalculatedEnd: CalculatedEnd, //of date type
-      End: ToString(CalculatedEnd), //of string type
-      Quantity: GetMedicationRequestDispensedQuantity(O),
-      Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
-      // doseQuantity: MME_Object[0].doseQuantity,
-      // dosesPerDay: MME_Object[0].dosesPerDay,
-      // strength: MME_Object[0].strength,
-      // factor: MME_Object[0].conversionFactor,
-      // MME: MME_Object[0].mme.value,
-      Prescriber: O.requester.display.value,
-      Pharmacy: GetMedicationRequestPharmacy(O),
-      NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
-      RXNorm_Code: RxnormCode,
-      //isBup: RxnormCode in BuprenorphineRxCUIs,
-      isActive: CalculatedEnd same or after Today(),
-      Status: O.status.value,
-      Class: getMedicationRequestDrugClass(O),
-      AuthoredOn: O.authoredOn,
-      medicationRequest: O
-    }
-    sort by DispensedDate desc, End desc
 
   // let
   //   AuthoredDate: DateTimeText(O.authoredOn),

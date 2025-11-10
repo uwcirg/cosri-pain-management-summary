@@ -208,27 +208,10 @@ export default class Landing extends Component {
       };
 
       const { sectionFlags, flaggedCount } = landingUtils.getProcessedSummaryData(result.Summary, currentSummaryMap);
-
-      //   if (result["Summary"] && result["Summary"]["RiskConsiderations"]) {
-      //   result["Summary"]["RiskConsiderations"][
-      //     "ReportDailyMMEByDateWithBuprenorphineOnly"
-      //   ] = landingUtils.ReportDailyMMEByDateWithBuprenorphineOnly(
-      //     result["Summary"]
-      //   );
-      //   result["Summary"]["RiskConsiderations"][
-      //     "ReportDailyMMEByDateWithoutBuprenorphine"
-      //   ] = landingUtils.ReportDailyMMEByDateWithoutBuprenorphine(
-      //     result["Summary"]
-      //   );
-      //   result["Summary"]["MedicationRequestsForNaloxoneConsideration"] = landingUtils.MedicationRequestsForNaloxoneConsideration(result["Summary"])
-      // }
-
       this.setSummaryOverviewStatsData(result.Summary);
       this.setSummaryAlerts(result.Summary, sectionFlags);
       result.Summary = landingUtils.getProcessedMMEData(result.Summary);
       result.Summary = landingUtils.getProcessedBupData(result.Summary);
-
-      //console.log("mme data ", landingUtils.getProcessedMMEData(result.Summary))
       //landingUtils.debugMME();
       console.log("result summary ", result.Summary)
       this.setSummaryGraphData(result.Summary);
@@ -243,27 +226,6 @@ export default class Landing extends Component {
         tags: ["mme-calc"],
         ...this.getPatientLogParams(),
       });
-
-      
-
-      // console.log("summary data ", result);
-      // console.log(
-      //   "nax med list ",
-      //   landingUtils.MedicationRequestsForNaloxoneConsideration(
-      //     result["Summary"]
-      //   )
-      // );
-      // console.log("rxcuids ", landingUtils.getBupRXCUIs(result["Summary"]));
-      // console.log(
-      //   "wo bup mmed list ",
-      //   landingUtils.ReportDailyMMEByDateWithoutBuprenorphine(result["Summary"])
-      // );
-      // console.log(
-      //   "w bup mmed list ",
-      //   landingUtils.ReportDailyMMEByDateWithBuprenorphineOnly(
-      //     result["Summary"]
-      //   )
-      // );
 
       this.setState(
         {
