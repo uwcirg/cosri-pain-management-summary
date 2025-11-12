@@ -720,8 +720,8 @@ define ReportEncounterRiskFactorsForOpioidRelatedHarms:
   return GetEncounterDiagnosesRiskFactorsForOpioidRelatedHarms(E))) D
   sort by Visit.Start desc, Visit.End desc
 
-//Shape the pregnancy Observation as a Condition, since this is the backup approach for detecting a pregnancy in case
-//there are no active Conditions found.
+// Shape the pregnancy Observation as a Condition, since this is the backup approach for detecting a pregnancy in case
+// there are no active Conditions found.
 // define ReportMostRecentPositivePregnancyObservation:
 //   if MostRecentPregnancyObservationIsPositive then
 //     {
