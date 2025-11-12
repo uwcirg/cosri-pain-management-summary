@@ -630,7 +630,7 @@ define PregnancyConditions:
 //   C3F.Verified(C3F.ObservationLookBack([Observation: "Pregnancy status"], 42 weeks))
 
 // define MostRecentPregnancyObservation:
-//    C3F.MostRecent(PregnancyObservations)
+//   C3F.MostRecent(PregnancyObservations)
 
 // define MostRecentPregnancyObservationIsPositive:
 //    C3F.ConceptValue(MostRecentPregnancyObservation) ~ "Pregnant"
