@@ -633,7 +633,7 @@ define PregnancyConditions:
 //   C3F.MostRecent(PregnancyObservations)
 
 // define MostRecentPregnancyObservationIsPositive:
-//    C3F.ConceptValue(MostRecentPregnancyObservation) ~ "Pregnant"
+//   C3F.ConceptValue(MostRecentPregnancyObservation) ~ "Pregnant"
 
 define Is65orOlder:
   AgeInYears() >= 65
