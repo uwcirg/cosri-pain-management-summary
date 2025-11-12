@@ -1,4 +1,5 @@
 // Original source: ./src/cql/OMTKData.cql
+// More information: https://www.fhir.org/guides/cdc/opioid-mme-r4/Library-OMTKData.html
 const OMTKData = {
   DrugIngredients: [
     {

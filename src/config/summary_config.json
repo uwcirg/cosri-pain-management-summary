@@ -1260,13 +1260,13 @@
                 "formatter": "datishFormat"
               },
               "Prescriber": {
-                "key": "Name",
+                "key": "Prescriber",
                 "formatter": "stringSubstitutionFormat",
                 "formatterArguments": [""],
                 "sortable": false
               },
               "Pharmacy": {
-                "key": "Name",
+                "key": "Pharmacy",
                 "formatter": "stringSubstitutionFormat",
                 "formatterArguments": [""],
                 "sortable": false

@@ -212,7 +212,6 @@ export default class Landing extends Component {
       this.setSummaryAlerts(result.Summary, sectionFlags);
       result.Summary = landingUtils.getProcessedMMEData(result.Summary);
       result.Summary = landingUtils.getProcessedBupData(result.Summary);
-      //landingUtils.debugMME();
       this.setSummaryGraphData(result.Summary);
 
       const { errors, hasMmeErrors, mmeErrors } = landingUtils.getSummaryErrors(

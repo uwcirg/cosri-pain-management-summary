@@ -11,7 +11,6 @@ import {
   writeToLog,
 } from "../../helpers/utility";
 import MMECalculator from "../../utils/MMECalculator";
-import OMTKLogic from "../../utils/MMECalculator/OMTKLogic";
 import { getEnv, ENV_VAR_PREFIX } from "../../utils/envConfig";
 let uuid = 0;
 
@@ -291,7 +290,7 @@ export function getProcessedMMEData(summaryData) {
       dosesPerDay,
       strength,
       conversionFactor,
-      MME: isNumber(mme) ? mme.toFixed(2): null,
+      MME: isNumber(mme) ? Number(mme.toFixed(2)): null,
     };
   });
   summaryData["RiskConsiderations"]["ReportMME"] = mmeData;
@@ -647,12 +646,10 @@ export function GetBuprenorphineMMEListByDates(summaryData) {
   return mmeList
     .filter((o) => bupRxCuis.find((item) => item === o.rxCUI))
     .map((o) => {
+      const { Start, End, rxNormCode, rxCUI, MME}  = o;
       return {
-        Start: o.Start,
-        End: o.End,
-        rxNormCode: o.rxNormCode,
+        ...o,
         rxCUI: o.rxNormCode.code,
-        MMEValue: o.MMEValue,
       };
     });
 }
@@ -673,11 +670,8 @@ export function GetNonBuprenorphineMMEListByDates(summaryData) {
     .filter((o) => bupRxCuis.find((item) => item !== o.rxCUI))
     .map((o) => {
       return {
-        Start: o.Start,
-        End: o.End,
-        rxNormCode: o.rxNormCode,
+        ...o,
         rxCUI: o.rxNormCode.code,
-        MMEValue: o.MMEValue,
       };
     });
 }
@@ -689,9 +683,7 @@ export function ReportDailyMMEByDateWithoutBuprenorphine(summaryData) {
   const bupRxcuis = getBupRXCUIs(summaryData);
   return mmeList.map((R) => {
     return {
-      Start: R.Start,
-      End: R.End,
-      rxNormCode: R.rxNormCode,
+      ...R,
       rxCUI: R.rxNormCode.code,
       //miniscule value for displaying on graph above x-axis
       MMEValue: bupRxcuis.find((rxcui) => rxcui === R.rxCUI)
@@ -708,15 +700,13 @@ export function ReportDailyMMEByDateWithBuprenorphineOnly(summaryData) {
   const bupRxcuis = getBupRXCUIs(summaryData);
   return mmeList.map((R) => {
     return {
-      Start: R.Start,
-      End: R.End,
-      rxNormCode: R.rxNormCode,
+      ...R,
       rxCUI: R.rxNormCode.code,
       //miniscule value for displaying on graph above x-axis
       MMEValue: !bupRxcuis.find((rxcui) => rxcui === R.rxCUI)
         ? 0.000000001
         : R.MMEValue,
-      category: "buprenorphine_onl",
+      category: "buprenorphine_only",
     };
   });
 }

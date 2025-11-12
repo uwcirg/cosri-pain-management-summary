@@ -7329,6 +7329,31 @@
                            }
                         }
                      }, {
+                        "name" : "Prescriber",
+                        "value" : {
+                           "path" : "value",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "display",
+                              "type" : "Property",
+                              "source" : {
+                                 "path" : "requester",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
+                           }
+                        }
+                     }, {
+                        "name" : "Pharmacy",
+                        "value" : {
+                           "name" : "GetMedicationRequestPharmacy",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "name" : "O",
+                              "type" : "AliasRef"
+                           } ]
+                        }
+                     }, {
                         "name" : "AuthoredOn",
                         "value" : {
                            "path" : "value",

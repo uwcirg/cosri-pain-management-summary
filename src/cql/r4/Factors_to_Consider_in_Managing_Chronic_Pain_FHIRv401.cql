@@ -1407,6 +1407,8 @@ define ReportNaloxoneMedicationRequests:
     Start: DateTimeText(O.authoredOn),
     End:   null as String, // MedicationRequest end date not supported in R4,
     Status: O.status.value,
+    Prescriber: O.requester.display.value,
+    Pharmacy: GetMedicationRequestPharmacy(O),
     AuthoredOn: O.authoredOn.value
   }
   sort by Start desc, End desc
