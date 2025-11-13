@@ -141,7 +141,7 @@ const OMTKLogic = {
       case 2670:
         return 0.15; // Codeine
       case 3423:
-        return 6; // Hydromorphone (updated from 4 to 6)
+        return 5; // Hydromorphone
       case 3498:
         return 0; // Diphenhydramine
 

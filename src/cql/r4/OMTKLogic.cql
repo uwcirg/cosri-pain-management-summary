@@ -37,7 +37,7 @@ Epub 2011 Apr 21. PubMed PMID: 21515544; PubMed Central PMCID: PMC3128404.
 * 09/21/21 BugFix fix integer/decimal daily dose comparison when detetermine conversion factor for Methodone
 * 12/01/21 Add conversion factor for Sufentanil, Alfentanil, and Remifentanil
 * 12/21/21 Add conversion factor for Diphenoxylate
-* 10/09/24 Change conversion factor for Hydromorphone (from 4 to 6), for Tramadol (from 0.1 to 0.2), for buprenorphine patch (from 1.8 X 7 = 12.6 to 2.2 X 7 = 15.4, as patch remains in place for 7 days)
+* 10/09/24 Change conversion factor for Hydromorphone (from 4 to 5), for Tramadol (from 0.1 to 0.2), for buprenorphine patch (from 1.8 X 7 = 12.6 to 2.2 X 7 = 15.4, as patch remains in place for 7 days)
 */
 
 include OMTKData version '3.0.0' called OMTKData

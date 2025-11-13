@@ -359,7 +359,7 @@ describe("MME Calculator", () => {
         dailyDose,
         doseFormCode
       );
-      expect(factor).toBe(6); // Updated from 4 to 6
+      expect(factor).toBe(5); // Updated from 4 to 5
     });
 
     it("should return correct conversion factor for Tramadol", () => {
