@@ -907,10 +907,10 @@ export default class Summary extends Component {
           <DevTools
             collector={collector}
             summary={CQLSummary}
+            graphData={PatientRiskOverview_graph}
             //results not coming from CQL
             other={{
               EducationMaterials,
-              PatientRiskOverview_graph,
               PatientRiskOverview_alerts,
               PatientRiskOverview_stats,
             }}
