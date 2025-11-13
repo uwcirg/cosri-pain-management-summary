@@ -300,7 +300,7 @@ export function getProcessedMMEData(summaryData) {
       ? summaryData["PDMPMedications"]["PDMPMedications"]
       : [];
   summaryData["PDMPMedications"]["PDMPMedications"] = PDMPMeds.map((med) => {
-    med.MME = mmeData.find((m) => m.ID === med.ID)?.MME;
+    med.MME = MMECalculator.mme([med.medicationRequest]);
     return med;
   });
   summaryData["RiskConsiderations"]["ReportMMEByDates"] = Array.from(
