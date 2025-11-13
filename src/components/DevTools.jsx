@@ -11,6 +11,7 @@ export default class DevTools extends Component {
       displayFhirQueries: false,
       displayCQLResults: false,
       displayPDMPResults: false,
+      displayGraphResults: false,
       displayOtherResults: false,
     };
   }
@@ -33,6 +34,11 @@ export default class DevTools extends Component {
   togglePDMPResults = (event) => {
     event.preventDefault();
     this.setState({ displayPDMPResults: !this.state.displayPDMPResults });
+  };
+
+  toggleGraphResults = (event) => {
+    event.preventDefault();
+    this.setState({ displayGraphResults: !this.state.displayGraphResults });
   };
 
   toggleOtherResults = (event) => {
@@ -141,6 +147,48 @@ export default class DevTools extends Component {
       </div>
     );
   }
+  renderGraphResults() {
+    let graphDataSet = this.props.graphData ? this.props.graphData : null;
+    console.log("graph data ", graphDataSet);
+    if (!graphDataSet) return null;
+    const keys = Object.keys(graphDataSet);
+    if (!keys.length) return null;
+    return (
+      <div className="graph-results">
+        <h4>
+          Graph Data{" "}
+          <button onClick={this.toggleGraphResults}>[show/hide]</button>
+        </h4>
+        <div
+          style={{ display: this.state.displayGraphResults ? "block" : "none" }}
+        >
+          {keys.map((key, index) => {
+            return (
+              <div key={`${key}_table_${index}`}>
+                <h5 className="title">{graphDataSet[key].title}</h5>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>MME Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {graphDataSet[key].data.map((o, index) => (
+                      <tr key={`${key}_row_${index}`}>
+                        <td>{o["date"]}</td>
+                        <td>{o["MMEValue"]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   renderOtherResults() {
     return (
@@ -168,7 +216,9 @@ export default class DevTools extends Component {
       <div className="dev-tools">
         <h3 className="title js-toc-ignore">
           Development Tools{" "}
-          <button className="button-link" onClick={this.toggleDevTools}>[show/hide]</button>
+          <button className="button-link" onClick={this.toggleDevTools}>
+            [show/hide]
+          </button>
         </h3>
 
         <div className="dev-tools__disclaimer">
@@ -181,6 +231,7 @@ export default class DevTools extends Component {
           {this.renderFHIRQueries()}
           {this.renderCQLResults()}
           {this.renderPDMPResults()}
+          {this.renderGraphResults()}
           {this.renderOtherResults()}
         </div>
       </div>
@@ -191,5 +242,6 @@ export default class DevTools extends Component {
 DevTools.propTypes = {
   collector: PropTypes.array.isRequired,
   summary: PropTypes.object.isRequired,
+  graphData: PropTypes.object,
   other: PropTypes.object,
 };
