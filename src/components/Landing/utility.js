@@ -300,7 +300,9 @@ export function getProcessedMMEData(summaryData) {
       ? summaryData["PDMPMedications"]["PDMPMedications"]
       : [];
   summaryData["PDMPMedications"]["PDMPMedications"] = PDMPMeds.map((med) => {
-    med.MME = MMECalculator.mme([med.medicationRequest]);
+    const mmeResultObject = MMECalculator.mme([med.medicationRequest]);
+    const {mme} = !isEmptyArray(mmeResultObject) ? mmeResultObject[0] : {};
+    med.MME = mme;
     return med;
   });
   summaryData["RiskConsiderations"]["ReportMMEByDates"] = Array.from(
