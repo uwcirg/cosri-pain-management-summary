@@ -149,7 +149,7 @@ export default class DevTools extends Component {
   }
   renderGraphResults() {
     let graphDataSet = this.props.graphData ? this.props.graphData : null;
-    console.log("graph data ", graphDataSet);
+    // console.log("graph data ", graphDataSet);
     if (!graphDataSet) return null;
     const keys = Object.keys(graphDataSet);
     if (!keys.length) return null;
@@ -165,7 +165,9 @@ export default class DevTools extends Component {
           {keys.map((key, index) => {
             return (
               <div key={`${key}_table_${index}`}>
-                <h5 className="title">{graphDataSet[key].title}</h5>
+                {graphDataSet[key].title && (
+                  <h5 className="title">{graphDataSet[key].title}</h5>
+                )}
                 <table>
                   <thead>
                     <tr>

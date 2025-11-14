@@ -770,11 +770,11 @@ define ReportRiskFactorsForOpioidRelatedHarms:
 // HISTORICAL TREATMENTS
 
 // Opioid medication orders and statements with dates
-define OpioidMedicationRequests:
-  C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
-    100 years
-  )
+// define OpioidMedicationRequests:
+//   C3F.MedicationRequestLookBack(
+//     [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
+//     100 years
+//   )
 
 // define OpioidMedicationStatements:
 //   C3F.MedicationStatementLookBack(
@@ -782,8 +782,13 @@ define OpioidMedicationRequests:
 //     100 years
 //   )
 
-define ReportOpioidMedicationRequests:
-  ( OpioidMedicationRequests M
+define ReportOpioidMedications:
+  ( (
+    C3F.MedicationRequestLookBack(
+      [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
+      100 years
+    )
+  ) M
     where not(M.identifier is not null and M.identifier[0].system ~ PDMP_SYSTEM_VALUE)
   ) O
   let CalculatedEnd: GetMedicationRequestEndDate(O)
@@ -814,21 +819,21 @@ define ReportOpioidMedicationRequests:
 //   }
 //   sort by Start desc, End desc
 
-define ReportOpioidMedications:
-  // (ReportOpioidMedicationRequests union ReportOpioidMedicationStatements) M
-  (ReportOpioidMedicationRequests) M
-    sort by Start desc, End desc
+// define ReportOpioidMedications:
+//   // (ReportOpioidMedicationRequests union ReportOpioidMedicationStatements) M
+//   (ReportOpioidMedicationRequests) M
+//     sort by Start desc, End desc
 
 //a list of MedicationRequest FHIR resources for Buprenorphine
 define ReportBuprenorphineMedicationRequests:
   [MedicationRequest: "Buprenorphine medications"]
 
 //Buprenorphine RXCUIs in list
-define BuprenorphineRxCUIs:
-  (ReportBuprenorphineMedicationRequests) o
-  let
-    c: (o.medication as FHIR.CodeableConcept)
-    return Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
+// define BuprenorphineRxCUIs:
+//   (ReportBuprenorphineMedicationRequests) o
+//   let
+//     c: (o.medication as FHIR.CodeableConcept)
+//     return Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
 
 // medication requests from PDMP
 // using relevant system identifier for filtering
@@ -851,7 +856,6 @@ define ReportPDMPMedicationRequests:
       Name:  ConceptText(c),
       Start: DateTimeText(O.authoredOn),
       DispensedDate: DateText(dispensedDateObj),
-      oDispensedDate: dispensedDateObj,
       CalculatedEnd: CalculatedEnd, //of date type
       End: ToString(CalculatedEnd), //of string type
       Quantity: GetMedicationRequestDispensedQuantity(O),
@@ -1229,11 +1233,11 @@ define ReportAllUrineScreens:
 
 
 // Benzodiazepine Medications -  orders and statements with dates
-define BenzodiazepineMedicationRequests:
-  C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Benzodiazepine medications"], //remove consideration for status field
-    100 years
-  )
+// define BenzodiazepineMedicationRequests:
+//   C3F.MedicationRequestLookBack(
+//     [MedicationRequest: "Benzodiazepine medications"], //remove consideration for status field
+//     100 years
+//   )
 
 // define BenzodiazepineMedicationStatements:
 //   C3F.MedicationStatementLookBack(
@@ -1243,7 +1247,12 @@ define BenzodiazepineMedicationRequests:
 
 //Benzodiazepine MedicationRequests identified via valueset
 define ReportBenzodiazepineMedicationRequests:
-  (BenzodiazepineMedicationRequests) O
+   (
+    C3F.MedicationRequestLookBack(
+      [MedicationRequest: "Benzodiazepine medications"], //remove consideration for status field
+      100 years
+    )
+  ) O
   let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
@@ -1302,20 +1311,24 @@ define ReportBenzodiazepineMedications:
 
 
 // Carisoprodol Medications -  orders and statements with dates
-define CarisoprodolMedicationRequests:
-  //remove consideration for status field
-  C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Carisoprodol"] union [MedicationRequest: "Aspirin / Carisoprodol"]
-  , 100 years)
+// define CarisoprodolMedicationRequests:
+//  // remove consideration for status field
+  // C3F.MedicationRequestLookBack(
+  //   [MedicationRequest: "Carisoprodol"] union [MedicationRequest: "Aspirin / Carisoprodol"]
+  // , 100 years)
 
 // define CarisoprodolMedicationStatements:
-//   //remove consideration for status field
+//   // remove consideration for status field
 //   C3F.MedicationStatementLookBack(
 //     [MedicationStatement: "Carisoprodol"]
 //   , 100 years)
 
-define ReportCarisoprodolMedicationRequests:
-  (CarisoprodolMedicationRequests) O
+define ReportCarisoprodolMedications:
+  (
+    C3F.MedicationRequestLookBack(
+    [MedicationRequest: "Carisoprodol"] union [MedicationRequest: "Aspirin / Carisoprodol"]
+  , 100 years)
+   ) O
   let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
@@ -1343,11 +1356,11 @@ define ReportCarisoprodolMedicationRequests:
 //   }
 //   sort by Start desc, End desc
 
-define ReportCarisoprodolMedications:
-  // (ReportCarisoprodolMedicationRequests union ReportCarisoprodolMedicationStatements) M
-  // sort by Start desc, End desc
-  (ReportCarisoprodolMedicationRequests) M
-  sort by Start desc, End desc
+// define ReportCarisoprodolMedications:
+//   // (ReportCarisoprodolMedicationRequests union ReportCarisoprodolMedicationStatements) M
+//   // sort by Start desc, End desc
+//   (ReportCarisoprodolMedicationRequests) M
+//   sort by Start desc, End desc
 
 //seditive medication requests identified via drug class
 define ReportSedativeMedicationRequests:
@@ -1390,16 +1403,16 @@ define ReportBarbiturateMedicationRequests:
   sort by Start desc, End desc
 
 // Naloxone Medications (unrestricted lookback) - orders and statements with dates
-define NaloxoneMedicationRequests:
-  //remove consideration for status
-  [MedicationRequest: "Naloxone medications"]
+// define NaloxoneMedicationRequests:
+  // remove consideration for status
+  // [MedicationRequest: "Naloxone medications"]
 
 // define NaloxoneMedicationStatements:
-//   //remove consideration for status
+//   remove consideration for status
 //   [MedicationStatement: "Naloxone medications"]
 
-define ReportNaloxoneMedicationRequests:
-  (NaloxoneMedicationRequests) O
+define ReportNaloxoneMedications:
+  [MedicationRequest: "Naloxone medications"] O
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
@@ -1424,11 +1437,11 @@ define ReportNaloxoneMedicationRequests:
 //   }
 //   sort by Start desc, End desc
 
-define ReportNaloxoneMedications:
-  // (ReportNaloxoneMedicationRequests union ReportNaloxoneMedicationStatements) M
-  // sort by Start desc, End desc
-  (ReportNaloxoneMedicationRequests) M
-  sort by Start desc, End desc
+// define ReportNaloxoneMedications:
+//   // (ReportNaloxoneMedicationRequests union ReportNaloxoneMedicationStatements) M
+//   // sort by Start desc, End desc
+//   (ReportNaloxoneMedicationRequests) M
+//   sort by Start desc, End desc
 
 //Controlled substance agreement
 define ReportCSAgreement:
@@ -1487,21 +1500,21 @@ define Summary: {
 //     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
 //   },
   RiskConsiderations: {
-    //ReportMME: ReportMME,
-    //ReportMMEByDates: ReportMMEByDates,
+    // ReportMME: ReportMME,
+    // ReportMMEByDates: ReportMMEByDates,
     AllOpioidMedicationRequests: AllOpioidMedicationRequests,
     ReportPDMPMedicationRequests: ReportPDMPMedicationRequests,
     ReportBuprenorphineMedicationRequests: ReportBuprenorphineMedicationRequests,
     // ReportDailyMMEByDateWithoutBuprenorphine: ReportDailyMMEByDateWithoutBuprenorphine,
     // ReportDailyMMEByDateWithBuprenorphineOnly: ReportDailyMMEByDateWithBuprenorphineOnly,
-    //for debugging, uncomment to test
-    //ReportPrescriptions: ReportPrescriptions,
+    // for debugging, uncomment to test
+    // ReportPrescriptions: ReportPrescriptions,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     SedativeMedications: ReportSedativeMedicationRequests,
     BarbiturateMedications: ReportBarbiturateMedicationRequests,
     CarisoprodolMedications: ReportCarisoprodolMedications,
     NaloxoneMedications: ReportNaloxoneMedications
-    //MedicationRequestsForNaloxoneConsideration: MedicationRequestsForNaloxoneConsideration
+    // MedicationRequestsForNaloxoneConsideration: MedicationRequestsForNaloxoneConsideration
   },
   PDMPMedications: {
     PDMPMedications: ReportPDMPMedicationRequests

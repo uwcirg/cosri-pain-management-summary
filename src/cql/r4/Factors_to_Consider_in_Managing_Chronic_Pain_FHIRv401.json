@@ -4565,32 +4565,7 @@
                }
             }
          }, {
-            "name" : "OpioidMedicationRequests",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "name" : "MedicationRequestLookBack",
-               "libraryName" : "C3F",
-               "type" : "FunctionRef",
-               "operand" : [ {
-                  "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-                  "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
-                  "codeProperty" : "medication",
-                  "codeComparator" : "in",
-                  "type" : "Retrieve",
-                  "codes" : {
-                     "name" : "Opioid Pain Medications",
-                     "preserve" : true,
-                     "type" : "ValueSetRef"
-                  }
-               }, {
-                  "value" : 100,
-                  "unit" : "years",
-                  "type" : "Quantity"
-               } ]
-            }
-         }, {
-            "name" : "ReportOpioidMedicationRequests",
+            "name" : "ReportOpioidMedications",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -4602,8 +4577,25 @@
                      "source" : [ {
                         "alias" : "M",
                         "expression" : {
-                           "name" : "OpioidMedicationRequests",
-                           "type" : "ExpressionRef"
+                           "name" : "MedicationRequestLookBack",
+                           "libraryName" : "C3F",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                              "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+                              "codeProperty" : "medication",
+                              "codeComparator" : "in",
+                              "type" : "Retrieve",
+                              "codes" : {
+                                 "name" : "Opioid Pain Medications",
+                                 "preserve" : true,
+                                 "type" : "ValueSetRef"
+                              }
+                           }, {
+                              "value" : 100,
+                              "unit" : "years",
+                              "type" : "Quantity"
+                           } ]
                         }
                      } ],
                      "relationship" : [ ],
@@ -4802,32 +4794,6 @@
                }
             }
          }, {
-            "name" : "ReportOpioidMedications",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "M",
-                  "expression" : {
-                     "name" : "ReportOpioidMedicationRequests",
-                     "type" : "ExpressionRef"
-                  }
-               } ],
-               "relationship" : [ ],
-               "sort" : {
-                  "by" : [ {
-                     "direction" : "desc",
-                     "path" : "Start",
-                     "type" : "ByColumn"
-                  }, {
-                     "direction" : "desc",
-                     "path" : "End",
-                     "type" : "ByColumn"
-                  } ]
-               }
-            }
-         }, {
             "name" : "ReportBuprenorphineMedicationRequests",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -4841,84 +4807,6 @@
                   "name" : "Buprenorphine medications",
                   "preserve" : true,
                   "type" : "ValueSetRef"
-               }
-            }
-         }, {
-            "name" : "BuprenorphineRxCUIs",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "o",
-                  "expression" : {
-                     "name" : "ReportBuprenorphineMedicationRequests",
-                     "type" : "ExpressionRef"
-                  }
-               } ],
-               "let" : [ {
-                  "identifier" : "c",
-                  "expression" : {
-                     "strict" : false,
-                     "type" : "As",
-                     "operand" : {
-                        "path" : "medication",
-                        "scope" : "o",
-                        "type" : "Property"
-                     },
-                     "asTypeSpecifier" : {
-                        "name" : "{http://hl7.org/fhir}CodeableConcept",
-                        "type" : "NamedTypeSpecifier"
-                     }
-                  }
-               } ],
-               "relationship" : [ ],
-               "return" : {
-                  "expression" : {
-                     "type" : "Coalesce",
-                     "operand" : [ {
-                        "type" : "Query",
-                        "source" : [ {
-                           "alias" : "c2",
-                           "expression" : {
-                              "path" : "coding",
-                              "type" : "Property",
-                              "source" : {
-                                 "name" : "c",
-                                 "type" : "QueryLetRef"
-                              }
-                           }
-                        } ],
-                        "relationship" : [ ],
-                        "where" : {
-                           "type" : "Equivalent",
-                           "operand" : [ {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "system",
-                                 "scope" : "c2",
-                                 "type" : "Property"
-                              }
-                           }, {
-                              "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                              "value" : "http://www.nlm.nih.gov/research/umls/rxnorm",
-                              "type" : "Literal"
-                           } ]
-                        },
-                        "return" : {
-                           "expression" : {
-                              "path" : "value",
-                              "type" : "Property",
-                              "source" : {
-                                 "path" : "code",
-                                 "scope" : "c2",
-                                 "type" : "Property"
-                              }
-                           }
-                        }
-                     } ]
-                  }
                }
             }
          }, {
@@ -5132,12 +5020,6 @@
                               "name" : "dispensedDateObj",
                               "type" : "QueryLetRef"
                            } ]
-                        }
-                     }, {
-                        "name" : "oDispensedDate",
-                        "value" : {
-                           "name" : "dispensedDateObj",
-                           "type" : "QueryLetRef"
                         }
                      }, {
                         "name" : "CalculatedEnd",
@@ -6075,31 +5957,6 @@
                }
             }
          }, {
-            "name" : "BenzodiazepineMedicationRequests",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "name" : "MedicationRequestLookBack",
-               "libraryName" : "C3F",
-               "type" : "FunctionRef",
-               "operand" : [ {
-                  "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-                  "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
-                  "codeProperty" : "medication",
-                  "codeComparator" : "in",
-                  "type" : "Retrieve",
-                  "codes" : {
-                     "name" : "Benzodiazepine medications",
-                     "preserve" : true,
-                     "type" : "ValueSetRef"
-                  }
-               }, {
-                  "value" : 100,
-                  "unit" : "years",
-                  "type" : "Quantity"
-               } ]
-            }
-         }, {
             "name" : "ReportBenzodiazepineMedicationRequests",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -6108,8 +5965,25 @@
                "source" : [ {
                   "alias" : "O",
                   "expression" : {
-                     "name" : "BenzodiazepineMedicationRequests",
-                     "type" : "ExpressionRef"
+                     "name" : "MedicationRequestLookBack",
+                     "libraryName" : "C3F",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                        "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+                        "codeProperty" : "medication",
+                        "codeComparator" : "in",
+                        "type" : "Retrieve",
+                        "codes" : {
+                           "name" : "Benzodiazepine medications",
+                           "preserve" : true,
+                           "type" : "ValueSetRef"
+                        }
+                     }, {
+                        "value" : 100,
+                        "unit" : "years",
+                        "type" : "Quantity"
+                     } ]
                   }
                } ],
                "let" : [ {
@@ -6525,46 +6399,7 @@
                }
             }
          }, {
-            "name" : "CarisoprodolMedicationRequests",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "name" : "MedicationRequestLookBack",
-               "libraryName" : "C3F",
-               "type" : "FunctionRef",
-               "operand" : [ {
-                  "type" : "Union",
-                  "operand" : [ {
-                     "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-                     "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
-                     "codeProperty" : "medication",
-                     "codeComparator" : "in",
-                     "type" : "Retrieve",
-                     "codes" : {
-                        "name" : "Carisoprodol",
-                        "preserve" : true,
-                        "type" : "ValueSetRef"
-                     }
-                  }, {
-                     "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-                     "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
-                     "codeProperty" : "medication",
-                     "codeComparator" : "in",
-                     "type" : "Retrieve",
-                     "codes" : {
-                        "name" : "Aspirin / Carisoprodol",
-                        "preserve" : true,
-                        "type" : "ValueSetRef"
-                     }
-                  } ]
-               }, {
-                  "value" : 100,
-                  "unit" : "years",
-                  "type" : "Quantity"
-               } ]
-            }
-         }, {
-            "name" : "ReportCarisoprodolMedicationRequests",
+            "name" : "ReportCarisoprodolMedications",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -6572,8 +6407,39 @@
                "source" : [ {
                   "alias" : "O",
                   "expression" : {
-                     "name" : "CarisoprodolMedicationRequests",
-                     "type" : "ExpressionRef"
+                     "name" : "MedicationRequestLookBack",
+                     "libraryName" : "C3F",
+                     "type" : "FunctionRef",
+                     "operand" : [ {
+                        "type" : "Union",
+                        "operand" : [ {
+                           "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                           "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+                           "codeProperty" : "medication",
+                           "codeComparator" : "in",
+                           "type" : "Retrieve",
+                           "codes" : {
+                              "name" : "Carisoprodol",
+                              "preserve" : true,
+                              "type" : "ValueSetRef"
+                           }
+                        }, {
+                           "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                           "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+                           "codeProperty" : "medication",
+                           "codeComparator" : "in",
+                           "type" : "Retrieve",
+                           "codes" : {
+                              "name" : "Aspirin / Carisoprodol",
+                              "preserve" : true,
+                              "type" : "ValueSetRef"
+                           }
+                        } ]
+                     }, {
+                        "value" : 100,
+                        "unit" : "years",
+                        "type" : "Quantity"
+                     } ]
                   }
                } ],
                "let" : [ {
@@ -6706,32 +6572,6 @@
                      } ]
                   }
                },
-               "sort" : {
-                  "by" : [ {
-                     "direction" : "desc",
-                     "path" : "Start",
-                     "type" : "ByColumn"
-                  }, {
-                     "direction" : "desc",
-                     "path" : "End",
-                     "type" : "ByColumn"
-                  } ]
-               }
-            }
-         }, {
-            "name" : "ReportCarisoprodolMedications",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "M",
-                  "expression" : {
-                     "name" : "ReportCarisoprodolMedicationRequests",
-                     "type" : "ExpressionRef"
-                  }
-               } ],
-               "relationship" : [ ],
                "sort" : {
                   "by" : [ {
                      "direction" : "desc",
@@ -7221,23 +7061,7 @@
                }
             }
          }, {
-            "name" : "NaloxoneMedicationRequests",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "dataType" : "{http://hl7.org/fhir}MedicationRequest",
-               "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
-               "codeProperty" : "medication",
-               "codeComparator" : "in",
-               "type" : "Retrieve",
-               "codes" : {
-                  "name" : "Naloxone medications",
-                  "preserve" : true,
-                  "type" : "ValueSetRef"
-               }
-            }
-         }, {
-            "name" : "ReportNaloxoneMedicationRequests",
+            "name" : "ReportNaloxoneMedications",
             "context" : "Patient",
             "accessLevel" : "Public",
             "expression" : {
@@ -7245,8 +7069,16 @@
                "source" : [ {
                   "alias" : "O",
                   "expression" : {
-                     "name" : "NaloxoneMedicationRequests",
-                     "type" : "ExpressionRef"
+                     "dataType" : "{http://hl7.org/fhir}MedicationRequest",
+                     "templateId" : "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+                     "codeProperty" : "medication",
+                     "codeComparator" : "in",
+                     "type" : "Retrieve",
+                     "codes" : {
+                        "name" : "Naloxone medications",
+                        "preserve" : true,
+                        "type" : "ValueSetRef"
+                     }
                   }
                } ],
                "relationship" : [ ],
@@ -7367,32 +7199,6 @@
                      } ]
                   }
                },
-               "sort" : {
-                  "by" : [ {
-                     "direction" : "desc",
-                     "path" : "Start",
-                     "type" : "ByColumn"
-                  }, {
-                     "direction" : "desc",
-                     "path" : "End",
-                     "type" : "ByColumn"
-                  } ]
-               }
-            }
-         }, {
-            "name" : "ReportNaloxoneMedications",
-            "context" : "Patient",
-            "accessLevel" : "Public",
-            "expression" : {
-               "type" : "Query",
-               "source" : [ {
-                  "alias" : "M",
-                  "expression" : {
-                     "name" : "ReportNaloxoneMedicationRequests",
-                     "type" : "ExpressionRef"
-                  }
-               } ],
-               "relationship" : [ ],
                "sort" : {
                   "by" : [ {
                      "direction" : "desc",

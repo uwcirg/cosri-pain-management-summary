@@ -30,8 +30,6 @@ describe("MME Calculations (Using John Cushing data)", () => {
     };
 
     const mmeResults = MMECalculator.mme([medicationRequest]);
-
-    // expect(mmeResults).toHaveLength(1);
     expect(mmeResults[0].dosesPerDay).toBe(4);
     expect(mmeResults[0].strength.value).toBe(4);
     expect(mmeResults[0].strength.unit).toBe("mg");

@@ -91,7 +91,6 @@
         "section_key": "RiskConsiderations",
         "subSection_key": "ReportMMEByDates",
         "key": "default",
-        "title": "MME Per Day",
         "lineProps": {
           "id": "dataLine_default",
           "strokeColor": "#168698",
