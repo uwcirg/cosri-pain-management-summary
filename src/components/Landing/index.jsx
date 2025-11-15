@@ -198,7 +198,6 @@ export default class Landing extends Component {
 
     this.setState({
       requestsDone: true,
-      loading: false,
       result: result,
       errorCollection: [
         ...landingUtils.getResponseErrors(responses),
@@ -241,6 +240,7 @@ export default class Landing extends Component {
           sectionFlags,
           flaggedCount,
           activeTab: 0,
+          loading: false,
           patientId: this.getPatientId(),
           hasMmeErrors,
           mmeErrors,
