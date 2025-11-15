@@ -7,9 +7,9 @@ import dstu2HelpersELM from "../cql/dstu2/FHIRHelpers.json";
 import r4FactorsELM from "../cql/r4/Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv401.json";
 import r4CommonsELM from "../cql/r4/CDS_Connect_Commons_for_FHIRv401.json";
 import r4HelpersELM from "../cql/r4/FHIRHelpers.json";
-import r4MMECalculatorELM from "../cql/r4/MMECalculator.json";
-import r4OMTKDataELM from "../cql/r4/OMTKData.json";
-import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
+// import r4MMECalculatorELM from "../cql/r4/MMECalculator.json";
+// import r4OMTKDataELM from "../cql/r4/OMTKData.json";
+// import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import valueSetDB from "../cql/valueset-db.json";
 import { fetchEnvData } from "./envConfig";
 import {
@@ -288,9 +288,9 @@ function getLibrary(release) {
         new cql.Repository({
           CDS_Connect_Commons_for_FHIRv401: r4CommonsELM,
           FHIRHelpers: r4HelpersELM,
-          MMECalculator: r4MMECalculatorELM,
-          OMTKLogic: r4OMTKLogicELM,
-          OMTKData: r4OMTKDataELM,
+          // MMECalculator: r4MMECalculatorELM,
+          // OMTKLogic: r4OMTKLogicELM,
+          // OMTKData: r4OMTKDataELM,
         })
       );
     default:

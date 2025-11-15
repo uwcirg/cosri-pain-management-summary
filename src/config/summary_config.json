@@ -113,6 +113,7 @@
           "section_key": "RiskConsiderations",
           "subSection_key": "ReportDailyMMEByDateWithoutBuprenorphine",
           "key": "wo_buprenorphine",
+          "title": "MME Per Day (Without Buprenorphine)",
           "lineProps": {
             "id": "dataLine_wo_bup",
             "strokeColor": "#024242",
@@ -144,6 +145,7 @@
           "section_key": "RiskConsiderations",
           "subSection_key": "ReportDailyMMEByDateWithBuprenorphineOnly",
           "key": "buprenorphine_only",
+          "title": "MME Per Day (Buprenorphine Only)",
           "lineProps": {
             "id": "dataLine_bup_only",
             "strokeColor": "#dc6bab",
@@ -1260,13 +1262,13 @@
                 "formatter": "datishFormat"
               },
               "Prescriber": {
-                "key": "Name",
+                "key": "Prescriber",
                 "formatter": "stringSubstitutionFormat",
                 "formatterArguments": [""],
                 "sortable": false
               },
               "Pharmacy": {
-                "key": "Name",
+                "key": "Pharmacy",
                 "formatter": "stringSubstitutionFormat",
                 "formatterArguments": [""],
                 "sortable": false

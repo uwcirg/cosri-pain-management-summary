@@ -88,6 +88,28 @@ export function getArrayOfDatesFromToday(numberOfDays = 0) {
 
   return datesArray;
 }
+
+/**
+ * Check if a date is within the past N years from today.
+ * (e.g. within the last 2 years, not future)
+ * @param {string|Date} dateToCheck - e.g., "2025-06-09" or Date object
+ * @param {number} [years=2] - Number of years in the past to check
+ * @returns {boolean} true if date is within past N years, false otherwise
+ */
+export function isWithinPastYears(dateToCheck, years = 2) {
+  if (!dateToCheck) return false;
+
+  const inputDate = new Date(dateToCheck);
+  if (isNaN(inputDate)) return false;
+
+  const today = new Date();
+  const pastLimit = new Date();
+  pastLimit.setFullYear(today.getFullYear() - years);
+
+  // must be between [pastLimit, today]
+  return inputDate >= pastLimit && inputDate <= today;
+}
+
 /*
  * check if an image has completed loading
  */
@@ -661,7 +683,7 @@ export function writeToLog(message, level, params) {
       return response.json();
     })
     .then(function (data) {
-     // console.log("audit request succeeded with response ", data);
+      // console.log("audit request succeeded with response ", data);
     })
     .catch(function (error) {
       console.log("Request failed", error);

@@ -1,23 +1,17 @@
-import {
-  datishFormat,
-  dateFormat,
-  dateNumberFormat,
-  extractDateFromGMTDateString,
-} from "../../helpers/formatit";
+import { datishFormat, dateFormat } from "../../helpers/formatit";
 import flagit from "../../helpers/flagit";
-import { dateCompare } from "../../helpers/sortit";
 import {
-  getDiffDays,
   getEnvConfidentialAPIURL,
   getEnvSystemType,
   getSiteId,
   isEmptyArray,
+  isNumber,
+  isWithinPastYears,
   saveData,
   writeToLog,
 } from "../../helpers/utility";
+import MMECalculator from "../../utils/MMECalculator";
 import { getEnv, ENV_VAR_PREFIX } from "../../utils/envConfig";
-import { sum } from "d3-array";
-
 let uuid = 0;
 
 export function generateUuid() {
@@ -218,7 +212,9 @@ export function getProcessedSummaryData(summary, summaryMap) {
           if (entry._id == null) entry._id = generateUuid();
 
           const flagResult = flagit(entry, subSection, summary);
-          const normalized = dedupeFlags(normalizeFlagResults(flagResult, alertMapping));
+          const normalized = dedupeFlags(
+            normalizeFlagResults(flagResult, alertMapping)
+          );
 
           for (const f of normalized) {
             flaggedCount += 1;
@@ -237,16 +233,17 @@ export function getProcessedSummaryData(summary, summaryMap) {
               flagCount: flaggedCount,
               flagDateText,
               priority:
-                (f.class === "info" && 1000) ||
-                alertMapping.priority ||
-                0,
+                (f.class === "info" && 1000) || alertMapping.priority || 0,
             });
           }
         }
         sectionFlags[sectionKey][subSection.dataKey] = flaggedEntries;
       } else {
         const sectionFlagResult = flagit(null, subSection, summary);
-        const normalized = normalizeFlagResults(sectionFlagResult, alertMapping);
+        const normalized = normalizeFlagResults(
+          sectionFlagResult,
+          alertMapping
+        );
         const unique = dedupeFlags(normalized);
 
         if (unique.length) {
@@ -266,6 +263,62 @@ export function getProcessedSummaryData(summary, summaryMap) {
   });
 
   return { sectionFlags, flaggedCount };
+}
+
+export function getProcessedMMEData(summaryData) {
+  if (!summaryData) return [];
+  if (!summaryData["RiskConsiderations"])
+    summaryData["RiskConsiderations"] = {};
+  const allOpioidMedSections =
+    summaryData["RiskConsiderations"]["AllOpioidMedicationRequests"] ?? [];
+  const mmeData = allOpioidMedSections?.map((med) => {
+    const mmeResult = MMECalculator.mme([med.medicationRequest]);
+    const resultObject = !isEmptyArray(mmeResult) ? mmeResult[0] : {};
+    const {
+      mme,
+      rxNormCode,
+      doseQuantity,
+      dosesPerDay,
+      strength,
+      conversionFactor,
+    } = resultObject;
+    return {
+      ...med,
+      rxNormCode,
+      rxCUI: rxNormCode?.code,
+      doseQuantity,
+      dosesPerDay,
+      strength,
+      conversionFactor,
+      MME: isNumber(mme) ? Number(mme.toFixed(2)): null,
+    };
+  });
+  summaryData["RiskConsiderations"]["ReportMME"] = mmeData;
+  const PDMPMeds =
+    summaryData["PDMPMedications"] &&
+    summaryData["PDMPMedications"]["PDMPMedications"]
+      ? summaryData["PDMPMedications"]["PDMPMedications"]
+      : [];
+  summaryData["PDMPMedications"]["PDMPMedications"] = PDMPMeds.map((med) => {
+    const mmeResultObject = MMECalculator.mme([med.medicationRequest]);
+    const {mme} = !isEmptyArray(mmeResultObject) ? mmeResultObject[0] : {};
+    med.MME = isNumber(mme) ? Number(mme.toFixed(2)): null;
+    return med;
+  });
+  summaryData["RiskConsiderations"]["ReportMMEByDates"] = Array.from(
+    mmeData
+      .filter((med) => isNumber(med.MME) && med.End && med.IsLastTwoYears)
+      .reduce((map, med) => {
+        const key = `${med.Start}|${med.End}|${med.rxCUI}|${med.MME}`;
+        if (!map.has(key)) {
+          const { Start, End, rxNormCode, rxCUI, MME } = med;
+          map.set(key, { Start, End, rxNormCode, rxCUI, MME, MMEValue: MME });
+        }
+        return map;
+      }, new Map())
+      .values()
+  );
+  return summaryData;
 }
 
 export function getSummaryGraphDataSet(graphConfig, summaryData) {
@@ -311,37 +364,6 @@ export function getSummaryGraphDataSet(graphConfig, summaryData) {
 
   // Avoid returning a large empty object and skip console noise in production
   return hasAny ? graphDataSet : null;
-}
-
-function parseYMD(ymd /* "YYYY-MM-DD" */) {
-  // Be tolerant of your existing helper; ensure we end with "YYYY-MM-DD"
-  const s = extractDateFromGMTDateString
-    ? extractDateFromGMTDateString(ymd)
-    : ymd;
-  const [y, m, d] = s.split("-").map(Number);
-  return { y, m, d };
-}
-function toMsUTC(ymd) {
-  const { y, m, d } = parseYMD(ymd);
-  // UTC midnight for the calendar date (no local TZ applied)
-  return Date.UTC(y, m - 1, d);
-}
-function toYMDUTC(msUTC) {
-  const dt = new Date(msUTC); // interpret as UTC instant
-  const y = dt.getUTCFullYear();
-  const m = String(dt.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(dt.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-function todayYMDUTC() {
-  // "Today" as a UTC calendar day; if you prefer local 'today', compute with local getters consistently
-  return toYMDUTC(
-    Date.UTC(
-      new Date().getUTCFullYear(),
-      new Date().getUTCMonth(),
-      new Date().getUTCDate()
-    )
-  );
 }
 
 // Daily cumulative MME, starting from the day BEFORE the earliest start (0 value)
@@ -394,6 +416,8 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   const startDays = new Set(); // Set<"YYYY-MM-DD">
   let minMs = Infinity;
   let maxEndMs = -Infinity; // last course's end (inclusive day)
+
+  //console.log("graphDataSource ", graphDataSource)
 
   for (const item of graphDataSource) {
     const sMs = toMsUTC(item?.[startDateFieldName]);
@@ -581,6 +605,150 @@ export function getDailyMMEData(mmeData) {
   if (!mmeData) return null;
   if (!mmeData.default) return null;
   return mmeData.default["data"];
+}
+
+export function HasNaloxoneInLastYear(summaryData) {
+  if (
+    !summaryData ||
+    !summaryData["RiskConsiderations"] ||
+    !summaryData["RiskConsiderations"]["NaloxoneMedications"]
+  )
+    return null;
+  const naxList = summaryData["RiskConsiderations"]["NaloxoneMedications"];
+  return !!naxList.find((M) => isWithinPastYears(M.AuthoredOn, 1));
+}
+
+export function MedicationRequestsForNaloxoneConsideration(summaryData) {
+  if (HasNaloxoneInLastYear(summaryData)) return null;
+  return NonBupMedRequestsForNaloxoneConsiderationLastTwoYears(summaryData);
+}
+
+export function NonBupMedRequestsForNaloxoneConsiderationLastTwoYears(
+  summaryData
+) {
+  const nonBupMedList = GetNonBuprenorphineMMEListByDates(summaryData);
+  if (isEmptyArray(nonBupMedList)) return null;
+  return nonBupMedList
+    .filter((M) => M.MMEValue >= 50 && isWithinPastYears(M.End, 2))
+    .sort((a, b) => new Date(b.End) - new Date(a.End));
+}
+
+export function GetBuprenorphineMMEListByDates(summaryData) {
+  if (
+    !summaryData ||
+    !summaryData["RiskConsiderations"] ||
+    !summaryData["RiskConsiderations"]["ReportMMEByDates"]
+  )
+    return [];
+  if (isEmptyArray(summaryData["RiskConsiderations"]["ReportMMEByDates"]))
+    return [];
+  const mmeList = summaryData["RiskConsiderations"]["ReportMMEByDates"];
+  const bupRxCuis = getBupRXCUIs(summaryData);
+  if (isEmptyArray(bupRxCuis)) return [];
+  return mmeList
+    .filter((o) => bupRxCuis.find((item) => item === o.rxCUI))
+    .map((o) => {
+      const { Start, End, rxNormCode, rxCUI, MME}  = o;
+      return {
+        ...o,
+        rxCUI: o.rxNormCode.code,
+      };
+    });
+}
+
+export function GetNonBuprenorphineMMEListByDates(summaryData) {
+  if (
+    !summaryData ||
+    !summaryData["RiskConsiderations"] ||
+    !summaryData["RiskConsiderations"]["ReportMMEByDates"]
+  )
+    return [];
+  if (isEmptyArray(summaryData["RiskConsiderations"]["ReportMMEByDates"]))
+    return [];
+  const mmeList = summaryData["RiskConsiderations"]["ReportMMEByDates"];
+  const bupRxCuis = getBupRXCUIs(summaryData);
+  if (isEmptyArray(bupRxCuis)) return mmeList ?? [];
+  return mmeList
+    .filter((o) => bupRxCuis.find((item) => item !== o.rxCUI))
+    .map((o) => {
+      return {
+        ...o,
+        rxCUI: o.rxNormCode.code,
+      };
+    });
+}
+
+export function ReportDailyMMEByDateWithoutBuprenorphine(summaryData) {
+  if (isEmptyArray(GetBuprenorphineMMEListByDates(summaryData))) return [];
+  if (isEmptyArray(GetNonBuprenorphineMMEListByDates(summaryData))) return [];
+  const mmeList = summaryData["RiskConsiderations"]["ReportMMEByDates"];
+  const bupRxcuis = getBupRXCUIs(summaryData);
+  return mmeList.map((R) => {
+    return {
+      ...R,
+      rxCUI: R.rxNormCode.code,
+      //miniscule value for displaying on graph above x-axis
+      MMEValue: bupRxcuis.find((rxcui) => rxcui === R.rxCUI)
+        ? 0.000000001
+        : R.MMEValue,
+      category: "wo_buprenorphine",
+    };
+  });
+}
+
+export function ReportDailyMMEByDateWithBuprenorphineOnly(summaryData) {
+  if (isEmptyArray(GetBuprenorphineMMEListByDates(summaryData))) return null;
+  const mmeList = summaryData["RiskConsiderations"]["ReportMMEByDates"];
+  const bupRxcuis = getBupRXCUIs(summaryData);
+  return mmeList.map((R) => {
+    return {
+      ...R,
+      rxCUI: R.rxNormCode.code,
+      //miniscule value for displaying on graph above x-axis
+      MMEValue: !bupRxcuis.find((rxcui) => rxcui === R.rxCUI)
+        ? 0.000000001
+        : R.MMEValue,
+      category: "buprenorphine_only",
+    };
+  });
+}
+
+export function getBupRXCUIs(summaryData) {
+  if (
+    !summaryData ||
+    !summaryData["RiskConsiderations"] ||
+    !summaryData["RiskConsiderations"]["ReportBuprenorphineMedicationRequests"]
+  )
+    return [];
+
+  const bupMeds =
+    summaryData["RiskConsiderations"]["ReportBuprenorphineMedicationRequests"];
+  if (isEmptyArray(bupMeds)) return [];
+  return bupMeds.flatMap((med) => {
+    const medConcept = med.medication;
+    const match = medConcept?.coding?.find(
+      (item) =>
+        item.system?.value === "http://www.nlm.nih.gov/research/umls/rxnorm"
+    );
+    if (!match) return [];
+    return match.code?.value;
+  });
+}
+
+export function getProcessedBupData(summaryData) {
+  if (!summaryData) return null;
+  if (!summaryData["RiskConsiderations"]) {
+    summaryData["RiskConsiderations"] = {};
+  }
+  summaryData["RiskConsiderations"][
+    "ReportDailyMMEByDateWithBuprenorphineOnly"
+  ] = ReportDailyMMEByDateWithBuprenorphineOnly(summaryData);
+  summaryData["RiskConsiderations"][
+    "ReportDailyMMEByDateWithoutBuprenorphine"
+  ] = ReportDailyMMEByDateWithoutBuprenorphine(summaryData);
+  summaryData["MedicationRequestsForNaloxoneConsideration"] =
+    MedicationRequestsForNaloxoneConsideration(summaryData);
+  return summaryData;
 }
 
 export function getProcessedStatsData(statsConfig, summaryData) {

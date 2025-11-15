@@ -84,6 +84,8 @@
 // Commented out define statements for sections that aren't currently displayed
 // Update 20251016
 // Add patient MRN
+// Update 20251110
+// Remove MME Calculations, Bupronorephine meds functions, to be implemented in JS
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -105,7 +107,7 @@ include CDS_Connect_Commons_for_FHIRv401 version '1.0.0' called C3F
 // The FHIRHelpers library provides common functions for simplifying interaction w/ the FHIR R4 data model.
 include FHIRHelpers version '4.0.1' called FHIRHelpers
 // The MMECalculator library is used to compute the patient's MME/MED
-include MMECalculator version '3.0.0' called MMECalculator
+//include MMECalculator version '3.0.0' called MMECalculator
 
 
 
@@ -768,11 +770,11 @@ define ReportRiskFactorsForOpioidRelatedHarms:
 // HISTORICAL TREATMENTS
 
 // Opioid medication orders and statements with dates
-define OpioidMedicationRequests:
-  C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
-    100 years
-  )
+// define OpioidMedicationRequests:
+//   C3F.MedicationRequestLookBack(
+//     [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
+//     100 years
+//   )
 
 // define OpioidMedicationStatements:
 //   C3F.MedicationStatementLookBack(
@@ -780,8 +782,13 @@ define OpioidMedicationRequests:
 //     100 years
 //   )
 
-define ReportOpioidMedicationRequests:
-  ( OpioidMedicationRequests M
+define ReportOpioidMedications:
+  ( (
+    C3F.MedicationRequestLookBack(
+      [MedicationRequest: "Opioid Pain Medications"], //remove consideration for the status field
+      100 years
+    )
+  ) M
     where not(M.identifier is not null and M.identifier[0].system ~ PDMP_SYSTEM_VALUE)
   ) O
   let CalculatedEnd: GetMedicationRequestEndDate(O)
@@ -812,21 +819,21 @@ define ReportOpioidMedicationRequests:
 //   }
 //   sort by Start desc, End desc
 
-define ReportOpioidMedications:
-  // (ReportOpioidMedicationRequests union ReportOpioidMedicationStatements) M
-  (ReportOpioidMedicationRequests) M
-    sort by Start desc, End desc
+// define ReportOpioidMedications:
+//   // (ReportOpioidMedicationRequests union ReportOpioidMedicationStatements) M
+//   (ReportOpioidMedicationRequests) M
+//     sort by Start desc, End desc
 
 //a list of MedicationRequest FHIR resources for Buprenorphine
 define ReportBuprenorphineMedicationRequests:
   [MedicationRequest: "Buprenorphine medications"]
 
 //Buprenorphine RXCUIs in list
-define BuprenorphineRxCUIs:
-  (ReportBuprenorphineMedicationRequests) o
-  let
-    c: (o.medication as FHIR.CodeableConcept)
-    return Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
+// define BuprenorphineRxCUIs:
+//   (ReportBuprenorphineMedicationRequests) o
+//   let
+//     c: (o.medication as FHIR.CodeableConcept)
+//     return Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
 
 // medication requests from PDMP
 // using relevant system identifier for filtering
@@ -839,50 +846,53 @@ define ReportPDMPMedicationRequests:
   let
     CalculatedEnd: GetMedicationRequestEndDate(O),
     dispenseRequest:  O.dispenseRequest,
-    MME_Object: MMECalculator.MME(O),
+    dispensedDateObj: GetMedicationRequestDispensedDate(O),
+   // MME_Object: MMECalculator.MME(O),
     c: (O.medication as FHIR.CodeableConcept),
     RxnormCode: Coalesce((c.coding) c2 where c2.system.value ~ 'http://www.nlm.nih.gov/research/umls/rxnorm' return c2.code.value)
     return {
       Type:  'Request',
+      ID: O.id.value,
       Name:  ConceptText(c),
       Start: DateTimeText(O.authoredOn),
-      DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
+      DispensedDate: DateText(dispensedDateObj),
       CalculatedEnd: CalculatedEnd, //of date type
       End: ToString(CalculatedEnd), //of string type
       Quantity: GetMedicationRequestDispensedQuantity(O),
       Duration: if dispenseRequest.expectedSupplyDuration is not null then dispenseRequest.expectedSupplyDuration.value.value else null,
-      doseQuantity: MME_Object[0].doseQuantity,
-      dosesPerDay: MME_Object[0].dosesPerDay,
-      strength: MME_Object[0].strength,
-      factor: MME_Object[0].conversionFactor,
-      MME: MME_Object[0].mme.value,
+      // doseQuantity: MME_Object[0].doseQuantity,
+      // dosesPerDay: MME_Object[0].dosesPerDay,
+      // strength: MME_Object[0].strength,
+      // factor: MME_Object[0].conversionFactor,
+      // MME: MME_Object[0].mme.value,
       Prescriber: O.requester.display.value,
       Pharmacy: GetMedicationRequestPharmacy(O),
       NDC_Code: Coalesce((c.coding) c2 where c2.system.value ~ 'http://hl7.org/fhir/sid/ndc' return c2.code.value),
       RXNorm_Code: RxnormCode,
-      isBup: RxnormCode in BuprenorphineRxCUIs,
+      //isBup: RxnormCode in BuprenorphineRxCUIs,
       isActive: CalculatedEnd same or after Today(),
       Status: O.status.value,
       Class: getMedicationRequestDrugClass(O),
-      AuthoredOn: O.authoredOn
+      AuthoredOn: O.authoredOn,
+      medicationRequest: O
     }
-    sort by DispensedDate desc, End desc
+    sort by Start desc, End desc
 
-define HasNaloxoneInLastYear:
-  Length(
-    (ReportNaloxoneMedicationRequests) M 
-    where M.AuthoredOn <= Today() and M.AuthoredOn >= (Today() - 1 year)
-  ) > 0
+// define HasNaloxoneInLastYear:
+//   Length(
+//     (ReportNaloxoneMedicationRequests) M 
+//     where M.AuthoredOn <= Today() and M.AuthoredOn >= (Today() - 1 year)
+//   ) > 0
 
-define NonBupMedRequestsForNaloxoneConsiderationLastTwoYears:
-  (GetNonBuprenorphineMMEListByDates) M
-  where M.MMEValue >= 50 and ((year from Today() - year from ToDate(M.End)) <= 2)
+// define NonBupMedRequestsForNaloxoneConsiderationLastTwoYears:
+//   (GetNonBuprenorphineMMEListByDates) M
+//   where M.MMEValue >= 50 and ((year from Today() - year from ToDate(M.End)) <= 2)
 
-define MedicationRequestsForNaloxoneConsideration:
-  if HasNaloxoneInLastYear then
-    null
-  else
-    NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
+// define MedicationRequestsForNaloxoneConsideration:
+//   if HasNaloxoneInLastYear then
+//     null
+//   else
+//     NonBupMedRequestsForNaloxoneConsiderationLastTwoYears
 
 
 // Non-opioid medication orders and statements with dates
@@ -1019,123 +1029,119 @@ define MedicationRequestsForNaloxoneConsideration:
 
 // RISK CONSIDERATIONS
 
-define ReportMME:
+define AllOpioidMedicationRequests:
   (PDMPMedicationRequests union [MedicationRequest: "Opioid Pain Medications"]) O
   let
-    MME_Object: MMECalculator.MME(O),
     AuthoredDate: DateTimeText(O.authoredOn),
-    DispensedDate: DateText(GetMedicationRequestDispensedDate(O)),
     CalculatedEnd: GetMedicationRequestEndDate(O),
-    CalculatedStatus:
-      if CalculatedEnd same or after Today() then 'active' else null
-  return {
-    Type:  'Request',
-    Name:  ConceptText(O.medication as FHIR.CodeableConcept),
-    CalculatedEnd: CalculatedEnd,
-    Written: DateTimeText(O.authoredOn),
-    Start: if DispensedDate is not null then DispensedDate else AuthoredDate,
-    End: ToString(CalculatedEnd),
-    Status: CalculatedStatus,
-    doseQuantity: MME_Object[0].doseQuantity,
-    dosesPerDay: MME_Object[0].dosesPerDay,
-    strength: MME_Object[0].strength,
-    supplyQuantity: MME_Object[0].supplyQuantity,
-    supplyDuration: MME_Object[0].supplyDuration,
-    factor: MME_Object[0].conversionFactor,
-    MMEValue: MME_Object[0].mme.value,
-    rxNormCode: MME_Object[0].rxNormCode
-  }
-  sort by End desc
+    CalculatedStatus: if CalculatedEnd same or after Today() then 'active' else null,
+    c: (O.medication as FHIR.CodeableConcept)
+      return {
+          Type:  'Request',
+          ID: O.id.value,
+          Name:  ConceptText(c),
+          Start: DateTimeText(O.authoredOn),
+          CalculatedEnd: CalculatedEnd, //of date type
+          End: ToString(CalculatedEnd), //of string type
+          Prescriber: O.requester.display.value,
+          isActive: CalculatedEnd same or after Today(),
+          Status:  CalculatedStatus,
+          AuthoredDate: AuthoredDate,
+          AuthoredOn: O.authoredOn,
+          IsLastTwoYears: ((year from Today() - year from CalculatedEnd) <= 2),
+          medicationRequest: O
+      }
+      sort by End desc
 
 //return a list of tuples containing MME value for each MedicationRequest that happends in the last two years
-define ReportMMEByDates:
-  (ReportMME) R
-  where
-    //make sure not to include null MME value
-    R.End is not null and 
-    R.MMEValue is not null and 
-    ((year from Today() - year from R.CalculatedEnd) <= 2)
-  return {
-    Start: R.Start,
-    End: R.End,
-    rxNormCode: R.rxNormCode,
-    rxCUI: R.rxNormCode.code,
-    MMEValue: R.MMEValue,
-    isBup: R.rxNormCode.code in BuprenorphineRxCUIs,
-    category: 'default'
-  }
-  sort by End
+// define ReportMMEByDates:
+//   (ReportMME) R
+//   where
+//     //make sure not to include null MME value
+//     R.End is not null and 
+//     R.MMEValue is not null and 
+//     ((year from Today() - year from R.CalculatedEnd) <= 2)
+//   return {
+//     Start: R.Start,
+//     End: R.End,
+//     rxNormCode: R.rxNormCode,
+//     rxCUI: R.rxNormCode.code,
+//     MMEValue: R.MMEValue,
+//     //isBup: R.rxNormCode.code in BuprenorphineRxCUIs,
+//     category: 'default'
+//   }
+//   sort by End
 
 //a list including non-null MME value for non - Buprenorphine
-define GetNonBuprenorphineMMEListByDates:
-  ((ReportMMEByDates) O
-    where not (O.rxCUI in BuprenorphineRxCUIs)
-  ) R 
-  return {
-    Start: R.Start,
-    End: R.End,
-    rxNormCode: R.rxNormCode,
-    rxCUI: R.rxNormCode.code,
-    MMEValue: R.MMEValue
-  }
-  sort by End desc
+// define GetNonBuprenorphineMMEListByDates:
+//   ((ReportMMEByDates) O
+//     where not (O.rxCUI in BuprenorphineRxCUIs)
+//   ) R 
+//   return {
+//     Start: R.Start,
+//     End: R.End,
+//     rxNormCode: R.rxNormCode,
+//     rxCUI: R.rxNormCode.code,
+//     MMEValue: R.MMEValue
+//   }
+//   sort by End desc
 
 //a list including non-null MME value for Buprenorphine
-define GetBuprenorphineMMEListByDates:
-  ((ReportMMEByDates) O
-    where O.rxCUI in BuprenorphineRxCUIs
-  ) R 
-  return {
-    Start: R.Start,
-    End: R.End,
-    rxNormCode: R.rxNormCode,
-    rxCUI: R.rxNormCode.code,
-    MMEValue: R.MMEValue
-  }
-  sort by End
+// define GetBuprenorphineMMEListByDates:
+//   ((ReportMMEByDates) O
+//     where O.rxCUI in BuprenorphineRxCUIs
+//   ) R 
+//   return {
+//     Start: R.Start,
+//     End: R.End,
+//     rxNormCode: R.rxNormCode,
+//     rxCUI: R.rxNormCode.code,
+//     MMEValue: R.MMEValue
+//   }
+//   sort by End
 
 // a list of daily total MME values without Buprenorphine
-define ReportDailyMMEByDateWithoutBuprenorphine:
-if First(GetBuprenorphineMMEListByDates) is null then
-  null
-else if First(GetNonBuprenorphineMMEListByDates) is null then
-  null
-else
-  (ReportMMEByDates) R
-  return 
-  {
-    Start: R.Start,
-    End: R.End,
-    rxNormCode: R.rxNormCode,
-    rxCUI: R.rxNormCode.code,
-    //miniscule value for displaying on graph above x-axis
-    MMEValue: if R.rxCUI in BuprenorphineRxCUIs then 0.000000001 else R.MMEValue,
-    category: 'wo_buprenorphine'
-  }
-  sort by End
+// define ReportDailyMMEByDateWithoutBuprenorphine:
+// if First(GetBuprenorphineMMEListByDates) is null then
+//   null
+// else if First(GetNonBuprenorphineMMEListByDates) is null then
+//   null
+// else
+//   (ReportMMEByDates) R
+//   return 
+//   {
+//     Start: R.Start,
+//     End: R.End,
+//     rxNormCode: R.rxNormCode,
+//     rxCUI: R.rxNormCode.code,
+//     //miniscule value for displaying on graph above x-axis
+//     MMEValue: if R.rxCUI in BuprenorphineRxCUIs then 0.000000001 else R.MMEValue,
+//     category: 'wo_buprenorphine'
+//   }
+//   sort by End
 
 // a list of daily total MME values with Buprenorphine ONLY
-define ReportDailyMMEByDateWithBuprenorphineOnly:
-  if First(GetBuprenorphineMMEListByDates) is null then
-    null
-  else
-    (ReportMMEByDates) R
-    return 
-    {
-      Start: R.Start,
-      End: R.End,
-      rxNormCode: R.rxNormCode,
-      rxCUI: R.rxNormCode.code,
-      //miniscule value for displaying on graph above x-axis
-      MMEValue: if not (R.rxCUI in BuprenorphineRxCUIs) then 0.000000001 else R.MMEValue,
-      category: 'buprenorphine_only'
-    }
-    sort by End
+// define ReportDailyMMEByDateWithBuprenorphineOnly:
+//   if First(GetBuprenorphineMMEListByDates) is null then
+//     null
+//   else
+//     (ReportMMEByDates) R
+//     return 
+//     {
+//       Start: R.Start,
+//       End: R.End,
+//       rxNormCode: R.rxNormCode,
+//       rxCUI: R.rxNormCode.code,
+//       //miniscule value for displaying on graph above x-axis
+//       MMEValue: if not (R.rxCUI in BuprenorphineRxCUIs) then 0.000000001 else R.MMEValue,
+//       category: 'buprenorphine_only'
+//     }
+//     sort by End
   
 
-define ReportPrescriptions:
-  (OpioidMedicationRequests) M
-  return MMECalculator.Prescriptions(M)
+// define ReportPrescriptions:
+//   (OpioidMedicationRequests) M
+//   return MMECalculator.Prescriptions(M)
 
 
 // Urine drug screen from observations - dates and results (all screens w/ lookback of 1 year)
@@ -1227,11 +1233,11 @@ define ReportAllUrineScreens:
 
 
 // Benzodiazepine Medications -  orders and statements with dates
-define BenzodiazepineMedicationRequests:
-  C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Benzodiazepine medications"], //remove consideration for status field
-    100 years
-  )
+// define BenzodiazepineMedicationRequests:
+//   C3F.MedicationRequestLookBack(
+//     [MedicationRequest: "Benzodiazepine medications"], //remove consideration for status field
+//     100 years
+//   )
 
 // define BenzodiazepineMedicationStatements:
 //   C3F.MedicationStatementLookBack(
@@ -1241,7 +1247,12 @@ define BenzodiazepineMedicationRequests:
 
 //Benzodiazepine MedicationRequests identified via valueset
 define ReportBenzodiazepineMedicationRequests:
-  (BenzodiazepineMedicationRequests) O
+   (
+    C3F.MedicationRequestLookBack(
+      [MedicationRequest: "Benzodiazepine medications"], //remove consideration for status field
+      100 years
+    )
+  ) O
   let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
@@ -1300,20 +1311,24 @@ define ReportBenzodiazepineMedications:
 
 
 // Carisoprodol Medications -  orders and statements with dates
-define CarisoprodolMedicationRequests:
-  //remove consideration for status field
-  C3F.MedicationRequestLookBack(
-    [MedicationRequest: "Carisoprodol"] union [MedicationRequest: "Aspirin / Carisoprodol"]
-  , 100 years)
+// define CarisoprodolMedicationRequests:
+//  // remove consideration for status field
+  // C3F.MedicationRequestLookBack(
+  //   [MedicationRequest: "Carisoprodol"] union [MedicationRequest: "Aspirin / Carisoprodol"]
+  // , 100 years)
 
 // define CarisoprodolMedicationStatements:
-//   //remove consideration for status field
+//   // remove consideration for status field
 //   C3F.MedicationStatementLookBack(
 //     [MedicationStatement: "Carisoprodol"]
 //   , 100 years)
 
-define ReportCarisoprodolMedicationRequests:
-  (CarisoprodolMedicationRequests) O
+define ReportCarisoprodolMedications:
+  (
+    C3F.MedicationRequestLookBack(
+    [MedicationRequest: "Carisoprodol"] union [MedicationRequest: "Aspirin / Carisoprodol"]
+  , 100 years)
+   ) O
   let CalculatedEnd: GetMedicationRequestEndDate(O)
   return {
     Type:  'Request',
@@ -1341,11 +1356,11 @@ define ReportCarisoprodolMedicationRequests:
 //   }
 //   sort by Start desc, End desc
 
-define ReportCarisoprodolMedications:
-  // (ReportCarisoprodolMedicationRequests union ReportCarisoprodolMedicationStatements) M
-  // sort by Start desc, End desc
-  (ReportCarisoprodolMedicationRequests) M
-  sort by Start desc, End desc
+// define ReportCarisoprodolMedications:
+//   // (ReportCarisoprodolMedicationRequests union ReportCarisoprodolMedicationStatements) M
+//   // sort by Start desc, End desc
+//   (ReportCarisoprodolMedicationRequests) M
+//   sort by Start desc, End desc
 
 //seditive medication requests identified via drug class
 define ReportSedativeMedicationRequests:
@@ -1388,16 +1403,16 @@ define ReportBarbiturateMedicationRequests:
   sort by Start desc, End desc
 
 // Naloxone Medications (unrestricted lookback) - orders and statements with dates
-define NaloxoneMedicationRequests:
-  //remove consideration for status
-  [MedicationRequest: "Naloxone medications"]
+// define NaloxoneMedicationRequests:
+  // remove consideration for status
+  // [MedicationRequest: "Naloxone medications"]
 
 // define NaloxoneMedicationStatements:
-//   //remove consideration for status
+//   remove consideration for status
 //   [MedicationStatement: "Naloxone medications"]
 
-define ReportNaloxoneMedicationRequests:
-  (NaloxoneMedicationRequests) O
+define ReportNaloxoneMedications:
+  [MedicationRequest: "Naloxone medications"] O
   return {
     Type:  'Request',
     Name:  ConceptText(O.medication as FHIR.CodeableConcept),
@@ -1405,6 +1420,8 @@ define ReportNaloxoneMedicationRequests:
     Start: DateTimeText(O.authoredOn),
     End:   null as String, // MedicationRequest end date not supported in R4,
     Status: O.status.value,
+    Prescriber: O.requester.display.value,
+    Pharmacy: GetMedicationRequestPharmacy(O),
     AuthoredOn: O.authoredOn.value
   }
   sort by Start desc, End desc
@@ -1420,11 +1437,11 @@ define ReportNaloxoneMedicationRequests:
 //   }
 //   sort by Start desc, End desc
 
-define ReportNaloxoneMedications:
-  // (ReportNaloxoneMedicationRequests union ReportNaloxoneMedicationStatements) M
-  // sort by Start desc, End desc
-  (ReportNaloxoneMedicationRequests) M
-  sort by Start desc, End desc
+// define ReportNaloxoneMedications:
+//   // (ReportNaloxoneMedicationRequests union ReportNaloxoneMedicationStatements) M
+//   // sort by Start desc, End desc
+//   (ReportNaloxoneMedicationRequests) M
+//   sort by Start desc, End desc
 
 //Controlled substance agreement
 define ReportCSAgreement:
@@ -1483,18 +1500,21 @@ define Summary: {
 //     StoolSoftenersAndLaxatives: ReportStoolSoftenersAndLaxatives
 //   },
   RiskConsiderations: {
-    ReportMME: ReportMME,
-    ReportMMEByDates: ReportMMEByDates,
-    ReportDailyMMEByDateWithoutBuprenorphine: ReportDailyMMEByDateWithoutBuprenorphine,
-    ReportDailyMMEByDateWithBuprenorphineOnly: ReportDailyMMEByDateWithBuprenorphineOnly,
-    //for debugging, uncomment to test
-    //ReportPrescriptions: ReportPrescriptions,
+    // ReportMME: ReportMME,
+    // ReportMMEByDates: ReportMMEByDates,
+    AllOpioidMedicationRequests: AllOpioidMedicationRequests,
+    ReportPDMPMedicationRequests: ReportPDMPMedicationRequests,
+    ReportBuprenorphineMedicationRequests: ReportBuprenorphineMedicationRequests,
+    // ReportDailyMMEByDateWithoutBuprenorphine: ReportDailyMMEByDateWithoutBuprenorphine,
+    // ReportDailyMMEByDateWithBuprenorphineOnly: ReportDailyMMEByDateWithBuprenorphineOnly,
+    // for debugging, uncomment to test
+    // ReportPrescriptions: ReportPrescriptions,
     BenzodiazepineMedications: ReportBenzodiazepineMedications,
     SedativeMedications: ReportSedativeMedicationRequests,
     BarbiturateMedications: ReportBarbiturateMedicationRequests,
     CarisoprodolMedications: ReportCarisoprodolMedications,
-    NaloxoneMedications: ReportNaloxoneMedications,
-    MedicationRequestsForNaloxoneConsideration: MedicationRequestsForNaloxoneConsideration
+    NaloxoneMedications: ReportNaloxoneMedications
+    // MedicationRequestsForNaloxoneConsideration: MedicationRequestsForNaloxoneConsideration
   },
   PDMPMedications: {
     PDMPMedications: ReportPDMPMedicationRequests
