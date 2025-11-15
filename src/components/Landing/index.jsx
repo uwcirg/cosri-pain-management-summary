@@ -218,12 +218,7 @@ export default class Landing extends Component {
         result.Summary
       );
 
-      console.log("Summary result ", result);
-
-      landingUtils.logMMEEntries(result.Summary, {
-        tags: ["mme-calc"],
-        ...this.getPatientLogParams(),
-      });
+      //console.log("Summary result ", result);
 
       this.setState(
         {
@@ -242,9 +237,13 @@ export default class Landing extends Component {
           // loading already false
         },
         () => {
+          this.handleSetActiveTab(0);
           this.initEvents();
           this.savePDMPSummaryData();
-          this.handleSetActiveTab(0);
+          landingUtils.logMMEEntries(result.Summary, {
+            tags: ["mme-calc"],
+            ...this.getPatientLogParams(),
+          });
         }
       );
     } catch (e) {
