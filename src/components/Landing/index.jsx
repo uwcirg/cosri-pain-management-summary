@@ -33,16 +33,19 @@ import Header from "../Header";
 import Report from "../Report";
 import Summary from "../Summary";
 import Spinner from "../../elements/Spinner";
-//import CopyPaste from "./report/CopyPaste";
 
-let processIntervalId = 0;
-let scrollHeaderIntervalId = 0;
+// Memoized components for better performance
+const MemoizedSummary = React.memo(Summary);
+const MemoizedReport = React.memo(Report);
+const MemoizedHeader = React.memo(Header);
+
 let landingFinishedOnce = false;
-let bootstrapPromise = null; // first-phase fetch resources
+let bootstrapPromise = null;
 let bootstrapResult = null;
 
 export default class Landing extends Component {
   static contextType = FhirClientContext;
+
   constructor() {
     super(...arguments);
     this.state = {
@@ -60,14 +63,28 @@ export default class Landing extends Component {
       errorCollection: [],
       summaryMap: summaryMap,
     };
+
     this._initStarted = false;
 
-    // This binding is necessary to make `this` work in the callback
+    // Instance properties for intervals (prevents memory leaks)
+    this.processIntervalId = null;
+    this.scrollHeaderIntervalId = null;
+
+    // Cache for DOM elements and computed values
+    this._bodyElement = null;
+    this._titleSet = false;
+    this._prevShouldShowTabs = undefined;
+    this._cachedTabs = null;
+    this._cachedShouldShowTabs = null;
+    this._tabHandlers = null;
+
+    // Bind methods
     this.handleSetActiveTab = this.handleSetActiveTab.bind(this);
     this.handleHeaderPos = this.handleHeaderPos.bind(this);
     this.headerPosEvent = this.headerPosEvent.bind(this);
     this.handleAccessToEducationMaterial =
       this.handleAccessToEducationMaterial.bind(this);
+    this.handleReportLoaded = this.handleReportLoaded.bind(this);
 
     this.containerRef = React.createRef();
     this.anchorTopRef = React.createRef();
@@ -88,7 +105,7 @@ export default class Landing extends Component {
 
     Timeout();
 
-    // show progress UI (interval already debounced)
+    // Show progress UI
     if (!this.state.requestsDone) this.initProcessProgressDisplay();
 
     const { client, patient, error } = this.context;
@@ -109,7 +126,6 @@ export default class Landing extends Component {
         landingUtils.getExternalData(summaryMap),
         fetchEnvData(),
       ]).then((responses) => {
-        // side effects that are safe to run once:
         getEnvs();
         addMatomoTracking();
         writeToLog("application loaded", "info", this.getPatientLogParams());
@@ -207,7 +223,8 @@ export default class Landing extends Component {
         ),
       };
 
-      const { sectionFlags, flaggedCount } = landingUtils.getProcessedSummaryData(result.Summary, currentSummaryMap);
+      const { sectionFlags, flaggedCount } =
+        landingUtils.getProcessedSummaryData(result.Summary, currentSummaryMap);
       this.setSummaryOverviewStatsData(result.Summary);
       this.setSummaryAlerts(result.Summary, sectionFlags);
       result.Summary = landingUtils.getProcessedMMEData(result.Summary);
@@ -217,8 +234,6 @@ export default class Landing extends Component {
       const { errors, hasMmeErrors, mmeErrors } = landingUtils.getSummaryErrors(
         result.Summary
       );
-
-      //console.log("Summary result ", result);
 
       this.setState(
         {
@@ -234,7 +249,6 @@ export default class Landing extends Component {
             currentSummaryMap,
             externalDataSet?.error
           ),
-          // loading already false
         },
         () => {
           this.handleSetActiveTab(0);
@@ -244,6 +258,9 @@ export default class Landing extends Component {
             tags: ["mme-calc"],
             ...this.getPatientLogParams(),
           });
+
+          // Pre-create tab handlers after state is set
+          this.createTabHandlers();
         }
       );
     } catch (e) {
@@ -258,13 +275,29 @@ export default class Landing extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    //page title
-    document.title = "COSRI";
-    if (this.shouldShowTabs()) {
-      // for styling purpose
-      document.querySelector("body").classList.add("has-tabs");
+    // Cache body element reference
+    if (!this._bodyElement) {
+      this._bodyElement = document.querySelector("body");
     }
 
+    // Only update title once
+    if (!this._titleSet) {
+      document.title = "COSRI";
+      this._titleSet = true;
+    }
+
+    // Only update body class when tabs visibility changes
+    const shouldShowTabs = this.shouldShowTabs();
+    if (this._prevShouldShowTabs !== shouldShowTabs) {
+      if (shouldShowTabs) {
+        this._bodyElement.classList.add("has-tabs");
+      } else {
+        this._bodyElement.classList.remove("has-tabs");
+      }
+      this._prevShouldShowTabs = shouldShowTabs;
+    }
+
+    // Only refresh tocbot when activeTab actually changes
     if (
       prevState.activeTab !== this.state.activeTab &&
       this.isTabActivated(this.state.activeTab)
@@ -286,27 +319,29 @@ export default class Landing extends Component {
   }
 
   initEvents() {
-    //const logParams = this.getPatientLogParams();
-    this.containerRef.current.addEventListener(
-      "click",
-      this.handleAccessToEducationMaterial
-    );
+    if (this.containerRef.current) {
+      this.containerRef.current.addEventListener(
+        "click",
+        this.handleAccessToEducationMaterial
+      );
+    }
     this.handleHeaderPos();
-    // support other events if need to
   }
 
   removeEvents() {
     document.removeEventListener("scroll", this.headerPosEvent);
-    this.containerRef.current.removeEventListener(
-      "click",
-      this.handleAccessToEducationMaterial
-    );
+    if (this.containerRef.current) {
+      this.containerRef.current.removeEventListener(
+        "click",
+        this.handleAccessToEducationMaterial
+      );
+    }
   }
 
   handleAccessToEducationMaterial(event) {
     const logParams = this.getPatientLogParams();
     if (
-      event.target.classList.contains(".education") ||
+      event.target.classList.contains("education") ||
       event.target.closest(".education")
     ) {
       const title =
@@ -320,20 +355,20 @@ export default class Landing extends Component {
   }
 
   headerPosEvent() {
-    clearTimeout(scrollHeaderIntervalId);
-    scrollHeaderIntervalId = setTimeout(
-      function () {
-        if (!isInViewport(this.anchorTopRef.current)) {
-          document.querySelector("body").classList.add("fixed");
-          return;
-        }
-        document.querySelector("body").classList.remove("fixed");
-      }.bind(this),
-      250
-    );
+    clearTimeout(this.scrollHeaderIntervalId);
+    this.scrollHeaderIntervalId = setTimeout(() => {
+      if (!this._bodyElement) {
+        this._bodyElement = document.querySelector("body");
+      }
+
+      if (!isInViewport(this.anchorTopRef.current)) {
+        this._bodyElement.classList.add("fixed");
+        return;
+      }
+      this._bodyElement.classList.remove("fixed");
+    }, 250);
   }
 
-  // fixed header when scrolling in the event that it is not within viewport
   handleHeaderPos() {
     document.addEventListener("scroll", this.headerPosEvent);
   }
@@ -347,15 +382,17 @@ export default class Landing extends Component {
     if (this.state.patientId) return this.state.patientId;
     return this.context.patient?.id;
   }
+
   getPatientName() {
     const summary = this.state.result ? this.state.result.Summary : null;
     const patientName = summary && summary.Patient ? summary.Patient.Name : "";
     if (patientName) return patientName;
     return getPatientNameFromSource(this.getPatientResource());
   }
+
   initProcessProgressDisplay() {
     this.clearProcessInterval();
-    processIntervalId = setInterval(() => {
+    this.processIntervalId = setInterval(() => {
       this.setState({
         loadingMessage: landingUtils.getProcessProgressDisplay(
           this.state.resourceTypes
@@ -363,35 +400,38 @@ export default class Landing extends Component {
       });
     }, 350);
   }
+
   clearProcessInterval() {
-    if (processIntervalId) {
-      clearInterval(processIntervalId);
-      processIntervalId = null;
+    if (this.processIntervalId) {
+      clearInterval(this.processIntervalId);
+      this.processIntervalId = null;
     }
   }
+
   getOverviewSectionKey() {
     return "PatientRiskOverview";
   }
+
   setError(message) {
     if (!message) return;
     this.setState({
       errorCollection: [...this.state.errorCollection, message],
     });
   }
+
   logError(message) {
     if (!message) return;
     writeToLog(message, "error", this.getPatientLogParams());
   }
 
   getPatientLogParams() {
-    // see https://github.com/uwcirg/logserver for recommended params
     return {
       patientName: this.getPatientName(),
       subject: `Patient/${this.getPatientId()}`,
       "epic-patient-id": getEPICPatientIdFromSource(this.getPatientResource()),
     };
   }
-  //save MME calculations to file for debugging purpose, development environment ONLY
+
   savePDMPSummaryData() {
     if (isProduction()) return;
     const summary = this.state.result ? this.state.result.Summary : null;
@@ -413,9 +453,9 @@ export default class Landing extends Component {
         ...this.getPatientLogParams(),
       });
   }
+
   setSummaryGraphData(summary) {
     if (!this.hasOverviewSection()) return;
-    //process graph data
     const overviewSection = summaryMap[this.getOverviewSectionKey()];
     const mmeData = landingUtils.getSummaryGraphDataSet(
       overviewSection.graphConfig,
@@ -440,9 +480,11 @@ export default class Landing extends Component {
       tags: ["tab", "analytics"],
       ...this.getPatientLogParams(),
     });
+
     if (this.state.activeTab === index) {
       return;
     }
+
     if (!this.isTabActivated(index)) {
       this.setState(
         (prevState) => ({
@@ -461,23 +503,55 @@ export default class Landing extends Component {
   }
 
   shouldShowTabs() {
+    if (this._cachedShouldShowTabs !== null) {
+      return this._cachedShouldShowTabs;
+    }
+
     const tabs = this.getTabs();
-    return tabs && tabs.length > 1;
+    this._cachedShouldShowTabs = tabs && tabs.length > 1;
+    return this._cachedShouldShowTabs;
   }
 
   getTabs() {
+    if (this._cachedTabs) return this._cachedTabs;
+
     let tabs = ["overview"];
     if (isReportEnabled()) tabs.push("report");
+
+    this._cachedTabs = tabs;
     return tabs;
   }
+
   isTabActivated(index) {
     return this.state.tabsActivated.indexOf(index) !== -1;
+  }
+
+  // Pre-create tab click handlers to avoid inline function creation
+  createTabHandlers() {
+    const tabs = this.getTabs();
+    this._tabHandlers = tabs.map((_, index) => (e) => {
+      const parentTab = e.target.closest(".tab");
+      if (parentTab) parentTab.classList.add("active");
+      this.handleSetActiveTab(index);
+    });
+  }
+
+  handleReportLoaded(data) {
+    this.setState({
+      result: {
+        ...this.state.result,
+        Summary: {
+          ...this.state.result.Summary,
+          ...data,
+        },
+      },
+    });
   }
 
   renderHeader(summary, patientResource, PATIENT_SEARCH_URL) {
     const summaryPatient = summary.Patient;
     return (
-      <Header
+      <MemoizedHeader
         patientName={this.getPatientName()}
         patientDOB={datishFormat(this.state.result, patientResource?.birthDate)}
         patientGender={summaryPatient?.Gender}
@@ -491,7 +565,7 @@ export default class Landing extends Component {
 
   renderSummary(summary, sectionFlags) {
     return (
-      <Summary
+      <MemoizedSummary
         summary={summary}
         summaryMap={this.state.summaryMap}
         patient={summary.Patient}
@@ -503,21 +577,25 @@ export default class Landing extends Component {
       />
     );
   }
+
   renderTabs() {
     const tabs = this.getTabs();
+    if (!this.shouldShowTabs()) return null;
+
+    // Ensure handlers are created
+    if (!this._tabHandlers) {
+      this.createTabHandlers();
+    }
+
     return (
-      <div className={"tabs " + (!this.shouldShowTabs() ? "hide" : "")}>
+      <div className="tabs">
         {tabs.map((item, index) => {
           return (
             <div
               className={`tab ${
                 this.state.activeTab === index ? "active" : ""
               }`}
-              onClick={(e) => {
-                const parentTab = e.target.closest(".tab");
-                if (parentTab) parentTab.classList.add("active");
-                this.handleSetActiveTab(index);
-              }}
+              onClick={this._tabHandlers[index]}
               role="presentation"
               key={`tab_${index}`}
             >
@@ -525,15 +603,6 @@ export default class Landing extends Component {
             </div>
           );
         })}
-        {/* this just to test copy and paste */}
-        {/* <div
-          className={`tab ${this.state.activeTab === 10 ? "active" : ""}`}
-          onClick={() => this.handleSetActiveTab(10)}
-          role="presentation"
-          key={`tab_10`}
-        >
-          COPY & PASTE
-        </div> */}
       </div>
     );
   }
@@ -544,44 +613,27 @@ export default class Landing extends Component {
       <div className="tab-panels">
         <React.Fragment>
           {tabs.map((item, index) => {
+            const isActive = this.state.activeTab === index;
+
             return (
               <div
-                className={`tab-panel ${
-                  this.state.activeTab === index ? "active" : ""
-                } ${tabs.length > 1 ? "multi-tabs" : ""}`}
+                className={`tab-panel ${isActive ? "active" : ""} ${
+                  tabs.length > 1 ? "multi-tabs" : ""
+                }`}
                 key={`tab-panel_${item}`}
               >
                 {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
                 {item === "report" && (
-                  <Report
+                  <MemoizedReport
                     patientBundle={this.state.result?.bundle}
                     sectionFlags={sectionFlags}
-                    onReportLoaded={(data) =>
-                      this.setState({
-                        result: {
-                          ...this.state.result,
-                          Summary: {
-                            ...this.state.result.Summary,
-                            ...data,
-                          },
-                        },
-                      })
-                    }
-                  ></Report>
+                    onReportLoaded={this.handleReportLoaded}
+                  />
                 )}
-                {/* other tab panel as specified here */}
               </div>
             );
           })}
-          {/* this is to test copy and paste */}
-          {/* <div
-            className={`tab-panel  multi-tabs ${
-              this.state.activeTab === 10 ? "active" : ""
-            }`}
-          >
-            <CopyPaste patientInfo={summary.Patient}></CopyPaste>
-          </div> */}
         </React.Fragment>
       </div>
     );
@@ -609,6 +661,7 @@ export default class Landing extends Component {
     if (!this.state || this.state.result == null) {
       return this.renderError(getPatientSearchURL(!!getTokenInfoFromStorage()));
     }
+
     const patientResource = this.getPatientResource();
     const summary = this.state.result.Summary;
     const { sectionFlags } = this.state;
