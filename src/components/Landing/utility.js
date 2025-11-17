@@ -308,15 +308,19 @@ export function getProcessedMMEData(summaryData) {
   summaryData["RiskConsiderations"]["ReportMMEByDates"] = Array.from(
     mmeData
       .filter((med) => isNumber(med.MME) && med.End && med.IsLastTwoYears)
-      .reduce((map, med) => {
-        const key = `${med.ID}|${med.Name}|${med.dosesPerDay}|${med.conversionFactor}|${med.strength?.value}|${med.isActive}|${med.Prescriber}|${med.Start}|${med.End}|${med.rxCUI}|${med.MME}`;
-        if (!map.has(key)) {
-          const { Start, End, rxNormCode, rxCUI, MME } = med;
-          map.set(key, { Start, End, rxNormCode, rxCUI, MME, MMEValue: MME });
-        }
-        return map;
-      }, new Map())
-      .values()
+      .map((med) => {
+        const { Start, End, rxNormCode, rxCUI, MME } = med;
+        return { Start, End, rxNormCode, rxCUI, MME, MMEValue: MME };
+      })
+    // .reduce((map, med) => {
+    //   const key = `${med.ID}|${med.Name}|${med.dosesPerDay}|${med.conversionFactor}|${med.strength?.value}|${med.isActive}|${med.Prescriber}|${med.Start}|${med.End}|${med.rxCUI}|${med.MME}`;
+    //   if (!map.has(key)) {
+    //     const { Start, End, rxNormCode, rxCUI, MME } = med;
+    //     map.set(key, { Start, End, rxNormCode, rxCUI, MME, MMEValue: MME });
+    //   }
+    //   return map;
+    // }, new Map())
+    // .values()
   );
   return summaryData;
 }
