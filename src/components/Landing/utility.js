@@ -305,24 +305,34 @@ export function getProcessedMMEData(summaryData) {
     med.MME = isNumber(mme) ? Number(mme.toFixed(2)) : null;
     return med;
   });
-  summaryData["RiskConsiderations"]["ReportMMEByDates"] = Array.from(
-    mmeData
-      .filter((med) => isNumber(med.MME) && med.End && med.IsLastTwoYears)
-      .map((med) => {
-        const { Start, End, rxNormCode, rxCUI, MME } = med;
-        return { Start, End, rxNormCode, rxCUI, MME, MMEValue: MME };
-      })
-    // .reduce((map, med) => {
-    //   const key = `${med.ID}|${med.Name}|${med.dosesPerDay}|${med.conversionFactor}|${med.strength?.value}|${med.isActive}|${med.Prescriber}|${med.Start}|${med.End}|${med.rxCUI}|${med.MME}`;
-    //   if (!map.has(key)) {
-    //     const { Start, End, rxNormCode, rxCUI, MME } = med;
-    //     map.set(key, { Start, End, rxNormCode, rxCUI, MME, MMEValue: MME });
-    //   }
-    //   return map;
-    // }, new Map())
-    // .values()
-  );
-  console.log("summaryData ", summaryData)
+  const seen = new Set();
+  summaryData["RiskConsiderations"]["ReportMMEByDates"] = mmeData
+    .filter((med) => {
+      if (!med.IsLastTwoYears) return false;
+      if (!isNumber(med.MME) || !med.End) return false;
+      console.log("med ", med);
+      // Create unique key from relevant fields
+      const key = [
+        med.Name,
+        med.MME,
+        med.Start,
+        med.End,
+        med.Prescriber,
+        med.Status,
+        med.conversionFactor,
+        med.rxCUI,
+        med.dosesPerDay,
+        med.strength?.value,
+      ].join("|");
+      if (seen.has(key)) {
+        return false; // Duplicate found, filter it out
+      }
+
+      seen.add(key);
+      return true; // Keep this item
+    })
+    .map((med) => ({ ...med, MMEValue: med.MME }));
+  console.log("summaryData ", summaryData);
   return summaryData;
 }
 

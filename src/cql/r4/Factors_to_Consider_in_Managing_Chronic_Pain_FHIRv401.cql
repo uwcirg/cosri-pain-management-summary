@@ -873,7 +873,6 @@ define ReportPDMPMedicationRequests:
       isActive: CalculatedEnd same or after Today(),
       Status: O.status.value,
       Class: getMedicationRequestDrugClass(O),
-      AuthoredOn: O.authoredOn,
       medicationRequest: O
     }
     sort by Start desc, End desc
@@ -1041,13 +1040,11 @@ define AllOpioidMedicationRequests:
           ID: O.id.value,
           Name:  ConceptText(c),
           Start: DateTimeText(O.authoredOn),
-          CalculatedEnd: CalculatedEnd, //of date type
           End: ToString(CalculatedEnd), //of string type
           Prescriber: O.requester.display.value,
           isActive: CalculatedEnd same or after Today(),
           Status:  CalculatedStatus,
           AuthoredDate: AuthoredDate,
-          AuthoredOn: O.authoredOn,
           IsLastTwoYears: ((year from Today() - year from CalculatedEnd) <= 2),
           medicationRequest: O
       }

@@ -5199,13 +5199,6 @@
                            } ]
                         }
                      }, {
-                        "name" : "AuthoredOn",
-                        "value" : {
-                           "path" : "authoredOn",
-                           "scope" : "O",
-                           "type" : "Property"
-                        }
-                     }, {
                         "name" : "medicationRequest",
                         "value" : {
                            "name" : "O",
@@ -5360,12 +5353,6 @@
                            } ]
                         }
                      }, {
-                        "name" : "CalculatedEnd",
-                        "value" : {
-                           "name" : "CalculatedEnd",
-                           "type" : "QueryLetRef"
-                        }
-                     }, {
                         "name" : "End",
                         "value" : {
                            "type" : "ToString",
@@ -5411,13 +5398,6 @@
                         "value" : {
                            "name" : "AuthoredDate",
                            "type" : "QueryLetRef"
-                        }
-                     }, {
-                        "name" : "AuthoredOn",
-                        "value" : {
-                           "path" : "authoredOn",
-                           "scope" : "O",
-                           "type" : "Property"
                         }
                      }, {
                         "name" : "IsLastTwoYears",
