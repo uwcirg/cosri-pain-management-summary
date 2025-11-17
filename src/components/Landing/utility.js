@@ -322,6 +322,7 @@ export function getProcessedMMEData(summaryData) {
     // }, new Map())
     // .values()
   );
+  console.log("summaryData ", summaryData)
   return summaryData;
 }
 
