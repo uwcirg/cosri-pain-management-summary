@@ -290,7 +290,7 @@ export function getProcessedMMEData(summaryData) {
       dosesPerDay,
       strength,
       conversionFactor,
-      MME: isNumber(mme) ? Number(mme.toFixed(2)): null,
+      MME: isNumber(mme) ? Number(mme.toFixed(2)) : null,
     };
   });
   summaryData["RiskConsiderations"]["ReportMME"] = mmeData;
@@ -301,15 +301,15 @@ export function getProcessedMMEData(summaryData) {
       : [];
   summaryData["PDMPMedications"]["PDMPMedications"] = PDMPMeds.map((med) => {
     const mmeResultObject = MMECalculator.mme([med.medicationRequest]);
-    const {mme} = !isEmptyArray(mmeResultObject) ? mmeResultObject[0] : {};
-    med.MME = isNumber(mme) ? Number(mme.toFixed(2)): null;
+    const { mme } = !isEmptyArray(mmeResultObject) ? mmeResultObject[0] : {};
+    med.MME = isNumber(mme) ? Number(mme.toFixed(2)) : null;
     return med;
   });
   summaryData["RiskConsiderations"]["ReportMMEByDates"] = Array.from(
     mmeData
       .filter((med) => isNumber(med.MME) && med.End && med.IsLastTwoYears)
       .reduce((map, med) => {
-        const key = `${med.Start}|${med.End}|${med.rxCUI}|${med.MME}`;
+        const key = `${med.ID}|${med.Name}|${med.dosesPerDay}|${med.conversionFactor}|${med.strength?.value}|${med.isActive}|${med.Prescriber}|${med.Start}|${med.End}|${med.rxCUI}|${med.MME}`;
         if (!map.has(key)) {
           const { Start, End, rxNormCode, rxCUI, MME } = med;
           map.set(key, { Start, End, rxNormCode, rxCUI, MME, MMEValue: MME });
@@ -648,7 +648,7 @@ export function GetBuprenorphineMMEListByDates(summaryData) {
   return mmeList
     .filter((o) => bupRxCuis.find((item) => item === o.rxCUI))
     .map((o) => {
-      const { Start, End, rxNormCode, rxCUI, MME}  = o;
+      const { Start, End, rxNormCode, rxCUI, MME } = o;
       return {
         ...o,
         rxCUI: o.rxNormCode.code,
