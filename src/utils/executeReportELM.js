@@ -33,11 +33,13 @@ async function executeReportELM(
     patientBundle?.entry
   );
   const SURVEY_FHIR_RESOURCES = ["QuestionnaireResponse", "Questionnaire"];
+
   return new Promise((resolve, reject) => {
     const reportResources = extractResourcesFromELM(getReportLibrary());
     const resourcesToLoad = reportResources.filter(
       (resource) => resourceLoaded.indexOf(resource) === -1
     );
+
     Promise.allSettled(
       [...new Set([...resourcesToLoad, ...SURVEY_FHIR_RESOURCES])].map(
         (name) => {
@@ -50,36 +52,37 @@ async function executeReportELM(
         if (isEmptyArray(requestResults)) {
           return null;
         }
-        let resources = requestResults
+
+        // Use status, not state, and don't double-wrap
+        const resources = requestResults
           .filter(
             (result) =>
-              result.state !== "rejected" && !isEmptyArray(result.value)
+              result.status === "fulfilled" && !isEmptyArray(result.value)
           )
-          .map((result) => {
-            return getResourcesFromBundle(result.value);
-          })
-          .flat();
+          .flatMap((result) => result.value);
+
         patientBundle = {
           resourceType: "Bundle",
           entry: [
-            ...new Set([
-              ...(paramPatientBundle.entry ? paramPatientBundle.entry : []),
-              ...resources,
-            ]),
+            ...(paramPatientBundle.entry ? paramPatientBundle.entry : []),
+            ...resources,
           ],
         };
+
         const patientSource = getPatientSource(release);
         try {
-          patientSource.loadBundles(patientBundle);
+          // IMPORTANT: needs an array of bundles
+          patientSource.loadBundles([patientBundle]);
         } catch (e) {
           console.log(e);
           throw new Error("Unable to load patient resource bundle.");
         }
+
         // return a promise containing survey evaluated data
         return Promise.allSettled([
           // report
           executeELMForReport(patientSource),
-          // surey results
+          // survey results
           ...executeELMForInstruments(patientSource),
         ]);
       })
@@ -87,6 +90,11 @@ async function executeReportELM(
         reject(e);
       })
       .then((results) => {
+        if (!results) {
+          resolve({});
+          return;
+        }
+
         if (results[0].status === "rejected") {
           console.log("Executing ELM for Report error ", results[0].reason);
         }
@@ -95,27 +103,28 @@ async function executeReportELM(
           result && result.patientResults
             ? result.patientResults[Object.keys(result.patientResults)[0]]
             : {};
+
         const reportResults = getPatientResults(
           results[0].status !== "rejected" ? results[0].value : null
         );
         evalResults["ReportSummary"] = reportResults.Summary
           ? reportResults.Summary
           : null;
+
         const surveyLibResults = results
           .slice(1)
           .filter((result) => !!result.value);
+
         if (isEmptyArray(surveyLibResults)) {
           resolve(evalResults);
+          return;
         }
+
         const evaluatedSurveyResults = surveyLibResults
           .filter((o) => o.value && o.value.patientResults)
           .map((o) => getPatientResults(o.value));
+
         evalResults["SurveySummary"] = evaluatedSurveyResults;
-        //debug
-        // console.log(
-        //   "final evaluated CQL results including surveys ",
-        //   evalResults
-        // );
         resolve(evalResults);
       })
       .catch((e) => {
@@ -123,6 +132,7 @@ async function executeReportELM(
       });
   });
 }
+
 
 function getReportLibrary() {
   let r4ReportCommonELM = getReportLogicLibrary();
