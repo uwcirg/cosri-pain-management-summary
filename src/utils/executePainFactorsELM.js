@@ -151,13 +151,11 @@ function minifyBundleForCQL(bundle, library, keepPredicate = null) {
 
 // Fetch critical resources first, then others in parallel
 const RESOURCE_PRIORITY = {
-  HIGH: ["Patient", "MedicationRequest"],
-  MEDIUM: ["Observation", "Procedure", "Encounter"],
+  HIGH: ["Patient", "MedicationRequest", "Procedure", "DocumentReference"],
+  MEDIUM: ["Observation", "Condition", "Encounter"],
   LOW: [
     "QuestionnaireResponse",
     "Questionnaire",
-    "Condition",
-    "DocumentReference",
     "MedicationStatement",
     "MedicationOrder",
   ],
