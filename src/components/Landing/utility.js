@@ -310,7 +310,6 @@ export function getProcessedMMEData(summaryData) {
     .filter((med) => {
       if (!med.IsLastTwoYears) return false;
       if (!isNumber(med.MME) || !med.End) return false;
-      console.log("med ", med);
       // Create unique key from relevant fields
       const key = [
         med.Name,
