@@ -151,18 +151,12 @@ function minifyBundleForCQL(bundle, library, keepPredicate = null) {
 
 // Fetch critical resources first, then others in parallel
 const RESOURCE_PRIORITY = {
-  HIGH: [
-    "Patient",
-    "Condition",
-    "MedicationRequest",
-    "QuestionnaireResponse",
-    "Questionnaire",
-  ],
+  HIGH: ["Patient", "MedicationRequest"],
   MEDIUM: ["Observation", "Procedure", "Encounter"],
   LOW: [
-    "Observation",
-    "Procedure",
-    "Encounter",
+    "QuestionnaireResponse",
+    "Questionnaire",
+    "Condition",
     "DocumentReference",
     "MedicationStatement",
     "MedicationOrder",
@@ -356,7 +350,7 @@ export async function executeRequests(
   }
 }
 
-// **NEW: Fetch a batch of resources in parallel**
+// Fetch a batch of resources in parallel
 async function fetchResourceBatch(
   client,
   release,
@@ -421,7 +415,7 @@ async function fetchResourceBatch(
   }
 }
 
-// **OPTIMIZED: Search with caching and pagination limits**
+// Search with caching and pagination limits
 export function doSearchOptimized(
   client,
   release,
@@ -481,7 +475,7 @@ export function doSearchOptimized(
     });
 }
 
-// ** determine appropriate page limit based on resource type **
+// determine appropriate page limit based on resource type
 function getPageLimitForResourceType(type) {
   // For resources that typically have many entries, limit pagination
   const HIGH_VOLUME_TYPES = [
@@ -496,9 +490,9 @@ function getPageLimitForResourceType(type) {
   ];
 
   if (HIGH_VOLUME_TYPES.includes(type)) {
-    return 10; // Fetch up to 5 pages
+    return 10;
   } else if (MEDIUM_VOLUME_TYPES.includes(type)) {
-    return 15; // Fetch up to 10 pages
+    return 15;
   }
 
   return 0; // Fetch all pages for other types
