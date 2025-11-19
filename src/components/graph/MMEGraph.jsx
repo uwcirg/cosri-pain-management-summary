@@ -226,7 +226,7 @@ export default class MMEGraph extends Component {
     );
   }
 
-  renderSwitches() {
+  renderSwitches(shouldShowSwitches) {
     const oLines = this.arrLineObj.filter((o) => !!o.legendProps);
     if (!oLines.length) return null;
     return (
@@ -259,29 +259,31 @@ export default class MMEGraph extends Component {
                   </span>
                 </div>
 
-                <div className="select-icons-container print-hidden exclude-from-copy">
-                  <label
-                    className={`exclude-from-copy switch`}
-                    title={
-                      this.isInGraph(item.key)
-                        ? `Remove ${legendProps.label} from graph`
-                        : `Add ${legendProps.label} to graph`
-                    }
-                  >
-                    <input
-                      type="checkbox"
-                      value={item.key}
-                      dataindex={index}
-                      onChange={this.handleSwitchChange}
-                      // disabled={
-                      //   this.isInGraph(item.id) && this.hasOnlyOneGraphLine()
-                      // }
-                      checked={!!this.isInSelectedLineIds(item.key)}
-                      ref={this.switchCheckboxRefs[index]}
-                    />
-                    <span className="switch-slider round"></span>
-                  </label>
-                </div>
+                {shouldShowSwitches && (
+                  <div className="select-icons-container print-hidden exclude-from-copy">
+                    <label
+                      className={`exclude-from-copy switch`}
+                      title={
+                        this.isInGraph(item.key)
+                          ? `Remove ${legendProps.label} from graph`
+                          : `Add ${legendProps.label} to graph`
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        value={item.key}
+                        dataindex={index}
+                        onChange={this.handleSwitchChange}
+                        // disabled={
+                        //   this.isInGraph(item.id) && this.hasOnlyOneGraphLine()
+                        // }
+                        checked={!!this.isInSelectedLineIds(item.key)}
+                        ref={this.switchCheckboxRefs[index]}
+                      />
+                      <span className="switch-slider round"></span>
+                    </label>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -721,7 +723,7 @@ export default class MMEGraph extends Component {
               </svg>
               {this.renderPrintOnlyImage()}
             </div>
-            {shouldShowSwitches && this.renderSwitches()}
+            {this.renderSwitches(shouldShowSwitches)}
           </div>
           {this.renderStats(graphStats)}
         </div>
