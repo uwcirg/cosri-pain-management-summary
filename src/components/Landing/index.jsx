@@ -57,7 +57,7 @@ export default class Landing extends Component {
       patientId: "",
       activeTab: 0,
       tabsActivated: [],
-      loadingMessage: "Resources are being loaded...",
+      loadingMessage: "Please wait...",
       hasMmeErrors: false,
       mmeErrors: [],
       errorCollection: [],

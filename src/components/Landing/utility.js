@@ -1017,11 +1017,11 @@ export function getAnalyticsData(endpoint, apikey, summary) {
   });
 }
 
-export function getProcessProgressDisplay(resourcesTypes) {
+export function getProcessProgressDisplay(resourcesTypes = {}) {
   if (!resourcesTypes) return null;
-  let totalResources = 0;
-  let numResourcesLoaded = 0;
-  let loadedResources = "";
+  let totalResources = Object.keys(resourcesTypes).length;
+  let numResourcesLoaded = Object.values(resourcesTypes).filter(s => s === true).length;;
+  let message  = "";
   const camel2title = (camelCase) =>
     camelCase
       .replace(/([A-Z])/g, (match) => ` ${match}`)
@@ -1031,25 +1031,23 @@ export function getProcessProgressDisplay(resourcesTypes) {
     let title = camel2title(key);
     if (resourcesTypes[key]) {
       //data loaded text
-      loadedResources += `<div class='text-success resource-item'>&#10003; ${title} data loaded</div>`;
-      numResourcesLoaded = numResourcesLoaded + 1;
+      message += `<div class='text-success resource-item'>&#10003; ${title} loaded</div>`;
     } else {
       //data loading in progress
-      loadedResources += `<div class='text-warning text-bold resource-item'>Loading ${title} data...</div>`;
+      message += `<div class='text-warning text-bold resource-item'>Loading ${title} ...</div>`;
     }
-    totalResources = totalResources + 1;
   }
   let stillLoading = numResourcesLoaded < totalResources;
   let textClass = stillLoading ? "text-warning" : "text-success";
   return `<div><div class='title-text'>${
     totalResources === 0
-      ? "Gathering resources..."
-      : totalResources + " resources are to be loaded."
+      ? "Loading resources..."
+      : `${totalResources} resources`
   }</div><div class='${
     totalResources === 0 ? "hide" : "title-text"
   }'><span class='${textClass}'>${
     stillLoading ? numResourcesLoaded : totalResources
-  } loaded ...</span></div><div class='resources-container'>${loadedResources}</div></div>`;
+  } loaded ...</span></div><div class='resources-container'>${message}</div></div>`;
 }
 export function getSummaryMapWithUpdatedSectionsVis(summaryMap) {
   if (!summaryMap) return null;

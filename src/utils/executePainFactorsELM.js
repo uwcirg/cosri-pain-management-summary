@@ -151,9 +151,10 @@ function minifyBundleForCQL(bundle, library, keepPredicate = null) {
 
 // Fetch critical resources first, then others in parallel
 const RESOURCE_PRIORITY = {
-  HIGH: ["Patient", "MedicationRequest", "Procedure", "DocumentReference"],
-  MEDIUM: ["Observation", "Condition", "Encounter"],
+  HIGH: ["Patient", "MedicationRequest"],
+  MEDIUM: ["Observation", "Encounter", "Procedure", "DocumentReference"],
   LOW: [
+    "Condition",
     "QuestionnaireResponse",
     "Questionnaire",
     "MedicationStatement",
@@ -262,6 +263,9 @@ export async function executeRequests(
 
     // Step 2: Get all needed resource types
     const neededTypes = [...neededTypesFromELM(library)];
+    neededTypes.forEach(type => {
+      resourceTypes[type] = false; // or false, depending on your UI needs
+    });
 
     // Step 3: Prioritize resources (fetch critical ones first)
     const prioritized = prioritizeResourceTypes(neededTypes);
@@ -482,7 +486,6 @@ function getPageLimitForResourceType(type) {
     "MedicationRequest",
   ];
   const MEDIUM_VOLUME_TYPES = [
-    "MedicationRequest",
     "MedicationStatement",
     "Procedure",
   ];
