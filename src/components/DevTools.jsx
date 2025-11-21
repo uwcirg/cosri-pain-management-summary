@@ -1,7 +1,8 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import PropTypes from "prop-types";
 
 import FhirQuery from "./FhirQuery";
+import CopyButton from "./CopyButton";
 
 export default class DevTools extends Component {
   constructor() {
@@ -14,6 +15,7 @@ export default class DevTools extends Component {
       displayGraphResults: false,
       displayOtherResults: false,
     };
+    this.graphTableRefs = {}; // Store refs in an object
   }
 
   toggleDevTools = (event) => {
@@ -149,10 +151,10 @@ export default class DevTools extends Component {
   }
   renderGraphResults() {
     let graphDataSet = this.props.graphData ? this.props.graphData : null;
-    // console.log("graph data ", graphDataSet);
     if (!graphDataSet) return null;
     const keys = Object.keys(graphDataSet);
     if (!keys.length) return null;
+
     return (
       <div className="graph-results">
         <h4>
@@ -163,12 +165,20 @@ export default class DevTools extends Component {
           style={{ display: this.state.displayGraphResults ? "block" : "none" }}
         >
           {keys.map((key, index) => {
+            // Create a ref for each table if it doesn't exist
+            if (!this.graphTableRefs[key]) {
+              this.graphTableRefs[key] = createRef();
+            }
+
             return (
               <div key={`${key}_table_${index}`}>
-                {graphDataSet[key].title && (
-                  <h5 className="title">{graphDataSet[key].title}</h5>
-                )}
-                <table>
+                <div className="flex flex-start">
+                  {<h5 className="title">{graphDataSet[key].title??"MME Per Day"}</h5>}
+                  {this.renderCopyButton(this.graphTableRefs[key].current, {
+                    imageType: "text/html",
+                  })}
+                </div>
+                <table ref={this.graphTableRefs[key]}>
                   <thead>
                     <tr>
                       <th>Date</th>
@@ -206,6 +216,16 @@ export default class DevTools extends Component {
           <pre>{JSON.stringify(this.props.other, null, 2)}</pre>
         </div>
       </div>
+    );
+  }
+
+  renderCopyButton(copyRef, options) {
+    return (
+      <CopyButton
+        buttonTitle="Click to copy"
+        elementToCopy={copyRef}
+        options={options}
+      ></CopyButton>
     );
   }
 

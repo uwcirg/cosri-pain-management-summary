@@ -439,6 +439,18 @@ export function copySVGImage(
 export function getHTMLImageClipboardItem(domElement, options) {
   const imageType =
     options && options.imageType ? options.imageType : "image/png";
+  
+  // Handle HTML content type
+  if (imageType === "text/html") {
+    return {
+      "text/html": new Promise((resolve) => {
+        const htmlBlob = new Blob([domElement.outerHTML], { type: "text/html" });
+        resolve(htmlBlob);
+      }),
+    };
+  }
+  
+  // Handle image types
   return {
     [imageType]: new Promise(async (resolve) => {
       if (imageType === "image/png") {
@@ -448,12 +460,13 @@ export function getHTMLImageClipboardItem(domElement, options) {
         const imageBlob = await toJpeg(domElement, options);
         resolve(imageBlob);
       } else {
-        const imageBlob = await toBlob(domElement, options);
+        const imageBlob = await toBlob(domElement);
         resolve(imageBlob);
       }
     }),
   };
 }
+
 export function copyDomToClipboard(domElement, options) {
   if (!allowCopyClipboardItem()) return null;
   const params = options ? options : {};
