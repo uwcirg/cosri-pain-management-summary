@@ -34,9 +34,7 @@ import Report from "../Report";
 import Summary from "../Summary";
 import Spinner from "../../elements/Spinner";
 
-// Memoized components for better performance
-const MemoizedSummary = React.memo(Summary);
-const MemoizedReport = React.memo(Report);
+// Memoized component for better performance
 const MemoizedHeader = React.memo(Header);
 
 let landingFinishedOnce = false;
@@ -565,7 +563,7 @@ export default class Landing extends Component {
 
   renderSummary(summary, sectionFlags) {
     return (
-      <MemoizedSummary
+      <Summary
         summary={summary}
         summaryMap={this.state.summaryMap}
         patient={summary.Patient}
@@ -625,7 +623,7 @@ export default class Landing extends Component {
                 {item === "overview" &&
                   this.renderSummary(summary, sectionFlags)}
                 {item === "report" && (
-                  <MemoizedReport
+                  <Report
                     patientBundle={this.state.result?.bundle}
                     sectionFlags={sectionFlags}
                     onReportLoaded={this.handleReportLoaded}
