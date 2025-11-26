@@ -378,6 +378,15 @@ export function copySVGImage(
 export function getHTMLImageClipboardItem(domElement, options) {
   const imageType =
     options && options.imageType ? options.imageType : "image/png";
+  // Handle HTML content type
+  if (imageType === "text/html") {
+    return {
+      "text/html": new Promise((resolve) => {
+        const htmlBlob = new Blob([domElement.outerHTML], { type: "text/html" });
+        resolve(htmlBlob);
+      }),
+    };
+  }
   return {
     [imageType]: new Promise(async (resolve) => {
       if (imageType === "image/png") {
