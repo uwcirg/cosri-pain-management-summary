@@ -460,7 +460,7 @@ export function getHTMLImageClipboardItem(domElement, options) {
         const imageBlob = await toJpeg(domElement, options);
         resolve(imageBlob);
       } else {
-        const imageBlob = await toBlob(domElement);
+        const imageBlob = await toBlob(domElement, options);
         resolve(imageBlob);
       }
     }),
