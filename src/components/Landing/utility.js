@@ -867,6 +867,7 @@ export function getMMEErrors(summary) {
       );
     }
   });
+  console.log("MME Errors: ", errors);
   return errors;
 }
 
