@@ -859,7 +859,7 @@ export function getMMEErrors(summary) {
     if (
       isOpioid &&
       item["NDC_Code"] &&
-      (!item["RXNorm_Code"] || !item["MME"])
+      (!item["RXNorm_Code"] || !isNumber(item["MME"]))
     ) {
       errorItems.push(item);
       errors.push(
