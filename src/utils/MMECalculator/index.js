@@ -397,8 +397,9 @@ const MMECalculator = {
         .filter(Boolean)
         .join("\r\n");
 
-      const totalMME = (
-        mmePerIngredient.reduce((sum, x) => sum + (x.mme?.value || 0), 0)
+      const totalMME = mmePerIngredient.reduce(
+        (sum, x) => sum + (x.mme?.value || 0),
+        0
       );
 
       return {
