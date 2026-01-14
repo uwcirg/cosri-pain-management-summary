@@ -1109,8 +1109,23 @@
       .cql-results,
       .pdmp-results,
       .occupation-results,
+      .graph-results,
       .other-results {
         margin-left: 40px;
+      }
+      .graph-results {
+        .title {
+          margin-left: 56px;
+        }
+        table {
+          margin-left: 56px;
+          border-collapse: collapse;
+          font-size: 0.9em;
+          th, td {
+            border: 1px solid #ececec;
+            text-align: center;
+          }
+        }
       }
 
       .fhir-query,

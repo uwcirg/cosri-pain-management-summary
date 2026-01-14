@@ -7,9 +7,9 @@ import dstu2HelpersELM from "../cql/dstu2/FHIRHelpers.json";
 import r4FactorsELM from "../cql/r4/Factors_to_Consider_in_Managing_Chronic_Pain_FHIRv401.json";
 import r4CommonsELM from "../cql/r4/CDS_Connect_Commons_for_FHIRv401.json";
 import r4HelpersELM from "../cql/r4/FHIRHelpers.json";
-import r4MMECalculatorELM from "../cql/r4/MMECalculator.json";
-import r4OMTKDataELM from "../cql/r4/OMTKData.json";
-import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
+// import r4MMECalculatorELM from "../cql/r4/MMECalculator.json";
+// import r4OMTKDataELM from "../cql/r4/OMTKData.json";
+// import r4OMTKLogicELM from "../cql/r4/OMTKLogic.json";
 import valueSetDB from "../cql/valueset-db.json";
 import { fetchEnvData } from "./envConfig";
 import {
@@ -22,6 +22,10 @@ import {
 export const FHIR_RELEASE_VERSION_2 = 2;
 export const FHIR_RELEASE_VERSION_4 = 4;
 export const PATIENT_SUMMARY_KEY = "Summary";
+
+// In-memory cache for storing fetched resources
+const resourceCache = new Map();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const getResourcesFromBundle = (bundle) => {
   if (isEmptyArray(bundle)) return [];
@@ -145,6 +149,88 @@ function minifyBundleForCQL(bundle, library, keepPredicate = null) {
   };
 }
 
+// Fetch critical resources first, then others in parallel
+const RESOURCE_PRIORITY = {
+  HIGH: ["Patient", "MedicationRequest"],
+  MEDIUM: ["Observation", "Encounter", "Procedure", "DocumentReference"],
+  LOW: [
+    "Condition",
+    "QuestionnaireResponse",
+    "Questionnaire",
+    "MedicationStatement",
+    "MedicationOrder",
+  ],
+};
+
+function prioritizeResourceTypes(resourceTypes) {
+  const prioritized = { high: [], medium: [], low: [] };
+
+  resourceTypes.forEach((type) => {
+    if (RESOURCE_PRIORITY.HIGH.includes(type)) {
+      prioritized.high.push(type);
+    } else if (RESOURCE_PRIORITY.MEDIUM.includes(type)) {
+      prioritized.medium.push(type);
+    } else {
+      prioritized.low.push(type);
+    }
+  });
+
+  return prioritized;
+}
+
+// Get cache key for a request
+function getCacheKey(clientId, type, params) {
+  return `${clientId}-${type}-${params.toString()}`;
+}
+
+// Utility to clear cache
+export function clearResourceCache() {
+  resourceCache.clear();
+  console.log("Resource cache cleared");
+}
+
+// Utility to get cache stats
+export function getCacheStats() {
+  // Clean expired entries before reporting stats
+  cleanExpiredCache();
+
+  return {
+    size: resourceCache.size,
+    entries: Array.from(resourceCache.keys()),
+  };
+}
+
+// Check if cached data is still valid
+function getCachedResource(cacheKey) {
+  const cached = resourceCache.get(cacheKey);
+  if (!cached) return null;
+
+  if (Date.now() - cached.timestamp > CACHE_DURATION) {
+    resourceCache.delete(cacheKey);
+    return null;
+  }
+
+  return cached.data;
+}
+
+// Store resource in cache
+function setCachedResource(cacheKey, data) {
+  resourceCache.set(cacheKey, {
+    data,
+    timestamp: Date.now(),
+  });
+}
+
+// Clean up expired cache entries
+function cleanExpiredCache() {
+  const now = Date.now();
+  for (const [key, value] of resourceCache.entries()) {
+    if (now - value.timestamp > CACHE_DURATION) {
+      resourceCache.delete(key);
+    }
+  }
+}
+
 export async function executeRequests(
   client,
   patient,
@@ -153,76 +239,281 @@ export async function executeRequests(
 ) {
   let release, library, patientBundle;
   let resourceTypes = paramResourceTypes || {};
+
   if (!client) {
     throw new Error("Invalid FHIR client.");
   }
+
   const startTime = Date.now();
-  return new Promise((resolve, reject) => {
-    // First get our authorized client and send the FHIR release to the next step
-    Promise.allSettled([
+  const clientId = client.state?.serverUrl || "default";
+
+  try {
+    // Step 1: Get release info and library (parallel)
+    const [envResult, releaseResult] = await Promise.allSettled([
       fetchEnvData(),
       client.getFhirRelease(),
-      //client.patient.read(),
-    ])
-      // then remember the release for later and get the release-specific library
-      .then((clientResults) => {
-        if (isEmptyArray(clientResults)) {
-          throw new Error("No results returned from client requests.");
-        }
-        if (!clientResults[1] || clientResults[1].status === "rejected")
-          throw new Error("Error fetching FHIR release");
+    ]);
 
-        release = clientResults[1].value;
-        library = getLibrary(release);
+    if (!releaseResult || releaseResult.status === "rejected") {
+      throw new Error("Error fetching FHIR release");
+    }
 
-        // return all the requests that have been resolved // rejected
-        return Promise.allSettled(
-          [...neededTypesFromELM(library)].map((name) => {
-            if (String(name).toLowerCase() === "patient" && patient) {
-              resourceTypes[name] = true;
-              return [patient];
-            }
-            resourceTypes[name] = false;
-            return doSearch(client, release, name, collector, resourceTypes);
-          })
-        );
-      })
-      .then((requestResults) => {
-        const endTime = Date.now();
-        const executionTime = (endTime - startTime).toFixed(2);
-        console.log(`Requests total execution time: ${executionTime} ms`);
-        if (isEmptyArray(requestResults)) {
-          return null;
+    release = releaseResult.value;
+    library = getLibrary(release);
+
+    // Step 2: Get all needed resource types
+    const neededTypes = [...neededTypesFromELM(library)];
+    neededTypes.forEach(type => {
+      resourceTypes[type] = false; // or false, depending on your UI needs
+    });
+
+    // Step 3: Prioritize resources (fetch critical ones first)
+    const prioritized = prioritizeResourceTypes(neededTypes);
+
+    console.log("Resource fetch priority:", {
+      high: prioritized.high,
+      medium: prioritized.medium,
+      low: prioritized.low,
+    });
+
+    // Step 4: Fetch resources in priority batches
+    const allResources = [];
+
+    // Fetch high priority resources first (parallel within batch)
+    if (prioritized.high.length > 0) {
+      const highPriorityResults = await fetchResourceBatch(
+        client,
+        release,
+        prioritized.high,
+        patient,
+        collector,
+        resourceTypes,
+        clientId,
+        "HIGH"
+      );
+      allResources.push(...highPriorityResults);
+    }
+
+    // Fetch medium and low priority in parallel
+    const parallelResults = await Promise.allSettled([
+      fetchResourceBatch(
+        client,
+        release,
+        prioritized.medium,
+        patient,
+        collector,
+        resourceTypes,
+        clientId,
+        "MEDIUM"
+      ),
+      fetchResourceBatch(
+        client,
+        release,
+        prioritized.low,
+        patient,
+        collector,
+        resourceTypes,
+        clientId,
+        "LOW"
+      ),
+    ]);
+
+    // Extract successful results, log any failures
+    parallelResults.forEach((result, index) => {
+      const priority = index === 0 ? "MEDIUM" : "LOW";
+      if (result.status === "fulfilled") {
+        allResources.push(...result.value);
+      } else {
+        console.error(`${priority} priority batch failed:`, result.reason);
+        // Continue with partial results - error already logged in fetchResourceBatch
+      }
+    });
+
+    // Step 5: Build bundle
+    patientBundle = {
+      resourceType: "Bundle",
+      entry: allResources.flat(),
+    };
+
+    const patientSource = getPatientSource(release);
+
+    const endTime = Date.now();
+    const executionTime = (endTime - startTime).toFixed(2);
+    console.log(`Optimized requests total execution time: ${executionTime} ms`);
+
+    return {
+      patientBundle,
+      library,
+      patientSource,
+    };
+  } catch (e) {
+    console.error("Error in executeRequests:", e);
+    throw e;
+  }
+}
+
+// Fetch a batch of resources in parallel
+async function fetchResourceBatch(
+  client,
+  release,
+  resourceTypes,
+  patient,
+  collector,
+  resourceTypesStatus,
+  clientId,
+  priority
+) {
+  if (resourceTypes.length === 0) return [];
+
+  const batchStart = Date.now();
+
+  try {
+    const results = await Promise.allSettled(
+      resourceTypes.map(async (type) => {
+        try {
+          if (String(type).toLowerCase() === "patient" && patient) {
+            resourceTypesStatus[type] = true;
+            return getResourcesFromBundle([patient]);
+          }
+
+          resourceTypesStatus[type] = false;
+          return await doSearchOptimized(
+            client,
+            release,
+            type,
+            collector,
+            resourceTypesStatus,
+            clientId
+          );
+        } catch (error) {
+          console.error(`Error fetching ${type} in ${priority} batch:`, error);
+          resourceTypesStatus[type] = true; // Mark as done even if failed
+          return []; // Return empty array on error
         }
-        let resources = requestResults
-          .filter(
-            (result) =>
-              result.state !== "rejected" && !isEmptyArray(result.value)
-          )
-          .map((result) => {
-            return getResourcesFromBundle(result.value);
-          })
-          .flat();
-        patientBundle = {
-          resourceType: "Bundle",
-          entry: resources,
-        };
-        const patientSource = getPatientSource(release);
-        resolve({
-          patientBundle,
-          library,
-          patientSource,
-        });
       })
-      .catch((e) => {
-        reject(e);
-      });
-  });
+    );
+
+    const batchEnd = Date.now();
+    const successCount = results.filter((r) => r.status === "fulfilled").length;
+    const failCount = results.filter((r) => r.status === "rejected").length;
+
+    console.log(
+      `${priority} priority batch (${resourceTypes.join(", ")}) ` +
+        `took ${(batchEnd - batchStart).toFixed(2)}ms ` +
+        `[✓ ${successCount} ✗ ${failCount}]`
+    );
+
+    // Return all fulfilled results, empty arrays for rejected
+    return results.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value || [];
+      }
+      return []; // Return empty for rejected promises
+    });
+  } catch (error) {
+    // Catch-all in case Promise.allSettled itself fails (very rare)
+    console.error(`Critical error in ${priority} batch:`, error);
+    return []; // Return empty array to allow other batches to continue
+  }
+}
+
+// Search with caching and pagination limits
+export function doSearchOptimized(
+  client,
+  release,
+  type,
+  collector,
+  resourceTypes = {},
+  clientId
+) {
+  const params = new URLSearchParams();
+  updateSearchParams(params, release, type);
+
+  // Check cache first
+  const cacheKey = getCacheKey(clientId, type, params);
+  const cached = getCachedResource(cacheKey);
+
+  if (cached) {
+    console.log(`Using cached data for ${type}`);
+    resourceTypes[type] = true;
+    return Promise.resolve(cached);
+  }
+
+  const resources = [];
+  const uri = `${type}?${params}`;
+  const isNotPatientResourceType = ["questionnaire"].includes(
+    type.toLowerCase()
+  );
+
+  const options = { url: uri, headers: noCacheHeader };
+
+  // Add page limit based on resource type
+  const pageLimit = getPageLimitForResourceType(type);
+
+  const fhirOptions = {
+    pageLimit: pageLimit,
+    onPage: processPage(client, uri, collector, resources),
+  };
+
+  const req = isNotPatientResourceType
+    ? client.request(options, fhirOptions)
+    : client.patient.request(options, fhirOptions);
+
+  return req
+    .then(() => {
+      resourceTypes[type] = true;
+      const bundledResources = getResourcesFromBundle(resources);
+
+      // Cache the results
+      setCachedResource(cacheKey, bundledResources);
+
+      return bundledResources;
+    })
+    .catch((error) => {
+      console.error(`Error fetching ${type}:`, error);
+      collector.push({ error, url: uri, type, data: error });
+      resourceTypes[type] = true;
+      return getResourcesFromBundle(resources); // Return partial results
+    });
+}
+
+// determine appropriate page limit based on resource type
+function getPageLimitForResourceType(type) {
+  // For resources that typically have many entries, limit pagination
+  const HIGH_VOLUME_TYPES = [
+    "Observation",
+    "QuestionnaireResponse",
+    "MedicationRequest",
+  ];
+  const MEDIUM_VOLUME_TYPES = [
+    "MedicationStatement",
+    "Procedure",
+  ];
+
+  if (HIGH_VOLUME_TYPES.includes(type)) {
+    return 10;
+  } else if (MEDIUM_VOLUME_TYPES.includes(type)) {
+    return 15;
+  }
+
+  return 0; // Fetch all pages for other types
+}
+
+// Keep original doSearch for backwards compatibility
+export function doSearch(client, release, type, collector, resourceTypes = {}) {
+  return doSearchOptimized(
+    client,
+    release,
+    type,
+    collector,
+    resourceTypes,
+    "default"
+  );
 }
 
 export async function executeELMForFactors(bundle, patientSource, library) {
   if (!bundle || !patientSource) return null;
-   let cqlStartTime = Date.now(),
+  let cqlStartTime = Date.now(),
     cqlEndTime = Date.now();
   const codeService = new VSACAwareCodeService(
     extractMatchingValueSets(library?.valuesets, valueSetDB)
@@ -259,7 +550,11 @@ export async function executeELMForFactors(bundle, patientSource, library) {
     "total (ms)": (t3 - t0).toFixed(1),
     // expressionMs: (t5- t4).toFixed(1)
   });
-  console.log("CQL execution time ", (cqlEndTime - cqlStartTime).toFixed(1), " ms")
+  console.log(
+    "CQL execution time ",
+    (cqlEndTime - cqlStartTime).toFixed(1),
+    " ms"
+  );
   //return execResults;
   const getPatientResults = (result) =>
     result && result.patientResults
@@ -288,9 +583,9 @@ function getLibrary(release) {
         new cql.Repository({
           CDS_Connect_Commons_for_FHIRv401: r4CommonsELM,
           FHIRHelpers: r4HelpersELM,
-          MMECalculator: r4MMECalculatorELM,
-          OMTKLogic: r4OMTKLogicELM,
-          OMTKData: r4OMTKDataELM,
+          // MMECalculator: r4MMECalculatorELM,
+          // OMTKLogic: r4OMTKLogicELM,
+          // OMTKData: r4OMTKDataELM,
         })
       );
     default:
@@ -326,38 +621,6 @@ export function getRequestURL(client, uri = "") {
   let uriToUse = uri;
   if (uriToUse.startsWith("/")) uriToUse = uriToUse.slice(1);
   return serverURL + (!serverURL.endsWith("/") ? "/" : "") + uriToUse;
-}
-
-export function doSearch(client, release, type, collector, resourceTypes = {}) {
-  const params = new URLSearchParams();
-  updateSearchParams(params, release, type);
-
-  const resources = [];
-  const uri = `${type}?${params}`;
-  const isNotPatientResourceType = ["questionnaire"].includes(
-    type.toLowerCase()
-  );
-
-  const options = { url: uri, headers: noCacheHeader };
-  const fhirOptions = {
-    pageLimit: 0,
-    onPage: processPage(client, uri, collector, resources),
-  };
-
-  const req = isNotPatientResourceType
-    ? client.request(options, fhirOptions)
-    : client.patient.request(options, fhirOptions);
-
-  return req
-    .then(() => {
-      resourceTypes[type] = true;
-      return resources;
-    })
-    .catch((error) => {
-      collector.push({ error, url: uri, type, data: error });
-      resourceTypes[type] = true;
-      return resources; // keep partials; don't reject
-    });
 }
 
 export function processPage(client, uri, collector, resources) {

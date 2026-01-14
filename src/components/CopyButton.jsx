@@ -19,7 +19,10 @@ export default class CopyButton extends Component {
   }
   handleCopy() {
     if (!allowCopyClipboardItem()) return;
-    if (!(this.props.elementToCopy || this.props.buildElementForCopy)) return;
+    if (!(this.props.elementToCopy || this.props.buildElementForCopy)) {
+      console.log("No element to copy.");
+      return;
+    }
     copyDomToClipboard(
       this.props.buildElementForCopy
         ? this.props.buildElementForCopy()
@@ -67,7 +70,7 @@ export default class CopyButton extends Component {
             "button",
             "button-primary",
             "button-secondary",
-            "pagination"
+            "pagination",
           ];
           return !exclusionClasses.some((classname) =>
             node.classList?.contains(classname)

@@ -1,7 +1,8 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import PropTypes from "prop-types";
 
 import FhirQuery from "./FhirQuery";
+import CopyButton from "./CopyButton";
 
 export default class DevTools extends Component {
   constructor() {
@@ -11,8 +12,10 @@ export default class DevTools extends Component {
       displayFhirQueries: false,
       displayCQLResults: false,
       displayPDMPResults: false,
+      displayGraphResults: false,
       displayOtherResults: false,
     };
+    this.graphTableRefs = {}; // Store refs in an object
   }
 
   toggleDevTools = (event) => {
@@ -33,6 +36,11 @@ export default class DevTools extends Component {
   togglePDMPResults = (event) => {
     event.preventDefault();
     this.setState({ displayPDMPResults: !this.state.displayPDMPResults });
+  };
+
+  toggleGraphResults = (event) => {
+    event.preventDefault();
+    this.setState({ displayGraphResults: !this.state.displayGraphResults });
   };
 
   toggleOtherResults = (event) => {
@@ -141,6 +149,58 @@ export default class DevTools extends Component {
       </div>
     );
   }
+  renderGraphResults() {
+    let graphDataSet = this.props.graphData ? this.props.graphData : null;
+    if (!graphDataSet) return null;
+    const keys = Object.keys(graphDataSet);
+    if (!keys.length) return null;
+
+    return (
+      <div className="graph-results">
+        <h4>
+          Graph Data{" "}
+          <button onClick={this.toggleGraphResults}>[show/hide]</button>
+        </h4>
+        <div
+          style={{ display: this.state.displayGraphResults ? "block" : "none" }}
+        >
+          {keys.map((key, index) => {
+            // Create a ref for each table if it doesn't exist
+            if (!this.graphTableRefs[key]) {
+              this.graphTableRefs[key] = createRef();
+            }
+
+            return (
+              <div key={`${key}_table_${index}`}>
+                <div className="flex flex-start">
+                  {<h5 className="title">{graphDataSet[key].title??"MME Per Day"}</h5>}
+                  {this.renderCopyButton(this.graphTableRefs[key].current, {
+                    imageType: "text/html",
+                  })}
+                </div>
+                <table ref={this.graphTableRefs[key]}>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>MME Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {graphDataSet[key].data.map((o, index) => (
+                      <tr key={`${key}_row_${index}`}>
+                        <td>{o["date"]}</td>
+                        <td>{o["MMEValue"]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   renderOtherResults() {
     return (
@@ -159,6 +219,16 @@ export default class DevTools extends Component {
     );
   }
 
+  renderCopyButton(copyRef, options) {
+    return (
+      <CopyButton
+        buttonTitle="Click to copy"
+        elementToCopy={copyRef}
+        options={options}
+      ></CopyButton>
+    );
+  }
+
   render() {
     if (!this.props.collector) {
       return null;
@@ -168,7 +238,9 @@ export default class DevTools extends Component {
       <div className="dev-tools">
         <h3 className="title js-toc-ignore">
           Development Tools{" "}
-          <button className="button-link" onClick={this.toggleDevTools}>[show/hide]</button>
+          <button className="button-link" onClick={this.toggleDevTools}>
+            [show/hide]
+          </button>
         </h3>
 
         <div className="dev-tools__disclaimer">
@@ -181,6 +253,7 @@ export default class DevTools extends Component {
           {this.renderFHIRQueries()}
           {this.renderCQLResults()}
           {this.renderPDMPResults()}
+          {this.renderGraphResults()}
           {this.renderOtherResults()}
         </div>
       </div>
@@ -191,5 +264,6 @@ export default class DevTools extends Component {
 DevTools.propTypes = {
   collector: PropTypes.array.isRequired,
   summary: PropTypes.object.isRequired,
+  graphData: PropTypes.object,
   other: PropTypes.object,
 };
