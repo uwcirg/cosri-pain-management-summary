@@ -464,6 +464,8 @@ export default class Summary extends Component {
         column.maxWidth = headerKey.maxWidth;
       }
 
+      column.className = `bordered ${headerKey.className ? headerKey.className: ""}`;
+
       columns.push(column);
     });
 
