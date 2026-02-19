@@ -5443,6 +5443,144 @@
                }
             }
          }, {
+            "name" : "GetLocationFromEncounter",
+            "context" : "Patient",
+            "accessLevel" : "Public",
+            "type" : "FunctionDef",
+            "expression" : {
+               "type" : "Query",
+               "source" : [ {
+                  "alias" : "E",
+                  "expression" : {
+                     "type" : "Query",
+                     "source" : [ {
+                        "alias" : "En",
+                        "expression" : {
+                           "dataType" : "{http://hl7.org/fhir}Encounter",
+                           "templateId" : "http://hl7.org/fhir/StructureDefinition/Encounter",
+                           "type" : "Retrieve"
+                        }
+                     } ],
+                     "relationship" : [ ],
+                     "where" : {
+                        "type" : "Equal",
+                        "operand" : [ {
+                           "name" : "ToString",
+                           "libraryName" : "FHIRHelpers",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "path" : "id",
+                              "scope" : "En",
+                              "type" : "Property"
+                           } ]
+                        }, {
+                           "name" : "encounterId",
+                           "type" : "OperandRef"
+                        } ]
+                     }
+                  }
+               } ],
+               "relationship" : [ ],
+               "return" : {
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "location",
+                                 "scope" : "E",
+                                 "type" : "Property"
+                              }
+                           }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "type" : "Query",
+                                 "source" : [ {
+                                    "alias" : "$this",
+                                    "expression" : {
+                                       "path" : "location",
+                                       "scope" : "E",
+                                       "type" : "Property"
+                                    }
+                                 } ],
+                                 "where" : {
+                                    "type" : "Not",
+                                    "operand" : {
+                                       "type" : "IsNull",
+                                       "operand" : {
+                                          "path" : "location",
+                                          "type" : "Property",
+                                          "source" : {
+                                             "name" : "$this",
+                                             "type" : "AliasRef"
+                                          }
+                                       }
+                                    }
+                                 },
+                                 "return" : {
+                                    "distinct" : false,
+                                    "expression" : {
+                                       "path" : "location",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "name" : "$this",
+                                          "type" : "AliasRef"
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        } ]
+                     },
+                     "then" : {
+                        "path" : "value",
+                        "type" : "Property",
+                        "source" : {
+                           "path" : "display",
+                           "type" : "Property",
+                           "source" : {
+                              "path" : "location",
+                              "type" : "Property",
+                              "source" : {
+                                 "type" : "Indexer",
+                                 "operand" : [ {
+                                    "path" : "location",
+                                    "scope" : "E",
+                                    "type" : "Property"
+                                 }, {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                    "value" : "0",
+                                    "type" : "Literal"
+                                 } ]
+                              }
+                           }
+                        }
+                     },
+                     "else" : {
+                        "asType" : "{urn:hl7-org:elm-types:r1}String",
+                        "type" : "As",
+                        "operand" : {
+                           "type" : "Null"
+                        }
+                     }
+                  }
+               }
+            },
+            "operand" : [ {
+               "name" : "encounterId",
+               "operandTypeSpecifier" : {
+                  "name" : "{urn:hl7-org:elm-types:r1}String",
+                  "type" : "NamedTypeSpecifier"
+               }
+            } ]
+         }, {
             "name" : "ReportUrineLabServiceRequestsByCustomCode",
             "context" : "Patient",
             "accessLevel" : "Public",
@@ -5465,6 +5603,63 @@
                         "path" : "requester",
                         "scope" : "O",
                         "type" : "Property"
+                     }
+                  }
+               }, {
+                  "identifier" : "location",
+                  "expression" : {
+                     "type" : "If",
+                     "condition" : {
+                        "type" : "Not",
+                        "operand" : {
+                           "type" : "IsNull",
+                           "operand" : {
+                              "path" : "encounter",
+                              "scope" : "O",
+                              "type" : "Property"
+                           }
+                        }
+                     },
+                     "then" : {
+                        "type" : "First",
+                        "source" : {
+                           "name" : "GetLocationFromEncounter",
+                           "type" : "FunctionRef",
+                           "operand" : [ {
+                              "type" : "Indexer",
+                              "operand" : [ {
+                                 "type" : "Split",
+                                 "stringToSplit" : {
+                                    "name" : "ToString",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "reference",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "path" : "encounter",
+                                          "scope" : "O",
+                                          "type" : "Property"
+                                       }
+                                    } ]
+                                 },
+                                 "separator" : {
+                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                    "value" : "/",
+                                    "type" : "Literal"
+                                 }
+                              }, {
+                                 "valueType" : "{urn:hl7-org:elm-types:r1}Integer",
+                                 "value" : "1",
+                                 "type" : "Literal"
+                              } ]
+                           } ]
+                        }
+                     },
+                     "else" : {
+                        "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                        "value" : "UW",
+                        "type" : "Literal"
                      }
                   }
                }, {
@@ -5808,27 +6003,26 @@
                                  "operand" : [ {
                                     "type" : "Concatenate",
                                     "operand" : [ {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                       "value" : "UW lab order (placed by ",
-                                       "type" : "Literal"
+                                       "name" : "location",
+                                       "type" : "QueryLetRef"
                                     }, {
-                                       "name" : "ToString",
-                                       "libraryName" : "FHIRHelpers",
-                                       "type" : "FunctionRef",
-                                       "operand" : [ {
-                                          "path" : "display",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "path" : "requester",
-                                             "scope" : "O",
-                                             "type" : "Property"
-                                          }
-                                       } ]
+                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
+                                       "value" : " lab order\n placed by ",
+                                       "type" : "Literal"
                                     } ]
                                  }, {
-                                    "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                    "value" : ")",
-                                    "type" : "Literal"
+                                    "name" : "ToString",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "display",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "path" : "requester",
+                                          "scope" : "O",
+                                          "type" : "Property"
+                                       }
+                                    } ]
                                  } ]
                               },
                               "else" : {
@@ -5852,29 +6046,22 @@
                               "then" : {
                                  "type" : "Concatenate",
                                  "operand" : [ {
-                                    "type" : "Concatenate",
-                                    "operand" : [ {
-                                       "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                       "value" : "manually entered (placed by ",
-                                       "type" : "Literal"
-                                    }, {
-                                       "name" : "ToString",
-                                       "libraryName" : "FHIRHelpers",
-                                       "type" : "FunctionRef",
-                                       "operand" : [ {
-                                          "path" : "display",
-                                          "type" : "Property",
-                                          "source" : {
-                                             "path" : "requester",
-                                             "scope" : "O",
-                                             "type" : "Property"
-                                          }
-                                       } ]
-                                    } ]
-                                 }, {
                                     "valueType" : "{urn:hl7-org:elm-types:r1}String",
-                                    "value" : ")",
+                                    "value" : "manually entered\n placed by ",
                                     "type" : "Literal"
+                                 }, {
+                                    "name" : "ToString",
+                                    "libraryName" : "FHIRHelpers",
+                                    "type" : "FunctionRef",
+                                    "operand" : [ {
+                                       "path" : "display",
+                                       "type" : "Property",
+                                       "source" : {
+                                          "path" : "requester",
+                                          "scope" : "O",
+                                          "type" : "Property"
+                                       }
+                                    } ]
                                  } ]
                               },
                               "else" : {
