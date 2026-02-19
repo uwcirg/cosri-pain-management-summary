@@ -5610,15 +5610,32 @@
                   "expression" : {
                      "type" : "If",
                      "condition" : {
-                        "type" : "Not",
-                        "operand" : {
-                           "type" : "IsNull",
+                        "type" : "And",
+                        "operand" : [ {
+                           "type" : "Not",
                            "operand" : {
-                              "path" : "encounter",
-                              "scope" : "O",
-                              "type" : "Property"
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "encounter",
+                                 "scope" : "O",
+                                 "type" : "Property"
+                              }
                            }
-                        }
+                        }, {
+                           "type" : "Not",
+                           "operand" : {
+                              "type" : "IsNull",
+                              "operand" : {
+                                 "path" : "reference",
+                                 "type" : "Property",
+                                 "source" : {
+                                    "path" : "encounter",
+                                    "scope" : "O",
+                                    "type" : "Property"
+                                 }
+                              }
+                           }
+                        } ]
                      },
                      "then" : {
                         "type" : "First",

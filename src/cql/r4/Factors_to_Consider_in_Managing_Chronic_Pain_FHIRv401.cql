@@ -86,6 +86,8 @@
 // Add patient MRN
 // Update 20251110
 // Remove MME Calculations, Bupronorephine meds functions, to be implemented in JS
+// Update 20260219
+// Add department location to urine tox screen result set, see GetLocationByEncounter
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -1191,7 +1193,7 @@ define ReportUrineLabServiceRequestsByCustomCode:
   [ServiceRequest] O
   let
     requester: O.requester.display,
-    location: if O.encounter is not null then First(GetLocationFromEncounter(Split(O.encounter.reference, '/')[1])) else 'UW',
+    location: if O.encounter is not null and O.encounter.reference is not null then First(GetLocationFromEncounter(Split(O.encounter.reference, '/')[1])) else 'UW',
     c: O.code as FHIR.CodeableConcept
     where (
       (
