@@ -211,12 +211,13 @@ export default class Summary extends Component {
       return "";
     let flagText = "";
     let flagClass = "";
-    sectionFlags[section][subSection].forEach((flag) => {
+    const sectionItemCount = sectionFlags[section][subSection].length;
+    sectionFlags[section][subSection].forEach((flag, index) => {
       if (flag.entryId === entry._id) {
         if (flag.flagText) {
-          flagText += "\r\n" + flag.flagText;
+          flagText += flag.flagText + (index !== sectionItemCount-1 ? "\r\n" : "");
            if (flag.flagClass) {
-              flagClass += " " + flagClass;
+              flagClass += " " + flag.flagClass;
            }
         }
       }

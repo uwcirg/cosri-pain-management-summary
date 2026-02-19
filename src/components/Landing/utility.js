@@ -1,4 +1,4 @@
-import { datishFormat, dateFormat } from "../../helpers/formatit";
+//import { datishFormat, dateFormat } from "../../helpers/formatit";
 import flagit from "../../helpers/flagit";
 import {
   getEnvConfidentialAPIURL,
@@ -24,7 +24,7 @@ export function processEndPoint(endpoint, endpointParams) {
   return endpoint
     .replace(
       `{process.env.${ENV_VAR_PREFIX}_CONF_API_URL}`,
-      getEnvConfidentialAPIURL()
+      getEnvConfidentialAPIURL(),
     )
     .replace("{process.env.PUBLIC_URL}", getEnv("PUBLIC_URL"))
     .replace("{patientId}", params.patientId);
@@ -47,7 +47,7 @@ export async function fetchExternalData(url, datasetKey, rootElement) {
    */
   let results = await Promise.race([fetch(url), timeoutPromise]).catch((e) => {
     return Promise.reject(
-      new Error(`There was error fetching data for ${datasetKey}: ${e}`)
+      new Error(`There was error fetching data for ${datasetKey}: ${e}`),
     );
   });
 
@@ -61,14 +61,14 @@ export async function fetchExternalData(url, datasetKey, rootElement) {
       });
     } catch (e) {
       return Promise.reject(
-        new Error(`There was error parsing data for ${datasetKey}: ${e}`)
+        new Error(`There was error parsing data for ${datasetKey}: ${e}`),
       );
     }
     try {
       responseDataSet = json[rootElement];
     } catch (e) {
       return Promise.reject(
-        `Data does not contained the required root element ${rootElement} for ${datasetKey}: ${e}`
+        `Data does not contained the required root element ${rootElement} for ${datasetKey}: ${e}`,
       );
     }
   }
@@ -90,9 +90,9 @@ export async function getExternalData(summaryMap) {
       return fetchExternalData(
         processEndPoint(item.endpoint),
         item.dataKey,
-        item.dataKey
+        item.dataKey,
       );
-    })
+    }),
   ).catch((e) => {
     console.log(`Error parsing external data response json: ${e.message}`);
     return null;
@@ -112,11 +112,11 @@ export async function getExternalData(summaryMap) {
       try {
         result = this[item.processFunction](
           result.value ? result.value[item.dataKey] : null,
-          item.dataKey
+          item.dataKey,
         );
       } catch (e) {
         console.log(
-          `Error processing data result via processing function ${item.processFunction}: ${e}`
+          `Error processing data result via processing function ${item.processFunction}: ${e}`,
         );
       }
     }
@@ -129,8 +129,8 @@ export async function getExternalData(summaryMap) {
       dataSet[item.dataKeySource][item.dataKey] = result.value
         ? result.value[item.dataKey]
         : result[item.dataKey]
-        ? result[item.dataKey]
-        : result;
+          ? result[item.dataKey]
+          : result;
     }
   });
   return {
@@ -161,7 +161,7 @@ function normalizeFlagResults(flagResult, alertMapping) {
       // object from flagit: { text, class, date }
       const text = f.text ?? "";
       const cls = f.class ?? "";
-      const date = f.date != null ? f.date : alertMapping?.dateField ?? null;
+      const date = f.date != null ? f.date : (alertMapping?.dateField ?? null);
       return { text, class: cls, date };
     })
     .filter((f) => f.text); // must have text to display
@@ -213,17 +213,11 @@ export function getProcessedSummaryData(summary, summaryMap) {
 
           const flagResult = flagit(entry, subSection, summary);
           const normalized = dedupeFlags(
-            normalizeFlagResults(flagResult, alertMapping)
+            normalizeFlagResults(flagResult, alertMapping),
           );
 
           for (const f of normalized) {
             flaggedCount += 1;
-            const flagDateField = f.date ?? alertMapping?.dateField ?? null;
-            const flagDateText =
-              entry && flagDateField && entry[flagDateField]
-                ? dateFormat("", entry[flagDateField])
-                : "";
-
             flaggedEntries.push({
               entryId: entry._id,
               entry,
@@ -231,7 +225,7 @@ export function getProcessedSummaryData(summary, summaryMap) {
               flagText: f.text,
               flagClass: f.class || "",
               flagCount: flaggedCount,
-              flagDateText,
+              text: f.text,
               priority:
                 (f.class === "info" && 1000) || alertMapping.priority || 0,
             });
@@ -242,7 +236,7 @@ export function getProcessedSummaryData(summary, summaryMap) {
         const sectionFlagResult = flagit(null, subSection, summary);
         const normalized = normalizeFlagResults(
           sectionFlagResult,
-          alertMapping
+          alertMapping,
         );
         const unique = dedupeFlags(normalized);
 
@@ -253,6 +247,7 @@ export function getProcessedSummaryData(summary, summaryMap) {
               flagText: f.text,
               flagCount: flaggedCount,
               flagClass: f.class,
+              text: f.text,
               subSection,
               priority: alertMapping.priority || 0,
             };
@@ -421,7 +416,7 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
   function todayYMDUTC() {
     const now = new Date();
     return toYMDUTC(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
     );
   }
 
@@ -526,18 +521,6 @@ export function getProcessedGraphData(graphConfig, graphDataSource) {
 
   return out;
 }
-export function getFlagTextByItem(flagItem) {
-  if (!flagItem) return "";
-  if (flagItem.flagTextBySite) {
-    const siteId = getSiteId();
-    const siteKey = siteId ? siteId.toLowerCase() : "";
-    if (siteKey && flagItem.flagTextBySite[siteKey])
-      return flagItem.flagTextBySite[siteKey];
-    return flagItem.flagText ?? "";
-  }
-  if (flagItem.flagText) return flagItem.flagText;
-  return "";
-}
 export function getProcessedAlerts(sectionFlags, logParams) {
   let alerts = [];
   if (!sectionFlags) {
@@ -551,37 +534,25 @@ export function getProcessedAlerts(sectionFlags, logParams) {
           alerts.push(subsection[1]);
         }
         if (typeof subsection[1] === "object") {
-          const subSectionFlagText = getFlagTextByItem(subsection[1]);
+          const subSectionFlagText = subsection[1]?.flagText;
           if (Array.isArray(subsection[1])) {
             subsection[1].forEach((subitem) => {
-              const subItemFlagText = getFlagTextByItem(subitem);
+              const subItemFlagText = subitem.flagText;
               //this prevents addition of duplicate alert text
               let alertTextExist = alerts.filter((item) => {
-                const itemFlagText = getFlagTextByItem(item);
+                const itemFlagText = item.flagText;
                 return (
                   String(itemFlagText).toLowerCase() ===
                   String(subItemFlagText).toLowerCase()
                 );
               });
               if (!alertTextExist.length && subItemFlagText) {
-                let flagDateText = subitem.flagDateText
-                  ? subitem.flagDateText
-                  : "";
                 alerts.push({
                   id: subitem.subSection.dataKey,
                   name: subitem.subSection.name,
                   flagText: subItemFlagText,
                   className: subitem.flagClass,
-                  text:
-                    subItemFlagText.indexOf("[DATE]") >= 0
-                      ? subItemFlagText.replace(
-                          "[DATE]",
-                          datishFormat("", flagDateText)
-                        )
-                      : subItemFlagText +
-                        (subitem.flagDateText
-                          ? ` (${datishFormat("", flagDateText)})`
-                          : ""),
+                  text: subItemFlagText,
                   priority: subitem.priority || 100,
                 });
                 //log alert
@@ -589,7 +560,7 @@ export function getProcessedAlerts(sectionFlags, logParams) {
                   writeToLog(
                     "alert flag: " + subItemFlagText,
                     "warn",
-                    logParams
+                    logParams,
                   );
               }
             });
@@ -609,9 +580,10 @@ export function getProcessedAlerts(sectionFlags, logParams) {
   alerts.sort(function (a, b) {
     return a.priority - b.priority;
   });
+  console.log("alerts ", alerts);
   return alerts.filter(
     (item, index, thisRef) =>
-      thisRef.findIndex((t) => t.text === item.text) === index
+      thisRef.findIndex((t) => t.text === item.text) === index,
   );
 }
 
@@ -638,7 +610,7 @@ export function MedicationRequestsForNaloxoneConsideration(summaryData) {
 }
 
 export function NonBupMedRequestsForNaloxoneConsiderationLastTwoYears(
-  summaryData
+  summaryData,
 ) {
   const nonBupMedList = GetNonBuprenorphineMMEListByDates(summaryData);
   if (isEmptyArray(nonBupMedList)) return null;
@@ -742,7 +714,7 @@ export function getBupRXCUIs(summaryData) {
     const medConcept = med.medication;
     const match = medConcept?.coding?.find(
       (item) =>
-        item.system?.value === "http://www.nlm.nih.gov/research/umls/rxnorm"
+        item.system?.value === "http://www.nlm.nih.gov/research/umls/rxnorm",
     );
     if (!match) return [];
     return match.code?.value;
@@ -802,11 +774,11 @@ export function getProcessedStatsData(statsConfig, summaryData) {
           }
           if (summaryField.identifier) return true;
           let matchedDataByKey = matchItem.data.filter(
-            (dItem) => dItem[summaryField.key]
+            (dItem) => dItem[summaryField.key],
           );
           //de-duplicate
           matchItem[summaryField.key] = Array.from(
-            new Set(matchedDataByKey.map((dItem) => dItem[summaryField.key]))
+            new Set(matchedDataByKey.map((dItem) => dItem[summaryField.key])),
           ).length;
         });
         dataSet.push(matchItem);
@@ -819,10 +791,10 @@ export function getProcessedStatsData(statsConfig, summaryData) {
     } //end if keyMatch & matchSet
     else if (keyMatch) {
       let filteredStatsSource = dataSource.filter(
-        (element) => element[item.keyMatch]
+        (element) => element[item.keyMatch],
       );
       filteredStatsSource = Array.from(
-        new Set(filteredStatsSource.map((subitem) => subitem[item.keyMatch]))
+        new Set(filteredStatsSource.map((subitem) => subitem[item.keyMatch])),
       );
       statItem[item.title] = filteredStatsSource.length;
       stats.push(statItem);
@@ -863,7 +835,7 @@ export function getMMEErrors(summary) {
     ) {
       errorItems.push(item);
       errors.push(
-        `Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`
+        `Medication, ${item["Name"]}, did not have an MME value returned, total MME and the MME overview graph are not reflective of total MME for this patient.`,
       );
     }
   });
@@ -904,7 +876,7 @@ export function logMMEEntries(summary, logParams) {
       writeToLog(
         `MME calculation failure: Name: ${item.Name} NDC: ${item.NDC_Code} Quantity: ${item.Quantity} Duration: ${item.Duration} Factor: ${item.factor}`,
         "error",
-        logParams
+        logParams,
       );
     }
     if (item.MME) {
@@ -912,7 +884,7 @@ export function logMMEEntries(summary, logParams) {
       writeToLog(
         `MME calculated: Name: ${item.Name} NDC: ${item.NDC_Code} RxNorm: ${item.RXNorm_Code} MME: ${item.MME}`,
         "info",
-        logParams
+        logParams,
       );
     }
   });
@@ -1020,8 +992,10 @@ export function getAnalyticsData(endpoint, apikey, summary) {
 export function getProcessProgressDisplay(resourcesTypes = {}) {
   if (!resourcesTypes) return null;
   let totalResources = Object.keys(resourcesTypes).length;
-  let numResourcesLoaded = Object.values(resourcesTypes).filter(s => s === true).length;;
-  let message  = "";
+  let numResourcesLoaded = Object.values(resourcesTypes).filter(
+    (s) => s === true,
+  ).length;
+  let message = "";
   const camel2title = (camelCase) =>
     camelCase
       .replace(/([A-Z])/g, (match) => ` ${match}`)
@@ -1059,7 +1033,7 @@ export function getSummaryMapWithUpdatedSectionsVis(summaryMap) {
       newMap[key]["sections"].forEach((section) => {
         if (
           getEnv(
-            `${ENV_VAR_PREFIX}_SUBSECTION_${section.dataKey.toUpperCase()}`
+            `${ENV_VAR_PREFIX}_SUBSECTION_${section.dataKey.toUpperCase()}`,
           ) === "hidden"
         ) {
           section["hideSection"] = true;

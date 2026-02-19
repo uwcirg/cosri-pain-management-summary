@@ -1,10 +1,10 @@
 import {
   isDateInPast,
-  isEmptyArray,
   getDiffMonths,
   getDateObjectInLocalDateTime,
-  getSiteId
+  getSiteId,
 } from "./utility";
+import { dateFormat } from "./formatit";
 const functions = {
   ifAnd,
   ifOr,
@@ -23,10 +23,11 @@ const functions = {
 // helpers
 const toArray = (x) => (Array.isArray(x) ? x : x ? [x] : []);
 const getFlagClass = (item) => (item.flagClass ? item.flagClass : "");
-const getFlagDateField = (item) => (item.flagDateField ? item.flagDateField : "");
+const getFlagDateField = (item) =>
+  item.flagDateField ? item.flagDateField : "";
 
 // Build display text for a single flag item
-function buildDisplayText(flagItem, entry) {
+function buildDisplayText(flagItem, entry, subSection) {
   if (!flagItem) return "";
 
   const siteId = getSiteId?.();
@@ -45,6 +46,16 @@ function buildDisplayText(flagItem, entry) {
   // substitute {name}
   if (displayText) {
     displayText = displayText.replace("{name}", `- ${elementText}`);
+
+    const alertMapping = subSection?.alertMapping || {};
+    const flagDateField = alertMapping?.dateField ?? null;
+    const flagDateText =
+      entry && flagDateField && entry[flagDateField]
+        ? dateFormat("", entry[flagDateField])
+        : "";
+    if (flagDateText) {
+      displayText = displayText.replace("[DATE]", flagDateText);
+    }
   }
 
   // mapping (pattern -> friendly display name)
@@ -86,7 +97,7 @@ export default function flagit(entry, subSection, summary) {
       const flagRule = flagItem.flag;
       const flagClass = getFlagClass(flagItem);
       const flagDate = getFlagDateField(flagItem);
-      const displayText = buildDisplayText(flagItem, entry);
+      const displayText = buildDisplayText(flagItem, entry, subSection);
       const pushResult = () => {
         if (displayText) {
           results.push({ text: displayText, class: flagClass, date: flagDate });
@@ -263,7 +274,10 @@ function if3MonthsDue(value, entry, subSection, summary) {
   if (!entry) return false;
   const targetDate = entry[value.targetField];
   if (!targetDate) return false;
-  const diff = getDiffMonths(new Date(), getDateObjectInLocalDateTime(targetDate));
+  const diff = getDiffMonths(
+    new Date(),
+    getDateObjectInLocalDateTime(targetDate),
+  );
   //console.log("if3MonthsDue months diff ", diff);
   return diff >= 0 && diff <= 3;
 }
@@ -276,7 +290,10 @@ function if4MonthsDue(value, entry, subSection, summary) {
   if (!entry) return false;
   const targetDate = entry[value.targetField];
   if (!targetDate) return false;
-  const diff = getDiffMonths(new Date(), getDateObjectInLocalDateTime(targetDate));
+  const diff = getDiffMonths(
+    new Date(),
+    getDateObjectInLocalDateTime(targetDate),
+  );
   //console.log("if4MonthsDue months diff ", diff);
   return diff > 3 && diff <= 4;
 }
