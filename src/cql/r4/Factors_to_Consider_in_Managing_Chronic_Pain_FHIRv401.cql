@@ -86,6 +86,8 @@
 // Add patient MRN
 // Update 20251110
 // Remove MME Calculations, Bupronorephine meds functions, to be implemented in JS
+// Update 20260219
+// Add department location to urine tox screen result set, see GetLocationByEncounter
 
 // The initial R4 port of this artifact used the FHIR 4.0.0 model and CQL 1.3. This version uses the FHIR 4.0.1 model and
 // CQL 1.5 (although it is expected to be backward compatible to CQL 1.4 and CQL 1.3). For this most recent update to FHIR
@@ -1181,11 +1183,17 @@ define AllOpioidMedicationRequests:
 //     }
 //     sort by Date desc
 
+
+define function GetLocationFromEncounter(encounterId System.String):
+  ([Encounter] En where En.id = encounterId) E
+  return if E.location is not null and E.location.location is not null then E.location[0].location.display.value else null
+
 // Urine drug screen from service request,  matching on custom system and concept code, e.g. sites using labcorp for testing
 define ReportUrineLabServiceRequestsByCustomCode:
   [ServiceRequest] O
   let
     requester: O.requester.display,
+    location: if O.encounter is not null and O.encounter.reference is not null then First(GetLocationFromEncounter(Split(O.encounter.reference, '/')[1])) else 'UW',
     c: O.code as FHIR.CodeableConcept
     where (
       (
@@ -1211,11 +1219,11 @@ define ReportUrineLabServiceRequestsByCustomCode:
       Date: DateTimeText(O.authoredOn),
       Source: if O.identifier[0].system ~ UWMC_LAB_SYSTEM_IDENTIFIER_URL then
           if requester is not null then
-            'UW lab order (placed by ' + O.requester.display + ')' 
+            location + ' lab order\n placed by ' + O.requester.display
           else 'UW lab order'
         else
           if requester is not null then 
-            'manually entered (placed by ' + O.requester.display + ')'
+            'manually entered\n placed by ' + O.requester.display
           else
             'manually entered',
       Next_Screen_Date: O.authoredOn + 12 months
