@@ -1362,10 +1362,7 @@
                     }
                   ]
                 },
-                "flagText": "No urine drug screen date found for this patient. Please check the last controlled substance prescription to determine if they are due for their 12 month drug screen.",
-                "flagTextBySite": {
-                  "uwmc": "No urine drug screen date found for this patient. We are currently in the process of identifying all of the UDS tests from Epic, which will be available soon. Please double check Epic for UDS."
-                }
+                "flagText": "No urine drug screen date found for this patient. Please check the last controlled substance prescription to determine if they are due for their 12 month drug screen."
               },
               {
                 "flag": {
